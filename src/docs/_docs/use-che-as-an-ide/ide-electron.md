@@ -37,5 +37,3 @@ open eclipse-che.app . <che-server-url>
 # Linux
 ./eclipse-che . <che-server-url>\
 ```
-
-# Build Clients From Source  
