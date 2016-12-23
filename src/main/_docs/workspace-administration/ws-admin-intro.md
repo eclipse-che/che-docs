@@ -9,13 +9,14 @@ permalink: /:categories/admin-intro/
 
 {{product_formal_name}}'s power comes from the unique Eclipse Che workspaces which are portable and shareable because they are composed of projects (source files) and environments (runtimes). 
 
-# How Che Workspaces Work
-## 1. You start with a production runtime
+# Workspace Activation
+## 1. Create a workspace with a production runtime
 - A Docker image or a “recipe”, for example a Dockerfile / Composefile
 - Runtimes can inherit from other kinds of “machines” such as SSH 
 - Images are built, if necessary, and run with additional run + volume mount parameters
+- We provide numerous "stacks" with pre-defined Docker compose and image runtimes.
 
-## 2. Che "dev modes” the runtime
+## 2. "Dev Mode” the Workspace
 - Agents ⇒ ZIP package of bash software to be installed + started in the runtime (sshd, intellisense, sync)
 - Agents ⇒ Can be added during workspace boot, or after it has started triggered by a developer activity
 - Agents ⇒ Added through either a volume mount or HTTP download from the Che server - depending upon config
@@ -23,15 +24,16 @@ permalink: /:categories/admin-intro/
 - WS Agent ⇒ Special purpose agent that must exist in one container providing Che APIs for Che server & browser clients
 - Debuggers ⇒ Processes with special ports to be exposed, which allow debugger clients to connect
 
-## 3. Che activates the project in the workspace
+## 3. Import Projects From Version Contro
 - Clone ⇒ Users can clone repos from remote locations
 - Mount ⇒ Source code is volume mounted to the local server host for long term storage
 - rsync ⇒ Distributed workspaces with Codenvy rsync project code from long term storage to a workspace runtime during boot
 
-## 4. IDE clients are informed of workpace URL and endpoint
+## 4. IDEs Connect to Workspace Endpoint
+- Use our cloud IDE or your desktop IDE
 - Sync ⇒ Users can use a che-sync docker container to unison sync workspace files to localhost
 
-# Che Workspace Model
+# Workspace Model
 ### 1..n Environments
 - 1..1 Recipes ⇒ defined by a “stack”
 - 1..n Machines ⇒ machines have “type”, such as Docker or SSH and an SPI
