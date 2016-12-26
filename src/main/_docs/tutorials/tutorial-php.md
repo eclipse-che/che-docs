@@ -8,7 +8,7 @@ permalink: /:categories/php/
 {% include base.html %}
 # 1. Create a PHP Project  
 Start Che, create a PHP project using a sample app:
-![php.png]({{ base }}/assets/imgs/php.png)
+![php.png]({{ base }}/docs/assets/imgs/php.png)
 
 # 2. Start Apache Server  
 This project has 3 custom commands to start, stop and restart apache2.
@@ -97,4 +97,4 @@ RewriteRule ^ index.php [QSA,L]\
 Apache needs to be restarted. Run `apache restart` command in CMD command widget.
 
 Now, navigate to `http://<your-che-host>:$port/$project/Che` to find `Hello Che` in a response:
-![slim.png]({{ base }}/assets/imgs/slim.png)
+![slim.png]({{ base }}/docs/assets/imgs/slim.png)

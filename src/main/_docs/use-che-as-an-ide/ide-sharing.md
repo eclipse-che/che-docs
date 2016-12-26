@@ -13,9 +13,9 @@ An {{ site.product_formal_name }} server can be setup to run on an external port
 
 ## Export Workspaces from Separate Servers
 If team members are all using their own {{ site.product_mini_name }} servers, they can share their workspace environment with other team members manually. Exporting a workspace can be done after a workspace has been created from the Workspaces page in the dashboard:
-![che-sharing2.jpg]({{ base }}/assets/imgs/che-sharing2.jpg)
+![che-sharing2.jpg]({{ base }}/docs/assets/imgs/che-sharing2.jpg)
 There are two exporting options available there, **Export to File** and **Export to Cloud** under Settings tab:
-![che-sharing3.jpg]({{ base }}/assets/imgs/che-sharing3.jpg)
+![che-sharing3.jpg]({{ base }}/docs/assets/imgs/che-sharing3.jpg)
 Finally, it's possible to take a snapshot of a running workspace, export it to a Docker image registry and share it with others.
 
 ### Export to File
@@ -29,7 +29,7 @@ To import the JSON in another {{ site.product_mini_name }} instance:
 3. Click "Add Workspace".
 4. Under "Select Source" choose "Import an existing workspace configuration".
 5. Paste the JSON in the text editing area.
-![che-sharing4.jpg]({{ base }}/assets/imgs/che-sharing4.jpg)
+![che-sharing4.jpg]({{ base }}/docs/assets/imgs/che-sharing4.jpg)
 ### Export to Cloud
 Export to Cloud pushes the {{ site.product_mini_name }} workspace to a network-reachable Che or Codenvy system. This is tested with the hosted Che system at https://codenvy.io/.
 

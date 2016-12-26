@@ -10,6 +10,6 @@ Preview objects are URLs that reference specific files or endpoints activated by
 
 # Create  
 Preview objects are stored as part of command. {{ site.product_mini_name }} will generate the preview URL during the command execution and present the URL to the user as part of the command output. You can add a preview URL of any format within the command editor.
-![img-features-commands.png]({{ base }}/assets/imgs/img-features-commands.png)
+![img-features-commands.png]({{ base }}/docs/assets/imgs/img-features-commands.png)
 The preview object will dynamically determine the appropriate URL when the command is run.
-![Capture_preview.PNG]({{ base }}/assets/imgs/Capture_preview.PNG)
+![Capture_preview.PNG]({{ base }}/docs/assets/imgs/Capture_preview.PNG)

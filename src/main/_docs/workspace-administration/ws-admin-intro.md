@@ -59,7 +59,7 @@ permalink: /:categories/admin-intro/
 - An embedded IDE package, delivered to end user configured for the ws
 - Che web IDE is included by default
 
-![machine.png]({{ base }}/assets/imgs/machine.png)
+![machine.png]({{ base }}/docs/assets/imgs/machine.png)
 
 # Where To Go From Here  
 Che provides a lot of flexibility to administrators and users. You can start by choosing from our stack library that is within the user dashboard.
