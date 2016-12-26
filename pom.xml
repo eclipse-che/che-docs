@@ -58,13 +58,57 @@
         </pluginRepository>
     </pluginRepositories>
     <build>
-        <sourceDirectory>${project.basedir}/src/main/</sourceDirectory>
+        <sourceDirectory>${project.build.directory}/che-docs-src</sourceDirectory>
         <plugins>
-          <plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                  <execution>
+                    <id>copy-assets-resources</id>
+                    <phase>validate</phase>
+                    <goals>
+                      <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                      <outputDirectory>${project.build.directory}/che-docs-src/src/main/_docs/assets</outputDirectory>
+                      <resources>          
+                        <resource>
+                          <directory>${project.basedir}/src/main/_docs/assets</directory>
+                          <filtering>false</filtering>
+                          <excludes>
+                            <exclude>**/css/**</exclude>
+                          </excludes>
+                        </resource>
+                      </resources>  
+                    </configuration>            
+                  </execution>
+                  <execution>
+                    <id>copy-docs-resources</id>
+                    <phase>validate</phase>
+                    <goals>
+                      <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                      <outputDirectory>${project.build.directory}/che-docs-src/src/main/_docs/che</outputDirectory>
+                      <resources>          
+                        <resource>
+                          <directory>${project.basedir}/src/main/_docs/</directory>
+                          <filtering>false</filtering>
+                          <excludes>
+                            <exclude>**/assets/**</exclude>
+                          </excludes>
+                        </resource>
+                      </resources> 
+                    </configuration>            
+                  </execution>
+                </executions>
+              </plugin>
+              <plugin>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
+                        <phase>initialize</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>
