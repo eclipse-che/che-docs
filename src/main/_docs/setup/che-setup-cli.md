@@ -28,8 +28,8 @@ COMMANDS:
   action <action-name>                 Start action on che instance
   backup                               Backups che configuration and data to /data/backup volume mount
   config                               Generates a che config from vars; run on any start / restart
-  dir <path> <command>                 Use Chefile feature in the directory <path>
   destroy                              Stops services, and deletes che instance data
+  dir <path> <command>                 Use Chefile feature in the directory <path>
   download                             Pulls Docker images for the current che version
   help                                 This message
   info                                 Displays info about che and the CLI
@@ -48,6 +48,47 @@ COMMANDS:
 ```
 
 The CLI will hide most error conditions from standard out. Internal stack traces and error output is redirected to `cli.log`, which is saved in the host folder where `:/data` is mounted.
+
+## action
+Executes some actions on the Eclipse Che instance or on a workspace running inside Che.
+For example to list all workspaces on Che, the following command can be used
+`action list-workspaces`.
+To execute a command on a workspace `action execute-command <workspace-name> <action>` where action can be any bash command.
+
+## backup
+TARS your `/instance` into files and places them into `/backup`. These files are restoration-ready.
+
+## config
+Generates a Che instance configuration thta is placed in `/instance`. This command uses puppet to generate Docker Compose configuration files to run Che and its associated server. Che's server configuration is generated as a che.properties file that is volume mounted into the Che server when it boots. This command is executed on every `start` or `restart`.
+
+If you are using a `eclipse/che-cli:<version>` image and it does not match the version that is in `/instance/che.ver`, then the configuration will abort to prevent you from running a configuration for a different version than what is currently installed.
+
+This command respects `--no-force`, `--pull`, `--force`, and `--offline`.
+
+## destroy
+Deletes `/docs`, `che.env` and `/instance`, including destroying all user workspaces, projects, data, and user database. If you pass `--quiet` then the confirmation warning will be skipped. Passing `--cli` will also destroy the `cli.log`. By default this is left behind for traceability.
+
+## dir
+Boots a new Eclipse Che instance with a workspace for the folder specified in parameter.
+If for example `$HOME/my-project` is given as parameter in `dir $HOME/my-project up`, a new Che instance will be created, using `$HOME/my-project`as project in the IDE.
+So inside the IDE, `/projects` folder will contain a `my-project`folder with your host folder.
+Then, any changes inside the IDE will be reflected in your host folder. And the opposite is also true, updating a file on your local computer will update the content of the file inside the IDE.
+
+Other commands are `init`,`up`, `down`, `ssh` and `status`
+
+  - `init`  : Initialize the directory specified and add a default `Chefile` file if there is none
+  - `up`    : Boot Eclipse Che with workspace on folder
+  - `down`  : Stop Eclipse Che and any workspaces
+  - `ssh`   : Connect to the running workspace by using ssh
+  - `status`: Display if an instance of Eclipse Che is running or not for the specified folder.
+
+## download
+Used to download Docker images that will be stored in your Docker images repository. This command downloads images that are used by the CLI as utilities, for Che to do initialization and configuration, and for the runtime images that Che needs when it starts.  This command respects `--offline`, `--pull`, `--force`, and `--no-force` (default).  This command is invoked by `che init`, `che config`, and `che start`.
+
+`download` is invoked by `che init` before initialization to download images for the version specified by `eclipse/che-cli:<version>`.
+
+## info
+Displays system state and debugging information. `--network` runs a test to take your `CHE_HOST` value to test for networking connectivity simulating browser > Che and Che > workspace connectivity.
 
 ## init
 Initializes an empty directory with a Che configuration and instance folder where user data and runtime configuration will be stored. You must provide a `<path>:/data` volume mount, then Che creates a `instance` and `backup` subfolder of `<path>`. You can optionally override the location of `instance` by volume mounting an additional local folder to `/data/instance`. You can optionally override the location of where backups are stored by volume mounting an additional local folder to `/data/backup`.  After initialization, a `che.env` file is placed into the root of the path that you mounted to `/data`.
@@ -74,12 +115,26 @@ You can control how Che downloads these images with command line options. All im
 
 You can reinstall Che on a folder that is already initialized and preserve your `che.env` values by passing the `--reinit` flag.
 
-## config
-Generates a Che instance configuration thta is placed in `/instance`. This command uses puppet to generate Docker Compose configuration files to run Che and its associated server. Che's server configuration is generated as a che.properties file that is volume mounted into the Che server when it boots. This command is executed on every `start` or `restart`.
+## offline
+Saves all of the Docker images that Che requires into `/backup/*.tar` files. Each image is saved as its own file. If the `backup` folder is available on a machine that is disconnected from the Internet and you start Che with `--offline`, the CLI pre-boot sequence will load all of the Docker images in the `/backup/` folder.
 
-If you are using a `eclipse/che-cli:<version>` image and it does not match the version that is in `/instance/che.ver`, then the configuration will abort to prevent you from running a configuration for a different version than what is currently installed.
+`--list` option will list all of the core images and optional stack images that can be downloaded. The core system images and the CLI will always be saved, if an existing TAR file is not found. `--image:<image-name>` will download a single stack image and can be used multiple times on the command line. You can use `--all-stacks` or `--no-stacks` to download all or none of the optional stack images.
 
-This command respects `--no-force`, `--pull`, `--force`, and `--offline`.
+## restart
+Performs a `stop` followed by a `start`, respecting `--pull`, `--force`, and `--offline`.
+
+## restore
+Restores `/instance` to its previous state. You do not need to worry about having the right Docker images. The normal start / stop / restart cycle ensures that the proper Docker images are available or downloaded, if not found.
+
+This command will destroy your existing `/instance` folder, so use with caution, or set these values to different folders when performing a restore.
+
+## rmi
+Deletes the Docker images from the local registry that Che has downloaded for this version.
+
+## ssh
+Connects the current terminal where the command is started to the terminal of a machine of the workspace. If no machine is specified in the command, it will connect to the default machine which is the dev machine.
+The syntax is `ssh <workspace-name> [machine-name]`
+The ssh connection will work only if there is a workspace ssh key setup. A default ssh key is automatically generated when a workspace is created.
 
 ## start
 Starts Che and its services using `docker-compose`. If the system cannot find a valid configuration it will perform an `init`. Every `start` and `restart` will run a `config` to generate a new configuration set using the latest configuration. The starting sequence will perform pre-flight testing to see if any ports required by Che are currently used by other services and post-flight checks to verify access to key APIs.  
@@ -87,27 +142,9 @@ Starts Che and its services using `docker-compose`. If the system cannot find a 
 ## stop
 Stops all of the Che service containers and removes them.
 
-## restart
-Performs a `stop` followed by a `start`, respecting `--pull`, `--force`, and `--offline`.
-
-## destroy
-Deletes `/docs`, `che.env` and `/instance`, including destroying all user workspaces, projects, data, and user database. If you pass `--quiet` then the confirmation warning will be skipped. Passing `--cli` will also destroy the `cli.log`. By default this is left behind for traceability.
-
-## offline
-Saves all of the Docker images that Che requires into `/backup/*.tar` files. Each image is saved as its own file. If the `backup` folder is available on a machine that is disconnected from the Internet and you start Che with `--offline`, the CLI pre-boot sequence will load all of the Docker images in the `/backup/` folder.
-
-`--list` option will list all of the core images and optional stack images that can be downloaded. The core system images and the CLI will always be saved, if an existing TAR file is not found. `--image:<image-name>` will download a single stack image and can be used multiple times on the command line. You can use `--all-stacks` or `--no-stacks` to download all or none of the optional stack images.
-
-## rmi
-Deletes the Docker images from the local registry that Che has downloaded for this version.
-
-## download
-Used to download Docker images that will be stored in your Docker images repository. This command downloads images that are used by the CLI as utilities, for Che to do initialization and configuration, and for the runtime images that Che needs when it starts.  This command respects `--offline`, `--pull`, `--force`, and `--no-force` (default).  This command is invoked by `che init`, `che config`, and `che start`.
-
-`download` is invoked by `che init` before initialization to download images for the version specified by `eclipse/che-cli:<version>`.
-
-## version
-Provides information on the current version and the available versions that are hosted in Che's repositories. `che upgrade` enforces upgrade sequences and will prevent you from upgrading one version to another version where data migrations cannot be guaranteed.
+## test
+Performs some tests on your local instance of Che. It can for example check the ability to create a workspace, start the workspace by using a custom Workspace runtime and then use it.
+The list of all the tests available can be obtained by providing only `test` command.
 
 ## upgrade
 Manages the sequence of upgrading Che from one version to another. Run `che version` to get a list of available versions that you can upgrade to.
@@ -128,45 +165,8 @@ The upgrade process: a) performs a version compatibility check, b) downloads new
 
 You can run `che version` to see the list of available versions that you can upgrade to.
 
-## info
-Displays system state and debugging information. `--network` runs a test to take your `CHE_HOST` value to test for networking connectivity simulating browser > Che and Che > workspace connectivity.
-
-## backup
-TARS your `/instance` into files and places them into `/backup`. These files are restoration-ready.
-
-## restore
-Restores `/instance` to its previous state. You do not need to worry about having the right Docker images. The normal start / stop / restart cycle ensures that the proper Docker images are available or downloaded, if not found.
-
-This command will destroy your existing `/instance` folder, so use with caution, or set these values to different folders when performing a restore.
-
-## action
-Executes some actions on the Eclipse Che instance or on a workspace running inside Che.
-For example to list all workspaces on Che, the following command can be used
-`action list-workspaces`.
-To execute a command on a workspace `action execute-command <workspace-name> <action>` where action can be any bash command.
-
-## dir
-Boots a new Eclipse Che instance with a workspace for the folder specified in parameter.
-If for example `$HOME/my-project` is given as parameter in `dir $HOME/my-project up`, a new Che instance will be created, using `$HOME/my-project`as project in the IDE.
-So inside the IDE, `/projects` folder will contain a `my-project`folder with your host folder.
-Then, any changes inside the IDE will be reflected in your host folder. And the opposite is also true, updating a file on your local computer will update the content of the file inside the IDE.
-
-Other commands are `init`,`up`, `down`, `ssh` and `status`
-
-  - `init`  : Initialize the directory specified and add a default `Chefile` file if there is none
-  - `up`    : Boot Eclipse Che with workspace on folder
-  - `down`  : Stop Eclipse Che and any workspaces
-  - `ssh`   : Connect to the running workspace by using ssh
-  - `status`: Display if an instance of Eclipse Che is running or not for the specified folder.
-
-## ssh
-Connects the current terminal where the command is started to the terminal of a machine of the workspace. If no machine is specified in the command, it will connect to the default machine which is the dev machine.
-The syntax is `ssh <workspace-name> [machine-name]`
-The ssh connection will work only if there is a workspace ssh key setup. A default ssh key is automatically generated when a workspace is created.
-
-## test
-Performs some tests on your local instance of Che. It can for example check the ability to create a workspace, start the workspace by using a custom Workspace runtime and then use it.
-The list of all the tests available can be obtained by providing only `test` command.
+## version
+Provides information on the current version and the available versions that are hosted in Che's repositories. `che upgrade` enforces upgrade sequences and will prevent you from upgrading one version to another version where data migrations cannot be guaranteed.
 
 
 # CLI Development
