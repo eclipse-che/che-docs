@@ -28,6 +28,7 @@ COMMANDS:
   action <action-name>                 Start action on che instance
   backup                               Backups che configuration and data to /data/backup volume mount
   config                               Generates a che config from vars; run on any start / restart
+  dir <path> <command>                 Use Chefile feature in the directory <path>
   destroy                              Stops services, and deletes che instance data
   download                             Pulls Docker images for the current che version
   help                                 This message
@@ -48,7 +49,7 @@ COMMANDS:
 
 The CLI will hide most error conditions from standard out. Internal stack traces and error output is redirected to `cli.log`, which is saved in the host folder where `:/data` is mounted.
 
-## init 
+## init
 Initializes an empty directory with a Che configuration and instance folder where user data and runtime configuration will be stored. You must provide a `<path>:/data` volume mount, then Che creates a `instance` and `backup` subfolder of `<path>`. You can optionally override the location of `instance` by volume mounting an additional local folder to `/data/instance`. You can optionally override the location of where backups are stored by volume mounting an additional local folder to `/data/backup`.  After initialization, a `che.env` file is placed into the root of the path that you mounted to `/data`.
 
 These variables can be set in your local environment shell before running and they will be respected during initialization:
@@ -138,7 +139,35 @@ Restores `/instance` to its previous state. You do not need to worry about havin
 
 This command will destroy your existing `/instance` folder, so use with caution, or set these values to different folders when performing a restore.
 
-TODO: NEED SYNTAX FOR SSH, TEST, SYNC, DIR COMMANDS
+## action
+Executes some actions on the Eclipse Che instance or on a workspace running inside Che.
+For example to list all workspaces on Che, the following command can be used
+`action list-workspaces`.
+To execute a command on a workspace `action execute-command <workspace-name> <action>` where action can be any bash command.
+
+## dir
+Boots a new Eclipse Che instance with a workspace for the folder specified in parameter.
+If for example `$HOME/my-project` is given as parameter in `dir $HOME/my-project up`, a new Che instance will be created, using `$HOME/my-project`as project in the IDE.
+So inside the IDE, `/projects` folder will contain a `my-project`folder with your host folder.
+Then, any changes inside the IDE will be reflected in your host folder. And the opposite is also true, updating a file on your local computer will update the content of the file inside the IDE.
+
+Other commands are `init`,`up`, `down`, `ssh` and `status`
+
+  - `init`  : Initialize the directory specified and add a default `Chefile` file if there is none
+  - `up`    : Boot Eclipse Che with workspace on folder
+  - `down`  : Stop Eclipse Che and any workspaces
+  - `ssh`   : Connect to the running workspace by using ssh
+  - `status`: Display if an instance of Eclipse Che is running or not for the specified folder.
+
+## ssh
+Connects the current terminal where the command is started to the terminal of a machine of the workspace. If no machine is specified in the command, it will connect to the default machine which is the dev machine.
+The syntax is `ssh <workspace-name> [machine-name]`
+The ssh connection will work only if there is a workspace ssh key setup. A default ssh key is automatically generated when a workspace is created.
+
+## test
+Performs some tests on your local instance of Che. It can for example check the ability to create a workspace, start the workspace by using a custom Workspace runtime and then use it.
+The list of all the tests available can be obtained by providing only `test` command.
+
 
 # CLI Development
 You can customize the CLI using a variety of techniques. This section discusses how engineers develop and test the CLI on their local machines.
@@ -180,6 +209,6 @@ You can add additional commands to the Che CLI beyond the base set of commands t
 The `version` folder has information that details the latest version and a sub-folder for each version that is available for installation. Each version subfolder has version-specific data that the CLI depends upon to create a manifest of Docker images that must be downloaded to support the product that is going to be run. When we generate a release of the Che CLI, we have our CI systems automatically update the `/version` folder with the version-specific information contained in a release.
 
 ## Puppet Templates
-The Che CLI uses Puppet to generate OS-specific configuration files based upon environment variables set by the user either with `-e <VALUE>` options on the command line, or by modifying their `che.env` file. We pass all of these values into Puppet and then run a puppet configuration utility across the files contained in the `/dockerfiles/init/modules` and `/dockerfiles/init/manifests` folder to take the templates contained within the `/init` module, marry them with user-specific variables, and then generate an instance-specific configuration in `/instance`. Puppet has logic constructs that allow us to generate different kinds of constructs with logic based upon the values provided by end users. 
+The Che CLI uses Puppet to generate OS-specific configuration files based upon environment variables set by the user either with `-e <VALUE>` options on the command line, or by modifying their `che.env` file. We pass all of these values into Puppet and then run a puppet configuration utility across the files contained in the `/dockerfiles/init/modules` and `/dockerfiles/init/manifests` folder to take the templates contained within the `/init` module, marry them with user-specific variables, and then generate an instance-specific configuration in `/instance`. Puppet has logic constructs that allow us to generate different kinds of constructs with logic based upon the values provided by end users.
 
 This puppet-based approach allow us to simplify the outputs for end users and limit the locations where end users need to configure various parts of the system. One powerful example of this is that we generate two `docker-compose.yml` files from a single Puppet template. In the user's `/instance` folder is `docker-compose.yml` and `docker-compose-container.yml`. The first one is a configuration file that allows a user to run Docker compose for Che on their host. They can just `docker-compose up` in that folder. The second file is for running Docker compose from within a container, which is what the CLI does. The syntax of Docker compose changes in each of these scenarios as the files being referenced from within the compose syntax are different. In the `init` image, we have a single template for Docker Compose and then apply it in two configurations using Puppet.
