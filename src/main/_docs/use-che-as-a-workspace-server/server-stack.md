@@ -6,33 +6,47 @@ layout: docs
 permalink: /:categories/stack/
 ---
 {% include base.html %}
-## List All Stacks
-```curl  
-curl --header 'Accept: application/json' http://localhost:8080/api/stack?tags=Node.JS\
+
+# List All Stacks
+
+#### cURL - List all stacks tagged with 'Node'
+```shell  
+curl --header 'Accept: application/json' http://localhost:8080/api/stack?tags=Node.JS
 ```
+
 Query parameter `tags` is optional and used to narrow down search results.
 
 It's possible to use multiple query parameters, e.g. `http://localhost:8080/api/stack?tags=Java&tags=Ubuntu`
 
-Swagger: http://localhost:8080/swagger/#!/stack/searchStacks
+Swagger: [http://localhost:8080/swagger/#!/stack/searchStacks](http://localhost:8080/swagger/#!/stack/searchStacks)
 
-##Create a New Stack
+
+# Create a New Stack
 
 JSON with stack configurations is sent in a POST request:
-```curl  
-curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"name":"my-custom-stack"source":{"origin":"codenvy/ubuntu_jdk8"type":"image"},"components":[],"tags":["my-custom-stack"Ubuntu"Git"Subversion"],"id":"stack15l7wsfqffxokhle"workspaceConfig":{"environments":{"default":{"machines":{"default":{"attributes":{"memoryLimitBytes":"1048576000"},"servers":{},"agents":["org.eclipse.che.terminal"org.eclipse.che.ws-agent"org.eclipse.che.ssh"]}},"recipe":{"location":"codenvy/ubuntu_jdk8"type":"dockerimage"}}},"defaultEnv":"default"projects":[],"name":"default"commands":[],"links":[]},"creator":"che"description":"Default Blank Stack."scope":"general"}' http://localhost:8080/api/stack
+
+#### cURL - Create a new stack
+```shell  
+curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"name":"my-custom-stack"source":{"origin":"codenvy/ubuntu_jdk8"type":"image"},"components":[],"tags":["my-custom-stack","Ubuntu","Git","Subversion"],"id":"stack15l7wsfqffxokhle","workspaceConfig":{"environments":{"default":{"machines":{"default":{"attributes":{"memoryLimitBytes":"1048576000"},"servers":{},"agents":["org.eclipse.che.terminal"org.eclipse.che.ws-agent"org.eclipse.che.ssh"]}},"recipe":{"location":"codenvy/ubuntu_jdk8","type":"dockerimage"}}},"defaultEnv":"default","projects":[],"name":"default"commands":[],"links":[]},"creator":"che","description":"Default Blank Stack.","scope":"general"}' http://localhost:8080/api/stack
+
 ```
-Swagger:
+Output:
 ```json  
 {
-  "name": "my-custom-stack\n  "source": {
-    "origin": "codenvy/ubuntu_jdk8\n    "type": "image"
+  "name": "my-custom-stack",
+  "source": {
+    "origin": "codenvy/ubuntu_jdk8",
+    "type": "image"
   },
   "components": [],
   "tags": [
-    "my-custom-stack\n    "Ubuntu\n    "Git\n    "Subversion"
+    "my-custom-stack",
+    "Ubuntu",
+    "Git",
+    "Subversion"
   ],
-  "id": "stackocriwhwviu1kjm2r\n  "workspaceConfig": {
+  "id": "stackocriwhwviu1kjm2r",
+  "workspaceConfig": {
     "environments": {
       "default": {
         "machines": {
@@ -42,37 +56,56 @@ Swagger:
             },
             "servers": {},
             "agents": [
-              "org.eclipse.che.terminal\n              "org.eclipse.che.ws-agent\n              "org.eclipse.che.ssh"
+              "org.eclipse.che.terminal",
+              "org.eclipse.che.ws-agent",
+              "org.eclipse.che.ssh"
             ]
           }
         },
         "recipe": {
-          "location": "codenvy/ubuntu_jdk8\n          "type": "dockerimage"
+          "location": "codenvy/ubuntu_jdk8",
+          "type": "dockerimage"
         }
       }
     },
-    "defaultEnv": "default\n    "projects": [],
-    "name": "default\n    "commands": [],
+    "defaultEnv": "default",
+    "projects": [],
+    "name": "default",
+    "commands": [],
     "links": []
   },
-  "creator": "che\n  "description": "Default Blank Stack.\n  "scope": "general"
+  "creator": "che",
+  "description": "Default Blank Stack.",
+  "scope": "general"
 }
 ```
+
+
 ## Update an Existing Stack
 
 JSON with updated stack configs is sent in a PUT request:
-```curl  
-curl -X PUT --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"name":"my-custom-stack"source":{"origin":"codenvy/ubuntu_jdk8"type":"image"},"components":[],"tags":["my-custom-stack"Ubuntu"Git"Subversion"],"id":"stacki7jf4x4n2cz6r3cr"workspaceConfig":{"environments":{"default":{"machines":{"default":{"attributes":{"memoryLimitBytes":"1048576000"},"servers":{},"agents":["org.eclipse.che.terminal"org.eclipse.che.ws-agent"org.eclipse.che.ssh"]}},"recipe":{"location":"codenvy/ubuntu_jdk8"type":"dockerimage"}}},"defaultEnv":"default"projects":[],"name":"default"commands":[],"links":[]},"creator":"che"description":"NEW-DESCRIPTION"scope":"general"}' http://localhost:8080/api/stack/${id}
+
+#### cURL - Update an existing stack
+```shell  
+curl -X PUT --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"name":"my-custom-stack","source":{"origin":"codenvy/ubuntu_jdk8","type":"image"},"components":[],"tags":["my-custom-stack","Ubuntu","Git","Subversion"],"id":"stacki7jf4x4n2cz6r3cr","workspaceConfig":{"environments":{"default":{"machines":{"default":{"attributes":{"memoryLimitBytes":"1048576000"},"servers":{},"agents":["org.eclipse.che.terminal","org.eclipse.che.ws-agent","org.eclipse.che.ssh"]}},"recipe":{"location":"codenvy/ubuntu_jdk8","type":"dockerimage"}}},"defaultEnv":"default","projects":[],"name":"default","commands":[],"links":[]},"creator":"che","description":"NEW-DESCRIPTION","scope":"general"}' http://localhost:8080/api/stack/${id}
 ```
-Swagger:
+
+
+Output:
 ```json  
+
 {
-  "name": "my-custom-stack\n  "source": {
-    "origin": "codenvy/ubuntu_jdk8\n    "type": "image"
+  "name": "my-custom-stack",
+  "source": {
+    "origin": "codenvy/ubuntu_jdk8",
+    "type": "image"
   },
   "components": [],
   "tags": [
-    "my-custom-stack\n    "Ubuntu\n    "Git\n    "Subversion"
+    "my-custom-stack",
+    "Ubuntu",
+    "Git",
+    "Subversion"
   ],
   "workspaceConfig": {
     "environments": {
@@ -84,25 +117,36 @@ Swagger:
             },
             "servers": {},
             "agents": [
-              "org.eclipse.che.terminal\n              "org.eclipse.che.ws-agent\n              "org.eclipse.che.ssh"
+              "org.eclipse.che.terminal",
+              "org.eclipse.che.ws-agent",
+              "org.eclipse.che.ssh"
             ]
           }
         },
         "recipe": {
-          "location": "codenvy/ubuntu_jdk8\n          "type": "dockerimage"
+          "location": "codenvy/ubuntu_jdk8",
+          "type": "dockerimage"
         }
       }
     },
-    "defaultEnv": "default\n    "projects": [],
-    "name": "default\n    "commands": [],
+    "defaultEnv": "default",
+    "projects": [],
+    "name": "default",
+    "commands": [],
     "links": []
   },
-  "creator": "che\n  "description": "Default Blank Stack.\n  "scope": "general"
+  "creator": "che",
+  "description": "Default Blank Stack.",
+  "scope": "general"
 }
 ```
-##Delete a Stack
+
+
+## Delete a Stack
 
 Stack ID is passed as a path parameter:
-```curl  
-curl -X DELETE --header 'Accept: application/json' http://localhost:8080/api/stack/${id}\
+```shell  
+curl -X DELETE --header 'Accept: application/json' http://localhost:8080/api/stack/${id}
 ```
+
+Swagger: [http://localhost:8080/swagger/#!/stack/removeStack](Swagger: http://localhost:8080/swagger/#!/stack/removeStack)
