@@ -6,35 +6,59 @@ layout: docs
 permalink: /:categories/admin-intro/
 ---
 {% include base.html %}
-A Che workspace is composed of projects (source files) and environments (runtimes). A workspace can contain one or more environments (e.g. hack environment, populated database environment, etc...) but only one environment at a time can be running in the workspace. An environment is composed of one or more machines. The default machine in an environment is called the "dev-machine" and your projects are mounted or synchronized into that machine so that the software running in the machine can gain access to the source code.  
-![WorksapceBasicArchitecture.png]({{ base }}/assets/imgs/WorksapceBasicArchitecture.png)
 
-# Machines  
-Environments contain one or more machines. A machine is an abstraction for a single run time, defined by a [recipe](docs:recipes) or [stack](docs:stacks). These docs use the terms "machine" and "workspace runtime" interchangeably.
+{{product_formal_name}}'s power comes from the unique Eclipse Che workspaces which are portable and shareable because they are composed of projects (source files) and environments (runtimes). 
 
-A machine can have different implementations and our default implementation is to have one Docker container for each machine. Different Che deployments can have different implementations for machines such as localhost or a remote VM.
+# Workspace Activation
+## 1. Create a workspace with a production runtime
+- A Docker image or a “recipe”, for example a Dockerfile / Composefile
+- Runtimes can inherit from other kinds of “machines” such as SSH 
+- Images are built, if necessary, and run with additional run + volume mount parameters
+- We provide numerous "stacks" with pre-defined Docker compose and image runtimes.
 
-Machines are instantiated by Che with the stack of software defined by the recipe. Dockerfiles or Docker Compose files, for example, define utilities, frameworks, compilers, and debuggers that should be installed, configured and / or running in the machine(s).  Che then syncs the workspace's projects into the machine so that the software running in the machine can gain access to the source code.  
+## 2. "Dev Mode” the Workspace
+- Agents ⇒ ZIP package of bash software to be installed + started in the runtime (sshd, intellisense, sync)
+- Agents ⇒ Can be added during workspace boot, or after it has started triggered by a developer activity
+- Agents ⇒ Added through either a volume mount or HTTP download from the Che server - depending upon config
+- Terminal Agent ⇒ Special purpose agent to provide web-based terminal
+- WS Agent ⇒ Special purpose agent that must exist in one container providing Che APIs for Che server & browser clients
+- Debuggers ⇒ Processes with special ports to be exposed, which allow debugger clients to connect
 
-Any changes made to the project files within the machine is synchronized back to the workspace master out of the machine. This happens through a simple mount.
+## 3. Import Projects From Version Contro
+- Clone ⇒ Users can clone repos from remote locations
+- Mount ⇒ Source code is volume mounted to the local server host for long term storage
+- rsync ⇒ Distributed workspaces with Codenvy rsync project code from long term storage to a workspace runtime during boot
 
-### Types of Machines
-There are two types of machines:
-1. A workspace "dev-machine" that is the runtime for the workspace's projects. Che automatically boots and suspends the dev-machine as the workspace is started and stopped.
-2. Ancillary machines that provide additional runtime environments for use by projects in the workspace. For example, you may need to launch a database server that is used by projects in the workspace machine. Che will launch additional ancillary machines defined by each user.  The user is responsible for defining, starting and stopping ancillary machines.
+## 4. IDEs Connect to Workspace Endpoint
+- Use our cloud IDE or your desktop IDE
+- Sync ⇒ Users can use a che-sync docker container to unison sync workspace files to localhost
 
-A workspace always has one workspace machine, and it can have zero or more ancillary machines.
+# Workspace Model
+### 1..n Environments
+- 1..1 Recipes ⇒ defined by a “stack”
+- 1..n Machines ⇒ machines have “type”, such as Docker or SSH and an SPI
+- State, such as “running”, “stopped”, “booting”
+- Runtime - the instantiated machines
+- Snapshot - saved machine state
 
-### Agents for Machine Superpowers
-Additionally, Che can inject additional software into a machine through [workspace agents](doc:workspace-agents). Agents can provide machines with special services for the source code. For example, a Java agent runs JDT intellisense inside the machine against the project files and then makes the results available to browsers through REST and websocket communications.
-# How It Works  
-Docker is the default machine implementation in Che. Each machine is created from a [runtime recipe](doc:recipes) that defines a [runtime stack](doc:stacks). Che provides a variety of ready-to-go stacks that contain common combinations of frameworks needed to develop software projects of various languages. However, the user can create their own [runtime stack](doc:stacks) by defining a Dockerfile or Docker Compose file when creating a new workspace or editing the Che server `stacks.json`.
+### 0..n Agents
+- Microservices added to ws runtimes, such as SSH, dev-machine, or intellisense
 
-Che builds a Docker image from the recipe, if an image is not already available. The image can be stored locally on your host, loaded from a private Docker registry, or downloaded from DockerHub. By default, the [provided stacks within Che](https://eclipse-che.readme.io/docs/stacks) will cause Che to download pre-built images from Che's DockerHub repository.
+### 0..n Projects
+- Each mapped to a single repository or directory, with a “type”
+- Type ⇒ such as “javac”, “c#” to inject behaviors into the ws
+- Modules ⇒ sub-projects that have directory-sensitive behaviors
+- Templates ⇒ Sample projects which can be instantiated in a workspace
 
-After the image is downloaded, Che runs a container from that image. This running container represents a machine. If it is a workspace dev-machine, a workspace agent (packaged as a Tomcat server) is injected and started.
+### 0..n Commands
+- Processes for users to perform tasks, such as compiling code, with a “type”
+- Type ⇒ such as “javac”, “c#” to inject behaviors into the ws
+- Previews ⇒ URLs generated by commands which give access to workspace “servers”
 
-When a machine is started, Che volume mounts the projects folder on the host, specified by the `CHE_DATA_FOLDER `(default `/home/user/che`) environment variable, into the machine located at `CHE_PROPERTY_che_machine_projects_internal_storage`(default `/projects`). Your workspace projects will be in both the machine and host.
+### 0..n IDEs
+- An embedded IDE package, delivered to end user configured for the ws
+- Che web IDE is included by default
+
 ![machine.png]({{ base }}/assets/imgs/machine.png)
 
 # Where To Go From Here  
