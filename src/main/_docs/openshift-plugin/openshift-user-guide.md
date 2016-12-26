@@ -27,7 +27,7 @@ Once an app is imported, OpenShift metadata is added to project attributes, thus
 }  
 
 
-![module.png]({{ base }}/assets/imgs/module.png)
+![module.png]({{ base }}/docs/assets/imgs/module.png)
 
 #### Development cycle
 Since projects created from OpenShift templates use GitHub repositories that you cannot push to, use templates just for demo purposes. Alternatively, you may replace Git URL in *buildConfig* with the one you have push permissions at `OpenShift > Manage Configs`.  

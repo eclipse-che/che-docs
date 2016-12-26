@@ -12,7 +12,7 @@ permalink: /:categories/rest-api/
 
 # Workspace Master APIs  
 
-![Swagger.PNG]({{ base }}/assets/imgs/Swagger.PNG)
+![Swagger.PNG]({{ base }}/docs/assets/imgs/Swagger.PNG)
 
 ```http  
 http://localhost:8080/swagger/\

@@ -223,7 +223,7 @@ Che relies on web sockets to stream content between workspaces and the browser. 
 The Che server runs in its own Docker container, "Che Docker Container", and each workspace gets an embedded runtime which can be a set of additional Docker containers, "Docker Container(n)". All containers are managed by a common Docker daemon, "docker-ip", making them siblings of each other. This includes the Che server and its workspaces - each workspace runtime environment has a set of containers that is a sibling to the Che server, not a child.
 
 TODO: UPDATE WITH ACCURANTE IMAGE
-![Capture_.PNG]({{ base }}/assets/imgs/Capture_.PNG)
+![Capture_.PNG]({{ base }}/docs/assets/imgs/Capture_.PNG)
 
 ### Connectivity  
 The browser client initiates communication with the Che server by connecting to `che-ip`. This IP address must be accessible by your browser clients. Internally, Che runs on Tomcat which is bound to port `8080`. This port can be altered by setting `CHE_PORT` during start or in your `che.env`.\
