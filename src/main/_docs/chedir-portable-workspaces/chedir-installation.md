@@ -16,6 +16,7 @@ You will automatically get newer versions of Chedir when you upgrade Eclipse Che
 
 # From Source  
 Chedir is provided as a Docker container which you can run instead of using the CLI. The CLI captures your environmental information and invokes the container with the appropriate syntax.
+
 ```shell  
 # Mac / Linux
 docker run -v /var/run/docker.sock:/var/run/docker.sock \
@@ -29,6 +30,8 @@ docker run -v /var/run/docker.sock:/var/run/docker.sock \
 
 
 # Build Chedir Docker Container
+
+You can build Chedir Docker Container by using the following commands:
 ```shell  
 git clone http://github.com/eclipse/che-dockerfiles
 cd che-dockerfiles
@@ -37,10 +40,13 @@ cd che-dockerfiles
 
 # Uninstallation  
 You can remove Chedir by deleting the Chedir docker image from your system.
+
+#### Remove Chedir
 ```shell  
 docker rmi -f eclipse/che-dir
 ```
 
+#### Remove Che
 If you'd also like to remove the Che CLI and Che:
 ```shell  
 # Remove the Che container
