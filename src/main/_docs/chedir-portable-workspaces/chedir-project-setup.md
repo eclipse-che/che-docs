@@ -19,7 +19,7 @@ cd chedir_start
 docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> dir <path-to-project> init
 ```
 
-This will place a Chefile in your current directory. You can take a look at the Chefile if you want, it is filled with comments and examples. You can also run `docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> dir <path-to-project> init` in a pre-existing directory that already has source code to set up Chedir for an existing project.
+This will place a Chefile in your current directory. You can take a look at the Chefile if you want, it is filled with comments and examples. You can also run Chedir `init` command in a pre-existing directory that already has source code to set up Chedir for an existing project.
 
 The Chefile is meant to be committed to version control with your project, if you use version control. This way, every person working with that project can benefit from Chedir without any upfront work.
 
