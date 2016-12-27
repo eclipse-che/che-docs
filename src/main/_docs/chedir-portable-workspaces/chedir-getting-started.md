@@ -10,7 +10,7 @@ The Chedir getting started guide will walk you through your first Chedir project
 
 If you are curious what benefits Chedir has to offer, you should also read the [Why Chedir?]({{base}}/docs/chedir/why/index.html) page.
 
-Before diving into your first workspace, please check how to use the latest version of Chedir, which is also part of the [Eclipse Che CLI]({{base}}/docs/setup/cli/index.html). And since Docker is required for everything related to Che, make sure that is installed as well.
+Before diving into your first workspace, please check how to use the latest version of Chedir, which is also part of the [Eclipse Che CLI]({{base}}/docs/setup/getting-started/index.html). And since Docker is required for everything related to Che, make sure that is installed as well.
 
 
 ```shell  
