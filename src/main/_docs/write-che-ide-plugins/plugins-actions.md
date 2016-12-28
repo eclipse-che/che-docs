@@ -92,7 +92,7 @@ public class SampleActionsExtensions {
 }
 ```
 
-##Action Locations
+## Action Locations
 In this section, we describe more in detail, how actions can be placed at specific locations within Che and how the order within toolbars and menus can be specified. Both, the location and the order is specified along with the registration of an action.
 
 Every action and action group in Che has a unique identifier. This allows to reference existing groups and actions when registering a new element and thereby specify its location. In the example registration in the previous section, we have used the ID of the Che main menu to place our custom action group and action in it. All existing identifiers for existing che action groups can be found in  [org.eclipse.che.ide.api.action.IdeActions](https://github.com/eclipse/che/blob/master/core/ide/che-core-ide-api/src/main/java/org/eclipse/che/ide/api/action/IdeActions.java).
@@ -114,7 +114,7 @@ mainMenu.add(sampleGroup, new Constraints(AFTER, GROUP_HELP));
 DefaultActionGroup toolbar = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_MAIN_TOOLBAR);
 toolbar.add(helloWorldActionWithIcon, Constraints.FIRST);
 ```
-##Visibility and Enablement
+## Visibility and Enablement
 
 By default, actions will always be visible to the user and enabled. However, certain actions shall only be visible or enabled based on the current state of Che. The implementation of an action is responsible for managing its visibility and enabled state.
 
@@ -159,10 +159,10 @@ public class OnProjectHelloWorldAction extends Action {
 }
 ```
 
-##Reusable Actions
+## Reusable Actions
 For common operations such as creating files, Che provides reusable default actions. Custom implementations can inherit from those and thereby only need to specify their specifics, while reusing most of the default behavior. In this section, we provide an overview of the most common reusable actions in Che.
 
-###Create File Actions
+### Create File Actions
 Che provides a template implementation for actions to create new resources (i.e. files). When using the template, you only need to specify the name of the action as well as the file extension to be created (as shown in the following code example).
 ```java  
 org.eclipse.che.plugin.myextension.ide.action.CreateMyFileAction
@@ -179,7 +179,8 @@ public class CreateMyFileAction extends AbstractNewResourceAction {
 	}
 }
 ```
-##Project/Perspective-specific Actions (JSON Example)
+
+## Project/Perspective-specific Actions (JSON Example)
 In this part of the tutorial, as part of the [JSON example](docs:introduction-1#section-the-json-example) we describe how to add project- and perspective-specific actions, meaning  actions that are only available for a specific project type and within specific perspectives. As we want to define several actions of this type, we will create a template implementation and then inherit from it for the implementation of several actions.
 
 These example actions will be placed in the context menu on the specific [JSON project type](doc:custom-project-types)  defined before. The following diagram shows all components of a project type registration. The classes highlighted in dark grey are to be implemented for the extension.
@@ -298,7 +299,7 @@ public class JsonExampleExtension {
 Finally, we can open the context menu on our custom project type and trigger the example action, the screenshot show the `HelloWorldAction`, as well as another project specific action defined in the section [Server/Workspace Access](doc:serverworkspace-access).
 
 ![image00.png]({{ base }}/docs/assets/imgs/image00.png)
-##Further Example Actions
+## Further Example Actions
 In this section, we provide a collection of existing example actions to demonstrate the variety of possible locations and behavior to be executed.
 
 The following example creates a `RedirectToDashboardWorkspacesAction` which is the behavior that redirects the IDE back into the user dashboard application.

@@ -14,7 +14,7 @@ In the following, we will describe how to create server and workspace services a
 Based on that, in the subsequent section “Workspace Services”, we will describe a more complex example, which accesses the files of a specific project.
 Server and Workspace services need to be deployed differently, please refer to the section [Create and build extensions](doc:create-and-build-extensions) to learn how.
 
-##Server Services
+## Server Services
 The following diagram shows all components of server services. The classes highlighted in dark grey are to be implemented for the extension. The `ServerService` offers a REST service to be consumed.
 The IDE plugin implements a client class (`MyClient`), which calls the REST service using Che helper classes. The result is made available by a Java API, which is to be defined based on the result type. By calling the client class, different components of the IDE, such as `Actions` or `CodeCompletionProcessors`, can consume the `ServerService` without having to deal with the REST API itself.
 ![image15.png]({{ base }}/docs/assets/imgs/image15.png)
@@ -118,7 +118,7 @@ public class MyAction extends Action {
 
 ```
 
-##Workspace Services
+## Workspace Services
 Workspace services are special types of server services, they are deployed directly within the workspace agent. Therefore, they can access the content of a workspace, e.g. projects, source files, etc. Furthermore, they can trigger native operations in the running workspace.
 Besides their different scope, workspace services are developed like standard server services using REST. Therefore, we recommend to first cover the previous section about [server services](serverworkspace-access#section-server-services). The main difference between workspace and server services is where they are actually deployed to. Please refer to the section [Create and build extensions](doc:create-and-build-extensions)  to learn how to deploy services correctly.
 

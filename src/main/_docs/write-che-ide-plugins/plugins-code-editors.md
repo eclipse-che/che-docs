@@ -8,7 +8,7 @@ permalink: /:categories/code-editors/
 {% include base.html %}
 This part of the tutorial describes how to extend the Eclipse Che code editor to support a new language. It starts with defining a custom file type and associating it with the specific editor to be opened. Subsequently, we describe how to adapt and enhance the syntax highlighting as well as the code completion of the code editor.
 
-##File Types
+## File Types
 In this part of the tutorial, we describe, how new file types can be defined in Che and how those file types can be associated with a specific editor to be opened with. File types can be anything, from a source file to a configuration or properties file. By defining a new file type, it will be displayed in the project explorer using a specific icon. Further, it can be opened and modified with the associated editor. Please note, that Che already provides support for many common file types, so before defining a new one, you should check whether it is already supported.
 
 Defining a new file type consists of three basic steps:
@@ -22,6 +22,7 @@ FileType myFileType = new FileType("My FileType\ anIcon, "my");
 fileTypeRegistry.registerFileType(myFileType);
 editorRegistry.registerDefaultEditor(myFileType, defaultTextEditorProvider);
 ```
+
 In the first line, the new `FileType` is defined, the parameters of its constructor define a name (visible in the UI), an icon, the mime type and a file extension. In line 2, the new file type is registered in Che’s `FileTypeRegistry`. In line 3 the file type is added to Che’s editor registry and thereby associated with Che’s default editor. Please note that step three is optional, as Che will associate all file types with the default text editor by itself. However, this step is necessary, if you later want to implement a custom editor provider.
 
 Following a modular design, and following the guideline for the structure of Che plugins, the creation of the file type and the registration should be kept in two separate components (Java Classes).
@@ -34,6 +35,7 @@ If you haven’t used Gin or dependency injection before, we recommend you have 
 First, we define a new class `GinModule` for the instantiation of the custom `FileType`. It enables other classes to access the new file type using dependency injection. When adding more extensions later, the `GinModule` class can also create other components and mappings. So we will not call it `FileTypeGinModule`, but more generically `MyGinModule`. For now, the `GinModule` just provides the custom file type using the ID `MyFileType`. This makes the custom file type available for injection for other components using the annotation `@Named(“MyFileType”)`.
 
 The creation of the file type defines a name, a custom icon and the file extension. If Strings, such as the file extension, are used at other places later, they should be externalized to a common place, for simpler reading, we keep them inlined for now. If those Strings also need to be consumed by a server component later, it should go to a “shared” module, for now, it is kept in the IDE (client) module.
+
 ```java  
 org.eclipse.che.plugin.myextension.ide.inject.MyGinModule
 @ExtensionGinModule
@@ -109,10 +111,10 @@ So far, we have defined a new file type, which can be opened with the default te
 
 Further, the new file type can only be created using the generic “New” action and enter the extension manually. If you want to define a custom action, visible in the “New” menu, please refer to the section New File Actions.
 
-###JSON File Type (already supported by Che)
+### JSON File Type (already supported by Che)
 The [continuous JSON example](introduction-1#section-the-json-example), which is used throughout this tutorial uses the file type ".json". As Che already registeres a JSON file type out of the box, that means, the necessary registrations, described above for the "my" file type example are already existing in the Che core framework. For reference, the corresponding registrations can be found in the following classes and can be used as another example.
 
-####File Type Definition
+#### File Type Definition
 ```java  
 core/ide/che-core-ide-app/src/main/java/org.eclipse.che.ide.filetypes.FileTypeModule (alongside with other file types)
 
@@ -123,13 +125,14 @@ protected FileType provideJsonFile(Resources resources) {
    return new FileType(resources.jsonFile(), "json");
 }
 ```
-####File Type Registration
+#### File Type Registration
 ```java  
 core/ide/che-core-ide-app/src/main/java/org.eclipse.che.ide.core.StandardComponentInitializer
 
 fileTypeRegistry.registerFileType(jsonFile);\
 ```
-####Resources
+
+#### Resources
 ```java  
 core/ide/che-core-ide-app/src/main/java/org.eclipse.che.ide.Resources
 
@@ -140,7 +143,7 @@ Based on these existing registrations, Che will show the JSON file type as shown
 
 
 ![image01.png]({{ base }}/docs/assets/imgs/image01.png)
-##Code Completion
+## Code Completion
 This part of the tutorial describes how the code-completion of Che’s default code editor can be extended through new suggestions. This also enables you to add code-completion for completely new languages. The following diagram shows all components of a typical file type registration. The classes highlighted in dark grey are to be implemented for the extension.
 
 
@@ -322,7 +325,7 @@ public class SimpleCompletion implements Completion {
 In the example, we have shown, how to extend the code completion and used a static list of Strings. However, in a real world example, the calculation of the available proposals might, of course, be more complex. Furthermore, our example completion happens entirely on the client-site, without accessing the server or the workspace. If you need to access dependencies or other resources of a project, please see here to learn how to implement server site services to be used for more advanced code completion.
 
 
-##Syntax Highlighting
+## Syntax Highlighting
 Syntax highlighting allows you to mark characters and keywords in certain colors, based on a given grammar. To enable syntax highlighting in the browser IDE, Che embeds the existing [Orion Editor](https://wiki.eclipse.org/Orion). It already provides a wide range of supported grammars to be used. Please refer to the section “contentType parameter” within [this document](https://wiki.eclipse.org/Orion/How_Tos/Code_Edit) for a list of supported types.
 
 If the orion editor already knows the language you want to support, you need to associate the file extension with the content type defined by orion. As an example, we could associate our a custom file type `.my` ([see here for its definition](code-editors#section-file-types)) with the existing content type `Json`, which is already supported by the Orion editor. Therefore, we add the following line to `org.eclipse.che.ide.jseditor.client.filetype.ExtensionFileTypeIdentifier`:
@@ -339,7 +342,7 @@ By adding this mapping, the embedded Orion editor will now provide the JSON synt
 ![image01.png]({{ base }}/docs/assets/imgs/image01.png)
 To adapt or extend the syntax highlighting of the orion editor, please have a look at the [Orion Documentation](https://wiki.eclipse.org/Orion/Documentation/Developer_Guide/Plugging_into_the_editor#orion.edit.highlighter).
 
-###Add syntax highlighting for your own language
+### Add syntax highlighting for your own language
 There are two options how you can add a syntax highlighting for your own language:
 - Add the highlighting of content type, supported by Orion, but not by IDE.
 Add extension with mime type to [File Extension Registry](https://github.com/eclipse/che/blob/master/ide/che-core-ide-api/src/main/java/org/eclipse/che/ide/api/editor/filetype/ExtensionFileTypeIdentifier.java). For example:

@@ -10,7 +10,7 @@ Project types allow you to provide custom project behavior for a certain languag
 
 In this part of the tutorial, we describe how to define a custom project type, how to provide a custom creation wizard, and how to add project-specific actions.
 
-##Custom Project Type
+## Custom Project Type
 In this part of the tutorial, we describe how to define a new custom project type including a project initialization (e.g. to add default content). The following diagram shows all components of a project type registration. The classes highlighted in dark grey are to be implemented for the extension.
 
 ![ProjectType.png]({{ base }}/docs/assets/imgs/ProjectType.png)
@@ -150,7 +150,7 @@ projectHandlerMultibinder.addBinding().to(JsonExampleCreateProjectHandler.class)
 Once the ProjectHandler has been added and executed, the example project will already contain the files  in the IDE:
 
 ![image08.png]({{ base }}/docs/assets/imgs/image08.png)
-##Project Creation Wizard
+## Project Creation Wizard
 Project creation wizards are executed once the user creates a new project. They allow you to enter general properties (such as a name and a description), but also project-specific properties (e.g. a compiler option, a project dependency, etc.). Without providing a specific project creation wizard, Che already allows you to enter the general properties available for all projects as shown in the following screenshot for the JSON example project type we have defined in the previous section of the tutorial:
 
 
