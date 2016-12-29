@@ -18,12 +18,14 @@ To simplify this we build a Docker image with all the dependencies needed to bui
 
 
 If you want to work with an IDE, please follow this guideline: [IDE Setup](doc:setup-che-workspace).
+
 # Sample Extensions  
 There are a set of sample extensions that are included in the Che source code. They are in the `/samples` directory. The examples below reference once of those samples, named `sample-plugin-embedjs`.
 
 The Che sample plugins are not packaged with Che. You need to add each one to Che to test its capabilities. Most of the documentation provides instructions on how to create, build and link extensions manually.
 
 Usually, most developers will copy an existing extension into a new directory and then build that. The linking process is one-time and can be cumbersome the first time that you do it.  Che provides a utility in the source code (in a built assembly) called `bin/che-install-plugin` that automates the linking of your extensions into Che and the rebuilding of an assembly. While this utility is helpful, it's best if you go through the linking exercise once manually to understand the various relationships of what is linked where and why.
+
 # Extension Structure  
 The typical structure of a Che extension is composed of the following:
 
