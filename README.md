@@ -16,8 +16,8 @@ Docs are built using Jekyll and the output is static HTML that is hosted at [htt
 
 # Linking to Docs and Images
 Because the docs are generated into static HTML linking to docs and images is a bit unusual. We provide a custom plugin [_plugins/links.rb](_plugins/links.rb) to create links.
-- Link to a Che docs page "_docs/workspace-administration/ws-agents.md": `[workspace agents]({{sites.links["ws-agents"]}})`
-  - Link definition `[<link description shown in html>]({{sites.links["<file base name>"]}}#<section name>)`
+- Link to a Che docs page "_docs/workspace-administration/ws-agents.md": `[workspace agents]({{base+sites.links["ws-agents"]}})`
+  - Link definition `[<link description shown in html>]({{base+sites.links["<file base name>"]}}#<section name>)`
   - `sites.links["<file base name>"]` is a global hash value created by links plugin [_plugins/links.rb](_plugins/links.rb) before html generation.
   - Links plugin uses the following variables in [_config.yml](_config.yml) file:
     - Each `defaults.value.categories` used to create same permalink used in markdown file.
