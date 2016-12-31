@@ -95,16 +95,24 @@ Code [sampes]() allow you to define sample projects that are cloned into a works
 TODO: UPDATE THIS FOR THE NEW LOCATION WITH THE CLI ON HOW TO ADD
 
 # Development Mode
-For che developers that are building and customizing che from its source repository, you can run che in development mode where your local assembly is used instead of the one that is provided in the default containers downloaded from DockerHub. This allows for a rapid edit / build / run cycle.
+You can debug the Che binaries that are running within the Che server. You can debug either the binaries that are included within the `eclipse/che-server` image that you download from DockerHub or you can mount a local Che git repository to debug binaries built in a local assembly. By using local binaries, this allows Che developers to perform a rapid edit / build / run cycle without having to rebuild Che's Docker images.
 
-Dev mode is activated by volume mounting the che git repository to `:/repo` in your Docker run command.
+Dev mode is activated by passing `--debug` to any command on the CLI. 
+```
+# Activate dev mode with embedded binaries
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                    -v <local-path>:/data \
+                       eclipse/che-cli:<version> [COMMAND] --debug
+```
+
+You can replace the binaries in your local image with local binaries by volume mounting the Che git repository to `:/repo` in your Docker run command.
 ```
 docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock \
                     -v <local-path>:/data \
                     -v <local-repo>:/repo \
-                       eclipse/che-cli:<version> [COMMAND]
+                       eclipse/che-cli:<version> [COMMAND] --debug
 ```
-Dev mode will use files from your host repository:
+There are two locations that files in your Che source repository will be used instead of those in the image:
 
 1. During the `che config` phase, the source repository's `/dockerfiles/init/modules` and `/dockerfiles/init/manifests` will be used instead of the ones that are included in the `eclipse/che-init` container.
 2. During the `che start` phase, a local assembly from `assembly/assembly-main/target/` is mounted into the `eclipse/che-server` runtime container. You must `mvn clean install` the `assembly/assembly-main/` folder prior to activating development mode.
