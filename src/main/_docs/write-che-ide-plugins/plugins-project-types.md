@@ -28,56 +28,61 @@ Further, it specifies with the remaining three boolean parameters:
 * **mixin**=false: That the project cannot be embedded into other projects (as sub-projects)
 
 After specifying the project, we add a constant and a variable definition to the project type. Constants can not be changed, once they are defined and therefore contain static information about the project type. In our example, we add the information, that the project’s language is “json”. The first parameter specifies a key, the second a description of the Constant, and the third the corresponding value.
+
+*che/samples/sample-plugin-json/che-sample-plugin-json-server/src/main/java/org/eclipse/che/plugin/jsonexample/projecttype/JsonExampleProjectType.java*
 ```java  
 Server-side: org.eclipse.che.plugin.jsonexample.projecttype.JsonExampleProjectType
 public class JsonExampleProjectType extends ProjectTypeDef {
 
-	@Inject
-	public JsonExampleProjectType() {
-		super(JSON_EXAMPLE_PROJECT_TYPE_ID, "JSON Example\ true, false);
-  	addConstantDefinition(LANGUAGE, LANGUAGE, JSON_EXAMPLE_PROJECT_TYPE_ID);
-  	addVariableDefinition("json-schema-ref\ "Referenced base schema\ /*required*/ true);
-	}
+  @Inject
+  public JsonExampleProjectType() {
+    super(JSON_EXAMPLE_PROJECT_TYPE_ID, "JSON Example", true, false);
+    addConstantDefinition(LANGUAGE, LANGUAGE, JSON_EXAMPLE_PROJECT_TYPE_ID);
+    addVariableDefinition("json-schema-ref", "Referenced base schema", /*required*/ true);
+  }
 }
 ```
+
 Variables can be changed, e.g. to store values that the user enters on project creation. In the example, we define a custom variable to store a reference to a JSON schema. We will allow the user to set this variable in a custom project wizard in the corresponding part of this tutorial. You can define your own variables to store project specific properties. All String constants of the following code example are defined in a shared constant class, which is listed below.
+
+*che/samples/sample-plugin-json/che-sample-plugin-json-shared/src/main/java/org/eclipse/che/plugin/jsonexample/shared/Constants.java*
 ```java  
 org.eclipse.che.plugin.jsonexample.shared.Constants
 public final class Constants {
 
-	/**
- 	* Language attribute name.
- 	*/
-	public static final String LANGUAGE            	= "language";
+  /**
+  * Language attribute name.
+  */
+  public static final String LANGUAGE             = "language";
 
-	/**
- 	* Language attribute value.
- 	*/
-	public static final String JSON_EXAMPLE_LANG   	= "json";
+  /**
+  * Language attribute value.
+  */
+  public static final String JSON_EXAMPLE_LANG    = "json";
 
-	/**
- 	* JSON Example Project Type ID.
- 	*/
-	public static final String JSON_EXAMPLE_PROJECT_TYPE_ID = "json-example";
+  /**
+  * JSON Example Project Type ID.
+  */
+  public static final String JSON_EXAMPLE_PROJECT_TYPE_ID = "json-example";
 
-	/**
- 	* JSON Example Category.
- 	*/
-	public static final String JSON_EXAMPLE_CATEGORY  	= "JSON Example";
+  /**
+  * JSON Example Category.
+  */
+  public static final String JSON_EXAMPLE_CATEGORY    = "JSON Example";
 
-	/**
- 	* JSON Schema reference attribute name.
- 	*/
-	public static final String JSON_EXAMPLE_SCHEMA_REF_ATTRIBUTE = "json-schem-ref";
+  /**
+  * JSON Schema reference attribute name.
+  */
+  public static final String JSON_EXAMPLE_SCHEMA_REF_ATTRIBUTE = "json-schem-ref";
 
-	private Constants() {
+  private Constants() {
 
-	}
+  }
 }
-
 ```
 
-To make our new project type available in Che, we need to register it using Guice. The following example code registers the `JsonExampleProjectType` from above as a `ProjectTypeDef`. Che will automatically pick up all bound `ProjectTypeDefs`. Please see our [Dependency Injection Basics] (doc:dependency-injection-basics) section for a general introduction of this mechanism.
+To make our new project type available in Che, we need to register it using Guice. The following example code registers the `JsonExampleProjectType` from above as a `ProjectTypeDef`. Che will automatically pick up all bound `ProjectTypeDefs`. Please see our [Dependency Injection Basics]({{ base }}/docs/plugins/dependency-injection-basics/index.html) section for a general introduction of this mechanism.
+
 ```java  
 org.eclipse.che.plugin.jsonexample.inject.JsonExampleGuiceModule
 @DynaModule
@@ -85,12 +90,11 @@ public class JsonExampleGuiceModule extends AbstractModule {
 
   @Override
   protected void configure() {
-  	Multibinder<ProjectTypeDef> projectTypeDefMultibinder = newSetBinder(binder(),
-  	ProjectTypeDef.class);
+    Multibinder<ProjectTypeDef> projectTypeDefMultibinder = newSetBinder(binder(),
+    ProjectTypeDef.class);
     projectTypeDefMultibinder.addBinding().to(JsonExampleProjectType.class);
   }
 }
-\
 ```
 By defining the new project type, Che will add a new entry in the “New” menu of the IDE and allow us to create a new and empty project:
 
@@ -101,42 +105,44 @@ Typical project types often need to be initialized with some default content, e.
 
 In the following example, we will create the following files: a "person.json" file with some default content that will be stored in a folder named "myJsonFiles" as well as a "package.json" file, which we’ll need later on. The method `#getProjectType` needs to provide the project type ID to allow Che to map the `ProjectHandler` to the correct type.
 
+*che/samples/sample-plugin-json/che-sample-plugin-json-server/src/main/java/org/eclipse/che/plugin/jsonexample/inject/JsonExampleGuiceModule.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.generator.JsonExampleProjectGenerator
 public class JsonExampleCreateProjectHandler implements CreateProjectHandler {
 
-	private static final String FILE_NAME = "package.json";
+  private static final String FILE_NAME = "package.json";
 
-	@Override
-	public void onCreateProject(FolderEntry baseFolder,
-                            	Map<String, AttributeValue> attributes,
-                            	Map<String, String> options) throws /.../
+  @Override
+  public void onCreateProject(FolderEntry baseFolder,
+                              Map<String, AttributeValue> attributes,
+                              Map<String, String> options) throws /.../
   {
-		InputStream packageJson = null;
+    InputStream packageJson = null;
     InputStream personJson = null;
     try {
-    	FolderEntry myJsonFiles = baseFolder.createFolder("myJsonFiles");
-    	packageJson = getClass().getClassLoader()
+      FolderEntry myJsonFiles = baseFolder.createFolder("myJsonFiles");
+      packageJson = getClass().getClassLoader()
                 .getResourceAsStream("files/default_package");
       personJson = getClass().getClassLoader()
                 .getResourceAsStream("files/default_person");
-     	baseFolder.createFile(FILE_NAME, packageJson);
-      myJsonFiles.createFile("person.json\ personJson);
+      baseFolder.createFile(FILE_NAME, packageJson);
+      myJsonFiles.createFile("person.json", personJson);
     } finally {
-     	Closeables.closeQuietly(packageJson);
-     	Closeables.closeQuietly(personJson);
+      Closeables.closeQuietly(packageJson);
+      Closeables.closeQuietly(personJson);
     }
-	}
+  }
 
-	@Override
-	public String getProjectType() {
-  	return Constants.JSON_EXAMPLE_PROJECT_TYPE_ID;
-	}
+  @Override
+  public String getProjectType() {
+    return Constants.JSON_EXAMPLE_PROJECT_TYPE_ID;
+  }
 }
-
 ```
 Finally, the ProjectHandler needs to be bound using Guice just as the project type was bound before:
 
+*che/samples/sample-plugin-json/che-sample-plugin-json-server/src/main/java/org/eclipse/che/plugin/jsonexample/inject/JsonExampleGuiceModule.java*
 ```java  
 org.eclipse.che.plugin.jsonexample.inject.JsonExampleGuiceModule
 
@@ -145,7 +151,6 @@ Multibinder<ProjectHandler> projectHandlerMultibinder = newSetBinder(binder(),
      ProjectHandler.class);
 projectHandlerMultibinder.addBinding().to(JsonExampleCreateProjectHandler.class);
 /...
-\
 ```
 Once the ProjectHandler has been added and executed, the example project will already contain the files  in the IDE:
 
@@ -174,107 +179,108 @@ Now all required classes are set up and the actual runtime behavior can be perfo
 
 Finally, to wire everything up with Gin, all we need to do is to define a module to register our class `JsonExampleProjectWizardRegistrar` as an implementation of `ProjectWizardRegistrar`:
 
+*che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/inject/JsonExampleModule.java*
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.inject.JsonExampleModule
 @ExtensionGinModule
 public class JsonExampleModule extends AbstractGinModule {
 
-	@Override
-	protected void configure() {
-    	GinMultibinder
-            	.newSetBinder(binder(), ProjectWizardRegistrar.class)
-            	.addBinding()
-            	.to(JsonExampleProjectWizardRegistrar.class);
+  @Override
+  protected void configure() {
+      GinMultibinder
+              .newSetBinder(binder(), ProjectWizardRegistrar.class)
+              .addBinding()
+              .to(JsonExampleProjectWizardRegistrar.class);
        }
-    	//...
+      //...
 }
-
-\
 ```
+
+
 Now let us look at the implementation of all required classes in more detail.
 The `JsonExampleProjectWizardRegistrar` is responsible for setting up the `SchemaUrlWizardPage` as one of its wizard pages. To do this, it requests a provider for a `SchemaUrlWizardPage` injected in its constructor. The provider is just a wrapper around the actual wizard page which is required by the Che framework. In the method `#getWizardPages` we can then just return a list of providers for wizard pages containing only the injected provider.
 
 In addition to setting up the wizard page we need to declare the project type and category for which the project wizard is responsible for.
 
+*che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/project/JsonExampleProjectWizardRegistrar.java*
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.project.JsonExampleProjectWizardRegistrar
 public class JsonExampleProjectWizardRegistrar implements ProjectWizardRegistrar {
-	private final List<Provider<? extends WizardPage<ProjectConfigDto>>> wizardPages;
+  private final List<Provider<? extends WizardPage<ProjectConfigDto>>> wizardPages;
 
-	@Inject
-	public JsonExampleProjectWizardRegistrar(
+  @Inject
+  public JsonExampleProjectWizardRegistrar(
          Provider<SchemaUrlWizardPage> wizardPage) {
-  	wizardPages = new ArrayList<>();
+    wizardPages = new ArrayList<>();
     wizardPages.add(provider);
-	}
+  }
 
-	@NotNull
-	public String getProjectTypeId() {
-  	return Constants.JSON_EXAMPLE_PROJECT_TYPE_ID;
-	}
+  @NotNull
+  public String getProjectTypeId() {
+    return Constants.JSON_EXAMPLE_PROJECT_TYPE_ID;
+  }
 
-	@NotNull
-	public String getCategory() {
-  	return JSON_EXAMPLE_CATEGORY;
-	}
+  @NotNull
+  public String getCategory() {
+    return JSON_EXAMPLE_CATEGORY;
+  }
 
-	@NotNull
-	public List<Provider<? extends WizardPage<ProjectConfigDto>>> getWizardPages()	{
-  	return wizardPages;
-	}
+  @NotNull
+  public List<Provider<? extends WizardPage<ProjectConfigDto>>> getWizardPages()  {
+    return wizardPages;
+  }
 }
-\
 ```
 
 The `SchemaUrlWizardPage` class defines the actual wizard page for entering a schema URL. In the constructor it requires the injection of a view for displaying the UI of the page called `SchemaUrlPageViewImpl`. In the method `#go`, which is called when the page is about to be displayed, it will set this view as the only widget on the page and pass a new `SchemaUrlChangedDelegate` to the view. The view will later use this delegate to trigger  changes on the page's `ProjectConfigDto` whenever something is entered into the schema URL text box on the view.
 
+*che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/project/SchemaUrlWizardPage.java*
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.project.SchemaUrlWizardPage
 public class SchemaUrlWizardPage extends AbstractWizardPage<ProjectConfigDto> {
 
-	private final SchemaUrlChangedDelegate view;
+  private final SchemaUrlChangedDelegate view;
 
-	@Inject
-	public SchemaUrlWizardPage(SchemaUrlPageViewImpl view) {
-  	this.view = view;
-	}
+  @Inject
+  public SchemaUrlWizardPage(SchemaUrlPageViewImpl view) {
+    this.view = view;
+  }
 
-	@Override
-	public void go(AcceptsOneWidget container) {
-  	container.setWidget(view);
-  	view.setDelegate(new SchemaUrlChangedDelegate (this.dataObject));	  
+  @Override
+  public void go(AcceptsOneWidget container) {
+    container.setWidget(view);
+    view.setDelegate(new SchemaUrlChangedDelegate (this.dataObject));   
   }
 
 }
-
-\
 ```
+
 The `SchemaUrlChangedDelegate` receives a `ProjectConfigDto` in its constructor which holds all the values that are defined during project creation including the schema URL. Whenever its `#schemaUrlChanged` method is fired, it will write the new value into the `ProjectConfigDto`.
 
+*che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/project/SchemaUrlChangedDelegate.java*
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.project.SchemaUrlChangedDelegate   
 public class SchemaUrlChangedDelegate {
 
-	private ProjectConfigDto dataObject;
+  private ProjectConfigDto dataObject;
 
-	public SchemaUrlChangedDelegate(ProjectConfigDto dataObject) {
-  	this.dataObject = dataObject;
-	}
+  public SchemaUrlChangedDelegate(ProjectConfigDto dataObject) {
+    this.dataObject = dataObject;
+  }
 
-	public void schemaUrlChanged(String value) {
-  	dataObject.getAttributes().put("json-schema-ref\
+  public void schemaUrlChanged(String value) {
+    dataObject.getAttributes().put("json-schema-ref",
            Collections.singletonList(value));
-	}
+  }
 }
-
-
 ```
 
 `SchemaUrlPageView` is just a marker interface required by the framework to declare that our `SchemaUrlPageViewImpl` is an implementation of a view with a `SchemaUrlChangedDelegate`.
+
+*che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/project/SchemaUrlPageView.java*
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.project.SchemaUrlPageView   
 public interface SchemaUrlPageView extends View<SchemaUrlChangedDelegate> {}
-\
 ```
 
 `SchemaUrlPageViewImpl` is the class which will actually create the UI with a TextBox for entering the schema URL. It is a GWT Composite with its contents defined in `SchemaUrlPageViewImpl.ui.xml`.
@@ -285,61 +291,64 @@ This requires you to define `JsonExamplePageViewUiBinder` as a marker interface 
 
 More about declarative UIs with GWT UI binder can be found on the [GWT homepage](http://www.gwtproject.org/doc/latest/DevGuideUiBinder.html).
 
+
+*che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/project/SchemaUrlPageViewImpl.java*
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.project.SchemaUrlPageViewImpl
 class SchemaUrlPageViewImpl extends Composite implements SchemaUrlPageView {
 
-	interface JsonExamplePageViewUiBinder extends UiBinder<DockLayoutPanel, SchemaUrlPageViewImpl> {
-	}
+  interface JsonExamplePageViewUiBinder extends UiBinder<DockLayoutPanel, SchemaUrlPageViewImpl> {
+  }
 
-	@UiField
-	TextBox schemaUrl;
+  @UiField
+  TextBox schemaUrl;
 
-	private SchemaUrlChangedDelegate delegate;
+  private SchemaUrlChangedDelegate delegate;
 
-	@Inject
-	public SchemaUrlPageViewImpl(JsonExamplePageViewUiBinder uiBinder) {
-  	initWidget(uiBinder.createAndBindUi(this));
-	}
+  @Inject
+  public SchemaUrlPageViewImpl(JsonExamplePageViewUiBinder uiBinder) {
+    initWidget(uiBinder.createAndBindUi(this));
+  }
 
-	/** {@inheritDoc} */
-	@Override
-	public void setDelegate(SchemaUrlChangedDelegate delegate) {
-  	this.delegate = delegate;
-	}
+  /** {@inheritDoc} */
+  @Override
+  public void setDelegate(SchemaUrlChangedDelegate delegate) {
+    this.delegate = delegate;
+  }
 
-	@UiHandler("schemaUrl")
-	void onSchemaUrlChanged(KeyUpEvent event) {
-   	delegate.schemaUrlChanged(schemaUrl.getValue());
-	}
+  @UiHandler("schemaUrl")
+  void onSchemaUrlChanged(KeyUpEvent event) {
+    delegate.schemaUrlChanged(schemaUrl.getValue());
+  }
 }
 ```
 
+*che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/project/SchemaUrlPageViewImpl.ui.xml*
 ```xml  
 SchemaUrlPageViewImpl.ui.xml
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-         	xmlns:g='urn:import:com.google.gwt.user.client.ui'
-         	xmlns:ide='urn:import:org.eclipse.che.ide.ui'>
-	<g:DockLayoutPanel unit="PX" >
-    	<g:north size="200">
-        	<g:FlowPanel ui:field="panel">
-            	<g:FlowPanel height="90px" >
-                	<g:Label text="JSON Schema URL" />
-                	<ide:TextBox ui:field="schemaUrl"
-                             	tabIndex="0"
-                             	debugId="file-createProject-schemaUrl"/>
-                	<g:Label ui:field="labelUrlError" width="100%" 		wordWrap="true"/>
-            	</g:FlowPanel>
-        	</g:FlowPanel>
-    	</g:north>
-	</g:DockLayoutPanel>
+          xmlns:g='urn:import:com.google.gwt.user.client.ui'
+          xmlns:ide='urn:import:org.eclipse.che.ide.ui'>
+  <g:DockLayoutPanel unit="PX" >
+      <g:north size="200">
+          <g:FlowPanel ui:field="panel">
+              <g:FlowPanel height="90px" >
+                  <g:Label text="JSON Schema URL" />
+                  <ide:TextBox ui:field="schemaUrl"
+                              tabIndex="0"
+                              debugId="file-createProject-schemaUrl"/>
+                  <g:Label ui:field="labelUrlError" width="100%"    wordWrap="true"/>
+              </g:FlowPanel>
+          </g:FlowPanel>
+      </g:north>
+  </g:DockLayoutPanel>
 </ui:UiBinder>
-
 ```
+
 By adapting the `SchemaUrlPageViewImpl.ui.xml` you can customize the layout of the final wizard page. The example page will look like this:
 ![image14.png]({{ base }}/docs/assets/imgs/image14.png)
 ##Project-specific Actions
-Actions allow you to add custom behavior to the Che IDE. They can be placed in menus, toolbars or context menus. Some actions shall only be available on a specific project type. In the JSON example, we place two actions in the context menu of the defined project type. The screenshot shows a project-specific `HelloWorldAction`, as well as another project specific action implemented in the section [Server/Workspace Access](doc:serverworkspace-access).
+Actions allow you to add custom behavior to the Che IDE. They can be placed in menus, toolbars or context menus. Some actions shall only be available on a specific project type. In the JSON example, we place two actions in the context menu of the defined project type. The screenshot shows a project-specific `HelloWorldAction`, as well as another project specific action implemented in the section [Server/Workspace Access]({{ base }}/docs/plugins/serverworkspace-access/index.html#workspace-services).
 
 
 ![image00.png]({{ base }}/docs/assets/imgs/image00.png)
