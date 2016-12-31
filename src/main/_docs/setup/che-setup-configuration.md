@@ -112,6 +112,9 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock \
                     -v <local-repo>:/repo \
                        eclipse/che-cli:<version> [COMMAND] --debug
 ```
+
+You can also optionally use your local binaries in production mode by volume mounting `:/repo` without passing `--debug`.
+
 There are two locations that files in your Che source repository will be used instead of those in the image:
 
 1. During the `che config` phase, the source repository's `/dockerfiles/init/modules` and `/dockerfiles/init/manifests` will be used instead of the ones that are included in the `eclipse/che-init` container.
