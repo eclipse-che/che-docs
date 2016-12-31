@@ -20,7 +20,7 @@ OPTIONAL DOCKER PARAMETERS:
   -e CHE_PORT=<YOUR_PORT>              Port where che will bind itself to
   -v <LOCAL_PATH>:/data/instance       Where instance, user, log data will be saved
   -v <LOCAL_PATH>:/data/backup         Where backup files will be saved
-  -v <LOCAL_PATH>:/repo                che git repo to activate dev mode
+  -v <LOCAL_PATH>:/repo                Che repo with config and binaries for dev mode
   -v <LOCAL_PATH>:/sync                Where remote ws files will be copied with sync command
   -v <LOCAL_PATH>:/unison              Where unison profile for optimzing sync command resides
 
@@ -45,6 +45,10 @@ COMMANDS:
   test <test-name>                     Start test on che instance
   upgrade                              Upgrades che from one version to another with migrations and backups
   version                              Installed version and upgrade paths
+
+COMMAND OPTIONS:
+  --fast                               Skips networking and version checks, saving 5 secs during boot
+  --debug                              Activates dev mode, which allows debugging binares in che-server
 ```
 
 The CLI will hide most error conditions from standard out. Internal stack traces and error output is redirected to `cli.log`, which is saved in the host folder where `:/data` is mounted.
@@ -98,6 +102,7 @@ These variables can be set in your local environment shell before running and th
 | Variable | Description |
 |----------|-------------|
 | `CHE_HOST` | The IP address or DNS name of the Che service. We use `eclipse/che-ip` to attempt discovery if not set. |
+| `CHE_PORT` | The port the Che server will run on and expose in its container for your clients to connect to. |
 
 Che depends upon Docker images. We use Docker images to:
 1. Provide cross-platform utilites within the CLI. For example, in scenarios where we need to perform a `curl` operation, we use a small Docker image to perform this function. We do this as a precaution as many operating systems (like Windows) do not have curl installed.
