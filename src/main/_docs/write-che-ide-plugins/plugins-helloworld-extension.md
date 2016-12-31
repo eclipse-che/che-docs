@@ -8,7 +8,7 @@ permalink: /:categories/helloworld-extension/
 {% include base.html %}
 This documentation is a step-by-step guide to build your first HelloWorld extension for Eclipse Che.
 
-In order to follow this guide, we consider you have successfully configured Eclipse Che sources inside of Eclipse IDE and have been able to execute your manually built assembly. If not, please refer to the following [documentation](https://eclipse-che.readme.io/docs/setup-che-workspace).
+In order to follow this guide, we consider you have successfully configured Eclipse Che sources inside of Eclipse IDE and have been able to execute your manually built assembly. If not, please refer to the following [documentation]({{ base }}/docs/plugins/setup-che-workspace/index.html).
 
 
 ## 1- Create a new maven project
@@ -30,7 +30,9 @@ We add the dependencies for:
 - Che Core IDE API
 - GWT
 
-We also add the Maven repository used to retrieve artifacts and the Build configuration (refer to [https://eclipse-che.readme.io/v5.0/docs/create-and-build-extensions#section-pom-xml](https://eclipse-che.readme.io/v5.0/docs/create-and-build-extensions#section-pom-xml))  .
+We also add the Maven repository used to retrieve artifacts and the [Build configuration]({{ base }}/docs/plugins/create-and-build-extensions/index.html#pomxml)).
+
+*pom.xml*
 ```xml  
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
@@ -50,7 +52,7 @@ We also add the Maven repository used to retrieve artifacts and the Build config
     <parent>
         <artifactId>che-parent</artifactId>
         <groupId>org.eclipse.che</groupId>
-        <version>5.0.0-M6-SNAPSHOT</version>
+        <version>5.0.0</version>
     </parent>
     <artifactId>che-helloworld-sample</artifactId>
     <packaging>jar</packaging>
@@ -103,6 +105,7 @@ We also add the Maven repository used to retrieve artifacts and the Build config
 Once your pom.xml file is edited, save it.
 You will see that Eclipse is displaying an error on the `che-helloworld-extension` module. Fix this error by doing an "Update Project" with the Eclipse's Maven plugin:
 ![Screen_Shot_2016-10-13_at_14_17_47.png]({{ base }}/docs/assets/imgs/Screen_Shot_2016-10-13_at_14_17_47.png)
+
 ## 3- Create HelloWorldExtension class
 
 Create the package `org.eclipse.che.ide.ext.helloworld` in `src/main/java`:
@@ -115,7 +118,8 @@ In this extension we'll need to talk to Parts and Action API. Gin and Singleton 
 import org.eclipse.che.ide.api.extension.Extension;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-...\
+...
+
 ```
 We add the following annotations:
 ```java  
@@ -124,12 +128,14 @@ We add the following annotations:
  * @Extension lets us know this is an extension and code injected in it will be executed when launched
  */
 @Singleton
-@Extension(title = "Hello world\ version = "1.0.0")
+@Extension(title = "Hello world", version = "1.0.0")
 public class HelloWorldExtension
 {
 }
 ```
+
 In the constructor, we want our HelloWorld extension to display an "Hello World" message in the Events Panel. In order to do that, we will use the notification manager.
+
 ```java  
 {
     @Inject
@@ -138,7 +144,9 @@ In the constructor, we want our HelloWorld extension to display an "Hello World"
     }
 }
 ```
+
 Finally, your class should be like this:
+*HelloWorldExtension.java*
 ```java  
 /*******************************************************************************
  * Copyright (c) 2012-2016 Codenvy, S.A.
@@ -170,7 +178,7 @@ import com.google.inject.Singleton;
  * @Extension lets us know this is an extension and code injected in it will be executed when launched
  */
 @Singleton
-@Extension(title = "Hello world\ version = "1.0.0")
+@Extension(title = "Hello world", version = "1.0.0")
 public class HelloWorldExtension
 {
     @Inject
@@ -179,6 +187,7 @@ public class HelloWorldExtension
     }
 }
 ```
+
 ## 4- Create HelloWorldExtension GWT module
 
 Create the package `org.eclipse.che.ide.ext.helloworld` in `src/main/resources`:
@@ -186,6 +195,8 @@ Create the package `org.eclipse.che.ide.ext.helloworld` in `src/main/resources`:
 Add `HelloWorldExtension` GWT module by creating the file `HelloWorldExtension.gwt.xml`:
 ![ScreenShot2016-10-13at14.59.27.png]({{ base }}/docs/assets/imgs/ScreenShot2016-10-13at14.59.27.png)
 Inherits from the GWT modules: User, Inject. We will also inherits from the IDE GWT API.
+
+*HelloWorldExtension.gwt.xml*
 ```xml  
 <!--
 
@@ -205,6 +216,7 @@ Inherits from the GWT modules: User, Inject. We will also inherits from the IDE 
     <source path=""/>
 </module>
 ```
+
 ## 5- Build the Extension
 
 Create the following `Run Configuration`:
@@ -223,9 +235,13 @@ If everything goes well, you should have:
 [INFO] ------------------------------------------------------------------------
 \
 ```
+
+
 ## 6- Add extension to root pom of Che
 
 In order to allow your extension to be visible from the root level of Che, add your extension as a dependency in the list of `<dependencies>` from the `<dependencyManagement>` block. Edit the `pom.xml` from `che-parent`
+
+*pom.xml*
 ```xml  
 ...
 <dependencyManagement>
@@ -245,11 +261,14 @@ In order to allow your extension to be visible from the root level of Che, add y
 ![ScreenShot2016-10-13at15.30.00.png]({{ base }}/docs/assets/imgs/ScreenShot2016-10-13at15.30.00.png)
 You can insert the dependency anywhere in the list. After you have inserted it, run `mvn sortpom:sort` and maven will order the pom.xml for you.
 ![ScreenShot2016-10-13at15.34.00.png]({{ base }}/docs/assets/imgs/ScreenShot2016-10-13at15.34.00.png)
+
 ## 7- Link to IDE Assembly
 
 The HelloWorld extension is only a client-side (IDE) extension. You have to introduce your extension as a dependency in /che/assembly/assembly-ide-war/pom.xml and also have it added as a dependency to the GWT application.
 
 First add the dependency:
+*pom.xml*
+
 ```xml  
 ...
 <dependencies>
@@ -259,7 +278,7 @@ First add the dependency:
      <artifactId>che-helloworld-sample</artifactId>
   </dependency>
   ...
-</dependencies>\
+</dependencies>
 ```
 You can insert the dependency anywhere in the list. After you have inserted it, run `mvn sortpom:sort` and maven will order the pom.xml for you.
 ![ScreenShot2016-10-13at16.35.54.png]({{ base }}/docs/assets/imgs/ScreenShot2016-10-13at16.35.54.png)
@@ -269,13 +288,15 @@ In `assembly-ide-war/src/main/resources/org/eclipse/che/ide/IDE.gwt.xml` add:
 ```xml  
 ...
 <inherits name='org.eclipse.che.ide.ext.helloworld.HelloWorldExtension'/>
-...\
+...
 ```
-This means that in our embed sample, there is a file with a *.gwt.xml extension in a folder structure identical to the name above.
+
+This means that in our embed sample, there is a file with a `*.gwt.xml` extension in a folder structure identical to the name above.
 
 ![ScreenShot2016-10-13at16.35.54.png]({{ base }}/docs/assets/imgs/ScreenShot2016-10-13at16.35.54.png)
 
 ![ScreenShot2016-10-13at16.34.24.png]({{ base }}/docs/assets/imgs/ScreenShot2016-10-13at16.34.24.png)
+
 ## 8- Build Che with your extension.
 
 First, we need to rebuild the assembly-ide-war:
@@ -285,19 +306,21 @@ Or you can also do it in a terminal:
 # Build a new IDE.war
 # This IDE web app will be bundled into the assembly
 cd che/assembly/assembly-ide-war
-mvn clean install\
+mvn clean install
 ```
+
 Second, we need to rebuild the whole Eclipse Che assembly:
 
 Or you can also do it in a terminal:
 ```shell  
 # Create a new Che assembly that includes all new client-side extensions
 cd che/assembly/assembly-main
-mvn clean install\
+mvn clean install
 ```
+
 ## 9- Start your custom assembly
 
-To start Che from the custom assembly you just built, you can refer to this [Usage: Docker Launcher](doc:usage-docker#local-eclipse-che-binaries). Remind your custom assembly is located in {workspace-path}\che\assembly\assembly-main\target\eclipse-che-<version>\eclipse-che-<version>
+To start Che from the custom assembly you just built, you can refer to this [Usage: Development Demo](http://localhost:9080/docs/setup/configuration/index.html#development-mode). 
 
 ## 10- Test your extension
 
