@@ -17,7 +17,7 @@ For instructions on how to build and run an extension, see [Building Extensions]
 Location:     github.com/eclipse/che/samples/sample-plugin-embedjs
 Type:         IDE extension
 groupId:      org.eclipse.che.sample
-artifactId:   che-sample-plugin-embedjs-ide\
+artifactId:   che-sample-plugin-embedjs-ide
 ```
 
 # Steps  
@@ -25,7 +25,7 @@ In this tutorial, we demonstrate, how to embed a minimal HTML/JavaScript compone
 
 ![che_helloworld.png]({{ base }}/docs/assets/imgs/che_helloworld.png)
 
-The following example is based on a simple part, which is opened by a sample action. Therefore, we recommend to get familiar with the implementation of [Parts]({{ base }}/docs/plugins/parts/index.html) and [Actions]({{ base }/docs/plugins/actions/index.html) first.
+The following example is based on a simple part, which is opened by a sample action. Therefore, we recommend to get familiar with the implementation of [Parts]({{ base }}/docs/plugins/parts/index.html) and [Actions]({{ base }}/docs/plugins/actions/index.html) first.
 
 The `HelloWorldView` is a default view, in this example, the `HelloWorldView` just creates an empty Panel. The panel will finally be represented by a HTML element in the running browser application.
 
