@@ -106,7 +106,7 @@ Che depends upon Docker images. We use Docker images to:
 
 You can control how Che downloads these images with command line options. All image downloads are performed with `docker pull`.
 
-| Mode>>>>>>>>>>>> | Description |
+| Mode | Description |
 |------|-------------|
 | `--no-force` | Default behavior. Will download an image if not found locally. A local check of the image will see if an image of a matching name is in your local registry and then skip the pull if it is found. This mode does not check DockerHub for a newer version of the same image. |
 | `--pull` | Will always perform a `docker pull` when an image is requested. If there is a newer version of the same tagged image at DockerHub, it will pull it, or use the one in local cache. This keeps your images up to date, but execution is slower. |
