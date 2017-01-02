@@ -10,7 +10,7 @@ Gradle is an open source build automation system that builds upon the concepts o
 
 *Instructions - Create a New Project*
 ```text  
-# When on the User Dashboard, create a custom stack. The recipe goes as follows
+# When on the User Dashboard, create a custom stack. The recipe goes as follows:
 FROM eclipse/ubuntu_gradle
 
 # Import a project from source:
