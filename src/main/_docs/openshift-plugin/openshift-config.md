@@ -6,7 +6,8 @@ layout: openshift
 permalink: /:categories/config/
 ---
 {% include base.html %}
-# Download  
+
+## Download  
 ### Binaries
 [Get packaged zip file](http://maven.codenvycorp.com/content/repositories/codenvy-public-snapshots/org/eclipse/che/openshift-plugin-assembly-main/)
 
@@ -14,10 +15,10 @@ permalink: /:categories/config/
 ```shell  
 git clone https://github.com/codenvy/plugin-openshift
 cd plugin-openshift
-mvn clean install\
+mvn clean install
 ```
 
-# Configure Che  
+## Configure Che  
 
 ```shell  
 # Create a directory to host conf files
@@ -33,18 +34,20 @@ oauth.openshift.authuri=https://your.openshift.instance.com/oauth/authorize
 oauth.openshift.tokenuri=https://your.openshift.instance.com/oauth/token
 oauth.openshift.clientid=yourID
 oauth.openshift.clientsecret=yourSecret
-oauth.openshift.redirecturis=http://localhost:${SERVER_PORT}/wsmaster/api/oauth/callback\
+oauth.openshift.redirecturis=http://localhost:${SERVER_PORT}/wsmaster/api/oauth/callback
 ```
 Create `~/.che/plugin-conf/che.properties` and set a single OpenShift parameter:
 ```toml  
-openshift.api.endpoint=https://your.openshift.instance.com/\
+openshift.api.endpoint=https://your.openshift.instance.com/
 ```
 Both configuration files are mandatory.
+
+
 #### What is my API endpoint client ID and secret?
-API endpoint is the URL of your OpenShift installation (can be a domain name or IP address). Client ID and secret should match those registered in a [custom oAuth client](#register-a-custom-oauth-client).  
+API endpoint is the URL of your OpenShift installation (can be a domain name or IP address). Client ID and secret should match those registered in a [custom oAuth client]({{ base }}/docs/openshift/config/index.html#register-a-custom-oauth-client).  
 
 
-# Register a Custom oAuth Client  
+## Register a Custom oAuth Client  
 Che uses oAuth2 to get authentication tokens from OpenShift. You need to register a custom oAuth client in your OpenShift master node. Example, using `oc`:
 ```shell  
 # Requires OpenShift admin privs
