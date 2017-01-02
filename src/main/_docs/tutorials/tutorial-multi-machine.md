@@ -57,7 +57,7 @@ The web page can interact in various ways with the database. Data can be added t
 ![che-multimachine-tutorial7.jpg]({{ base }}/docs/assets/imgs/che-multimachine-tutorial7.jpg)
 
 # 4. Editing, Building and Debugging  
-Che is a fully featured IDE that just happens to be in the browser. You can explore the [editor]({{ base }}/docs/ide/editor-settings/index.html) which includes [intellisense]({{ base }}/docs/ide/intellisense/index.html) for some languages and [refactoring]({{ base }}/docs/ide/intellisense/index.html#refactoring).  It also includes [git and svn]({{ base}/docs/ide/git-svn/index.html) support built-in.
+Che is a fully featured IDE that just happens to be in the browser. You can explore the [editor]({{ base }}/docs/ide/editor-settings/index.html) which includes [intellisense]({{ base }}/docs/ide/intellisense/index.html) for some languages and [refactoring]({{ base }}/docs/ide/intellisense/index.html#refactoring).  It also includes [git and svn]({{ base }}/docs/ide/git-svn/index.html) support built-in.
 
 The example app has built in commands for [building]({{ base }}/docs/ide/build/index.html) and [running]({{ base }}/docs/ide/run/index.html#web-apps) the app.  You can also [debug]({{ base }}/docs/ide/debug/index.html) right inside Che.
 
