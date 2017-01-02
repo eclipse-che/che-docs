@@ -20,7 +20,7 @@ https://github.com/Haulmont/platform-sample-sales
 ```text  
 Title:    start-platform
 Command:  /home/user/studio-2.0.6/bin/studio -nogui
-Preview:  http://${server.port.3080}\
+Preview:  http://${server.port.3080}
 ```
 
 *Click the preview URL:*
