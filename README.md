@@ -1,4 +1,4 @@
-# Eclipse Che Docs
+# Eclipse Che Docs 
 Eclipse Che uses Jekyll 3.3.1 to generate documentation from this reposistory as a static html webpages. 
 
 ## Viewing Generated Documentation
