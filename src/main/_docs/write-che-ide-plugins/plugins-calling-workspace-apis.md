@@ -9,6 +9,8 @@ permalink: /:categories/calling-workspace-apis/
 Many of the IDE components that you build into your extension will need to communicate directly with the Che server or to the workspace the IDE is currently bound to. Che provides helper utilities to make REST calls simpler. Che's REST library is built on top of Google's HTTP Java client libraries.
 
 In your extension code, you can create an AsyncRequestFactory object, which has helper methods for creating requests that will have responses.
+
+*che/core/ide/che-core-ide-api/src/main/java/org/eclipse/che/ide/api/project/ProjectTypeServiceClientImpl.java*
 ```java  
 private void getProjectType(@NotNull String workspaceId,
                             @NotNull String id,
@@ -38,6 +40,8 @@ In Che, you will frequently see `AsyncRequestCallback<T>` objects passed into an
 Che provides different types of `Unmarshallable` objects including [StringUnmarshaller](https://github.com/eclipse/che/blob/0d0bbf900114e9c9964d386b02f0904a913ae4e0/core/commons/che-core-commons-gwt/src/main/java/org/eclipse/che/ide/rest/StringUnmarshaller.java), [StringMapUnmarshaller](https://github.com/eclipse/che/blob/0d0bbf900114e9c9964d386b02f0904a913ae4e0/core/commons/che-core-commons-gwt/src/main/java/org/eclipse/che/ide/rest/StringMapUnmarshaller.java), [StringMapListUnmarshaller](https://github.com/eclipse/che/blob/0d0bbf900114e9c9964d386b02f0904a913ae4e0/core/commons/che-core-commons-gwt/src/main/java/org/eclipse/che/ide/rest/StringMapListUnmarshaller.java), [DtoUnmarshaller](https://github.com/eclipse/che/blob/0d0bbf900114e9c9964d386b02f0904a913ae4e0/core/commons/che-core-commons-gwt/src/main/java/org/eclipse/che/ide/rest/DtoUnmarshaller.java), and [LocationUnmarshaller](https://github.com/eclipse/che/blob/0d0bbf900114e9c9964d386b02f0904a913ae4e0/core/commons/che-core-commons-gwt/src/main/java/org/eclipse/che/ide/rest/LocationUnmarshaller.java).  These different marshallers represent the most common types of JSON to Java payload conversions.
 
 For example, this logic comes from the git plugin and is the method that is called when a user asks to delete the local git repository contained within the project.
+
+*che/plugins/plugin-git/che-plugin-git-ext-git/src/main/java/org/eclipse/che/ide/ext/git/client/delete/DeleteRepositoryPresenter.java*
 ```java  
 public void deleteRepository() {
     final CurrentProject project = appContext.getCurrentProject();
@@ -58,5 +62,7 @@ public void deleteRepository() {
             // The logic for what to do if the response generated a failure message
         }
     });
-}\
+}
 ```
+
+In this example, the `service.deleteRepository(...)` is a method that will generate the `AsyncRequestFactory` object for calling the server. This object requires a `AsyncRequestCallback<T>`. This method creates a new instance inline with a callback that expects the response to send data of `Void` type, which basically means that there is no response payload. In this case, either the server tells us there is success or there is failure. The `AsyncRequestCallback` instance needs to implement two methods `onSuccess(<T>)` and `onFailure(Throwable)`, which will be called by the `AsyncRequestFactory` when the response arrives on the wire. It is within these methods that the logic is placed that tells the IDE what to do in each event.
