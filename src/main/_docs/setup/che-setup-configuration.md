@@ -83,14 +83,17 @@ Refer to [GitHub using OAuth]() for configuration information.
 
 
 # Stacks
-[Stacks]() define the recipes used to create workspace runtimes. They appear in the stack library of the dashboard. You can create your own.
+[Stacks]({{ base }}/docs/workspace/stacks/index.html) define the recipes used to create workspace runtimes. They appear in the stack library of the dashboard. You can create your own.
 
 TODO: UPDATE THIS
+
 ONE: WHERE ARE STACKS DEFINED FOR CONFIGURATION PURPOSES WITH NEW CLI?
+
 TWO: LINK TO DOC ON ADDING OR REMOVING
 
+
 # Sample Projects
-Code [sampes]() allow you to define sample projects that are cloned into a workspace if the user chooses it when creating a new project. You can add your own.
+Code [sampes]({{ base }}/docs/workspace/samples/index.html) allow you to define sample projects that are cloned into a workspace if the user chooses it when creating a new project. You can add your own.
 
 TODO: UPDATE THIS FOR THE NEW LOCATION WITH THE CLI ON HOW TO ADD
 
@@ -136,7 +139,7 @@ Eclipse Che workspace runtimes are powered by one or more Docker containers. Whe
 ### Private Images  
 When users create a workspace in Eclipse Che, they must select a Docker image to power the workspace. We provide ready-to-go stacks which reference images hosted at the public Docker Hub, which do not require any authenticated access to pull. You can provide your own images that are stored in a local private registry or at Docker Hub. The images may be publicly or privately visible, even if they are part of a private registry.
 
-If your stack images that Che wants to pull require authenticated access to any registry, or if you want Che to push snapshot images into a registry (also requiring authenticated access), then you must configure registry authentication. 
+If your stack images that Che wants to pull require authenticated access to any registry, or if you want Che to push snapshot images into a registry (also requiring authenticated access), then you must configure registry authentication.
 
 In `che.env`:
 ```
@@ -176,11 +179,11 @@ CHE_DOCKER_REGISTRY=<registry-url>
 ```
 
 ### Custom Dockerfiles and Composefiles for Workspaces
-Within Che, your workspaces are powered by a set of runtime environments. The default runtime is Docker. Typically, admins have pre-built images in DockerHub or another registry which are pulled when the workspace is created. You can optionally provide custom Dockerfiles (or let your users provide their own Dockerfiles), which will dynamically create a workspace image when a user creates a new workspace. 
+Within Che, your workspaces are powered by a set of runtime environments. The default runtime is Docker. Typically, admins have pre-built images in DockerHub or another registry which are pulled when the workspace is created. You can optionally provide custom Dockerfiles (or let your users provide their own Dockerfiles), which will dynamically create a workspace image when a user creates a new workspace.
 
 To use your custom Dockerfiles, you can:
 
-1. Create a [custom stack](), which includes a [recipe]() with your Dockerfile. 
+1. Create a [custom stack]({{ base }}/docs/workspace/stacks/index.html#custom-stack), which includes a [recipe]({{ base }}/docs/workspace/recipes/index.html) with your Dockerfile.
 2. Or, users can create a custom recipe when creating a workspace that references your registry.
 
 ### Privileged Mode
@@ -222,11 +225,10 @@ Che relies on web sockets to stream content between workspaces and the browser. 
 ### Topology  
 The Che server runs in its own Docker container, "Che Docker Container", and each workspace gets an embedded runtime which can be a set of additional Docker containers, "Docker Container(n)". All containers are managed by a common Docker daemon, "docker-ip", making them siblings of each other. This includes the Che server and its workspaces - each workspace runtime environment has a set of containers that is a sibling to the Che server, not a child.
 
-TODO: UPDATE WITH ACCURANTE IMAGE
-![Capture_.PNG]({{ base }}/docs/assets/imgs/Capture_.PNG)
+![Capture.PNG]({{ base }}/docs/assets/imgs/Capture.PNG)
 
 ### Connectivity  
-The browser client initiates communication with the Che server by connecting to `che-ip`. This IP address must be accessible by your browser clients. Internally, Che runs on Tomcat which is bound to port `8080`. This port can be altered by setting `CHE_PORT` during start or in your `che.env`.\
+The browser client initiates communication with the Che server by connecting to `che-ip`. This IP address must be accessible by your browser clients. Internally, Che runs on Tomcat which is bound to port `8080`. This port can be altered by setting `CHE_PORT` during start or in your `che.env`.
 
 When a user creates a workspace, the Che server connects to the Docker daemon at `docker-ip` and uses the daemon to launch a new set of containers that will power the workspace. These workspace containers will have a Docker-configured IP address, `workspace-ip`. The `workspace-ip` must also be reachable by your browser host.
 
@@ -250,6 +252,7 @@ On Linux, a firewall may block inbound connections from within Docker containers
 Firewalls will typically cause traffic problems to appear when you are starting a new workspace. There are certain network configurations where we direct networking traffic between workspaces and Che through external IP addresses, which can flow through routers or firewalls. If ports or protocols are blocked, then certain functions will be unavailable.
 
 #### Running Behind a Firewall (Linux/Mac)
+
 ```shell
 # Check to see if firewall is running:
 systemctl status firewalld
@@ -277,7 +280,7 @@ pass in proto tcp from any to any port 1234
 There are many third party firewall services. Different versions of Windows OS also have different firewall configurations. The built-in Windows firewall can be configured in the control panel under "System and Security":
 1. In the left pane, right-click `Inbound Rules`, and then click `New Rule` in the action pane.
 2. In the `Rule Type` dialog box, select `Port`, and then click `Next`.
-3. In the `Protocol and Ports` dialog box, select `TCP`. 
+3. In the `Protocol and Ports` dialog box, select `TCP`.
 4. Select speicfic local ports, enter the port number to be opened and click `Next`.
 5. In the `Action` dialog box, select `Allow the Connection`, and then click `Next`.
 6. In the `Name` dialog box, type a name and description for this rule, and then click `Finish`.
