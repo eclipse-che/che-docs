@@ -11,8 +11,9 @@ Bitnami provides provides a [one-click install](https://bitnami.com/stack/eclips
 Bitnami will automatically install Che to your cloud account, just select your provider and then choose "Add Account" from the menu:
 ![ScreenShot2016-06-23at9.40.42AM.png]({{ base }}/docs/assets/imgs/ScreenShot2016-06-23at9.40.42AM.png)
 Once your account is connected select the instance size. You should ensure that Che has at least 4GB RAM and 10GB of storage (the Che server itself will need ~2GB RAM). If you plan on running larger or more workspaces, increase your RAM and storage.
+
 #### Azure Ports
-}  
+Che runs Docker which uses the ephemeral port range when starting containers and exposing services. On Azure instances, the ephemeral port range has been limited to 50 - if all ports are in use when you try and start a container you'll receive an error. Try stopping a container or increasing the ephemeral port range for your Azure machine.
 
 
 # 2. Usage  
@@ -30,6 +31,7 @@ These are some other common URLs on your instance:
 <url>/ide/<ws-not-exist> # Opens IDE with a prompt to create a new workspace
 <url>/ide                # Loads the IDE, bypassing the dashboard\
 ```
+
 ## Running, Stopping and Restarting Che
 If you have SSH access to the Che instance you can start and stop Che from the command line.
 ```shell  
@@ -37,8 +39,9 @@ If you have SSH access to the Che instance you can start and stop Che from the c
 sudo su eclipseche -- /opt/bitnami/apps/eclipseche/che/bin/che.sh -p:8080 -s:uid start
 
 # to stop Che
-sudo su eclipseche -- /opt/bitnami/apps/eclipseche/che/bin/che.sh -p:8080 -s:uid stop\
+sudo su eclipseche -- /opt/bitnami/apps/eclipseche/che/bin/che.sh -p:8080 -s:uid stop
 ```
+
 Controlling the instance hosting Che is done through your cloud provider's management console.
 
 ## Preserving Project Files
@@ -60,15 +63,16 @@ sudo /opt/bitnami/apache2/bin/htpasswd /opt/bitnami/apps/eclipseche/conf/.htpass
 ```
 
 #### Advanced Configuration
-There are many aspects of Eclipse Che like port and hostname that can be configured by [setting Eclipse Che properties](https://eclipse-che.readme.io/docs/usage-docker#environment-variables).  
+There are many aspects of Eclipse Che like port and hostname that can be configured by setting [Eclipse Che properties]({{ base }}/docs/setup/configuration/index.html).  
 
 
 # 3. Develop with Che  
+# Develop with Che  
 Now that Che is running there are a lot of fun things to try:
-- Become familiar with Che through [one of our tutorials](https://eclipse-che.readme.io/docs/get-started-with-java-and-che).
-- [Import a project](https://eclipse-che.readme.io/docs/import-a-project) from git.
-- Use [commands](https://eclipse-che.readme.io/docs/commands) to build and run a project.
-- Create a [preview URL](https://eclipse-che.readme.io/docs/previews) to share your app.
-- Setup a [debugger](https://eclipse-che.readme.io/docs/debug).
-- Experiment with [chedir](https://dash.readme.io/project/eclipse-che/docs/getting-started-chedir).
-- Create a [custom stack](https://eclipse-che.readme.io/docs/stacks).
+- Become familiar with Che through [one of our tutorials]({{ base }}/docs/tutorials/multi-machine/index.html).
+- [Import a project]({{ base }}/docs/ide/import-a-project/index.html) and setup [git authentication]({{ base }}/docs/ide/git-svn/index.html).
+- Use [commands]({{ base }}/docs/ide/commands/index.html) to build and run a project.
+- Create a [preview URL]({{ base }}/docs/ide/previews/index.html) to share your app.
+- Setup a [debugger]( {{ base }}/docs/ide/debug/index.html).
+- Create reproducible workspaces with [chedir]({{ base }}/docs/chedir/getting-started/index.html).
+- Create a [custom runtime stack]({{ base }}/docs/workspace/stacks/index.html).

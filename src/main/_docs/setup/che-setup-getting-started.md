@@ -75,13 +75,13 @@ docker run <docker-goodness> -e CHE_HOST=<your-ip> eclipse/che-cli start
 
 # Develop with Che  
 Now that Che is running there are a lot of fun things to try:
-- Become familiar with Che through [one of our tutorials]().
-- [Import a project](https://eclipse-che.readme.io/docs/import-a-project) and setup [git authentication]().
-- Use [commands]() to build and run a project.
-- Create a [preview URL]() to share your app.
-- Setup a [debugger]().
-- Create reproducible workspaces with [chedir]().
-- Create a [custom runtime stack](https://eclipse-che.readme.io/docs/stacks).
+- Become familiar with Che through [one of our tutorials]({{ base }}/docs/tutorials/multi-machine/index.html).
+- [Import a project]({{ base }}/docs/ide/import-a-project/index.html) and setup [git authentication]({{ base }}/docs/ide/git-svn/index.html).
+- Use [commands]({{ base }}/docs/ide/commands/index.html) to build and run a project.
+- Create a [preview URL]({{ base }}/docs/ide/previews/index.html) to share your app.
+- Setup a [debugger]( {{ base }}/docs/ide/debug/index.html).
+- Create reproducible workspaces with [chedir]({{ base }}/docs/chedir/getting-started/index.html).
+- Create a [custom runtime stack]({{ base }}/docs/workspace/stacks/index.html).
 
 # Syntax  
 ```
@@ -150,13 +150,13 @@ Verify that Docker is installed with:
 docker run hello-world
 ```
 
-Sometimes Fedora and RHEL/CentOS users will encounter issues with SElinux. Try disabling selinux with `setenforce 0` and check if resolves the issue. If using the latest docker version and/or disabling selinux does not fix the issue then please file a issue request on the [issues](https://github.com/eclipse/che/issues) page. 
+Sometimes Fedora and RHEL/CentOS users will encounter issues with SElinux. Try disabling selinux with `setenforce 0` and check if resolves the issue. If using the latest docker version and/or disabling selinux does not fix the issue then please file a issue request on the [issues](https://github.com/eclipse/che/issues) page.
 
 #### Ports
 The default port required to run Che is `8080`. Che performs a preflight check when it boots to verify that the port is available. You can pass `-e CHE_PORT=<port>` in Docker portion of the start command to change the port that Che starts on.
 
 #### Internet Connection
-You can install Che while connected to a network or offline, disconnected from the Internet. If you perform an offline intallation, you need to first download a Che assembly while in a DMZ with a network connection to DockerHub. 
+You can install Che while connected to a network or offline, disconnected from the Internet. If you perform an offline intallation, you need to first download a Che assembly while in a DMZ with a network connection to DockerHub.
 
 # Versions
 Each version of Che is available as a Docker image tagged with a label that matches the version, such as `eclipse/che-cli:5.0.0-M7`. You can see all versions available by running `docker run eclipse/che-cli version` or by [browsing DockerHub](https://hub.docker.com/r/eclipse/che-cli/tags/).
@@ -196,7 +196,7 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
 ```
 
 # Hosting
-If you are hosting Che at a cloud service like DigitalOcean, `CHE_HOST` must be set to the server's IP address or its DNS. 
+If you are hosting Che at a cloud service like DigitalOcean, `CHE_HOST` must be set to the server's IP address or its DNS.
 
 We will attempt to auto-set `CHE_HOST` by running an internal utility `docker run --net=host eclipse/che-ip:nightly`. This approach is not fool-proof. This utility is usually accurate on desktops, but usually fails on hosted servers. You can explicitly set this value to the IP address of your server:
 ```
@@ -242,7 +242,7 @@ The CLI will download images and save them to `/backup/*.tar` with each image sa
 The default execution will download none of the optional stack images, which are needed to launch workspaces of a particular type. There are a few dozen stacks for different programming languages and some of them are over 1GB in size. It is unlikely that your users will need all of the stacks, so you do not need to download all of them. You can get a list of available stack images by running `eclipse/che-cli offline --list`. You can download a specific stack by running `eclipse/che-cli offline --image:<image-name>` and the `--image` flag can be repeatedly used on a single command line.
 
 ### 2. Start Che In Offline Mode
-Place the TAR files into a folder in the offline computer. If the files are in placed in a folder named `/tmp/offline`, you can run Che in offline mode with: 
+Place the TAR files into a folder in the offline computer. If the files are in placed in a folder named `/tmp/offline`, you can run Che in offline mode with:
 
 ```shell
 # Load the CLI
@@ -266,7 +266,7 @@ docker rmi -f eclipse/che-cli
 ```
 
 # Licensing
-Che is licensed with the Eclipse Public License. 
+Che is licensed with the Eclipse Public License.
 
 # Configuration
-Change Che's port, hostname, oAuth, Docker, git, and networking by setting [Eclipse Che properties]().
+Change Che's port, hostname, oAuth, Docker, git, and networking by setting [Eclipse Che properties]({{ base }}/docs/setup/configuration/index.html).
