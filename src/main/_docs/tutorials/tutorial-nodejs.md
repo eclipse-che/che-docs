@@ -68,7 +68,7 @@ Select `Create`.  The project construction process goes through a number of step
 # 3. Run Your Project  
 The project explorer gives you navigation to the various files that make up the project. The editor provides a variety of JavaScript, CSS, and HTML intellisense, multiple key bindings, and a sublime-style navigator.
 
-![Capture.PNG]({{ base }}/docs/assets/imgs/Capture.PNG)
+![Capture.PNG]({{ base }}/docs/assets/imgs/tutorial-nodejs-1.png)
 
 This project has two custom commands (located in the `CMD` drop-down selector in the toolbar:
 1. `install dependencies`. This will execute a `npm install --no-bin-links && bower install` process in your workspace. There are quite a few dependencies that will be downloaded and installed into your workspace. Be patient as this command runs.
@@ -76,7 +76,7 @@ This project has two custom commands (located in the `CMD` drop-down selector in
 
 Go ahead and run your project. The output will be displayed in the `Consoles` panel. If you run the project, the commands have an embedded `Preview URL` that will be displayed for your application. It will look something like: `http://192.168.99.100:32768/`. After the grunt server has started, your application will load in another browser tab when you click on that link.
 
-![Capture.PNG]({{ base }}/docs/assets/imgs/Capture.PNG)
+![Capture.PNG]({{ base }}/docs/assets/imgs/tutorial-nodejs-2.png)
 
 You can change the content of any command by editing it. The option to modify commands is available from the `CMD` drop-down in the toolbar.
 
