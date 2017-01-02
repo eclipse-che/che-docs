@@ -9,13 +9,16 @@ permalink: /:categories/che-in-che/
 You can build and run Che using Che!  Since Che runs within a Docker container and its workspaces are generated as Docker containers, there is extra configuration that is needed to enable the Che that you build in Che to generate its own workspaces!
 # Concepts  
 We are going to setup Che to have the Che launcher, the Che server, your primary development workspace, and the new Che you will compile be Docker containers. All of these Docker containers will be launched and managed by a shared Docker daemon, which is running on your host system.
+
 ![Capture.PNG]({{ base }}/docs/assets/imgs/Capture.PNG)
+
 * **Native**: The CLI that launches your main instance of Che with the `che-launcher`.
 * **Che Launcher**: A Docker container, which provides cross-platform management of your Che server.
 * **Che Server**: A Docker container running your primary Che server.
 * **Che Workspace**: A Docker container which containers your development workspace. The Che source code is cloned into this workspace, compiled here, and acts as the launch point. It includes the CLI that launches the launcher (creating a type of recursive behavior). The new inner Che will be able to launch its own workspaces.
 
 All of these containers share a common Docker daemon that is running on the host operating system. This means that even though we are doing Che-in-Che (or why not Che-in-Che-in-Che), all of the containers created are siblings of one another managed by the same daemon.
+
 # Step By Step Guide  
 ### Configure Che
 There are two values that you must set as environment variables. This requires the 4.7 CLI - previous versions of the CLI do not support converting environment variables into Che properties.
@@ -25,12 +28,12 @@ export CHE_PROPERTY_machine_server_extra_volume=/var/run/docker.sock:/var/run/do
 
 # Set CHE_DATA_FOLDER to a directory that you will remember.
 # This value will be needed inside of the workspace
-export CHE_DATA_FOLDER=/Users/tyler/data\
+export CHE_DATA_FOLDER=/Users/tyler/data
 ```
 ### Start Che
 ```shell  
 # Start Che
-che start\
+che start
 ```
 Now, all workspaces started in this Che server will have access to the host's Docker daemon. Because workspaces will share access to the host daemon, be careful with sharing workspaces in this configuration. It's possible that workspaces can send commands to the daemon that gain privileges to the host that you may not want to give.
 
@@ -47,6 +50,7 @@ Now, all workspaces started in this Che server will have access to the host's Do
 Now that you have a compiled Che binary, you need to run it.  We will use the Che Launcher Docker container to run the binary. Your workspace project has all of its files mounted onto the host. So while you see the files inside your workspace, they are also running on the host - where the Docker daemon is.
 
 We will launch the Che Launcher from inside the workspace, but pass environment variables that allow the launcher to create a new Che server on the host, and that new Che server will be started with the binaries that you just compiled (also on the host).
+
 ```shell  
 # First, find the location where Che built itself in your workspace.
 cd /projects
