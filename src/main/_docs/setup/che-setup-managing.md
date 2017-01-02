@@ -10,7 +10,7 @@ permalink: /:categories/managing/
 Eclipse Che is a workspace server. It supports the provisioning and management of numerous workspaces for users. The default configuration of Che has a single identity per server, where the identity manages IDE preferences and SSH keys for workspaces and GitHub.
 
 There are three aspects to scaling Che:
-1. Multi-client [collaboration]() within a workspace
+1. Multi-client [collaboration]({{ base }}/docs/setup/managing/index.html#multi-client-collaboration) within a workspace
 2. Scaling Che using a [Che farm]()
 3. [Upgrade to Codenvy](http://codenvy.com)
 
@@ -34,8 +34,7 @@ Generally, workspace images start at 180MB. If you permit workspace snapshots, t
 Workspaces are both portable and shared. Multiple browser clients (and humans!) can connect to a single Che server running multiple workspaces, or if you prefer, to a single workspace. Users within a single workspace can make use of the runtime and project files. Che implements a last-write-wins policy when multiple users modify the same file.
 
 ## Scaling Che Using a Che Farm  
-
-![Capture_.PNG]({{ base }}/docs/assets/imgs/Capture_.PNG)
+![che_farm.png]({{ base }}/docs/assets/imgs/che_farm.png)
 You can deploy Che in a farm with an Nginx router. Each user would be provisioned their own Che instance, either running on its own port in a VM. In this configuration, each user can have their own workspaces and identity profile. Note that since Che exports two IP addresses, one for Che and another for the workspace machine running Docker, your router will need to manage traffic for all possible routes [between browser, Che and machines.]()
 
 ## Scaling Che with Codenvy  
@@ -45,7 +44,8 @@ Your Eclipse Che workspaces and plug-ins will work within [Codenvy](http://coden
 * Team management, permissions and resource policy management tools
 * User authentication, single-sign on, and LDAP
 * Self-service user registration
-![ScaleCodenvy.PNG]({{ base }}/docs/assets/imgs/ScaleCodenvy.PNG)
+![scale_codenvy.png]({{ base }}/docs/assets/imgs/scale_codenvy.png)
+
 Codenvy uses Docker to install, configure, and update various internal services. This creates a simple management interface for administrators with flexibility on how many physical nodes to allocate along with the resource policy management that is applied to users and accounts.
 
 # Upgrading
@@ -107,7 +107,7 @@ Codenvy provides an implementation of Eclipse Che that is multi-tenant, multi-us
 ## Authenticated Access  
 The Che server itself is unauthenticated. Che is extensible allowing different dashboard front ends or proxies to implement authenticated access to the Che server. Bitnami's deployment of Eclipse Che includes an authenticated front-end implemented as a proxy. Many users deploy nginx in front of Che to provide an authentication layer within the system.
 
-Bitnami requires an existing account with cloud providers such as Google, Amazon AWS, or Microsoft Azure which may require monthly service charges from cloud providers.  Refer to [Usage: Private Cloud](doc:usage-bitnami) for additional information.
+Bitnami requires an existing account with cloud providers such as Google, Amazon AWS, or Microsoft Azure which may require monthly service charges from cloud providers.  Refer to [Usage: Private Cloud]({{ base }}/docs/setup/bitnami/index.html) for additional information.
 
 Codenvy also provides an implementation of Eclipse Che that has multi-user and multi-tenant capabilities.
 
