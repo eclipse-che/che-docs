@@ -7,7 +7,7 @@ permalink: /:categories/admin-intro/
 ---
 {% include base.html %}
 
-{{product_formal_name}}'s power comes from the unique Eclipse Che workspaces which are portable and shareable because they are composed of projects (source files) and environments (runtimes). 
+{{site.product_formal_name}}'s power comes from the unique Eclipse Che workspaces which are portable and shareable because they are composed of projects (source files) and environments (runtimes). 
 
 # Workspace Activation
 ## 1. Create a workspace with a production runtime
@@ -27,7 +27,7 @@ permalink: /:categories/admin-intro/
 ## 3. Import Projects From Version Contro
 - Clone ⇒ Users can clone repos from remote locations
 - Mount ⇒ Source code is volume mounted to the local server host for long term storage
-- rsync ⇒ Distributed workspaces with Codenvy rsync project code from long term storage to a workspace runtime during boot
+- Rsync ⇒ Distributed workspaces with Codenvy rsync project code from long term storage to a workspace runtime during boot
 
 ## 4. IDEs Connect to Workspace Endpoint
 - Use our cloud IDE or your desktop IDE
@@ -59,11 +59,9 @@ permalink: /:categories/admin-intro/
 - An embedded IDE package, delivered to end user configured for the ws
 - Che web IDE is included by default
 
-![machine.png]({{ base }}/docs/assets/imgs/machine.png)
-
+![machine.png]({{base}}{{site.links["machine.png"]}})
 # Where To Go From Here  
-Che provides a lot of flexibility to administrators and users. You can start by choosing from our stack library that is within the user dashboard.
+{{site.product_mini_name}} provides a lot of flexibility to administrators and users. You can start by choosing from our stack library that is within the user dashboard.
 
-Or, if you want to distribute your own workspace configuration, study how to add a [Runtime Stack](doc:stacks) or a [Project Sample](doc:templates).
-
-In the [Stacks](doc:stacks) section, we also provide instructions for how to write custom Dockerfiles or Docker Compose files that will act as a workspace recipes.
+Or, if you want to distribute your own workspace configuration, study how to add a [Runtime Stack]({{base}}{{site.links["ws-stacks"]}}) or a [Project Sample]({{base}}{{site.links["ws-samples"]}})
+In the [Stacks]({{base}}{{site.links["ws-stacks"]}}) section, we also provide instructions for how to write custom Dockerfiles or Docker Compose files that will act as a workspace recipes.

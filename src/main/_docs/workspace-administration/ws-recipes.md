@@ -6,21 +6,21 @@ layout: docs
 permalink: /:categories/recipes/
 ---
 {% include base.html %}
-A recipe defines part of the runtime of a workspace. A recipe is included in a [stack](https://eclipse-che.readme.io/docs/stacks) along with meta information that defines how the workspace runtime should be created. When creating custom workspace runtime it's often best to create a custom [stack](https://eclipse-che.readme.io/docs/stacks) with a custom recipe.
+A recipe defines part of the runtime of a workspace. A recipe is included in a [stack]({{base}}{{site.links["ws-stacks"]}}) along with meta information that defines how the workspace runtime should be created. When creating custom workspace runtime it's often best to create a custom [stack]({{base}}{{site.links["ws-stacks"]}}) with a custom recipe.
 
 Workspaces can have a single runtime or multiple runtimes.  Che uses Docker, though Che could handle runtimes other than Docker, to create runtime(s) from [Dockerfiles](https://docs.docker.com/engine/reference/builder/) for a single-container runtime, or [compose files](https://docs.docker.com/compose/overview/) to create single-container/multi-container runtime(s).
 
-Che provides recipes for all of the ["Ready-to-go" stacks](https://eclipse-che.readme.io/docs/stacks#section-ready-to-go-stacks) for things like Java, PHP, Node, ASP.NET, and C++.
+Che provides recipes for all of the ["Ready-to-go" stacks]({{base}}{{site.links["ws-stacks"]}}#section-ready-to-go-stacks) for things like Java, PHP, Node, ASP.NET, and C++.
 
 A recipe references either a Dockerfile or compose definition that need to be built into image(s) or reference already-built image(s). When a workspace is created from a particular stack, Che will take a recipe, create or use existing Docker image(s) from it, and then create runtime Docker container(s) from that/those image(s). That/Those runtime Docker container(s) will be your workspace runtime(s).
 
-[Workspace agents](https://eclipse-che.readme.io/docs/workspace-agents) include the additional libraries that you may need, such as yum or npm, along with the runtime services that Che needs, such as Java and Tomcat, a SSH daemon. [Workspace agents](https://eclipse-che.readme.io/docs/workspace-agents) are then injected into runtime Docker container(s) from Docker images such as certified minimal versions of Linux operating systems like Alpine, Debian or Ubuntu with added [Che dependencies](https://eclipse-che.readme.io/docs/recipes#section-che-runtime-dependencies).
+[Workspace agents]({{base}}{{site.links["ws-agents"]}}) include the additional libraries that you may need, such as yum or npm, along with the runtime services that Che needs, such as Java and Tomcat, a SSH daemon. [Workspace agents]({{base}}{{site.links["ws-agents"]}}) are then injected into runtime Docker container(s) from Docker images such as certified minimal versions of Linux operating systems like Alpine, Debian or Ubuntu with added [Che dependencies]({{base}}{{site.links["ws-recipes"]}}#section-che-runtime-dependencies).
 # Single-Container Recipes  
 ## Defining
 You can author your own recipe as a way to make your workspace runtime shareable. You can provide a URL to a custom recipe (Dockerfile or Docker compose file) or write a new custom recipe (Dockerfile or Docker compose file) from the dashboard.
 
-Please note, Eclipse Che only [supports certain compose syntax](https://eclipse-che.readme.io/docs/recipes#section-compose-syntax-support).
-![che-recipe-write.jpg]({{ base }}/docs/assets/imgs/che-recipe-write.jpg)
+Please note, Eclipse Che only [supports certain compose syntax]({{base}}{{site.links["ws-recipes"]}}#section-compose-syntax-support).
+![che-recipe-write.jpg]({{ base }}{{site.links["che-recipe-write.jpg"]}})
 There are two ways for you to create a custom recipe that can be used within Che:
 1. Inherit from an Eclipse Che base Docker image and then add your dependencies (easiest).
 2. Inherit from a non-Eclipse Che base Docker image, then add both your dependencies, and Che's dependencies (most flexible).
@@ -41,7 +41,7 @@ Codenvy's base stacks, which include the minimum utilities for everything needed
 In Codenvy's repository, some recipes have sub-directories which represent tags. For example, the `/php/latest` directory in the GitHub repository would be pulled as `codenvy/php:latest` from Docker Hub.
 
 ### Inherit From Non-Eclipse Che Base Images
-This will create the best performing workspace image by only installing the minimum dependencies and packages required for your workspace. The trade off is that you have to include [Che's runtime dependencies](https://eclipse-che.readme.io/docs/recipes#section-che-runtime-required-dependencies) so we can work our magic in the workspace.
+This will create the best performing workspace image by only installing the minimum dependencies and packages required for your workspace. The trade off is that you have to include [Che's runtime dependencies]({{base}}{{site.links["ws-recipes"]}}#section-che-runtime-required-dependencies) so we can work our magic in the workspace.
 
 ### Che Runtime Required Dependencies
 
@@ -98,13 +98,13 @@ EXPOSE 3000 5000
 ##Exposing multiple ports in a compose file
 expose:
  - 3000
- - 5000\
+ - 5000
 ```
 - Go to Operations perspective (icon in the top right corner) and click the Servers tab. You will see a table with all the ports exposed in the recipe and their corresponding externally published ports.
-- You can also get the published port automatically by using a macro in a [command](https://eclipse-che.readme.io/docs/commands). When authoring a command, set its preview URL to `${server.port.<your-apps-port>}` where `<your-apps-port>` is the port in your recipe's expose command. When the command is executed, this macro is translated into a `host:port` URL.
+- You can also get the published port automatically by using a macro in a [command]({{base}}{{site.links["ide-commands"]}}). When authoring a command, set its preview URL to `${server.port.<your-apps-port>}` where `<your-apps-port>` is the port in your recipe's expose command. When the command is executed, this macro is translated into a `host:port` URL.
 
 There is no way to expose a port once the workspace is running. To expose an additional ports, the ports need to be added to the runtime recipe or added directly to the runtime instance via the dashboard `Workspaces>(click workspace name)>Runtime Tab`.
-![Che-recipe-expose-ports.jpg]({{ base }}/docs/assets/imgs/Che-recipe-expose-ports.jpg)
+![Che-recipe-expose-ports.jpg]({{ base }}{{site.links["Che-recipe-expose-ports.jpg"]}})
 ## Issue a Pull Request To Improve Recipes
 We really love pull requests. We are always looking to increase the set of stacks that are available for development. Please suggest a fix or add a new base image recipe.  To do so, issue [pull requests](https://github.com/codenvy/dockerfiles). If you add a new Dockerfile, it will be added as a source for a new automated build at DockerHub.  Please sign the [Eclipse contributor agreement](https://eclipse.org/legal/ECA.php) before making a contribution. Your contribution will be licensed as [EPL 1.0](https://www.eclipse.org/legal/epl-v10.html).
 # Multi-Container Recipes  
@@ -122,10 +122,10 @@ build:
   context: https://github.com/eclipse/che-dockerfiles.git#master:recipes/ubuntu_jre
 
   ## local context will not work
-  context: ./my/local/filesystem\
+  context: ./my/local/filesystem
 ```
 ##### Using Private Repositories
-If your `build.context` or `build.Dockerfile` accesses a private remote registry, you need to provide additional configuration.  First, the SSH private key needs to be located in your host machine's home directory `~/.ssh/id_rsa` for Mac/Linux and `C:\Users\<username>\.ssh\id_rsa` for Windows with `0600` permissions for the user that starts Che.  Second, add the hostname of the private repository to the known hosts of the host machine using `ssh -o StrictHostKeyChecking=no -T git@<hostname>`.  Third, add the public key to the git [repository host](https://eclipse-che.readme.io/v5.0/docs/git#section-adding-ssh-public-key-to-git-account). Finally, you can use an SSH git URL in the `build.context` of your compose syntax.
+If your `build.context` or `build.Dockerfile` accesses a private remote registry, you need to provide additional configuration.  First, the SSH private key needs to be located in your host machine's home directory `~/.ssh/id_rsa` for Mac/Linux and `C:\Users\<username>\.ssh\id_rsa` for Windows with `0600` permissions for the user that starts Che.  Second, add the hostname of the private repository to the known hosts of the host machine using `ssh -o StrictHostKeyChecking=no -T git@<hostname>`.  Third, add the public key to the git [repository host]({{base}}{{site.links["ide-git-svn"]}}#section-adding-ssh-public-key-to-git-account). Finally, you can use an SSH git URL in the `build.context` of your compose syntax.
 ```shell  
 ## On Linux/Mac host machine
 ## To new create ssh keypair
@@ -166,12 +166,12 @@ In the event that a Compose file includes both build instructions and a build im
 
 ### Container Name
 ```yaml  
-container_name: my_container\
+container_name: my_container
 ```
 `container_name` is skipped during execution. Instead, Che generates container names based on its own internal patterns. Because many developers could be running the same Compose file on the same Che workspace node at the same time naming conflicts need to be avoided.
 
 ### Volumes
-Volumes are not supported in the Che system. Instead we suggest using `volumes_from` to gain access to [volume mount](https://eclipse-che.readme.io/docs/recipes#section-multiple-machines-shared-volumes) of the `dev-machine`.
+Volumes are not supported in the Che system. Instead we suggest using `volumes_from` to gain access to [volume mount]({{base}}{{site.links["ws-recipes"]}}#section-multiple-machines-shared-volumes) of the `dev-machine`.
 
 ### Networks
 ```yaml  
@@ -182,7 +182,7 @@ networks:
 ## Not supported
 networks:
   internal:
-  driver: bridge\
+  driver: bridge
 ```
 Che does not yet currently support compose networks. We do, however, support the use of aliases through `links` command.
 
@@ -190,7 +190,7 @@ Che does not yet currently support compose networks. We do, however, support the
 Hostname is not supported and the machine's name will be used for the hostname. User can use `links` aliases syntax to add additional hostname(s) to a machine.
 
 ### Ports
-Binding ports to the host system is not supported. This is done to ensure that each container does not used already assigned host ports because many developers could be running the same compose file on the same Che server host at the same time. Users can expose ports and provide a [command macro](https://eclipse-che.readme.io/docs/commands#macros) `${server.port.<port>}` in the IDE to determine the ephemeral port assigned.  
+Binding ports to the host system is not supported. This is done to ensure that each container does not used already assigned host ports because many developers could be running the same compose file on the same Che server host at the same time. Users can expose ports and provide a [command macro]({{base}}{{site.links["ide-commands"]}}#macros) `${server.port.<port>}` in the IDE to determine the ephemeral port assigned.  
 
 ### Privileged
 To secure the underlying host system `privileged` compose command is not supported.

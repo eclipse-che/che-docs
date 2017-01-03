@@ -300,8 +300,8 @@ command : {
 ```
 Each commands have a type and get translated into a process that is executed on the command line within the machine's environment. Some commands can be derived, such as `maven` commands where Che will apply the location and necessary flags for execution. Other commands can be custom, where the command line is executed within the environment as you have specified it.
 
-The command line can use [Macros](../../docs/commands#macros).
-See [Command](https://eclipse-che.readme.io/docs/workspace#section-command-object) reference.
+The command line can use [Macros]({{base}}{{site.links["ide-commands"]}}#macros).
+See [Command]({{base}}{{site.links["ide-commands"]}}) reference.
 
 
 ### PreviewURL
@@ -309,7 +309,7 @@ See [Command](https://eclipse-che.readme.io/docs/workspace#section-command-objec
 Preview objects are stored as part of command. Che will generate the preview URL during the command execution and present the URL to the user as part of the command output. You can add a preview URL of any format within the command editor.
 
 
-The previewURL can use [Macros](../../docs/commands#macros).
+The previewURL can use [Macros]({{base}}{{site.links["ide-commands"]}}#macros).
 
 
 ### Command Sample
