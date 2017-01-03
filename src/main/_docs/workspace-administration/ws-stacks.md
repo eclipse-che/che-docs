@@ -10,7 +10,7 @@ A stack is a runtime configuration for a workspace. It contains a [runtime recip
 
 Stacks are displayed within the user dashboard and stack tags are used to filter the [project code samples]({{base}}{{site.links["ws-samples"]}}) that are available. It is possible to have a single stack with a variety of different project samples, each of which are filtered differently.
 
-You can use Che's [built-in stacks]({{base}}{{site.links["ws-stacks"]}}#using-stacks) or [author your own custom stacks]({{base}}{{site.links["ws-stacks"]}}#custom-stacks-for-che).
+You can use Che's [built-in stacks]({{base}}{{site.links["ws-stacks"]}}#using-stacks-to-create-a-new-workspace) or [author your own custom stacks]({{base}}{{site.links["ws-stacks"]}}#custom-stack).
 
 A stack is different from a [recipe]({{base}}{{site.links["ws-recipes"]}}). A stack is a JSON definition with meta information which includes a reference to a recipe. A recipe is either a [Dockerfile](https://docs.docker.com/engine/reference/builder/) or a [Docker compose file](https://docs.docker.com/compose/) used by Che to create a runtime that will be embedded within the workspace.  It is also possible to write a custom plug-in that replaces the default Docker machine implementation within Che with another one. For details on this, see [Building Extensions]({{base}}{{site.links["plugins-create-and-build-extensions"]}}) and / or start a dialog with the core Che engineers at `che-dev@eclipse.org`.
 # Using Stacks To Create a New Workspace  

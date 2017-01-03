@@ -6,8 +6,6 @@ layout: docs
 permalink: /:categories/agents/
 ---
 {% include base.html %}
-
-
 Agents are scripts that are executed after a [runtime machine]({{base}}{{site.links["ws-machines"]}}) is created. They add additional capabilities to the machines they're injected in - for example to allow terminal access or enhanced language services. Agents allow these services to be injected into machines built from stock Dockerfiles or Compose files.
 
 # Adding Agents to a Machine  
@@ -17,9 +15,8 @@ Adding agents to your own machines can be done by editing [machine information i
 
 # Adding Agents to a Custom Stack  
 Stacks use JSON format for configuration. Agents are included in the machines definition. Each stack requires a machine named `dev-machine` which always requires the terminal, ws-agent, and SSH agents. Language server agents need to be added to the dev-machine if you want [intellisense]({{base}}{{site.links["ide-intellisense"]}}) features when using the workspace IDE.
-```json  
-.......
-  workspaceConfig": {
+```json 
+  "workspaceConfig": {
     "environments": {
       "default": {
         "recipe": {
@@ -27,7 +24,7 @@ Stacks use JSON format for configuration. Agents are included in the machines de
         },
         "machines": {
           "dev-machine": {
-            "servers": {},
+            "servers": { },
             "agents": [
               "org.eclipse.che.terminal\n              "org.eclipse.che.ws-agent\n              "org.eclipse.che.ssh\n              "org.eclipse.che.ls.php"
             ],
@@ -37,9 +34,8 @@ Stacks use JSON format for configuration. Agents are included in the machines de
           }
         }
       }
-    },
-.......
-
+    }
+  }
 ```
 
 # Creating New Agents  
