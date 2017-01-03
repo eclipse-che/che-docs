@@ -7,7 +7,7 @@ permalink: /:categories/admin-intro/
 ---
 {% include base.html %}
 
-{{site.product_formal_name}}'s power comes from the unique {{site.product_mini_name}} workspaces which are portable and shareable because they are composed of projects (source files) and environments (runtimes). 
+{{site.product_formal_name}}'s power comes from the unique Eclipse Che workspaces which are portable and shareable because they are composed of projects (source files) and environments (runtimes). 
 
 # Workspace Activation
 ## 1. Create a workspace with a production runtime
