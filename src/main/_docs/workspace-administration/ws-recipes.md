@@ -128,6 +128,7 @@ build:
 ```
 Using Private Repositories:
 If your `build.context` or `build.Dockerfile` accesses a private remote registry, you need to provide additional configuration.  First, the SSH private key needs to be located in your host machine's home directory `~/.ssh/id_rsa` for Mac/Linux and `C:\Users\<username>\.ssh\id_rsa` for Windows with `0600` permissions for the user that starts Che.  Second, add the hostname of the private repository to the known hosts of the host machine using `ssh -o StrictHostKeyChecking=no -T git@<hostname>`.  Third, add the public key to the git [repository host]({{base}}{{site.links["ide-git-svn"]}}#adding-ssh-public-key-to-repository-account). Finally, you can use an SSH git URL in the `build.context` of your compose syntax.
+
 ```shell  
 ## On Linux/Mac host machine
 ## To new create ssh keypair

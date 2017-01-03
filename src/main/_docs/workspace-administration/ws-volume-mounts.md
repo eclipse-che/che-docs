@@ -33,6 +33,7 @@ export CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh;~/.m2:/home/user/.m2
 
 # Sharing Volumes Between Containers  
 Share volumes between containers by using `volumes_from` in Docker compose using json syntax. Refer to [Multi-Container recipes]({{base}}{{site.links["ws-recipes"]}}#multi-container-recipes) for additional information.
+
 ```json  
 ...
 "volumes_from" : [
@@ -50,8 +51,8 @@ set CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh:ro;~/.m2:/home/user/.m2:rw
 
 #Windows
 set CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh:ro;~/.m2:/home/user/.m2:rw
-```  
---
+
+```
 
 ```text  
 ...

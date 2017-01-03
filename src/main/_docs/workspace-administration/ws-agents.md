@@ -15,8 +15,9 @@ Adding agents to your own machines can be done by editing [machine information i
 
 # Adding Agents to a Custom Stack  
 Stacks use JSON format for configuration. Agents are included in the machines definition. Each stack requires a machine named `dev-machine` which always requires the terminal, ws-agent, and SSH agents. Language server agents need to be added to the dev-machine if you want [intellisense]({{base}}{{site.links["ide-intellisense"]}}) features when using the workspace IDE.
-```json 
-  "workspaceConfig": {
+```json  
+.......
+  workspaceConfig": {
     "environments": {
       "default": {
         "recipe": {
