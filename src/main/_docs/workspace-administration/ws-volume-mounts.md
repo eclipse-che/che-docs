@@ -16,7 +16,7 @@ All workspaces will have access to this volume mount.
 set CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh
 
 # Windows
-export CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh\
+export CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh
 ```
 
 # Mounting Multiple Volumes  
@@ -28,11 +28,11 @@ All workspaces will have access to these mounted volumes.
 set CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh;~/.m2:/home/user/.m2
 
 # Windows
-export CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh;~/.m2:/home/user/.m2\
+export CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh;~/.m2:/home/user/.m2
 ```
 
 # Sharing Volumes Between Containers  
-Share volumes between containers by using `volumes_from` in Docker compose using json syntax. Refer to [Multi-Machine Workspaces in Che](doc:che-and-multi-machine-workspaces) for additional information.
+Share volumes between containers by using `volumes_from` in Docker compose using json syntax. Refer to [Multi-Container recipes]({{base}}{{site.links["ws-recipe"]}}#multi-container-recipes) for additional information.
 ```json  
 ...
 "volumes_from" : [
@@ -49,7 +49,7 @@ Set read-only or read-write permissions to volumes by adding `:ro`(read-only) or
 set CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh:ro;~/.m2:/home/user/.m2:rw
 
 #Windows
-set CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh:ro;~/.m2:/home/user/.m2:rw\
+set CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh:ro;~/.m2:/home/user/.m2:rw
 ```
 
 ```text  
