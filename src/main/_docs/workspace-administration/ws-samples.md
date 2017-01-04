@@ -24,7 +24,9 @@ Wizard-driven templates allow the user to create a project and configure the cod
 To register your a new project template to Che, you first need to create the corresponding Template Object. Please read the following documentation for the [Template Object]({{base}}{{site.links["ws-data-model-samples"]}}).  
 
 A code template can be used to instantiate a set of files into the project tree. The code template will appear in the user dashboard when a user attempts to create a new project.
+
 Those projects templates can be registered for existing Che stacks, or it can be for a [custom stack that you author]({{base}}{{site.links["ws-stacks"]}}#custom-stack).
+
 Different templates will be shown to the user depending upon the stack that they select using embedded filters. The template lets the initial code tree to be instantiated from a git / URL or from a hosted ZIP archive.
 ```shell  
 # Location of Che template definitions
