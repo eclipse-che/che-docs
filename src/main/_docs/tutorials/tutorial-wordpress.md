@@ -29,7 +29,7 @@ Let's import WP from an [official WordPress GitHub repo](https://github.com/Word
 
 ### Select Stack
 Che offers a certified PHP image with Apache2, MySQL, git, curl and a number of popular PHP extensions.
-[Dockerfile](https://github.com/eclipse/che-dockerfiles/blob/master/php/ubuntu/Dockerfile).
+[Dockerfile](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/php/ubuntu/Dockerfile).
 
 ### Configure Workspace
 Give your workspace a nice name and configure RAM, i.e. apply the memory limit to a workspace machine.

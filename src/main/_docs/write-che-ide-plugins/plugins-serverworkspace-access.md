@@ -41,7 +41,7 @@ public class MyService {
 To make the server service consumable within the IDE, we implement a client encapsulating the REST call (see following code example).
 Therefore, the client will offer a method `#getHello`, which can be called by any IDE component with a parameter “name”. To send an asynchronous REST request, the client uses two Che utilities, the `AsyncRequestFactory` and the `LoaderFactory`, which both get injected into the constructor.
 
-The `AsyncRequestFactory` simplifies the creation of REST calls by providing a method `#createGetRequest` which will create a request using the provided parameter as a path. It will automatically prefix this path with the current server URL used by the IDE, so the parameter “hello” would be bound to [http://serveradress/hello](http://serveradress/hello).
+The `AsyncRequestFactory` simplifies the creation of REST calls by providing a method `#createGetRequest` which will create a request using the provided parameter as a path. It will automatically prefix this path with the current server URL used by the IDE, so the parameter “hello” would be bound to http://serveradress/hello.
 
 The request is sent by passing in an `Unmarshaller`. It is responsible for unmarshalling the response from the transport format (JSON) to a Java type, e.g. a String. Che already provides a collection of `Unmarshallers`, please see the section [Calling Workspace APIs]( {{base}}/docs/plugins/calling-workspace-apis/index.html) for details.
 

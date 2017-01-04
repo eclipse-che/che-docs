@@ -18,7 +18,7 @@ Query parameter `tags` is optional and used to narrow down search results.
 
 It's possible to use multiple query parameters, e.g. `http://localhost:8080/api/stack?tags=Java&tags=Ubuntu`
 
-Swagger: [http://localhost:8080/swagger/#!/stack/searchStacks](http://localhost:8080/swagger/#!/stack/searchStacks)
+Swagger: http://localhost:8080/swagger/#!/stack/searchStacks
 
 
 # Create a New Stack
