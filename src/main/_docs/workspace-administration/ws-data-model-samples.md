@@ -74,7 +74,7 @@ samples.commands : [{
   # Add command JSON objects here
 }]
 ```
-See [Command]() reference.
+See Command {% assign docs_todo="What is link/page" %} reference.
 
 
 ## Tags

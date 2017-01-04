@@ -144,7 +144,7 @@ A mixin adds additional behaviors to a project as a set of new project type attr
 | Mixin ID   | Description   
 | --- | ---
 | `git`   | Initiates the project with a git repository. Adds git menu functionality to the IDE. If a user in the IDE creates a new project and then initializes a git repository, then this mixin is added to that project.   
-| `tour`  | Enables walk-me style guided tour functionality. You can author custom step by step tours that execute when users create a new workspace.  See [Tour]() for specification and examples.   
+| `tour`  | Enables walk-me style guided tour functionality. You can author custom step by step tours that execute when users create a new workspace.  See Tour {% assign docs_todo="What is link/page" %} for specification and examples.   
 | `pullrequest`   | Enables pull request workflow where server handles local & remote branching, forking, and pull request issuance. Pull requests generated from within server have another Factory placed into the comments of pull requests that a PR reviewer can consume. Adds contribution panel to the IDE. If this mixin is set, then it uses attribute values for `project.attributes.local_branch` and `project.attributes.contribute_to_branch`.   
 
 The `pullrequest` mixin requires additional configuration from the `attributes` object of the project.  

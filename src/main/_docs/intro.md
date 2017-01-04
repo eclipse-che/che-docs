@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Introduction
 excerpt: ""
 layout: docs
-permalink: /:categories/intro/
+permalink: /docs/
 ---
 {% include base.html %}
 Eclipse Che provides:

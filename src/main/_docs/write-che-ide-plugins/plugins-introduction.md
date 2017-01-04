@@ -6,7 +6,7 @@ layout: docs
 permalink: /:categories/introduction/
 ---
 {% include base.html %}
-This part of the documentation describes how to extend Eclipse Che with custom plugins, e.g. to provide support for new languages. It covers various aspects from adding new file types, extending the code editor, adding intellisense features, defining a specific project-type, and accessing the workspace. Before you start to extend Che, we recommend to get a general technical overview as provided [here]({{ base }}/docs/setup/intro/index.html).
+This part of the documentation describes how to extend Eclipse Che with custom plugins, e.g. to provide support for new languages. It covers various aspects from adding new file types, extending the code editor, adding intellisense features, defining a specific project-type, and accessing the workspace. Before you start to extend Che, we recommend to get a general technical overview as provided [here]({{ base }}/docs/index.html).
 
 In general, Che can be extended in its three different components, the IDE running in the Browser, the Che Server, and the Workspace (see diagram below).
 

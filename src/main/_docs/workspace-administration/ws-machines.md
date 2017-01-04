@@ -33,10 +33,9 @@ Snapshots are important to preserve the internal state of a machine that is not 
 
 Note that once you've snapshotted a workspace, changing the environment or machine names inside the workspace will result in the snapshot being lost.
 
+Snapshots image a machine and then it is committed, tagged, and optionally pushed into a Docker registry. You can use a local Docker registry or a remote one. See [Configuration]({{base}}{{site.links["setup-configuration"]}}#using-snapshots-with-private-registries) for information on how to setup a docker registry.
 
-Snapshots image a machine and then it is committed, tagged, and optionally pushed into a Docker registry. You can use a local Docker registry or a remote one. See [Configuration]({{base}}{{site.links["che-setup-configuration"]}}#workspace-snapshots) for information on how to setup a docker registry.
-
-To snapshot a machine go to the Operations Perspective by clicking the button on the far right of the menu bar. Choose Machines > Snapshot from the top menu bar. See our other docs [for details on setting up a local or remote Docker Registry]({{base}}{{site.links["che-setup-configuration"]}}#workspace-snapshots).
+To snapshot a machine go to the Operations Perspective by clicking the button on the far right of the menu bar. Choose Machines > Snapshot from the top menu bar. See our other docs [for details on setting up a local or remote Docker Registry]({{base}}{{site.links["setup-configuration"]}}#using-snapshots-with-private-registries).
 ![che-create-snapshot.jpg]({{base}}{{site.links["che-create-snapshot.jpg"]}})
 By default, Che does not need a local/remote Docker registry to create snapshots. If no registry is used, a container is committed into an image which is then tagged, so that next time a workspace is started with this image. The behavior is regulated with the following environment variables:
 ```shell  

@@ -320,7 +320,7 @@ mvn clean install
 
 ## 9- Start your custom assembly
 
-To start Che from the custom assembly you just built, you can refer to this [Usage: Development Demo](http://localhost:9080/docs/setup/configuration/index.html#development-mode). 
+To start Che from the custom assembly you just built, you can refer to this [Usage: Development Demo]({{base}}/docs/setup/configuration/index.html#development-mode). 
 
 ## 10- Test your extension
 
