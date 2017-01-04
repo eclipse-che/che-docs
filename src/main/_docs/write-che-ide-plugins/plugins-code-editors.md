@@ -159,7 +159,7 @@ This part of the tutorial describes how the code-completion of Che’s default c
 
 
 ![image06.png]({{ base }}/docs/assets/imgs/image06.png)
-First, we need to register a custom editor provider, `MyEditorProvider`, which plugs in our custom code completion. If you did not register a custom editor provider before, Che will use the `DefaultEditorProvider`, which we now replace. This is done in a class `JsEditorExtension` which contains all potential extensions for the JSEditor (see also [here](introduction-1#section-extension-classes)).
+First, we need to register a custom editor provider, `MyEditorProvider`, which plugs in our custom code completion. If you did not register a custom editor provider before, Che will use the `DefaultEditorProvider`, which we now replace. This is done in a class `JsEditorExtension` which contains all potential extensions for the JSEditor.
 
 An editor provider is responsible for configuring a specific editor type. Therefore, it provides an `EditorConfiguration`, which is responsible for editor features such as code completion, quick assist or code formatting. To provide custom code completion, the `EditorConfiguration` needs to create a custom `CodeAssistProcessor`.
 

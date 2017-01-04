@@ -76,10 +76,10 @@ CHE_GOOGLE_SECRET=yourSecret
 ```
 
 #### GitHub oAuth
-Refer to [GitHub using OAuth]() for configuration information.
+Refer to [GitHub using OAuth]({{base}}{{site.links["ide-git-svn"]}}#github-oauth) for configuration information.
 
 #### GitLab oAuth
-Refer to [GitHub using OAuth]() for configuration information.
+Refer to [GitLab using OAuth]({{base}}{{site.links["ide-git-svn"]}}#gitlab-oauth) for configuration information.
 
 
 # Stacks
@@ -134,7 +134,7 @@ You can place limits on how users interact with the system to control overall sy
 You can also set limits on Docker's allocation of CPU to workspaces, which may be necessary if you have a very dense workspace population where users are competing for limited physical resources.
 
 # Docker
-Eclipse Che workspace runtimes are powered by one or more Docker containers. When a user creates a workpace, they do so from a [stack]() which includes a Dockerfile or reference to a Docker image which will be used to create the containers for the workspace runtimes. Che stacks can pull that image from a public registry, like DockerHub, or a private registry. Images in a registry can be publicly visible or private, which require user credentials to access. You can also set up a private registry to act as a mirror to Docker Hub.  And, if you are running Eclipse Che behind a proxy, you can configure the Docker daemon registry to operate behind a proxy.
+Eclipse Che workspace runtimes are powered by one or more Docker containers. When a user creates a workpace, they do so from a [stack]({{base}}{{site.links["ws-stacks"]}}) which includes a Dockerfile or reference to a Docker image which will be used to create the containers for the workspace runtimes. Che stacks can pull that image from a public registry, like DockerHub, or a private registry. Images in a registry can be publicly visible or private, which require user credentials to access. You can also set up a private registry to act as a mirror to Docker Hub.  And, if you are running Eclipse Che behind a proxy, you can configure the Docker daemon registry to operate behind a proxy.
 
 ### Private Images  
 When users create a workspace in Eclipse Che, they must select a Docker image to power the workspace. We provide ready-to-go stacks which reference images hosted at the public Docker Hub, which do not require any authenticated access to pull. You can provide your own images that are stored in a local private registry or at Docker Hub. The images may be publicly or privately visible, even if they are part of a private registry.
@@ -197,7 +197,7 @@ CHE_DOCKER_PRIVILEGED_MODE=true
 ```
 
 ### Mirroring Docker Hub  
-If you are running a private registry internally to your company, you can [optionally mirror Docker Hub](https://docs.docker.com/registry/mirror/). Your private registry will download and cache any images that your users reference from the public Docker Hub. You need to [configure your Docker daemon to make use of mirroring](https://docs.docker.com/registry/mirror/).
+If you are running a private registry internally to your company, you can [optionally mirror Docker Hub](https://docs.docker.com/registry/recipes/mirror/). Your private registry will download and cache any images that your users reference from the public Docker Hub. You need to [configure your Docker daemon to make use of mirroring](https://docs.docker.com/registry/recipes/mirror).
 
 ### Using Docker In Workspaces
 If you'd like your users to work with projects which have their own Docker images and Docker build capabilities inside of their workspace, then you need to configure the workspace to work with Docker. You have two options:
