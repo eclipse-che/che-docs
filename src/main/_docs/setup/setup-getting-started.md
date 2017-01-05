@@ -22,7 +22,7 @@ If the unthinkable happens, or you have a question, you can post [issues on our 
 - the full `docker run ...` syntax you used on the command line
 - the output of `cli.log`
 
-### Documentation 
+### Documentation
 We put a lot of effort into our docs. Please add suggestions on areas for improvement with a new [pull request](https://github.com/codenvy/che-docs/pulls) or [issue](https://github.com/codenvy/che-docs/issues).
 
 # Quick Start
@@ -123,7 +123,7 @@ COMMANDS:
 ```
 
 # Pre-Reqs  
-### Hardware:
+### Hardware
 * 1 cores
 * 256MB RAM
 * 300MB disk space
@@ -132,7 +132,7 @@ Che requires 300 MB storage and 256MB RAM for internal services. The RAM, CPU an
 
 Boot2Docker, docker-machine, Docker for Windows, and Docker for Mac are all Docker variations that launch VMs with Docker running in the VM with access to Docker from your host. We recommend increasing your default VM size to at least 4GB. Each of these technologies have different ways to allow host folder mounting into the VM. Please enable this for your OS so that Che data is persisted on your host disk.
 
-### Software:
+### Software
 * Docker 1.11+
 
 The Che CLI - a Docker image - manages the other Docker images and supporting utilities that Che uses during its configuration or operations phases. The CLI also provides utilities for downloading an offline bundle to run Che while disconnected from the network.
@@ -192,7 +192,6 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
                     -v <a-different-path>:/data/instance
                     -v <another-path>:/data/backup
                        eclipse/che-cli:<version> [COMMAND]    
-
 ```
 
 # Hosting
