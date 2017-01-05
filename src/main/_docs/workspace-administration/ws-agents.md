@@ -21,13 +21,17 @@ Stacks use JSON format for configuration. Agents are included in the machines de
     "environments": {
       "default": {
         "recipe": {
-          "location": "eclipse/ubuntu_jdk8\n          "type": "dockerimage"
+          "location": "eclipse/ubuntu_jdk8",
+          "type": "dockerimage"
         },
         "machines": {
           "dev-machine": {
-            "servers": { },
+            "servers": {},
             "agents": [
-              "org.eclipse.che.terminal\n              "org.eclipse.che.ws-agent\n              "org.eclipse.che.ssh\n              "org.eclipse.che.ls.php"
+              "org.eclipse.che.terminal",
+              "org.eclipse.che.ws-agent",
+              "org.eclipse.che.ssh",
+              "org.eclipse.che.ls.php"
             ],
             "attributes": {
               "memoryLimitBytes": "2147483648"
@@ -35,8 +39,8 @@ Stacks use JSON format for configuration. Agents are included in the machines de
           }
         }
       }
-    }
-  }
+    },
+.......
 ```
 
 # Creating New Agents  
