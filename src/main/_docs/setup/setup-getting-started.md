@@ -14,7 +14,7 @@ This is the administration guide for the on-premises installation of Eclipse Che
 You can get a hosted version of Eclipse Che with Codenvy at [codenvy.io](http://codenvy.io).
 
 # How to Get Help
-### Support:  
+### Support  
 If the unthinkable happens, or you have a question, you can post [issues on our GitHub page](https://github.com/eclipse/che/issues). Please follow the [guidelines on issue reporting](https://github.com/eclipse/che/blob/master/CONTRIBUTING.md) and provide:
 * your OS distribution and version
 - output of `docker version` command
@@ -22,7 +22,7 @@ If the unthinkable happens, or you have a question, you can post [issues on our 
 - the full `docker run ...` syntax you used on the command line
 - the output of `cli.log`
 
-### Documentation:
+### Documentation 
 We put a lot of effort into our docs. Please add suggestions on areas for improvement with a new [pull request](https://github.com/codenvy/che-docs/pulls) or [issue](https://github.com/codenvy/che-docs/issues).
 
 # Quick Start
