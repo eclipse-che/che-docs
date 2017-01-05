@@ -10,59 +10,60 @@ The Docker image which runs Che is the Che CLI. It has various commands for runn
 
 ```
 USAGE:
-  docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> [COMMAND]
+USAGE:
+ docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> [COMMAND]
 
 MANDATORY DOCKER PARAMETERS:
-  -v <LOCAL_PATH>:/data                Where user, instance, and log data saved
+ -v <LOCAL_PATH>:/data                Where user, instance, and log data saved
 
 OPTIONAL DOCKER PARAMETERS:
-  -e CHE_HOST=<YOUR_HOST>              IP address or hostname where che will serve its users
-  -e CHE_PORT=<YOUR_PORT>              Port where che will bind itself to
-  -v <LOCAL_PATH>:/data/instance       Where instance, user, log data will be saved
-  -v <LOCAL_PATH>:/data/backup         Where backup files will be saved
-  -v <LOCAL_PATH>:/repo                Che repo with config and binaries for dev mode
-  -v <LOCAL_PATH>:/sync                Where remote ws files will be copied with sync command
-  -v <LOCAL_PATH>:/unison              Where unison profile for optimzing sync command resides
+ -e CHE_HOST=<YOUR_HOST>              IP address or hostname where che will serve its users
+ -e CHE_PORT=<YOUR_PORT>              Port where che will bind itself to
+ -v <LOCAL_PATH>:/data/instance       Where instance, user, log data will be saved
+ -v <LOCAL_PATH>:/data/backup         Where backup files will be saved
+ -v <LOCAL_PATH>:/repo                che git repo - uses local binaries
+ -v <LOCAL_PATH>:/sync                Where remote ws files will be copied with sync command
+ -v <LOCAL_PATH>:/unison              Where unison profile for optimizing sync command resides
 
 COMMANDS:
-  action <action-name>                 Start action on che instance
-  backup                               Backups che configuration and data to /data/backup volume mount
-  config                               Generates a che config from vars; run on any start / restart
-  destroy                              Stops services, and deletes che instance data
-  dir <path> <command>                 Use Chefile feature in the directory <path>
-  download                             Pulls Docker images for the current che version
-  help                                 This message
-  info                                 Displays info about che and the CLI
-  init                                 Initializes a directory with a che install
-  offline                              Saves che Docker images into TAR files for offline install
-  restart                              Restart che services
-  restore                              Restores che configuration and data from /data/backup mount
-  rmi                                  Removes the Docker images for <version>, forcing a repull
-  ssh <wksp-name> [machine-name]       SSH to a workspace if SSH agent enabled
-  start                                Starts che services
-  stop                                 Stops che services
-  sync <wksp-name>                     Synchronize workspace with current working directory
-  test <test-name>                     Start test on che instance
-  upgrade                              Upgrades che from one version to another with migrations and backups
-  version                              Installed version and upgrade paths
+ action <action-name>                 Start action on che instance
+ backup                               Backups che configuration and data to /data/backup volume mount
+ config                               Generates a che config from vars; run on any start / restart
+ destroy                              Stops services, and deletes che instance data
+ dir <path> <command>                 Use Chefile feature in the directory <path>
+ download                             Pulls Docker images for the current che version
+ help                                 This message
+ info                                 Displays info about che and the CLI
+ init                                 Initializes a directory with a che install
+ offline                              Saves che Docker images into TAR files for offline install
+ restart                              Restart che services
+ restore                              Restores che configuration and data from /data/backup mount
+ rmi                                  Removes the Docker images for <version>, forcing a repull
+ ssh <wksp-name> [machine-name]       SSH to a workspace if SSH agent enabled
+ start                                Starts che services
+ stop                                 Stops che services
+ sync <wksp-name>                     Synchronize workspace with current working directory
+ test <test-name>                     Start test on che instance
+ upgrade                              Upgrades che from one version to another with migrations and backups
+ version                              Installed version and upgrade paths
 
-COMMAND OPTIONS:
-  --fast                               Skips networking and version checks, saving 5 secs during boot
-  --debug                              Activates dev mode, which allows debugging binares in che-server
+GLOBAL COMMAND OPTIONS:
+ --fast                               Skips networking and version checks (saves 5 secs during bootstrap)
+ --debug                              Enable debugging of che server
 ```
 
 The CLI will hide most error conditions from standard out. Internal stack traces and error output is redirected to `cli.log`, which is saved in the host folder where `:/data` is mounted.
 
-## action
+## `action`
 Executes some actions on the Eclipse Che instance or on a workspace running inside Che.
 For example to list all workspaces on Che, the following command can be used
 `action list-workspaces`.
 To execute a command on a workspace `action execute-command <workspace-name> <action>` where action can be any bash command.
 
-## backup
+## `backup`
 TARS your `/instance` into files and places them into `/backup`. These files are restoration-ready.
 
-## config
+## `config`
 Generates a Che instance configuration thta is placed in `/instance`. This command uses puppet to generate Docker Compose configuration files to run Che and its associated server. Che's server configuration is generated as a che.properties file that is volume mounted into the Che server when it boots. This command is executed on every `start` or `restart`.
 
 If you are using a `eclipse/che-cli:<version>` image and it does not match the version that is in `/instance/che.ver`, then the configuration will abort to prevent you from running a configuration for a different version than what is currently installed.
