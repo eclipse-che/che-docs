@@ -96,7 +96,7 @@ OPTIONAL DOCKER PARAMETERS:
   -e CHE_PORT=<YOUR_PORT>              Port where che will bind itself to
   -v <LOCAL_PATH>:/data/instance       Where instance, user, log data will be saved
   -v <LOCAL_PATH>:/data/backup         Where backup files will be saved
-  -v <LOCAL_PATH>:/repo                che git repo to activate dev mode
+  -v <LOCAL_PATH>:/repo                che git repo with config and source to use in dev mode
   -v <LOCAL_PATH>:/sync                Where remote ws files will be copied with sync command
   -v <LOCAL_PATH>:/unison              Where unison profile for optimzing sync command resides
 
@@ -180,7 +180,7 @@ To avoid issues that can appear from using 'nightly' or 'latest' redirections, y
 If you are running Che using a tagged version that is a not a redirection label, such as `5.0.0-M7`, then these caching issues will not happen, as the software installed is tagged and specific to that particular version, never changing over time.
 
 # Volume Mounts
-We use volume mounts to configure certain parts of Che. The presence or absence of certain volume mounts will trigger certain behaviors in the system. For example, you can volume mount a Che source git repository with `:/repo` to activate development mode where we start Che's containers using source code from the repository instead of the software inside of the default containers.
+We use volume mounts to configure certain parts of Che. The presence or absence of certain volume mounts will trigger certain behaviors in the system. For example, you can volume mount a Che source git repository with `:/repo` to use Che source code instead of the binaries and configuration that is shipped with our Docker images.
 
 At a minimum, you must volume mount a local path to `:/data`, which will be the location that Che installs its configuration, user data, version and log information. Che also leaves behind a `cli.log` file in this location to debug any odd behaviors while running the system. In this folder we also create a `che.env` file which contains all of the admin configuration that you can set or override in a single location.
 
