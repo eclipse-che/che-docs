@@ -7,6 +7,8 @@ permalink: /:categories/tomee/
 ---
 {% include base.html %}
 TomEE is a JavaEE application server. (Learn more about TomEE) This page provides a quick configuration guide to get started with TomEE within Che.  
+
+*Instructions - Create a New Workspace*
 ```text  
 # In the dashboard, create a new project from samples
 # Choose the stack library and select TomEE stack.
@@ -14,6 +16,7 @@ TomEE is a JavaEE application server. (Learn more about TomEE) This page provide
 # Create the workspace.
 ```
 
+*Instructions - Create Commands*
 ```text  
 # In the IDE, you have a set of predefined commands:
 CUSTOM
@@ -22,9 +25,10 @@ CUSTOM
 MAVEN
 - build
 - build and run
-- debug\
+- debug
 ```
 
+*Instructions - Test Your Application*
 ```text  
 # Test the application
 1. Run the `build and run` command.
@@ -35,5 +39,5 @@ MAVEN
 
 # Debug the application
 1. Run the `debug` command
-2. Connect the debugger by using local machine and port 8000\
+2. Connect the debugger by using local machine and port 8000
 ```

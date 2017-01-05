@@ -54,12 +54,12 @@ Stacks are referenced in JSON format:
 WorkspaceConfig JSON:
 
 ```json  
-workspaceConfig : {
-  name           : STRING,    // The name of this workspace
-  defaultEnv     : STRING,    // The name of env that powers this workspace
-  environments   : [{}],      // Array of runtime envs this workspace uses
-  projects       : [{}],      // List of projects included in the workspace
-  commands       : [{}]       // Array of commands that build & run projects
+"workspaceConfig": {
+  "name"           : STRING,    // The name of this workspace
+  "defaultEnv"     : STRING,    // The name of env that powers this workspace
+  "environments"   : [{}],      // Array of runtime envs this workspace uses
+  "projects"       : [{}],      // List of projects included in the workspace
+  "commands"       : [{}]       // Array of commands that build & run projects
 }
 ```
 Every workspace can have one or more environments which are used to run the code against a stack of technology. Every workspace has exactly one environment which acts as a special "development environment", for which projects are synchronized into and developer services are injected, such as intellisense, workspace agents, SSH, and plug-ins.  
@@ -69,10 +69,10 @@ Set `defaultEnv` to the name of the environment that should act as the Docker-po
 ## Environments
 Each environments are constructed of one or more machines, each one is an individual container. An environment can be comprised of multiple machines that are linked together, such as when you want a database running on a different machine than your debugger.
 ```json  
-environment : {
-  name           : STRING,     // Identifier and pretty name for environment
-  recipe         : STRING,     // Define engine for composing machines network runtimes (compose, kubernetes pod)
-  machineConfigs : [{}],       // Instructions for how Che builds a runtime
+"environment": {
+  "name"           : STRING,     // Identifier and pretty name for environment
+  "recipe"         : STRING,     // Define engine for composing machines network runtimes (compose, kubernetes pod)
+  "machineConfigs" : [{}],       // Instructions for how Che builds a runtime
 }
 ```
 
@@ -82,13 +82,13 @@ MachineConfigs JSON:
 
 ```json  
 environment.machineConfigs : [{
-  name   : STRING,             // Name of the machine
-  type   : STRING,             // What kind of machine - set to `docker` for containers
-  limits : {                   // Limits for the machine
-  	 ram : INT              // Memory in MB this machine will be allocated
+  "name"   : STRING,             // Name of the machine
+  "type"   : STRING,             // What kind of machine - set to `docker` for containers
+  "limits" : {                   // Limits for the machine
+  	 "ram" : INT              // Memory in MB this machine will be allocated
   },
-  dev    : [true | false],     // If true, injects dev services into machine
-  source : {}                  // configure workspace agent runtime        
+  "dev"    : [true | false],     // If true, injects dev services into machine
+  "source" : {}                  // configure workspace agent runtime        
 }
 ```
 
@@ -114,6 +114,7 @@ It provides a docker runtime. Link to the Dockerfile recipe can be provided by a
 #### image type
 
 location can include the dockerhub image name
+
 ```json  
 "source": {
   "type": "image",
@@ -121,7 +122,7 @@ location can include the dockerhub image name
 }
 ```
  or for example include a registry url with a custom tag or a custom digest
-```text  
+```json  
 "source": {
   "type": "image",
   "location": "myregistry:5000/eclipse/ubuntu_jdk8:myCustomTag"
@@ -143,7 +144,7 @@ A mixin adds additional behaviors to a project as a set of new project type attr
 | Mixin ID   | Description   
 | --- | ---
 | `git`   | Initiates the project with a git repository. Adds git menu functionality to the IDE. If a user in the IDE creates a new project and then initializes a git repository, then this mixin is added to that project.   
-| `tour`  | Enables walk-me style guided tour functionality. You can author custom step by step tours that execute when users create a new workspace.  See [Tour](../../docs/tour) for specification and examples.   
+| `tour`  | Enables walk-me style guided tour functionality. You can author custom step by step tours that execute when users create a new workspace.  See Tour {% assign docs_todo="What is link/page" %} for specification and examples.   
 | `pullrequest`   | Enables pull request workflow where server handles local & remote branching, forking, and pull request issuance. Pull requests generated from within server have another Factory placed into the comments of pull requests that a PR reviewer can consume. Adds contribution panel to the IDE. If this mixin is set, then it uses attribute values for `project.attributes.local_branch` and `project.attributes.contribute_to_branch`.   
 
 The `pullrequest` mixin requires additional configuration from the `attributes` object of the project.  
@@ -190,16 +191,16 @@ factory.workspace.project : {
 Project object:
 
 ```json  
-project : {
-  name        : STRING,       // The name of the project
-  type        : STRING,       // The project type defines plug-ins & behaviors
-  description : STRING,       // Pretty description for display to users
-  path        : STRING,       // Location in the workspace where this project lives
-  source      : {},           // The source code repo for this project
-  mixins      : [STRING],     // Adds behaviors to the project, such as enabling a pull request
-  attributes  : {},           // Varies by project type
-  modules     : [{}]          // Modules are project sub-units with type that can build & run
-}\
+"project" : {
+  "name"        : STRING,       // The name of the project
+  "type"        : STRING,       // The project type defines plug-ins & behaviors
+  "description" : STRING,       // Pretty description for display to users
+  "path"        : STRING,       // Location in the workspace where this project lives
+  "source"      : {},           // The source code repo for this project
+  "mixins"      : [STRING],     // Adds behaviors to the project, such as enabling a pull request
+  "attributes"  : {},           // Varies by project type
+  "modules"     : [{}]          // Modules are project sub-units with type that can build & run
+}
 ```
 
 A project has a type which causes special services to be added to the IDE and the default environment that is powering the workspace. Additionally, each project type has a specialized set of additional attributes that can alter the behavior of the project.  The icon next to your project name in the IDE explorer changes based upon the project type that it has.  You can also change project type in `Project > Configuration` in the IDE.
@@ -222,20 +223,19 @@ Every project belongs to a single version control repository. If you want the pr
 
 ```json  
 project.source : {
-  type       : [git | svn | dockerfile],   
-  location   : URL,            // Repo location
-  parameters : {}              // (OPTIONAL) Attributes for version control
+  "type"       : [git | svn | dockerfile],   
+  "location"   : URL,            // Repo location
+  "parameters" : {}              // (OPTIONAL) Attributes for version control
 }
 
 project.source.parameters : {      
-  branch     : STRING,         // Clone from this branch
-  startPoint : STRING,         // Branch to start at if value of 'branch' param isn't a valid branch
-  keepVcs    : [true | false], // Keep the .git folder after clone.
-  commitId   : STRING,         // Clone from a commit point. Branch precedes this property
-  keepDir    : STRING,         // Clone all, but display only this subdir of repo
-  fetch      : REF-SPEC        // Clone from patch set of provided ref-spec
+  "branch"     : STRING,         // Clone from this branch
+  "startPoint" : STRING,         // Branch to start at if value of 'branch' param isn't a valid branch
+  "keepVcs"    : [true | false], // Keep the .git folder after clone.
+  "commitId"   : STRING,         // Clone from a commit point. Branch precedes this property
+  "keepDir"    : STRING,         // Clone all, but display only this subdir of repo
+  "fetch"      : REF-SPEC        // Clone from patch set of provided ref-spec
 }
-
 ```
 Depending upon the type of version control system selected, you can configure the recipe to clone different repositories, branches, ref-specs. The `dockerfile` option is used by environments to reference a Dockerfile that will be used to build an image dynamically when the workspace is being constructed. The `git` and `svn` options are for cloning and synchronizing with Git and Subversion repositories.
 
@@ -264,18 +264,18 @@ This example clones a git repository hosted by Codenvy with a specific commit ID
 A module is a directory in a project that can be independently built and run.  Modules have their own project type and attributes, which can affect how the command behavior works for that directory apart from others or the project as a whole. Modules can be nested.
 ```json  
 project.modules : [{
-  name        : STRING,     // Name of the module
-  description : STRING,     // (OPTIONAL) Pretty description to show to users
-  path        : STRING,     // Relative path from workspace root to module root
-  type        : STRING,     // Same as workspace.projects.type
-  attributes  : {},         // (OPTIONAL) Same as workspace.projects.attributes
-  mixins      : [STRING]    // (OPTIONAL) Same as workspace.projects.mixins
+  "name"        : STRING,     // Name of the module
+  "description" : STRING,     // (OPTIONAL) Pretty description to show to users
+  "path"        : STRING,     // Relative path from workspace root to module root
+  "type"        : STRING,     // Same as workspace.projects.type
+  "attributes"  : {},         // (OPTIONAL) Same as workspace.projects.attributes
+  "mixins"      : [STRING]    // (OPTIONAL) Same as workspace.projects.mixins
 }]
 
 ```
 
 ## Commands
-When authoring a project template we recommend to predefine commands to register build and run actions. [Learn more about commands.](../../docs/commands)
+When authoring a project template we recommend to predefine commands to register build and run actions. [Learn more about commands.]({{base}}{{site.links["ide-commands"]}})
 ```json  
 "commands" : {  
   "commandLine": "",                                     // Command to run on target machine
@@ -288,20 +288,20 @@ When authoring a project template we recommend to predefine commands to register
 ```
 
 ```json  
-command : {
-  name        : STRING,       // Identifier and pretty name for command
-  type        : STRING,       // Command type, such as "mvn"
-  commandLine : STRING,       // Process to execute in the workspace
-  workingDir  : STRING        // (Optional) Location in workpace to execute command
-  attributes  : {
-    previewUrl: STRING        // (Optional) Refer preview URL
+"command" : {
+  "name"        : STRING,       // Identifier and pretty name for command
+  "type"        : STRING,       // Command type, such as "mvn"
+  "commandLine" : STRING,       // Process to execute in the workspace
+  "workingDir"  : STRING        // (Optional) Location in workpace to execute command
+  "attributes"  : {
+    "previewUrl": STRING        // (Optional) Refer preview URL
   }
 }
 ```
 Each commands have a type and get translated into a process that is executed on the command line within the machine's environment. Some commands can be derived, such as `maven` commands where Che will apply the location and necessary flags for execution. Other commands can be custom, where the command line is executed within the environment as you have specified it.
 
-The command line can use [Macros](../../docs/commands#macros).
-See [Command](https://eclipse-che.readme.io/docs/workspace#section-command-object) reference.
+The command line can use [Macros]({{base}}{{site.links["ide-commands"]}}#macros).
+See [Command]({{base}}{{site.links["ide-commands"]}}) reference.
 
 
 ### PreviewURL
@@ -309,7 +309,7 @@ See [Command](https://eclipse-che.readme.io/docs/workspace#section-command-objec
 Preview objects are stored as part of command. Che will generate the preview URL during the command execution and present the URL to the user as part of the command output. You can add a preview URL of any format within the command editor.
 
 
-The previewURL can use [Macros](../../docs/commands#macros).
+The previewURL can use [Macros]({{base}}{{site.links["ide-commands"]}}#macros).
 
 
 ### Command Sample

@@ -11,12 +11,11 @@ This page explains how to setup a developer workspace for Che using various IDEs
 Setting up your environment consist of three steps, (1) Getting the source code, (2), setting up your IDE for development, (3) and configuring the maven build.
 ![Selection_009.png]({{ base }}/docs/assets/imgs/Selection_009.png)
 Che is IDE agnostic. We provide configuration instructions for:
-* [Eclipse (using the Eclipse Installer)](doc:setup-che-workspace#setup-the-eclipse-ide)
-* [IntelliJ](doc:setup-che-workspace#setup-the-intellij-ide)
-* [Che IDE (coming soon) ](doc:setup-che-workspace#setup-the-che-ide)
+* [Eclipse (using the Eclipse Installer)]({{ base }}/docs/plugins/setup-che-workspace/index.html#eclipse-ide---neon-installer)
+* [IntelliJ]({{ base }}/docs/plugins/setup-che-workspace/index.html#gwt-super-dev-mode-for-intellij)
+* [Che IDE (coming soon) ]({{ base }}/docs/plugins/setup-che-workspace/index.html#setup-the-che-ide)
 
-After setting up a workspace, you find documentation about how to setup your build and run environment for Che in the following guide: [Developing Extensions](doc:create-and-build-extensions).
-
+After setting up a workspace, you find documentation about how to setup your build and run environment for Che in the following guide: [Developing Extensions]({{ base }}/docs/plugins/create-and-build-extensions/index.html).
 
 
 # Pre-requisites  
@@ -37,7 +36,7 @@ To build the user dashboard submodule, you will need npm, bower, gulp, and pytho
 
 Installation instructions for Node.js and npm can be found on the following [link](https://docs.npmjs.com/getting-started/installing-node). Bower and gulp are CLI utilities which are installed via npm:
 ```shell  
-$ npm install --global bower gulp\
+$ npm install --global bower gulp
 ```
 
 # Developers on Windows  
@@ -71,11 +70,12 @@ Alternatively you can also skip building certain submodules:
 # Each submodule may require additional software to build properly.
 # You can skip a submodule to avoid installing additional software.
 # For example, to skip building the dashboard:
-mvn -pl '!dashboard' clean install\
+mvn -pl '!dashboard' clean install
 ```
 
 # Eclipse IDE - Yatta Installer  
 The [Yatta Installer for Eclipse Che](https://profiles.yatta.de/iQBd) installs Eclipse, the necessary plugins, checkout the Che source code, and configure a Che workspace. There is a lot going on, so this installation can take a few minutes.
+
 #### The Yatta Installer Requires JavaFX
 In case you use OpenJDK, you will need to install openjfx first.  
 
@@ -83,15 +83,19 @@ In case you use OpenJDK, you will need to install openjfx first.
 ![ScreenShot2016-05-27at09.16.31.png]({{ base }}/docs/assets/imgs/ScreenShot2016-05-27at09.16.31.png)
 
 ![yatta-installer.png]({{ base }}/docs/assets/imgs/yatta-installer.png)
+
 ## Optional
 You can consider to deactivate automatic builds in eclipse as this will run maven in places you may not want it to. Rebuilding some Che modules is not necessary unless you modify the code in that module. Otherwise, maven will grab the latest versioned module from Nexus.
 
 If you plan to update files outside the workbench, then you can add a [native update hook refresh](http://help.eclipse.org/mars/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftasks-52.htm).
+
+
 # Eclipse IDE - Neon Installer  
 If you install Eclipse manually, you will need to use the Eclipse Installer. Please get the Eclipse IDE for Java configured with the maven plugin.
 
 1. Download Eclipse Neon from https://www.eclipse.org/downloads/eclipse-packages/ and select Eclipse IDE for Java EE Developers
 ![ScreenShot2016-10-21at15.15.16.png]({{ base }}/docs/assets/imgs/ScreenShot2016-10-21at15.15.16.png)
+
 2. Clone Eclipse Che sources on your local computer (repository URL: https://github.com/eclipse/che)
 
 3. Once Eclipse installed, do `Import > Maven > Existing Maven Projects`
@@ -108,30 +112,44 @@ The projects will be imported and you will see them in the explorer.
 ![install-plugin3.png]({{ base }}/docs/assets/imgs/install-plugin3.png)
 
 ![install-plugin4.png]({{ base }}/docs/assets/imgs/install-plugin4.png)
+
 5.  Define the Maven command to build Che. Create a new "Run Configuration"
 ![ScreenShot2016-09-29at16.14.16.png]({{ base }}/docs/assets/imgs/ScreenShot2016-09-29at16.14.16.png)
 Double click on "Maven Build"
 
-Choose "che-parent" or "assembly-main" to be the base directory:
-
+Choose `che-parent` or `assembly-main` to be the base directory:
 ![ScreenShot2016-10-21at11.13.34.png]({{ base }}/docs/assets/imgs/ScreenShot2016-10-21at11.13.34.png)
+
 Add the following goal `clean install`
 
 Check the checkmark for skipping tests:
 ![ScreenShot2016-10-21at11.14.24.png]({{ base }}/docs/assets/imgs/ScreenShot2016-10-21at11.14.24.png)
+
 6. Build the workspace by executing the command you defined:
 ![ScreenShot2016-09-29at16.21.10.png]({{ base }}/docs/assets/imgs/ScreenShot2016-09-29at16.21.10.png)
+
 This will create an assembly in `{workspace-path}\che\assembly\assembly-main\target\eclipse-che-<version>\eclipse-che-<version>`
-#### Tips
-1. You might have Eclipse not discovering properly your environment variables. In this case, configure your environment variables with the custom command.\n\n\n2. It happens sometimes, that 'npm' is not having the right permissions to complete the build. In this case, remove your npm repository (.npm folder)  
+
+**Tips #1**
+You might have Eclipse not discovering properly your environment variables. In this case, configure your environment variables with the custom command.
+
+**Tips #2**
+2. It happens sometimes, that `npm` is not having the right permissions to complete the build. In this case, remove your npm repository (.npm folder)  
 
 7. Fixing the error marks
 
 There are certains Maven goals that are not completed by Eclipse at once.
 The idea is to require Eclipse to rebuild the workspace and update the project's dependencies. You can do that by doing right click on the projects (probably all the first time you are setupping the workspace).
 ![Screen_Shot_2016-10-06_at_14_46_36.png]({{ base }}/docs/assets/imgs/Screen_Shot_2016-10-06_at_14_46_36.png)
-8. To start Che from the custom assembly you just built, you can refer to this [Usage: Docker Launcher](doc:usage-docker#local-eclipse-che-binaries). Remind your custom assembly is located in `{workspace-path}\che\assembly\assembly-main\target\eclipse-che-<version>\eclipse-che-<version>`
 
+8. To start Che from the custom assembly you just built, you can refer to this [Usage: Development Mode Launcher]({{ base}}/docs/setup/configuration/index.html#development-mode).
+
+```shell
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                    -v <local-path>:/data \
+                    -v <local-repo>:/repo \
+                    eclipse/che-cli:<version> start
+```
 
 
 # GWT Super Dev Mode for Eclipse  

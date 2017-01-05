@@ -28,7 +28,7 @@ There are basically two scenarios possible:
 To add a new theme one needs to implement the interface `org.eclipse.che.ide.api.Theme`, and register it in a `ThemeAgent`.
 This is how it's done:
 ```java  
-void addTheme(@NotNull Theme theme);\
+void addTheme(@NotNull Theme theme);
 ```
 Alternatively, it is possible just to extend an existing theme (rather than implementing own). However, in this case it will still be a new Theme which will be based on an existing one. In such a way, users will just change colors they need to change. Of course, if the goal is a total theme overhaul then the work should be done from the ground up (i.e. own implementation).
 
@@ -51,7 +51,7 @@ textarea {
   border: 1px solid tabBorder;
   border-radius: 2px;
   font-size: fontSize;
-}\
+}
 ```
 Here, `mainFontColor`, `mainFontFamily` and `mainFontSize` are declared in `style.css` provided by Themes API, and thus can be re-used in a custom CSS file.
 
@@ -59,7 +59,7 @@ Here, `mainFontColor`, `mainFontFamily` and `mainFontSize` are declared in `styl
 SDK users can easily change looks and feel of the product by adding own themes or extending existing themes developed by Che contributors.
 To get started with creating your own theme based on the existing one, let's extend Dark Theme which is provided in API.
 ```java  
-public class DarkThemeExt extends DarkTheme\
+public class DarkThemeExt extends DarkTheme
 ```
 Next, we override Theme ID and name:
 ```java  
@@ -91,10 +91,11 @@ public String getTabsPanelBackground() {
   return "white";
 }
 ```
+
 # Register Own Theme Using GIN Multibinding
 Let's register a new theme:
 ```java  
 GinMultibinder themeBinder = GinMultibinder.newSetBinder(binder(), Theme.class);
-themeBinder.addBinding().to(DarkThemeExt.class);\
+themeBinder.addBinding().to(DarkThemeExt.class);
 ```
 Having tested your new theme (you can update source code and update extension in runtime), you can add it to Che bundle, so that it loads along with all other extensions when starting.

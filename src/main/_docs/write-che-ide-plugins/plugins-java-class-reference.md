@@ -6,7 +6,9 @@ layout: docs
 permalink: /:categories/java-class-reference/
 ---
 {% include base.html %}
+
 You can generate the JavaDoc for your installation from source.
+
 ```shell  
 # You need the che-core library
 git clone http://github.com/eclipse/che
