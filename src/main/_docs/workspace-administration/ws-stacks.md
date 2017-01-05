@@ -18,7 +18,7 @@ To create a new workspace in the user dashboard:
 - Click `Dashboard` > `Create Workspace`
 - Click `Workspaces` > `Add Workspace`
 - Hit the “+” next to `Recent Workspaces`
-![che-stacks1.jpg]({{base}}{{site.links["che-stacks1.jpg"]}})
+![che-stacks1.jpg]({{base}}{{site.links["che-stacks1.jpg"]}})  
 The stack selection form is available in the “Select Workspace” section, it allows you to choose stacks provided with Che or create and edit your own stack.
 
 ## Ready-To-Go Stacks
@@ -27,46 +27,65 @@ Che provides ready-to-go stacks for various technologies. These stacks provide a
 ## Stack Library
 Che provides a wider range of stacks which you can browse from the “Stack library” tab. This list contains advanced stacks which can also be used as runtime configuration for your workspaces.
 ![che-stacks2.jpg]({{base}}{{site.links["che-stacks2.jpg"]}})
+
 ## Custom Stack
 User can create their own stack from the "Custom stack" tab. Using Che's interface the user can provide a [runtime recipe]({{base}}{{site.links["ws-recipes"]}}) from an existing external recipe file or by writing a recipe directly.
 
 Che provides a form that can be used to write a recipe directly or copied/pasted from an existing location. A recipe can be written directly as a Dockerfile or a Docker compose file and Che will detect which one it is automatically based on syntax. Refer to [runtime recipes]({{base}}{{site.links["ws-recipes"]}}) documentation for additional information.
+
 # Stack Administration  
 ## Stack Loading
 In 5.x, we introduced an underlying database for storing product configuration state, including the state of stacks and templates. In previous versions, we primarily allowed stack configuration through a `stacks.json` object file that was in the base of a Che assembly. The `stacks.json` object file is still there, and if you provide any stack definitions within it, they will be loaded (and override!) any stacks in the database whenever Che starts. We will be removing support for the JSON configuration approach in upcoming releases as it is error prone.
 
 ## Configuring Stacks
 In the user dashboard, click the `Stacks` to view all the available stacks. New stacks can be created and existing stacks can be modified/searched.
+
+*Java Stack Example - Annotated*
 ```json  
 {
   // Tags describes components that make up the stack such as Tomcat, PHP, etc.
   // Tags are listed on stacks when creating a workspace.
   "tags": [
-    "Java\n    "JDK\n    "Maven\n    "Tomcat\n    "Subversion\n    "Ubuntu\n    "Git"
+    "Java",
+    "JDK",
+    "Maven",
+    "Tomcat",
+    "Subversion",
+    "Ubuntu",
+    "Git"
   ],
   // Creator is the name of the person or organization that wrote the stack.
-  "creator": "ide\n  // Workspace configuration defines environments, commands, and project info.
+  "creator": "ide",
+  // Workspace configuration defines environments, commands, and project info.
   "workspaceConfig": {
-    "defaultEnv": "default\n    "commands": [
+    "defaultEnv": "default",
+    "commands": [
       {
-  			// Commands will be pre-loaded in the workspace. They use bash syntax.
-        "commandLine": "mvn clean install -f ${current.project.path}\n        "name": "build\n        "type": "mvn\n        "attributes": {}
+        // Commands will be pre-loaded in the workspace. They use bash syntax.
+        "commandLine": "mvn clean install -f ${current.project.path}",
+        "name": "build",
+        "type": "mvn",
+        "attributes": {}
       }
     ],
-		// Projects can be pre-loaded into the workspace.
+    // Projects can be pre-loaded into the workspace.
     "projects": [],
-		// Name of the workspace as it appears in the IDE.
-    "name": "default\n    "environments": {
+    // Name of the workspace as it appears in the IDE.
+    "name": "default",
+    "environments": {
       "default": {
         "recipe": {
-          "location": "codenvy/ubuntu_jdk8\n          "type": "dockerimage"
+          "location": "codenvy/ubuntu_jdk8",
+          "type": "dockerimage"
         },
         "machines": {
           "dev-machine": {
             "servers": {},
             // Agents are injected into the workspace to provide special funtions.
             "agents": [
-              "org.eclipse.che.terminal\n              "org.eclipse.che.ws-agent\n              "org.eclipse.che.ssh"
+              "org.eclipse.che.terminal",
+              "org.eclipse.che.ws-agent",
+              "org.eclipse.che.ssh"
             ],
             // Sets the RAM allocated to the machine.
             "attributes": {
@@ -81,21 +100,28 @@ In the user dashboard, click the `Stacks` to view all the available stacks. New 
   // Name field is used in the "Components" column of the Stack table in Codenvy.
   "components": [
     {
-      "version": "1.8.0_45\n      "name": "JDK"
+      "version": "1.8.0_45",
+      "name": "JDK"
     },
     {
-      "version": "3.2.2\n      "name": "Maven"
+      "version": "3.2.2",
+      "name": "Maven"
     },
     {
-      "version": "8.0.24\n      "name": "Tomcat"
+      "version": "8.0.24",
+      "name": "Tomcat"
     }
   ],
   // Description appears at the bottom of the Stack's "tile" in the dashboard.
-  "description": "Default Java Stack with JDK 8, Maven and Tomcat.\n  "scope": "general\n  "source": {
-    "origin": "codenvy/ubuntu_jdk8\n    "type": "image"
+  "description": "Default Java Stack with JDK 8, Maven and Tomcat.",
+  "scope": "general",
+  "source": {
+    "origin": "codenvy/ubuntu_jdk8",
+    "type": "image"
   },
   // Unique name and ID for the stack.
-  "name": "Java\n  "id": "java-default"
+  "name": "Java",
+  "id": "java-default"
 }
 ```
 ## Create a Stack
@@ -103,17 +129,20 @@ A stack can be created from scratch using a skeleton template or duplicated from
 
 To create a stack from scratch click the `Add Stacks` button at the top left of the page. This will load a skeleton template that can be edited. After editing the template configuration and changing the stack name, clicking the save button to add the new stack to the available stacks.
 ![che-add-stack.gif]({{ base }}{{site.links["che-add-stack.gif"]}})
+
 ## Duplicate a Stack
 Duplicating an existing stack is often a good way to create your own. Click the duplicate icon on the right of the stack item you want. This will create a new stack name `<original name> - Copy` which can then be renamed and configuration edited.
 ![Che-Stack-Duplicate.jpg]({{ base }}{{site.links["Che-Stack-Duplicate.jpg"]}})
+
 ## Edit a Stack
 Stacks name and configuration can be edited by clicking on the stack item name which will bring up the stack editing interface. The stack can be renamed at the top of the stack editing interface. The stack configuration can be changed using the provided forms. After editing is complete, the stack can be saved by clicking the save button.
 ![che-edit-stack.gif]({{ base }}{{site.links["che-edit-stack.gif"]}})
+
 ## Delete a Stack
 Stacks can be deleted by clicking the checkbox on the left then the delete button that appear on the top right of the page or by clicking the trash bin icon on the right side of the stack item.
 ![Che-Stack-Delete.jpg]({{ base }}{{site.links["Che-Stack-Delete.jpg"]}})
 ## Register a Custom Stack
 Che has a stack API that you can call to manage your custom stacks. See the [Stacks]({{base}}{{site.links["ws-stacks"]}}) page in section _Use Che as a workspace server_ section.
-# Adding Stacks to the Che Default Assembly  
 
-#### Double check this - I think the location of stacks has changed in 5
+# Adding Stacks to the Che Default Assembly  
+//TODO
