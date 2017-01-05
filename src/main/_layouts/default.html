@@ -1,4 +1,23 @@
 {% include base.html %}
+<!-- jQuery Eclipse IP approval https://dev.eclipse.org/ipzilla/show_bug.cgi?id=10801 -->
+<script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.1.min.js"></script>
+
+<script type="text/javascript" charset="utf8">
+  $(document).ready(function(){
+    var images = document.getElementsByTagName('img');
+    for (var i = 0; i < images.length; i++) {
+      var image = images[i];
+      var parentElement = image.parentElement;
+      var a = document.createElement('a');
+      if (! image.getAttribute('src').includes("logo-codenvy.svg") ){
+          a.href = image.getAttribute('src');
+          a.target = "_blank";
+          a.appendChild(image);
+          parentElement.appendChild(a);
+      }
+    }
+  });
+</script>
 {% include top.html %}
 
 <body class="wrap">
