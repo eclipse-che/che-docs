@@ -48,8 +48,8 @@ This will create the best performing workspace image by only installing the mini
 | Dependency   | Why?   | How? (Ubuntu/Debian)   
 | --- | --- | ---
 | `RUN apt-get install bash -y`   | `bash`   | Execs are performed as bash commands. It is uncommon that base Docker images do not have bash. However, some distributions as Alpine or Busybox only provide `sh`.   
-| User with `root` privileges   | To install our developer tools agents (like terminal access and intellisense) we need root access or a user who has sudo rights.   | `USER root`<br/><br/>or grant your preferred user sudo rights.   
-| Dockerfile<br/>`CMD tail -f /dev/null`<br/><br/>Compose<br/>`command: [tail, -f, /dev/null]`   | To keep a container running   | Non-terminating CMD   
+| User with `root` privileges   | To install our developer tools agents (like terminal access and intellisense) we need root access or a user who has sudo rights.   | `USER root` <br/><br/> or grant your preferred user sudo rights.   
+| Dockerfile <br/> `CMD tail -f /dev/null` <br/><br/> Compose <br/> `command: [tail, -f, /dev/null]`   | To keep a container running   | Non-terminating CMD   
 
 All Eclipse Che images must have a non-terminating `CMD` command so that the container doesn't shut down immediately after loading. If you want to override the default `CMD`, add `tail -f /dev/null` to the execution.  For example:
 ```shell  
@@ -65,7 +65,7 @@ If you want to use Che with the maven plug-in, then you need to add these additi
 | Dependency   | Why?   | How?   
 | --- | --- | ---
 | `mvn`   | Maven plugin needs Maven 3.3.9 or higher.   | `wget -qO- \http://apache.ip-connect.vn.ua/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-3.3.9-bin.tar.gz\ | tar -zx --strip-components=1 -C /home/user/apache-maven-3.3.9/`   
-| `M2_HOME` environment variable exported   | Maven plugin uses this variable to detect if Maven is installed.   | Dockerfile<br/>`ENV M2_HOME /home/user/apache-maven-3.3.9`<br/><br/>Compose<br/>```<br/>environment:<br/>  - M2_HOME=/home/user/apache-maven-3.3.9<br/>```   
+| `M2_HOME` environment variable exported   | Maven plugin uses this variable to detect if Maven is installed.   | Dockerfile <br/> `ENV M2_HOME /home/user/apache-maven-3.3.9` <br/><br/> Compose <br/><br/> `environment:`<br/><br/> `- M2_HOME=/home/user/apache-maven-3.3.9`   
 
 ### Other Optional Dependencies
 
@@ -74,7 +74,9 @@ If you want to use Che with the maven plug-in, then you need to add these additi
 | Java 1.8 (OpenJDK)   | Required to compile and run Java code.   | `apt-get install openjdk-8-jdk`   
 | Required to import projects stored in git repositories. Git is the default importer in Che (all sample apps are imported as git repositories).   | `apt-get install git -y`   | `git`   
 | Required to import projects stored in subversion repositories.   | `svn`   | `apt-get install subversion -y`   
-| SSH access to a running workspace. If you do not provide this command, when you click `SSH` in the IDE, you will be presented with an access error.   | `sshd`   | `apt-get -y install openssh-server -y && mkdir /var/run/sshd && sed 's@session\\s*required\\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd`<br/><br/>Dockerfile<br/>`CMD /usr/sbin/sshd -D && tail -f /dev/null`<br/><br/>Compose<br/>`command: [/usr/sbin/sshd, -D, &&, tail, -f, /dev/null]`   
+| SSH access to a running workspace. If you do not provide this command, when you click `SSH` in the IDE, you will be presented with an access error.   | `sshd`   | `apt-get -y install openssh-server -y && mkdir /var/run/sshd && sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd` <br/><br/>Dockerfile<br/>`CMD /usr/sbin/sshd -D && tail -f /dev/null`<br/><br/>Compose<br/> `command: [/usr/sbin/sshd, -D, &&, tail, -f, /dev/null]`   
+
+
 
 ### Exposing Ports (Mandatory)
 
