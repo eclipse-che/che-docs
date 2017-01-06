@@ -91,7 +91,7 @@ Eclipse Che has the Zend Debugger Client integrated in the Web IDE. For launchin
 1. Change any settings if necessary. The defaults are usually OK.
 1. Click the `Debug` button.
 
-![php-debug-configuration.png]({{ base }}/docs/assets/imgs/php-debug-configuration.png)
+![php-debug-configuration.png]({{ base }}{{ site.links["php-debug-configuration.png"] }})
 
 The successful launch of the Zend Debugger Client is noted with a notification message. From this moment on the Zend Debugger Client listens for new debug sessions initiated by the Zend Debugger module of the PHP engine.
 
@@ -144,7 +144,7 @@ Note that it is not the browser that opens the debug session to the Zend Debugge
 
 In the end the zDebug settings should look like this:
 
-![zdebug-settings.png]({{ base }}/docs/assets/imgs/zdebug-settings.png)
+![zdebug-settings.png]({{ base }}{{ site.links["zdebug-settings.png"] }})
 
 Now you are ready to trigger the debug session:
 
@@ -165,7 +165,7 @@ After installing it, go to `Extra Stuff > Setttings` to configure the toolbar:
 
 In the end the toolbar settings should look like this:
 
-![zend-debugger-firefox-settings.png]({{ base }}/docs/assets/imgs/zend-debugger-firefox-settings.png)
+![zend-debugger-firefox-settings.png]({{ base }}{{ site.links["zend-debugger-firefox-settings.png"] }})
 
 Now you are ready to trigger the debug session:
 
@@ -181,6 +181,6 @@ Among other features, it also has the capability to trigger a debug session:
 1. Click on the "bug" button.
 1. Click on `Debug current page`.
 
-![z-ray-debug.png]({{ base }}/docs/assets/imgs/z-ray-debug.png)
+![z-ray-debug.png]({{ base }}{{ site.links["z-ray-debug.png"] }})
 
 That's all!
