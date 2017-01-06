@@ -71,3 +71,119 @@ It is also possible to add this command as a Dockerfile instruction for a custom
 FROM eclipse/cpp_gcc
 RUN echo  "set remotetimeout 10" > /home/user/.gdbinit
 ```
+
+# PHP
+
+The PHP and Zend stacks come with the Zend Debugger module installed and configured. Debugging both PHP CLI scripts and PHP web apps is supported.
+
+The debugging workflow involves the following steps:
+
+1. Launch the Zend Debugger Client to start listening for new debug sessions.
+1. Optionally set breakpoints in the PHP editor.
+1. Trigger a debug session from the CLI script or the web app.
+1. Use the Web IDE tooling to do the actual debugging.
+
+![php-debugging.gif]({{ base }}{{ site.links["php-debugging.gif"] }})
+
+## Starting the Zend Debugger Client
+
+Eclipse Che has the Zend Debugger Client integrated in the Web IDE. For launching the Zend Debugger Client:
+
+1. Go to `Run > Edit Debug Configurations` from the main menu.
+1. Create new `PHP` configuration.
+1. Change any settings if necessary. The defaults are usually OK.
+1. Click the `Debug` button.
+
+![php-debug-configuration.png]({{ base }}{{ site.links["php-debug-configuration.png"] }})
+
+The successful launch of the Zend Debugger Client is noted with a notification message. From this moment on the Zend Debugger Client listens for new debug sessions initiated by the Zend Debugger module of the PHP engine.
+
+The Debug Configuration window allows the following configuration for the Zend Debugger Client:
+
+- `Break at first line`. Determines whether to break the execution at the very first line, hit by the PHP interpreter. Enabled by default. It is useful to easily find the app's entry point. You may want to switch this option off if you defined your own breakpoint and you are not interesting at breaking the execution at the first line.
+- `Client host/IP`. The host/IP on which to bind the server socket for listening for new debug sessions. The default host is `localhost`. Changing it should be only necessary if the PHP engine is running in a different workspace machine or outside of the Che workspace at all.
+- `Debug port`. The port on which to bind the server socket for listening for new debug sessions. The default port is `10137`. It should be rarely necessary to change it.
+- `Use SSL encryption`. Whether to use SSL encryption for the debugging communication between the PHP engine and the Zend Debugger Client. Disabled by default.
+
+## Debugging PHP CLI Scripts
+
+PHP CLI scripts can be debugged by setting the `QUERY_STRING` environment variable when executing the PHP script. For example, to debug the `hello.php` script you should execute the following command in the Terminal:
+
+```sh
+QUERY_STRING="start_debug=1&debug_host=localhost&debug_port=10137" php hello.php
+```
+
+Let's dissect the value of the `QUERY_STRING`:
+
+- `start_debug=1` says the PHP engine that we want to trigger a debug session for this execution.
+- `debug_host=localhost` says that the Zend Debugger Client runs on localhost (on the same host where the PHP engine runs).
+- `debug_port=10137` says that the Zend Debugger Client listens on port 10137.
+
+For convenience the PHP and Zend stacks have the `debug php script` command. It will run the PHP script, which is currently opened in the editor, with the required `QUERY_STRING` preprended to the launch command. It is a handy way for easily debugging CLI script without the need to remember the exact `QUERY_STRING` variable.
+
+## Debugging PHP Web Apps
+
+Debugging web apps is done in a similar way. The value of the `QUERY_STRING` used for debugging CLI scripts must be added as a query string to the URL of the debugged web page. This can be done either manually or by using a browser toolbar/extension that does it automatically. Such browser extensions also make it easier to debug POST requests.
+
+### Using Query Params in the URL
+
+The `?start_debug=1&debug_host=localhost&debug_port=10137` query string must be added to the URL. For example, to debug the `http://localhost:32810/web-php-simple/index.php` web page you should request the following URL in the browser:
+
+```
+http://localhost:32810/web-php-simple/index.php?start_debug=1&debug_host=localhost&debug_port=10137
+```
+
+### Using the zDebug Extension for Chrome
+
+The [zDebug](https://chrome.google.com/webstore/detail/zdebug/gknbnafalimbhgkmichoadhmkaoingil) extension can be used for easier triggering of debug sessions from the Chrome browser. The [Zend Debugger Extension](https://chrome.google.com/webstore/detail/zend-debugger-extension/aonajadpeeaijblinaeohfdmbgdpibba) is another extension that does the same job.
+
+It is important to configure the Chrome extension properly before using it for debugging PHP apps running in a Che workspace:
+
+1. Set `Debug Host` to `localhost` or `127.0.0.1`.
+1. Set `Debug Port` to `10137`.
+1. Set `Debug Local Copy` to `No`.
+
+Note that it is not the browser that opens the debug session to the Zend Debugger Client. This is done by the PHP engine that runs in the Che workspace. The browser just tells the PHP engine to do so. So the above settings are for the PHP engine (the Zend Debugger module in particular). Thus the `Debug Host` must be set to `localhost` and not the public host of the docker container running the Che workspace.
+
+In the end the zDebug settings should look like this:
+
+![zdebug-settings.png]({{ base }}{{ site.links["zdebug-settings.png"] }})
+
+Now you are ready to trigger the debug session:
+
+1. Open the web page to debug.
+1. Click on the zDebug toolbar button.
+1. Click on `This Page`.
+
+### Using the Zend Debugger Toolbar for Firefox
+
+The [Zend Debugger Toolbar for Firefox](https://addons.mozilla.org/firefox/addon/zend-debugger-toolbar/) can be used for easier triggering of debug sessions from the Firefox browser.
+
+After installing it, go to `Extra Stuff > Setttings` to configure the toolbar:
+
+1. Disable the `Debug Local Copy` option.
+1. Switch the `Client/IDE Settings` to `Manual Settings`.
+1. Set `Debug Port` to `10137`.
+1. Set `IP Address` to `127.0.0.1`.
+
+In the end the toolbar settings should look like this:
+
+![zend-debugger-firefox-settings.png]({{ base }}{{ site.links["zend-debugger-firefox-settings.png"] }})
+
+Now you are ready to trigger the debug session:
+
+1. Open the web page to debug.
+1. Click on the `Debug` toolbar button.
+
+### Using Z-Ray
+
+[Z-Ray](http://www.zend.com/en/products/server/z-ray) is a productivity tool, part of [Zend Server](http://www.zend.com/en/products/zend_server), that is available in the Zend stack. Z-Ray requires no installation or configuraton. It is injected into the response coming from your PHP app and shown right in the browser you are using for development. 
+
+Among other features, it also has the capability to trigger a debug session:
+
+1. Click on the "bug" button.
+1. Click on `Debug current page`.
+
+![z-ray-debug.png]({{ base }}{{ site.links["z-ray-debug.png"] }})
+
+That's all!
