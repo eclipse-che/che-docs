@@ -81,6 +81,9 @@ The debugging workflow involves the following steps:
 1. Launch the Zend Debugger Client to start listening for new debug sessions.
 1. Optionally set breakpoints in the PHP editor.
 1. Trigger a debug session from the CLI script or the web app.
+1. Use the Web IDE tooling to do the actual debugging.
+
+![php-debugging.gif]({{ base }}{{ site.links["php-debugging.gif"] }})
 
 ## Starting the Zend Debugger Client
 
