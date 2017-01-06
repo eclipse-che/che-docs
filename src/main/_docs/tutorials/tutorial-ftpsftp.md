@@ -18,7 +18,7 @@ username:password@host           #for non-anonymous login;
 host                             #for anonymous login;
 !username:password@host          #for servers behind the firewall, through proxy servers;
 username:password@host:port      #for servers using non std port;
-username:password@host/directory #to go to specific directory.\
+username:password@host/directory #to go to specific directory.
 ```
 
 ## Synchronize projects

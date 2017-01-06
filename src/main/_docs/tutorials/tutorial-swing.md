@@ -43,4 +43,4 @@ java -jar {your-artifact-name}.jar
 5. Click Preview URL, cd /projects/{your-project-name}/target directory again and run `java -jar {your-project-name}.jar` command to see changes.
 ```
 
-If you want to debug your app, find instructions on [Java debugger]({{ base }}/docs/ide/debug/index.html).
+If you want to debug your app, find instructions on [Java debugger]({{base}}{{site.links["ide-debug"]}}).

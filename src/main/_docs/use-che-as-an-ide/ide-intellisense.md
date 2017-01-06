@@ -6,7 +6,7 @@ layout: docs
 permalink: /:categories/intellisense/
 ---
 {% include base.html %}
-Eclipse Che uses a language server protocol to provide intellisense for various languages. Each language server protocol is an [agent]({{base}}/docs/workspace/agents/index.html) that is injected into the [runtime machine dev-machine]({{base}}/docs/workspace/machines/index.html) by adding it to a [runtime stack]({{base}}/docs/workspace/stacks/index.html) configuration or an existing [workspace]({{base}}/docs/workspace/machines/index.html#dashboard-machine-information) in the dashboard.
+Eclipse Che uses a language server protocol to provide intellisense for various languages. Each language server protocol is an [agent]({{base}}{{site.links["ws-agents"]}}) that is injected into the [runtime machine dev-machine]({{base}}{{site.links["ws-machines"]}}) by adding it to a [runtime stack]({{base}}{{site.links["ws-stacks"]}}) configuration or an existing [workspace]({{base}}{{site.links["ws-machines"]}}#dashboard-machine-information) in the dashboard.
 
 # Language Intellisense  
 We currently support the following intellisense languages.
@@ -19,16 +19,16 @@ We currently support the following intellisense languages.
 | JSON   | org.eclipse.che.ls.json   
 
 ## Syntax Highlighting  
-Certain words will be highlighted with color defined by the [language server protocol]({{base}}/docs/ide/intellisense/index.html#language-server-protocol).
+Certain words will be highlighted with color defined by the [language server protocol](#language-server-protocol).
 
 ## Syntax Error Checking  
-Certain code will be identified when there is an error in the code defined by a [language server protocol]({{base}}/docs/ide/intellisense/index.html#language-server-protocol). Usually errors are identified to the user by underlining in red the code and providing a error icon to the left side on the line of the code. Hovering the mouse over the error icon or underlined code will give suggestion on how to correct the code.
+Certain code will be identified when there is an error in the code defined by a [language server protocol](#language-server-protocol). Usually errors are identified to the user by underlining in red the code and providing a error icon to the left side on the line of the code. Hovering the mouse over the error icon or underlined code will give suggestion on how to correct the code.
 
 ## Auto-Complete  
-Auto-complete can be used by the user to determine possible code outcomes defined by a [language server protocol]({{base}}/docs/ide/intellisense/index.html#language-server-protocol). In order to activate this feature the user needs to type <ctrl+space> which will bring up a menu listing possible code outcomes known/selected by the language server. If only one possible out come exists to the language server, the code will be inserted into the editor.
+Auto-complete can be used by the user to determine possible code outcomes defined by a [language server protocol](#language-server-protocol). In order to activate this feature the user needs to type <ctrl+space> which will bring up a menu listing possible code outcomes known/selected by the language server. If only one possible out come exists to the language server, the code will be inserted into the editor.
 
 ## Refactoring  
-Renaming files or parts of code such as variables/functions/classes requires refactoring to change any parts of other code that may refer to it by name. Eclipse Che refactoring is defined by a [language server protocol]({{base}}/docs/ide/intellisense/index.html#language-server-protocol).
+Renaming files or parts of code such as variables/functions/classes requires refactoring to change any parts of other code that may refer to it by name. Eclipse Che refactoring is defined by a [language server protocol](#language-server-protocol).
 
 # Language Server Protocol   
 A language server has two phases of management within Che: installation and initialization.  The installation is about how the language server gets installed into the stack, so that it is present for Che to turn on or off. The initialization process is the launching of the language server so that it is a running process within the workspace, and that the editor can connect to it to provide intellisense capabilities.

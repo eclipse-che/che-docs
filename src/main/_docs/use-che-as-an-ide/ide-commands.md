@@ -23,7 +23,7 @@ mvn clean install
 cd /projects/spring; mvn clean install
 
 # a succession of several commands where execution of a subsequent command depends on execution of a preceeding one - if there's no /projects/spring directory, `mvn clean install` won't be executed
-cd /projects/spring && mvn clean install\
+cd /projects/spring && mvn clean install
 ```
 It is possible to check for conditions, use for loops and other bash syntax:
 ```shell  
@@ -55,11 +55,11 @@ fi
 | `${explorer.current.file.relpath}` | Path relative to the `/projects` folder in project tree   
 | `${explorer.current.project.name}` | Project name of the file currently selected in explorer   
 | `${explorer.current.project.type}` | Project type of the file currently selected in explorer   
-| `${server.<name>}` | Returns protocol, hostname and port of an internal server. `<name>` is defined by the same of the internal service that you have exposed in your workspace recipe. <br><br> Returns the hostname and port of a service or application you launch inside of a machine. <br><br> The hostname resolves to the hostname or the IP address of the workspace machine. This name varies depending upon where Docker is running and whether it is embedded within a VM.  See [Networking]({{base}}/docs/setup/configuration/index.html#networking). <br><br> The port returns the Docker ephemeral port that you can give to your external clients to connect to your internal service. Docker uses ephemeral port mapping to expose a range of ports that your clients may use to connect to your internal service. This port mapping is dynamic.   
+| `${server.<name>}` | Returns protocol, hostname and port of an internal server. `<name>` is defined by the same of the internal service that you have exposed in your workspace recipe. <br><br> Returns the hostname and port of a service or application you launch inside of a machine. <br><br> The hostname resolves to the hostname or the IP address of the workspace machine. This name varies depending upon where Docker is running and whether it is embedded within a VM.  See [Networking]({{base}}{{site.links["setup-configuration"]}}#networking). <br><br> The port returns the Docker ephemeral port that you can give to your external clients to connect to your internal service. Docker uses ephemeral port mapping to expose a range of ports that your clients may use to connect to your internal service. This port mapping is dynamic.   
 | `${server.<name>.protocol}` | Returns protocol of a server registered by name   
 | `${server.<name>.hostname}` | Returns hostname of a server registered by name   
 | `${server.<name>.port}` | Returns port of a server registered by name
-| `${server.port.<port>}` | Returns the hostname and port of a service or application you launch inside of a machine. <br><br>The hostname resolves to the hostname or the IP address of the workspace machine. This name varies depending upon where Docker is running and whether it is embedded within a VM. See [Networking]({{base}}/docs/setup/configuration/index.html#networking).<br><br>The port returns the Docker ephemeral port that you can give to your external clients to connect to your internal service. Docker uses ephemeral port mapping to expose a range of ports that your clients may use to connect to your internal service. This port mapping is dynamic.<br><br>Let's say you launched a process inside your machine and bound it to `<port>`. A remote client can connect to your workspace by taking the IP address of the machine and the port of your service. Docker provides a dynamic port number to external clients for each service running internally. This macro will return the value Docker assigned for external clients to use. <br><br>For example, in your workspace, you launch a service that binds to port 8080. Then `${server.port.8080}` macro may return 32769, which is the port to give to remote clients to connect to the internal service.   
+| `${server.port.<port>}` | Returns the hostname and port of a service or application you launch inside of a machine. <br><br>The hostname resolves to the hostname or the IP address of the workspace machine. This name varies depending upon where Docker is running and whether it is embedded within a VM. See [Networking]({{base}}{{site.links["setup-configuration"]}}#networking).<br><br>The port returns the Docker ephemeral port that you can give to your external clients to connect to your internal service. Docker uses ephemeral port mapping to expose a range of ports that your clients may use to connect to your internal service. This port mapping is dynamic.<br><br>Let's say you launched a process inside your machine and bound it to `<port>`. A remote client can connect to your workspace by taking the IP address of the machine and the port of your service. Docker provides a dynamic port number to external clients for each service running internally. This macro will return the value Docker assigned for external clients to use. <br><br>For example, in your workspace, you launch a service that binds to port 8080. Then `${server.port.8080}` macro may return 32769, which is the port to give to remote clients to connect to the internal service.   
 | `${workspace.name}` | Returns the name of the workspace   
 
 
@@ -70,5 +70,5 @@ The workspace machine has a set of system environment variables that have been e
 export
 
 # Reference an environment variable, where $TOMCAT_HOME points to /home/user/tomcat8
-$TOMCAT_HOME/bin/catalina.sh run\
+$TOMCAT_HOME/bin/catalina.sh run
 ```
