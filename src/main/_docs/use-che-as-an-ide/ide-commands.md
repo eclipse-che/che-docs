@@ -23,7 +23,7 @@ mvn clean install
 cd /projects/spring; mvn clean install
 
 # a succession of several commands where execution of a subsequent command depends on execution of a preceeding one - if there's no /projects/spring directory, `mvn clean install` won't be executed
-cd /projects/spring && mvn clean install\
+cd /projects/spring && mvn clean install
 ```
 It is possible to check for conditions, use for loops and other bash syntax:
 ```shell  
@@ -70,5 +70,5 @@ The workspace machine has a set of system environment variables that have been e
 export
 
 # Reference an environment variable, where $TOMCAT_HOME points to /home/user/tomcat8
-$TOMCAT_HOME/bin/catalina.sh run\
+$TOMCAT_HOME/bin/catalina.sh run
 ```

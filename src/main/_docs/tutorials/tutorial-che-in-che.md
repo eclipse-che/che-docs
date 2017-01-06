@@ -10,7 +10,7 @@ You can build and run Che using Che!  Since Che runs within a Docker container a
 # Concepts  
 We are going to setup Che to have the Che launcher, the Che server, your primary development workspace, and the new Che you will compile be Docker containers. All of these Docker containers will be launched and managed by a shared Docker daemon, which is running on your host system.
 
-![Capture.PNG]({{ base }}/docs/assets/imgs/Capture.PNG)
+![Capture.PNG]({{base}}{{site.links["Capture.PNG"]}})
 
 * **Native**: The CLI that launches your main instance of Che with the `che-launcher`.
 * **Che Launcher**: A Docker container, which provides cross-platform management of your Che server.

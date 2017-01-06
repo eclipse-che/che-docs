@@ -8,7 +8,7 @@ permalink: /:categories/meteor/
 {% include base.html %}
 # 1. Start Che  
 
-Use your SaaS account for the following, or if you have [installed Che]({{ base }}/docs/setup/getting-started/index.html), open a terminal and use the Che startup script:
+Use your SaaS account for the following, or if you have [installed Che]({{base}}{{site.links["setup-getting-started"]}}), open a terminal and use the Che startup script:
 
 ```shell  
 # Interactive help
@@ -58,7 +58,7 @@ Preview URL is very important. When a process starts on a particular port in the
 `http://${server.port.3000}`  
 
 `${server.port.3000}` will return `currentHost:mappedPort`.
-See: [IDE Macros]{{ base }}/docs/ide/commands/index.html#macros).
+See: [IDE Macros]({{ base }}{{base}}{{site.links["ide-commands"]}}#macros).
 
 If you switch to a Machine perspective, Servers tab, you will find all available port mappings, including the meteor one.
 

@@ -29,7 +29,7 @@ We provide a Docker container that bridges your remote Che workspace with your l
 This particular approach is fast because your local IDE has local I/O performance for all file actions. The synchronizer runs in the background asynchronously, and synchronizes your local changes into the workspace. The reverse course is true as well. This asynchronous approach provides a non-blocking I/O performance that is essential.
 
 ## Use
-To synchronize your IDE you'll use the [{{ site.product_formal_name }} CLI]({{base}}/docs/setup/cli/index.html) installed. The synchronization will take place with the current directory. It is probably best to start in an empty directory, otherwise the utility will synchronize the contents of an existing directory onto the workspace.
+To synchronize your IDE you'll use the [{{ site.product_formal_name }} CLI]{{base}}{{site.links["setup-cli"]}}) installed. The synchronization will take place with the current directory. It is probably best to start in an empty directory, otherwise the utility will synchronize the contents of an existing directory onto the workspace.
 
 ```shell  
 mkdir sync
@@ -43,7 +43,7 @@ cd sync
 ```
 
 This will make a secure connection to the workspace and unison-sync the contents to the local host directory. You will be asked for the password that you retrieved from the SSH configuration. The synchronization will run continuously and the command will not return until you press CTRL-C, at which point the synchronization will be terminated.
-![fef09b90-a696-11e6-9a37-70f827677830.gif]({{ base }}/docs/assets/imgs/fef09b90-a696-11e6-9a37-70f827677830.gif)
+![fef09b90-a696-11e6-9a37-70f827677830.gif]({{base}}{{site.links["8f99a700-a696-11e6-8d8a-414e38ec26b2.gif"]}})
 ## Optimize
 The utility is designed to synchronize everything in your `/projects` folder that is within the workspace. Synchronization is impacted by the size and nature of files that are contained within the directory. If you have libraries such as with an NPM or maven repository, it may be unnecessary and taxing to synchronization all of those files.
 
@@ -62,7 +62,7 @@ You can still use your local IDE with the local file mount. You may want a local
 Windows users can use sshfs by installing free software [win-sshfs](https://code.google.com/archive/p/win-sshfs/) for Window versions up to 7 or by purchasing software such as [SFTP Net Drive](https://www.eldos.com/) for Windows 8.0, 8.1 or 10. Mac users can use sshfs by installing free open source software [FUSE](https://osxfuse.github.io/) and associated sshfs extension. Linux has sshfs built into it kernel so most Linux distributions require a small sshfs package to be installed.
 ```shell  
 # On Linux & Mac - first install sshfs.  Then:
-sshfs -p <ws-ssh-port> user@<che-ws-ip-address>:/projects /mnt/che\
+sshfs -p <ws-ssh-port> user@<che-ws-ip-address>:/projects /mnt/che
 ```
 
 # Docker Variant  

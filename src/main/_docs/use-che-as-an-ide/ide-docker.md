@@ -56,5 +56,5 @@ You can also set this using the {{ site.product_mini_name }} CLI with an environ
 `CHE_PROPERTY_machine_server_extra_volume=/var/run/docker.sock:/var/run/docker.sock` to achieve the same behavior.  You may need to set up permissions for `/var/run/docker.sock` on the host with `sudo chmod 777 /var/run/docker.sock`.
 
 ```text  
-CHE_PROPERTY_machine_server_extra_volume=/c/Users/tyler:/projects/tyler;/c/Users/allsyon:/projects/allyson\
+CHE_PROPERTY_machine_server_extra_volume=/c/Users/tyler:/projects/tyler;/c/Users/allsyon:/projects/allyson
 ```

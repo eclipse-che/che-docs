@@ -7,7 +7,7 @@ permalink: /:categories/wordpress/
 ---
 {% include base.html %}
 # 1. Start Che  
-Use your SaaS account for the following, or if you have [installed Che]({{ base }}/docs/setup/getting-started/index.html), open a terminal and use the Che startup script:
+Use your SaaS account for the following, or if you have [installed Che]({{base}}{{site.links["setup-getting-started"]}}), open a terminal and use the Che startup script:
 
 ```shell  
 # Interactive help
@@ -69,11 +69,11 @@ Preview URL is another important object. It will be `http://${server.port.80}/${
 
 `${server.port.80}` returns host and port, while `${current.project.relpath}` will be interpreted as a relative path to your project (relative to `/projects` which is DocumentRoot for Apache in this environment).
 
-![Screenshot2.png]({{ base }}/docs/assets/imgs/Screenshot2.png)
+![Screenshot2.png]({{base}}{{site.links["Screenshot2.png"]}})
 
 Run Apache, click the preview URL and find your WordPress project started there. Follow the WordPress guide to start your first site.
 
-![Screenshot3.png]({{ base }}/docs/assets/imgs/Screenshot3.png)
+![Screenshot3.png]({{base}}{{site.links["Screenshot3.png"]}})
 
 You will be prompted to connect your MySQL database (see details above). You can also connect an external database.
 
