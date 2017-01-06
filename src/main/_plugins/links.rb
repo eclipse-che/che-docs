@@ -46,7 +46,7 @@ module Reading
               collections=collections.merge(get_col(site,collection[0],entries))
             end
           end     
-          puts collections
+          #puts collections
           site.config["links"] = collections
       rescue 
           red = "\033[0;31m"
