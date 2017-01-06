@@ -19,7 +19,7 @@ mysql     workspacewia89343k4  RUNNING
 # Options
 --url <url>           # Che or Codenvy host where workspaces are running
 --user <email>        # Codenvy user name
---password <password> # Codenvy password\
+--password <password> # Codenvy password
 ```
 
 # Mount and Sync  
@@ -39,7 +39,7 @@ cd sync
 # Options
 --url <url>           # Che or Codenvy host where workspaces are running
 --user <email>        # Codenvy user name
---password <password> # Codenvy password\
+--password <password> # Codenvy password
 ```
 
 This will make a secure connection to the workspace and unison-sync the contents to the local host directory. You will be asked for the password that you retrieved from the SSH configuration. The synchronization will run continuously and the command will not return until you press CTRL-C, at which point the synchronization will be terminated.

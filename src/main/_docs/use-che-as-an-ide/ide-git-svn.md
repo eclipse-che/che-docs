@@ -43,7 +43,7 @@ Import project from the IDE `Workspace > Import Project > GIT/SUBVERSION` menu.
 ![Clipboard12.jpg]({{base}}{{site.links["Clipboard12.jpg"]}})
 Importing a project can also be done from the dashboard menu.
 ![ImportProjectDashboard.jpg]({{base}}{{site.links["ImportProjectDashboard.jpg"]}})
-Be sure to use the ssh url like `git@<git url>:<account>/<project>.git` when importing a project from a git repository using ssh key authorization. **Note: HTTPS git url can only be used for oauth authentication described in [Git Using oAuth]({{base}}/docs/ide/git-svn/index.html#git-using-oauth)**.
+Be sure to use the ssh url like `git@<git url>:<account>/<project>.git` when importing a project from a git repository using ssh key authorization. **Note: HTTPS git url can only be used for oauth authentication described in [Git Using oAuth](#git-oauth)**.
 
 # Git Using oAuth  
 ## GitLab oAuth

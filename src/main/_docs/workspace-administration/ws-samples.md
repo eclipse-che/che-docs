@@ -21,7 +21,7 @@ Wizard-driven templates allow the user to create a project and configure the cod
 # Register New Project Templates  
 
 #### Template Object
-To register your a new project template to Che, you first need to create the corresponding Template Object. Please read the following documentation for the [Template Object]({{base}}{{site.links["ws-data-model-samples"]}}).  
+To register your a new project template to Che, you first need to create the corresponding Sample Object. Please read the following documentation for the [Sample Object]({{base}}{{site.links["ws-data-model-samples"]}}).  
 
 A code template can be used to instantiate a set of files into the project tree. The code template will appear in the user dashboard when a user attempts to create a new project.
 

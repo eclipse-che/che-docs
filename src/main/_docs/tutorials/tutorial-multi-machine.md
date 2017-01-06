@@ -6,7 +6,7 @@ layout: tutorials
 permalink: /:categories/multi-machine/
 ---
 {% include base.html %}
-A multi-machine recipe allows multiple runtimes to communicate/share data. In this tutorial we will be looking at an existing Java and MySQL application called Pet Clinic. The tutorial will help show how to create a multi-machine from an existing [runtime stack]({{ base }}/docs/workspace/stacks/index.html) called "Java-MySQL", execute commands on different target runtimes, startup the Pet Clinic Tomcat server, view/interact with the Pet Clinic web page, and take a closer look at the "Java-MySQL" [runtime stack]({{ base }}/docs/workspace/stacks/index.html) /[runtime recipe]({{ base }}/docs/workspace/recipes/index.html) to get a better understanding of how multi-machine runtimes are created.
+A multi-machine recipe allows multiple runtimes to communicate/share data. In this tutorial we will be looking at an existing Java and MySQL application called Pet Clinic. The tutorial will help show how to create a multi-machine from an existing [runtime stack]({{base}}{{site.links["ws-stacks"]}}) called "Java-MySQL", execute commands on different target runtimes, startup the Pet Clinic Tomcat server, view/interact with the Pet Clinic web page, and take a closer look at the "Java-MySQL" [runtime stack]({{base}}{{site.links["ws-stacks"]}}) /[runtime recipe]({{base}}{{site.links["ws-recipes"]}}) to get a better understanding of how multi-machine runtimes are created.
 
 # 1. Start Che  
 Use your SaaS account for the following, or if you have [installed Che]({{base}}{{site.links["setup-getting-started"]}}), open a terminal and use the Che startup script:
@@ -57,7 +57,7 @@ The web page can interact in various ways with the database. Data can be added t
 ![che-multimachine-tutorial7.jpg]({{base}}{{site.links["che-multimachine-tutorial7.jpg"]}})
 
 # 4. Editing, Building and Debugging  
-Che is a fully featured IDE that just happens to be in the browser. You can explore the [editor]({{base}}{{site.links["ide-editor-settings"]}}) which includes [intellisense]({{base}}{{site.links["ide-intellisense"]}}) for some languages and [refactoring]({{ base }}/docs/ide/intellisense/index.html#refactoring).  It also includes [git and svn]({{ base }}/docs/ide/git-svn/index.html) support built-in.
+Che is a fully featured IDE that just happens to be in the browser. You can explore the [editor]({{base}}{{site.links["ide-editor-settings"]}}) which includes [intellisense]({{base}}{{site.links["ide-intellisense"]}}) for some languages and [refactoring]({{base}}{{site.links["ide-intellisense"]}}#refactoring).  It also includes [git and svn]({{base}}{{site.links["ide-git-svn"]}}) support built-in.
 
 The example app has built in commands for [building]({{base}}{{site.links["ide-build"]}}) and [running]({{base}}{{site.links["ide-run"]}}#web-apps) the app.  You can also [debug]({{base}}{{site.links["ide-debug"]}}) right inside Che.
 
@@ -66,7 +66,7 @@ Read this section to understand more about the multi-machine "Java-MySQL" [runti
 
 ![che-multimachine-tutorial8.jpg]({{base}}{{site.links["che-multimachine-tutorial8.jpg"]}})
 
-Click on the "Java-MySQL" menu item which will bring up the stack's configuration page. There is various useful configuration information provided on this page as well as the [Runtime Stacks]({{base}}{{site.links["ws-stacks"]}}) and [Runtime Recipes]({{ base }}/docs/workspace/recipes/index.html) documentation pages. For this tutorial, we will be focusing on the recipe configuration and the "codenvy/mysql" dockerfile provided in the "Java-MySQL" stack.
+Click on the "Java-MySQL" menu item which will bring up the stack's configuration page. There is various useful configuration information provided on this page as well as the [Runtime Stacks]({{base}}{{site.links["ws-stacks"]}}) and [Runtime Recipes]({{base}}{{site.links["ws-recipes"]}}) documentation pages. For this tutorial, we will be focusing on the recipe configuration and the "codenvy/mysql" dockerfile provided in the "Java-MySQL" stack.
 
 The recipe uses docker compose syntax. Due to the limitation of the JSON syntax the compose recipe is written as a single line with `\n` indicating carriage return. The following is the recipe in expanded form to make reading easier.
 
