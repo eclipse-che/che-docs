@@ -241,7 +241,7 @@ The Che server runs in its own Docker container, "Che Docker Container", and eac
 ### Connectivity  
 The browser client initiates communication with the Che server by connecting to `che-ip`. This IP address must be accessible by your browser clients. Internally, Che runs on Tomcat which is bound to port `8080`. This port can be altered by setting `CHE_PORT` during start or in your `che.env`.
 
-When a user creates a workspace, the Che server connects to the Docker daemon at `docker-ip` and uses the daemon to launch a new set of containers that will power the workspace. These workspace containers will have a Docker-configured IP address, `workspace-ip`. The `workspace-ip` must also be reachable by your browser host.
+When a user creates a workspace, the Che server connects to the Docker daemon at `docker-ip` and uses the daemon to launch a new set of containers that will power the workspace. These workspace containers will have a Docker-configured IP address, `workspace-container-ip`. The `workspace-container-ip` isn't usually reachable by your browser host, `docker-ip` will be used to establish the connections between the browser and workspace containers.
 
 Che goes through a progression algorithm to establish the protocol, IP address and port to establish communications when it is booting or starting a workspace. You can override certain parameters in Che's configuration to overcome issues with the Docker daemon, workspaces, or browsers being on different networks.
 
@@ -262,7 +262,7 @@ Che goes through a progression algorithm to establish the protocol, IP address a
 #    3. Else, use DOCKER_HOST
 #
 # Workspace Agent --> Che Server
-#    1. Default is http://che-host:${SERVER_PORT}/wsmaster/api, where che-host is IP of server.
+#    1. Default is http://che-host:${SERVER_PORT}/wsmaster/api. che-host IP is defined in Workspace Agent /etc/hosts.
 #    2. Else, use value of che.workspace.che_server_endpoint
 #    3. Else, if 'docker0' interface is unreachable, then che-host replaced with
 #       172.17.42.1 or 192.168.99.1
@@ -291,7 +291,7 @@ $ curl http://<che-ip>:<che-port>/wsagent/ext/
 docker exec -ti <che-container-name> curl http://<che-ip>:<che-port>/wsagent/ext/
 
 # Server => Workspace Agent (Internal IP):
-docker exec -ti <che-container-name> curl http://<wsagent-container-ip>:4401/wsagent/ext/
+docker exec -ti <che-container-name> curl http://<workspace-container-ip>:4401/wsagent/ext/
 ```
 
 ### Docker Connectivity
