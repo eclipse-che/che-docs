@@ -245,6 +245,55 @@ When a user creates a workspace, the Che server connects to the Docker daemon at
 
 Che goes through a progression algorithm to establish the protocol, IP address and port to establish communications when it is booting or starting a workspace. You can override certain parameters in Che's configuration to overcome issues with the Docker daemon, workspaces, or browsers being on different networks.
 
+```
+# Browser --> Che Server
+#    1. Default is 'http://localhost:${SERVER_PORT}/wsmaster/api'.
+#    2. Else use the value of che.api
+#
+# Che Server --> Docker Daemon Progression:
+#    1. Use the value of che.docker.daemon_url
+#    2. Else, use the value of DOCKER_HOST system variable
+#    3. Else, use Unix socket over unix:///var/run/docker.sock
+#
+# Che Server --> Workspace Connection:
+# Browser    --> Workspace Connection:
+#    1. Use the value of che.docker.ip
+#    2. Else, if server connects over Unix socket, then use localhost
+#    3. Else, use DOCKER_HOST
+#
+# Workspace Agent --> Che Server
+#    1. Default is http://che-host:${SERVER_PORT}/wsmaster/api, where che-host is IP of server.
+#    2. Else, use value of che.workspace.che_server_endpoint
+#    3. Else, if 'docker0' interface is unreachable, then che-host replaced with
+#       172.17.42.1 or 192.168.99.1
+#    4. Else, print connection exception
+```
+
+It is common for configuration with firewalls, routers, networks and hosts to make the default values we detect to establish these connections incorrect. You can run `docker run <DOCKER_OPTIONS> eclipse/che info --network` to run a test that makes connections between simulated components to reflect the networking setup of Che as it is configured. You do not need all connections to pass for Che to be properly configured. For example, on a Windows machine, this output may exist, just indicating that `localhost` is not an acceptable domain for communications, but the IP address `10.0.75.2` is.
+
+```
+INFO: ---------------------------------------
+INFO: --------   CONNECTIVITY TEST   --------
+INFO: ---------------------------------------
+INFO: Browser    => Workspace Agent (localhost): Connection failed
+INFO: Browser    => Workspace Agent (10.0.75.2): Connection succeeded
+INFO: Server     => Workspace Agent (External IP): Connection failed
+INFO: Server     => Workspace Agent (Internal IP): Connection succeeded
+```
+
+You can also perform additional tests yourself against an already-running Che server. You will need to use `docker ps` and `docker inspect` on the command line to get the container name and IP address of your Che server, and then you can run additional tests:
+
+```
+# Browser => Workspace Ageent (External IP):
+$ curl http://<che-ip>:<che-port>/wsagent/ext/
+
+# Server => Workspace Agent (External IP):
+docker exec -ti <che-container-name> curl http://<che-ip>:<che-port>/wsagent/ext/
+
+# Server => Workspace Agent (Internal IP):
+docker exec -ti <che-container-name> curl http://<wsagent-container-ip>:4401/wsagent/ext/
+```
+
 ### Docker Connectivity
 There are multiple techniques for connecting to Docker including Unix sockets, localhost, and remote connections over TCP protocol. Depending upon the type of connection you require and the location of the machine node running Docker, we use different parameters.
 
