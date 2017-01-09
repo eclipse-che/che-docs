@@ -53,19 +53,15 @@ You content can start after this.
 New sections are represented as folders in https://github.com/codenvy/che-docs/tree/master/src/main/_docs. Folder names must contain lowercase a-z characters and `-` to seperate words.
     
 # Building Docs
-Docs are built using a Docker image with Jekyll inside it. You will need Docker running on your machine to build the Che docs.
+Docs are built using a Docker image with Jekyll inside it. You need Docker and Bash installed to build and host the Che docs.
 
-Navigate to the repo "src/main/" on your filesystem and type:
+```
+$ git clone http://github.com/eclipse/che-docs
+$ cd che-docs/src/main/
+$ bash docs.sh --run
 
-On Mac and Linux
+# Markdown converted to static HTML and launches Jekyll server at http://localhost:9080
 ```
-$ cd {your-repo-location}/src/main/
-$ ./docs.sh --run
-```
-On Windows
-```
-> cd {your-repo-location}\src\main
-> docs.bat --run
 
 The Jekyll server will scan for changes to the `.md` files every 2 seconds and auto-update the generated HTML.
 
