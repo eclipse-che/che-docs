@@ -6,8 +6,6 @@ Latest shipped release of documentation can viewed at [https://www.eclipse.org/c
 
 Nightly documentation of this repository and can be viewed at [https://www.eclipse.org/che/docs-versions/nightly/](https://www.eclipse.org/che/docs-versions/nightly/). 
 
-Other versions are listed/linked at home page of [https://www.eclipse.org/che/docs/](https://www.eclipse.org/che/docs/). 
-
 ## Viewing Generated Documentation
 
 This repository houses documentation for Eclipse Che ([repo](https://github.com/eclipse/che) / [site](https://eclipse.com/che/)). Content is held in markdown files in the `/src/main/_docs` directory. Images should be placed in `/src/main/_docs/assets/imgs`.
