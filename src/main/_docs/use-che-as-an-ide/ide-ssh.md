@@ -20,7 +20,10 @@ We then provide various client utilities (authored in Docker!) for connecting to
 # List Workspaces  
 You can get a list of workspaces in a Che server that have an SSH agent deployed. These are the workspaces that you can SSH into.
 ```shell  
-$ che action list-workspaces
+$ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                      -v <path>:/data
+                         eclipse/che action list-workspaces
+
 NAME      ID                   STATUS
 florent   workspace93kd748390  STOPPED
 mysql     workspacewia89343k4  RUNNING
@@ -42,16 +45,29 @@ If you have the {{ site.product_mini_name }} CLI installed, you can SSH into any
 ```shell  
 # Connect to the machine in a workspace that is designated as the dev machine.
 # Each workspace always has one machine that is a dev machine with a dev agent on it.
-{{ site.product_mini_cli }} ssh <ws-name>
-{{ site.product_mini_cli }} ssh <ws-id>
+$ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                      -v <path>:/data
+                         eclipse/che ssh <workspace-name>
+
+# Or
+$ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                      -v <path>:/data
+                         eclipse/che ssh <workspace-id>
+
 
 # If in Codenvy, you can optionally append a user namespace to a workspace name.
 # For example, <namespace:ws-name> such as "florent:first-workspace".
 
 # Connect to a secondary machine in the workspace if you started multiple machines
 # using Docker compose.
-{{ site.product_mini_cli }} ssh <ws-name> [machine-name]
-{{ site.product_mini_cli }} ssh <ws-id> [machine-name]
+$ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                      -v <path>:/data
+                         eclipse/che ssh <workspace-name> [machine-name]
+
+# Or
+$ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                      -v <path>:/data
+                         eclipse/che ssh <workspace-id> [machine-name]
 
 # Options
 --url <url>           # Che or Codenvy host where workspaces are running
@@ -62,21 +78,39 @@ The CLI is aware of the locally running {{ site.product_mini_name }} server base
 
 The same is true for the machines - if there is a single machine, it will choose a single one. If there are multiple machines, it will present for you a list of different machines that you can connect to.
 ![8f99a700-a696-11e6-8d8a-414e38ec26b2.gif]({{base}}{{site.links["8f99a700-a696-11e6-8d8a-414e38ec26b2.gif"]}})
+
+
 ### SSH With Containers
 We provide a utiltiy `eclipse/che-action` which performs various actions against a {{ site.product_mini_name }} server. One of the actions is to SSH. In Eclipse Che, this utility auto-discovers the right key to use by querying the Che server. In Codenvy, you will need to provide the key or authenticate in advance.
 ```shell  
-{{ site.product_mini_cli }} action workspace-ssh <ws-name>
-{{ site.product_mini_cli }} action workspace-ssh <ws-id>
+$ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                      -v <path>:/data
+                         eclipse/che action workspace-ssh <workspace-name>
+
+# Or
+$ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                      -v <path>:/data
+                         eclipse/che action workspace-ssh <workspace-id>
 
 [-s,--url]=<value>      Defines the url of Che or Codenvy to connect to
 [-u,--user]=<value>     Defines the Codenvy user name to authenticate with
-[-w,--password]=<value> Defines the Codenvy password to authenticate with\
+[-w,--password]=<value> Defines the Codenvy password to authenticate with
 ```
+
 ### SSH With Native Tools
 If you want to use your native SSH tools to connect to a workspace, you can get the connectivity information that you need to use with one of our utilities. You can then pass this information into `ssh` or `putty` to make a direct connection.
-```text  
-$ {{ site.product_mini_cli }} action get-ssh-data <ws-name>
-$ {{ site.product_mini_cli }} action get-ssh-data <ws-id>
+
+```Shell
+
+$ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                      -v <path>:/data
+                         eclipse/che action get-ssh-data <workspace-name>
+
+$ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                      -v <path>:/data
+                         eclipse/che action get-ssh-data <workspace-id>
+
+# Will output the following
 SSH_IP=192.168.65.2
 SSH_PORT=32900
 SSH_USER=user
@@ -88,5 +122,5 @@ ws-private-key-listed-here
 # Options
 --url <url>           # Che or Codenvy host where workspaces are running
 --user <email>        # Codenvy user name
---password <password> # Codenvy password\
+--password <password> # Codenvy password
 ```
