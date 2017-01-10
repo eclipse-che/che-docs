@@ -16,7 +16,10 @@ You can create Chefiles for a local directory from an existing Factory. Or, you 
 You can create a factory to load within Codenvy from an existing Chefile. In the directory that has your Chefile execute:
 
 ```shell  
-docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> dir <path> factory
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                    -v <path>:/data
+                    -v <path-to-project>:/chedir
+                       eclipse/che:<version> dir factory
 ```
 
 This will output a factory object that can be imported into any Codenvy system. Once imported, you will have a URL that can be shared with others allowing for remote execution of the Chedir up capability.

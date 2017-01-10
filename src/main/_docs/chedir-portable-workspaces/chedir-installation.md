@@ -12,7 +12,7 @@ Installing Chedir is extremely easy. Just [get the Che CLI]({{base}}/docs/setup/
 Chedir requires Eclipse Che 4.7+. Chefiles are not supported to run on older versions of Che.
 
 # Upgrading  
-You will automatically get newer versions of Chedir when you upgrade Eclipse Che. You can upgrade Eclipse Che with the CLI by `docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> upgrade`. If you want to use a particular version of Chedir you can set `CHE_VERSION` as an environment variable and Chedir will use that particular version. You can run multiple versions of Chedir at the same time.
+You will automatically get newer versions of Chedir when you upgrade Eclipse Che. You can upgrade Eclipse Che with the CLI by `docker run -it --rm <DOCKER_PARAMETERS> eclipse/che:<version> upgrade`. If you want to use a particular version of Chedir you can set `CHE_VERSION` as an environment variable and Chedir will use that particular version. You can run multiple versions of Chedir at the same time.
 
 # From Source  
 Chedir is provided as a Docker container which you can run instead of using the CLI. The CLI captures your environmental information and invokes the container with the appropriate syntax.
