@@ -6,77 +6,62 @@ layout: docs
 permalink: /:categories/ssh/
 ---
 {% include base.html %}
-Workspaces are configured with an SSH agent, which runs an SSH daemon within your workspace runtime. You can connect to your workspace on the command line and get root access to the runtime (similar to what the Web terminal provides) from other machines. You can optionally disable the SSH agent for your workspace from within the dashboard.
+Workspaces are configured with an SSH [agent]({{base}}{{site.links["ws-agents"]}}#adding-agents-to-a-machine), which runs an SSH daemon within your workspace runtime. You can connect to your workspace on the command line and get root access to the runtime (similar to what the Web terminal provides) from other machines. You can optionally disable the SSH agent for your workspace from within the dashboard.
 
 # Public / Private Key Generation
-If your workspace has the SSH agent activated in the dashboard, then {{ site.product_mini_name }} runs an SSH daemon within the machines that are part of your workspace. The SSH agent is activated by default with all new workspaces and you can manually disable it within the dashboard. If your workspace is powered by Docker Compose, then the SSH agent is deployed into every container that makes up your compose services. You can optionally remove the agent from selected machines of your compose services from within the dashboard.
+If your workspace has the SSH [agent]({{base}}{{site.links["ws-agents"]}}#adding-agents-to-a-machine) activated in the [dashboard]({{base}}{{site.links["ws-machines"]}}#dashboard-machine-information), then {{ site.product_mini_name }} runs an SSH daemon within the machines that are part of your workspace. The SSH agent is activated by default with all new workspaces and you can manually disable it within the dashboard. If your workspace is powered by Docker Compose, then the SSH agent is deployed into every container that makes up your compose services. You can optionally remove the SSH [agent]({{base}}{{site.links["ws-agents"]}}#adding-agents-to-a-machine) from selected machines of your compose services from within the [dashboard]({{base}}{{site.links["ws-machines"]}}#dashboard-machine-information).
 
-Each new workspace has a default key-pair generated for it. The private key for the workspace is inserted into each machine and they will all share the same public key. You can generate a new key-pair in the dashboard, or remove the default one to be replaced with yours.
+Each new workspace has a default key-pair generated for it. The private key is inserted into each machine of a workspace and they will all share the same public key. You can generate a new key-pair in the dashboard, or remove the default one to be replaced with yours.
+![ssh-delete-create-keypair.gif]({{base}}{{site.links["ssh-delete-create-keypair.gif"]}})
 
-Eclipse Che does not have any user authentication, so any client can connect to the Che server REST API and then request the public key for the workspace. In Codenvy, API clients must be authenticated with appropriate permissions before they can request the public key for a workspace.
+{% if site.product_mini_cli=="codenvy" %}API clients must be authenticated with appropriate permissions before they can request the private key for a workspace.
+{% else %}Eclipse Che does not have any user authentication, so any client can connect to the {{site.product_mini_name}} server REST API and then request the private key for the workspace. In Codenvy, API clients must be authenticated with appropriate permissions before they can request the public key for a workspace.{% endif %}
 
-We then provide various client utilities (authored in Docker!) for connecting to a workspace using SSH.
+We provide an optional ssh client built into [cli](#connect) for connecting to a workspace using SSH.
 
 # List Workspaces  
-You can get a list of workspaces in a Che server that have an SSH agent deployed. These are the workspaces that you can SSH into.
-```shell  
-$ che action list-workspaces
-NAME      ID                   STATUS
-florent   workspace93kd748390  STOPPED
-mysql     workspacewia89343k4  RUNNING
+You can get a list of workspaces in a {{site.product_mini_name}} server that have an SSH agent deployed. These are the workspaces that you can SSH into.
 
-# Options
---url <url>           # Che or Codenvy host where workspaces are running
---user <email>        # Codenvy user name
---password <password> # Codenvy password\
+```shell  {% assign action="list-workspaces"%}
+$ docker run -ti <volume-mounts> {% if site.product_mini_cli=="codenvy" %}codenvy/cli action {{action}} [parameters]{% else %}eclipse/che action {{action}} [parameters]{% endif %} 
+
+NAME                      ID                         STATUS
+wksp-v4l8(No Sync Agent)  workspaceolhvwg1bjuepyfar  RUNNING
+
+# Parameters
+    --url <url>           # {{ site.product_mini_name }} host where workspaces are running
+{% if site.product_mini_cli=="codenvy" %}    --user <login email>        # Codenvy user name
+    --password <login password> # Codenvy password{% endif %}
 ```
 
 # Connect  
-You can connect to your workspace using our Docker containers, the Che CLI, or your off-the-shelf SSH client such as `ssh` on Linux/Mac or `putty` on Windows.
+You can connect to your workspace using our Docker CLI container or your off-the-shelf SSH client such as `ssh` on Linux/Mac or `putty` on Windows.
 
 One nice aspect of our SSH capabilities is that they are all done inside of a Docker container, letting any OS connect to a Che workspace using the same sytnax without the user having to install specialized tools for each OS.
 
-### SSH With {{ site.product_mini_name }} CLI
-If you have the {{ site.product_mini_name }} CLI installed, you can SSH into any workspace.
+### SSH With CLI
 
-```shell  
+```shell    {% assign action="ssh"%}
 # Connect to the machine in a workspace that is designated as the dev machine.
 # Each workspace always has one machine that is a dev machine with a dev agent on it.
-{{ site.product_mini_cli }} ssh <ws-name>
-{{ site.product_mini_cli }} ssh <ws-id>
+$ docker run -ti <volume-mounts> {% if site.product_mini_cli=="codenvy" %}codenvy/cli action {{action}} <workspace> [machine-name] [parameters]{% else %}eclipse/che action {{action}} <workspace> [machine-name] [parameters]{% endif %} 
 
-# If in Codenvy, you can optionally append a user namespace to a workspace name.
-# For example, <namespace:ws-name> such as "florent:first-workspace".
-
-# Connect to a secondary machine in the workspace if you started multiple machines
-# using Docker compose.
-{{ site.product_mini_cli }} ssh <ws-name> [machine-name]
-{{ site.product_mini_cli }} ssh <ws-id> [machine-name]
-
-# Options
---url <url>           # Che or Codenvy host where workspaces are running
---user <email>        # Codenvy user name
---password <password> # Codenvy password
+# Arguments
+    workspace             # Workspace name or id.  
+    machine-name          # Connect to a secondary machine in the workspace(docker compose)
+# Parameters
+    --url <url>           # {{ site.product_mini_name }} host where workspaces are running
+{% if site.product_mini_cli=="codenvy" %}    --user <login email>        # Codenvy user name
+    --password <login password> # Codenvy password{% endif %}
 ```
-The CLI is aware of the locally running {{ site.product_mini_name }} server based upon the configuration that you have provided it within your environment variables. If your {{ site.product_mini_name }} server only has a single workspace, it will connect to that workspace. If your {{ site.product_mini_name }} server does not have any workspaces, it will present an error. If your {{ site.product_mini_name }} server has two or more running workspaces, it will display a list of available workspaces that you can connect to.
 
-The same is true for the machines - if there is a single machine, it will choose a single one. If there are multiple machines, it will present for you a list of different machines that you can connect to.
-![8f99a700-a696-11e6-8d8a-414e38ec26b2.gif]({{base}}{{site.links["8f99a700-a696-11e6-8d8a-414e38ec26b2.gif"]}})
-### SSH With Containers
-We provide a utiltiy `eclipse/che-action` which performs various actions against a {{ site.product_mini_name }} server. One of the actions is to SSH. In Eclipse Che, this utility auto-discovers the right key to use by querying the Che server. In Codenvy, you will need to provide the key or authenticate in advance.
-```shell  
-{{ site.product_mini_cli }} action workspace-ssh <ws-name>
-{{ site.product_mini_cli }} action workspace-ssh <ws-id>
-
-[-s,--url]=<value>      Defines the url of Che or Codenvy to connect to
-[-u,--user]=<value>     Defines the Codenvy user name to authenticate with
-[-w,--password]=<value> Defines the Codenvy password to authenticate with\
-```
 ### SSH With Native Tools
-If you want to use your native SSH tools to connect to a workspace, you can get the connectivity information that you need to use with one of our utilities. You can then pass this information into `ssh` or `putty` to make a direct connection.
-```text  
-$ {{ site.product_mini_cli }} action get-ssh-data <ws-name>
-$ {{ site.product_mini_cli }} action get-ssh-data <ws-id>
+If you want to use your native SSH tools to connect to a workspace, you can get the connectivity information that you need to use through the dashboard as described in [Public/Private Key Generation](#public--private-key-generation) section on this page or using CLI described below. You can then pass this information into `ssh` or `putty` to make a direct connection.
+
+```shell  {% assign action="get-ssh-data"%}
+# Connect to the machine in a workspace that is designated as the dev machine.
+# Each workspace always has one machine that is a dev machine with a dev agent on it.
+$ docker run -ti <volume-mounts> {% if site.product_mini_cli=="codenvy" %}codenvy/cli action {{action}} <ws-name> {% else %}eclipse/che action {{action}} <workspace> [machine-name] [parameters]{% endif %}
 SSH_IP=192.168.65.2
 SSH_PORT=32900
 SSH_USER=user
@@ -84,9 +69,13 @@ SSH_PRIVATE_KEY='
 -----BEGIN RSA PRIVATE KEY-----
 ws-private-key-listed-here
 -----END RSA PRIVATE KEY-----
+'
 
-# Options
---url <url>           # Che or Codenvy host where workspaces are running
---user <email>        # Codenvy user name
---password <password> # Codenvy password\
+# Arguments
+    workspace             # Workspace name or id.               
+    machine-name          # Connect to a secondary machine in the workspace(docker compose)
+# Parameters
+    --url <url>           # {{ site.product_mini_name }} host where workspaces are running
+{% if site.product_mini_cli=="codenvy" %}    --user <login email>        # Codenvy user name
+    --password <login password> # Codenvy password{% endif %}
 ```
