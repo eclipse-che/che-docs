@@ -37,6 +37,8 @@ wksp-v4l8(No Sync Agent)  workspaceolhvwg1bjuepyfar  RUNNING
 # Connect  
 You can connect to your workspace using our Docker CLI container or your off-the-shelf SSH client such as `ssh` on Linux/Mac or `putty` on Windows.
 
+One nice aspect of our SSH capabilities is that they are all done inside of a Docker container, letting any OS connect to a Che workspace using the same sytnax without the user having to install specialized tools for each OS.
+
 ### SSH With CLI
 
 ```shell    {% assign action="ssh"%}
