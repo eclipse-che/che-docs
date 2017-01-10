@@ -37,12 +37,12 @@ Editor tabs and console outputs can be displayed fullscreen.
 ![fullscreen.gif]({{base}}{{site.links["fullscreen.gif"]}})
 
 ## Fullscreen for Editors
-Editor tabs can easily get displayed in fullscreen mode. This allows to display more content for the editor panes. You can double click on one of the editor's tab to get it maximized and displayed in fullscreen mode. It will collapse all other panes. To exit the fullscreen mode, just double click again on the editor tab.
+Editor tabs can easily get displayed in fullscreen mode by double-clicking on one of the editor's tabs. All other panes will be collapsed when you do this. To exit the fullscreen mode, double-click again on the tab.
 
 ## Fullscreen for Consoles
-Console outputs and processes tabs can easily get displayed in fullscreen mode. This allows to display more content for the outputs or get a larger terminal to interact with. You can double click on one of the terminal's (or output) tab to get it maximized and displayed in fullscreen mode. It will collapse all other panes. To exit the fullscreen mode, just double click again on the terminal's (or output) tab.
+Console outputs and processes tabs can be displayed in fullscreen mode by double-clicking on one of the terminal's (or output's) tab to maximize it. All other panes will be collapsed when you do this. To exit the fullscreen mode, double-click again on the tab.
 
-You can also use the quick pane option displayed in the top right corner of the pane to get it displayed in fullscreen mode.
+You can also use the quick pane option displayed in the top right corner of the pane to move to fullscreen mode.
 ![fullscreen-button.png]({{base}}{{site.links["fullscreen-button.png"]}})
 
 # Preview HTML Files  
