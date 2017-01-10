@@ -28,6 +28,21 @@ Starting in Eclipse Che 4.7 you can split the editor into multiple panes. This a
 Starting in Eclipse Che 4.7 you can split the consoles into multiple panes. This allows easier navigation when trying to see different console outputs at the same time. `Split Vertical` and `Split Horizontal` can be selected through the drop down menu accessible by at the top right of the console area. To put new console in a newly created pane select the open area below the tabs area.
 ![consolepanes.gif]({{base}}{{site.links["consolepanes.gif"]}})
 
+# Fullscreen Mode for Panes
+
+Editor tabs and console outputs can be displayed fullscreen.
+![fullscreen.gif]({{base}}{{site.links["fullscreen.gif"]}})
+
+## Fullscreen for Editors
+Editor tabs can easily get displayed in fullscreen mode. This allows to display more content for the editor panes. You can double click on one of the editor's tab to get it maximized and displayed in fullscreen mode. It will collapse all other panes. To exit the fullscreen mode, just double click again on the editor tab.
+
+## Fullscreen for Consoles
+Console outputs and processes tabs can easily get displayed in fullscreen mode. This allows to display more content for the outputs or get a larger terminal to interact with. You can double click on one of the terminal's (or output) tab to get it maximized and displayed in fullscreen mode. It will collapse all other panes. To exit the fullscreen mode, just double click again on the terminal's (or output) tab.
+
+You can also use the quick pane option displayed in the top right corner of the pane to get it displayed in fullscreen mode.
+
+![fullscreen-button.png]({{base}}{{site.links["fullscreen-button.png"]}})
+
 # Preview HTML Files  
 Preview an HTML file by right-clicking it in the project explorer and selecting preview from the popup menu.
 ![che-previewHTML.jpg]({{base}}{{site.links["che-previewHTML.jpg"]}})
