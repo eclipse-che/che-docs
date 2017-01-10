@@ -16,7 +16,11 @@ Chedir has a built-in command for initializing a directory for usage with Chedir
 ```shell  
 mkdir chedir_start
 cd chedir_start
-docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> dir <path-to-project> init
+
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                    -v <path>:/data
+                    -v <path-to-project>:/chedir
+                       eclipse/che:<version> dir init
 ```
 
 This will place a Chefile in your current directory. You can take a look at the Chefile if you want, it is filled with comments and examples. You can also run Chedir `init` command in a pre-existing directory that already has source code to set up Chedir for an existing project.
