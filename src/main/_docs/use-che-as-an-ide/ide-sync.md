@@ -10,8 +10,12 @@ permalink: /:categories/sync/
 Che ships a super fast Fuse-based mount and sync mechanism. This is delivered as a Docker container that combines `sshfs` with `unison`. You can perform a mount on any operating system that supports Docker. However, if you are on Windows using Boot2Docker, you can only mount directories in `%userprofile%`.
 # List Workspaces  
 You can get a list of workspaces in a Che server that have an SSH agent deployed and are also a dev-machine where `/projects` are deployed. This means it is sync-ready.
-```text  
-$ che action list-workspaces
+```Shell  
+$ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                      -v <path>:/data
+                         eclipse/che action list-workspaces
+
+# Will output the following
 NAME      ID                   STATUS
 florent   workspace93kd748390  STOPPED
 mysql     workspacewia89343k4  RUNNING
@@ -34,7 +38,18 @@ To synchronize your IDE you'll use the [{{ site.product_formal_name }} CLI]{{bas
 ```shell  
 mkdir sync
 cd sync
-{{ site.product_mini_cli }} mount <ws-name> (or {{ site.product_mini_cli }} mount <ws-id>)
+
+# Sync a workspace to local directory, <local-sync-point>
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                    -v <path>:/data
+                    -v <local-sync-point>:/sync
+                    eclipse/che sync <workspace-name>
+
+# Or
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                    -v <path>:/data
+                    -v <local-sync-point>:/sync
+                    eclipse/che sync <workspace-id>
 
 # Options
 --url <url>           # Che or Codenvy host where workspaces are running
@@ -44,6 +59,7 @@ cd sync
 
 This will make a secure connection to the workspace and unison-sync the contents to the local host directory. You will be asked for the password that you retrieved from the SSH configuration. The synchronization will run continuously and the command will not return until you press CTRL-C, at which point the synchronization will be terminated.
 ![fef09b90-a696-11e6-9a37-70f827677830.gif]({{base}}{{site.links["8f99a700-a696-11e6-8d8a-414e38ec26b2.gif"]}})
+
 ## Optimize
 The utility is designed to synchronize everything in your `/projects` folder that is within the workspace. Synchronization is impacted by the size and nature of files that are contained within the directory. If you have libraries such as with an NPM or maven repository, it may be unnecessary and taxing to synchronization all of those files.
 
@@ -54,6 +70,7 @@ The CLI will automatically install your unison profile.  Create a `default.prf` 
 [Profiles](https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html#profile)
 [Ignore Directories and Files](https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html#ignore)
 [Path Specification](https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html#pathspec)
+
 # Mount Without Sync  
 If you just want to mount the remote workspace to a local directory, you can do so with `sshfs`. Mounting will allow all file system writes to take place immediately. However, all changes are sent over the network. If the workspace and desktop IDE are both on the same machine, then this method may be preferred. However, the greater the network latency, the slower the sync will be.
 
