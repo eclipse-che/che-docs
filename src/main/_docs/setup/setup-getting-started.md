@@ -118,7 +118,7 @@ COMMANDS:
   ssh <wksp-name> [machine-name]       SSH to a workspace if SSH agent enabled
   start                                Starts che services
   stop                                 Stops che services
-  sync <wksp-name>                     Synchronize workspace with current working directory
+  sync <wksp-name>                     Synchronize workspace with local directory mounted to :/sync
   test <test-name>                     Start test on che instance
   upgrade                              Upgrades che from one version to another with migrations and backups
   version                              Installed version and upgrade paths
