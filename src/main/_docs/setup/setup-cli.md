@@ -10,46 +10,46 @@ The Docker image which runs Che is the Che CLI. It has various commands for runn
 
 ```
 USAGE:
-USAGE:
- docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> [COMMAND]
+  docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> [COMMAND]
 
 MANDATORY DOCKER PARAMETERS:
- -v <LOCAL_PATH>:/data                Where user, instance, and log data saved
+  -v <LOCAL_PATH>:/data                Where user, instance, and log data saved
 
 OPTIONAL DOCKER PARAMETERS:
- -e CHE_HOST=<YOUR_HOST>              IP address or hostname where che will serve its users
- -e CHE_PORT=<YOUR_PORT>              Port where che will bind itself to
- -v <LOCAL_PATH>:/data/instance       Where instance, user, log data will be saved
- -v <LOCAL_PATH>:/data/backup         Where backup files will be saved
- -v <LOCAL_PATH>:/repo                che git repo - uses local binaries
- -v <LOCAL_PATH>:/sync                Where remote ws files will be copied with sync command
- -v <LOCAL_PATH>:/unison              Where unison profile for optimizing sync command resides
+  -e CHE_HOST=<YOUR_HOST>              IP address or hostname where che will serve its users
+  -e CHE_PORT=<YOUR_PORT>              Port where che will bind itself to
+  -v <LOCAL_PATH>:/data/instance       Where instance, user, log data will be saved
+  -v <LOCAL_PATH>:/data/backup         Where backup files will be saved
+  -v <LOCAL_PATH>:/repo                che git repo - uses local binaries
+  -v <LOCAL_PATH>:/sync                Where remote ws files will be copied with sync command
+  -v <LOCAL_PATH>:/unison              Where unison profile for optimizing sync command resides
+  -v <LOCAL_PATH>:/chedir              Soure repository to convert into workspace with Chedir utility
 
 COMMANDS:
- action <action-name>                 Start action on che instance
- backup                               Backups che configuration and data to /data/backup volume mount
- config                               Generates a che config from vars; run on any start / restart
- destroy                              Stops services, and deletes che instance data
- dir <path> <command>                 Use Chefile feature in the directory <path>
- download                             Pulls Docker images for the current che version
- help                                 This message
- info                                 Displays info about che and the CLI
- init                                 Initializes a directory with a che install
- offline                              Saves che Docker images into TAR files for offline install
- restart                              Restart che services
- restore                              Restores che configuration and data from /data/backup mount
- rmi                                  Removes the Docker images for <version>, forcing a repull
- ssh <wksp-name> [machine-name]       SSH to a workspace if SSH agent enabled
- start                                Starts che services
- stop                                 Stops che services
- sync <wksp-name>                     Synchronize workspace with current working directory
- test <test-name>                     Start test on che instance
- upgrade                              Upgrades che from one version to another with migrations and backups
- version                              Installed version and upgrade paths
+  action <action-name>                 Start action on che instance
+  backup                               Backups che configuration and data to /data/backup volume mount
+  config                               Generates a che config from vars; run on any start / restart
+  destroy                              Stops services, and deletes che instance data
+  dir <command>                        Use Chedir and Chefile in the directory mounted to :/chedir
+  download                             Pulls Docker images for the current che version
+  help                                 This message
+  info                                 Displays info about che and the CLI
+  init                                 Initializes a directory with a che install
+  offline                              Saves che Docker images into TAR files for offline install
+  restart                              Restart che services
+  restore                              Restores che configuration and data from /data/backup mount
+  rmi                                  Removes the Docker images for <version>, forcing a repull
+  ssh <wksp-name> [machine-name]       SSH to a workspace if SSH agent enabled
+  start                                Starts che services
+  stop                                 Stops che services
+  sync <wksp-name>                     Synchronize workspace with current working directory
+  test <test-name>                     Start test on che instance
+  upgrade                              Upgrades che from one version to another with migrations and backups
+  version                              Installed version and upgrade paths
 
 GLOBAL COMMAND OPTIONS:
- --fast                               Skips networking and version checks (saves 5 secs during bootstrap)
- --debug                              Enable debugging of che server
+  --fast                               Skips networking and version checks (saves 5 secs during bootstrap)
+  --debug                              Enable debugging of che server
 ```
 
 The CLI will hide most error conditions from standard out. Internal stack traces and error output is redirected to `cli.log`, which is saved in the host folder where `:/data` is mounted.
@@ -81,11 +81,11 @@ Then, any changes inside the IDE will be reflected in your host folder. And the 
 
 Other commands are `init`,`up`, `down`, `ssh` and `status`
 
-  - `init`  : Initialize the directory specified and add a default `Chefile` file if there is none
-  - `up`    : Boot Eclipse Che with workspace on folder
-  - `down`  : Stop Eclipse Che and any workspaces
-  - `ssh`   : Connect to the running workspace by using ssh
-  - `status`: Display if an instance of Eclipse Che is running or not for the specified folder.
+  - `init`    : Initialize the directory specified and add a default `Chefile` file if there is none
+  - `up`      : Boot Eclipse Che with workspace on folder
+  - `down`    : Stop Eclipse Che and any workspaces
+  - `ssh`     : Connect to the running workspace by using ssh
+  - `status`  : Display if an instance of Eclipse Che is running or not for the specified folder.
 
 ###### download
 Used to download Docker images that will be stored in your Docker images repository. This command downloads images that are used by the CLI as utilities, for Che to do initialization and configuration, and for the runtime images that Che needs when it starts.  This command respects `--offline`, `--pull`, `--force`, and `--no-force` (default).  This command is invoked by `che init`, `che config`, and `che start`.
