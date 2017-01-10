@@ -12,10 +12,10 @@ Use your SaaS account for the following, or if you have [installed Che]({{base}}
 
 ```shell  
 # Interactive help
-docker run -it eclipse/che-cli start
+docker run -it eclipse/che start
 
 # Or, full start syntax where <path> is a local directory
-docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v <path>:/data eclipse/che-cli start
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v <path>:/data eclipse/che start
 ```
 
 When you execute this command, you'll see the URL for the user dashboard.

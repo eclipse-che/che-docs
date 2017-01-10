@@ -12,7 +12,7 @@ The first step in configuring a Che workspace from your directory is to create a
 
 2. Describe the way the Che server and workspace will be configured and the resources they need to run your project, as well as what workspace stack to use and how it should be accessed.
 
-Chedir has a built-in command for initializing a directory for usage with Chedir: `docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> dir <path-to-project> init`. For the purpose of this getting started guide, please follow along in your terminal:
+Chedir has a built-in command for initializing a directory for usage with Chedir: `docker run -it --rm <DOCKER_PARAMETERS> -v <path-to-project>:/chedir eclipse/che:<version> dir init`. For the purpose of this getting started guide, please follow along in your terminal:
 ```shell  
 mkdir chedir_start
 cd chedir_start

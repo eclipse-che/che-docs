@@ -29,16 +29,16 @@ We put a lot of effort into our docs. Please add suggestions on areas for improv
 On any computer with Docker 1.11+ installed:
 ```shell
 # Interactive help
-docker run -it eclipse/che-cli start
+docker run -it eclipse/che start
 
 # Or, full start syntax where <path> is a local directory
-docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v <path>:/data eclipse/che-cli start
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v <path>:/data eclipse/che start
 ```
 
 # Operate Che
 ```shell  
 # Start Eclipse Che with user data saved on Windows in c:\tmp
-docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v /c/tmp:/data eclipse/che-cli start
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v /c/tmp:/data eclipse/che start
 INFO: (che cli): Loading cli...
 INFO: (che cli): Checking registry for version 'nightly' images
 INFO: (che config): Generating che configuration...
@@ -55,22 +55,22 @@ INFO: (che start): Use: http://<your-ip>:8080
 INFO: (che start): API: http://<your-ip>:8080/swagger
 
 # Stop Che
-docker run <docker-goodness> eclipse/che-cli stop
+docker run <docker-goodness> eclipse/che stop
 
 # Restart Che
-docker run <docker-goodness> eclipse/che-cli restart
+docker run <docker-goodness> eclipse/che restart
 
 # Run a specific version of Che
-docker run <docker-goodness> eclipse/che-cli:<version> start
+docker run <docker-goodness> eclipse/che:<version> start
 
 # Get help
-docker run eclipse/che-cli
+docker run eclipse/che
 
 # If boot2docker on Windows (rare), mount a subdir of `%userprofile%` to `:/data`. For example:
-docker run <docker-goodness> -v /c/Users/tyler/che:/data eclipse/che-cli start
+docker run <docker-goodness> -v /c/Users/tyler/che:/data eclipse/che start
 
 # If Che will be accessed from other machines add your server's external IP
-docker run <docker-goodness> -e CHE_HOST=<your-ip> eclipse/che-cli start
+docker run <docker-goodness> -e CHE_HOST=<your-ip> eclipse/che start
 ```
 
 # Develop with Che  
@@ -86,7 +86,7 @@ Now that Che is running there are a lot of fun things to try:
 # Syntax  
 ```
 USAGE:
-  docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> [COMMAND]
+  docker run -it --rm <DOCKER_PARAMETERS> eclipse/che:<version> [COMMAND]
 
 MANDATORY DOCKER PARAMETERS:
   -v <LOCAL_PATH>:/data                Where user, instance, and log data saved
@@ -165,7 +165,7 @@ The default port required to run Che is `8080`. Che performs a preflight check w
 You can install Che while connected to a network or offline, disconnected from the Internet. If you perform an offline intallation, you need to first download a Che assembly while in a DMZ with a network connection to DockerHub.
 
 # Versions
-Each version of Che is available as a Docker image tagged with a label that matches the version, such as `eclipse/che-cli:5.0.0-M7`. You can see all versions available by running `docker run eclipse/che-cli version` or by [browsing DockerHub](https://hub.docker.com/r/eclipse/che-cli/tags/).
+Each version of Che is available as a Docker image tagged with a label that matches the version, such as `eclipse/che:5.0.0-M7`. You can see all versions available by running `docker run eclipse/che version` or by [browsing DockerHub](https://hub.docker.com/r/eclipse/che/tags/).
 
 We maintain "redirection" labels which reference special versions of Che:
 
@@ -175,12 +175,12 @@ We maintain "redirection" labels which reference special versions of Che:
 | `5.0.0-latest` | The most recent stable release on the 5.x branch. |
 | `nightly` | The nightly build. |
 
-The software referenced by these labels can change over time. Since Docker will cache images locally, the `eclipse/che-cli:<version>` image that you are running locally may not be current with the one cached on DockerHub. Additionally, the `eclipse/che-cli:<version>` image that you are running references a manifest of Docker images that Che depends upon, which can also change if you are using these special redirection tags.
+The software referenced by these labels can change over time. Since Docker will cache images locally, the `eclipse/che:<version>` image that you are running locally may not be current with the one cached on DockerHub. Additionally, the `eclipse/che:<version>` image that you are running references a manifest of Docker images that Che depends upon, which can also change if you are using these special redirection tags.
 
 In the case of 'latest' images, when you initialize an installation using the CLI, we encode a `/instance/che.ver` file with the numbered version that latest references. If you begin using a CLI version that mismatches what was installed, you will be presented with an error.
 
 To avoid issues that can appear from using 'nightly' or 'latest' redirections, you may:
-1. Verify that you have the most recent version with `docker pull eclipse/che-cli:<version>`.
+1. Verify that you have the most recent version with `docker pull eclipse/che:<version>`.
 2. When running the CLI, commands that use other Docker images have an optional `--pull` and `--force` command line option [which will instruct the CLI to check DockerHub](https://hub.docker.com/r/eclipse/che/) for a newer version and pull it down. Using these flags will slow down performance, but ensures that your local cache is current.
 
 If you are running Che using a tagged version that is a not a redirection label, such as `5.0.0-M7`, then these caching issues will not happen, as the software installed is tagged and specific to that particular version, never changing over time.
@@ -197,7 +197,7 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
                     -v <local-path>:/data
                     -v <a-different-path>:/data/instance
                     -v <another-path>:/data/backup
-                       eclipse/che-cli:<version> [COMMAND]    
+                       eclipse/che:<version> [COMMAND]    
 ```
 
 # Hosting
@@ -208,7 +208,7 @@ We will attempt to auto-set `CHE_HOST` by running an internal utility `docker ru
 docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
                     -v <local-path>:/data
                     -e CHE_HOST=<your-ip-or-host>
-                       eclipse/che-cli:<version> [COMMAND]
+                       eclipse/che:<version> [COMMAND]
 ```
 
 # Proxy Installation
@@ -240,34 +240,34 @@ We support offline (disconnected from the Internet) installation and operation. 
 ### 1. Save Che Images
 While connected to the Internet, download Che's Docker images:
 ```shell
-docker run <docker-goodness> eclipse/che-cli:<version> offline
+docker run <docker-goodness> eclipse/che:<version> offline
 ```
 The CLI will download images and save them to `/backup/*.tar` with each image saved as its own file. You can save these files to a differnet location by volume mounting a local folder to `:/data/backup`. The version tag of the CLI Docker image will be used to determine which versions of dependent images to download. There is about 1GB of data that will be saved.
 
-The default execution will download none of the optional stack images, which are needed to launch workspaces of a particular type. There are a few dozen stacks for different programming languages and some of them are over 1GB in size. It is unlikely that your users will need all of the stacks, so you do not need to download all of them. You can get a list of available stack images by running `eclipse/che-cli offline --list`. You can download a specific stack by running `eclipse/che-cli offline --image:<image-name>` and the `--image` flag can be repeatedly used on a single command line.
+The default execution will download none of the optional stack images, which are needed to launch workspaces of a particular type. There are a few dozen stacks for different programming languages and some of them are over 1GB in size. It is unlikely that your users will need all of the stacks, so you do not need to download all of them. You can get a list of available stack images by running `eclipse/che offline --list`. You can download a specific stack by running `eclipse/che offline --image:<image-name>` and the `--image` flag can be repeatedly used on a single command line.
 
 ### 2. Start Che In Offline Mode
 Place the TAR files into a folder in the offline computer. If the files are in placed in a folder named `/tmp/offline`, you can run Che in offline mode with:
 
 ```shell
 # Load the CLI
-docker load < /tmp/offline/eclipse_che-cli:<version>.tar
+docker load < /tmp/offline/eclipse_che:<version>.tar
 
 # Start Che in offline mode
-docker run <other-properties> -v /tmp/offline:/data/backup eclipse/che-cli:<version> start --offline
+docker run <other-properties> -v /tmp/offline:/data/backup eclipse/che:<version> start --offline
 ```
-The `--offline` parameter instructs the Che CLI to load all of the TAR files located in the folder mounted to `/data/backup`. These images will then be used instead of routing out to the Internet to check for DockerHub. The preboot sequence takes place before any CLI functions make use of Docker. The `eclipse/che-cli start`, `eclipse/che-cli download`, and `eclipse/che-cli init` commands support `--offline` mode which triggers this preboot seequence.
+The `--offline` parameter instructs the Che CLI to load all of the TAR files located in the folder mounted to `/data/backup`. These images will then be used instead of routing out to the Internet to check for DockerHub. The preboot sequence takes place before any CLI functions make use of Docker. The `eclipse/che start`, `eclipse/che download`, and `eclipse/che init` commands support `--offline` mode which triggers this preboot seequence.
 
 # Uninstall
 ```shell
 # Remove your Che configuration and destroy user projects and database
-docker run eclipse/che-cli:<version> destroy [--quiet|--cli]
+docker run eclipse/che:<version> destroy [--quiet|--cli]
 
 # Deletes Che's images from your Docker registry
-docker run eclipse/che-cli:<version> rmi
+docker run eclipse/che:<version> rmi
 
 # Delete the Che CLI
-docker rmi -f eclipse/che-cli
+docker rmi -f eclipse/che
 ```
 
 # Licensing
