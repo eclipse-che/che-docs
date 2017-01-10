@@ -74,9 +74,9 @@ This command respects `--no-force`, `--pull`, `--force`, and `--offline`.
 Deletes `/docs`, `che.env` and `/instance`, including destroying all user workspaces, projects, data, and user database. If you pass `--quiet` then the confirmation warning will be skipped. Passing `--cli` will also destroy the `cli.log`. By default this is left behind for traceability.
 
 ###### dir
-Boots a new Eclipse Che instance with a workspace for the folder specified in parameter.
-If for example `$HOME/my-project` is given as parameter in `dir $HOME/my-project up`, a new Che instance will be created, using `$HOME/my-project`as project in the IDE.
-So inside the IDE, `/projects` folder will contain a `my-project`folder with your host folder.
+Boots a new Eclipse Che instance with a workspace for the folder `/chedir` defined as volume mount in parameter.
+If for example `$HOME/my-project` is given as parameter, a new Che instance will be created, using `$HOME/my-project` as project in the IDE.
+So inside the IDE, `/projects` folder will contain a `my-project` folder with your host folder.
 Then, any changes inside the IDE will be reflected in your host folder. And the opposite is also true, updating a file on your local computer will update the content of the file inside the IDE.
 
 Other commands are `init`,`up`, `down`, `ssh` and `status`
