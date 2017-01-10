@@ -16,7 +16,7 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
                        eclipse/che:<version> dir <command>
 
 # Commands:
-- init : Initialize the /chedir volume mount and add a default Chefile file if there is none
+- init : Initialize the :/chedir volume mount and add a default Chefile file if there is none
 - up : Boot Eclipse Che with workspace on folder
 - down : Stop Eclipse Che and any workspaces
 - ssh : Connect to the running workspace by using ssh
