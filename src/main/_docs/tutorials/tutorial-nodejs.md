@@ -118,6 +118,10 @@ Your express application will be started on port `3000`. But how do you reach it
 
 Docker exposes your express server port to a random port in the ephemeral range. Each time you launch Che, this port will be different. Switch to `Operations Perspective` (button in upper right corner of toolbar). In the Servers tab, look for an entry where the initial exposed port is `3000`.  The table will provide for you an appropriate server address such as `192.168.99.100:32787`. Copy this address into your browser, and you should see your express app!
 
+You can add additional exposed ports to an existing workspace. Exposed ports can be defined in stacks dockerfile or compose file. If using ready-to-go node [stack]({{base}}{{site.links["ws-stacks"]}}) you can view dockerfile `EXPOSE` command on github repo [eclipse/che-dockerfiles](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/node/latest/Dockerfile) for a list of exposed ports. Additional exposed ports can be added through dashboard `dashboard > select workspace > runtime > <expand machine> > server > add`.
+
+![nodejs-tutorial-add-port.gif]({{ base }}{{ site.links["nodejs-tutorial-add-port.gif"] }})
+
 # 5. Snapshot Workspace  
 Che synchronizes your projects in and out of your workspace in between executions of the server. Changes made to projects are synchronized to long term storage. However, if your workspace is shut down, the internal state of the environment will not be saved to disk unless you snapshot it. The internal stage of the environment is any file that is not part of your project tree. For example, the express application installed in the previous steps will update the NPM repository within the environment. If the workspace is stopped (by you or the server), then when the workspace is restarted, it is restarted from the originating image that we downloaded when creating the project.
 
