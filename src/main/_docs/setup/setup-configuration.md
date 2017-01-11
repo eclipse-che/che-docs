@@ -75,10 +75,10 @@ CHE_GOOGLE_CLIENT_ID=yourID
 CHE_GOOGLE_SECRET=yourSecret
 ```
 
-#### GitHub oAuth
+### GitHub oAuth
 Refer to [GitHub using OAuth]({{base}}{{site.links["ide-git-svn"]}}#github-oauth) for configuration information.
 
-#### GitLab oAuth
+### GitLab oAuth
 Refer to [GitLab using OAuth]({{base}}{{site.links["ide-git-svn"]}}#gitlab-oauth) for configuration information.
 
 
@@ -147,7 +147,7 @@ You can also set limits on Docker's allocation of CPU to workspaces, which may b
 # Docker
 Eclipse Che workspace runtimes are powered by one or more Docker containers. When a user creates a workpace, they do so from a [stack]({{base}}{{site.links["ws-stacks"]}}) which includes a Dockerfile or reference to a Docker image which will be used to create the containers for the workspace runtimes. Che stacks can pull that image from a public registry, like DockerHub, or a private registry. Images in a registry can be publicly visible or private, which require user credentials to access. You can also set up a private registry to act as a mirror to Docker Hub.  And, if you are running Eclipse Che behind a proxy, you can configure the Docker daemon registry to operate behind a proxy.
 
-### Private Images  
+## Private Images  
 When users create a workspace in Eclipse Che, they must select a Docker image to power the workspace. We provide ready-to-go stacks which reference images hosted at the public Docker Hub, which do not require any authenticated access to pull. You can provide your own images that are stored in a local private registry or at Docker Hub. The images may be publicly or privately visible, even if they are part of a private registry.
 
 If your stack images that Che wants to pull require authenticated access to any registry, or if you want Che to push snapshot images into a registry (also requiring authenticated access), then you must configure registry authentication.
@@ -167,7 +167,7 @@ CHE_DOCKER_REGISTRY_AWS_REGISTRY1_SECRET__ACCESS__KEY=secret1
 There are different configurations for AWS EC2 and the Docker regsitry. You can define as many different registries as you'd like, using the numerical indicator in the environment variable. In case of adding several registries just copy set of properties and append `REGISTRY[n]` for each variable.
 
 
-#### Pulling Private Images in Stacks
+### Pulling Private Images in Stacks
 Once you have configured private registry access, any Che stack that has a `FROM <registry>/<repository>` that requires authenticated access will use the provided credentials within `che.env` to access the registry.
 
 ```text  
@@ -178,26 +178,49 @@ FROM <repository>/<image>:<tag>
 FROM my.registry.url:9000/image:latest
 ```
 
-### Using Snapshots with Private Registries
-You can configure Che to save your workspace snapshots to a private registry that you have installed, such as JFrog's Artifactory or Docker's Enterprise Registry. The default configuration of workspace snapshots is to save to local disk.
+## Workspace Snapshots
+By default any workspace stop event will automatically snapshot the workspace runtime (and all of its images). Anything in your workspace `/project` folder will be saved to the data folder you mounted into the Che container (see ["Logs and User Data"](#logs-and-user-data) for more information). We then use Docker to snapshot the remaining contents of the workspace into a Docker image. There is a matching auto-restore configuration item which will automatically restart the workspace from the latest saved Docker image on disk. When the workspace is started, your project files will be re-mounted or re-synced into `/projects`.
 
-#### Save Workspace Snapshots in a Private Registry
-The default configuration for workspace snapshots is to have them written to disk as TAR files. This is faster, but not centralized. You can have workspace snapshots saved in a private registry. In `che.env`:
+You can configure auto-snapshot and auto-restore behaviors by modifiyng the [`che.env` file]({{base}}{{site.links["setup-configuration"]}}#internal-configuration):
+
+```shell
+# During the stop of the workspace automatically creates a snapshot if the value is {true},
+# Otherwise just stops the workspace.
+CHE_WORKSPACE_AUTO__SNAPSHOT=false
+
+# During the start of the workspace automatically restore it from a snapshot if the value is {true},
+# Otherwise create a new workspace.
+CHE_WORKSPACE_AUTO__RESTORE=false
+```
+
+### Using Snapshots with Private Registries
+The default configuration of workspace snapshots is to save to local disk but you can configure Che to save your workspace snapshots to a private registry that you have installed, such as JFrog's Artifactory or Docker's Enterprise Registry. 
+
+```shell
+# Use a Docker registry for workspace snapshots. If false, snaps are saved to disk.
+CHE_DOCKER_REGISTRY__FOR__SNAPSHOTS=false
+
+# Registry snapshot namespace
+CHE_DOCKER_NAMESPACE=NULL
+```
+
+### Save Workspace Snapshots in a Private Registry
+The default configuration for workspace snapshots is to have them written to disk as TAR files. This is faster, but not centralized. You can have workspace snapshots saved in a private registry instead. In `che.env`:
 
 ```
 CHE_DOCKER_REGISTRY__FOR__SNAPSHOTS=true
 CHE_DOCKER_REGISTRY=<registry-url>
 ```
 
-### Custom Dockerfiles and Composefiles for Workspaces
-Within Che, your workspaces are powered by a set of runtime environments. The default runtime is Docker. Typically, admins have pre-built images in DockerHub or another registry which are pulled when the workspace is created. You can optionally provide custom Dockerfiles (or let your users provide their own Dockerfiles), which will dynamically create a workspace image when a user creates a new workspace.
+## Custom Dockerfiles and Composefiles for Workspaces
+Within Che, your workspaces are powered by a set of runtime environments. The default runtime is Docker. Typically, admins have pre-built images in a Docker registry which are pulled when the workspace is created. You can optionally provide custom Dockerfiles (or let your users provide their own Dockerfiles), which will dynamically create a workspace image when a user creates a new workspace.
 
 To use your custom Dockerfiles, you can:
 
 1. Create a [custom stack]({{ base }}/docs/workspace/stacks/index.html#custom-stack), which includes a [recipe]({{ base }}/docs/workspace/recipes/index.html) with your Dockerfile.
 2. Or, users can create a custom recipe when creating a workspace that references your registry.
 
-### Privileged Mode
+## Privileged Mode
 Docker's privileged mode allows a container to have root-level access to the host from within the container. This enables containers to do more than they normally would, but opens up security risks. You can enable your workspaces to have privileged mode, giving your users root-level access to the host where Che is running (in addition to root access of their workspace). Privileged mode is necessary if you want to enable certain features such as Docker in Docker.
 
 By default, Che workspaces powered by a Docker container are not configured with Docker privileged mode.  There are many security risks to activating this feature - please review the various issues with blogs posted online.  
@@ -207,10 +230,10 @@ By default, Che workspaces powered by a Docker container are not configured with
 CHE_DOCKER_PRIVILEGED_MODE=true
 ```
 
-### Mirroring Docker Hub  
+## Mirroring Docker Hub  
 If you are running a private registry internally to your company, you can [optionally mirror Docker Hub](https://docs.docker.com/registry/recipes/mirror/). Your private registry will download and cache any images that your users reference from the public Docker Hub. You need to [configure your Docker daemon to make use of mirroring](https://docs.docker.com/registry/recipes/mirror).
 
-### Using Docker In Workspaces
+## Using Docker In Workspaces
 If you'd like your users to work with projects which have their own Docker images and Docker build capabilities inside of their workspace, then you need to configure the workspace to work with Docker. You have two options:
 
 1. Activate Docker's prvileged mode, where your user workspaces have access to the host.
@@ -230,15 +253,15 @@ Also, since the Che server and your Che workspaces are within containers governe
 
 Generally, if your browser, Che server and Che workspace are all on the same node, then `localhost` configuration will always work.
 
-### WebSockets  
+## WebSockets  
 Che relies on web sockets to stream content between workspaces and the browser. We have found many networks and firewalls to block portions of Web socket communications. If there are any initial configuration issues that arise, this is a likely cause of the problem.
 
-### Topology  
+## Topology  
 The Che server runs in its own Docker container, "Che Docker Container", and each workspace gets an embedded runtime which can be a set of additional Docker containers, "Docker Container(n)". All containers are managed by a common Docker daemon, "docker-ip", making them siblings of each other. This includes the Che server and its workspaces - each workspace runtime environment has a set of containers that is a sibling to the Che server, not a child.
 
 ![Capture.PNG]({{ base }}/docs/assets/imgs/Capture.PNG)
 
-### Connectivity  
+## Connectivity  
 The browser client initiates communication with the Che server by connecting to `che-ip`. This IP address must be accessible by your browser clients. Internally, Che runs on Tomcat which is bound to port `8080`. This port can be altered by setting `CHE_PORT` during start or in your `che.env`.
 
 When a user creates a workspace, the Che server connects to the Docker daemon at `docker-ip` and uses the daemon to launch a new set of containers that will power the workspace. These workspace containers will have a Docker-configured IP address, `workspace-container-ip`. The `workspace-container-ip` isn't usually reachable by your browser host, `docker-ip` will be used to establish the connections between the browser and workspace containers.
@@ -294,24 +317,24 @@ docker exec -ti <che-container-name> curl http://<che-ip>:<che-port>/wsagent/ext
 docker exec -ti <che-container-name> curl http://<workspace-container-ip>:4401/wsagent/ext/
 ```
 
-### Docker Connectivity
+## Docker Connectivity
 There are multiple techniques for connecting to Docker including Unix sockets, localhost, and remote connections over TCP protocol. Depending upon the type of connection you require and the location of the machine node running Docker, we use different parameters.
 
 TODO: LINK TO DOCKER DOCS ON SETTING TCP VS UNIX FOR A DAEMON
 
-### Workspace Port Exposure  
+## Workspace Port Exposure  
 Inside your user's workspace containers, Che launches microservices on port `4401` and `4403`. We also launch SSH agents on port `22`. The bash terminal accessible in the workspace is also launched as an agent in the workspace on port `4411`. Custom stacks (configured in the dashboard) may expose additional services on different ports.
 
 Docker uses ephemeral port mapping. The ports accessible to your clients start at port `32768` and go through a wide range. When we start services internal to Docker, they are mapped to one of these ports. It is these ports that the browser (or SSH) clients connect to, and would need to be opened if connecting through a firewall.
 
 Additionally, if services are started within the workspace that expose their own ports, then those ports need to have an `EXPOSE <port>` command added to the workspace image Dockerfile, or from within the user dashboard these ports need to be explicitly added to the workspace configuration. As a courtesy, in our default stack images, we expose port `80` and `8080` within the container for any users that want to launch services on those ports.
 
-### Firewalls  
+## Firewalls  
 On Linux, a firewall may block inbound connections from within Docker containers to your localhost network. As a result, the workspace agent is unable to ping the Che server. You can check for the firewall and then disable it.
 
 Firewalls will typically cause traffic problems to appear when you are starting a new workspace. There are certain network configurations where we direct networking traffic between workspaces and Che through external IP addresses, which can flow through routers or firewalls. If ports or protocols are blocked, then certain functions will be unavailable.
 
-#### Running Behind a Firewall (Linux/Mac)
+### Running Behind a Firewall (Linux/Mac)
 
 ```shell
 # Check to see if firewall is running:
@@ -335,7 +358,7 @@ pass in proto tcp from any to any port 1234
 # And then restart your firewall
 ```
 
-#### Running Che Behind a Firewall (Windows)
+### Running Che Behind a Firewall (Windows)
 
 There are many third party firewall services. Different versions of Windows OS also have different firewall configurations. The built-in Windows firewall can be configured in the control panel under "System and Security":
 1. In the left pane, right-click `Inbound Rules`, and then click `New Rule` in the action pane.
