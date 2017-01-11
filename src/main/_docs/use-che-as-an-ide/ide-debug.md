@@ -8,10 +8,10 @@ permalink: /:categories/debug/
 {% include base.html %}
 
 Debuggers are included in Che for:
-* Java
-* C/C++ (via GDB)
-* Node.js (via GDB)
-* PHP (via Zend debugger, zDebug and Z-Ray
+* [Java](#java)
+* [C/C++](#gdb) (via GDB)
+* [PHP](#php) (via Zend debugger, zDebug and Z-Ray)
+* [Node.js](#nodejs) (via GDB)
 
 # Java  
 Java debugger is deployed with the workspace agent, i.e. runs in the workspace. It can connect to local processes (those running in a workspace) or remote ones.
