@@ -6,6 +6,13 @@ layout: docs
 permalink: /:categories/debug/
 ---
 {% include base.html %}
+
+Debuggers are included in Che for:
+* Java
+* C/C++ (via GDB)
+* Node.js (via GDB)
+* PHP (via Zend debugger, zDebug and Z-Ray
+
 # Java  
 Java debugger is deployed with the workspace agent, i.e. runs in the workspace. It can connect to local processes (those running in a workspace) or remote ones.
 
@@ -27,6 +34,8 @@ $TOMCAT_HOME/bin/catalina.sh jpda run
 ```
 You can add debug commands to CMD widget to permanently save them with the workspace config.
 # GDB  
+GDB can be used to debug **C/C++** and **Node.js** projects.
+
 ## Debugging Local Binary
 
 Compile your app with `-g` argument, go to `Run > Edit Debug Configurations > GDB`. Create a new configuration, check `Debug local binary` box. By default, binary path is `${current.project.path/a.out}`. When the debugger attaches, this macro is translated into an absolute path to a currently selected project. `a.out` is the default binary name. If you have compiled binary with a different name, change it:
