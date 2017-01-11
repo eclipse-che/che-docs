@@ -201,7 +201,7 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
 ```
 
 # Hosting
-If you are hosting Che at a cloud service like DigitalOcean, `CHE_HOST` must be set to the server's IP address or its DNS.
+If you are hosting Che at a cloud service like DigitalOcean, or [Bitnami]({{base}}{{site.links["setup-bitnami"]}})  `CHE_HOST` must be set to the server's IP address or its DNS.
 
 We will attempt to auto-set `CHE_HOST` by running an internal utility `docker run --net=host eclipse/che-ip:nightly`. This approach is not fool-proof. This utility is usually accurate on desktops, but usually fails on hosted servers. You can explicitly set this value to the IP address of your server:
 ```
@@ -256,7 +256,7 @@ docker load < /tmp/offline/eclipse_che:<version>.tar
 # Start Che in offline mode
 docker run <other-properties> -v /tmp/offline:/data/backup eclipse/che:<version> start --offline
 ```
-The `--offline` parameter instructs the Che CLI to load all of the TAR files located in the folder mounted to `/data/backup`. These images will then be used instead of routing out to the Internet to check for DockerHub. The preboot sequence takes place before any CLI functions make use of Docker. The `eclipse/che start`, `eclipse/che download`, and `eclipse/che init` commands support `--offline` mode which triggers this preboot seequence.
+The `--offline` parameter instructs the Che CLI to load all of the TAR files located in the folder mounted to `/data/backup`. These images will then be used instead of routing out to the Internet to check for DockerHub. The preboot sequence takes place before any CLI functions make use of Docker. The `eclipse/che start`, `eclipse/che download`, and `eclipse/che init` commands support `--offline` mode which triggers this preboot sequence.
 
 # Uninstall
 ```shell
