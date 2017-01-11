@@ -136,7 +136,7 @@ CHE_DEBUG_PORT=8000
 The IP address or DNS name of where the Che endpoint will service your users. If you are running this on a local system, we auto-detect this value as the IP address of your Docker daemon. On many systems, especially those from cloud hosters like DigitalOcean, you may have to explicitly set this to the external IP address or DNS entry provided by the provider. You can edit this value in `che.env` and restart Che, or you can pass it during initialization:
 
 ```
-docker run <other-syntax-here> -e CHE_HOST=<ip-addr-or-dns> eclipse/che:<version> start
+docker run <OTHER-DOCKER_OPTIONS> -e CHE_HOST=<ip-addr-or-dns> eclipse/che:<version> start
 ```
 
 # Workspace Limits

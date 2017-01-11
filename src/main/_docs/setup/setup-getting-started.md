@@ -55,22 +55,22 @@ INFO: (che start): Use: http://<your-ip>:8080
 INFO: (che start): API: http://<your-ip>:8080/swagger
 
 # Stop Che
-docker run <docker-goodness> eclipse/che stop
+docker run <DOCKER_OPTIONS> eclipse/che stop
 
 # Restart Che
-docker run <docker-goodness> eclipse/che restart
+docker run <DOCKER_OPTIONS> eclipse/che restart
 
 # Run a specific version of Che
-docker run <docker-goodness> eclipse/che:<version> start
+docker run <DOCKER_OPTIONS> eclipse/che:<version> start
 
 # Get help
 docker run eclipse/che
 
-# If boot2docker on Windows (rare), mount a subdir of `%userprofile%` to `:/data`. For example:
-docker run <docker-goodness> -v /c/Users/tyler/che:/data eclipse/che start
+# If boot2docker on Windows, mount a subdir of `%userprofile%` to `:/data`. For example:
+docker run <DOCKER_OPTIONS> -v /c/Users/tyler/che:/data eclipse/che start
 
 # If Che will be accessed from other machines add your server's external IP
-docker run <docker-goodness> -e CHE_HOST=<your-ip> eclipse/che start
+docker run <DOCKER_OPTIONS> -e CHE_HOST=<your-ip> eclipse/che start
 ```
 
 # Develop with Che  
