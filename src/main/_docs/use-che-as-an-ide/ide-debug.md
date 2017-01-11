@@ -10,9 +10,13 @@ permalink: /:categories/debug/
 Java debugger is deployed with the workspace agent, i.e. runs in the workspace. It can connect to local processes (those running in a workspace) or remote ones.
 
 Breakpoints are set with a single click on a line number in the editor. You can set breakpoints before attaching a debugger:
+
 ![breakpoint.png]({{base}}{{site.links["breakpoint.png"]}})
+
 In a Debug Dialog (**Run > Edit Debug Configurations...**), choose if you want to attach to a process in a local workspace or a remote machine. If localhost is chosen, a drop down menu will show all ports that are exposed in a container. You may either choose an existing port or provide your own.
+
 ![debug-configurations.png]({{base}}{{site.links["debug-configurations.png"]}})
+
 ## Java Console Apps
 
 To debug console apps, pass debug arguments to JVM:
@@ -27,7 +31,7 @@ $TOMCAT_HOME/bin/catalina.sh jpda run
 ```
 You can add debug commands to CMD widget to permanently save them with the workspace config.
 # GDB  
-## Debugging Local Binary
+## Debugging Local C/CPP Binary
 
 Compile your app with `-g` argument, go to `Run > Edit Debug Configurations > GDB`. Create a new configuration, check `Debug local binary` box. By default, binary path is `${current.project.path/a.out}`. When the debugger attaches, this macro is translated into an absolute path to a currently selected project. `a.out` is the default binary name. If you have compiled binary with a different name, change it:
 ![debug.png]({{base}}{{site.links["debug.png"]}})
@@ -53,9 +57,9 @@ This commands grabs gdbserver PID and kills the process.
 
 ## Connect to GDB server
 
-Go to `Run > Debug Configurations > Edit Debug Configurations` and enter host (localhost if gdbserver has been started in the same workspace environment), port and path to the binary file being debugged. By default, binary name is `a.out`. If you have compiled your binary with `-o` argument, you need to provide own custom binary name in a debug configuration.
+Go to `Run > Edit Debug Configurations` and enter host (localhost if gdbserver has been started in the same workspace environment), port and path to the binary file being debugged. By default, binary name is `a.out`. If you have compiled your binary with `-o` argument, you need to provide own custom binary name in a debug configuration.
 
-Save your configuration, choose it at `Run > Debug Configuration` and attach the debugger, having previously set breakpoints in source files.
+Save your configuration, choose it at `Run > Debug > <YourDebugConfiguration>` and attach the debugger, having previously set breakpoints in source files.
 
 ### Connection Timeouts
 
@@ -87,7 +91,7 @@ The debugging workflow involves the following steps:
 
 ## Starting the Zend Debugger Client
 
-Eclipse Che has the Zend Debugger Client integrated in the Web IDE. For launching the Zend Debugger Client:
+{{site.product_formal_name}} has the Zend Debugger Client integrated in the Web IDE. For launching the Zend Debugger Client:
 
 1. Go to `Run > Edit Debug Configurations` from the main menu.
 1. Create new `PHP` configuration.
@@ -101,7 +105,7 @@ The successful launch of the Zend Debugger Client is noted with a notification m
 The Debug Configuration window allows the following configuration for the Zend Debugger Client:
 
 - `Break at first line`. Determines whether to break the execution at the very first line, hit by the PHP interpreter. Enabled by default. It is useful to easily find the app's entry point. You may want to switch this option off if you defined your own breakpoint and you are not interesting at breaking the execution at the first line.
-- `Client host/IP`. The host/IP on which to bind the server socket for listening for new debug sessions. The default host is `localhost`. Changing it should be only necessary if the PHP engine is running in a different workspace machine or outside of the Che workspace at all.
+- `Client host/IP`. The host/IP on which to bind the server socket for listening for new debug sessions. The default host is `localhost`. Changing it should be only necessary if the PHP engine is running in a different workspace machine or outside of the {{site.product_mini_name}} workspace at all.
 - `Debug port`. The port on which to bind the server socket for listening for new debug sessions. The default port is `10137`. It should be rarely necessary to change it.
 - `Use SSL encryption`. Whether to use SSL encryption for the debugging communication between the PHP engine and the Zend Debugger Client. Disabled by default.
 
@@ -137,13 +141,13 @@ http://localhost:32810/web-php-simple/index.php?start_debug=1&debug_host=localho
 
 The [zDebug](https://chrome.google.com/webstore/detail/zdebug/gknbnafalimbhgkmichoadhmkaoingil) extension can be used for easier triggering of debug sessions from the Chrome browser. The [Zend Debugger Extension](https://chrome.google.com/webstore/detail/zend-debugger-extension/aonajadpeeaijblinaeohfdmbgdpibba) is another extension that does the same job.
 
-It is important to configure the Chrome extension properly before using it for debugging PHP apps running in a Che workspace:
+It is important to configure the Chrome extension properly before using it for debugging PHP apps running in a {{site.product_mini_name}} workspace:
 
 1. Set `Debug Host` to `localhost` or `127.0.0.1`.
 1. Set `Debug Port` to `10137`.
 1. Set `Debug Local Copy` to `No`.
 
-Note that it is not the browser that opens the debug session to the Zend Debugger Client. This is done by the PHP engine that runs in the Che workspace. The browser just tells the PHP engine to do so. So the above settings are for the PHP engine (the Zend Debugger module in particular). Thus the `Debug Host` must be set to `localhost` and not the public host of the docker container running the Che workspace.
+Note that it is not the browser that opens the debug session to the Zend Debugger Client. This is done by the PHP engine that runs in the {{site.product_mini_name}} workspace. The browser just tells the PHP engine to do so. So the above settings are for the PHP engine (the Zend Debugger module in particular). Thus the `Debug Host` must be set to `localhost` and not the public host of the docker container running the {{site.product_mini_name}} workspace.
 
 In the end the zDebug settings should look like this:
 
@@ -187,3 +191,54 @@ Among other features, it also has the capability to trigger a debug session:
 ![z-ray-debug.png]({{ base }}{{ site.links["z-ray-debug.png"] }})
 
 That's all!
+
+# NodeJS
+
+The Node.js ready-to-go [stack]({{ base }}{{ site.links["ws-stacks"] }}) come with Node.js debugger module installed and configured. Dockerfile is located on github [eclipse/che-dockerfiles](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/node/latest/Dockerfile) repository.
+
+The debugging workflow involves the following steps:
+
+1. Launch the Node.js debugger client to start debug session
+1. Optionally set breakpoints in the editor
+1. Create/Run command to generate preview url
+1. Click preview url to open new tab with web app
+1. Use the Web IDE tooling to do the actual debugging
+
+## Starting Node.js Debugger Client
+
+{{site.product_formal_name}} has the Node.js Client integrated in the Web IDE. For launching the Node.js Debugger Client:
+
+1. Go to `Run > Edit Debug Configurations` from the main menu
+1. Create new `NODEJS` configuration
+1. Change any settings if necessary. The defaults are usually OK
+1. Click the `Debug` button
+1. Will break at first line of code
+
+![debug-nodejs-config.png]({{ base }}{{ site.links["debug-nodejs-config.png"] }})
+
+## Creating command to view preview url
+
+{{site.product_formal_name}}'s workspaces have machine(s) that are docker container(s). These workspace machines have exposed ports which are initially set by [stack]({{base}}{{site.links["ws-stacks"]}}) and [additional exposed ports](#exposed-ports) can be added through the [machine information in dashboard]({{base}}{{site.links["ws-machines"]}}#dashboard-machine-information)
+
+1. Add command `Run > Edit Commands` 
+1. Give command a name like "View Preview URL"
+1. Add fictitious command `echo` for required command line
+1. Provide preview url for nodejs server such as `http://${server.port.<port>}/`
+
+## Use Node.js Debugger
+
+1. Start debugger `Run > debug > <config-name>`
+1. Click continue button until server is running
+1. Add breakpoints
+1. Run command to generate preview url
+1. Click preview url to open web app in another tab
+1. Go back to IDE tab
+1. Use the Web IDE tooling to do the actual debugging
+
+![nodejs-debugger-walkthru.gif]({{ base }}{{ site.links["nodejs-debugger-walkthru.gif"] }})
+
+## Exposed Ports
+
+Exposed ports can be defined in stacks dockerfile or compose file. If using ready-to-go node [stack]({{base}}{{site.links["ws-stacks"]}}) you can view dockerfile `EXPOSE` command on github repo [eclipse/che-dockerfiles](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/node/latest/Dockerfile). Additional exposed ports can be added through dashboard `dashboard > select workspace > runtime > <expand machine> > add server`.
+
+![nodejs-debugger-add-port.gif]({{ base }}{{ site.links["nodejs-debugger-add-port.gif"] }})
