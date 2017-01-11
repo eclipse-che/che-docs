@@ -251,7 +251,7 @@ mvn clean install
 docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock \
                     -v <local-path>:/data \
                     -v <local-repo>:/repo \
-                    eclipse/che-cli:<version> start
+                    eclipse/che:<version> start
 ```
 
 To start Che from the custom assembly you just built, you can refer to this [Usage: Development Mode Launcher]({{ base}}/docs/setup/configuration/index.html#development-mode)
@@ -285,7 +285,7 @@ mvn clean install
 docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock \
                     -v <local-path>:/data \
                     -v <local-repo>:/repo \
-                    eclipse/che-cli:<version> start
+                    eclipse/che:<version> start
 ```
 To start Che from the custom assembly you just built, you can refer to this [Usage: Development Mode Launcher]({{ base}}/docs/setup/configuration/index.html#development-mode)
 
@@ -312,7 +312,7 @@ mvn clean install
 docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock \
                     -v <local-path>:/data \
                     -v <local-repo>:/repo \
-                    eclipse/che-cli:<version> start
+                    eclipse/che:<version> start
 ```
 
 To start Che from the custom assembly you just built, you can refer to this [Usage: Development Mode Launcher]({{ base}}/docs/setup/configuration/index.html#development-mode)

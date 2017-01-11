@@ -148,7 +148,7 @@ The idea is to require Eclipse to rebuild the workspace and update the project's
 docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock \
                     -v <local-path>:/data \
                     -v <local-repo>:/repo \
-                    eclipse/che-cli:<version> start
+                    eclipse/che:<version> start
 ```
 
 

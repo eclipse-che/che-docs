@@ -38,7 +38,7 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
                     -v <path>:/data
                     -v <path-to-project>:/chedir
                        eclipse/che:<version> dir down
-```docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> [COMMAND] dir <path-to-project> down`.
+```
 
 Now imagine every repository that you work on being this easy to convert into a debuggable workspace that includes its own pre-configured IDE. Chedir is all you need to convert repositories into workspaces with their own private runtimes, dependencies, networking and synchronized folders.
 

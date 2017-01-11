@@ -100,12 +100,12 @@ TODO: UPDATE THIS FOR THE NEW LOCATION WITH THE CLI ON HOW TO ADD
 # Development Mode
 You can debug the Che binaries that are running within the Che server. You can debug either the binaries that are included within the `eclipse/che-server` image that you download from DockerHub or you can mount a local Che git repository to debug binaries built in a local assembly. By using local binaries, this allows Che developers to perform a rapid edit / build / run cycle without having to rebuild Che's Docker images.
 
-Dev mode is activated by passing `--debug` to any command on the CLI. 
+Dev mode is activated by passing `--debug` to any command on the CLI.
 ```
 # Activate dev mode with embedded binaries
 docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock \
                     -v <local-path>:/data \
-                       eclipse/che-cli:<version> [COMMAND] --debug
+                       eclipse/che:<version> [COMMAND] --debug
 ```
 
 You can replace the binaries in your local image with local binaries by volume mounting the Che git repository to `:/repo` in your Docker run command.
@@ -113,7 +113,7 @@ You can replace the binaries in your local image with local binaries by volume m
 docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock \
                     -v <local-path>:/data \
                     -v <local-repo>:/repo \
-                       eclipse/che-cli:<version> [COMMAND] --debug
+                       eclipse/che:<version> [COMMAND] --debug
 ```
 
 You can also optionally use your local binaries in production mode by volume mounting `:/repo` without passing `--debug`.
@@ -136,7 +136,7 @@ CHE_DEBUG_PORT=8000
 The IP address or DNS name of where the Che endpoint will service your users. If you are running this on a local system, we auto-detect this value as the IP address of your Docker daemon. On many systems, especially those from cloud hosters like DigitalOcean, you may have to explicitly set this to the external IP address or DNS entry provided by the provider. You can edit this value in `che.env` and restart Che, or you can pass it during initialization:
 
 ```
-docker run <other-syntax-here> -e CHE_HOST=<ip-addr-or-dns> eclipse/che-cli:<version> start
+docker run <OTHER-DOCKER_OPTIONS> -e CHE_HOST=<ip-addr-or-dns> eclipse/che:<version> start
 ```
 
 # Workspace Limits

@@ -10,7 +10,7 @@ The Docker image which runs Che is the Che CLI. It has various commands for runn
 
 ```
 USAGE:
-  docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> [COMMAND]
+  docker run -it --rm <DOCKER_PARAMETERS> eclipse/che:<version> [COMMAND]
 
 MANDATORY DOCKER PARAMETERS:
   -v <LOCAL_PATH>:/data                Where user, instance, and log data saved
@@ -66,7 +66,7 @@ TARS your `/instance` into files and places them into `/backup`. These files are
 ###### config
 Generates a Che instance configuration thta is placed in `/instance`. This command uses puppet to generate Docker Compose configuration files to run Che and its associated server. Che's server configuration is generated as a che.properties file that is volume mounted into the Che server when it boots. This command is executed on every `start` or `restart`.
 
-If you are using a `eclipse/che-cli:<version>` image and it does not match the version that is in `/instance/che.ver`, then the configuration will abort to prevent you from running a configuration for a different version than what is currently installed.
+If you are using a `eclipse/che:<version>` image and it does not match the version that is in `/instance/che.ver`, then the configuration will abort to prevent you from running a configuration for a different version than what is currently installed.
 
 This command respects `--no-force`, `--pull`, `--force`, and `--offline`.
 
@@ -90,7 +90,7 @@ Other commands are `init`,`up`, `down`, `ssh` and `status`
 ###### download
 Used to download Docker images that will be stored in your Docker images repository. This command downloads images that are used by the CLI as utilities, for Che to do initialization and configuration, and for the runtime images that Che needs when it starts.  This command respects `--offline`, `--pull`, `--force`, and `--no-force` (default).  This command is invoked by `che init`, `che config`, and `che start`.
 
-`download` is invoked by `che init` before initialization to download images for the version specified by `eclipse/che-cli:<version>`.
+`download` is invoked by `che init` before initialization to download images for the version specified by `eclipse/che:<version>`.
 
 ###### info
 Displays system state and debugging information. `--network` runs a test to take your `CHE_HOST` value to test for networking connectivity simulating browser > Che and Che > workspace connectivity.
@@ -155,14 +155,14 @@ The list of all the tests available can be obtained by providing only `test` com
 ###### upgrade
 Manages the sequence of upgrading Che from one version to another. Run `che version` to get a list of available versions that you can upgrade to.
 
-Upgrading Che is done by using a `eclipse/che-cli:<version>` that is newer than the version you currently have installed. For example, if you have 5.0.0-M2 installed and want to upgrade to 5.0.0-M7, then:
+Upgrading Che is done by using a `eclipse/che:<version>` that is newer than the version you currently have installed. For example, if you have 5.0.0-M2 installed and want to upgrade to 5.0.0-M7, then:
 ```
 # Get the new version of Che
-docker pull eclipse/che-cli:5.0.0-M7
+docker pull eclipse/che:5.0.0-M7
 
-# You now have two eclipse/che-cli images (one for each version)
+# You now have two eclipse/che images (one for each version)
 # Perform an upgrade - use the new image to upgrade old installation
-docker run <volume-mounts> eclipse/che-cli:5.0.0-M7 upgrade
+docker run <volume-mounts> eclipse/che:5.0.0-M7 upgrade
 ```
 
 The upgrade command has numerous checks to prevent you from upgrading Che if the new image and the old version are not compatiable. In order for the upgrade procedure to proceed, the CLI image must be newer than the value of '/instance/che.ver'.
