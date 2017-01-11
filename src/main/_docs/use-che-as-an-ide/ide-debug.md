@@ -219,7 +219,7 @@ You can set breakpoints in the editor at any time by clicking on the line number
 
 ### Creating a Command to View the Preview URL
 
-{{site.product_formal_name}}'s workspaces have machine(s) that are docker container(s). These workspace machines have exposed ports which are initially set by [stack]({{base}}{{site.links["ws-stacks"]}}) and [additional exposed ports](#exposed-ports) can be added through the [machine information in dashboard]({{base}}{{site.links["ws-machines"]}}#dashboard-machine-information)
+{{site.product_formal_name}}'s workspaces have machine(s) that are docker container(s). Docker container's exposed ports are given an emphemerial port. The preview url provides an easy way convert an internal port to it's external emphemerial port counter part.
 
 1. Add a command `Run > Edit Commands` 
 1. Give the command a name like "View Preview URL"
@@ -240,6 +240,6 @@ You can set breakpoints in the editor at any time by clicking on the line number
 
 ## Exposed Ports
 
-Exposed ports can be defined in stacks dockerfile or compose file. If using ready-to-go node [stack]({{base}}{{site.links["ws-stacks"]}}) you can view dockerfile `EXPOSE` command on github repo [eclipse/che-dockerfiles](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/node/latest/Dockerfile). Additional exposed ports can be added through dashboard `dashboard > select workspace > runtime > <expand machine> > add server`.
+Exposed ports can be defined in stacks dockerfile or compose file. If using ready-to-go node [stack]({{base}}{{site.links["ws-stacks"]}}) you can view dockerfile `EXPOSE` command on github repo [eclipse/che-dockerfiles](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/node/latest/Dockerfile) for a list of exposed ports. Additional exposed ports can be added through dashboard `dashboard > select workspace > runtime > <expand machine> > server > add`.
 
 ![nodejs-debugger-add-port.gif]({{ base }}{{ site.links["nodejs-debugger-add-port.gif"] }})
