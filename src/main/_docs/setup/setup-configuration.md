@@ -178,8 +178,31 @@ FROM <repository>/<image>:<tag>
 FROM my.registry.url:9000/image:latest
 ```
 
+### Workspace Snapshots Behaviors
+You can configure behaviors for workspace snapshots. By default any workspace stop event will automatically snapshot the workspace runtime (and all of its images). Anything in your workspace `/project` folder will be saved to the data folder you mounted into the Che container. We then use Docker to snapshot the remaining contents of the workspace into a Docker image. There is a matching auto-restore configuration item which will automatically restart the workspace from the latest saved Docker image on disk. When the workspace is started, your project files will be re-mounted or re-synced into `/projects`.
+
+You can configure auto-snapshot and auto-restore behaviors by modifiyng [`che.env` file]({{base}}{{site.links["setup-configuration"]}}#internal-configuration):
+
+```shell
+# During the stop of the workspace automatically creates a snapshot if the value is {true},
+# Otherwise just stops the workspace.
+CHE_WORKSPACE_AUTO__SNAPSHOT=false
+
+# During the start of the workspace automatically restore it from a snapshot if the value is {true},
+# Otherwise create a new workspace.
+CHE_WORKSPACE_AUTO__RESTORE=false
+```
+
 ### Using Snapshots with Private Registries
 You can configure Che to save your workspace snapshots to a private registry that you have installed, such as JFrog's Artifactory or Docker's Enterprise Registry. The default configuration of workspace snapshots is to save to local disk.
+
+```shell
+# Use a Docker registry for workspace snapshots. If false, snaps are saved to disk.
+CHE_DOCKER_REGISTRY__FOR__SNAPSHOTS=false
+
+# Registry snapshot namespace
+CHE_DOCKER_NAMESPACE=NULL
+```
 
 #### Save Workspace Snapshots in a Private Registry
 The default configuration for workspace snapshots is to have them written to disk as TAR files. This is faster, but not centralized. You can have workspace snapshots saved in a private registry. In `che.env`:
