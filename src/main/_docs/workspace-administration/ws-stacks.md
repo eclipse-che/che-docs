@@ -138,6 +138,15 @@ Duplicating an existing stack is often a good way to create your own. Click the 
 Stacks name and configuration can be edited by clicking on the stack item name which will bring up the stack editing interface. The stack can be renamed at the top of the stack editing interface. The stack configuration can be changed using the provided forms. After editing is complete, the stack can be saved by clicking the save button.
 ![che-edit-stack.gif]({{ base }}{{site.links["che-edit-stack.gif"]}})
 
+## Test a Stack
+The built-in stacks editor allows to author your stack and test them into a temporary workspace. When, testing the new stack, Che spins up a temporary and isolated workspace using the stack you just defined. You can use the temporary workspace to import your project, test commands and ensure all the components you need are properly configured. Once the testing session is completed, the temporary workspace will be automatically deleted.
+
+Test the stack, by clicking the `Test` button - it will start the temporary workspace on an overlay over the dashboard.
+![che-test-stack.gif]({{ base }}{{site.links["che-test-stack.gif"]}})
+
+You can stop the testing session and the temporary workspace by clicking on the `Close` icon
+
+
 ## Delete a Stack
 Stacks can be deleted by clicking the checkbox on the left then the delete button that appear on the top right of the page or by clicking the trash bin icon on the right side of the stack item.
 ![Che-Stack-Delete.jpg]({{ base }}{{site.links["Che-Stack-Delete.jpg"]}})
