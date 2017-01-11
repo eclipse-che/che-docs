@@ -10,7 +10,11 @@ In the first version of Chedir, each Chedir directory maps to a single Che serve
 
 You can boot both a Che server and a worskpace (with its embedded runtimes) with a single command:
 ```shell  
-docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> dir <path-to-project> up
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                    -v <path>:/data
+                    -v <path-to-project>:/chedir
+                       eclipse/che:<version> dir up
+
 ```
 
 This command will boot a Che server according to the properties in the Chefile. If necessary, the right Che launcher and Che server Docker images will be downloaded and cached. After the server has booted, Chedir will create a workspace and start its runtime, also as a set of Docker containers.
@@ -25,14 +29,21 @@ The workspace is a fully functional runtime environment. You can work within the
 
 When you are done working on the workspace, you can suspend the workspace and have it snapshot.
 ```shell  
-docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> dir <path-to-project> down
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                    -v <path>:/data
+                    -v <path-to-project>:/chedir
+                       eclipse/che:<version> dir down
+
 ```
 
-Run Chedir `down` command on the host machine. Chedir will stop the workspace's runtime, stop the Che server, and return to the host. The workspace and its project will be preserved.  You can run Chedir `up` to reactivate it. This command is the equivalent of running `docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> stop` with the CLI.
+Run Chedir `down` command on the host machine. Chedir will stop the workspace's runtime, stop the Che server, and return to the host. The workspace and its project will be preserved.  You can run Chedir `up` to reactivate it. This command is the equivalent of running `docker run -it --rm <DOCKER_PARAMETERS> eclipse/che:<version> stop` with the CLI.
 
 To stop the Che server and remove the workspace, you can destroy it.
 ```shell  
-docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> dir <path-to-workspace> destroy
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
+                    -v <path>:/data
+                    -v <path-to-project>:/chedir
+                       eclipse/che:<version> dir destroy
 ```
 
 ## NEXT STEPS
