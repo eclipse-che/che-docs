@@ -237,9 +237,3 @@ You can set breakpoints in the editor at any time by clicking on the line number
 1. Use the Web IDE tooling to do the actual debugging
 
 ![nodejs-debugger-walkthru.gif]({{ base }}{{ site.links["nodejs-debugger-walkthru.gif"] }})
-
-## Exposed Ports
-
-Exposed ports can be defined in stacks dockerfile or compose file. If using ready-to-go node [stack]({{base}}{{site.links["ws-stacks"]}}) you can view dockerfile `EXPOSE` command on github repo [eclipse/che-dockerfiles](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/node/latest/Dockerfile) for a list of exposed ports. Additional exposed ports can be added through dashboard `dashboard > select workspace > runtime > <expand machine> > server > add`.
-
-![nodejs-debugger-add-port.gif]({{ base }}{{ site.links["nodejs-debugger-add-port.gif"] }})
