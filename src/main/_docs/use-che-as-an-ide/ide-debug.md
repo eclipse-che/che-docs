@@ -31,7 +31,7 @@ $TOMCAT_HOME/bin/catalina.sh jpda run
 ```
 You can add debug commands to CMD widget to permanently save them with the workspace config.
 # GDB  
-## Debugging Local C/CPP Binary
+## Debugging Local C/C++ Binary
 
 Compile your app with `-g` argument, go to `Run > Edit Debug Configurations > GDB`. Create a new configuration, check `Debug local binary` box. By default, binary path is `${current.project.path/a.out}`. When the debugger attaches, this macro is translated into an absolute path to a currently selected project. `a.out` is the default binary name. If you have compiled binary with a different name, change it:
 ![debug.png]({{base}}{{site.links["debug.png"]}})
@@ -194,44 +194,45 @@ That's all!
 
 # NodeJS
 
-The Node.js ready-to-go [stack]({{ base }}{{ site.links["ws-stacks"] }}) come with Node.js debugger module installed and configured. Dockerfile is located on github [eclipse/che-dockerfiles](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/node/latest/Dockerfile) repository.
+The Node.js ready-to-go [stack]({{ base }}{{ site.links["ws-stacks"] }}) comes with a Node.js debugger module installed and configured. The Dockerfile is located in the [eclipse/che-dockerfiles](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/node/latest/Dockerfile) repository.
 
-The debugging workflow involves the following steps:
+The debugging workflow is:
 
-1. Launch the Node.js debugger client to start debug session
-1. Optionally set breakpoints in the editor
-1. Create/Run command to generate preview url
-1. Click preview url to open new tab with web app
-1. Use the Web IDE tooling to do the actual debugging
+1. Launch the Node.js debugger client to start a debug session
+1. Create/Run command to generate a preview URL
+1. Click the preview URL to interact with the app
+1. Use the debugger panel to perform debug functions
 
-## Starting Node.js Debugger Client
+You can set breakpoints in the editor at any time by clicking on the line number.
 
-{{site.product_formal_name}} has the Node.js Client integrated in the Web IDE. For launching the Node.js Debugger Client:
+## Starting the Node.js Debugger Client
+
+{{site.product_formal_name}} has the Node.js client integrated in the web IDE. to launch the debugger client:
 
 1. Go to `Run > Edit Debug Configurations` from the main menu
-1. Create new `NODEJS` configuration
+1. Create a new `NODEJS` configuration
 1. Change any settings if necessary. The defaults are usually OK
 1. Click the `Debug` button
-1. Will break at first line of code
+1. The debugger will break at first line of code
 
 ![debug-nodejs-config.png]({{ base }}{{ site.links["debug-nodejs-config.png"] }})
 
-## Creating command to view preview url
+### Creating a Command to View the Preview URL
 
 {{site.product_formal_name}}'s workspaces have machine(s) that are docker container(s). These workspace machines have exposed ports which are initially set by [stack]({{base}}{{site.links["ws-stacks"]}}) and [additional exposed ports](#exposed-ports) can be added through the [machine information in dashboard]({{base}}{{site.links["ws-machines"]}}#dashboard-machine-information)
 
-1. Add command `Run > Edit Commands` 
-1. Give command a name like "View Preview URL"
-1. Add fictitious command `echo` for required command line
-1. Provide preview url for nodejs server such as `http://${server.port.<port>}/`
+1. Add a command `Run > Edit Commands` 
+1. Give the command a name like "View Preview URL"
+1. Add a fictitious command `echo` for required command line
+1. Provide the preview URL for your app such as `http://${server.port.<port>}/`
 
-## Use Node.js Debugger
+### Using the Node.js Debugger
 
-1. Start debugger `Run > debug > <config-name>`
-1. Click continue button until server is running
-1. Add breakpoints
-1. Run command to generate preview url
-1. Click preview url to open web app in another tab
+1. Start the debugger `Run > debug > <config-name>`
+1. Click the continue button until server is running
+1. Add breakpoints if needed
+1. Run the preview URL command (see above)
+1. Click the preview URL to open web app in another tab
 1. Go back to IDE tab
 1. Use the Web IDE tooling to do the actual debugging
 
