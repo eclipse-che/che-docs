@@ -255,14 +255,23 @@ Che goes through a progression algorithm to establish the protocol, IP address a
 #    2. Else, use the value of DOCKER_HOST system variable
 #    3. Else, use Unix socket over unix:///var/run/docker.sock
 #
-# Che Server --> Workspace Connection:
-# Browser    --> Workspace Connection:
+# Che Server --> Workspace Connection (see Workspace Address Resolution Strategy, below):
+#    - If CHE_DOCKER_SERVER__EVALUATION__STRATEGY is 'default':
+#        1. Use the value of che.docker.ip
+#        2. Else, use address of docker0 bridge network, if available
+#        3. Else, if server connects over Unix socket, then use localhost
+#        4. Else, use DOCKER_HOST
+#    - If CHE_DOCKER_SERVER__EVALUATION__STRATEGY is 'docker-local':
+#        1. Use the address of the workspace container within the docker network
+#        2. If address cannot be read, use steps 3 and 4 from the default strategy. 
+#
+# Browser --> Workspace Connection:
 #    1. Use the value of che.docker.ip
 #    2. Else, if server connects over Unix socket, then use localhost
 #    3. Else, use DOCKER_HOST
 #
 # Workspace Agent --> Che Server
-#    1. Default is http://che-host:${SERVER_PORT}/wsmaster/api. che-host IP is defined in Workspace Agent /etc/hosts.
+#    1. Default is http://che-host:${SERVER_PORT}/wsmaster/api, where che-host is IP of server.
 #    2. Else, use value of che.workspace.che_server_endpoint
 #    3. Else, if 'docker0' interface is unreachable, then che-host replaced with
 #       172.17.42.1 or 192.168.99.1
@@ -293,6 +302,10 @@ docker exec -ti <che-container-name> curl http://<che-ip>:<che-port>/wsagent/ext
 # Server => Workspace Agent (Internal IP):
 docker exec -ti <che-container-name> curl http://<workspace-container-ip>:4401/wsagent/ext/
 ```
+#### Workspace Address Resolution Strategy
+By default, the Che server will connect to workspace containers according to the 'default' strategy. The order of precedence, Che will use `CHE_DOCKER_IP` if it is set, if not, it will use the address `docker-ip`. If `docker-ip` cannot be determined, it will default to `localhost` for Unix socket connections, and `DOCKER_HOST`. 
+
+An alternative strategy is available, by setting `CHE_DOCKER_SERVER__EVALUATION__STRATEGY` to 'docker-local'. In this mode, Che will attempt to communicate with workspace containers directly, using `workspace-container-ip`, with `localhost`/`DOCKER_HOST` as a fallback as in the default strategy. This can avoid some issues with ephemeral ports and firewalls (see section 'Firewalls', below), but will cause workspace creation to fail if the Che server is configured to not launch workspaces within the same Docker network.
 
 ### Docker Connectivity
 There are multiple techniques for connecting to Docker including Unix sockets, localhost, and remote connections over TCP protocol. Depending upon the type of connection you require and the location of the machine node running Docker, we use different parameters.
