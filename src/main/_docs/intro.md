@@ -53,7 +53,7 @@ Che has three types of users:
 Che is supported by engineers from Bitnami, Codenvy, SAP, IBM, Serli, Red Hat, Tomitribe,and WSO2.  [Codenvy](http://codenvy.com) provides a multi-tenant, multi-user infrastructure for Che with enhanced security and deployable on any public or private cloud.
 # Logical Architecture  
 
-![Capture_.PNG]({{ base }}/docs/assets/imgs/Capture_.PNG)
+![Capture_architecture.PNG]({{ base }}/docs/assets/imgs/Capture_architecture.PNG)
 Che is a workspace server that runs on top of an application server like Tomcat. When the Che server is launched, the IDE is loaded as a Web application accessible via a browser at `http://localhost:8080/`. The browser downloads the IDE as a single page web app from the Che server.  The Web application provides UI components such as wizards, panels, editors, menus, toolbars, and dialog boxes.
 
 As a user interacts with the Web application, they will create workspaces, projects, environments, machines, and other artifacts necessary to code and debug a project. The IDE communicates with Che over RESTful APIs that manage and interact with a Workspace Master.
