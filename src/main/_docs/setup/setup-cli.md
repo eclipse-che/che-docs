@@ -171,6 +171,8 @@ The upgrade process: a) performs a version compatibility check, b) downloads new
 
 You can run `che version` to see the list of available versions that you can upgrade to.
 
+`--skip-backup` option allow to skip [backup](https://github.com/codenvy/che-docs/blob/master/src/main/_docs/setup/setup-cli.md#backup) during update, that could be useful to speed up upgrade because [backup](https://github.com/codenvy/che-docs/blob/master/src/main/_docs/setup/setup-cli.md#backup) can be very expensive operation if `/instace` folder is really big due to many user worksapces and projects.
+
 ###### version
 Provides information on the current version and the available versions that are hosted in Che's repositories. `che upgrade` enforces upgrade sequences and will prevent you from upgrading one version to another version where data migrations cannot be guaranteed.
 
