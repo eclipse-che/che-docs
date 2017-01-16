@@ -53,10 +53,13 @@ Che uses oAuth2 to get authentication tokens from OpenShift. You need to registe
 # Requires OpenShift admin privs
 oc create -f <(echo '
 {
-  "kind": "OAuthClient\n  "apiVersion": "v1\n  "metadata": {
+  "kind": "OAuthClient",
+  "apiVersion": "v1",
+  "metadata": {
     "name": "che"
   },
-  "secret": "yoursecret\n  "redirectURIs": [
+  "secret": "yoursecret",
+  "redirectURIs": [
     "http://localhost:8080/wsmaster/api/oauth/callback"
   ]
 }')
