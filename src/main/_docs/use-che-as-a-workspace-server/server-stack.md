@@ -23,6 +23,8 @@ Swagger: http://localhost:8080/swagger/#!/stack/searchStacks
 
 # Create a New Stack
 
+To create a stack, you need to define its configuration according to the stack data model. You can learn it on the [following page]({{base}}{{site.links["ws-data-model-stacks"]}})
+
 JSON with stack configurations is sent in a POST request:
 
 #### cURL - Create a new stack

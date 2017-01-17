@@ -124,6 +124,10 @@ In the user dashboard, click the `Stacks` to view all the available stacks. New 
   "id": "java-default"
 }
 ```
+
+Learn more about the stack data model on the ![following page]({{base}}{{site.links["ws-data-model-stacks"]}})
+
+
 ## Create a Stack
 A stack can be created from scratch using a skeleton template or duplicated from an existing stack.
 
@@ -151,7 +155,13 @@ You can stop the testing session and the temporary workspace by clicking on the 
 Stacks can be deleted by clicking the checkbox on the left then the delete button that appear on the top right of the page or by clicking the trash bin icon on the right side of the stack item.
 ![Che-Stack-Delete.jpg]({{ base }}{{site.links["Che-Stack-Delete.jpg"]}})
 ## Register a Custom Stack
-Che has a stack API that you can call to manage your custom stacks. See the [Stacks]({{base}}{{site.links["ws-stacks"]}}) page in section _Use Che as a workspace server_ section.
+Che has a stack API that you can call to manage your custom stacks. See the [Stacks]({{base}}{{site.links["server-stack"]}}) page in section _Use Che as a workspace server_ section.
 
 # Adding Stacks to the Che Default Assembly  
-//TODO
+If you are extending Eclipse Che, you can alter the default stacks provided with your custom assembly. In order to do that, you have to modify the `stacks.json` which is used to initialize Che's stacks.
+This file is located here:
+[https://github.com/eclipse/che/blob/master/core/ide/che-core-ide-stacks/src/main/resources/stacks.json](https://github.com/eclipse/che/blob/master/core/ide/che-core-ide-stacks/src/main/resources/stacks.json)
+
+To create a stack, you need to define its configuration according to the stack data model. You can learn it on the [following page]({{base}}{{site.links["ws-data-model-stacks"]}})
+
+Also, if you believe your custom stack would be useful to others issue a pull request against the `stacks.json` at [https://github.com/eclipse/che/blob/master/core/ide/che-core-ide-stacks/src/main/resources/stacks.json](https://github.com/eclipse/che/blob/master/core/ide/che-core-ide-stacks/src/main/resources/stacks.json). If accepted this will add your stack to the default stack library in the product.
