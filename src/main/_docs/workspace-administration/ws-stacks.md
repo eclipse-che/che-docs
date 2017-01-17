@@ -13,6 +13,7 @@ Stacks are displayed within the user dashboard and stack tags are used to filter
 You can use Che's [built-in stacks]({{base}}{{site.links["ws-stacks"]}}#using-stacks-to-create-a-new-workspace) or [author your own custom stacks]({{base}}{{site.links["ws-stacks"]}}#custom-stack).
 
 A stack is different from a [recipe]({{base}}{{site.links["ws-recipes"]}}). A stack is a JSON definition with meta information which includes a reference to a recipe. A recipe is either a [Dockerfile](https://docs.docker.com/engine/reference/builder/) or a [Docker compose file](https://docs.docker.com/compose/) used by Che to create a runtime that will be embedded within the workspace.  It is also possible to write a custom plug-in that replaces the default Docker machine implementation within Che with another one. For details on this, see [Building Extensions]({{base}}{{site.links["plugins-create-and-build-extensions"]}}) and / or start a dialog with the core Che engineers at `che-dev@eclipse.org`.
+
 # Using Stacks To Create a New Workspace  
 To create a new workspace in the user dashboard:
 - Click `Dashboard` > `Create Workspace`
@@ -124,6 +125,9 @@ In the user dashboard, click the `Stacks` to view all the available stacks. New 
   "id": "java-default"
 }
 ```
+
+Learn more about the stack data model on the ![following page]({{base}}{{site.links["ws-data-model-stacks"]}})
+
 ## Create a Stack
 A stack can be created from scratch using a skeleton template or duplicated from an existing stack.
 
@@ -131,27 +135,32 @@ To create a stack from scratch click the `Add Stacks` button at the top left of 
 ![che-add-stack.gif]({{ base }}{{site.links["che-add-stack.gif"]}})
 
 ## Duplicate a Stack
-Duplicating an existing stack is often a good way to create your own. Click the duplicate icon on the right of the stack item you want. This will create a new stack name `<original name> - Copy` which can then be renamed and configuration edited.
+Duplicating an existing stack is often a good way to create your own. Click the duplicate icon on the right of the stack item you want. This will create a new stack name `<original name> - Copy` which can then be renamed and its configuration edited.
 ![Che-Stack-Duplicate.jpg]({{ base }}{{site.links["Che-Stack-Duplicate.jpg"]}})
 
 ## Edit a Stack
-Stacks name and configuration can be edited by clicking on the stack item name which will bring up the stack editing interface. The stack can be renamed at the top of the stack editing interface. The stack configuration can be changed using the provided forms. After editing is complete, the stack can be saved by clicking the save button.
+Stack name and configuration can be edited by clicking on the stack which will bring up the stack editing interface. The stack can be renamed at the top of the stack editing interface. The stack configuration can be changed using the provided forms. After editing is complete, the stack can be saved by clicking the save button.
 ![che-edit-stack.gif]({{ base }}{{site.links["che-edit-stack.gif"]}})
 
 ## Test a Stack
-The built-in stacks editor allows to author your stack and test them into a temporary workspace. When, testing the new stack, Che spins up a temporary and isolated workspace using the stack you just defined. You can use the temporary workspace to import your project, test commands and ensure all the components you need are properly configured. Once the testing session is completed, the temporary workspace will be automatically deleted.
+The built-in stacks editor allows to author your stack and test them in a temporary workspace. When testing the new stack, Che spins up a temporary and isolated workspace using the stack you just defined. You can use the temporary workspace to import your project, test commands and ensure all the components you need are properly configured. Once the testing session is completed the temporary workspace will be automatically deleted.
 
-Test the stack, by clicking the `Test` button - it will start the temporary workspace on an overlay over the dashboard.
+Test the stack by clicking the `Test` button - it will start the temporary workspace as an overlay over the dashboard.
 ![che-test-stack.gif]({{ base }}{{site.links["che-test-stack.gif"]}})
 
 You can stop the testing session and the temporary workspace by clicking on the `Close` icon
-
 
 ## Delete a Stack
 Stacks can be deleted by clicking the checkbox on the left then the delete button that appear on the top right of the page or by clicking the trash bin icon on the right side of the stack item.
 ![Che-Stack-Delete.jpg]({{ base }}{{site.links["Che-Stack-Delete.jpg"]}})
 ## Register a Custom Stack
-Che has a stack API that you can call to manage your custom stacks. See the [Stacks]({{base}}{{site.links["ws-stacks"]}}) page in section _Use Che as a workspace server_ section.
+Che has a stack API that you can call to manage your custom stacks. See the [Stacks]({{base}}{{site.links["server-stack"]}}) page in section _Use Che as a workspace server_ section.
 
 # Adding Stacks to the Che Default Assembly  
-//TODO
+If you are extending Eclipse Che, you can alter the default stacks provided with your custom assembly. In order to do that, you have to modify the `stacks.json` which is used to initialize Che's stacks.
+This file is located here:
+[https://github.com/eclipse/che/blob/master/core/ide/che-core-ide-stacks/src/main/resources/stacks.json](https://github.com/eclipse/che/blob/master/core/ide/che-core-ide-stacks/src/main/resources/stacks.json)
+
+To create a stack, you need to define its configuration according to the [stack data model]({{base}}{{site.links["ws-data-model-stacks"]}}).
+
+Also, if you believe your custom stack would be useful to others issue a pull request against the `stacks.json` at [https://github.com/eclipse/che/blob/master/core/ide/che-core-ide-stacks/src/main/resources/stacks.json](https://github.com/eclipse/che/blob/master/core/ide/che-core-ide-stacks/src/main/resources/stacks.json). If accepted this will add your stack to the default stack library in the product.
