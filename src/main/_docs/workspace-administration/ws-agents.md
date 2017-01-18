@@ -44,11 +44,11 @@ Stacks use JSON format for configuration. Agents are included in the machines de
 ```
 
 # Creating New Agents  
-Currently, all agents must be pre-defined within Che and [saved in this location](https://github.com/eclipse/che/tree/master/wsmaster/che-core-api-agent/src/main/resources/agents) as part of the Che repository. We are thinking about a public registry for agents where they can be added and removed, but this is a future activity.
+Currently, all agents must be pre-defined within Che and [saved in this location](https://github.com/eclipse/che/blob/master/agents/che-core-api-agent/src/main/resources/agents/) as part of the Che repository. We are thinking about a public registry for agents where they can be added and removed, but this is a future activity.
 
 Each agent is saved as a JSON file. The name of the file without the extension is used as the ID for the agent within the agents list in the dashboard.  For example, the CSharp agent is identified as `org.eclipse.che.csharp`.  Inside of workspaces and stacks.  In the JSON there is a new data object called `agents : []` which is an array of agents that are to be included. The array would list the IDs of each agent to include.
 
-Agents have a name, a set of other agents that they depend upon, properties and a "script", which defines how the agent's package is to be installed into the workspace. This script handles only installation and doesn't define the startup of the agent.  The script section of the agent is difficult to read, but we also include the same scripts in this [scripts directory](https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-agent/src/main/resources/agents/org.eclipse.che.ls.php.json) and our CI systems convert those scripts to embed them inline within your agent during the packaging phase.
+Agents have a name, a set of other agents that they depend upon, properties and a "script", which defines how the agent's package is to be installed into the workspace. This script handles only installation and doesn't define the startup of the agent.  The script section of the agent is difficult to read, but we also include the same scripts in this [scripts directory](https://github.com/eclipse/che/blob/master/agents/che-core-api-agent/src/main/resources/agents/scripts/update_agents.sh) and our CI systems convert those scripts to embed them inline within your agent during the packaging phase.
 
 The scripts that you must provide with an agent have a large `if` block where you provide installation logic for each Linux distribution that we support. You can follow our templates for how to build agents of your own.
 
