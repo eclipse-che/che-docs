@@ -35,9 +35,7 @@ Note that once you've snapshotted a workspace, changing the environment or machi
 
 Snapshots image a machine and then it is committed, tagged, and optionally pushed into a Docker registry. You can use a local Docker registry or a remote one. See [Configuration]({{base}}{{site.links["setup-configuration"]}}) for information on how to setup a docker registry.
 
-To snapshot a machine go to the Operations Perspective by clicking the button on the far right of the menu bar. Choose Machines > Snapshot from the top menu bar. See our other docs [for details on setting up a local or remote Docker Registry]({{base}}{{site.links["setup-configuration"]}}).
-![che-create-snapshot.jpg]({{base}}{{site.links["che-create-snapshot.jpg"]}})
-By default, Che does not need a local/remote Docker registry to create snapshots. If no registry is used, a container is committed into an image which is then tagged, so that next time a workspace is started with this image. The behavior is regulated with the following environment variables:
+By default machines are automatically snapshotted when they are stopped. By default, Che does not need a local/remote Docker registry to create snapshots. If no registry is used, a container is committed into an image which is then tagged, so that next time a workspace is started with this image. The behavior is regulated with the following environment variables:
 ```shell  
 # Windows use `set` in lieu of `export`
 
@@ -48,6 +46,8 @@ export CHE_PROPERTY_machine_docker_snapshot__use__registry=false
 export CHE_PROPERTY_workspace_runtime_auto__snapshot=true
 export CHE_PROPERTY_workspace_runtime_auto__restore=true
 ```
+If you turn off auto-snapshotting it is still possible to snapshot workspaces by going to the machine perspective by clicking the button on the far right of the menu bar. Then choose Machines > Snapshot from the top menu bar. See our other docs [for details on setting up a local or remote Docker Registry]({{base}}{{site.links["setup-configuration"]}}).
+![che-create-snapshot.jpg]({{base}}{{site.links["che-create-snapshot.jpg"]}})
 
 ## Machine Information
 Information on each machine is provided by Eclipse Che server.
