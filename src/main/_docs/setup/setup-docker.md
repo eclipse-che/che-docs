@@ -6,9 +6,11 @@ layout: docs
 permalink: /:categories/docker/
 ---
 {% include base.html %}
+
 You can run the Che server directly by launching a Docker image. This approach bypasses the CLI, which has additional utilities to simplify administration and operation. The `eclipse/che-server` Docker image is appropriate for running Che within clusters, orchestrators, or by third party tools with automation.
 
 # Run the Image  
+
 ```shell  
 # Run the latest released version of Che
 # Replace <path-for-data> with any host folder
@@ -41,6 +43,7 @@ Che has started when you see `Server startup in ##### ms`.  After starting, Che 
 
 ## SELinux
 If you are on SELinux then run this instead:
+
 ```shell  
 # Run the latest released version of Che
 docker run -p 8080:8080 \
@@ -52,6 +55,7 @@ docker run -p 8080:8080 \
 
 ## Ports
 Tomcat inside the container will bind itself to port 8080 by default. You must map this port to be exposed in your container using `-p 8080:8080`.  If you want to change the port at which your browsers connect, then change the first value, such as `p 9000:8080`.  This will route requests from port 9000 to the internal Tomcat bound to port 8080.  If you want to change the internal port that Tomcat is bound, you must update the port binding and set `CHE_PORT` to the new value.
+
 ```text  
 docker run -p 9000:9500 \
            --name che \
@@ -63,6 +67,7 @@ docker run -p 9000:9500 \
 
 ## Configuration
 Most important configuration properties are defined as environment variables that you pass into the container. You can also optionally pass in a custom `che.properties` which has internal Che configuration that is loaded when Che's tomcat is booted.  For example, to have Che listen on port 9000:
+
 ```shell  
 docker run -p:9000:9000 \
            --name che \
@@ -91,6 +96,7 @@ There are many variables that can be set.
 If you want to have remote browser clients connect to the Che server (as opposed to local browser clients) and override the defaults that we detect, set `CHE_IP` to the Docker host IP address that will have requests forwarded to the `che-server` container.
 
 We run an auto-detection algorithm within the che-server container to determine this IP.  If Docker is running on `boot2docker` this is usually the `eth1` interface. If you are running Docker for Windows or Docker for Mac this is usually the `eth0` interface. If you are running Docker natively on Linux, this is the `docker0` interface. If your host that is running Docker has its IP at 10.0.75.4 and you wanted to allow remote clients access to this container then:
+
 ```shell  
 docker run -p:8080:8080 \
            --name che \
@@ -102,6 +108,7 @@ docker run -p:8080:8080 \
 
 ## Run Che as a Daemon
 Pass the `--restart always` parameter to the docker syntax to have the Docker daemon restart the container on any exit event, including when your host is initially booting. You can also run Che in the background with the `-d` option.
+
 ```shell  
 docker run -p:8080:8080 \
            --name che \
@@ -128,6 +135,7 @@ docker restart che
 ```
 
 You can save your Che configuration to reside outside of the container to be reusable between different container instances. Create a local `che.properties` file, volume mount it into the container, and also tell Che in the container where to locate this file.
+
 ```shell  
 # Mount host directory with che.properties into container and inform Che where it is.
 # Place the folder with che.properties as a mount to /conf
@@ -143,6 +151,7 @@ docker run -p:8080:8080 \
 
 ## Use Local Che Assembly
 You can run the Che image with a Che assembly that you have installed (or compiled) locally on your host. If you are developing a custom assembly, extension, or developing Che, you can mount your local binaries built on your host into the container by mounting the assembly to `/assembly`.
+
 ```text  
 # If your local assembly is located at /home/my_assembly:
 docker run -p:8080:8080 \
@@ -157,6 +166,7 @@ docker run -p:8080:8080 \
 
 ## Port Exposure
 Docker uses the ephemeral port range from `32768-65535`.  If you do not want to expose ports `32768-65535` because of the large port range, you need to reconfigure your Docker daemon to communicate over the `docker0` interface. You need to set  `DOCKER_MACHINE_HOST` to `172.17.0.1` and modify `machine.docker.che_api.endpoint` in the  `che.properties` file.
+
 ```shell  
 # Modify your local che.properties with:
 machine.docker.che_api.endpoint=http://172.17.0.1:8080/wsmaster/api
@@ -174,6 +184,7 @@ docker run -p:8080:8080 \
 ```
 
 *Compose File*
+
 ```yaml  
 che:
    image: eclipse/che-server:5.0.0-latest
@@ -198,6 +209,7 @@ The `-v /var/run/docker.sock:/var/run/docker.sock` syntax is for mounting a Unix
 However, peculiarities of file systems and permissions may make it impossible to invoke Docker processes from inside a container. If this happens, the Che startup scripts will print an error about not being able to reach the Docker daemon with guidance on how to resolve the issue.
 
 An alternative solution is to run Docker daemon in TCP mode on the host and export `DOCKER_HOST` environment variable in the container.  You can tell the Docker daemon to listen on both Unix sockets and TCP.  On the host running the Docker daemon:
+
 ```text  
 # Set this environment variable and restart the Docker daemon
 DOCKER_OPTS=" -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock"
@@ -207,6 +219,7 @@ http://localhost:2375/containers/json
 ```
 
 Having verified that your Docker daemon is listening, run the Che container with the with `DOCKER_HOST` environment variable set to the IP address of `docker0` or `eth0` network interface. If `docker0` is running on 1.1.1.1 then:
+
 ```shell  
 docker run -p:8080:8080 \
            --name che \
@@ -233,6 +246,7 @@ The Che container uses host mounted volumes to store persistent data:
 
 # Debugging  
 Inside the Che container is a Tomcat service. The Tomcat debugger is running on port 8000. If you want to connect to that port, you need to bind it as part of the docker run command.
+
 ```shell  
 docker run -p 8080:8080 \
            -p 9000:8000 \
