@@ -132,7 +132,7 @@ In the user dashboard, click the `Stacks` to view all the available stacks. New 
 }
 ```
 
-Learn more about the stack data model on the ![following page]({{base}}{{site.links["ws-data-model-stacks"]}})
+Learn more about the stack data model on the [following page]({{base}}{{site.links["ws-data-model-stacks"]}})
 
 ## Create a Stack
 A stack can be created from scratch using a skeleton template or duplicated from an existing stack.
