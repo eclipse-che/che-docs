@@ -20,7 +20,7 @@ The commands are context sensitive. For example, if you create a `build` command
 
 You can reference the `${current.project.path}` macro within your command (see other [macros]({{base}}{{site.links["ide-commands"]}}#macros)). Its value is the path to the `pom.xml` from the current selection in the project tree. You can then target a single command to work for modules or projects.
 
-It is also possible to use custom commands to build and package your projects (`Run > Edit Commands > Custom`). `${current.project.path}` will provide you with the path to the currently selected project/module.  
+It is also possible to use custom commands to build and package your projects (`Run > Edit Commands > Custom`). `${current.project.path}` will provide you with the path to the currently selected project/module. 
 
 ```shell  
 # cd to project directory using macro and run Maven build command
@@ -33,6 +33,7 @@ mvn -f ${current.project.path} clean install
 # execute Maven command with an argument as an absolute path
 mvn -f /projects/awesomeproject clean install
 ```
+
 For Maven projects, { site.product_mini_name }} automatically discovers and downloads dependencies into the local Maven repository stored within your workspace. This is triggered when the project is opened. You can update dependencies manually at `Code > Update Dependencies`.
 
 # Build in Terminal  

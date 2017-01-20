@@ -6,10 +6,12 @@ layout: docs
 permalink: /:categories/managing/
 ---
 {% include base.html %}
+
 # Scaling
 Eclipse Che is a workspace server. It supports the provisioning and management of numerous workspaces for users. The default configuration of Che has a single identity per server, where the identity manages IDE preferences and SSH keys for workspaces and GitHub.
 
 There are three aspects to scaling Che:
+
 1. Multi-client [collaboration]({{ base }}/docs/setup/managing/index.html#multi-client-collaboration) within a workspace
 2. Scaling Che using a [Che farm](#scaling-che-using-a-che-farm)
 3. [Upgrade to Codenvy](http://codenvy.com)
@@ -24,6 +26,7 @@ The RAM variation and amount is relatively high and a function of which plug-ins
 Your workspace RAM can go higher if your users are creating multiple machines. Each workspace is given at least one machine. If you permit developers to launch other machines in a single workspace, those machines by default do not have a workspace agent and all of the RAM allocated to that machine will be granted to the user.
 
 Storage is consumed by:
+
 1. Images downloaded and cached by Che for creating new workspaces.
 2. Project files.
 3. Workspace snapshots, which create new images saved in a registry.
@@ -34,16 +37,20 @@ Generally, workspace images start at 180MB. If you permit workspace snapshots, t
 Workspaces are both portable and shared. Multiple browser clients (and humans!) can connect to a single Che server running multiple workspaces, or if you prefer, to a single workspace. Users within a single workspace can make use of the runtime and project files. Che implements a last-write-wins policy when multiple users modify the same file.
 
 ## Scaling Che Using a Che Farm  
+
 ![che_farm.png]({{ base }}/docs/assets/imgs/che_farm.png)
+
 You can deploy Che in a farm with an Nginx router. Each user would be provisioned their own Che instance, either running on its own port in a VM. In this configuration, each user can have their own workspaces and identity profile. Note that since Che exports two IP addresses, one for Che and another for the workspace machine running Docker, your router will need to manage traffic for all possible routes between browser, Che and machines.{%assign docs_todo="Provide link"%} 
 
 ## Scaling Che with Codenvy  
 Your Eclipse Che workspaces and plug-ins will work within [Codenvy](http://codenvy.com). Codenvy is a multi-tenant, multi-user and elastic cloud installed locally or used as a SaaS:
+
 * Workspace distribution with an embedded Docker Swarm
 * Operational solutions for monitoring, scaling, upgrading and archiving workspaces
 * Team management, permissions and resource policy management tools
 * User authentication, single-sign on, and LDAP
 * Self-service user registration
+
 ![scale_codenvy.png]({{ base }}/docs/assets/imgs/scale_codenvy.png)
 
 Codenvy uses Docker to install, configure, and update various internal services. This creates a simple management interface for administrators with flexibility on how many physical nodes to allocate along with the resource policy management that is applied to users and accounts.
@@ -65,6 +72,7 @@ docker run <volume-mounts> eclipse/che-cli:5.0.0-M8 upgrade
 The upgrade command has numerous checks to prevent you from upgrading Che if the new image and the old version are not compatible. In order for the upgrade procedure to advance, the CLI image must be newer that the version in `/instance/che.ver`.
 
 The upgrade process:
+
 1. Performs a version compatibility check
 2. Downloads new Docker images that are needed to run the new version of Che
 3. Stops Che if it is currently running
@@ -92,8 +100,9 @@ Docker will select its ports from anywhere in the ephemeral range. If you wish t
 Limiting the ephemeral range can only be done at the host level - you can read more about it (and some of the risks in doing so) here: http://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html
 
 To change the ephemeral range:
-  * On Linux: http://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html#Linux
-  * On Windows: http://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html#Windows
+
+* On Linux: http://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html#Linux
+* On Windows: http://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html#Windows
 
 ## Securing a Workspace from the Che Host  
 It is possible for admins to mount files from your server's host file system to be available to your users within their workspaces with the `CHE_WORKSPACE_VOLUME` and `CHE_DOCKER_PRIVILEGED_MODE` parameters are potential secrity risks as you open the possiblity of sending host-specific files into a workspace or giving a workspace user access to the host system.  These options are useful for certain development situations but should be minimized to increase security to the host system whenever possible.
@@ -103,7 +112,7 @@ Eclipse Che is a single identity system. All users accessing a Che server share 
 
 For a simple separation of workspaces for small development teams, without requiring workspace permissions, administrators can create separate Che server for each user. Each server, if ran on same host, would need to be setup on different ports using the `CHE_PORT` environment variable and different data folders mounted `:/data`.
 
-Codenvy provides an implementation of Eclipse Che that is multi-tenant, multi-user with distributed access and permissions controls for teams. Each user has a different login which enables access controls, workspace collaboration, and other forms of sharing. You can install Codenvy with a CLI that is nearly identical to Che with `docker run codenvy/cli start. Learn more at [https://codenvy.com](https://codenvy.com).
+Codenvy provides an implementation of Eclipse Che that is multi-tenant, multi-user with distributed access and permissions controls for teams. Each user has a different login which enables access controls, workspace collaboration, and other forms of sharing. You can install Codenvy with a CLI that is nearly identical to Che with `docker run codenvy/cli start`. Learn more at [https://codenvy.com](https://codenvy.com).
 
 ## Authenticated Access  
 The Che server itself is unauthenticated. Che is extensible allowing different dashboard front ends or proxies to implement authenticated access to the Che server. Bitnami's deployment of Eclipse Che includes an authenticated front-end implemented as a proxy. Many users deploy nginx in front of Che to provide an authentication layer within the system.

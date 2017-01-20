@@ -6,6 +6,7 @@ layout: docs
 permalink: /:categories/configuration/
 ---
 {% include base.html %}
+
 Configuration is handled by modifying `che.env` placed in the host folder volume mounted to `:/data`. This configuration file is generated during the `che init` phase. If you rerun `che init` in an already initialized folder, the process will abort unless you pass `--force`, `--pull`, or `--reinit`.
 
 Each variable is documented with an explanation and usually commented out. If you need to set a variable, uncomment it and configure it with your value. You can then run `che config` to apply this configuration to your system. `che start` also reapplies the latest configuration.
@@ -18,6 +19,7 @@ If you run `che config`, che runs puppet to transform your puppet templates into
 Administration teams that want to version control your che configuration should save `che.env`. This is the only file that should be saved with version control. It is not necessary, and even discouraged, to save the other files. If you were to perform a `che upgrade` we may replace these files with templates that are specific to the version that is being upgraded. The `che.env` file maintains fidelity between versions and we can generate instance configurations from that.
 
 The version control sequence would be:
+
 1. `che init` to get an initial configuration for a particular version.
 2. Edit `che.env` with your environment-specific configuration.
 3. Save `che.env` to version control.
@@ -136,6 +138,7 @@ To activate jpda suspend mode for debugging Che server initialization, in the `c
 ```
 CHE_DEBUG_SUSPEND=true
 ```
+
 To change che debug port, in the `che.env`:
 
 ```
@@ -176,7 +179,6 @@ CHE_DOCKER_REGISTRY_AWS_REGISTRY1_SECRET__ACCESS__KEY=secret1
 ```
 
 There are different configurations for AWS EC2 and the Docker regsitry. You can define as many different registries as you'd like, using the numerical indicator in the environment variable. In case of adding several registries just copy set of properties and append `REGISTRY[n]` for each variable.
-
 
 ### Pulling Private Images in Stacks
 Once you have configured private registry access, any Che stack that has a `FROM <registry>/<repository>` that requires authenticated access will use the provided credentials within `che.env` to access the registry.
@@ -253,7 +255,6 @@ If you'd like your users to work with projects which have their own Docker image
 These two tactics will allow user workspaces to perform `docker` commands from within their workspace to create and work with Docker containers that will be outside the workspace. In other words, this makes your user's workspace feel like their laptop where they would normally be performing `docker build` and `docker run` commands.
 
 You will need to make sure that your user's workspaces are powered from a stack that has Docker installed inside of it. Che's default images do not have Docker installed, but we have sample stacks (see the Che in Che stack).
-
 
 # Networking
 Eclipse Che makes connections between three entities: the browser, the Che server running in a Docker container, and a workspace running in a Docker container.
@@ -336,6 +337,7 @@ docker exec -ti <che-container-name> curl http://<che-ip>:<che-port>/wsagent/ext
 # Server => Workspace Agent (Internal IP):
 docker exec -ti <che-container-name> curl http://<workspace-container-ip>:4401/wsagent/ext/
 ```
+
 #### Workspace Address Resolution Strategy
 By default, the Che server will connect to workspace containers according to the 'default' strategy. The order of precedence, Che will use `CHE_DOCKER_IP` if it is set, if not, it will use the address `docker-ip`. If `docker-ip` cannot be determined, it will default to `localhost` for Unix socket connections, and `DOCKER_HOST`. 
 
@@ -385,6 +387,7 @@ pass in proto tcp from any to any port 1234
 ### Running Che Behind a Firewall (Windows)
 
 There are many third party firewall services. Different versions of Windows OS also have different firewall configurations. The built-in Windows firewall can be configured in the control panel under "System and Security":
+
 1. In the left pane, right-click `Inbound Rules`, and then click `New Rule` in the action pane.
 2. In the `Rule Type` dialog box, select `Port`, and then click `Next`.
 3. In the `Protocol and Ports` dialog box, select `TCP`.

@@ -12,6 +12,7 @@ There are numerous best practices that you can follow to get the most out of Doc
 
 # Using Docker In Your Workspaces  
 You may want to use Docker in your workspaces if:
+
 1. You want to build Dockerfiles using commands or in the terminal.
 2. You want to launch or manage Docker containers from your workspace.
 3. You want to run {{ site.product_mini_name }} in {{ site.product_mini_name }}, which allows you to build and run {{ site.product_mini_name }} from source code using {{ site.product_mini_name }}.
@@ -31,6 +32,7 @@ Configure your Docker daemon to listen on TCP.  First, add the following to your
 DOCKER_OPTS=" -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock"
 Verify that the Docker API is responding at: http://$IP:2375/containers/json
 ```
+
 Second, export `DOCKER_HOST` variable in your workspace. You can do this in the terminal or make it permanent by adding `ENV DOCKER_HOST=tcp://$IP:2375` to a workspace recipe, where `$IP` is your local machine IP.   
 
 ## Add Docker CLI to Your Workspace

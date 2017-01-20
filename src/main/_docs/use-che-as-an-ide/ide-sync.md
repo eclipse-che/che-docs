@@ -8,6 +8,7 @@ permalink: /:categories/sync/
 {% include base.html %}
 
 Che ships a super fast Fuse-based mount and sync mechanism. This is delivered as a Docker container that combines `sshfs` with `unison`. You can perform a mount on any operating system that supports Docker. However, if you are on Windows using Boot2Docker, you can only mount directories in `%userprofile%`.
+
 # List Workspaces  
 You can get a list of workspaces in a Che server that have an SSH agent deployed and are also a dev-machine where `/projects` are deployed. This means it is sync-ready.
 
@@ -27,7 +28,8 @@ mysql     workspacewia89343k4  RUNNING
 --password <password> # Codenvy password
 ```
 
-# Mount and Sync  
+# Mount and Sync 
+
 ## How
 We provide a Docker container that bridges your remote Che workspace with your local file system. Inside of the `che-mount` Docker container, we create an `sshfs` connection to the remote workspace using your user name, password, and workspace port number. Inside of that Docker container, we then use `unison`, a high performance file system synchronizer to synchronize the contents of the remote workspace with a directory within the container. Your local host will then volume mount the synchronized directory, for which those files appear. The `unison` synchronizer is run every minute, and will capture both changes made locally on your host and any changes made in the remote workspace.
 

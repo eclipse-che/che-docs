@@ -6,6 +6,7 @@ layout: docs
 permalink: /:categories/getting-started/
 ---
 {% include base.html %}
+
 Eclipse Che is a developer workspace server and cloud IDE. You install, run, and manage Eclipse Che with Docker.
 
 ### Download
@@ -14,9 +15,11 @@ This is the administration guide for the on-premises installation of Eclipse Che
 You can get a hosted version of Eclipse Che with Codenvy at [codenvy.io](http://codenvy.io).
 
 # How to Get Help
+
 ### Support  
 If the unthinkable happens, or you have a question, you can post [issues on our GitHub page](https://github.com/eclipse/che/issues). Please follow the [guidelines on issue reporting](https://github.com/eclipse/che/blob/master/CONTRIBUTING.md) and provide:
-* your OS distribution and version
+
+- your OS distribution and version
 - output of `docker version` command
 - output of `docker info` command
 - the full `docker run ...` syntax you used on the command line
@@ -37,6 +40,7 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v <path>:/data
 ```
 
 # Operate Che
+
 ```shell  
 # Start Eclipse Che with user data saved on Windows in c:\tmp
 docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v /c/tmp:/data eclipse/che start
@@ -76,6 +80,7 @@ docker run <DOCKER_OPTIONS> -e CHE_HOST=<your-ip> eclipse/che start
 
 # Develop with Che  
 Now that Che is running there are a lot of fun things to try:
+
 - Become familiar with Che through [one of our tutorials]({{ base }}/docs/tutorials/multi-machine/index.html).
 - [Import a project]({{ base }}/docs/ide/import-a-project/index.html) and setup [git authentication]({{ base }}/docs/ide/git-svn/index.html).
 - Use [commands]({{ base }}/docs/ide/commands/index.html) to build and run a project.
@@ -131,7 +136,9 @@ GLOBAL COMMAND OPTIONS:
 ```
 
 # Pre-Reqs  
+
 ### Hardware
+
 * 1 cores
 * 256MB RAM
 * 300MB disk space
@@ -141,6 +148,7 @@ Che requires 300 MB storage and 256MB RAM for internal services. The RAM, CPU an
 Boot2Docker, docker-machine, Docker for Windows, and Docker for Mac are all Docker variations that launch VMs with Docker running in the VM with access to Docker from your host. We recommend increasing your default VM size to at least 4GB. Each of these technologies have different ways to allow host folder mounting into the VM. Please enable this for your OS so that Che data is persisted on your host disk.
 
 ### Software
+
 * Docker 1.12.5+ recommended, Docker 1.11+ minimum
 
 The Che CLI - a Docker image - manages the other Docker images and supporting utilities that Che uses during its configuration or operations phases. The CLI also provides utilities for downloading an offline bundle to run Che while disconnected from the network.
@@ -184,6 +192,7 @@ The software referenced by these labels can change over time. Since Docker will 
 In the case of 'latest' images, when you initialize an installation using the CLI, we encode a `/instance/che.ver` file with the numbered version that latest references. If you begin using a CLI version that mismatches what was installed, you will be presented with an error.
 
 To avoid issues that can appear from using 'nightly' or 'latest' redirections, you may:
+
 1. Verify that you have the most recent version with `docker pull eclipse/che:<version>`.
 2. When running the CLI, commands that use other Docker images have an optional `--pull` and `--force` command line option [which will instruct the CLI to check DockerHub](https://hub.docker.com/r/eclipse/che/) for a newer version and pull it down. Using these flags will slow down performance, but ensures that your local cache is current.
 
@@ -218,6 +227,7 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
 
 # Proxy Installation
 You can install and operate Che behind a proxy:
+
 1. Configure each physical node's Docker daemon with proxy access.
 2. Optionally, override workspace proxy settings for users if you want to restrict their Internet access.
 
@@ -249,6 +259,7 @@ While connected to the Internet, download Che's Docker images:
 ```shell
 docker run <docker-goodness> eclipse/che:<version> offline
 ```
+
 The CLI will download images and save them to `/backup/*.tar` with each image saved as its own file. You can save these files to a differnet location by volume mounting a local folder to `:/data/backup`. The version tag of the CLI Docker image will be used to determine which versions of dependent images to download. There is about 1GB of data that will be saved.
 
 The default execution will download none of the optional stack images, which are needed to launch workspaces of a particular type. There are a few dozen stacks for different programming languages and some of them are over 1GB in size. It is unlikely that your users will need all of the stacks, so you do not need to download all of them. You can get a list of available stack images by running `eclipse/che offline --list`. You can download a specific stack by running `eclipse/che offline --image:<image-name>` and the `--image` flag can be repeatedly used on a single command line.
@@ -263,6 +274,7 @@ docker load < /tmp/offline/eclipse_che:<version>.tar
 # Start Che in offline mode
 docker run <other-properties> -v /tmp/offline:/data/backup eclipse/che:<version> start --offline
 ```
+
 The `--offline` parameter instructs the Che CLI to load all of the TAR files located in the folder mounted to `/data/backup`. These images will then be used instead of routing out to the Internet to check for DockerHub. The preboot sequence takes place before any CLI functions make use of Docker. The `eclipse/che start`, `eclipse/che download`, and `eclipse/che init` commands support `--offline` mode which triggers this preboot sequence.
 
 # Uninstall
