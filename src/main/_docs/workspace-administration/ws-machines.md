@@ -6,13 +6,16 @@ layout: docs
 permalink: /:categories/machines/
 ---
 {% include base.html %}
-A machine is part of an environment, which are in turn part of a {{site.product_mini_name}} workspace. The [workspace administration introduction]({{base}}{{site.links["ws-admin-intro"]}}) explains the details of this relationship.
+
+A machine is part of an environment, which are in turn part of a Che workspace. The [workspace administration introduction]({{base}}{{site.links["ws-admin-intro"]}}) explains the details of this relationship.
 
 A machine is created from a [runtime stack]({{base}}{{site.links["ws-stacks"]}}). {{site.product_mini_name}} supports both single-machine environments and multi-machine environments. The {{site.product_mini_name}}  server manages the lifecycle of environments and the machines inside, including creating snapshots of machines.  Additionally, the {{site.product_mini_name}}  server can inject [workspace agents]({{base}}{{site.links["ws-agents"]}}) into a machine to provide additional capabilities inside the machine.
 
 ## Add / Remove Libraries and Tools To Runtime Machines
 You can use the terminal and command line to install additional libraries and tools. After you have created a workspace, open a terminal in the IDE.  You can then perform commands like `npm` or `yum install` to add software into your workspace.  These changes will only exist for the lifespan of this single workspace. You can capture these changes permanently by creating a snapshot (which can then be used as a [recipe]({{base}}{{site.links["ws-recipes"]}})), or writing a custom stack that includes these commands in a Dockerfile (this method will make your workspace shareable with others).
+
 ![install-jetty8.png]({{base}}{{site.links["install-jetty8.png"]}})
+
 The following example takes a Java ready-to-go stack and adds Jetty8 in the workspace runtime configuration.
 
 ```shell  
@@ -27,6 +30,7 @@ sudo apt-get install jetty8
 
 # Jetty8 installed at path /usr/share/jetty8
 ```
+
 ## Machine Snapshot
 Machines can have their internal state saved into a Docker image with a snapshot.
 
@@ -53,7 +57,9 @@ By default machines are automatically snapshotted when they are stopped. By defa
 {{site.data.env["WORKSPACE_AUTO__SNAPSHOT"]}}=true
 {{site.data.env["WORKSPACE_AUTO__RESTORE"]}}=true
 ```
+
 If you turn off auto-snapshotting it is still possible to snapshot workspaces by going to the machine perspective by clicking the button on the far right of the menu bar. Then choose Machines > Snapshot from the top menu bar. See our other docs [for details on setting up a local or remote Docker Registry]({{base}}{{site.links["setup-configuration"]}}).
+
 ![che-create-snapshot.jpg]({{base}}{{site.links["che-create-snapshot.jpg"]}})
 
 ## Machine Information
@@ -63,8 +69,11 @@ Information on each machine is provided by {{site.product_formal_name}} server.
 Information on each machine can be viewed in the operations perspective in the IDE. You can toggle between the code perspective and operations perspective by clicking the pair of buttons in the top-right of the menu bar.
 
 The operations perspective provides general meta information such as name, status, id, etc. Also, there is externally exposed machine port information in the server tab section. Exposed ports are used in in various ways such as [priview urls]({{base}}{{site.links["ide-previews"]}}), allowing SSH into a machine, debug server ports, and various ports used by {{site.product_formal_name}} server to interact with the machine.
-![Che-machine-information.jpg]({{base}}{{site.links["Che-machine-information.jpg"]}})
-### Dashboard Machine Information
 
+![Che-machine-information.jpg]({{base}}{{site.links["Che-machine-information.jpg"]}})
+
+### Dashboard Machine Information
 Information on each machine can be viewed in the in the `Dashboard`. Information on each machine in a workspace can be viewed after clicking on the workspace name, selecting the `Runtime` tab, and clicking the expand button located next to each machine. Machine information includes source, ram, [agents]({{base}}{{site.links["ws-agents"]}}), exposed ports, and environment variables. All of these configuration items can be changed on a stopped workspace/machine. If the workspace/machine is running, the workspace will be stopped automatically. The saved configuration items will be used the next time the work space is started and will supersede any values given in the original workspace stack. Changes made to the runtime configuration will only effect the workspace and will not be saved to original stack to be create other workspaces from.
+
 ![Che-machine-information-edit.jpg]({{base}}{{site.links["Che-machine-information-edit.jpg"]}})
+
