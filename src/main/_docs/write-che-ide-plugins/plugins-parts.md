@@ -24,6 +24,7 @@ Views in Che are implemented using GWT. Therefore, we can use any GWT widgets or
 In the last line of the example, we call the method `#setContenWidget` of the base class to specifiy the root widget to be shown in the view. In our case, this is the `Label`, if you create a more complex layout of widgets, this would be the root container of the view.
 
 *che/samples/sample-plugin-parts/che-sample-plugin-parts-ide/src/main/java/org/eclipse/che/plugin/parts/ide/helloworldview/HelloWorldViewImpl.java*
+
 ```java  
 package org.eclipse.che.plugin.parts.ide.helloworldview;
 
@@ -50,6 +51,7 @@ As mentioned in the introduction of this section, an explicit interface should d
 Following the GWT pattern, the view interface also defines an `ActionDelegate`. This interface can be implemented by components, which want to listen to events triggered with the view, e.g. a button click. Our `HelloWorldView`is currently not triggering any actions, so the interface is empty. Please see the section (Interacting from within views)[{{ base }}/docs/plugins/parts/index.html#interacting-from-within-a-view] below for more details.
 
 *che/samples/sample-plugin-parts/che-sample-plugin-parts-ide/src/main/java/org/eclipse/che/plugin/parts/ide/helloworldview/HelloWorldView.java*
+
 ```java  
 package org.eclipse.che.plugin.parts.ide.helloworldview;
 
@@ -70,6 +72,7 @@ public interface HelloWorldView extends View<HelloWorldView.ActionDelegate> {
 Finally, we have to make our view available for other components, using dependency injection. This is done in `MyGinModule`, which can contain other bindings, too. Please see the section [Dependency Injection Basics]({{ base }}/docs/plugins/dependency-injection-basics/index.html) for more details about this binding.
 
 *che/samples/sample-plugin-parts/che-sample-plugin-parts-ide/src/main/java/org/eclipse/che/plugin/parts/ide/inject/MyGinModule.java*
+
 ```java  
 package org.eclipse.che.plugin.parts.ide.inject;
 
@@ -208,6 +211,7 @@ After a pat has been opened, it must be activated to ensure that it gets visible
 The following code example shows an action, which opens the "Hello World" part defined before. Please see the section [Actions]({{ base }}/docs/plugins/actions/index.html) for more details about the implementation of actions.
 
 *che/samples/sample-plugin-parts/che-sample-plugin-parts-ide/src/main/java/org/eclipse/che/plugin/parts/ide/helloworldview/HelloWorldViewAction.java*
+
 ```java  
 package org.eclipse.che.plugin.parts.ide.helloworldview;
 

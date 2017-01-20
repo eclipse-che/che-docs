@@ -34,6 +34,7 @@ These are some other common URLs on your instance:
 
 ## Running, Stopping and Restarting Che
 If you have SSH access to the Che instance you can start and stop Che from the command line.
+
 ```shell  
 # to start Che
 sudo su eclipseche -- /opt/bitnami/apps/eclipseche/che/bin/che.sh -p:8080 -s:uid start
@@ -58,6 +59,7 @@ To change the password:
 2. Change the contents of `/opt/bitnami/apps/eclipseche/conf/.htpasswd` to include the password you want to use.
 
 3. Run the following command substituting `new_user` for your preferred user name:
+
 ```text  
 sudo /opt/bitnami/apache2/bin/htpasswd /opt/bitnami/apps/eclipseche/conf/.htpasswd new_user\
 ```

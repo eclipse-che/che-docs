@@ -57,6 +57,7 @@ To enable automatic key upload to GitHub, register an application in your GitHub
 ![Clipboard9.jpg]({{base}}{{site.links["Clipboard9.jpg"]}})
 ### Setup environment variables.
 Set the following to environment variables then start/restart the {{ site.product_formal_name }} server. Optionally you can use [CLI profiles](https://eclipse-che.readme.io/docs/che-cli#profiles) to save these environment variables.
+
 ```shell  
 export CHE_PROPERTY_oauth_github_clientid=yourClientID
 export CHE_PROPERTY_oauth_github_clientsecret=yourClientSecret

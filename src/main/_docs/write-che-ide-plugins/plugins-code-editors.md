@@ -17,6 +17,7 @@ Defining a new file type consists of three basic steps:
   3. Optional: Register the file type in the editor registry and thereby associate it with a specific editor to be opened with
 
 A simplified version of a registration of a new file type with the extension `.my` covering exactly these three necessary steps in correct order looks like this:
+
 ```java  
 FileType myFileType = new FileType("My FileType\ anIcon, "my");
 fileTypeRegistry.registerFileType(myFileType);
@@ -37,6 +38,7 @@ First, we define a new class `GinModule` for the instantiation of the custom `Fi
 The creation of the file type defines a name, a custom icon and the file extension. If Strings, such as the file extension, are used at other places later, they should be externalized to a common place, for simpler reading, we keep them inlined for now. If those Strings also need to be consumed by a server component later, it should go to a “shared” module, for now, it is kept in the IDE (client) module.
 
 *che/samples/sample-plugin-filetype/che-sample-plugin-filetype-ide/src/main/java/org/eclipse/che/plugin/filetype/ide/inject/MyGinModule.java*
+
 ```java  
 org.eclipse.che.plugin.myextension.ide.inject.MyGinModule
 @ExtensionGinModule
@@ -59,6 +61,7 @@ public class MyGinModule extends AbstractGinModule {
 The custom file type consumes an icon, which is retrieved from a GWT resource:
 
 *che/samples/sample-plugin-filetype/che-sample-plugin-filetype-ide/src/main/java/org/eclipse/che/plugin/filetype/ide/MyResources.java*
+
 ```java  
 org.eclipse.che.plugin.myextension.ide.MyResources
 public interface MyResources extends ClientBundle {
@@ -75,6 +78,7 @@ The icon itself is a svg image located in the resources of the extension:
 To register the custom file type at Che’s Editor registry, we create another class called `MyExtension`. Again, we name this class more generically, as it will additionally contain other extensions to the IDE. The extension gets the new file type and the `FileTypeRegistry` injected and creates the file type registration.
 
 *che/samples/sample-plugin-filetype/che-sample-plugin-filetype-ide/src/main/java/org/eclipse/che/plugin/filetype/ide/MyFileTypeExtension.java*
+
 ```java  
 org.eclipse.che.plugin.myextension.ide.MyExtension
 @Extension(title = "My FileType Extension")
@@ -122,6 +126,7 @@ The [continuous JSON example]({{ base }}/docs/plugins/introduction/index.html#th
 ### File Type Definition
 
 *che/core/ide/che-core-ide-app/src/main/java/org/eclipse/che/ide/filetypes/FileTypeModule.java*
+
 ```java  
 core/ide/che-core-ide-app/src/main/java/org.eclipse.che.ide.filetypes.FileTypeModule (alongside with other file types)
 
@@ -135,6 +140,7 @@ protected FileType provideJsonFile(Resources resources) {
 
 ### File Type Registration
 *che/core/ide/che-core-ide-app/src/main/java/org/eclipse/che/ide/core/StandardComponent.java*
+
 ```java  
 core/ide/che-core-ide-app/src/main/java/org.eclipse.che.ide.core.StandardComponentInitializer
 
@@ -168,6 +174,7 @@ In the following example, we will describe how to provide a custom code completi
 As a first step, we register a custom `JsonExampleEditorProvider`:  
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/JsonExampleEditorExtension.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.JsonExampleJsEditorExtension
 @Extension(title = "JSON Example Editor")
@@ -187,6 +194,7 @@ An Editor Provider needs to implement the interface `EditorProvider`. If you wan
 In this tutorial, we create an extension for the existing `DefaultTextEditor`. Therefore, we first retrieve the existing editor from the `DefaultEditorProvider` and initialize it with our new custom editor configuration `JsonExampleEditorConfiguration`, which will add the custom auto-completion to the editor.
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/editor/JsonExampleEditorProvider.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.editor.JsonExampleEditorProvider
 /**
@@ -230,6 +238,7 @@ public class JsonExampleEditorProvider extends AbstractTextEditorProvider {
 As we just want to adapt the code completion, the example implementation of the editor configuration inherits from the existing `DefaultTextEditorConfiguration`. The method `getContentAssistantProcessors` is expected to return a mapping from content types to `CodeAssistProcessors`. In our case, if this mapping has exactly one entry registering the custom `JsonExampleCodeAssistProcessor` for the default content type.
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/editor/JsonExampleEditorConfiguration.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.editor.JsonExampleEditorConfiguration
 public class JsonExampleEditorConfiguration extends AutoSaveTextEditorConfiguration {
@@ -250,6 +259,7 @@ public class JsonExampleEditorConfiguration extends AutoSaveTextEditorConfigurat
 A `CodeAssistProcessor` is responsible for calculating `CompletionProposals`. Therefore, it gets the editor, from which the completion was triggered, the current offset in this editor and a callback to be filled with completion proposals. In this example, we fill the list of proposals with three `SimpleCompletionProposals` (see below) containing static Strings (“firstName”, “lastName” and “age”). In a real completion use case, this simple and static example is to be replaced with a more advanced proposal calculation. If any exception occurs during the computation of the completion proposals, e.g. the server is not reachable, a corresponding message should be returned in `#getErrorMessage`.
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/editor/JsonExampleCodeAssistProcessor.java*
+
 ```java  
 public  class JsonExampleCodeAssistProcessor implements CodeAssistProcessor {
 
@@ -278,6 +288,7 @@ public  class JsonExampleCodeAssistProcessor implements CodeAssistProcessor {
 A `CompletionProposal` represents a completion option to be displayed when the users trigger auto-completion in the editor. Therefore, it shows all necessary information for the user and allows to select the right proposal to be applied. The following example shows a code proposal based on a static String, which is retrieved as a parameter in the constructor. This String is used as the displayed name and, along with the defined icon, will be shown to the user in the proposal list. Finally, once the user has selected a proposal which should be applied, the `CompletionProposal` returns the `Completion` (using a callback) in the `#getCompletion` method.
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/editor/JsonExampleCodeAssistProcessor.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.editor.SimpleCompletionProposal
 public class SimpleCompletionProposal implements CompletionProposal {
@@ -314,6 +325,7 @@ public class SimpleCompletionProposal implements CompletionProposal {
 A `Completion` is finally responsible for applying a proposal, once the user has selected one. Therefore, after accessing the Document it can apply any text change necessary. In the following example, we append the static String of the `Completion` at the current offset. The `#getSelection` method can optionally set a new selection in the editor after the proposal has been applied. This is done in absolute document coordinates. Returning `null` (as in the example) will not set any new selection.
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/editor/SimpleCompletion.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.editor.SimpleCompletion
 public class SimpleCompletion implements Completion {
@@ -349,6 +361,7 @@ Syntax highlighting allows you to mark characters and keywords in certain colors
 If the orion editor already knows the language you want to support, you need to associate the file extension with the content type defined by orion. As an example, we could associate our a custom file type `.my` ([see here for its definition]({{ base }}/docs/plugins/code-editors/index.html#file-types)) with the existing content type `Json`, which is already supported by the Orion editor. Therefore, we add the following line to `org.eclipse.che.ide.jseditor.client.filetype.ExtensionFileTypeIdentifier`:
 
 *che/core/ide/che-core-ide-api/src/main/java/org/eclipse/che/ide/api/editor/filetype/ExtensionFileTypeIdentifier.java*
+
 ```java  
 org.eclipse.che.ide.jseditor.client.filetype.ExtensionFileTypeIdentifier
   //...
@@ -366,6 +379,7 @@ There are two options how you can add a syntax highlighting for your own languag
 Add extension with mime type to [File Extension Registry](https://github.com/eclipse/che/blob/master/ide/che-core-ide-api/src/main/java/org/eclipse/che/ide/api/editor/filetype/ExtensionFileTypeIdentifier.java). For example:
 
 */che/ide/che-core-ide-api/src/main/java/org/eclipse/che/ide/api/editor/filetype/ExtensionFileTypeIdentifier.java*
+
 ```java  
 //...
 this.mappings.put("ino", makeList("text/x-c++src"));

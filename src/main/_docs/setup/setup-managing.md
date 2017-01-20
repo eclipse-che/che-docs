@@ -52,6 +52,7 @@ Codenvy uses Docker to install, configure, and update various internal services.
 Upgrading Che is done by downloading a `eclipse/che-cli:<version>` that is newer than the version you currently have installed. You can run `eclipse/che-cli version` to see the list of available versions that you can upgrade to.
 
 For example, if you have 5.0.0-M2 installed and want to upgrade to 5.0.0-M8, then:
+
 ```
 # Get the new version of Che
 docker pull eclipse/che-cli:5.0.0-M8

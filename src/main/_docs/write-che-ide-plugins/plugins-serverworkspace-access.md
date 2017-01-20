@@ -27,6 +27,7 @@ In combination, this example will register a service that will listen to localho
 As specified using the @PathParam annotation, the {name} parameter will be passed as an input and then be used in the return statement.
 
 *che/samples/sample-serverservice/che-sample-plugin-serverservice-server/src/main/java/org/eclipse/che/plugin/serverservice/MyService.java*
+
 ```java  
 @Path("hello")
 public class MyService {
@@ -48,6 +49,7 @@ The request is sent by passing in an `Unmarshaller`. It is responsible for unmar
 Finally, the send method returns a `Promise`, which can be consumed by callers on `MyClient` (see below) to retrieve the answer from the server.
 
 *che/samples/sample-serverservice/che-sample-plugin-serverservice-ide/src/main/java/org/eclipse/che/plugin/serverservice/ide/MyServiceClient.java*
+
 ```java  
 /che-ide-extension/src/main/java/examples/MyServiceClient.java
 public class MyServiceClient {
@@ -78,6 +80,7 @@ On the `Promise` you can pass in an operation to be executed if the server call 
 In the example, it is passed to the Che `NotificationManager`. Using the `#catchError` method on the `Promise`, you can define an operation to be executed on an error during the server call.
 
 *che/samples/sample-serverservice/che-sample-plugin-serverservice-ide/src/main/java/org/eclipse/che/plugin/serverservice/ide/action/MyAction.java*
+
 ```java  
 public class MyAction extends Action {
 
@@ -132,6 +135,7 @@ Like a server service, workspace services need to define the path in which they 
 The method `#countLinesPerFile` receives a `projectPath` as a parameter for which it should count the number of lines. It uses the `ProjectManager` to retrieve the project. Using the project, it then navigates over all JSON files in the project and accesses the contents of those files to count the lines. Finally, it returns the result as a map.
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-server/src/main/java/org/eclipse/che/plugin/jsonexample/JsonLocService.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.JsonLocService
 @Path("json-example/{ws-id}")
@@ -193,6 +197,7 @@ Besides the specific path, workspace services can be consumed like any other ser
 The following example action consumes the workspace service defined above and shows the result using the notification manager.
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/action/CountLinesAction.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.action.CountLocAction
 

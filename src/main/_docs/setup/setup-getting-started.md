@@ -27,6 +27,7 @@ We put a lot of effort into our docs. Please add suggestions on areas for improv
 
 # Quick Start
 On any computer with Docker 1.11+ installed (Docker 1.12.5+ is recommended):
+
 ```shell
 # Interactive help
 docker run -it eclipse/che start
@@ -84,6 +85,7 @@ Now that Che is running there are a lot of fun things to try:
 - Create a [custom runtime stack]({{ base }}/docs/workspace/stacks/index.html).
 
 # Syntax  
+
 ```
 USAGE:
   docker run -it --rm <DOCKER_PARAMETERS> eclipse/che:<version> [COMMAND]
@@ -146,11 +148,13 @@ The Che CLI - a Docker image - manages the other Docker images and supporting ut
 Given the nature of the development and release cycle it is important that you have the latest version of Docker installed because any issue that you encounter might have already been fixed with a newer Docker release.
 
 Install the most recent version of the Docker Engine for your platform using the [official Docker releases](http://docs.docker.com/engine/installation/), including support for Mac and Windows!  If you are on Linux, you can also install using:
+
 ```bash
 wget -qO- https://get.docker.com/ | sh
 ```
 
 Verify that Docker is installed with:
+
 ```shell  
 # Should print "Hello from Docker!"
 docker run hello-world
@@ -204,6 +208,7 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
 If you are hosting Che at a cloud service like DigitalOcean, or [Bitnami]({{base}}{{site.links["setup-bitnami"]}})  `CHE_HOST` must be set to the server's IP address or its DNS.
 
 We will attempt to auto-set `CHE_HOST` by running an internal utility `docker run --net=host eclipse/che-ip:nightly`. This approach is not fool-proof. This utility is usually accurate on desktops, but usually fails on hosted servers. You can explicitly set this value to the IP address of your server:
+
 ```
 docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
                     -v <local-path>:/data
@@ -223,6 +228,7 @@ Please be mindful that your `HTTP_PROXY` and/or `HTTPS_PROXY` that you set in th
 If you configure `HTTP_PROXY` or `HTTPS_PROXY` in your Docker daemon, we will add `localhost,127.0.0.1,CHE_HOST` to your `NO_PROXY` value where `CHE_HOST` is the DNS or IP address. We recommend that you add the short and long form DNS entry to your Docker's `NO_PROXY` setting if it is not already set.
 
 We will add some values to `che.env` that contain some proxy overrides. You can optionally modify these with overrides:
+
 ```
 CHE_HTTP_PROXY=<YOUR_PROXY_FROM_DOCKER>
 CHE_HTTPS_PROXY=<YOUR_PROXY_FROM_DOCKER>
@@ -239,6 +245,7 @@ We support offline (disconnected from the Internet) installation and operation. 
 
 ### 1. Save Che Images
 While connected to the Internet, download Che's Docker images:
+
 ```shell
 docker run <docker-goodness> eclipse/che:<version> offline
 ```
@@ -259,6 +266,7 @@ docker run <other-properties> -v /tmp/offline:/data/backup eclipse/che:<version>
 The `--offline` parameter instructs the Che CLI to load all of the TAR files located in the folder mounted to `/data/backup`. These images will then be used instead of routing out to the Internet to check for DockerHub. The preboot sequence takes place before any CLI functions make use of Docker. The `eclipse/che start`, `eclipse/che download`, and `eclipse/che init` commands support `--offline` mode which triggers this preboot sequence.
 
 # Uninstall
+
 ```shell
 # Remove your Che configuration and destroy user projects and database
 docker run eclipse/che:<version> destroy [--quiet|--cli]

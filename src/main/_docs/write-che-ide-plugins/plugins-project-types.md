@@ -30,6 +30,7 @@ Further, it specifies with the remaining three boolean parameters:
 After specifying the project, we add a constant and a variable definition to the project type. Constants can not be changed, once they are defined and therefore contain static information about the project type. In our example, we add the information, that the project’s language is “json”. The first parameter specifies a key, the second a description of the Constant, and the third the corresponding value.
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-server/src/main/java/org/eclipse/che/plugin/jsonexample/projecttype/JsonExampleProjectType.java*
+
 ```java  
 Server-side: org.eclipse.che.plugin.jsonexample.projecttype.JsonExampleProjectType
 public class JsonExampleProjectType extends ProjectTypeDef {
@@ -46,6 +47,7 @@ public class JsonExampleProjectType extends ProjectTypeDef {
 Variables can be changed, e.g. to store values that the user enters on project creation. In the example, we define a custom variable to store a reference to a JSON schema. We will allow the user to set this variable in a custom project wizard in the corresponding part of this tutorial. You can define your own variables to store project specific properties. All String constants of the following code example are defined in a shared constant class, which is listed below.
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-shared/src/main/java/org/eclipse/che/plugin/jsonexample/shared/Constants.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.shared.Constants
 public final class Constants {
@@ -143,6 +145,7 @@ public class JsonExampleCreateProjectHandler implements CreateProjectHandler {
 Finally, the ProjectHandler needs to be bound using Guice just as the project type was bound before:
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-server/src/main/java/org/eclipse/che/plugin/jsonexample/inject/JsonExampleGuiceModule.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.inject.JsonExampleGuiceModule
 
@@ -180,6 +183,7 @@ Now all required classes are set up and the actual runtime behavior can be perfo
 Finally, to wire everything up with Gin, all we need to do is to define a module to register our class `JsonExampleProjectWizardRegistrar` as an implementation of `ProjectWizardRegistrar`:
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/inject/JsonExampleModule.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.inject.JsonExampleModule
 @ExtensionGinModule
@@ -196,13 +200,13 @@ public class JsonExampleModule extends AbstractGinModule {
 }
 ```
 
-
 Now let us look at the implementation of all required classes in more detail.
 The `JsonExampleProjectWizardRegistrar` is responsible for setting up the `SchemaUrlWizardPage` as one of its wizard pages. To do this, it requests a provider for a `SchemaUrlWizardPage` injected in its constructor. The provider is just a wrapper around the actual wizard page which is required by the Che framework. In the method `#getWizardPages` we can then just return a list of providers for wizard pages containing only the injected provider.
 
 In addition to setting up the wizard page we need to declare the project type and category for which the project wizard is responsible for.
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/project/JsonExampleProjectWizardRegistrar.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.project.JsonExampleProjectWizardRegistrar
 public class JsonExampleProjectWizardRegistrar implements ProjectWizardRegistrar {
@@ -235,6 +239,7 @@ public class JsonExampleProjectWizardRegistrar implements ProjectWizardRegistrar
 The `SchemaUrlWizardPage` class defines the actual wizard page for entering a schema URL. In the constructor it requires the injection of a view for displaying the UI of the page called `SchemaUrlPageViewImpl`. In the method `#go`, which is called when the page is about to be displayed, it will set this view as the only widget on the page and pass a new `SchemaUrlChangedDelegate` to the view. The view will later use this delegate to trigger  changes on the page's `ProjectConfigDto` whenever something is entered into the schema URL text box on the view.
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/project/SchemaUrlWizardPage.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.project.SchemaUrlWizardPage
 public class SchemaUrlWizardPage extends AbstractWizardPage<ProjectConfigDto> {
@@ -258,6 +263,7 @@ public class SchemaUrlWizardPage extends AbstractWizardPage<ProjectConfigDto> {
 The `SchemaUrlChangedDelegate` receives a `ProjectConfigDto` in its constructor which holds all the values that are defined during project creation including the schema URL. Whenever its `#schemaUrlChanged` method is fired, it will write the new value into the `ProjectConfigDto`.
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/project/SchemaUrlChangedDelegate.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.project.SchemaUrlChangedDelegate   
 public class SchemaUrlChangedDelegate {
@@ -278,6 +284,7 @@ public class SchemaUrlChangedDelegate {
 `SchemaUrlPageView` is just a marker interface required by the framework to declare that our `SchemaUrlPageViewImpl` is an implementation of a view with a `SchemaUrlChangedDelegate`.
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/project/SchemaUrlPageView.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.project.SchemaUrlPageView   
 public interface SchemaUrlPageView extends View<SchemaUrlChangedDelegate> {}
@@ -293,6 +300,7 @@ More about declarative UIs with GWT UI binder can be found on the [GWT homepage]
 
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/project/SchemaUrlPageViewImpl.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.project.SchemaUrlPageViewImpl
 class SchemaUrlPageViewImpl extends Composite implements SchemaUrlPageView {
@@ -324,6 +332,7 @@ class SchemaUrlPageViewImpl extends Composite implements SchemaUrlPageView {
 ```
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/project/SchemaUrlPageViewImpl.ui.xml*
+
 ```xml  
 SchemaUrlPageViewImpl.ui.xml
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'

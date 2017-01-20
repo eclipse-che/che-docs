@@ -14,6 +14,7 @@ There are two ways to run your application in Che:
 
 # Console Apps  
 Create a command using `${current.project.path}` macro to execute jars, python scripts, run gulp or grunt commands etc:
+
 ```shell  
 # execute a JAR
 java -jar ${current.project.path}/target/application.jar

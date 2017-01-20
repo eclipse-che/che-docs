@@ -10,7 +10,6 @@ This documentation is a step-by-step guide to build your first HelloWorld extens
 
 In order to follow this guide, we consider you have successfully configured Eclipse Che sources inside of Eclipse IDE and have been able to execute your manually built assembly. If not, please refer to the following [documentation]({{ base }}/docs/plugins/setup-che-workspace/index.html).
 
-
 ## 1- Create a new maven project
 
 Create a new maven project.
@@ -33,6 +32,7 @@ We add the dependencies for:
 We also add the Maven repository used to retrieve artifacts and the [Build configuration]({{ base }}/docs/plugins/create-and-build-extensions/index.html#pomxml)).
 
 *pom.xml*
+
 ```xml  
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
@@ -113,6 +113,7 @@ Create the package `org.eclipse.che.ide.ext.helloworld` in `src/main/java`:
 Add `HelloWorldExtension` java class in the package `org.eclipse.che.ide.ext.helloworld`:
 ![ScreenShot2016-10-13at14.27.40.png]({{ base }}/docs/assets/imgs/ScreenShot2016-10-13at14.27.40.png)
 In this extension we'll need to talk to Parts and Action API. Gin and Singleton imports are obligatory as well for any extension. Add the following import:
+
 ```java  
 ...
 import org.eclipse.che.ide.api.extension.Extension;
@@ -147,6 +148,7 @@ In the constructor, we want our HelloWorld extension to display an "Hello World"
 
 Finally, your class should be like this:
 *HelloWorldExtension.java*
+
 ```java  
 /*******************************************************************************
  * Copyright (c) 2012-2016 Codenvy, S.A.
@@ -197,6 +199,7 @@ Add `HelloWorldExtension` GWT module by creating the file `HelloWorldExtension.g
 Inherits from the GWT modules: User, Inject. We will also inherits from the IDE GWT API.
 
 *HelloWorldExtension.gwt.xml*
+
 ```xml  
 <!--
 
@@ -225,6 +228,7 @@ Or you can also open a terminal where you create your HelloWorld Extension and r
 
 
 If everything goes well, you should have:
+
 ```shell  
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
@@ -233,7 +237,6 @@ If everything goes well, you should have:
 [INFO] Finished at: 2016-10-13T15:05:21+02:00
 [INFO] Final Memory: 47M/648M
 [INFO] ------------------------------------------------------------------------
-\
 ```
 
 
@@ -242,6 +245,7 @@ If everything goes well, you should have:
 In order to allow your extension to be visible from the root level of Che, add your extension as a dependency in the list of `<dependencies>` from the `<dependencyManagement>` block. Edit the `pom.xml` from `che-parent`
 
 *pom.xml*
+
 ```xml  
 ...
 <dependencyManagement>
@@ -255,7 +259,7 @@ In order to allow your extension to be visible from the root level of Che, add y
     ...
   </dependencies>
 </dependencyManagement>
-...\
+...
 ```
 
 ![ScreenShot2016-10-13at15.30.00.png]({{ base }}/docs/assets/imgs/ScreenShot2016-10-13at15.30.00.png)
@@ -285,6 +289,7 @@ You can insert the dependency anywhere in the list. After you have inserted it, 
 Second, link your GUI extension into the GWT app. You will add an `<inherits>` tag to the module definition. The name of the GWT extension is derived from the direction + package structure given to the GWT module defined in our HelloWorld extension.
 
 In `assembly-ide-war/src/main/resources/org/eclipse/che/ide/IDE.gwt.xml` add:
+
 ```xml  
 ...
 <inherits name='org.eclipse.che.ide.ext.helloworld.HelloWorldExtension'/>
@@ -302,6 +307,7 @@ This means that in our embed sample, there is a file with a `*.gwt.xml` extensio
 First, we need to rebuild the assembly-ide-war:
 ![ScreenShot2016-10-13at16.40.08.png]({{ base }}/docs/assets/imgs/ScreenShot2016-10-13at16.40.08.png)
 Or you can also do it in a terminal:
+
 ```shell  
 # Build a new IDE.war
 # This IDE web app will be bundled into the assembly
@@ -312,6 +318,7 @@ mvn clean install
 Second, we need to rebuild the whole Eclipse Che assembly:
 
 Or you can also do it in a terminal:
+
 ```shell  
 # Create a new Che assembly that includes all new client-side extensions
 cd che/assembly/assembly-main

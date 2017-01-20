@@ -46,6 +46,7 @@ Create a snapshot of the workspace you want to export by right-clicking the work
 Use the Docker CLI to rename, login and push the workspace Docker image to a Docker repository.
 
 In order to access the Docker CLI, you will need access to the host terminal. Below is an example of renaming and pushing a workspace Docker image to Docker Hub repository using the Docker CLI.
+
 ```shell  
 #list all images. Look for the newest snapshot then tag it.
 docker images

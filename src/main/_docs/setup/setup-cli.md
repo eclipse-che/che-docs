@@ -156,6 +156,7 @@ The list of all the tests available can be obtained by providing only `test` com
 Manages the sequence of upgrading Che from one version to another. Run `che version` to get a list of available versions that you can upgrade to.
 
 Upgrading Che is done by using a `eclipse/che:<version>` that is newer than the version you currently have installed. For example, if you have 5.0.0-M2 installed and want to upgrade to 5.0.0-M7, then:
+
 ```
 # Get the new version of Che
 docker pull eclipse/che:5.0.0-M7
@@ -182,6 +183,7 @@ You can customize the CLI using a variety of techniques. This section discusses 
 
 ## Structure
 The Che CLI is constructed of multiple Docker images within the Che source repository.
+
 ```
 /dockerfiles/base  # Common functions and commands
 /dockerfiles/cli   # CLI entrypoint, overrides, and version information
@@ -191,6 +193,7 @@ The Che CLI is constructed of multiple Docker images within the Che source repos
 The Che CLI is authored in `bash`. The `cli` image depends upon both the `base` image and the `init` image. In the source repository, we have `build.sh` commands which will build these Docker images for you either one at a time or collectively as a group.
 
 It can become tedious rebuilding images every time you want to test a small change to a bash script. You can avoid having to rebuild images each time for every change to a bash script by volume mounting the contents during the image execution. You cannot volume mount the `entrypoint.sh` file which is where each container has a launch point, but you can volume mount others:
+
 ```
 # Volume mount the contents of the base image
 -v <path-to-che-repo>/dockerfiles/scripts/base/scripts:/base/scripts
