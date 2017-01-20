@@ -44,12 +44,14 @@ Depending on the complexity of your extension, you might build the structure of 
 | `/extension/extension-shared`   | Your extension module for the shared code between the server and the client.   
 
 Each module has a directory structure that is based upon maven and will include source code and a target where artifacts are placed.
+
 ```shell  
 pom.xml
 src/main/java/{package-name}/{extensionName}.java
 ```
 
 Depending on the extension, you may also need to include:
+
 ```text  
 # Required for client-side extensions
 src/main/resources/{package-name}/{extensionName}.gwt.xml
@@ -73,6 +75,7 @@ See the following [example](https://github.com/eclipse/che/tree/master/samples/s
 # Compiling Extensions  
 ## pom.xml
 Each extension has a root `pom.xml` file. When configuring an extension `pom.xml` file, you must define an `<artifactId>` tag which will be the unique name identifier given to this extension. This identifier tag will be referenced by the Che assembly to declare that your extension is part of Che. You can override the `groupId` and `version` parameters from the parent, or if not specified, it will inherit the values set by the `<parent>` tag reference.
+
 ```xml  
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -145,6 +148,7 @@ We do not require you to use this parent configuration file. Therefore you can b
 
 ## Licensing
 Referencing the Che parent `pom.xml` enforces the Eclipse Che license header to be in place for all source files. You can execute `mvn license:format` to add license headers to your files.  Or, to skip the license check add:
+
 ```xml  
 <plugin>
   <groupId>com.mycila</groupId>
@@ -158,6 +162,7 @@ If you modify the `pom.xml` it needs to be sorted. Run `mvn sortpom:sort` to sor
 
 ## Build Your Extension
 In your extension directory, run `mvn clean install`. This will build JAR files that bundle your extension.
+
 ```text  
 /target
   {your-extension-name}-{version}-sources.jar
@@ -180,6 +185,7 @@ After you compile your extension, they will be packaged as JAR files. Those JAR 
 
 ## Your Extension Identifier
 Every extension has a unique maven identifier. You will need to reference this identifier as a dependency. You can define your own identifiers for extensions or pull the identifier out of the `pom.xml` of the extension you are working with.  For example, in the samples that are provided with che the `samples/sample-plugin-embedjs/` has a single module for the IDE, and the identifier for the IDE extension is located in `sample/sample-plugin-embedjs/che-sample-plugin-embedjs-ide/pom.xml`.
+
 ```xml  
 <parent>
   <artifactId>che-sample-plugin-embedjs-parent</artifactId>
@@ -189,6 +195,7 @@ Every extension has a unique maven identifier. You will need to reference this i
 <artifactId>che-sample-plugin-embedjs-ide</artifactId>
 ```
 And the identifier of this extension is the `artifactId`, `groupId`, and `version` tags combined together. Tags can inherit values from parents if they are not explicitly defined in the `pom.xml`. So this extension has the identifier of.
+
 ```xml  
 <artifactId>che-sample-plugin-embedjs-ide</artifactId>
 <groupId>org.eclipse.che.sample</groupId>
@@ -196,6 +203,7 @@ And the identifier of this extension is the `artifactId`, `groupId`, and `versio
 ```
 ## Add Extension To Root Che POM
 In order to allow your extension to be visible from the root level of Che, add your extension as a dependency in the list of `<dependencies>` from the `<dependencyManagement>`block.  There are a lot of them in the root `pom.xml`. To avoid transitive dependencies, we require every dependency to be explicitly listed and added. While this may seem like a pain in the arse, this will save you a lot of pain in the future from having circular references.
+
 ```xml  
 <dependencyManagement>
   <dependencies>
@@ -216,6 +224,7 @@ By default, Che has the Maven enforcer plug-in activated. When this plugin is ac
 
 ## IDE Extension: Link To Assembly
 To include your jar files within the Che assemblies you have to introduce your extension as a dependency in `/che/assembly/assembly-ide-war/pom.xml` and also have it added as a dependency to the GWT application.  First add the dependency:
+
 ```xml  
 <dependency>
   <groupId>org.eclipse.che.sample</groupId>
@@ -225,17 +234,20 @@ To include your jar files within the Che assemblies you have to introduce your e
 You can insert the dependency anywhere in the list. After you have inserted it, run `mvn sortpom:sort` and maven will order the `pom.xml` for you.
 
 Second, link your GUI extension into the GWT app. You will add an `<inherits>` tag to the module definition. The name of the extension is derived from the direction + package structure that you have given your extension.  For example:
+
 ```xml  
 <inherits name='org.eclipse.che.plugin.embedjsexample.EmbedJSExample'/>
 ```
 
 And this means that in our embed sample, there is a file with a `*.gwt.xml` extension in a folder structure identical to the name above.
+
 ```shell  
 # This name was derived from the package structure in your sample:
 /che/samples/sample-plugin-embedjs/che-sample-plugin-embedjs-ide/src/main/resources/org/eclipse/che/plugin/embedjsexample/EmbedJSExample.gwt.xml
 ```
 
 Once you have added the IDE extension to both locations, you need to rebuild the IDE.
+
 ```shell  
 # Build a new IDE.war
 # This IDE web app will be bundled into the assembly
@@ -260,6 +272,7 @@ To start Che from the custom assembly you just built, you can refer to this [Usa
 
 ## Server Side Workspace Extensions: Link To Assembly
 To include your jar files within the Che assemblies you have to introduce your extension as a dependency in `/che/assembly/assembly-wsagent-war/pom.xml` and then rebuild the agent server.  
+
 ```xml  
 <dependency>
   <groupId>org.eclipse.che</groupId>
@@ -292,6 +305,7 @@ To start Che from the custom assembly you just built, you can refer to this [Usa
 
 ## Server Side Che Server Extensions: Link To Assembly
 To include your jar files within the Che assemblies you have to introduce your extension as a dependency in `/che/assembly/assembly-wsmaster-war/pom.xml` and then rebuild the Che server, which we call master.  
+
 ```xml  
 <dependency>
   <groupId>org.eclipse.che</groupId>
@@ -299,6 +313,7 @@ To include your jar files within the Che assemblies you have to introduce your e
 </dependency>
 ```
 Once you have added the extension to the Che server, you need to rebuild the Che server.
+
 ```shell  
 # Create a new Che server web app that includes your Che server extension
 cd che/assembly/assembly-wsmaster-war
@@ -357,6 +372,7 @@ mvn clean install -DskipTests -Dskip-validate-sources -Dgwt.compiler.localWorker
 ```
 
 In the IDE GWT module:
+
 ```xml  
 <!-- In /assembly/assembly-ide-war/src/main/resources/org/eclipse/che/ide/IDE.gwt.xml -->
 

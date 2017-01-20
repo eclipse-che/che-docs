@@ -10,6 +10,7 @@ permalink: /:categories/events/
 Events are defined in {{ site.product_mini_name }} in order to circulate information between processes in a publish/subscribe model. Event notifications are provided on Websocket channels. Clients can subscribe to these channels.
 
 #### Execute a command and get output
+
 ```shell  
 # Get the workspace Id
 curl http://localhost:8080/ide/api/workspace

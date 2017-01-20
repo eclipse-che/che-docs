@@ -16,6 +16,7 @@ Each Project Type has an associated set of machine images that are instantiated 
 A single Project Type can have many machines associated with it that can be interchangeably used by developers. For example, a maven project can have multiple machines with different JVM, application server types, and versions, with the Project successfully executing within each machine.
 
 #### cURL - Estimate a project against a project type
+
 ```shell  
 curl http://localhost:8080/api/ext/project/workspacee1p60f8ge4vukxxz/estimate/my-first-sample?type=maven\
 ```

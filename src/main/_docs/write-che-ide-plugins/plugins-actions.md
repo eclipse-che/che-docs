@@ -18,6 +18,7 @@ In the example action below, the constructor also gets the `NotificationManager`
 A custom `Action` need to implement the `#actionPerformed` method, which is called when it is invoked. Actions can be associated with a variety of triggers within the system such as buttons, menu item selections, or user input (see following section).
 
 *che/samples/sample-plugin-actions/che-sample-plugin-actions-ide/src/main/java/org/eclipse/che/plugin/sampleactions/ide/action/HelloWorld.java*
+
 ```java  
 @Singleton
 public class HelloWorldAction extends Action {
@@ -44,6 +45,7 @@ Additionally, you can optionally define an icon for an Action. This is done by c
 The following code example defines another "Hello World" action including a corresponding icon:
 
 *che/samples/sample-plugin-actions/che-sample-plugin-actions-ide/src/main/java/org/eclipse/che/plugin/sampleactions/ide/action/HelloWorldActionWithIcon.java*
+
 ```java  
 @Singleton
 public class HelloWorldActionWithIcon extends Action {
@@ -71,6 +73,7 @@ Additionally, the `HelloWorldActionWithIcon` is directly placed into the main me
 Please see the following section on more details about existing action locations (i.e. groups) in Che and how to specify the order of actions within those groups.
 
 *che/samples/sample-plugin-actions/che-sample-plugin-actions-ide/src/main/java/org/eclipse/che/plugin/sampleactions/ide/SampleActionsExtensions.java*
+
 ```java  
 @Extension(title = "Sample Actions Extension", version = "1.0.0")
 public class SampleActionsExtensions {
@@ -108,6 +111,7 @@ In addition to placing actions in groups, you can define a relative order for ac
 The following code example shows the registration of the group containing `HelloWorldAction` after the existing help menu, as well as the action itself at the beginning of the main toolbar.
 
 *che/samples/sample-plugin-actions/che-sample-plugin-actions-ide/src/main/java/org/eclipse/che/plugin/sampleactions/ide/SampleActionsExtensions.java*
+
 ```java  
 DefaultActionGroup sampleGroup = new DefaultActionGroup("Sample actions", true, actionManager);
 sampleGroup.add(helloWorldAction);
@@ -132,6 +136,7 @@ The `ActionEvent` allows access to the specific presentation which needs to be u
 The following example shows the `OnProjectHelloWorldAction`, which is placed in the main menu of Che. It controls its visibility based on the state and is only visible if a project is selected in the navigator.
 
 *che/samples/sample-plugin-actions/che-sample-plugin-actions-ide/src/main/java/org/eclipse/che/plugin/sampleactions/ide/action/OnProjectHelloWorldAction.java*
+
 ```java  
 public class OnProjectHelloWorldAction extends Action {
 
@@ -176,6 +181,7 @@ For common operations such as creating files, Che provides reusable default acti
 Che provides a template implementation for actions to create new resources (i.e. files). When using the template, you only need to specify the name of the action as well as the file extension to be created (as shown in the following code example).
 
 *che/samples/sample-plugin-filetype/che-sample-plugin-filetype-ide/src/main/java/org/eclipse/che/plugin/filetype/ide/action/CreateMyFileAction.java*
+
 ```java  
 org.eclipse.che.plugin.myextension.ide.action.CreateMyFileAction
 public class CreateMyFileAction extends AbstractNewResourceAction {
@@ -210,6 +216,7 @@ To make our abstract template action perspective-specific, we inherit from a reu
 The constructor also gets the `AppContext` injected, which is used in the following to control the project-specific visiblity of the action (see description below).
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/action/JsonExampleProjectAction.java*
+
 ```java  
 org.eclipse.che.plug.plugin.jsonexample.ide.action.JsonExampleProjectAction
 public abstract class JsonExampleProjectAction extends AbstractPerspectiveAction {
@@ -254,6 +261,7 @@ After defining a project specific action, we can now define an arbitrary number 
 In the example, we trigger a simple notification. However, this simple behavior could be replaced with any custom operation.
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/action/HelloWorldAction.java*
+
 ```java  
 org.eclipse.che.plug.plugin.jsonexample.ide.action.HelloAction
 @Singleton
@@ -289,6 +297,7 @@ To keep all JSON example related actions together, we define a new `ActionGroup`
 To define a place in the IDE where the Action is visible to the user, we further place the Action in an existing `ActionGroup`, in our case, the context menu of a project.
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/JsonExampleExtension.java*
+
 ```java  
 org.eclipse.che.plugin.jsonexample.ide.JsonExampleExtension
 @Extension(title = "JSON Example Extension", version = "0.0.1")
@@ -323,6 +332,7 @@ In this section, we provide a collection of existing example actions to demonstr
 The following example creates a `RedirectToDashboardWorkspacesAction` which is the behavior that redirects the IDE back into the user dashboard application.
 
 *https://github.com/eclipse/che/blob/master/core/ide/che-core-ide-app/src/main/java/org/eclipse/che/ide/actions/RedirectToDashboardWorkspacesAction.java*
+
 ```java  
 package org.eclipse.che.ide.actions;
 
@@ -354,6 +364,7 @@ public class RedirectToDashboardWorkspacesAction extends Action {
 The following example (from the [JSON example]({{ base }}/docs/plugins/introduction/index.html#the-json-example)) executes a server call to retrieve and display the number of lines of code from all JSON files within a project:
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/action/CountLinesAction.java*
+
 ```java  
 /**
  * Action for counting lines of code of all JSON files within the current project.
@@ -427,6 +438,7 @@ this.appContext.getCurrentProject().getRootProject().getPath();
 The following example shows how Che registers all of the actions for the Git menu.
 
 *https://github.com/eclipse/che/blob/master/plugins/plugin-git/che-plugin-git-ext-git/src/main/java/org/eclipse/che/ide/ext/git/client/GitExtension.java*
+
 ```java  
 DefaultActionGroup git = new DefaultActionGroup(GIT_GROUP_MAIN_MENU, true, actionManager);
 actionManager.registerAction("git", git);

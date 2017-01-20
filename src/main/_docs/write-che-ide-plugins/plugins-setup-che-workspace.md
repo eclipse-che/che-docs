@@ -41,6 +41,7 @@ To build the Che core, you will need the maven-patch-plugin. Windows does not [s
 If you are a developer on Windows you'll not be able to do a complete build of Che by doing a `mvn clean install`. There are certain modules that require additional libraries and are OS specific. (dashboard and svn plugin)
 
 In this situation, we recommend to build Che sources using the "che-dev" Docker image. This image has the dependencies necessary to build Che. You'll mount Che source code from your host to the container and then compile the code within the container.
+
 ```shell  
 # For Windows, replace $HOME with maven repo directory.
 # For Windows, replace $PWD with Che source code directory.
@@ -61,6 +62,7 @@ docker run -it --rm --name build-che
 # For Mac + Linux - replace $PWD with the root path to build:
 ```
 Alternatively you can also skip building certain submodules:
+
 ```shell  
 # Each submodule may require additional software to build properly.
 # You can skip a submodule to avoid installing additional software.
@@ -168,6 +170,7 @@ In Eclipse, go to `Run > Run Configurations`, select `Java Application`, right c
 In the `Main` tab, add the project `assembly-ide-war` with main class as `com.google.gwt.dev.codeserver.CodeServer`.
 ![ScreenShot2016-10-06at15.05.46.png]({{ base }}/docs/assets/imgs/ScreenShot2016-10-06at15.05.46.png)
 In the same panel, select the `Arguments` tab. We will add some content to `Program arguments`. Some of the parameters are mandatory, and you must add a `-src` parameter for each plugin that you have authored.
+
 ```shell  
 -noincremental -src target/generated-sources/gen -src {path-to-your-extension}/src/main/java org.eclipse.che.ide.IDE\
 ```
@@ -179,8 +182,6 @@ In the `Classpath` tab, go to `User Entries > Add External Jars`. Add:
 3. The JAR file for any extensions or plugins that you have built. You can find this JAR file in two locations. First, you can find it in the `/target` folder where you compiled the plugin. Second, you can also find it in your maven's local repository, typically in its `.m2` folder.
 ![ScreenShot2016-10-06at15.07.45.png]({{ base }}/docs/assets/imgs/ScreenShot2016-10-06at15.07.45.png)
 In the `Source` tab, remove any non-existent source folders. This is uncommon, but if you see something like `src/text/java` then these folders should be removed.
-
-
 
 ## Launch Super Dev Mode
 Run super dev mode in Eclipse by `Run > Run Configurations`.  Select the run configuration that you just created and select `Run`. The first boot can take a few minutes as GWT is  recompiling the application with development mode hooks.
@@ -195,8 +196,6 @@ Click the `Dev Mode On` bookmark on your booksmark bar. A message will appear as
 The compilation will likely take 5 to 10 Minutes:
 ![ScreenShot2016-10-06at15.23.13.png]({{ base }}/docs/assets/imgs/ScreenShot2016-10-06at15.23.13.png)
 Che is now running in Super Dev Mode. You can now make incremental Java source file changes within your IDE and then have the browser trigger an incremental rebuild and reload.
-
-
 
 ## Debugging GWT Apps in the Chrome Browser
 Google Chrome has an ability where you can set breakpoints for your Java GWT apps from within the Chrome browser itself, even though Chrome has loaded your GWT app as JavaScript!
@@ -219,6 +218,7 @@ JetBrains has a helpful page. There is [just a single step](https://www.jetbrain
 
 ## Modify the Che Assembly
 There are a few additional modifications to `/che/assembly/assembly-ide-war/pom.xml`. First, add a `gwt-dev` dependency and delete all 'provided' scopes.
+
 ```xml  
 <dependency>
     <groupId>com.google.gwt</groupId>

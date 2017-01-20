@@ -11,6 +11,7 @@ Many of the IDE components that you build into your extension will need to commu
 In your extension code, you can create an AsyncRequestFactory object, which has helper methods for creating requests that will have responses.
 
 *che/core/ide/che-core-ide-api/src/main/java/org/eclipse/che/ide/api/project/ProjectTypeServiceClientImpl.java*
+
 ```java  
 private void getProjectType(@NotNull String workspaceId,
                             @NotNull String id,
@@ -42,6 +43,7 @@ Che provides different types of `Unmarshallable` objects including [StringUnmars
 For example, this logic comes from the git plugin and is the method that is called when a user asks to delete the local git repository contained within the project.
 
 *che/plugins/plugin-git/che-plugin-git-ext-git/src/main/java/org/eclipse/che/ide/ext/git/client/delete/DeleteRepositoryPresenter.java*
+
 ```java  
 public void deleteRepository() {
     final CurrentProject project = appContext.getCurrentProject();

@@ -10,6 +10,7 @@ permalink: /:categories/stack/
 # List All Stacks
 
 #### cURL - List all stacks tagged with 'Node'
+
 ```shell  
 curl --header 'Accept: application/json' http://localhost:8080/api/stack?tags=Node.JS
 ```
@@ -31,6 +32,7 @@ curl -X POST --header 'Content-Type: application/json' --header 'Accept: applica
 ```
 
 Output:
+
 ```json  
 {
   "name": "my-custom-stack",
@@ -90,6 +92,7 @@ curl -X PUT --header 'Content-Type: application/json' --header 'Accept: applicat
 ```
 
 Output:
+
 ```json  
 
 {

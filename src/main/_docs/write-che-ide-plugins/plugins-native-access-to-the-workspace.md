@@ -19,6 +19,7 @@ To execute a command, Che provides the service `MachineServiceClient`. To execut
 The ID can be retrieved from the `AppContext`. The `Command` is created using the Che `DtoFactory`. The parameter `CommandLine` specifies the native command to be executed. Finally, we create a sample output channel and execute the command with an empty call back.
 
 *che/samples/sample-plugin-nativeaccess/che-sample-plugin-nativeaccess-ide/src/main/java/org/eclipse/che/plugin/nativeaccessexample/machine/client/command/CommandManager.java*
+
 ```java  
 @Singleton
 public class CommandManager {
@@ -69,6 +70,7 @@ public class CommandManager {
 Now, the `CommandManager` can be used to trigger any kind of command line operation. The following example action uses the native "touch" command to create a new file.
 
 *che/samples/sample-plugin-nativeaccess/che-sample-plugin-nativeaccess-ide/src/main/java/org/eclipse/che/plugin/nativeaccessexample/ide/action/RunNativeCommandAction.java*
+
 ```java  
 @Singleton
 public class RunNativeCommandAction extends Action {
