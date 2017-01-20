@@ -13,6 +13,7 @@ permalink: /:categories/api-projects/
 In {{ site.product_mini_name }} a **Project** is an instance of a Project Type with concrete values for all attributes and a set of associated Source Code that resides within the Project’s file system.
 
 #### cURL : Create a Maven project
+
 ```shell  
 # Get workspace id
 curl http://localhost:8080/api/workspace
@@ -23,6 +24,7 @@ http://localhost:8080/api/ext/project/workspacex4zl7nvex1yldosj?name=my-first-sa
 ```
 
 #### cURL : Remove a project
+
 ```shell  
 curl -X DELETE http://localhost:8080/api/ext/project/workspacex4zl7nvex1yldosj/my-first-sample
 ```

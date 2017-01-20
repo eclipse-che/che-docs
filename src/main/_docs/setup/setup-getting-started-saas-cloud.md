@@ -6,7 +6,9 @@ layout: docs
 permalink: /:categories/getting-started-saas-cloud/
 ---
 {% include base.html %}
+
 You can use Eclipse Che workspaces hosted at http://codenvy.io by signing up for a free account and accepting Codenvy's terms of service.
+
 # How to Get Help  
 **Support:** If the unthinkable happens, or you have a question, you can post [issues on our GitHub page](https://github.com/eclipse/che/issues). Please follow the [guidelines on issue reporting](https://github.com/eclipse/che/blob/master/CONTRIBUTING.md).
 
@@ -17,6 +19,7 @@ Eclipse Che is offered as hosted SaaS at Codenvy.com. See our [Eclipse Che site]
 
 # 2. Develop with Che  
 Now that you have access to Che at codenvy.com there are a lot of fun things to try:
+
 - Become familiar with Che through [one of our tutorials]({{ base }}/docs/tutorials/multi-machine/index.html).
 - [Import a project]({{ base }}/docs/ide/import-a-project/index.html) and setup [git authentication]({{ base }}/docs/ide/git-svn/index.html).
 - Use [commands]({{ base }}/docs/ide/commands/index.html) to build and run a project.

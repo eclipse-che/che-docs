@@ -27,6 +27,7 @@ There are basically two scenarios possible:
 ## Adding Own Theme
 To add a new theme one needs to implement the interface `org.eclipse.che.ide.api.Theme`, and register it in a `ThemeAgent`.
 This is how it's done:
+
 ```java  
 void addTheme(@NotNull Theme theme);
 ```
@@ -34,6 +35,7 @@ Alternatively, it is possible just to extend an existing theme (rather than impl
 
 ## Using Theme API in Own Custom Components
 To be able to use Themes API one needs to be familiar with `CssResource`, where runtime substitution is used:
+
 ```java  
 public interface CoreCss extends CssResource {
   public interface Resources extends ClientBudnle {
@@ -58,10 +60,12 @@ Here, `mainFontColor`, `mainFontFamily` and `mainFontSize` are declared in `styl
 # Extending Dark Theme
 SDK users can easily change looks and feel of the product by adding own themes or extending existing themes developed by Che contributors.
 To get started with creating your own theme based on the existing one, let's extend Dark Theme which is provided in API.
+
 ```java  
 public class DarkThemeExt extends DarkTheme
 ```
 Next, we override Theme ID and name:
+
 ```java  
 @Override
 public String getId() {
@@ -75,6 +79,7 @@ public String getDescription() {
 ```
 A new name will be displayed in the list of available themes at Window > Preferences > Themes.
 Now, let's override colors for main font and some panel background:
+
 ```java  
 @Override
 public String getMainFontColor() {
@@ -94,6 +99,7 @@ public String getTabsPanelBackground() {
 
 # Register Own Theme Using GIN Multibinding
 Let's register a new theme:
+
 ```java  
 GinMultibinder themeBinder = GinMultibinder.newSetBinder(binder(), Theme.class);
 themeBinder.addBinding().to(DarkThemeExt.class);

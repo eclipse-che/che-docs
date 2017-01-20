@@ -51,7 +51,7 @@ By default machines are automatically snapshotted when they are stopped. By defa
 {{site.data.env["DOCKER_NAMESPACE"]}}=NULL
 
 # Docker Registry for Workspace Snapshots
-{{site.data.env["DOCKER_REGISTRY"]}}=${CHE_REGISTRY_HOST}:5000
+{{site.data.env["DOCKER_REGISTRY"]}}=<your_private_registry_url>:5000
 
 # Enable/Disable auto snapshotting and auto restoring from a snapshot
 {{site.data.env["WORKSPACE_AUTO__SNAPSHOT"]}}=true

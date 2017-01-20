@@ -31,6 +31,7 @@ public class MyClass {
 ```
 
 All system properties and environment variables may be injected into your extensions with prefixes `sys.` and `env.`, respectively. So, for example, environment variable `HOME` name must be `env.HOME`. Here is an example of how to inject the value of system property `java.io.tmpdir` and value of environment variable `HOME`.
+
 ```java  
 public class MyClass {
   @Inject

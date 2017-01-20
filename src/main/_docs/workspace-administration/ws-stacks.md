@@ -6,6 +6,7 @@ layout: docs
 permalink: /:categories/stacks/
 ---
 {% include base.html %}
+
 A stack is a runtime configuration for a workspace. It contains a [runtime recipe]({{base}}{{site.links["ws-recipes"]}}), meta information like tags, description, environment name, and security policies. Since Che supports different kinds of runtimes, there are different stack recipe formats.
 
 Stacks are displayed within the user dashboard and stack tags are used to filter the [project code samples]({{base}}{{site.links["ws-samples"]}}) that are available. It is possible to have a single stack with a variety of different project samples, each of which are filtered differently.
@@ -16,10 +17,13 @@ A stack is different from a [recipe]({{base}}{{site.links["ws-recipes"]}}). A st
 
 # Using Stacks To Create a New Workspace  
 To create a new workspace in the user dashboard:
+
 - Click `Dashboard` > `Create Workspace`
 - Click `Workspaces` > `Add Workspace`
 - Hit the “+” next to `Recent Workspaces`
+
 ![che-stacks1.jpg]({{base}}{{site.links["che-stacks1.jpg"]}})  
+
 The stack selection form is available in the “Select Workspace” section, it allows you to choose stacks provided with Che or create and edit your own stack.
 
 ## Ready-To-Go Stacks
@@ -27,6 +31,7 @@ Che provides ready-to-go stacks for various technologies. These stacks provide a
 
 ## Stack Library
 Che provides a wider range of stacks which you can browse from the “Stack library” tab. This list contains advanced stacks which can also be used as runtime configuration for your workspaces.
+
 ![che-stacks2.jpg]({{base}}{{site.links["che-stacks2.jpg"]}})
 
 ## Custom Stack
@@ -42,6 +47,7 @@ In 5.x, we introduced an underlying database for storing product configuration s
 In the user dashboard, click the `Stacks` to view all the available stacks. New stacks can be created and existing stacks can be modified/searched.
 
 *Java Stack Example - Annotated*
+
 ```json  
 {
   // Tags describes components that make up the stack such as Tomcat, PHP, etc.
@@ -126,33 +132,39 @@ In the user dashboard, click the `Stacks` to view all the available stacks. New 
 }
 ```
 
-Learn more about the stack data model on the ![following page]({{base}}{{site.links["ws-data-model-stacks"]}})
+Learn more about the stack data model on the [following page]({{base}}{{site.links["ws-data-model-stacks"]}})
 
 ## Create a Stack
 A stack can be created from scratch using a skeleton template or duplicated from an existing stack.
 
 To create a stack from scratch click the `Add Stacks` button at the top left of the page. This will load a skeleton template that can be edited. After editing the template configuration and changing the stack name, clicking the save button to add the new stack to the available stacks.
+
 ![che-add-stack.gif]({{ base }}{{site.links["che-add-stack.gif"]}})
 
 ## Duplicate a Stack
 Duplicating an existing stack is often a good way to create your own. Click the duplicate icon on the right of the stack item you want. This will create a new stack name `<original name> - Copy` which can then be renamed and its configuration edited.
+
 ![Che-Stack-Duplicate.jpg]({{ base }}{{site.links["Che-Stack-Duplicate.jpg"]}})
 
 ## Edit a Stack
 Stack name and configuration can be edited by clicking on the stack which will bring up the stack editing interface. The stack can be renamed at the top of the stack editing interface. The stack configuration can be changed using the provided forms. After editing is complete, the stack can be saved by clicking the save button.
+
 ![che-edit-stack.gif]({{ base }}{{site.links["che-edit-stack.gif"]}})
 
 ## Test a Stack
 The built-in stacks editor allows to author your stack and test them in a temporary workspace. When testing the new stack, Che spins up a temporary and isolated workspace using the stack you just defined. You can use the temporary workspace to import your project, test commands and ensure all the components you need are properly configured. Once the testing session is completed the temporary workspace will be automatically deleted.
 
 Test the stack by clicking the `Test` button - it will start the temporary workspace as an overlay over the dashboard.
+
 ![che-test-stack.gif]({{ base }}{{site.links["che-test-stack.gif"]}})
 
 You can stop the testing session and the temporary workspace by clicking on the `Close` icon
 
 ## Delete a Stack
 Stacks can be deleted by clicking the checkbox on the left then the delete button that appear on the top right of the page or by clicking the trash bin icon on the right side of the stack item.
+
 ![Che-Stack-Delete.jpg]({{ base }}{{site.links["Che-Stack-Delete.jpg"]}})
+
 ## Register a Custom Stack
 Che has a stack API that you can call to manage your custom stacks. See the [Stacks]({{base_che}}{{site.links["server-stack"]}}) page in section _Use Che as a workspace server_ section.
 

@@ -6,10 +6,12 @@ layout: docs
 permalink: /:categories/data-model-stacks/
 ---
 {% include base.html %}
+
 Admins and users typically use our graphical dashboard for adding and configuring stacks within the product. However, you can also add these directly with REST or in the product using a JSON data model. 
 
 # Stack Object
 Stacks are referenced in JSON format:
+
 ```json  
 {
   "description": STRING,     //Description of the stack to appear on dashboard
@@ -62,12 +64,14 @@ WorkspaceConfig JSON:
   "commands"       : [{}]       // Array of commands that build & run projects
 }
 ```
+
 Every workspace can have one or more environments which are used to run the code against a stack of technology. Every workspace has exactly one environment which acts as a special "development environment", for which projects are synchronized into and developer services are injected, such as intellisense, workspace agents, SSH, and plug-ins.  
 
 Set `defaultEnv` to the name of the environment that should act as the Docker-powered environment that powers the workspace when it boots. This name must match the name given to an object in the `environments` array. Che will create a container off of this environment when the workspace is launched.
 
 ## Environments
 Each environments are constructed of one or more machines, each one is an individual container. An environment can be comprised of multiple machines that are linked together, such as when you want a database running on a different machine than your debugger.
+
 ```json  
 "environment": {
   "name"           : STRING,     // Identifier and pretty name for environment
@@ -96,6 +100,7 @@ The source of a machine configuration object is supporting several types when us
 
 #### dockerfile type
 It provides a docker runtime. Link to the Dockerfile recipe can be provided by a link, using `location` field or by providing directly the content of the Dockerfile, using `content `field
+
 ```json  
 "source": {
   "type": "dockerfile",
@@ -111,6 +116,7 @@ It provides a docker runtime. Link to the Dockerfile recipe can be provided by a
               ENV MYCUSTOM=VALUE"
 }
 ```
+
 #### image type
 
 location can include the dockerhub image name
@@ -121,7 +127,9 @@ location can include the dockerhub image name
   "location": "eclipse/ubuntu_jdk8"
 }
 ```
- or for example include a registry url with a custom tag or a custom digest
+
+or for example include a registry url with a custom tag or a custom digest
+
 ```json  
 "source": {
   "type": "image",
@@ -139,6 +147,7 @@ project.mixins : [
   STRING, ...
 ]
 ```
+
 A mixin adds additional behaviors to a project as a set of new project type attributes.  Mixins are reusable across any project type. You define the mixins to add to a project by specifying an array of strings, with each string containing the identifier for the mixin.  For example, `"mixins" : [ "git", "tour", "pullrequest" ]`.
 
 | Mixin ID   | Description   
@@ -151,15 +160,16 @@ The `pullrequest` mixin requires additional configuration from the `attributes` 
 
 ### Attributes
 Project attributes alter the behavior of the IDE or workspace.
+
 ```json  
 project.attributes : {
   KEY : [VALUES], ...          // Each attribute and value is a String.
 }
 ```
+
 Different Eclipse Che plug-ins can add their own attributes to affect the behavior for the system.  Attribute configuration is always optional and if not provided within a workspace definition, the system will set itself.
 
 #### Pull Request Attributes
-
 
 | Known Attribute   | Description   
 | --- | ---
@@ -167,6 +177,7 @@ Different Eclipse Che plug-ins can add their own attributes to affect the behavi
 | `contribute_to_branch` | Name of the branch that a pull request will be contributed to. Default is the value of `project.source.parameters.branch`, which is the name of the branch this project was cloned from.        
 
 Here is a snippet that demonstrates full configuration of the contribution mixin.
+
 ```json  
 factory.workspace.project : {
   "mixins"     : [ "pullrequest" ],
@@ -237,15 +248,18 @@ project.source.parameters : {
   "fetch"      : REF-SPEC        // Clone from patch set of provided ref-spec
 }
 ```
+
 Depending upon the type of version control system selected, you can configure the recipe to clone different repositories, branches, ref-specs. The `dockerfile` option is used by environments to reference a Dockerfile that will be used to build an image dynamically when the workspace is being constructed. The `git` and `svn` options are for cloning and synchronizing with Git and Subversion repositories.
 
 Here is a simple example:
+
 ```json  
 "source" : {  
   "location"   : "https://github.com/eclise/che.git",
   "type"       : "git"
 }
 ```
+
 This example clones a git repository hosted by Codenvy with a specific commit ID.
 
 ```json  
@@ -262,6 +276,7 @@ This example clones a git repository hosted by Codenvy with a specific commit ID
 
 ### Modules
 A module is a directory in a project that can be independently built and run.  Modules have their own project type and attributes, which can affect how the command behavior works for that directory apart from others or the project as a whole. Modules can be nested.
+
 ```json  
 project.modules : [{
   "name"        : STRING,     // Name of the module
@@ -276,6 +291,7 @@ project.modules : [{
 
 ## Commands
 When authoring a project template we recommend to predefine commands to register build and run actions. [Learn more about commands.]({{base}}{{site.links["ide-commands"]}})
+
 ```json  
 "commands" : {  
   "commandLine": "",                                     // Command to run on target machine
@@ -298,6 +314,7 @@ When authoring a project template we recommend to predefine commands to register
   }
 }
 ```
+
 Each commands have a type and get translated into a process that is executed on the command line within the machine's environment. Some commands can be derived, such as `maven` commands where Che will apply the location and necessary flags for execution. Other commands can be custom, where the command line is executed within the environment as you have specified it.
 
 The command line can use [Macros]({{base}}{{site.links["ide-commands"]}}#macros).
@@ -308,9 +325,7 @@ See [Command]({{base}}{{site.links["ide-commands"]}}) reference.
 
 Preview objects are stored as part of command. Che will generate the preview URL during the command execution and present the URL to the user as part of the command output. You can add a preview URL of any format within the command editor.
 
-
 The previewURL can use [Macros]({{base}}{{site.links["ide-commands"]}}#macros).
-
 
 ### Command Sample
 
@@ -323,10 +338,12 @@ Sample:
   "type"        : "mvn"
 }
 ```
+
 This example will create an entry into the `CMD` drop down named `MCI` that will perform a `mvn clean install` command against the project or module that is selected in the project tree.
 
 ## Tags
 Tags are used for stacks and sample objects. Those values are used to determine if a sample is compatible with a stack.
+
 ```json  
 "tags" : {        
   "tag1",                             //list of strings representing tags

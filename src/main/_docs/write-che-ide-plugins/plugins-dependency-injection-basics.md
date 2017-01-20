@@ -32,6 +32,7 @@ The dependency injection framework needs to know how to identify the correct obj
   * Second, if there can be several objects of the required type and you want a specific object out of those, you can additionally specify a key using the annotation `@Named`.
 
 In the following example, for the second parameter, the framework will look for an object which is of type `MyClass` has been explicitly registered with the key `MyID`. Please [see the following]({{ base }}/docs/plugins/dependency-injection-basics/index.html#providing-objects) section how to provide objects to be consumed that way.
+
 ```java  
 public class MyClass {
 
@@ -61,6 +62,7 @@ As an example, if you provide a wizard class, it will be integrated by the Che I
 To provide custom objects, you implement a module class. It is responsible to create the objects to be injected as well as register them using the type and optionally a key. Depending on the general structure of your extension, you could add as many modules as you like, however, most extensions use only one module for the client (Gin) and one for the server part (Guice).
 
 The following code example shows a simple Guice module. All Guice modules inherit from AbstractModule and are marked with the annotation `@DynaModule`, which registers the module itself to be executed by Guice. The mandatory method `#configure` is responsible for the registration of objects. We will not go into detail about all the different options of Guice/Gin, but focus on relevant use cases in Che. In the following code example, we register a custom object (`CustomObject`), which implements an existing Che type (`ExistingCheType`). The Che type defines an extension point for Che, e.g. a wizard.
+
 ```java  
 public class CustomObject implements ExistingCheType {
   // ...
@@ -85,6 +87,7 @@ public class MyGuiceModule extends AbstractModule {
 }
 ```
 Gin modules inherit from `AbstractGinModule` and use the `@ExtensionGinModule` annotation. Gin has a different [binding mechanism than Guice](https://code.google.com/p/google-gin/wiki/GinTutorial), however, for the typical use case, the code would look the same:
+
 ```java  
 import org.eclipse.che.ide.api.extension.ExtensionGinModule;
 import com.google.gwt.inject.client.AbstractGinModule;
@@ -119,7 +122,6 @@ The examples of dependency injection cover all basic use cases to understand the
 Besides the extensibility using dependency injections, many custom extensions need to call some Che services or registries on start-up. Therefore, most extensions contain a central class called `Extension`. To register those classes, Che provides the custom annotation `@Extension`, which also allows to define a title for the extension. A common example for a class which gets instantiated by Che and which requires parameters is the `Extension` class.
 
 Extension classes will automatically be picked-up by Che on start-up and all methods will be executed using dependency injection. In the following example, the extension class connects `SomeParameter` to `SomeService`.
-
 
 ```java  
 @Extension(title = "My Extension")

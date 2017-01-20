@@ -7,6 +7,7 @@ permalink: /:categories/import-a-project/
 ---
 {% include base.html %}
 There are several ways to import a project:
+
 * `IDE > Import Project`
 * `Dashboard > Create Project`
 * Import via Git

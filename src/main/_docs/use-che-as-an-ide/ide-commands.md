@@ -14,6 +14,7 @@ Commands have type like projects. Plug-in authors can register different command
 
 # Authoring  
 You can create any number of commands. The name of a command is not restricted to camelCase. A command may contain a single instruction or a succession of commands. For example:
+
 ```shell  
 # each command starts from a new line
 cd /projects/spring
@@ -25,7 +26,9 @@ cd /projects/spring; mvn clean install
 # a succession of several commands where execution of a subsequent command depends on execution of a preceeding one - if there's no /projects/spring directory, `mvn clean install` won't be executed
 cd /projects/spring && mvn clean install
 ```
+
 It is possible to check for conditions, use for loops and other bash syntax:
+
 ```shell  
 # copy build artifact only if build is a success
 mvn -f ${current.project.path} clean install
@@ -65,6 +68,7 @@ fi
 
 # Machine Environment Variables  
 The workspace machine has a set of system environment variables that have been exported. They are reachable from within your command scripts using `bash` syntax.
+
 ```shell  
 # List all available machine system environment variables
 export

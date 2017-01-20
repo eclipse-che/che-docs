@@ -36,6 +36,7 @@ In the `HelloWorldPresenter` we use the GWT `ScriptInjector` library to inject a
 The `HelloWorld.js` contains a simple function, which replaces the text content of an arbitrary element in the DOM. It could also add new elements and therefore embed an arbitrary sub component to running the browser application.
 
 *che/samples/sample-plugin-embedjs/che-sample-plugin-embedjs-ide/src/main/resources/org/eclipse/che/plugin/embedjsexample/public/helloworld.js*
+
 ```javascript  
 function HelloWorld(element, contents) {
     element.textContent = contents;
@@ -81,6 +82,7 @@ The `HelloWorldViewImpl` creates an empty panel (which is defined in `che/sample
 Furthermore, it implement the method `#sayHello` and forwards it to `HelloWorldViewOverlay`.
 
 *che/samples/sample-plugin-embedjs/che-sample-plugin-embedjs-ide/src/main/java/org/eclipse/che/plugin/embedjsexample/ide/view/HelloWorldViewImpl.java*
+
 ```java  
 public class HelloWorldViewImpl extends BaseView<HelloWorldView.ActionDelegate> implements HelloWorldView {
 
@@ -107,6 +109,7 @@ public class HelloWorldViewImpl extends BaseView<HelloWorldView.ActionDelegate> 
 }
 ```
 Finally the `HelloWorldOverlay` provides access to the JavaScript function and therefore redirects the Java method to a call of the `HelloWorld` function that we added before. Such overlays are used for communicating between the Che IDE, written in Java/GWT and native JavaScript components, which are embedded into it.
+
 ```java  
 public class HelloWorldViewOverlay extends JavaScriptObject {
 

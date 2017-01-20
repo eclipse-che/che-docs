@@ -8,6 +8,7 @@ permalink: /:categories/debug/
 {% include base.html %}
 
  Debuggers are included in Che for:
+ 
   * [Java](#java)
   * [C/C++](#gdb) (via GDB)
   * [PHP](#php) (via Zend debugger, zDebug and Z-Ray)
@@ -27,15 +28,19 @@ In a Debug Dialog (**Run > Edit Debug Configurations...**), choose if you want t
 ## Java Console Apps
 
 To debug console apps, pass debug arguments to JVM:
+
 ```shell  
 mvn clean install && java -jar -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y ${current.project.path}/target/*.jar
 ```
+
 ## Java Web Apps
 
 To debug a web application, you need to start a web server in a debug mode. Debug arguments may vary depending on the web server in use. For example, to start Tomcat in a debug mode, run:
+
 ```text  
 $TOMCAT_HOME/bin/catalina.sh jpda run
 ```
+
 You can add debug commands to CMD widget to permanently save them with the workspace config.
 # GDB  
 GDB can be used to debug **C/C++** and **Node.js** projects.
@@ -74,7 +79,9 @@ Save your configuration, choose it at `Run > Debug > <YourDebugConfiguration>` a
 
 Latency or poor connectivity may cause issues with remote debugging. A local GDB may fail to receive a timely response from the remote server. To fix it, set a default timeout for a local GDB. In the terminal, run:
 
-`echo  "set remotetimeout 10" > ~/.gdbinit`
+```
+echo  "set remotetimeout 10" > ~/.gdbinit
+```
 
 You may set a bigger timeout, say, 20 seconds, if there are serious connectivity issues with a remote GDB server.
 
