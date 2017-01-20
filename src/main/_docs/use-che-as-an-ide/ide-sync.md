@@ -8,8 +8,10 @@ permalink: /:categories/sync/
 {% include base.html %}
 
 Che ships a super fast Fuse-based mount and sync mechanism. This is delivered as a Docker container that combines `sshfs` with `unison`. You can perform a mount on any operating system that supports Docker. However, if you are on Windows using Boot2Docker, you can only mount directories in `%userprofile%`.
+
 # List Workspaces  
 You can get a list of workspaces in a Che server that have an SSH agent deployed and are also a dev-machine where `/projects` are deployed. This means it is sync-ready.
+
 ```Shell  
 $ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
                       -v <path>:/data
@@ -26,7 +28,8 @@ mysql     workspacewia89343k4  RUNNING
 --password <password> # Codenvy password
 ```
 
-# Mount and Sync  
+# Mount and Sync 
+
 ## How
 We provide a Docker container that bridges your remote Che workspace with your local file system. Inside of the `che-mount` Docker container, we create an `sshfs` connection to the remote workspace using your user name, password, and workspace port number. Inside of that Docker container, we then use `unison`, a high performance file system synchronizer to synchronize the contents of the remote workspace with a directory within the container. Your local host will then volume mount the synchronized directory, for which those files appear. The `unison` synchronizer is run every minute, and will capture both changes made locally on your host and any changes made in the remote workspace.
 
@@ -77,6 +80,7 @@ If you just want to mount the remote workspace to a local directory, you can do 
 You can still use your local IDE with the local file mount. You may want a local file mount instead of a sync if you want to eliminate the risk of any synchronization conflicts from clients accessing the same file system locally and remotely within the workspace at the same time.
 
 Windows users can use sshfs by installing free software [win-sshfs](https://code.google.com/archive/p/win-sshfs/) for Window versions up to 7 or by purchasing software such as [SFTP Net Drive](https://www.eldos.com/) for Windows 8.0, 8.1 or 10. Mac users can use sshfs by installing free open source software [FUSE](https://osxfuse.github.io/) and associated sshfs extension. Linux has sshfs built into it kernel so most Linux distributions require a small sshfs package to be installed.
+
 ```shell  
 # On Linux & Mac - first install sshfs.  Then:
 sshfs -p <ws-ssh-port> user@<che-ws-ip-address>:/projects /mnt/che
@@ -84,6 +88,7 @@ sshfs -p <ws-ssh-port> user@<che-ws-ip-address>:/projects /mnt/che
 
 # Docker Variant  
 The CLI in turn calls a Docker container, which you can use as well.
+
 ```shell  
 # On linux:
 docker run --rm -it --cap-add SYS_ADMIN --device /dev/fuse

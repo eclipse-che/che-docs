@@ -6,6 +6,7 @@ layout: docs
 permalink: /:categories/agents/
 ---
 {% include base.html %}
+
 Agents are scripts that are executed after a [runtime machine]({{base}}{{site.links["ws-machines"]}}) is created. They add additional capabilities to the machines they're injected in - for example to allow terminal access or enhanced language services. Agents allow these services to be injected into machines built from stock Dockerfiles or Compose files.
 
 # Adding Agents to a Machine  
@@ -15,6 +16,7 @@ Adding agents to your own machines can be done by editing [machine information i
 
 # Adding Agents to a Custom Stack  
 Stacks use JSON format for configuration. Agents are included in the machines definition. Each stack requires a machine named `dev-machine` which always requires the terminal, ws-agent, and SSH agents. Language server agents need to be added to the dev-machine if you want [intellisense]({{base}}{{site.links["ide-intellisense"]}}) features when using the workspace IDE.
+
 ```json  
 .......
   workspaceConfig": {
@@ -53,4 +55,5 @@ Agents have a name, a set of other agents that they depend upon, properties and 
 The scripts that you must provide with an agent have a large `if` block where you provide installation logic for each Linux distribution that we support. You can follow our templates for how to build agents of your own.
 
 To add a custom language server agent you have to accomplish two steps:
+
 * Implement a [language server launcher](https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver/src/main/java/org/eclipse/che/api/languageserver/launcher/LanguageServerLauncher.java). Have a look at [Json language server launcher](https://github.com/eclipse/che/blob/master/plugins/plugin-json/che-plugin-json-server/src/main/java/org/eclipse/che/plugin/json/languageserver/JsonLanguageServerLauncher.java)

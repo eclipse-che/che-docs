@@ -7,6 +7,7 @@ permalink: /:categories/electron/
 ---
 {% include base.html %}
 You can install a desktop application client for Che. The Che desktop clients are Electron applications, which runs a lightweight chrome browser client packaged as a native application that you install for your operating system. Electron is small and loads faster than a browser. It has all the power of Chrome packaged as an OS-specific binary. You can distribute these clients such that they are pre-configured with the URL of your Che server.
+
 ![Capture2.PNG]({{base}}{{site.links["Capture2.PNG"]}})
 
 #### Eclipse Che Electron Clients
