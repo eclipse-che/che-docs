@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Openshift Install
+title: OpenShift Install
 excerpt: "How to install the OpenShift Plug-in."
 layout: openshift
 permalink: /:categories/config/
