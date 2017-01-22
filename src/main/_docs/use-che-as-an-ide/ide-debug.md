@@ -235,7 +235,7 @@ You can set breakpoints in the editor at any time by clicking on the line number
 
 ### Creating a Command to View the Preview URL
 
-{{site.product_formal_name}}'s workspaces have machine(s) that are docker container(s). Docker container's exposed ports are given an emphemerial port. The preview url provides an easy way convert an internal port to it's external emphemerial port counter part.
+{{site.product_formal_name}}'s workspaces have machine(s) that are docker container(s). Docker container's exposed ports are given an ephemeral port. The preview url provides an easy way convert an internal port to it's external ephemeral port counter part.
 
 1. Add a command `Run > Edit Commands` 
 1. Give the command a name like "View Preview URL"
