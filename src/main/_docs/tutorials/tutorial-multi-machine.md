@@ -24,7 +24,7 @@ When you execute this command, you'll see the URL for the Che server.
 This URL can be used to open Che server's dashboard. It is where you manage your projects and workspaces.
 
 # 2. Create Workspace  
-Click the "Dasboard" menu item in the dashboard. Click the "New Workspace" button if there are existing workspaces or make sure "Select Source" category is set to "New from blank, template, or sample project" if one or more workspace exists.
+Click the "Dashboard" menu item in the dashboard. Click the "New Workspace" button if there are existing workspaces or make sure "Select Source" category is set to "New from blank, template, or sample project" if one or more workspace exists.
 
 ![che-multimachine-tutorial3.jpg]({{base}}{{site.links["che-multimachine-tutorial3.jpg"]}})
 
@@ -62,7 +62,7 @@ Che is a fully featured IDE that just happens to be in the browser. You can expl
 The example app has built in commands for [building]({{base}}{{site.links["ide-build"]}}) and [running]({{base}}{{site.links["ide-run"]}}#web-apps) the app.  You can also [debug]({{base}}{{site.links["ide-debug"]}}) right inside Che.
 
 # 5. About Docker and Compose  
-Read this section to understand more about the multi-machine "Java-MySQL" [runtime stack]({{base}}{{site.links["ws-stacks"]}}) used and it's [runtime recipe]({{base}}{{site.links["ws-recipes"]}}). The "Java-MySQL" stack configuration is located in the "stacks" section in the dashboard. This stack can be found easier by typing "java" in the filter form.
+Read this section to understand more about the multi-machine "Java-MySQL" [runtime stack]({{base}}{{site.links["ws-stacks"]}}) used and its [runtime recipe]({{base}}{{site.links["ws-recipes"]}}). The "Java-MySQL" stack configuration is located in the "stacks" section in the dashboard. This stack can be found easier by typing "java" in the filter form.
 
 ![che-multimachine-tutorial8.jpg]({{base}}{{site.links["che-multimachine-tutorial8.jpg"]}})
 
@@ -88,7 +88,7 @@ services:
 
 Examining the code above you will see our two runtime machines "db" and "dev-machine". Every workspace requires a [machine]({{base}}{{site.links["ws-machines"]}}) named "dev-machine".
 
-In the recipe the `depends_on` parameter of the "dev-machine" allows it to connect to the "db" machine MySQL process' port 3306. The "dev-machine" configures it's MySQL client connection in the projects source code at `src/main/resources/spring/data-access.properties`. The url is defined by `jdbc.url=jdbc:mysql://db:3306/petclinic` which uses the database machine's name "db" and the MySQL server default port 3306.
+In the recipe the `depends_on` parameter of the "dev-machine" allows it to connect to the "db" machine MySQL process' port 3306. The "dev-machine" configures its MySQL client connection in the projects source code at `src/main/resources/spring/data-access.properties`. The url is defined by `jdbc.url=jdbc:mysql://db:3306/petclinic` which uses the database machine's name "db" and the MySQL server default port 3306.
 
 Port 3306 is exposed in the "db" machines Dockerfile during build but is not required for "dev-machine" to connect to it. Exposing port 3306 is done to provide access to database that is external to "db" machine network via a random ephemeral port assigned by docker. The "dev-machine" by setting `depends_on: - db` creates a private network that allows it use of "db" machine's name as hostname and port 3306 without having to determine the ephemeral port docker assigned.
 
