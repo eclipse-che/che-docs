@@ -112,13 +112,24 @@ expose:
  - 5000
 ```
 
-**2: Go to user dashboard for your workspace** and click on the Runtimes tab. Select your machine and then in a section called "Server" you will see a table with all the ports exposed in the recipe and their corresponding externally published ports.
+**2: Go to user dashboard for your workspace** and click on the Runtimes tab. Select your machine and then in a section called "Servers" you will see a table with all the ports exposed in the recipe and their corresponding externally published ports.
 
 **3: You can also get the published port automatically by using a macro** in a [command]({{base}}{{site.links["ide-commands"]}}). When authoring a command, set its preview URL to `${server.port.<your-apps-port>}` where `<your-apps-port>` is the port in your recipe's expose command. When the command is executed, this macro is translated into a `host:port` URL.
 
-There is no way to expose a port once the workspace is running. To expose an additional ports, the ports need to be added to the runtime recipe or added directly to the runtime instance via the dashboard `Workspaces>(click workspace name)>Runtime Tab`.
+There is no way to expose a port once the workspace is running. To expose an additional ports, the ports need to be added to the runtime recipe or added directly to the runtime instance via the dashboard `Workspaces>(click workspace name)>Runtime Tab>(click machine name)`.
 
-![Che-recipe-expose-ports.jpg]({{ base }}{{site.links["Che-recipe-expose-ports.jpg"]}})
+![che-workspace-runtime.png]({{ base }}{{site.links["che-workspace-runtime.png"]}})
+
+![che-workspace-runtime-servers.png]({{ base }}{{site.links["che-workspace-runtime-servers.png"]}})
+
+![che-workspace-runtime-add-server.png]({{ base }}{{site.links["che-workspace-runtime-add-server.png"]}})
+
+If workspace is stopped the list only contains ports exposed by user. Once workspace is running the list expands with ports exposed by system:
+
+![che-workspace-running-runtime-servers.png]({{ base }}{{site.links["che-workspace-running-runtime-servers.png"]}})
+
+**Note:** You cannot manage ports which added by Che system.
+
 
 ## Issue a Pull Request To Improve Recipes
 We really love pull requests. We are always looking to increase the set of stacks that are available for development. Please suggest a fix or add a new base image recipe.  To do so, issue [pull requests](https://github.com/codenvy/dockerfiles). If you add a new Dockerfile, it will be added as a source for a new automated build at DockerHub.  Please sign the [Eclipse contributor agreement](https://eclipse.org/legal/ECA.php) before making a contribution. Your contribution will be licensed as [EPL 1.0](https://www.eclipse.org/legal/epl-v10.html).
