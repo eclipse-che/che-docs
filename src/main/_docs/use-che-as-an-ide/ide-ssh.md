@@ -12,7 +12,7 @@ Workspaces are configured with an SSH [agent]({{base}}{{site.links["ws-agents"]}
 # Public / Private Key Generation
 If your workspace has the SSH [agent]({{base}}{{site.links["ws-agents"]}}#adding-agents-to-a-machine) activated in the [dashboard]({{base}}{{site.links["ws-machines"]}}#dashboard-machine-information), then {{ site.product_mini_name }} runs an SSH daemon within the machines that are part of your workspace. The SSH agent is activated by default with all new workspaces and you can manually disable it within the dashboard. If your workspace is powered by Docker Compose, then the SSH agent is deployed into every container that makes up your compose services. You can optionally remove the SSH [agent]({{base}}{{site.links["ws-agents"]}}#adding-agents-to-a-machine) from selected machines of your compose services from within the [dashboard]({{base}}{{site.links["ws-machines"]}}#dashboard-machine-information).
 
-Each new workspace has a default key-pair generated for it. The private key is inserted into each machine of a workspace and they will all share the same public key. You can generate a new key-pair in the dashboard, or remove the default one to be replaced with yours.
+Each new workspace has a default key-pair generated for it. The private key is inserted into each machine of a workspace and they will all share the same public key. You can generate a new key-pair in the dashboard, or remove the default one to be replaced with yours. Replacing machine's key-pair requires restart of workspace if workspace is running.
 
 ![ssh-delete-create-keypair.gif]({{base}}{{site.links["ssh-delete-create-keypair.gif"]}})
 
