@@ -11,7 +11,7 @@ The Docker image which runs Che is the Che CLI. It has various commands for runn
 
 ```
 USAGE:
-  docker run -it --rm <DOCKER_PARAMETERS> eclipse/che:<version> [COMMAND]
+  docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> [COMMAND]
 
 MANDATORY DOCKER PARAMETERS:
   -v <LOCAL_PATH>:/data                Where user, instance, and log data saved
@@ -21,7 +21,8 @@ OPTIONAL DOCKER PARAMETERS:
   -e CHE_PORT=<YOUR_PORT>              Port where che will bind itself to
   -v <LOCAL_PATH>:/data/instance       Where instance, user, log data will be saved
   -v <LOCAL_PATH>:/data/backup         Where backup files will be saved
-  -v <LOCAL_PATH>:/repo                che git repo - uses local binaries
+  -v <LOCAL_PATH>:/repo                che git repo - uses local binaries and manifests
+  -v <LOCAL_PATH>:/assembly            che assembly - uses local binaries
   -v <LOCAL_PATH>:/sync                Where remote ws files will be copied with sync command
   -v <LOCAL_PATH>:/unison              Where unison profile for optimizing sync command resides
   -v <LOCAL_PATH>:/chedir              Soure repository to convert into workspace with Chedir utility
@@ -50,6 +51,7 @@ COMMANDS:
 
 GLOBAL COMMAND OPTIONS:
   --fast                               Skips networking and version checks (saves 5 secs during bootstrap)
+  --offline                            Runs CLI in offline mode, loading images from disk
   --debug                              Enable debugging of che server
 ```
 
@@ -207,8 +209,8 @@ It can become tedious rebuilding images every time you want to test a small chan
 
 If you run the Che CLI in this configuration, then any changes made to the bash files or templates in those repositories will be used without having to first rebuild the CLI image.
 
-## Custom CLI Assemblies
-The Che CLI was designed to easily be overridden to allow different CLIs to be created from the same base structure. This is how Codenvy and ARTIK has an identical CLIs to Che. The CLI is created with a few minimal assets:
+## Custom CLI
+The Che CLI was designed to be overridden to allow different CLIs to be created from the same base structure. This is how Codenvy and ARTIK has an identical CLIs to Che. The CLI is created with a few minimal assets:
 
 ```
 /dockerfiles/cli/build.sh               # Local file to build the image
