@@ -11,7 +11,7 @@ You can install a desktop application client for Che. The Che desktop clients ar
 ![Capture2.PNG]({{base}}{{site.links["Capture2.PNG"]}})
 
 #### Eclipse Che Electron Clients
-These clients are currently in beta and not part of the standard distribution. We will include them into the standard distribution as we get more comfortable with their usage and after Electron and Atom can be included as part of Eclipse product distributions.\n\nIf you discover issues, please take time to file an issue.  
+These clients are currently in beta and not part of the standard distribution. We will include them into the standard distribution as we get more comfortable with their usage and after Electron and Atom can be included as part of Eclipse product distributions.If you discover issues, please take time to file an issue.  
 
 
 # Download Eclipse Che Clients  
