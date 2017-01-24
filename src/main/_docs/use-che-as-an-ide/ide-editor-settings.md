@@ -50,5 +50,17 @@ You can preview an HTML file by right-clicking it in the project explorer and se
 
 ![che-previewHTML.jpg]({{base}}{{site.links["che-previewHTML.jpg"]}})
 
+# Editor Basics
+
+## Navigate to file
+
+It's easy to find and open a file you are looking for. You can simply press `Ctrl+Alt+N` or navigate to `Assistant > Navigate to File` to open a find file popup.
+Type the file name in the opened popup to find your file. Then select it in proposals and press `Enter`. Your file will be opened in editor.
+Use `Up`, `Down`, `Page Up`, `Page Down` keys or mouse wheel to scroll the file list. To close the popup press `Esc` or just click outside the popup.
+
+Also simple regexp can be used when you find a file. To replace one character you can type `?` and `*` to replace any string.
+
+![navigate-to-file.png]({{base}}{{site.links["navigate-to-file.png"]}})
+
 # Alternative: Use a Desktop IDE  
 You can use a desktop IDE or editor with an Eclipse Che workspace by following the instructions in our [Local IDE Sync]({{base}}{{site.links["ide-sync"]}}) docs.
