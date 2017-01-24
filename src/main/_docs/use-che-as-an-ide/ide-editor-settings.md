@@ -54,11 +54,10 @@ You can preview an HTML file by right-clicking it in the project explorer and se
 
 ## Navigate to file
 
-It's easy to find and open a file you are looking for. You can simply press `Ctrl+Alt+N` or navigate to `Assistant > Navigate to File` to open a find file popup.
-Type the file name in the opened popup to find your file. Then select it in proposals and press `Enter`. Your file will be opened in editor.
-Use `Up`, `Down`, `Page Up`, `Page Down` keys or mouse wheel to scroll the file list. To close the popup press `Esc` or just click outside the popup.
+You can easily find and open a file from your workspace by going into the menu `Assistant > Navigate to File` or by using the following keyboard shortcut: `Ctrl+Alt+N`. In the `Navigate to File` wizard, enter the file's name to get a list of corresponding files found in the workspace. Open a file in the editor by selecting it or pressing `Enter` when the focus is on it.
+You can use `Up`, `Down`, `Page Up`, `Page Down` on the keyboard or the mouse to scroll into the list of proposals. To close the popup press `Esc` or just click outside the wizard.
 
-Also simple regexp can be used when you find a file. To replace one character you can type `?` and `*` to replace any string.
+Also simple regular expression (regexp) can be used when you find a file. To replace one character you can type `?` and `*` to replace any string.
 
 ![navigate-to-file.png]({{base}}{{site.links["navigate-to-file.png"]}})
 
