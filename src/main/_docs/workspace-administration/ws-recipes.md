@@ -128,7 +128,7 @@ If workspace is stopped the list only contains ports exposed by user. Once works
 
 ![che-workspace-running-runtime-servers.png]({{ base }}{{site.links["che-workspace-running-runtime-servers.png"]}})
 
-**Note:** You cannot manage ports which added by Che system.
+**Note:** You cannot manage ports added by {{site.product_mini_name}}'s system, they are exposed for certain [agents]({{base}}{{site.links["ws-agents"]}}) to allow machine's management.
 
 
 ## Issue a Pull Request To Improve Recipes
