@@ -8,7 +8,7 @@ permalink: /:categories/tutorial-blink-led/
 {% include base.html %}
 The ARTIK device and many other other embedded device have their own equivalents to the standard printed "Hello World!" program. To show that a device can interact with digital devices in the physical world a device blinks an LED to say "Hello".
 
-This tutorial assumes that the user has already gone thru the ARTIK [Getting Started](../../docs/artik/) documentation.
+This tutorial assumes that the user has already gone thru the ARTIK [Getting Started]({{base}}{{site.links["artik-start-windows"]}}) documentation.
 
 
 Open the ARTIK IDE in your web browser after issuing `artik-ide start`. Select `Dashboard` from the menu on the left. The will bring up the workspace and project creation interface to the right. Select `New from blank, template, or sample project`, select `Ready-to-go Stacks`, select `Artik`, name the workspace `artik`(could pick anything), change the ram to 2 GB, select the `Ready-to-run project samples` with our tutorial project `artik-blink-led`, and finally select the `Create` button either at the top right or located at the bottom.
@@ -40,4 +40,3 @@ Now lets run `a.out` assembly on the ARTIK device. Select `Edit Commands ...` fr
 Place an LED into between pin 13 and `GND`(newer ARTIK device models) or `Vref`(older ARTIK device models) depending on your model of ARTIK board. Refer to [Blink an LED](https://developer.artik.io/documentation/tutorials/blink-an-led.html) tutorial on ARTIK's documentation page for additional information. The image below shows the LED plugged into the newer model using the pin 13 and `GND`.
 ![artik-blink-led-13.jpg]({{ base }}/docs/assets/imgs/artik-blink-led-13.jpg)
 
-![2016-09-16_18-38-15.gif]({{ base }}/docs/assets/imgs/2016-09-16_18-38-15.gif)
