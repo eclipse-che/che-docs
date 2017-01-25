@@ -10,7 +10,7 @@ The Samsung ARTIK IDE is based upon Eclipse Che and runs on Windows, Mac or Linu
 
 **Windows** users follow the instructions below.
 
-**Mac and Linux** users [use this page](../../docs/artik-start-mac/).
+**Mac and Linux** users [Getting Started]({{base}}{{site.links["artik-start-mac"]}}).
 
 # How to Get Help  
 **Support:** If the unthinkable happens, or you have a question, you can post [issues on our GitHub page](https://github.com/eclipse/che/issues). Please follow the [guidelines on issue reporting](https://github.com/eclipse/che/blob/master/CONTRIBUTING.md).
@@ -29,18 +29,21 @@ Before installing the ARTIK IDE you will need:
 
 # 1. Verify Docker  
 Add Git Bash to the system path by setting `PATH=<path-to-git>;%PATH%`:
+
 ```shell  
 set PATH=C:\Program Files\Git\bin\;%PATH%\
 ```
 Verify Docker by running the Docker hello world example.
+
 ```shell  
-docker run hello-world\
+docker run hello-world
 ```
 You should see Docker output and a hello world message.
 
 Now, verify that bash works:
+
 ```shell  
-bash\
+bash
 ```
 You should see a bash prompt. Keep the bash session open for the next step.
 # 2. Get ARTIK IDE CLI  
@@ -49,34 +52,38 @@ You will need to set the directory where you would like to keep ARTIK IDE execut
 Docker and bash are case sensitive and require forward slashes without colons for directory and path names. Errors can occur if directories have spaces in them.
 
 From the bash prompt:
+
 ```shell  
 mkdir /c/Users/$USERNAME/artik-ide
-cd /c/Users/$USERNAME/artik-ide\
+cd /c/Users/$USERNAME/artik-ide
 ```
 Now, download the `artik-ide.bat` and `artik-ide.sh` scripts:
+
 ```shell  
 curl -sL https://raw.githubusercontent.com/codenvy/artik-ide/master/artik-ide.bat > artik-ide.bat
 
-curl -sL https://raw.githubusercontent.com/codenvy/artik-ide/master/artik-ide.sh > artik-ide.sh\
+curl -sL https://raw.githubusercontent.com/codenvy/artik-ide/master/artik-ide.sh > artik-ide.sh
 ```
 Finally, set the location for workspace storage in the ARTIK IDE. If using boot2docker, set the ARTIK IDE workspace storage to a subdirectory of `%userprofile%`.
 
 If running Docker for Windows on Windows 10 Professional or Enterprise, you can set it to any directory.
+
 ```shell  
 mkdir %userprofile%\artik-ide\data\
 ```
+
 Once downloaded you can exit bash:
+
 ```shell  
-exit\
+exit
 ```
 
 #### Installing Behind a Proxy
 If you are behind a proxy, you need to [configure your proxy settings](../../docs/che-config-proxies/) for Docker and the ARTIK IDE.  
 
-
-
 # 3. Start ARTIK IDE  
 From the directory where you downloaded the `artik-ide.bat` set the `CHE_DATA_FOLDER` environment variable. This is persisted for each session. To persist it across sessions set it as a [system variable](http://www.computerhope.com/issues/ch000549.htm).
+
 ```shell  
 set CHE_DATA_FOLDER=/c/Users/%USERNAME%/artik-ide/data
 set PATH=<path-to-artik-ide-bat>;%PATH%\
@@ -84,6 +91,7 @@ set PATH=<path-to-artik-ide-bat>;%PATH%\
 If you have set system variables for the above you can start here for future sessions.
 
 Start the ARTIK-IDE:
+
 ```shell  
 artik-ide start
 
@@ -99,38 +107,40 @@ INFO: ARTIK-IDE: http://192.168.99.100:8080
 Copy the URL shown in the terminal to your browser to open the dashboard.
 
 To stop the ARTIK IDE:
+
 ```shell  
-artik-ide stop\
+artik-ide stop
 ```
 To update ARTIK IDE to the newest version you can set the `CHE_VERSION` to `latest`. Otherwise you can select a tag from the released versions at [Dockerhub](https://hub.docker.com/r/codenvy/artikide/tags/)
+
 ```shell  
 set CHE_VERSION=latest
-artik-ide update\
+artik-ide update
 ```
 See all the CLI commands:
+
 ```shell  
-artik-ide help\
+artik-ide help
 ```
 
 #### Advanced Configuration
 There are many aspects of ARTIK IDE like port and hostname that can be configured by [setting Eclipse Che properties](../../docs/usage-docker#environment-variables).  
-
-
 
 # 4. Create Workspaces and Projects  
 The ARTIK IDE provides a step-by-step wizard for creating your first workspace. It provides stacks for ARTIK and Android, as well as many other languages through the "Stack Library."  Stacks will populate the workspace with a runtime, SDK, and libraries needed for building new projects that will run on an ARTIK board.
 
 A workspace can have one or more projects. Each project can have a different type that supports different kinds of programming languages and build frameworks. When you create your first workspace, you can provide the project from a Git repository or using one of the included templates.
 ![createwsandproject.jpg]({{ base }}/docs/assets/imgs/createwsandproject.jpg)
-Choose the ARTIK stack and then select from one of the many sample projects. [Tutorial: Artik Blink LED](../../docs/artik-tutorial-blink-led/) is a good starter tutorial that uses the Ready-to-run project template `artik-blink-led`.
+Choose the ARTIK stack and then select from one of the many sample projects. [Tutorial: Artik Blink LED]({{base}}{{site.links["tutorial-artik-blink-led"]}}) is a good starter tutorial that uses the Ready-to-run project template `artik-blink-led`.
 
 # 5. Setup an ARTIK Device  
 Review Samsung ARTIK getting started docs at [https://developer.artik.io/documentation/getting-started-beta/powering-up.html](https://developer.artik.io/documentation/getting-started-beta/powering-up.html) and [https://developer.artik.io/documentation/getting-started-beta/communicating-pc.html](https://developer.artik.io/documentation/getting-started-beta/communicating-pc.html). This will help understand how to power up the ARTIK device(connect power and press SW3 switch) and how to setup communication with the ARTIK device.
 
 # 6. Discover ARTIK Device IP Address  
-The quickest way to get started is to connect your ARTIK device to the computer running the ARTIK IDE with a male USB to male USB cable: [quick connection over USB discovery](../../docs/artik-usb-connection-setup/).However, this cable doesn't ship with the ARTIK device and connecting over the network is often required in the long-term.
+The quickest way to get started is to connect your ARTIK device to the computer running the ARTIK IDE with a male USB to male USB cable: [quick connection over USB discovery]({{base}}{{site.links["artik-usb-connection-setup"]}}).However, this cable doesn't ship with the ARTIK device and connecting over the network is often required in the long-term.
 
 Connect your ARTIK board to your network router/switch via network cable. The ARTIK device will then obtain an IP address automatically using DHCP. To discover your ARTIK IP address log into your router and search the table of clients for the name "localhost". Also, you can discover your artik board IP address with the following utility.
+
 ```shell  
 #Determine your current computers IP to search network for ARTIK Board.
 export HOST_IP=$(docker run --rm --net host alpine sh -c "ip a show eth1" | \
@@ -159,9 +169,12 @@ docker run -i --rm -t artik-tools jdrummond/artik-tools -i %HOST_IP% -t 20
 
 #SSH in ARTIK device using ip address from above to test ip address validity.
 #ARTIK device default username/password root/root.
+```
+
 ```bash
 >ssh root@<ip-address>
 ```
+
 **Note: When the ARTIK device is powered up, it will request a new ip address each time. Be sure to determine the new ipaddress each time or give your ARTIK device a static ip address.**
 # 7. Connect ARTIK Device with ARTIK IDE  
 Use the ARTIK device manager in a workspace to connect an ARTIK device to the ARTIK IDE.
