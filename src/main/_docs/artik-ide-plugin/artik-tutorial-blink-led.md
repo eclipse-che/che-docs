@@ -40,4 +40,3 @@ Now lets run `a.out` assembly on the ARTIK device. Select `Edit Commands ...` fr
 Place an LED into between pin 13 and `GND`(newer ARTIK device models) or `Vref`(older ARTIK device models) depending on your model of ARTIK board. Refer to [Blink an LED](https://developer.artik.io/documentation/tutorials/blink-an-led.html) tutorial on ARTIK's documentation page for additional information. The image below shows the LED plugged into the newer model using the pin 13 and `GND`.
 ![artik-blink-led-13.jpg]({{ base }}/docs/assets/imgs/artik-blink-led-13.jpg)
 
-![2016-09-16_18-38-15.gif]({{ base }}/docs/assets/imgs/2016-09-16_18-38-15.gif)

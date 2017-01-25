@@ -115,21 +115,6 @@ docker run -ti --rm artik-tools jdrummond/artik-tools -i %HOST_IP% -t 20
 ssh root@<ip-address>
 ```
 
-```shell  
-#Determine your current computers IP to search network for ARTIK Board.
-for /f "skip=1 tokens=2 delims=: " %f in ('nslookup %COMPUTERNAME% ^| find /i "Address"') do set HOST_IP=%f
-
-#Quick search for ARTIK device via open 22 port
-docker run -i --rm -t artik-tools jdrummond/artik-tools -q -i %HOST_IP% -t 5
-
-#When above results in multiple ip addresses
-docker run -i --rm -t artik-tools jdrummond/artik-tools -i %HOST_IP% -t 20
-
-#SSH in ARTIK device using ip address from above to test ip address validity.
-#ARTIK device default username/password root/root.
-bash
->ssh root@<ip-address>
-```
 **Note: When the ARTIK device is powered up, it will request a new ip address each time. Be sure to determine the new ipaddress each time or give your ARTIK device a static ip address.**
 # 6. Connect ARTIK Device with ARTIK IDE  
 Use the ARTIK device manager in a workspace to connect an ARTIK device to the ARTIK IDE.

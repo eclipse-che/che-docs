@@ -86,7 +86,7 @@ From the directory where you downloaded the `artik-ide.bat` set the `CHE_DATA_FO
 
 ```shell  
 set CHE_DATA_FOLDER=/c/Users/%USERNAME%/artik-ide/data
-set PATH=<path-to-artik-ide-bat>;%PATH%\
+set PATH=<path-to-artik-ide-bat>;%PATH%
 ```
 If you have set system variables for the above you can start here for future sessions.
 
@@ -141,6 +141,7 @@ The quickest way to get started is to connect your ARTIK device to the computer 
 
 Connect your ARTIK board to your network router/switch via network cable. The ARTIK device will then obtain an IP address automatically using DHCP. To discover your ARTIK IP address log into your router and search the table of clients for the name "localhost". Also, you can discover your artik board IP address with the following utility.
 
+#### Windows Git Bash Terminal
 ```shell  
 #Determine your current computers IP to search network for ARTIK Board.
 export HOST_IP=$(docker run --rm --net host alpine sh -c "ip a show eth1" | \
@@ -154,9 +155,11 @@ docker run -ti --rm artik-tools jdrummond/artik-tools -i %HOST_IP% -t 20
 
 #SSH in ARTIK device using ip address from above to test ip address validity.
 #ARTIK device default username/password root/root.
-ssh root@<ip-address>
+
+>ssh root@<ip-address>
 ```
 
+#### Windows Command Prompt
 ```shell  
 #Determine your current computers IP to search network for ARTIK Board.
 for /f "skip=1 tokens=2 delims=: " %f in ('nslookup %COMPUTERNAME% ^| find /i "Address"') do set HOST_IP=%f
@@ -169,9 +172,7 @@ docker run -i --rm -t artik-tools jdrummond/artik-tools -i %HOST_IP% -t 20
 
 #SSH in ARTIK device using ip address from above to test ip address validity.
 #ARTIK device default username/password root/root.
-```
 
-```bash
 >ssh root@<ip-address>
 ```
 
