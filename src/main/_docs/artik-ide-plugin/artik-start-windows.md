@@ -230,7 +230,6 @@ Turning on a development profile will install the minimum software package that 
 A production profile removes this software from the system.
 
 Profiles are available at **Artik > Profiles** or by right clicking the device in machines panel in the bottom.
+
 # 11. Troubleshooting  
 If you experience problems, please file an issue on the [Eclipse Che GitHub page](https://github.com/eclipse/che/issues) where Che and ARTIK engineers can help you.
-# 12. Contribute to the ARTIK IDE  
-* **Build From Source**: We love that idea. Che is a multi-module project, so you can build all of it, or just some of it. Start in the /assembly/assembly-main/ repository for the fastest build. We maintain build instructions on the [ARTIK IDE GitHub repository](https://github.com/codenvy/artik-ide).
