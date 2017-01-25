@@ -173,5 +173,3 @@ Profiles are available at **Artik > Profiles** or by right clicking the device i
 
 # 10. Troubleshooting  
 If you experience problems, please file an issue on the [Eclipse Che GitHub page](https://github.com/eclipse/che/issues) where Che and ARTIK engineers can help you.
-# 11. Contribute to the ARTIK IDE  
-* **Build From Source**: We love that idea. Che is a multi-module project, so you can build all of it, or just some of it. Start in the /assembly/assembly-main/ repository for the fastest build. We maintain build instructions on the [ARTIK IDE GitHub repository](https://github.com/codenvy/artik-ide).
