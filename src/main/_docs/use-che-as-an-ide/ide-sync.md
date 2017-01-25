@@ -26,6 +26,7 @@ mysql     workspacewia89343k4  RUNNING
 --url <url>           # Che or Codenvy host where workspaces are running
 --user <email>        # Codenvy user name
 --password <password> # Codenvy password
+--unison-verbose      # Display verbose output of unison tool used by sync command
 ```
 
 # Mount and Sync 
