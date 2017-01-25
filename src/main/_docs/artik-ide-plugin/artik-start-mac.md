@@ -137,7 +137,7 @@ bash
 
 **Note: When the ARTIK device is powered up, it will request a new IP address each time. Be sure to determine the new IP address each time or give your ARTIK device a static IP address.**
 
->>>>>>> master
+=======
 # 6. Connect ARTIK Device with ARTIK IDE  
 Use the ARTIK device manager in a workspace to connect an ARTIK device to the ARTIK IDE.
 
@@ -184,7 +184,7 @@ When debug is initiated, gdbserver is started on the device, on port 1234, and t
 **Deploy (optional)**
 Because all files in the project are auto-synced to the device it's not necessary to deploy anything to the device. However, if you want to push files to specific locations on the device (not the project replication folder) you can right-click on the artifact and choose `Push to Device` then `Choose Target...`.
 
-# 9. Production and Development Profiles  
+# 10. Production and Development Profiles  
 Your Artik device needs certain software to make it possible for Artik IDE to debug apps, sync project files, make use of C/C++ and Node SDKs.
 
 Turning on a development profile will install the minimum software package that includes node.js, rsync and a gdbserver.
@@ -193,5 +193,5 @@ A production profile removes this software from the system.
 
 Profiles are available at **Artik > Profiles** or by right clicking the device in machines panel in the bottom.
 
-# 10. Troubleshooting  
+# 11. Troubleshooting  
 If you experience problems, please file an issue on the [Eclipse Che GitHub page](https://github.com/eclipse/che/issues) where Che and ARTIK engineers can help you.
