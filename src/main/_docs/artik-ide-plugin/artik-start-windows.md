@@ -13,13 +13,10 @@ The Samsung ARTIK IDE is based upon Eclipse Che and runs on Windows, Mac or Linu
 **Mac and Linux** users [Getting Started]({{base}}{{site.links["artik-start-mac"]}}).
 
 # How to Get Help  
-**Support:** If the unthinkable happens, or you have a question, you can post [issues on our GitHub page](https://github.com/eclipse/che/issues). Please follow the [guidelines on issue reporting](https://github.com/eclipse/che/blob/master/CONTRIBUTING.md).
-
-**Documentation:** We put a lot of effort into our docs. Please add suggestions on areas for improvement.
+**Support:** If the unthinkable happens, or you have a question, you can post [issues on our GitHub page](https://github.com/codenvy/artik-ide/issues/).
 
 # 0. Pre-Reqs  
-
-Before installing the ARTIK IDE you will need:
+Before installing the ARTIK IDE:
 
 - **Windows 10**
   1. Install [Docker for Windows](https://docs.docker.com/engine/installation/windows/) - ARTIK IDE requires Docker 1.8+.
@@ -32,11 +29,12 @@ Before installing the ARTIK IDE you will need:
   3. Use a Chrome or FireFox browser.
 
 # 1. Verify Docker  
+Before starting make sure that Docker is installed and you've set the [shared drives](https://docs.docker.com/docker-for-windows/#/shared-drives) for Docker and, if you're behind a proxy, [added your proxy information]({{base}}{{site.links["artik-proxies"]}}) to Docker. 
 
-Add Git Bash to the system path by setting `PATH=<path-to-git>;%PATH%`:
+Add Git Bash to the system path by setting `PATH=<path-to-git>;%PATH%` on the Windows command line:
 
 ```shell  
-set PATH=C:\Program Files\Git\bin\;%PATH%\
+set PATH=C:\Program Files\Git\bin\;%PATH%
 ```
 
 Verify Docker by running the Docker hello world example.
@@ -90,7 +88,7 @@ exit
 ```
 
 #### Installing Behind a Proxy
-If you are behind a proxy, you need to [configure your proxy settings](../../docs/che-config-proxies/) for Docker and the ARTIK IDE.  
+If you are behind a proxy, you need to [configure your proxy settings]({{base}}{{site.links["artik-proxies"]}}) for Docker and the ARTIK IDE.  
 
 # 3. Start ARTIK IDE  
 From the directory where you downloaded the `artik-ide.bat` set the `CHE_DATA_FOLDER` environment variable. This is persisted for each session. To persist it across sessions set it as a [system variable](http://www.computerhope.com/issues/ch000549.htm).
@@ -138,9 +136,6 @@ See all the CLI commands:
 artik-ide help
 ```
 
-#### Advanced Configuration
-There are many aspects of ARTIK IDE like port and hostname that can be configured by [setting Eclipse Che properties](../../docs/usage-docker#environment-variables).  
-
 # 4. Create Workspaces and Projects  
 The ARTIK IDE provides a step-by-step wizard for creating your first workspace. It provides stacks for ARTIK and Android, as well as many other languages through the "Stack Library."  Stacks will populate the workspace with a runtime, SDK, and libraries needed for building new projects that will run on an ARTIK board.
 
@@ -176,6 +171,7 @@ docker run -ti --rm artik-tools jdrummond/artik-tools -i %HOST_IP% -t 20
 ```
 
 #### Windows Command Prompt
+
 ```shell  
 #Determine your current computers IP to search network for ARTIK Board.
 for /f "skip=1 tokens=2 delims=: " %f in ('nslookup %COMPUTERNAME% ^| find /i "Address"') do set HOST_IP=%f
@@ -189,10 +185,12 @@ docker run -i --rm -t artik-tools jdrummond/artik-tools -i %HOST_IP% -t 20
 #SSH in ARTIK device using ip address from above to test ip address validity.
 #ARTIK device default username/password root/root.
 
+bash
 >ssh root@<ip-address>
 ```
 
 **Note: When the ARTIK device is powered up, it will request a new ip address each time. Be sure to determine the new ipaddress each time or give your ARTIK device a static ip address.**
+
 # 7. Connect ARTIK Device with ARTIK IDE  
 Use the ARTIK device manager in a workspace to connect an ARTIK device to the ARTIK IDE.
 
@@ -251,4 +249,4 @@ A production profile removes this software from the system.
 Profiles are available at **Artik > Profiles** or by right clicking the device in machines panel in the bottom.
 
 # 11. Troubleshooting  
-If you experience problems, please file an issue on the [Eclipse Che GitHub page](https://github.com/eclipse/che/issues) where Che and ARTIK engineers can help you.
+If you experience problems, please file an issue on the [ARTIK IDE GitHub page](https://github.com/codenvy/artik-ide/issues/) where engineers can help you.
