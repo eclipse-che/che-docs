@@ -42,7 +42,7 @@ sudo chmod +x /usr/local/bin/artik-ide
 ```
 
 #### Installing Behind a Proxy
-If you are behind a proxy, you need to [configure your proxy settings]({{base}}{{site.links["setup-configuration"]}}#docker) for Docker and the ARTIK IDE.  
+If you are behind a proxy, you need to [configure your proxy settings]({{base}}{{site.links["artik-proxies"]}}) for Docker and the ARTIK IDE.  
 
 # 2. Start ARTIK IDE  
 
@@ -79,9 +79,6 @@ artik-ide update
 # List all CLI commands
 artik-ide help
 ```
-
-#### Advanced Configuration
-There are many aspects of ARTIK IDE like port and hostname that can be configured by [setting Eclipse Che properties]({{base}}{{site.links["artik-start-windows"]}}#saving-configuration-in-version-control).  
 
 # 3. Create Workspaces and Projects  
 The ARTIK IDE provides a step-by-step wizard for creating your first workspace. It provides stacks for ARTIK and Android, as well as many other languages through the "Stack Library."  Stacks will populate the workspace with a runtime, SDK, and libraries needed for building new projects that will run on an ARTIK board.
