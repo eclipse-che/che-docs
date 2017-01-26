@@ -94,13 +94,6 @@ setx PATH c:\Users\%USERNAME%\artik-ide
 set PATH=c:\Users\%USERNAME%\artik-ide;%PATH%
 ```
 
-Save the environment variables to profile so new command prompt sessions will use the same information.
-
-```shell  
-artik-ide.bat profile add default
-artik-ide.bat profile set default
-```
-
 Start the ARTIK-IDE:
 
 ```shell  
