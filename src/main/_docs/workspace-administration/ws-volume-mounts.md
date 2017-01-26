@@ -7,62 +7,31 @@ permalink: /:categories/volume-mounts/
 ---
 {% include base.html %}
 
-Volume mounts are used by Eclipse Che to mount remote external files and directories into the workspaces. Users can mount volumes external to docker and between other containers.
+Volume mounts are used by Eclipse Che to mount remote external files and directories into the workspaces and containers within them.
 
-# Mounting a Single Volume  
-Mount a single volume to all workspaces/containers by setting the environment variable `CHE_EXTRA_VOLUME_MOUNT` with `<host-mount-path>:<ws-mount-path>` before starting Che.
+# Mounting Volumes
+Mounting volumes makes them available to all your workspaces. You can mount one or more volumes by uncommenting the `CHE_WORKSPACE_VOLUME` environment variable in the `che.env` file (found in the root of the data directory you mounted into Che when starting it) and adding your directories or files to it. Add multiple entries separated by semicolons to mount multiple volumes.
 
-All workspaces will have access to this volume mount.
-
-```shell  
-# Linux/Mac
-set CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh
-
-# Windows
-export CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh
-```
-
-# Mounting Multiple Volumes  
-Mount multiple volumes to all workspaces/containers by setting the environment variable `CHE_EXTRA_VOLUME_MOUNT` with `<host-mount-path1>:<ws-mount-path1>;<host-mount-path2>:<ws-mount-path2>` before starting Che. Each volume mount is separated by a semicolon `;`.  
-
-All workspaces will have access to these mounted volumes.
+In the `che.env`:
 
 ```shell  
-# Linux/Mac
-set CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh;~/.m2:/home/user/.m2
+# Example of a single mount
+CHE_WORKSPACE_VOLUME=/codenvy/tmp:/home/user/tmp
 
-# Windows
-export CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh;~/.m2:/home/user/.m2
-```
-
-# Sharing Volumes Between Containers  
-Share volumes between containers by using `volumes_from` in Docker compose using json syntax. Refer to [Multi-Container recipes]({{base}}{{site.links["ws-recipes"]}}#multi-container-recipes) for additional information.
-
-```json  
-...
-"volumes_from" : [
-  "some-machine\n  "db-machine"
-]
-...
-
+# Example of multiple mounts
+CHE_WORKSPACE_VOLUME=/codenvy/tmp:/home/user/tmp;/.ssh:/home/user/.ssh
 ```
 
 # Setting Permissions  
-Set read-only or read-write permissions to volumes by adding `:ro`(read-only) or `:rw`(read-write) to the end of the mount definition(s). When no permissions is set read-write permission is used.
+Set read-only or read-write permissions to volumes by adding `:ro`(read-only) or `:rw`(read-write) to the end of the mount definition(s). When no permission is set Che assumes a read-write permission.
+
+In the `che.env`:
 
 ```shell  
-#Linux/Mac
-set CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh:ro;~/.m2:/home/user/.m2:rw
-
-#Windows
-set CHE_EXTRA_VOLUME_MOUNT=~/.ssh:/home/user/.ssh:ro;~/.m2:/home/user/.m2:rw
+CHE_WORKSPACE_VOLUME=~/.ssh:/home/user/.ssh:ro;~/.m2:/home/user/.m2:rw
 
 ```
 
-```text  
-...
-"volumes_from" : [
-  "some-machine:ro\n  "db-machine:rw"
-]
-...
-```
+# Private Unshared Label Volume
+
+For operating systems like CentOS 7 with SELinux activated volume mounts require volumes to be labelled. Providing a `Z` option creates a private unshared label volume. For other operating system that do not have SELinux the `Z` option does not need to be provided but in all cases will work if provided. More information can be found at [https://docs.docker.com/engine/tutorials/dockervolumes/#/volume-labels](https://docs.docker.com/engine/tutorials/dockervolumes/#/volume-labels) and [http://www.projectatomic.io/blog/2015/06/using-volumes-with-docker-can-cause-problems-with-selinux/](http://www.projectatomic.io/blog/2015/06/using-volumes-with-docker-can-cause-problems-with-selinux/).
