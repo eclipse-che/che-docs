@@ -19,7 +19,7 @@ The Samsung ARTIK IDE is based upon Eclipse Che and runs on Windows, Mac or Linu
 Before installing the ARTIK IDE:
 
 - **Windows 10**
-  1. Install [Docker for Windows](https://docs.docker.com/engine/installation/windows/) - ARTIK IDE requires Docker 1.8+.
+  1. Install [Docker for Windows](https://docs.docker.com/engine/installation/windows/) - ARTIK IDE requires Docker 1.12+.
   2. Enable [bash in Windows](http://www.pcworld.com/article/3106463/windows/how-to-get-bash-on-windows-10-with-the-anniversary-update.html) or install [git for Windows](https://git-scm.com/download/win) to get a bash shell.
   3. Use a Chrome or FireFox browser.
 
