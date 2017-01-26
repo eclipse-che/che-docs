@@ -66,7 +66,7 @@ INFO: (che start): API: http://192.168.72.2:8080/swagger
 For your convenience, you may create a shell script with the above docker syntax. You may also add `--restart=always` to run command so that Docker launches Artik IDE after it starts (which happens automatically on Mac OS).
 
 #### Installing Behind a Proxy
-If you are behind a proxy, you need to [configure your proxy settings]({{base}}{{site.links["setup-configuration"]}}#docker) for Docker and the ARTIK IDE.  
+If you are behind a proxy, you need to [configure your proxy settings]({{base}}{{site.links["artik-proxies"]}}) for Docker and the ARTIK IDE.  
 
 #### Advanced Configuration
 There are many aspects of ARTIK IDE like port and hostname that can be configured by [setting Eclipse Che properties]({{base}}{{site.links["artik-start-windows"]}}#saving-configuration-in-version-control).  
