@@ -45,7 +45,7 @@ workspace.name = “happy”
 
 # Define the Docker image to use to power the workspace's runtime
 # This must conform to: https://eclipse-che.readme.io/docs/recipes
-workspace.runtime.image.location="eclispe/alpine_jdk8"
+workspace.runtime.docker.image="eclispe/alpine_jdk8"
 
 # You can - instead - define the runtime using a Dockerfile in a git repo
 workspace.runtime.docker.location= "http://gist...../my-dockerfile"
