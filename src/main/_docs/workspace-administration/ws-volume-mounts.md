@@ -10,7 +10,7 @@ permalink: /:categories/volume-mounts/
 Volume mounts are used by {{site.product_formal_name}} to mount remote external files and directories into the workspaces and containers within them.
 
 # Mounting Volumes
-Mounting volumes makes them available to all your workspaces. You can mount one or more volumes by uncommenting the `{{site.data.env["WORKSPACE_VOLUME"]}}` environment variable in the `{{site.data.env["filename"]}}` file (found in the root of the data directory you mounted into Che when starting it) and adding your directories or files to it. Add multiple entries separated by semicolons to mount multiple volumes.
+Mounting volumes makes them available to all your workspaces. You can mount one or more volumes by uncommenting the `{{site.data.env["WORKSPACE_VOLUME"]}}` environment variable in the `{{site.data.env["filename"]}}` file (found in the root of the data directory you mounted into {{site.product_mini_name}} when starting it) and adding your directories or files to it. Add multiple entries separated by semicolons to mount multiple volumes.
 
 In the `{{site.data.env["filename"]}}`:
 
@@ -23,7 +23,7 @@ In the `{{site.data.env["filename"]}}`:
 ```
 
 # Setting Permissions  
-Set read-only or read-write permissions to volumes by adding `:ro`(read-only) or `:rw`(read-write) to the end of the mount definition(s). When no permission is set Che assumes a read-write permission.
+Set read-only or read-write permissions to volumes by adding `:ro`(read-only) or `:rw`(read-write) to the end of the mount definition(s). When no permission is set {{site.product_mini_name}} assumes a read-write permission.
 
 In the `{{site.data.env["filename"]}}`:
 
