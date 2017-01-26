@@ -18,12 +18,12 @@ The Samsung ARTIK IDE is based upon Eclipse Che and runs on Windows, Mac or Linu
 # 0. Pre-Reqs  
 Before installing the ARTIK IDE:
 
-- **Windows 10**
+- **Windows 10 Professional**
   1. Install [Docker for Windows](https://docs.docker.com/engine/installation/windows/) - ARTIK IDE requires Docker 1.8+.
   2. Enable [bash in Windows](http://www.pcworld.com/article/3106463/windows/how-to-get-bash-on-windows-10-with-the-anniversary-update.html) or install [git for Windows](https://git-scm.com/download/win) to get a bash shell.
   3. Use a Chrome or FireFox browser.
 
-- **Windows 7 or 8**
+- **Windows 7, 8 or 10 Home**
   1. Install [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/).
   2. Install [git for Windows](https://git-scm.com/download/win) to get a bash shell.
   3. Use a Chrome or FireFox browser.
@@ -34,7 +34,8 @@ Before starting make sure that Docker is installed and you've set the [shared dr
 Add Git Bash to the system path by setting `PATH=<path-to-git>;%PATH%` on the Windows command line:
 
 ```shell  
-set PATH=C:\Program Files\Git\bin\;%PATH%
+setx PATH C:\Program Files\Git\bin
+set PATH=C:\Program Files\Git\bin;%PATH%
 ```
 
 Verify Docker by running the Docker hello world example.
@@ -59,31 +60,24 @@ You will need to set the directory where you would like to keep ARTIK IDE execut
 #### Directories for Docker
 Docker and bash are case sensitive and require forward slashes without colons for directory and path names. Errors can occur if directories have spaces in them.
 
+Create a location for workspace storage for the ARTIK IDE. If using boot2docker, set the ARTIK IDE workspace storage to a subdirectory of `%userprofile%`. If running Docker for Windows on Windows 10 Professional or Enterprise, you can set it to any directory. Below we set to `/c/Users/%USERNAME%/artik-ide/` but this can be changed if needed.
+
 From the bash prompt:
 
 ```shell  
+mkdir /c/Users/$USERNAME/artik-data
 mkdir /c/Users/$USERNAME/artik-ide
-cd /c/Users/$USERNAME/artik-ide
 ```
 
 Now, download the `artik-ide.bat` and `artik-ide.sh` scripts:
 
 ```shell  
-curl -sL https://raw.githubusercontent.com/codenvy/artik-ide/master/artik-ide.bat > artik-ide.bat
-curl -sL https://raw.githubusercontent.com/codenvy/artik-ide/master/artik-ide.sh > artik-ide.sh
-```
-
-Finally, set the location for workspace storage in the ARTIK IDE. If using boot2docker, set the ARTIK IDE workspace storage to a subdirectory of `%userprofile%`.
-
-If running Docker for Windows on Windows 10 Professional or Enterprise, you can set it to any directory.
-
-```shell  
-mkdir %userprofile%\artik-ide\data\
-```
-
-Once downloaded you can exit bash:
-
-```shell  
+curl -sL https://raw.githubusercontent.com/codenvy/artik-ide/master/artik-ide.bat > \
+   /c/Users/%USERNAME%/artik-ide/artik-ide.bat
+curl -sL https://raw.githubusercontent.com/codenvy/artik-ide/master/artik-ide.sh > \
+   /c/Users/%USERNAME%/artik-ide/artik-ide.sh
+ 
+# Once downloaded you can exit bash 
 exit
 ```
 
@@ -94,11 +88,18 @@ If you are behind a proxy, you need to [configure your proxy settings]({{base}}{
 From the directory where you downloaded the `artik-ide.bat` set the `CHE_DATA_FOLDER` environment variable. This is persisted for each session. To persist it across sessions set it as a [system variable](http://www.computerhope.com/issues/ch000549.htm).
 
 ```shell  
-set CHE_DATA_FOLDER=/c/Users/%USERNAME%/artik-ide/data
-set PATH=<path-to-artik-ide-bat>;%PATH%
+set CHE_DATA_FOLDER=/c/Users/%USERNAME%/artik-data
+set CHE_VERSION=latest
+setx PATH c:\Users\%USERNAME%\artik-ide
+set PATH=c:\Users\%USERNAME%\artik-ide;%PATH%
 ```
 
-If you have set system variables for the above you can start here for future sessions.
+Save the environment variables to profile so new command prompt sessions will use the same information.
+
+```shell  
+artik-ide.bat profile add default
+artik-ide.bat profile set default
+```
 
 Start the ARTIK-IDE:
 
@@ -126,7 +127,9 @@ artik-ide stop
 To update ARTIK IDE to the newest version you can set the `CHE_VERSION` to `latest`. Otherwise you can select a tag from the released versions at [Dockerhub](https://hub.docker.com/r/codenvy/artikide/tags/)
 
 ```shell  
+set CHE_DATA_FOLDER=/c/Users/%USERNAME%/artik-data
 set CHE_VERSION=latest
+artik-ide.bat profile update default
 artik-ide update
 ```
 

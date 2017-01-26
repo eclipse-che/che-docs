@@ -137,7 +137,6 @@ bash
 
 **Note: When the ARTIK device is powered up, it will request a new IP address each time. Be sure to determine the new IP address each time or give your ARTIK device a static IP address.**
 
-=======
 # 6. Connect ARTIK Device with ARTIK IDE  
 Use the ARTIK device manager in a workspace to connect an ARTIK device to the ARTIK IDE.
 
