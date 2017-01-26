@@ -18,12 +18,12 @@ The Samsung ARTIK IDE is based upon Eclipse Che and runs on Windows, Mac or Linu
 # 0. Pre-Reqs  
 Before installing the ARTIK IDE:
 
-- **Windows 10**
+- **Windows 10 Professional**
   1. Install [Docker for Windows](https://docs.docker.com/engine/installation/windows/) - ARTIK IDE requires Docker 1.12+.
   2. Enable [bash in Windows](http://www.pcworld.com/article/3106463/windows/how-to-get-bash-on-windows-10-with-the-anniversary-update.html) or install [git for Windows](https://git-scm.com/download/win) to get a bash shell.
   3. Use a Chrome or FireFox browser.
 
-- **Windows 7 or 8**
+- **Windows 7, 8 or 10 Home**
   1. Install [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/).
   2. Install [git for Windows](https://git-scm.com/download/win) to get a bash shell.
   3. Use a Chrome or FireFox browser.
@@ -43,13 +43,17 @@ You should see Docker output and a hello world message.
 
 # 2. Start ARTIK IDE
 
+Create data directory for Artik:
+
+`mkdir c:\Users\%USERNAME%\artik-data`
+
 Start syntax:
 
-`docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v /c/users/artik:/data codenvy/artik-cli start`
+`docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v /c/Users/%USERNAME%/artik-data:/data codenvy/artik-cli start`
 
-Note that `/c/Users/artik` should be an existing Windows path where you want to store Artik IDE configuration and project files. It can be any `C` drive directory. Use lower case `/c` and Unix-like slashes `/` as this is how `C` drive gets mounted into Hyper-V VM.
+Note that `/c/Users/%USERNAME%/artik-data` could be any existing Windows path where you want to store Artik IDE configuration and project files. It can be any `C` drive directory. Use lower case `/c` and Unix-like slashes `/` as this is how `C` drive gets mounted into Hyper-V VM.
 
-Once started, you will see `instance` and `docs` directories in the specified directory, as well as `artik-ide.env` and `cli. log` files.
+Once started, you will see `instance` and `docs` directories in the specified directory, as well as `artik-ide.env` and `cli.log` files.
 
 After Artik IDE has successfully started, you will see URLs to load Artik IDE and APIs:
 
@@ -71,7 +75,7 @@ INFO: (che start): Ver: 1.3.1
 INFO: (che start): Use: http://10.0.75.2:8080
 INFO: (che start): API: http://10.0.75.2:8080/swagger
 ```
-For your convenience, you may create a `.bat` file with the above docker syntax. You may also add `--restart=always` to run command so that Docker launches Artik IDE after it starts (which happens when Windows starts on Win 10).
+For your convenience, you may create a `.bat` file with the above docker syntax. You may also add `--restart=always` to run command so that Docker launches Artik IDE after it starts (which happens when Windows starts on Win 10 Professional using HyperV or after start boot2docker).
 
 #### Installing Behind a Proxy
 If you are behind a proxy, you need to [configure your proxy settings]({{base}}{{site.links["artik-proxies"]}}) for Docker and the ARTIK IDE.  
