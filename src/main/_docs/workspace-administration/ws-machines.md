@@ -7,7 +7,7 @@ permalink: /:categories/machines/
 ---
 {% include base.html %}
 
-A machine is part of an environment, which are in turn part of a Che workspace. The [workspace administration introduction]({{base}}{{site.links["ws-admin-intro"]}}) explains the details of this relationship.
+A machine is part of an environment, which are in turn part of a {{site.product_mini_name}} workspace. The [workspace administration introduction]({{base}}{{site.links["ws-admin-intro"]}}) explains the details of this relationship.
 
 A machine is created from a [runtime stack]({{base}}{{site.links["ws-stacks"]}}). {{site.product_mini_name}} supports both single-machine environments and multi-machine environments. The {{site.product_mini_name}}  server manages the lifecycle of environments and the machines inside, including creating snapshots of machines.  Additionally, the {{site.product_mini_name}}  server can inject [workspace agents]({{base}}{{site.links["ws-agents"]}}) into a machine to provide additional capabilities inside the machine.
 
