@@ -49,7 +49,7 @@ Start syntax:
 
 Note that `/c/Users/artik` should be an existing Windows path where you want to store Artik IDE configuration and project files. It can be any `C` drive directory. Use lower case `/c` and Unix-like slashes `/` as this is how `C` drive gets mounted into Hyper-V VM.
 
-Once started, you will see `instance` and `docs` directories in the specified directory, as well as `artik-ide.env` and `cli log` files.
+Once started, you will see `instance` and `docs` directories in the specified directory, as well as `artik-ide.env` and `cli. log` files.
 
 After Artik IDE has successfully started, you will see URLs to load Artik IDE and APIs:
 
