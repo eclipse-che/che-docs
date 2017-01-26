@@ -75,7 +75,7 @@ INFO: (che start): Ver: 1.3.1
 INFO: (che start): Use: http://10.0.75.2:8080
 INFO: (che start): API: http://10.0.75.2:8080/swagger
 ```
-For your convenience, you may create a `.bat` file with the above docker syntax. You may also add `--restart=always` to run command so that Docker launches Artik IDE after it starts (which happens when Windows starts on Win 10 Professional using HyperV or after start boot2docker).
+For your convenience, you may create a `.bat` file with the above docker syntax. You may also add `--restart=always` to run command so that Docker launches Artik IDE after it starts (which happens when Windows starts on Win 10 Professional using HyperV or after starting boot2docker).
 
 #### Installing Behind a Proxy
 If you are behind a proxy, you need to [configure your proxy settings]({{base}}{{site.links["artik-proxies"]}}) for Docker and the ARTIK IDE.  
