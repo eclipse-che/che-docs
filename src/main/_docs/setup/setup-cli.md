@@ -11,7 +11,7 @@ The Docker image which runs Che is the Che CLI. It has various commands for runn
 
 ```
 USAGE:
-  docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> [COMMAND]
+  docker run -it --rm <DOCKER_PARAMETERS> eclipse/che:<version> [COMMAND]
 
 MANDATORY DOCKER PARAMETERS:
   -v <LOCAL_PATH>:/data                Where user, instance, and log data saved
