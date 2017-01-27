@@ -73,7 +73,7 @@ Generally you can give Gin and Guice modules any file name, but for the sake of 
 See the following [example](https://github.com/eclipse/che/tree/master/samples/sample-plugin-wizard) for an advanced sample extension.
 
 # Compiling Extensions  
-## pom.xml
+## POM.xml
 Each extension has a root `pom.xml` file. When configuring an extension `pom.xml` file, you must define an `<artifactId>` tag which will be the unique name identifier given to this extension. This identifier tag will be referenced by the Che assembly to declare that your extension is part of Che. You can override the `groupId` and `version` parameters from the parent, or if not specified, it will inherit the values set by the `<parent>` tag reference.
 
 ```xml  
