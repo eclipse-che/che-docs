@@ -202,7 +202,7 @@ And the identifier of this extension is the `artifactId`, `groupId`, and `versio
 <version>5.0.0</version>
 ```
 ## Add Extension To Root Che POM
-In order to allow your extension to be visible from the root level of Che, add your extension as a dependency in the list of `<dependencies>` from the `<dependencyManagement>`block.  There are a lot of them in the root `pom.xml`. To avoid transitive dependencies, we require every dependency to be explicitly listed and added. While this may seem like a pain in the arse, this will save you a lot of pain in the future from having circular references.
+In order to allow your extension to be visible from the root level of Che, add your extension as a dependency in the list of `<dependencies>` from the `<dependencyManagement>`block.  There are a lot of them in the root `pom.xml`. To avoid transitive dependencies, we require every dependency to be explicitly listed and added. This will save you a lot of pain in the future from having circular references.
 
 ```xml  
 <dependencyManagement>
