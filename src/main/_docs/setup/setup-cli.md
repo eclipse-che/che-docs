@@ -21,7 +21,8 @@ OPTIONAL DOCKER PARAMETERS:
   -e CHE_PORT=<YOUR_PORT>              Port where che will bind itself to
   -v <LOCAL_PATH>:/data/instance       Where instance, user, log data will be saved
   -v <LOCAL_PATH>:/data/backup         Where backup files will be saved
-  -v <LOCAL_PATH>:/repo                che git repo - uses local binaries
+  -v <LOCAL_PATH>:/repo                che git repo - uses local binaries and manifests
+  -v <LOCAL_PATH>:/assembly            che assembly - uses local binaries
   -v <LOCAL_PATH>:/sync                Where remote ws files will be copied with sync command
   -v <LOCAL_PATH>:/unison              Where unison profile for optimizing sync command resides
   -v <LOCAL_PATH>:/chedir              Soure repository to convert into workspace with Chedir utility
@@ -49,8 +50,10 @@ COMMANDS:
   version                              Installed version and upgrade paths
 
 GLOBAL COMMAND OPTIONS:
-  --fast                               Skips networking and version checks (saves 5 secs during bootstrap)
+  --fast                               Skips networking, version, nightly and preflight checks
+  --offline                            Runs CLI in offline mode, loading images from disk
   --debug                              Enable debugging of che server
+  --trace                              Activates trace output for debugging CLI
 ```
 
 The CLI will hide most error conditions from standard out. Internal stack traces and error output is redirected to `cli.log`, which is saved in the host folder where `:/data` is mounted.
@@ -95,7 +98,7 @@ Used to download Docker images that will be stored in your Docker images reposit
 `download` is invoked by `che init` before initialization to download images for the version specified by `eclipse/che:<version>`.
 
 ### info
-Displays system state and debugging information. `--network` runs a test to take your `CHE_HOST` value to test for networking connectivity simulating browser > Che and Che > workspace connectivity.
+Displays system state and debugging information. `--network` runs a test to take your `CHE_HOST` value to test for networking connectivity simulating browser > Che and Che > workspace connectivity. `--bundle` will generate a support diagnostic bundle in a TAR file which includes the output of certain commands and your execution logs.
 
 ### init
 Initializes an empty directory with a Che configuration and instance folder where user data and runtime configuration will be stored. You must provide a `<path>:/data` volume mount, then Che creates a `instance` and `backup` subfolder of `<path>`. You can optionally override the location of `instance` by volume mounting an additional local folder to `/data/instance`. You can optionally override the location of where backups are stored by volume mounting an additional local folder to `/data/backup`.  After initialization, a `che.env` file is placed into the root of the path that you mounted to `/data`.
