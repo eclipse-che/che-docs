@@ -89,52 +89,6 @@ Now that Che is running there are a lot of fun things to try:
 - Create reproducible workspaces with [chedir]({{ base }}/docs/chedir/getting-started/index.html).
 - Create a [custom runtime stack]({{ base }}/docs/workspace/stacks/index.html).
 
-# Syntax  
-
-```
-USAGE:
-  docker run -it --rm <DOCKER_PARAMETERS> eclipse/che:<version> [COMMAND]
-
-MANDATORY DOCKER PARAMETERS:
-  -v <LOCAL_PATH>:/data                Where user, instance, and log data saved
-
-OPTIONAL DOCKER PARAMETERS:
-  -e CHE_HOST=<YOUR_HOST>              IP address or hostname where che will serve its users
-  -e CHE_PORT=<YOUR_PORT>              Port where che will bind itself to
-  -v <LOCAL_PATH>:/data/instance       Where instance, user, log data will be saved
-  -v <LOCAL_PATH>:/data/backup         Where backup files will be saved
-  -v <LOCAL_PATH>:/repo                che git repo - uses local binaries
-  -v <LOCAL_PATH>:/sync                Where remote ws files will be copied with sync command
-  -v <LOCAL_PATH>:/unison              Where unison profile for optimizing sync command resides
-  -v <LOCAL_PATH>:/chedir              Soure repository to convert into workspace with Chedir utility
-
-COMMANDS:
-  action <action-name>                 Start action on che instance
-  backup                               Backups che configuration and data to /data/backup volume mount
-  config                               Generates a che config from vars; run on any start / restart
-  destroy                              Stops services, and deletes che instance data
-  dir <command>                        Use Chedir and Chefile in the directory mounted to :/chedir
-  download                             Pulls Docker images for the current che version
-  help                                 This message
-  info                                 Displays info about che and the CLI
-  init                                 Initializes a directory with a che install
-  offline                              Saves che Docker images into TAR files for offline install
-  restart                              Restart che services
-  restore                              Restores che configuration and data from /data/backup mount
-  rmi                                  Removes the Docker images for <version>, forcing a repull
-  ssh <wksp-name> [machine-name]       SSH to a workspace if SSH agent enabled
-  start                                Starts che services
-  stop                                 Stops che services
-  sync <wksp-name>                     Synchronize workspace with local directory mounted to :/sync
-  test <test-name>                     Start test on che instance
-  upgrade                              Upgrades che from one version to another with migrations and backups
-  version                              Installed version and upgrade paths
-
-GLOBAL COMMAND OPTIONS:
-  --fast                               Skips networking and version checks (saves 5 secs during bootstrap)
-  --debug                              Enable debugging of che server
-```
-
 # Pre-Reqs  
 
 ### Hardware
@@ -224,6 +178,14 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
                     -e CHE_HOST=<your-ip-or-host>
                        eclipse/che:<version> [COMMAND]
 ```
+
+# Multiple Containers
+If you want to run multiple Che instances at the same time on the same host, each execution of Che needs to have a different:
+1. Port (set with `-e CHE_PORT=<port>`)
+2. Che container name (set with `-e CHE_CONTAINER=<name>`)
+3. Data folder (set with `:/data`)
+
+Each execution of Che will need a separate container name. The `eclipse/che` image is a launcher for Che containers. You can reuse the same `eclipse/che` image to launch many Che containers.  Each Che container is launched from a `eclipse/che-server` image. The value you give to `CHE_CONTAINER` will be the name of the container assigned to each instance of `eclipse/che-server`.
 
 # Proxy Installation
 You can install and operate Che behind a proxy:
