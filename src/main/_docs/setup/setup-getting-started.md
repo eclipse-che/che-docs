@@ -182,9 +182,11 @@ If you want to run multiple Che instances at the same time on the same host, eac
 2. Che container name
 3. Data folder
 
-We determine the Che container name with the format `<prefix>-<port>`. The default prefix is `che` and can be changed on the CLI with `-e CHE_CONTAINER=<name>`. If you use the default port, then this value is not added to the container name. However, if you change the port with `-e CHE_PORT=<port>` then we will use that value as part of the container name.
+We determine the Che container name with the format `<prefix>-<port>`. The default prefix is `che` and can be changed on the CLI with `-e CHE_CONTAINER_PREFIX=<name>`. If you use the default port, then this value is not added to the container name. However, if you change the port with `-e CHE_PORT=<port>` then we will use that value as part of the container name.
 
-When the CLI executes, it creates a configuration that ultimately launches a container from `eclipse/che-server` image which is the image that contains the Che container. This container receives the unique name created above. 
+When the CLI executes, it creates a configuration that ultimately launches a container from `eclipse/che-server` image which is the image that contains the Che container. This container receives the unique name created above.
+
+You can also optionally just set the name of the container with a UUID by setting `-e CHE_CONTAINER=<name>`.
 
 # Proxy Installation
 You can install and operate Che behind a proxy:
