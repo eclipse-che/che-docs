@@ -181,11 +181,13 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
 
 # Multiple Containers
 If you want to run multiple Che instances at the same time on the same host, each execution of Che needs to have a different:
-1. Port (set with `-e CHE_PORT=<port>`)
-2. Che container name (set with `-e CHE_CONTAINER=<name>`)
-3. Data folder (set with `:/data`)
+1. Port
+2. Che container name
+3. Data folder
 
-Each execution of Che will need a separate container name. The `eclipse/che` image is a launcher for Che containers. You can reuse the same `eclipse/che` image to launch many Che containers.  Each Che container is launched from a `eclipse/che-server` image. The value you give to `CHE_CONTAINER` will be the name of the container assigned to each instance of `eclipse/che-server`.
+We determine the Che container name with the format `<prefix>-<port>`. The default prefix is `che` and can be changed on the CLI with `-e CHE_CONTAINER=<name>`. If you use the default port, then this value is not added to the container name. However, if you change the port with `-e CHE_PORT=<port>` then we will use that value as part of the container name.
+
+When the CLI executes, it creates a configuration that ultimately launches a container from `eclipse/che-server` image which is the image that contains the Che container. This container receives the unique name created above. 
 
 # Proxy Installation
 You can install and operate Che behind a proxy:
