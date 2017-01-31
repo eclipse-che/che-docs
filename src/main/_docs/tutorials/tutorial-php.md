@@ -46,7 +46,7 @@ You should see a Hello World page. Open `index.php`, edit it, refresh the previe
 The PHP stack includes the Zend Debugger module, which allows debugging PHP both as CLI script and Web app. See the [Debug - PHP]({{base}}{{site.links["ide-debug"]}}#php) page for details.
 
 # 6. Composer and Unit Tests  
-A PHP stack has [Composer](https://getcomposer.org/) already installed and configured. Composer is used to manage project dependencies, i.e. makes it easy to use 3rd party libs and frameworks.
+A PHP stack has [Composer](https://getcomposer.org/) already installed and configured. Composer is used to manage project dependencies, i.e. makes it easy to use 3rd party libs and frameworks. Look at the [Composer tutorial]({{base}}{{site.links["tutorial-composer"]}}) for more details on how to work with Composer in Che.
 
 Let's add the [PHPUnit](https://phpunit.de/) testing framework and write a simple Unit test.
 
