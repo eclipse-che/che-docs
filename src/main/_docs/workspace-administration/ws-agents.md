@@ -49,7 +49,7 @@ Stacks use JSON format for configuration. Agents are included in the machines de
 
 Currently, all agents must be pre-defined within Che. We are thinking about a public registry for agents where they can be added and removed, but this is a future activity.
 
-A new agent has to implement the [Agent interface](https://github.com/eclipse/che/blob/master/agents/che-core-api-agent-shared/src/main/java/org/eclipse/che/api/agent/shared/model/Agent.java) and be bind into the container.
+A new agent has to implement the [Agent interface](https://github.com/eclipse/che/blob/master/agents/che-core-api-agent-shared/src/main/java/org/eclipse/che/api/agent/shared/model/Agent.java) and be bound into the container.
 
 ```java
 public interface Agent {
@@ -96,20 +96,20 @@ public interface Agent {
 }
 ```
 
-Agents have an unique id, a name, a set of other agents that they depend upon, properties and a "script", which defines how the agent's packages have to be installed into the workspace. This script handles installation and the way to start the agent.
+Agents have an unique ID, a name, a set of other agents that they depend upon, properties, and a "script" that defines how the agent's packages have to be installed into the workspace. This script handles installation and start of the agent.
 
 The scripts that you must provide with an agent have a large `if` block where you provide installation logic for each Linux distribution that we support. You can follow our [templates](https://github.com/eclipse/che/blob/master/agents/ls-json/src/main/resources/org.eclipse.che.ls.json.script.sh) for how to build agents of your own.
 
-### Adding agent
+### Adding Agents
 
-* Create sub module in [agents folder](https://github.com/eclipse/che/tree/master/agents)
-* Create resource file with agent description:
+* Create a sub module in the [agents folder](https://github.com/eclipse/che/tree/master/agents)
+* Create a resource file with the agent description:
 
 ```json
 {
   "id": "org.eclipse.che.my-agent",
   "name": "My simple agent",
-  "description": "Do nothing :)",
+  "description": "Does some stuff :)",
   "dependencies": [],
   "properties": {}
 }
@@ -137,13 +137,11 @@ if echo ${LINUX_TYPE} | grep -qi "rhel"; then
 ############################
 elif echo ${LINUX_TYPE} | grep -qi "Red Hat"; then
     ...
-
-
+    
 # Ubuntu 14.04 16.04 / Linux Mint 17
 ####################################
 elif echo ${LINUX_TYPE} | grep -qi "ubuntu"; then
     ...
-
 
 # Debian 8
 ##########
@@ -154,7 +152,6 @@ elif echo ${LINUX_TYPE} | grep -qi "debian"; then
 ###########
 elif echo ${LINUX_TYPE} | grep -qi "fedora"; then
     ...
-
 
 # CentOS 7.1 & Oracle Linux 7.1
 ###############################
@@ -207,4 +204,4 @@ public class WsMasterModule extends AbstractModule {
 }
 ```
 
-Have a look on our example of [JSON language server agent](https://github.com/eclipse/che/tree/master/agents/ls-json).
+Have a look at our example of the [JSON language server agent](https://github.com/eclipse/che/tree/master/agents/ls-json) for more ideas.
