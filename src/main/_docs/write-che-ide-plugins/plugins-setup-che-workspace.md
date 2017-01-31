@@ -237,7 +237,7 @@ Follow the remaining steps for running a configuration to launch Super Dev Mode,
 # Setup the Che IDE  
 
 #### Building Che Extensions in Che Coming Soon
-}  
+
 
 You can create, build and run client-side Che extensions using the Che IDE.
 

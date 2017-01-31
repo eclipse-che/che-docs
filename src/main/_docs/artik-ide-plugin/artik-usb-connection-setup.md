@@ -12,6 +12,7 @@ You can discover the IP address of USB-connected devices automatically using an 
 
 ### Prerequisites for USB Discovery
 The ADB daemon must be running on the device. Usually it is already running but if it's not or if you can't discover the device execute the following commands:
+
 ```shell  
 # On the device: Start the daemon
 service adbd start
@@ -20,7 +21,7 @@ service adbd start
 systemctl enable adbd.service
 
 # In Che workspace: Verify that discovery is working
-adb devices    # Returns a discovered device\
+adb devices    # Returns a discovered device
 ```
 Your Artik device must be connected over regular USB (do not use micro-USB).  If ADB discovery service fails to find any USB-connected devices, a `No USB devices found` message will be displayed. If that happens please [post an issue to this GitHub issues](https://github.com/eclipse/che/issues) page.
 

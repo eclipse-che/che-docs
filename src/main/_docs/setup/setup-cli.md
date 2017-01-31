@@ -19,6 +19,7 @@ MANDATORY DOCKER PARAMETERS:
 OPTIONAL DOCKER PARAMETERS:
   -e CHE_HOST=<YOUR_HOST>              IP address or hostname where che will serve its users
   -e CHE_PORT=<YOUR_PORT>              Port where che will bind itself to
+  -e CHE_CONTAINER=<YOUR_NAME>         Prefix name for the che container
   -v <LOCAL_PATH>:/data/instance       Where instance, user, log data will be saved
   -v <LOCAL_PATH>:/data/backup         Where backup files will be saved
   -v <LOCAL_PATH>:/repo                che git repo - uses local binaries and manifests
@@ -26,7 +27,7 @@ OPTIONAL DOCKER PARAMETERS:
   -v <LOCAL_PATH>:/sync                Where remote ws files will be copied with sync command
   -v <LOCAL_PATH>:/unison              Where unison profile for optimizing sync command resides
   -v <LOCAL_PATH>:/chedir              Soure repository to convert into workspace with Chedir utility
-
+  
 COMMANDS:
   action <action-name>                 Start action on che instance
   backup                               Backups che configuration and data to /data/backup volume mount
@@ -50,9 +51,10 @@ COMMANDS:
   version                              Installed version and upgrade paths
 
 GLOBAL COMMAND OPTIONS:
-  --fast                               Skips networking and version checks (saves 5 secs during bootstrap)
+  --fast                               Skips networking, version, nightly and preflight checks
   --offline                            Runs CLI in offline mode, loading images from disk
   --debug                              Enable debugging of che server
+  --trace                              Activates trace output for debugging CLI
 ```
 
 The CLI will hide most error conditions from standard out. Internal stack traces and error output is redirected to `cli.log`, which is saved in the host folder where `:/data` is mounted.
@@ -97,7 +99,7 @@ Used to download Docker images that will be stored in your Docker images reposit
 `download` is invoked by `che init` before initialization to download images for the version specified by `eclipse/che:<version>`.
 
 ### info
-Displays system state and debugging information. `--network` runs a test to take your `CHE_HOST` value to test for networking connectivity simulating browser > Che and Che > workspace connectivity.
+Displays system state and debugging information. `--network` runs a test to take your `CHE_HOST` value to test for networking connectivity simulating browser > Che and Che > workspace connectivity. `--bundle` will generate a support diagnostic bundle in a TAR file which includes the output of certain commands and your execution logs.
 
 ### init
 Initializes an empty directory with a Che configuration and instance folder where user data and runtime configuration will be stored. You must provide a `<path>:/data` volume mount, then Che creates a `instance` and `backup` subfolder of `<path>`. You can optionally override the location of `instance` by volume mounting an additional local folder to `/data/instance`. You can optionally override the location of where backups are stored by volume mounting an additional local folder to `/data/backup`.  After initialization, a `che.env` file is placed into the root of the path that you mounted to `/data`.
@@ -151,7 +153,7 @@ The ssh connection will work only if there is a workspace ssh key setup. A defau
 Starts Che and its services using `docker-compose`. If the system cannot find a valid configuration it will perform an `init`. Every `start` and `restart` will run a `config` to generate a new configuration set using the latest configuration. The starting sequence will perform pre-flight testing to see if any ports required by Che are currently used by other services and post-flight checks to verify access to key APIs.  
 
 ### stop
-Stops all of the Che service containers and removes them.
+The default stop is a graceful stop where each workspace is stopped and confirmed shutdown before stopping system services. If workspaces are configured to snap on stop, then all snaps will be completed before system service shutdown begins. You can ignore workspace stop behavior and shut down only system services with --force flag. 
 
 ### test
 Performs some tests on your local instance of Che. It can for example check the ability to create a workspace, start the workspace by using a custom Workspace runtime and then use it.
@@ -231,4 +233,4 @@ The Che CLI uses Puppet to generate OS-specific configuration files based upon e
 This puppet-based approach allow us to simplify the outputs for end users and limit the locations where end users need to configure various parts of the system. One powerful example of this is that we generate two `docker-compose.yml` files from a single Puppet template. In the user's `/instance` folder is `docker-compose.yml` and `docker-compose-container.yml`. The first one is a configuration file that allows a user to run Docker compose for Che on their host. They can just `docker-compose up` in that folder. The second file is for running Docker compose from within a container, which is what the CLI does. The syntax of Docker compose changes in each of these scenarios as the files being referenced from within the compose syntax are different. In the `init` image, we have a single template for Docker Compose and then apply it in two configurations using Puppet.
 
 ## CLI Tests
-There are existing [bats](https://github.com/sstephenson/bats) tests for the Che CLI, which runs automatically with each execution of a `build.sh` script located in the `dockerfiles/base` folder. To skip them, pass `--skip-tests` argument when running the build script. If you want to just run tests you can achieve it by running script `test.sh` located in the same folder. Tests utilizes docker image `eclipse/che-bats` which is build from `Dockerfile` placed in `dockerfiles/bats`.
+There are existing [bats](https://github.com/sstephenson/bats) tests for the Che CLI, which runs automatically with each execution of a `build.sh` script located in the `dockerfiles/cli` folder. To skip them, pass `--skip-tests` argument when running the build script. If you want to just run tests you can achieve it by running script `test.sh` located in the same folder. Tests utilizes docker image `eclipse/che-bats` which is build from `Dockerfile` placed in `dockerfiles/bats`.
