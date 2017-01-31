@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Composer in Che
+title: Composer
 excerpt: ""
 layout: tutorials
 permalink: /:categories/composer/
