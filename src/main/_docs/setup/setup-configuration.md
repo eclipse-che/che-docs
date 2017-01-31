@@ -126,13 +126,21 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock \
                        eclipse/che:<version> [COMMAND] --debug
 ```
 
-You can also optionally use your local binaries in production mode by volume mounting `:/repo` without passing `--debug`.
-
-There are two locations that files in your Che source repository will be used instead of those in the image:
+You can also optionally use your local binaries in production mode by volume mounting `:/repo` without passing `--debug`. There are two locations that files in your Che source repository will be used instead of those in the image:
 
 1. During the `che config` phase, the source repository's `/dockerfiles/init/modules` and `/dockerfiles/init/manifests` will be used instead of the ones that are included in the `eclipse/che-init` container.
 2. During the `che start` phase, a local assembly from `assembly/assembly-main/target/` is mounted into the `eclipse/che-server` runtime container. You must `mvn clean install` the `assembly/assembly-main/` folder prior to activating development mode.
 
+Volume mounting `:/repo` will also make use of your repository's puppet manifests and other files (replacing those that are stored within the CLI's base image). If you only want to volume mount a new set of assemblies and ignore the other items in a repository, you can do so by volume mounting `:/assembly` to a folder that is the base of a binary (we do not yet support volume mounting a `.tgz` file).
+
+```
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                    -v <local-path>:/data \
+                    -v <local-assembly-folder>:/assembly \
+                       eclipse/che:<version> [COMMAND]
+```
+
+### Debugging Che
 To activate jpda suspend mode for debugging Che server initialization, in the `che.env`:
 
 ```

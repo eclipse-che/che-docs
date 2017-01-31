@@ -11,7 +11,7 @@ The Docker image which runs Che is the Che CLI. It has various commands for runn
 
 ```
 USAGE:
-  docker run -it --rm <DOCKER_PARAMETERS> eclipse/che:<version> [COMMAND]
+  docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> [COMMAND]
 
 MANDATORY DOCKER PARAMETERS:
   -v <LOCAL_PATH>:/data                Where user, instance, and log data saved
@@ -211,8 +211,8 @@ It can become tedious rebuilding images every time you want to test a small chan
 
 If you run the Che CLI in this configuration, then any changes made to the bash files or templates in those repositories will be used without having to first rebuild the CLI image.
 
-## Custom CLI Assemblies
-The Che CLI was designed to easily be overridden to allow different CLIs to be created from the same base structure. This is how Codenvy and ARTIK has an identical CLIs to Che. The CLI is created with a few minimal assets:
+## Custom CLI
+The Che CLI was designed to be overridden to allow different CLIs to be created from the same base structure. This is how Codenvy and ARTIK has an identical CLIs to Che. The CLI is created with a few minimal assets:
 
 ```
 /dockerfiles/cli/build.sh               # Local file to build the image
