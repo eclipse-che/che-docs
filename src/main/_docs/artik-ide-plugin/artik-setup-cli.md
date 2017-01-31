@@ -131,7 +131,8 @@ The ssh connection will work only if there is a workspace ssh key setup. A defau
 Starts ARTIK and its services using `docker-compose`. If the system cannot find a valid configuration it will perform an `init`. Every `start` and `restart` will run a `config` to generate a new configuration set using the latest configuration. The starting sequence will perform pre-flight testing to see if any ports required by ARTIK are currently used by other services and post-flight checks to verify access to key APIs.  
 
 ### stop
-Stops all of the ARTIK service containers and removes them.
+By default, perform a graceful stop by stopping all services. This can be turned off with `--force` flag
+Then it stops all of the ARTIK service containers and removes them.
 
 ### test
 Performs some tests on your local instance of ARTIK. It can for example check the ability to create a workspace, start the workspace by using a custom Workspace runtime and then use it.
