@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Creating Custom Agents
 excerpt: ""
 layout: docs
-permalink: /:categories/languageserver/
+permalink: /:categories/plugins-agents/
 ---
 
 {% include base.html %}
