@@ -8,8 +8,6 @@ permalink: /:categories/agents/
 
 {% include base.html %}
 
-# Creating New Agents  
-
 All custom agents must be created and then packaged into a custom Che assembly. A new agent has to implement the [Agent interface](https://github.com/eclipse/che/blob/master/agents/che-core-api-agent-shared/src/main/java/org/eclipse/che/api/agent/shared/model/Agent.java) and be bound into the container.
 
 ```java
