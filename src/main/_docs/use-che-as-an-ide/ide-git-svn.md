@@ -69,18 +69,14 @@ To enable automatic key upload to GitHub, register an application in your GitHub
 ![Clipboard9.jpg]({{base}}{{site.links["Clipboard9.jpg"]}})
 
 ### Setup environment variables.
-Set the following to environment variables then start/restart the {{ site.product_formal_name }} server. Optionally you can use [CLI profiles](https://eclipse-che.readme.io/docs/che-cli#profiles) to save these environment variables.
+Set the following to environment variables in the `{{ site.data.env.filename }}` file then start/restart the {{ site.product_formal_name }} server. 
 
-```shell  
-export CHE_PROPERTY_oauth_github_clientid=yourClientID
-export CHE_PROPERTY_oauth_github_clientsecret=yourClientSecret
-export CHE_PROPERTY_oauth_github_authuri= https://github.com/login/oauth/authorize
-export CHE_PROPERTY_oauth_github_tokenuri= https://github.com/login/oauth/access_token
-export CHE_PROPERTY_oauth_github_redirecturis= http://${CHE_HOST_IP}:${SERVER_PORT}/wsmaster/api/oauth/callback
-#Optionally save the enviroment variables above using the CLI.
-#che profile add <profile-name>
-#che profile set <profile-name>
-che start
+```YAML  
+{{ site.data.env.OAUTH_GITHUB_CLIENTID }}=yourClientID
+{{ site.data.env.OAUTH_GITHUB_CLIENTSECRET }}=yourClientSecret
+{{ site.data.env.OAUTH_GITHUB_AUTHURI }}= https://github.com/login/oauth/authorize
+{{ site.data.env.OAUTH_GITHUB_TOKENURI }}= https://github.com/login/oauth/access_token
+{{ site.data.env.OAUTH_GITHUB_REDIRECTURIS }}= http://${CHE_HOST_IP}:${SERVER_PORT}/wsmaster/api/oauth/callback
 ```
 
 ### Using OAuth in Workspace
