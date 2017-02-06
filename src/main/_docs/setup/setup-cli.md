@@ -150,7 +150,7 @@ The syntax is `ssh <workspace-name> [machine-name]`
 The ssh connection will work only if there is a workspace ssh key setup. A default ssh key is automatically generated when a workspace is created.
 
 ### sync
-Synchronize `/assembly` folder with the workspace folder.
+Synchronizes a workspace's contents with a local folder mounted to :/sync
 The syntax is `-v <path-on-your-machine>:/sync eclipse/che sync <workspace-name>`
 
 To get extra information, the flag `--unison-verbose` can be used to display log of the underlying unison tool.
