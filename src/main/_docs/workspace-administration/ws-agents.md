@@ -205,3 +205,26 @@ public class WsMasterModule extends AbstractModule {
 ```
 
 Have a look at our example of the [JSON language server agent](https://github.com/eclipse/che/tree/master/agents/ls-json) for more ideas.
+
+
+### Creating sample agent using archetype
+
+It is easy to test custom agent using che-agent-archetype. 
+Run the command bellow to initialize folder with sample agent and custom assembly.
+
+```bash
+mvn archetype:generate                                                      \
+  -DarchetypeRepository=http://maven.codenvycorp.com/content/groups/public/ \
+  -DarchetypeGroupId=org.eclipse.che.archetype                              \
+  -DarchetypeArtifactId=che-agent-archetype                                 \
+  -DarchetypeVersion=<ARCHETYPE_VERSION>                                    \
+  -DcheVersion=<CHE_VERSION>                                                \
+  -DgroupId=my.agent                                                        \
+  -DartifactId=agent-sample                                                 \
+  -Dversion=0.1-SNAPSHOT
+```
+
+Run `mvn clean install` to build assembly and use docker to launch che with custom assembly [CLI reference]({{base}}{{site.links["setup-cli"]}}).
+
+If everything goes well it is possible to create workspace with new agent.
+![sample-agent.png]({{base}}{{site.links["sample-agent.png"]}})
