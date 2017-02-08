@@ -91,9 +91,6 @@ Import project from the IDE `Workspace > Import Project > GITHUB` menu. When imp
 
 Importing a project can also be done from the dashboard menu.
 
-# Built-In Pull Request Panel
-Within the Codenvy IDE there is a pull request panel to simplify the creation of pull requests for GitHub, BitBucket or Microsoft VSTS (with git) repositories.
-
 ## BitBucket Server oAuth
 You can setup oAuth to a dedicated BitBucket Server.
 
@@ -139,6 +136,9 @@ In the `codenvy.env` file add (or change if they already exist):
 
 ### 5. Restart Codenvy
 Restart your Codenvy server to enable the integration.
+
+# Built-In Pull Request Panel
+Within the Codenvy IDE there is a pull request panel to simplify the creation of pull requests for GitHub, BitBucket or Microsoft VSTS (with git) repositories.
 
 # SVN Using Username/Password  
 Import project from the IDE `Workspace > Import Project > SUBVERSION` menu. When importing a project from you can use the https url like `https://<hostname>/<repo-name>`.
