@@ -6,9 +6,18 @@ layout: docs
 permalink: /:categories/git-svn/
 ---
 {% include base.html %}
+
+## Contents
+- TOC
+{:toc}
+
+---
+
+
+
 {{ site.product_formal_name }} natively supports Git and SVN, which is installed in all pre-defined stacks. Versioning functionality is available in the IDE and in the terminal. When using the Git and SVN menu, commands are injected into the workspace runtime and all output is streamed into the consoles panels. The following sections are in reference to {{site.product_mini_name}}'s IDE Git and SVN Menu.
 
-# Using Private Repositories  
+# Git Using SSH Keys  
 Private repositories will require a secure SSH connection, so an SSH key pair needs to be generated. SSH keys are saved in user preferences, so you need to generate the SSH key only once and it will be used in all workspaces.
 
 ## Generate New SSH Keys
@@ -137,13 +146,13 @@ In the `codenvy.env` file add (or change if they already exist):
 ### 5. Restart Codenvy
 Restart your Codenvy server to enable the integration.
 
-# Built-In Pull Request Panel
-Within the Codenvy IDE there is a pull request panel to simplify the creation of pull requests for GitHub, BitBucket or Microsoft VSTS (with git) repositories.
-
 # SVN Using Username/Password  
 Import project from the IDE `Workspace > Import Project > SUBVERSION` menu. When importing a project from you can use the https url like `https://<hostname>/<repo-name>`.
 
 ![che-svn-username-password.jpg]({{base}}{{site.links["che-svn-username-password.jpg"]}}){:style="width: 60%"}
+
+# Built-In Pull Request Panel
+Within the Codenvy IDE there is a pull request panel to simplify the creation of pull requests for GitHub, BitBucket or Microsoft VSTS (with git) repositories.
 
 # Set Git Committer Name and Email  
 Committer name and email are set in `Profile > Preferences > Git > Committer`. Once set each commit will include this information.
