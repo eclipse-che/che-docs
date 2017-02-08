@@ -18,7 +18,9 @@ permalink: /:categories/git-svn/
 {{ site.product_formal_name }} natively supports Git and SVN, which is installed in all pre-defined stacks. Versioning functionality is available in the IDE and in the terminal. When using the Git and SVN menu, commands are injected into the workspace runtime and all output is streamed into the consoles panels. The following sections are in reference to {{site.product_mini_name}}'s IDE Git and SVN Menu.
 
 # Git Using SSH Keys  
-Private repositories will require a secure SSH connection, so an SSH key pair needs to be generated. SSH keys are saved in user preferences, so you need to generate the SSH key only once and it will be used in all workspaces.
+Private repositories will require a secure SSH connection and most developers who plan to push to a repo will clone it via SSH, so an SSH key pair needs to be generated. SSH keys are saved in user preferences, so you need to generate the SSH key only once and it will be used in all workspaces.
+
+When cloning be sure to use the SSH URL like `git@<git url>:<account>/<project>.git` when importing a project from a git repository using SSH key authorization. **Note: HTTPS git URL can only be used to push changes if you enable oAuth authentication as described in [Git Using oAuth](#git-using-oauth)**.
 
 ## Generate New SSH Keys
 SSH keys can be generated at `Profile > Preferences > SSH > VCS`. Use the `Generate Key` button and manually save the resulting key to your Git hosting provider account. When prompted to provide the hostname for your repo, make sure it is a bare hostname (no www or http/https) as in the example below.
@@ -61,12 +63,7 @@ Importing a project can also be done from the dashboard menu.
 
 ![ImportProjectDashboard.jpg]({{base}}{{site.links["ImportProjectDashboard.jpg"]}})
 
-Be sure to use the ssh url like `git@<git url>:<account>/<project>.git` when importing a project from a git repository using ssh key authorization. **Note: HTTPS git url can only be used for oauth authentication described in [Git Using oAuth](#git-using-oauth)**.
-
 # Git Using oAuth  
-
-## GitLab oAuth
-Currently it's not possible for {{ site.product_mini_name }} to use oAuth integration with GitLab. Although GitLab supports oAuth for clone operations, pushes are not supported. You can track [this GitLab issue](https://gitlab.com/gitlab-org/gitlab-ce/issues/18106) in their issue management system.
 
 ## GitHub oAuth
 
@@ -145,6 +142,9 @@ In the `codenvy.env` file add (or change if they already exist):
 
 ### 5. Restart Codenvy
 Restart your Codenvy server to enable the integration.
+
+## GitLab oAuth
+Currently it's not possible for {{ site.product_mini_name }} to use oAuth integration with GitLab. Although GitLab supports oAuth for clone operations, pushes are not supported. You can track [this GitLab issue](https://gitlab.com/gitlab-org/gitlab-ce/issues/18106) in their issue management system.
 
 # SVN Using Username/Password  
 Import project from the IDE `Workspace > Import Project > SUBVERSION` menu. When importing a project from you can use the https url like `https://<hostname>/<repo-name>`.
