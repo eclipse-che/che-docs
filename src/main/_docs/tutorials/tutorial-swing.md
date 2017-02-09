@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Java Swing in Che
+title: Java Swing
 excerpt: ""
 layout: tutorials
 permalink: /:categories/swing/

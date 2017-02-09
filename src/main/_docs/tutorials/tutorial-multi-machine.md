@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Multi-Machine Workspaces in Che
+title: Multi-Machine Workspaces
 excerpt: ""
 layout: tutorials
 permalink: /:categories/multi-machine/

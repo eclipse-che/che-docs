@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Laravel in Che
+title: Laravel
 excerpt: ""
 layout: tutorials
 permalink: /:categories/laravel/

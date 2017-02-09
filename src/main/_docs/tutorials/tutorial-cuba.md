@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Cuba Platform in Che
+title: Cuba Platform
 excerpt: ""
 layout: tutorials
 permalink: /:categories/cuba/

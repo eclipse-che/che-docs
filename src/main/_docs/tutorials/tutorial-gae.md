@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Google App Engine and Che
+title: Google App Engine
 excerpt: ""
 layout: tutorials
 permalink: /:categories/gae/

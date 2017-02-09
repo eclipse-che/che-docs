@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: AppFog and Che
+title: AppFog
 excerpt: ""
 layout: tutorials
 permalink: /:categories/che-and-appfog/

@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Spring Boot in Che
+title: Spring Boot
 excerpt: ""
 layout: tutorials
 permalink: /:categories/spring-boot/

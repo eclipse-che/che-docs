@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Node.js in Che
+title: Node.js
 excerpt: "Create a new Node project, install additional NPM modules, and save as a snapshot"
 layout: tutorials
 permalink: /:categories/nodejs/

@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Vaadin in Che
+title: Vaadin
 excerpt: ""
 layout: tutorials
 permalink: /:categories/vaadin/

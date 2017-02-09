@@ -1,7 +1,7 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Android in Che
-excerpt: "Developing Android apps in Che"
+title: Android
+excerpt: ""
 layout: tutorials
 permalink: /:categories/android/
 ---
@@ -18,7 +18,7 @@ When in the IDE, run `build` command that will package the project as `apk`. You
 The final instructions are documented in a sample [README file in the repository](https://github.com/che-samples/mobile-android-hello-world/blob/master/README.md)
 
 # 3. Run Android App on Device  
-It is possible to connect your Android phone or tabled to your machine and use `adb` commands to install `apk` right into a connected device.
+It is possible to connect your Android phone or tablet to your machine and use `adb` commands to install `apk` right into a connected device.
 
 There are a few pre-requisites:
 

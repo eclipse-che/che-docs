@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: TomEE in Che
+title: TomEE
 excerpt: ""
 layout: tutorials
 permalink: /:categories/tomee/
