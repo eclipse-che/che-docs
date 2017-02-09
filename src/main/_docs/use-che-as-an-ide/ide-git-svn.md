@@ -17,6 +17,8 @@ permalink: /:categories/git-svn/
 
 {{ site.product_formal_name }} natively supports Git and SVN, which is installed in all pre-defined stacks. Versioning functionality is available in the IDE and in the terminal. When using the Git and SVN menu, commands are injected into the workspace runtime and all output is streamed into the consoles panels. The following sections are in reference to {{site.product_mini_name}}'s IDE Git and SVN Menu.
 
+The following sections describe how to connect and authenticate users to a remote git/svn repository. Any operations that involves authentication on the remote repository will need to be done via the IDE interface unless authentication is setup seperately for the workspace machine(terminal/commands). Authentication information setup through the following documentation are stored on {{ site.product_mini_name }} server for each user and can be used on any of the user workspaces.
+
 # Git Using SSH Keys  
 Private repositories will require a secure SSH connection and most developers who plan to push to a repo will clone it via SSH, so an SSH key pair needs to be generated. SSH keys are saved in user preferences, so you need to generate the SSH key only once and it will be used in all workspaces.
 
@@ -68,7 +70,7 @@ Importing a project can also be done from the dashboard menu.
 ## GitHub oAuth
 
 ### Setup oAuth at GitHub
-To enable automatic key upload to GitHub, register an application in your GitHub account `Setting > oAuth Applications > Developer Applications` with the callback `http://<HOST_IP>:<SERVER_PORT>/wsmaster/api/oauth/callback`:
+oAuth for Github allows users via the IDE git menu to import projects using SSH "git@", push to repository, and use pull request panel. To enable automatic SSH key upload to GitHub for users, register an application in your GitHub account `Setting > oAuth Applications > Developer Applications` with the callback `http://<HOST_IP>:<SERVER_PORT>/wsmaster/api/oauth/callback`:
 
 ![Clipboard8.jpg]({{base}}{{site.links["Clipboard8.jpg"]}}){:style="width: 60%"}
 
@@ -86,7 +88,7 @@ Set the following to environment variables in the `{{ site.data.env.filename }}`
 ```
 
 ### Using OAuth in Workspace
-Once the oauth is setup, SSH keys are generated and uploaded automatically for GitHub at `Profile > Preferences > SSH > VCS` by clicking the 'Octocat' icon.
+Once the oauth is setup, SSH keys are generated and uploaded automatically to GitHub by a user in workspace IDE `Profile > Preferences > SSH > VCS` by clicking the 'Octocat' icon.
 
 ![Clipboard.jpg]({{base}}{{site.links["Clipboard.jpg"]}}){:style="width: 60%"}
 
@@ -98,7 +100,7 @@ Import project from the IDE `Workspace > Import Project > GITHUB` menu. When imp
 Importing a project can also be done from the dashboard menu.
 
 ## BitBucket Server oAuth
-You can setup oAuth to a dedicated BitBucket Server.
+You can setup oAuth to a dedicated BitBucket Server to give users access to the pull request panel in their workspace. Each user will still need to setup their own SSH key for authentication to the BitBucket Server which will be similar to [GitHub/GitLab SSH examples](#git-ssh-examples).
 
 ### 1. Generate Keys
 SSH to your BitBucket Server instance and generate RSA key-pairs
