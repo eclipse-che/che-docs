@@ -105,7 +105,7 @@ To change the ephemeral range:
 * On Windows: http://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html#Windows
 
 ## Securing a Workspace from the Che Host  
-It is possible for admins to mount files from your server's host file system to be available to your users within their workspaces with the `CHE_WORKSPACE_VOLUME` and `CHE_DOCKER_PRIVILEGED_MODE` parameters are potential secrity risks as you open the possiblity of sending host-specific files into a workspace or giving a workspace user access to the host system.  These options are useful for certain development situations but should be minimized to increase security to the host system whenever possible.
+It is possible for admins to mount files from your server's host file system to be available to your users within their workspaces with the `CHE_WORKSPACE_VOLUME` and `CHE_DOCKER_PRIVILEGED` parameters are potential secrity risks as you open the possiblity of sending host-specific files into a workspace or giving a workspace user access to the host system.  These options are useful for certain development situations but should be minimized to increase security to the host system whenever possible.
 
 ## Workspace Permissions  
 Eclipse Che is a single identity system. All users accessing a Che server share an identity and user preferences. There are no identity-based permissions since all users share the same identity.  Users have access and control over all workspace environments.

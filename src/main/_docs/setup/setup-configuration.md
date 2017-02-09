@@ -248,7 +248,7 @@ By default, Che workspaces powered by a Docker container are not configured with
 
 ```shell
 # Update your che.env:
-CHE_DOCKER_PRIVILEGED_MODE=true
+CHE_DOCKER_PRIVILEGED=true
 ```
 
 ## Mirroring Docker Hub  
