@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Meteor in Che
+title: Meteor
 excerpt: ""
 layout: tutorials
 permalink: /:categories/meteor/

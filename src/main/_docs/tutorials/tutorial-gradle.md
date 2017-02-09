@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Java+Gradle in Che
+title: Java+Gradle
 excerpt: ""
 layout: tutorials
 permalink: /:categories/gradle/

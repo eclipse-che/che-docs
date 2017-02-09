@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Java+Maven in Che
+title: Java+Maven
 excerpt: "Che was written in Java. Experience the rich Intellisense and Java tools in this tutorial."
 layout: tutorials
 permalink: /:categories/maven/

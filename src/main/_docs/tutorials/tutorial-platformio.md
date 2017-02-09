@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: PlatformIO in Che
+title: PlatformIO
 excerpt: ""
 layout: tutorials
 permalink: /:categories/platformio/

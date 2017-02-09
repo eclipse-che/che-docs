@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Sourcegraph in Che
+title: Sourcegraph
 excerpt: ""
 layout: tutorials
 permalink: /:categories/sourcegraph/

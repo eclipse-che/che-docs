@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Subversion Repos in Che
+title: Subversion Repos
 excerpt: ""
 layout: tutorials
 permalink: /:categories/subversion/

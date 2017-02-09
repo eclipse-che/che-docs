@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Wordpress in Che
+title: Wordpress
 excerpt: "Create a new Wordpress project with a dedicated database"
 layout: tutorials
 permalink: /:categories/wordpress/

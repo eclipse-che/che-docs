@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Rails in Che
+title: Rails
 excerpt: ""
 layout: tutorials
 permalink: /:categories/rails/

@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: FTP/SFTP and Che
+title: FTP/SFTP
 excerpt: ""
 layout: tutorials
 permalink: /:categories/ftpsftp/

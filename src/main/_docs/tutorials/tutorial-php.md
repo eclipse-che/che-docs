@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: PHP in Che
+title: PHP
 excerpt: ""
 layout: tutorials
 permalink: /:categories/php/

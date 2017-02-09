@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Java Console Apps in Che
+title: Java Console Apps
 excerpt: ""
 layout: tutorials
 permalink: /:categories/java/
