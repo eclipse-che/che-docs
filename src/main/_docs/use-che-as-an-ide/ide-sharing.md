@@ -12,7 +12,7 @@ permalink: /:categories/sharing/
 # Sharing Workspaces  
 
 ## Setting Up {{ site.product_mini_name }} as a Shared Server
-An {{ site.product_formal_name }} server can be setup to run on an external port using the environment variable  `CHE_HOST_IP` when starting the Che server. Once the Che server is running, team members can use this remote IP to connect to the same Che server.
+An {{ site.product_formal_name }} server can be setup to run on an external port using the environment variable  `CHE_HOST` when starting the Che server. Once the Che server is running, team members can use this remote IP to connect to the same Che server.
 
 ## Export Workspaces from Separate Servers
 If team members are all using their own {{ site.product_mini_name }} servers, they can share their workspace environment with other team members manually. Exporting a workspace can be done after a workspace has been created from the Workspaces page in the dashboard:
