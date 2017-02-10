@@ -121,8 +121,15 @@ docker run hello-world
 
 Sometimes Fedora and RHEL/CentOS users will encounter issues with SElinux. Try disabling selinux with `setenforce 0` and check if resolves the issue. If using the latest docker version and/or disabling selinux does not fix the issue then please file a issue request on the [issues](https://github.com/eclipse/che/issues) page.
 
-#### Ports
+#### External Ports
 The default port required to run Che is `8080`. Che performs a preflight check when it boots to verify that the port is available. You can pass `-e CHE_PORT=<port>` in Docker portion of the start command to change the port that Che starts on.
+
+All ports are TCP unless otherwise noted.
+
+|Port >>>>>>>>>>>>>>>>|Service >>>>>>>>>>>>>>>>|Notes|
+|---|---|---|
+|8080 / 443|HAProxy HTTP|HTTP is the default.
+|32768-65535|Docker and Che Agents|Users who launch servers in their workspace bind to ephemeral ports in this range. This range can be limited.
 
 #### Internet Connection
 You can install Che while connected to a network or offline, disconnected from the Internet. If you perform an offline intallation, you need to first download a Che assembly while in a DMZ with a network connection to DockerHub.
