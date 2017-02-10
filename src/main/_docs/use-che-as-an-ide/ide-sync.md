@@ -99,20 +99,24 @@ docker run --rm -it --cap-add SYS_ADMIN --device /dev/fuse
             -v /etc/passwd:/etc/passwd:ro
             -v <path-to-sync-profile>:/profile
             -u $(id -u ${USER})
-            -v <host-dir>:/mnthost eclipse/che-mount <ws-id|ws-name>
+            -e CHE_VERSION=${CHE_VERSION}
+            -v <host-dir>:/mnthost 
+                  eclipse/che-mount <ws-id|ws-name>
 
 # On Mac or Windows:
 docker run --rm -it --cap-add SYS_ADMIN --device /dev/fuse
            --name che-mount
            -v <path-to-sync-profile>:/profile
-           -v <host-dir>:/mnthost eclipse/che-mount <ip> <ws-id|ws-name>
+           -v <host-dir>:/mnthost 
+           -e CHE_VERSION=${CHE_VERSION}
+              eclipse/che-mount <ip> <ws-id|ws-name>
 
-# where <ip> is the IP address of your Docker daemon discoverable by:
+# Where <ip> is the IP address of your Docker daemon discoverable by:
 docker run --rm --net host \
             alpine sh -c \
             “ip a show <network-if>"
 
-# where <network-if> is ‘eth0’, or if using boot2docker, then ‘eth1’.
+# Where <network-if> is ‘eth0’, or if using boot2docker, then ‘eth1’
 
 # Verify directories are in the mount container:
 docker exec -ti che-mount sh
