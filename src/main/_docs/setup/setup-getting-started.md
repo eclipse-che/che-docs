@@ -128,7 +128,7 @@ All ports are TCP unless otherwise noted.
 
 |Port >>>>>>>>>>>>>>>>|Service >>>>>>>>>>>>>>>>|Notes|
 |---|---|---|
-|8080 / 443|HAProxy HTTP|
+|8080|HAProxy HTTP|
 |32768-65535|Docker and Che Agents|Users who launch servers in their workspace bind to ephemeral ports in this range. This range can be limited.
 
 #### Internet Connection
