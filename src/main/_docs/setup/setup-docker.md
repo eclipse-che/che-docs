@@ -13,13 +13,13 @@ You can run the Che server directly by launching a Docker image. This approach b
 
 ```shell  
 # Run the latest released version of Che
-# Replace <path-for-data> with any host folder
+# Replace <LOCAL_PATH> with any host folder
 # Che will place backup files there - configurable properties, workspaces, lib, storage
 docker run -p 8080:8080 \
            --name che \
            --rm \
            -v /var/run/docker.sock:/var/run/docker.sock \
-           -v <path-for-data>:/data \
+           -v <LOCAL_PATH>:/data \
            eclipse/che-server:5.0.0-latest
 
 # To run the nightly version of Che, replace eclipse/che-server:5.0.0-latest with
@@ -49,7 +49,7 @@ If you are on SELinux then run this instead:
 docker run -p 8080:8080 \
            --name che \
            -v /var/run/docker.sock:/var/run/docker.sock \
-           -v <path-for-data>:/data:Z \
+           -v <LOCAL_PATH>:/data:Z \
            --security-opt label:disable \
            -e CHE_DOCKER_SERVER__EVALUATION__STRATEGY=docker-local \
            eclipse/che-server:5.0.0-latest
@@ -63,7 +63,7 @@ docker run -p 9000:9500 \
            --name che \
            -e CHE_PORT=9500 \
            -v /var/run/docker.sock:/var/run/docker.sock \
-           -v <path-for-data>:/data \
+           -v <LOCAL_PATH>:/data \
            eclipse/che-server:5.0.0-latest
 ```
 
@@ -75,7 +75,7 @@ docker run -p:9000:9000 \
            --name che \
            -e CHE_SERVER_ACTION=stop \
            -v /var/run/docker.sock:/var/run/docker.sock \
-           -v <path-for-data>:/data \
+           -v <LOCAL_PATH>:/data \
            eclipse/che-server:5.0.0-latest
 ```
 
@@ -104,7 +104,7 @@ docker run -p:8080:8080 \
            --name che \
            -e CHE_IP=10.0.75.4 \
            -v /var/run/docker.sock:/var/run/docker.sock \
-           -v <path-for-data>:/data \
+           -v <LOCAL_PATH>:/data \
            eclipse/che-server:5.0.0-latest
 ```
 
@@ -117,7 +117,7 @@ docker run -p:8080:8080 \
            --restart always \
            -e CHE_IP=10.0.75.4 \
            -v /var/run/docker.sock:/var/run/docker.sock \
-           -v <path-for-data>:/data \
+           -v <LOCAL_PATH>:/data \
            eclipse/che-server:5.0.0-latest
 ```
 
@@ -146,7 +146,7 @@ docker run -p:8080:8080 \
            --restart always \
            -e CHE_IP=10.0.75.4 \
            -v /var/run/docker.sock:/var/run/docker.sock \
-           -v <path-for-data>:/data \
+           -v <LOCAL_PATH>:/data \
            -v /C/conf:/conf \
            eclipse/che-server:5.0.0-latest
 ```
@@ -160,7 +160,7 @@ docker run -p:8080:8080 \
            --name che \
            --restart always \
            -v /var/run/docker.sock:/var/run/docker.sock \
-           -v <path-for-data>:/data \
+           -v <LOCAL_PATH>:/data \
            -v /C/conf:/conf \
            -v /home/my_assembly:/assembly \
            eclipse/che-server:5.0.0-latest
@@ -178,7 +178,7 @@ docker run -p:8080:8080 \
            --name che \
            --restart always \
            -v /var/run/docker.sock:/var/run/docker.sock \
-           -v <path-for-data>:/data \
+           -v <LOCAL_PATH>:/data \
            -v /C/conf:/conf \
            -v /home/my_assembly:/assembly \
            -e DOCKER_MACHINE_HOST=172.17.0.1 \
@@ -198,7 +198,7 @@ che:
      DOCKER_MACHINE_HOST=172.17.0.1
    volumes:
      - /var/run/docker.sock:/var/run/docker.sock
-     - <path-for-data>:/data
+     - <LOCAL_PATH>:/data
      - /C/conf:/conf
      - /home/my_assembly:/assembly
    container_name: che
@@ -227,7 +227,7 @@ docker run -p:8080:8080 \
            --name che \
            --restart always \
            -v /var/run/docker.sock:/var/run/docker.sock \
-           -v <path-for-data>:/data \
+           -v <LOCAL_PATH>:/data \
            -v /C/conf:/conf \
            -v /home/my_assembly:/assembly \
            -e DOCKER_MACHINE_HOST=172.17.0.1 \
