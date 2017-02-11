@@ -127,6 +127,67 @@ The default port required to run Che is `8080`. Che performs a preflight check w
 #### Internet Connection
 You can install Che while connected to a network or offline, disconnected from the Internet. If you perform an offline intallation, you need to first download a Che assembly while in a DMZ with a network connection to DockerHub.
 
+#### Networking
+Che is a platform that launches workspaces using Docker on different networks. Your browser or desktop IDE then connects to these workspaces. This makes Che a Platform as a Service (PaaS) running on a distributed network. There are essential connections we establish:
+
+1. Browser --> Che Server
+2. Che Server --> Docker Daemon
+3. Che Server --> Workspace
+4. Workspace --> Che Server
+5. Browser --> Workspace
+
+Che goes through a progression algorithm to establish the protocol, IP address and port to establish a connection for each connection point. If you have launched Che and workspaces do not immediately start, the most common causes are:
+
+1. Failed Che -> Workspace (set CHE_DOCKER_IP in `che.env`)
+2. Failed Browser -> Workspace (set CHE_DOCKER_IP_EXTERNAL in `che.env`)
+
+When you first install Che, we will add a `che.env` file into the folder you mounted to `:/data`, and you can configure many variables to establish proper communications. After changing this file, restart Che for the changes to take affect.
+
+```
+Browser --> Che Server
+   1. Default is 'http://localhost:${SERVER_PORT}/wsmaster/api'.
+   2. Else use the value of CHE_API
+
+Che Server --> Docker Daemon Progression:
+   1. Use the value of CHE_DOCKER_DAEMON__URL
+   2. Else, use the value of DOCKER_HOST system variable
+   3. Else, use Unix socket over unix:///var/run/docker.sock
+
+Che Server --> Workspace Connection:
+   - If CHE_DOCKER_SERVER__EVALUATION__STRATEGY is 'default':
+       1. Use the value of CHE_DOCKER_IP
+       2. Else, if server connects over Unix socket, then use localhost
+       3. Else, use DOCKER_HOST
+   - If CHE_DOCKER_SERVER__EVALUATION__STRATEGY is 'docker-local':
+       1. Use the address of the workspace container within the docker network 
+          and exposed ports
+       2. If address is missing, if server connects over Unix socket, then use 
+          localhost and exposed ports
+       3. Else, use DOCKER_HOST and published ports
+
+Browser --> Workspace Connection:
+   - If CHE_DOCKER_SERVER__EVALUATION__STRATEGY is 'default':
+       1. If set use the value of CHE_DOCKER_IP_EXTERNAL
+       2. Else if set use the value of CHE_DOCKER_IP
+       3. Else, if server connects over Unix socket, then use localhost
+       4. Else, use DOCKER_HOST
+   - If CHE_DOCKER_SERVER__EVALUATION__STRATEGY is 'docker-local':
+       1. If set use the value of CHE_DOCKER_IP_EXTERNAL
+       2. Else use the address of the workspace container within the docker network, 
+          if it is set
+       3. If address is missing, if server connects over Unix socket, then use 
+          localhost
+       4. Else, use DOCKER_HOST
+
+Workspace Agent --> Che Server
+   1. Default is 'http://che-host:${SERVER_PORT}/wsmaster/api', where 'che-host' 
+      is IP of server.
+   2. Else, use value of CHE_WORKSPACE_CHE__SERVER__ENDPOINT
+   3. Else, if 'docker0' interface is unreachable, then 'che-host' replaced with
+      172.17.42.1 or 192.168.99.1
+   4. Else, print connection exception
+```
+
 # Versions
 Each version of Che is available as a Docker image tagged with a label that matches the version, such as `eclipse/che:5.0.0-M7`. You can see all versions available by running `docker run eclipse/che version` or by [browsing DockerHub](https://hub.docker.com/r/eclipse/che/tags/).
 
