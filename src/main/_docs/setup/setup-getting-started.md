@@ -140,6 +140,7 @@ Che goes through a progression algorithm to establish the protocol, IP address a
 
 1. Failed Che -> Workspace (set CHE_DOCKER_IP in `che.env`)
 2. Failed Browser -> Workspace (set CHE_DOCKER_IP_EXTERNAL in `che.env`)
+3. Firewall (required ports are not open)
 
 When you first install Che, we will add a `che.env` file into the folder you mounted to `:/data`, and you can configure many variables to establish proper communications. After changing this file, restart Che for the changes to take affect.
 
