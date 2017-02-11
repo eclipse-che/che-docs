@@ -59,6 +59,8 @@ GLOBAL COMMAND OPTIONS:
 
 The CLI will hide most error conditions from standard out. Internal stack traces and error output is redirected to `cli.log`, which is saved in the host folder where `:/data` is mounted.
 
+You can override any value in `che.env` for a single execution by passing in `-e NAME=VALUE` on the command line. The CLI will detect the values on the command line and ignore those imported from `che.env`.
+
 ### action
 Executes some actions on the Eclipse Che instance or on a workspace running inside Che.
 For example to list all workspaces on Che, the following command can be used `action list-workspaces`.
