@@ -129,6 +129,7 @@ All ports are TCP unless otherwise noted.
 |Port >>>>>>>>>>>>>>>>|Service >>>>>>>>>>>>>>>>|Notes|
 |---|---|---|
 |8080|HAProxy HTTP|
+|8000|Server Debug Port|Users developing Che extensions and custom assemblies would use this debug port to connect a remote debugger to che server. 
 |32768-65535|Docker and Che Agents|Users who launch servers in their workspace bind to ephemeral ports in this range. This range can be limited.
 
 #### Internet Connection
