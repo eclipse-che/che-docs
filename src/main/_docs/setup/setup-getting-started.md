@@ -121,8 +121,18 @@ docker run hello-world
 
 Sometimes Fedora and RHEL/CentOS users will encounter issues with SElinux. Try disabling selinux with `setenforce 0` and check if resolves the issue. If using the latest docker version and/or disabling selinux does not fix the issue then please file a issue request on the [issues](https://github.com/eclipse/che/issues) page.
 
-#### Ports
+#### Internal/External Ports
 The default port required to run Che is `8080`. Che performs a preflight check when it boots to verify that the port is available. You can pass `-e CHE_PORT=<port>` in Docker portion of the start command to change the port that Che starts on.
+
+Internal ports are ports within a local network. This is the most common senerio for most users when Che is installed on their local desktop/laptop. External ports are ports outside a local network. An example senerio of this would be a remote Che server on a cloud host provider. With either case ports need to be open and not blocked by firewalls or other applications already using the same ports.
+
+All ports are TCP unless otherwise noted.
+
+|Port >>>>>>>>>>>>>>>>|Service >>>>>>>>>>>>>>>>|Notes|
+|---|---|---|
+|8080|Tomcat Port|
+|8000|Server Debug Port|Users developing Che extensions and custom assemblies would use this debug port to connect a remote debugger to che server. 
+|32768-65535|Docker and Che Agents|Users who launch servers in their workspace bind to ephemeral ports in this range. This range can be limited.
 
 #### Internet Connection
 You can install Che while connected to a network or offline, disconnected from the Internet. If you perform an offline intallation, you need to first download a Che assembly while in a DMZ with a network connection to DockerHub.

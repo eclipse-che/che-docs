@@ -224,7 +224,7 @@ Firewalls will typically cause traffic problems to appear when you are starting 
 systemctl status firewalld
 
 # Check for list of open ports
-# Verify that ports 8080tcp, 7946tcp/udp, 32768-65535tcp are open
+# Verify that ports 8080tcp, 32768-65535tcp are open
 firewall-cmd --list-ports
 
 # Optionally open ports on your local firewall:
