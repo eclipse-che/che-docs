@@ -346,19 +346,19 @@ docker exec -ti <che-container-name> curl http://<che-ip>:<che-port>/wsagent/ext
 docker exec -ti <che-container-name> curl http://<workspace-container-ip>:4401/wsagent/ext/
 ```
 
-#### Workspace Address Resolution Strategy
-By default, the Che server will connect to workspace containers according to the 'default' strategy. The order of precedence, Che will use `CHE_DOCKER_IP` if it is set, if not, it will use the address `docker-ip`. If `docker-ip` cannot be determined, it will default to `localhost` for Unix socket connections, and `DOCKER_HOST`. 
-
-An alternative strategy is available, by setting `CHE_DOCKER_SERVER__EVALUATION__STRATEGY` to 'docker-local'. In this mode, Che will attempt to communicate with workspace containers directly, using `workspace-container-ip`, with `localhost`/`DOCKER_HOST` as a fallback as in the default strategy. This can avoid some issues with ephemeral ports and firewalls (see section 'Firewalls', below), but will cause workspace creation to fail if the Che server is configured to not launch workspaces within the same Docker network.
-
-#### Workspace DNS Resolution
-The default behavior is to inherit the list of DNS resolver servers from the host. Users can override the default DNS resolvers that are used in their workspace runtimes. Each workspace is given a set of runtimes. Agents and other services that run within those runtimes inherit networking properties from Che server including proxy and security configuration. In some environments, custom resolution of DNS entries (usually to an internal DNS provider) is required to enable the workspace runtimes to have lookup ability from services within the workspace. Below is an example of setting Che workspace DNS resolvers to DNS provider's with ip addresses of 10.10.10.10 and 8.8.8.8.
+#### DNS Resolution
+The default behavior is to inherit the list of DNS resolver servers from the host. Users can override the default DNS resolvers that are used in the Che server and their workspace runtimes. Each workspace is given a set of runtimes from the Che server. Agents and other services that run within those runtimes inherit networking properties from the Che server including proxy and security configuration. In some environments, custom resolution of DNS entries (usually to an internal DNS provider) is required to enable the Che server and the workspace runtimes to have lookup ability for internal services. Below is an example of setting Che workspace DNS resolvers to DNS provider's with ip addresses of 10.10.10.10 and 8.8.8.8.
 
 ```shell
 # Update your che.env:
 # CHE_DNS_RESOLVERS=<ip-list>
 CHE_DNS_RESOLVERS=10.10.10.10,8.8.8.8
 ```
+
+#### Workspace Address Resolution Strategy
+By default, the Che server will connect to workspace containers according to the 'default' strategy. The order of precedence, Che will use `CHE_DOCKER_IP` if it is set, if not, it will use the address `docker-ip`. If `docker-ip` cannot be determined, it will default to `localhost` for Unix socket connections, and `DOCKER_HOST`. 
+
+An alternative strategy is available, by setting `CHE_DOCKER_SERVER__EVALUATION__STRATEGY` to 'docker-local'. In this mode, Che will attempt to communicate with workspace containers directly, using `workspace-container-ip`, with `localhost`/`DOCKER_HOST` as a fallback as in the default strategy. This can avoid some issues with ephemeral ports and firewalls (see section 'Firewalls', below), but will cause workspace creation to fail if the Che server is configured to not launch workspaces within the same Docker network.
 
 ## Docker Connectivity
 There are multiple techniques for connecting to Docker including Unix sockets, localhost, and remote connections over TCP protocol. Depending upon the type of connection you require and the location of the machine node running Docker, we use different parameters.
