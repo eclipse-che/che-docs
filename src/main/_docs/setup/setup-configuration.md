@@ -357,7 +357,7 @@ The default behavior is to inherit the list of DNS resolver servers from the hos
 ```shell
 # Update your che.env:
 # CHE_DNS_RESOLVERS=<ip-list>
-CHE_DNS__RESOLVERS=10.10.10.10,8.8.8.8
+CHE_DNS_RESOLVERS=10.10.10.10,8.8.8.8
 ```
 
 ## Docker Connectivity
