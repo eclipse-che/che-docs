@@ -15,4 +15,4 @@ Preview objects are stored as part of command. {{ site.product_mini_name }} will
 
 The preview object will dynamically determine the appropriate URL when the command is run.
 
-![Capture_preview.PNG]({{base}}{{site.links["Capture_preview.PNG"]}}
+![Capture_preview.PNG]({{base}}{{site.links["Capture_preview.PNG"]}})
