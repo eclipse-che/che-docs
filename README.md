@@ -1,12 +1,12 @@
 # Eclipse Che Docs 
 Eclipse Che uses Jekyll 3.3.1 to generate documentation from this reposistory as a static html webpages. 
 
-## Viewing Generated Documentation
+### Viewing Generated Documentation
 Latest shipped release of documentation can viewed at [https://www.eclipse.org/che/docs/](https://www.eclipse.org/che/docs/). 
 
 Nightly documentation of this repository and can be viewed at [https://www.eclipse.org/che/docs-versions/nightly/](https://www.eclipse.org/che/docs-versions/nightly/). 
 
-## Viewing Generated Documentation
+### Overview of Documentation
 
 This repository houses documentation for Eclipse Che ([repo](https://github.com/eclipse/che) / [site](https://eclipse.com/che/)). Content is held in markdown files in [/src/main/_docs](https://github.com/codenvy/che-docs/tree/master/src/main/_docs). Images should be placed in [/src/main/_docs/assets/imgs](https://github.com/codenvy/che-docs/tree/master/src/main/_docs/assets/imgs).
 
