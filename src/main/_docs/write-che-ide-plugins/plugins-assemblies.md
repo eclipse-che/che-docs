@@ -20,6 +20,68 @@ The custom assembly lifecycle includes:
 4. Customize - Add different types of custom extensions, agents, stacks, templates, and brand elements.
 5. Debug - Debug your customizations for browser, Che, and workspace extensions running within a custom assembly.
 
+# Generate
+The CLI has an `archetype` command that can be used to generate custom assemblies of Eclipse Che and Codenvy.
+
+An archetype is a maven technique for generating code templates. A single archetype has an ID and generates a complete custom assembly. Differnent archetypes generate assemblies with different types of customizations. We make each archetype customize the minimal number of features to make learning about customizations simpler.
+
+Your host system must have Maven 3.3+ installed to facilitate generation and compiling of custom assemblies. You must pass in your Maven's M2 repository path on your host. Our archetype generator will download libraries into that repository making repeated compilations faster over time. On most Linux based systems, your M2 repository is located at `/home/user/.m2/repository` and it is `%USERPROFILE%/.m2/repository` for Windows. We default your M2 repository to `/home/user/.m2/repository`. Use the `/m2` mount to chnage this.
+
+The syntax of the command is:
+```
+USAGE: DOCKER_PARAMS eclipse/che-cli:nightly archetype ACTION [PARAMETERS]
+
+Use an archetype to generate, build or run a custom che assembly
+
+MANDATORY DOCKER PARAMETERS:
+  -v <path>:/archetype        Local path where your custom assembly will be generated
+
+OPTIONAL DOCKER PARAMETERS:
+  -v <path>:/m2               Local path to your host's Maven M2 repository
+
+ACTION:
+  all                         Generate, build and run a new custom assembly
+  generate                    Generate a new custom assembly to folder mounted to '/archetype'
+  build                       Uses 'eclipse/che-dev' image to compile archetype in '/archetype'
+  run                         Starts che from custom assembly in '/archetype'
+
+PARAMETERS:
+  --archid=<id>               Different archetypes generate different types of customizations
+  --archversion=<version>     Sets archetype version - default = tag of CLI image
+  --version=<version>         Sets custom assembly version - default = archetype version
+  --group=<group>             Sets groupId of generated assembly - default = com.sample
+  --id=<id>                   Sets artifaceId of generated assembly - default = assembly
+  --no:interactive            Disables interactive mode
+```
+
+This generates a Maven multi-module project. Your custom assembly will be generated in the host path mounted to `/archetype`. For example, on a Windows machine run:
+```
+docker run -it --rm
+  -v /var/run/docker.sock:/var/run/docker.sock 
+  -v /c/archetype:/archetype 
+  -v /c/tmp:/data 
+  -v /c/Users/Tyler/.m2/repository:/m2 
+    eclipse/che-cli:5.4.0 
+      archetype all --no:interactive
+```
+This:
+1. Generate a custom assembly into the `C:\archetype` folder.
+2. The archetype uses defaults without prompting the user (chooses the default IDE archetype).
+3. During generation, the custom assembly's Maven dependencies will be saved to the host's maven repository at `C:\Users\Tyler\.m2\repository`.
+4. The `all` command will trigger the `archetype` utility to also build and run the custom assembly.
+
+We provide different archetypes that will generate custom assemblies with different types of customizations. You can see the list of available archetypes by running the `archetype` command without `--no:interactive`. You will be prompted to choose from a list. These archetypes are provided as small sets of customization to simplify the learning experience for new developers with Che. For each of the archetypes that we provide, we also have a short section discussing the relevant elements modified to make the assembly work.
+
+####
+On Linux, the Maven utility launched by the CLI may have problems writing files to your host system during the generation phase. To overcome this limitation, in the docker run ... syntax before the image name add --user={uid} where UID is the user identity of your current users. This user identity will be passed into the various CLI utilities to execute under that user identity.
+
+# Build
+You can enter the folder and build it with `mvn clean install` or use the `archetype` utility to build it. Compiling an assembly requires other tools like Java, Angular, Go to be installed on your host system. However, if you use this tool to compile your custom assembly we use `eclipse/che-dev` Docker image which contains all of these utilities preinstalled. It is simple but is a large download >1GB and compilation is slower than using your host since the Docker container is performing compilation against files that are host-mounted.
+
+# Run
+
+
+
 # Che Layout  
 A Che assembly has the following directory structure after it is installed.
 
