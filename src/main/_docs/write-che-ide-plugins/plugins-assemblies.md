@@ -65,6 +65,7 @@ docker run -it --rm
       archetype all --no:interactive
 ```
 This command:
+
 1. Generate a custom assembly into the `C:\archetype` folder.
 2. The archetype uses defaults without prompting the user (chooses the default IDE archetype).
 3. During generation, the custom assembly's Maven dependencies will be saved to the host's maven repository at `C:\Users\Tyler\.m2\repository`.
@@ -125,23 +126,10 @@ docker run -it --rm --name run-che \
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+a
+a
+a
+a
 # Che Layout  
 A Che assembly has the following directory structure after it is installed.
 
