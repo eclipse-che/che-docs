@@ -125,37 +125,43 @@ docker run -it --rm --name run-che \
               eclipse/che:5.4.0 start --skip:nightly"
 ```
 
+# Customize
+Instructions for how to customize:
+
+1. Branding
+2. IDE extension
+3. Che extension
+4. Workspace extension
+5. Agent
+6. Stack
+7. Template
+
+# Debug
+
+1. Setup your IDE to build Che assemblies
+2. Debug IDE extensions
+3. Debug Che extensions
+4. Debug workspace extensions
 
 
-a
-a
-a
-a
-# Che Layout  
-A Che assembly has the following directory structure after it is installed.
+# Layout  
+
+#### Modules
+A custom assembly will have different modules that build the different architectural elements that make up Che. Che itself is a combination of a Che server, the assets (agents) that are deployed inside of workspaces, and the browser IDE which is hosted as a Web application within the Che server or a workspace. Each of these components are modules that are built separately.
+
+An assembly has the following sub-modules:
+
+TODO VERIFY MODULES
 
 ```text  
-/bin             # Scripts to start, stop, and manage Che
-/conf            # Configuration files
-/lib             # Workspace agent, terminal and other resources a workspace may require
-/plugins         # Staging for Che plugins that you author
-/sdk             # Che packaging with SDK tools required to compile custom Che assemblies
-/templates       # Project samples that appear in dashboard or IDE
-/tomcat          # App server used as a runner for Che extensions, packaged with war and jar artifacts
-```
-
-# Modules  
-The purpose of the `http://github.com/eclipse/che/assembly` module is to generate Che assemblies. It has five sub-modules.
-
-```text  
-assembly-main            # Contains the base structure of a Che assembly
+assembly-main            # Contains the base structure of a Che assembly and builds other sub-modules
 assembly-ide-war         # Generates the IDE web app (ide.war) loaded by Che server (client side)
 assembly-wsagent-server  # Contains the base structure of a workspaces server
 assembly-wsagent-war     # Generates a machine web app (ide.war) used by workspace agent (server side APIs)
 assembly-wsmaster-war    # Generates IDE web app with server side components
 ```
 
-Run `mvn clean install` in the `/assembly` module to build the project and generate an assembly.  The output of the `mvn clean install` command generates a new assembly and places the resulting files in the `target` folder. The `assembly-ide-war` module is the longest operation as it uses a GWT compilation operation to generate cross-browser JavaScript from numerous Java libraries. You can speed the assembly generation process by building `assembly-main`, which will download the latest IDE web application from Che's nexus repositories.
+Once you build the assembly-main module, it will generate various packages that contain binaries that can execute a Che server in the `/target` folder.
 
 ```text  
 /assembly-main
@@ -169,69 +175,46 @@ Run `mvn clean install` in the `/assembly` module to build the project and gener
     eclipse-che-{version}.zip            # ZIP file of assembly
 ```
 
-# Custom Assemblies  
-You can generate assemblies that include custom plug-ins and [extensions]({{ base }}/docs/plugins/create-and-build-extensions/index.html). Custom assemblies can be distributed as ZIP or TGZ packages.
+#### Package 
+The custom assembly packages the Che server (and all sub-packages) into a single package `eclipse-che-{version}.zip`. This package contains a series of web applications hosted by Che and other servers launched as agents within workspaces:
 
-```shell  
-che-install-plugin [OPTIONS]         
-     -a            --assembly          Creates new distributable Che assembly with your plugins
-     -s:deps,      --skip:deps         Skips automatic injection of POM dependencies of your plugins
-     -s:maven,     --skip:maven        Skips running maven to inject your plugins into local repository
-     -s:update,    --skip:update       Skips updating this assembly; leaves packages in /temp build dir
-     -s:wsagent,   --skip:wsagent      Skips creating new ws agent
-     -s:wsmaster,  --skip:wsmaster     Skips creating new ws master, which contains IDE & ws manager
-     -d,           --debug             Additional verbose logging for this program
-     -h,           --help              This help message
-```
-
-This utility will create new web application packages with your custom plugins and optionally create new assemblies. Custom plug-ins are placed into the /plugins directory. Che packages extensions and plug-ins into Web application packages that are then deployed by Che. The location of your plug-ins determines how your plug-ins will be packaged and deployed.
-
-Place plug-in JARs & ZIPs:
-
-| PlugIn Location   | What Is Built   
-| --- | ---
-| `/plugins/ide`   | IDE extension, compiled with GWT & packaged into new ws-master Web application.   
-| `/plugins/ws-master`   | Server-side extension & packaged into new ws-master Web application with IDE.   
-| `/plugins/ws-agent`   | Server-side extension that runs in workspace machine & packaged into new ws-agent Web application.   
-| `/`   | Packaged in both ws-master and ws-agent Web applications. (Not Recommended)   
-
-You extension is compiled into one of two Web applications:
-1. Workspace Master.
-2. Workspace Agent.
-
-The workspace master is deployed into the core Che server. The workspace agent is deployed into the machine powering each workspace created by your users. Each workspace agent is unique to the workspace that created it. While you can deploy plug-ins into both locations, this is costly at compile and runtime.
-
-The Che assembly is generated by Che utility in stages.
 
 ```text  
-1. Install your plug-ins to a local maven repository.
-
-2. Create a staging module to build new Web applications
-   `/sdk/assembly-ide-war/temp`     --> Where ws-master web app will be generated
-   `/sdk/assembly-machine-war/temp` --> Where ws-agent web app will generated
-
-3. Your plug-ins are added as dependencies to the maven pom.xml in each staging module.
-
-4. The new Web application packages are compiled and packaged in the staging directory.
-    `mvn sortpom:sort`
-    `mvn -Denforcer.skip=true clean package install -Dskip-validate-sources=true`
-
-5. If your plug-ins are added into a workspace agent Web app, we then create a new ws-agent.zip.
-   `/sdk/assembly-machine-server`          --> Packages ws agent Web app w/ Tomcat into ws-agent.zip.
-   `mvn -Denforcer.skip=true clean package install`
-
-6. The new Web applications are copied into your core Che assembly, overwriting old version.
-   `/sdk/assembly-ide-war/temp/target/*.war`          --> /tomcat/webapps
-   `/sdk/assembly-machine-server/target/*.zip`        --> /lib/ws-agent.zip
-   Use `--skip:update` to avoid overwriting existing files.
-
-7. If `--assembly`, then we create a new distributable package of Che.
-   `/sdk/assembly-main`
-   `mvn clean package`
+eclipse-che-{version}.zip                              ==> Generated by assembly-main
+-> ide.war           ==> In /tomcat/webapps            ==> Generated by assembly-ide-war
+-> dashboard.war     ==> In /tomcat/webapps            ==> Generated by che-dashboard repo
+-> wsmaster.war      ==> In /tomcat/webapps            ==> Generated by assembly-wsmaster-war
+-> ws-agent.zip      ==> In /lib                       ==> Generated by assembly-machine-server
+-> terminal          ==> In /lib                       ==> Generated by che-websocket-terminal repo
 ```
 
-# Runtime Deployment  
-When Che is running, the embedded assets are deployed into different locations.
+```text  
+ws-agent.zip                                           ==> Generated by assembly-wsagent-server
+-> tomcat            ==> Placed in /                   ==> Downloaded from Che maven repo
+-> ide.war           ==> Placed in /webapps            ==> Generated by assembly-wsagent-war
+   -> che-core-*.jar                                   ==> Downloaded from Che maven repo
+   -> che-plugins-*.jar                                ==> Downloaded from Che maven repo
+   -> ws-agent specialized classes                     ==> Built by assembly-machine-war
+```
+Note that the `ide.war` web application generated for the workspace agent is not identical to the one generated for the Che application server, even though they have the same name. The workspace agent does not include many of the IDE libraries and adds in additional libraries for communicating to the Che server and running plug-ins within the workspace itself.
+
+#### Exploded Package
+A Che assembly that has been built into a binary package has the following exploded directory structure. You will typically find this in `/assembly/assembly-main/target`.
+
+```text
+/bin             # Scripts to run Che
+/conf            # Configuration files saved as .properties used by Che's Tomcat 
+/lib             # Workspace agent, terminal and other resources a workspace may require
+/plugins         # Staging for Che plugins that you author
+/sdk             # Che packaging with SDK tools required to compile custom Che assemblies
+/stacks          # Pre-loaded stacks that appear in the user dashboard
+/templates       # Project samples that appear in dashboard or IDE
+/tomcat          # App server used as a runner for Che extensions, packaged with war and jar artifacts
+```
+
+
+#### Deployment  
+When Che is running, the embedded that are built from your assembly's modules are deployed into different locations. We think of Che as a tripod with assets deployed (loaded) into the browser, the Che server and the workspace, which is running as 1..n Docker containers.
 
 ```text  
 BROWSER CLIENT                           CHE SERVER                                 WORKSPACE (DOCKER)
@@ -251,37 +234,12 @@ While both the Che server and the `ws-agent.zip` each have an `ide.war` web appl
 
 The `dashboard.war` web application is an Angular JS application that provides the user dashboard that is booted when Che launches. It is used for managing workspaces, projects and user preferences.
 
-# Assembly Dependency Hierarchy  
-There are two servers that are deployed when Che is started:
-1. The Che server, and:
-2. The workspace agent, which is a server running in each workspace
-
-The Che assembly, packaged as `eclipse-che-{version}.zip` contains both servers. The following charts layout which assembly modules build each of the assets.
-
-```text  
-eclipse-che-{version}.zip                              ==> Generated by assembly-main
--> ide.war           ==> Placed in /tomcat/webapps     ==> Generated by assembly-ide-war
--> dashboard.war     ==> Placed in /tomcat/webapps     ==> Generated by che-dashboard repo
--> wsmaster.war      ==> Placed in /tomcat/webapps     ==> Generated by assembly-wsmaster-war
--> ws-agent.zip      ==> Placed in /lib                ==> Generated by assembly-machine-server
--> terminal          ==> Placed in /lib                ==> Generated by che-websocket-terminal repo
-```
-
-```text  
-ws-agent.zip                                           ==> Generated by assembly-wsagent-server
--> tomcat            ==> Placed in /                   ==> Downloaded from Che maven repo
--> ide.war           ==> Placed in /webapps            ==> Generated by assembly-wsagent-war
-   -> che-core-*.jar                                   ==> Downloaded from Che maven repo
-   -> che-plugins-*.jar                                ==> Downloaded from Che maven repo
-   -> ws-agent specialized classes                     ==> Built by assembly-machine-war
-```
-Note that the `ide.war` web application generated for the workspace agent is not identical to the one generated for the Che application server, even though they have the same name. The workspace agent does not include many of the IDE libraries and adds in additional libraries for communicating to the Che server and running plug-ins within the workspace itself.
 
 
-# Che Repositories  
-The `ide.war`, `ws-agent.zip`, and other assembly files depend upon a wide range of libraries. Many of these resources and libraries are stored in other Che repositories.
+# Dependencies  
+The Web applications that are packaged into servers and packages depend upon a wide range of (open source!) libraries. We place some libraries in the main Che repo. Other dependencies are saved in external Che repositories to simplify management, manage overall repository size, and minimize compilation time.
 
-These are the repositories that are stored at `http://github.com/eclipse` organization. Each repository is referenced by its first entry, ie: `http://github.com/eclipse/che` or `http://github.com/eclipse/che-dependencies`.
+Each external repository is referenced by its first entry, ie: `http://github.com/eclipse/che` or `http://github.com/eclipse/che-docs`.
 
 ```shell  
 /che
@@ -305,8 +263,10 @@ These are the repositories that are stored at `http://github.com/eclipse` organi
 /che-lib/che-tomcat8-slf4j-logback
 
 # All modules in /che and /che-lib depend upon /che-dependencies
+/che-archetypes                           # Archetypes to generate custom assemblies
 /che-dependencies                         # Maven dependencies used by che
 /che-dev                                  # Code style and license header
+/che-docs                                 # These docs
 
 # /che-dependencies and /che-dev depends upon /che-parent
 /che-parent                               # Maven plugins and profiles
