@@ -19,6 +19,7 @@ MANDATORY DOCKER PARAMETERS:
 OPTIONAL DOCKER PARAMETERS:
   -e CHE_HOST=<YOUR_HOST>              IP address or hostname where che will serve its users
   -e CHE_PORT=<YOUR_PORT>              Port where artik will bind itself to
+  -e CHE_CONTAINER=<YOUR_NAME>         Prefix name for the che container
   -v <LOCAL_PATH>:/data/instance       Where instance, user, log data will be saved
   -v <LOCAL_PATH>:/data/backup         Where backup files will be saved
   -v <LOCAL_PATH>:/repo                artik git repo - uses local binaries
@@ -47,11 +48,15 @@ COMMANDS:
   version                              Installed version and upgrade paths
 
 GLOBAL COMMAND OPTIONS:
-  --fast                               Skips networking and version checks (saves 5 secs during bootstrap)
-  --debug                              Enable debugging of artik server
+  --fast                               Skips networking, version, nightly and preflight checks
+  --offline                            Runs CLI in offline mode, loading images from disk
+  --debug                              Enable debugging of Artik server
+  --trace                              Activates trace output for debugging CLI
 ```
 
 The CLI will hide most error conditions from standard out. Internal stack traces and error output is redirected to `cli.log`, which is saved in the host folder where `:/data` is mounted.
+
+You can override any value in `artik.env` for a single execution by passing in `-e NAME=VALUE` on the command line. The CLI will detect the values on the command line and ignore those imported from `artik.env`.
 
 ### action
 Executes some actions on the ARTIK IDE server or on a workspace running inside ARTIK.
@@ -77,7 +82,7 @@ Used to download Docker images that will be stored in your Docker images reposit
 `download` is invoked by `artik init` before initialization to download images for the version specified by `codenvy/artik-cli:<version>`.
 
 ### info
-Displays system state and debugging information. `--network` runs a test to take your `CHE_HOST` value to test for networking connectivity simulating browser > ARTIK and ARTIK > workspace connectivity.
+Displays system state and debugging information. `--network` runs a test to take your `CHE_HOST` value to test for networking connectivity simulating browser > ARTIK and ARTIK > workspace connectivity. `--bundle` will generate a support diagnostic bundle in a TAR file which includes the output of certain commands and your execution logs.
 
 ### init
 Initializes an empty directory with an ARTIK configuration and instance folder where user data and runtime configuration will be stored. You must provide a `<path>:/data` volume mount, then ARTIK creates a `instance` and `backup` subfolder of `<path>`. You can optionally override the location of `instance` by volume mounting an additional local folder to `/data/instance`. You can optionally override the location of where backups are stored by volume mounting an additional local folder to `/data/backup`.  After initialization, an `artik.env` file is placed into the root of the path that you mounted to `/data`.
