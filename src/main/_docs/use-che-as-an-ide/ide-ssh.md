@@ -54,7 +54,7 @@ $ docker run -ti <volume-mounts> {% if site.product_mini_cli=="codenvy" %}codenv
 # Parameters
     --url <url>                 # {{ site.product_mini_name }} host where workspaces are running
     --user <login email>        # {{ site.product_mini_name }} user name
-    --password <login password> # {{ site.product_mini_name }} password{% endif %}
+    --password <login password> # {{ site.product_mini_name }} password
 ```
 
 ### SSH With Native Tools
