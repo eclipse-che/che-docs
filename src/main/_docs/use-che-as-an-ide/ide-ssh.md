@@ -25,7 +25,7 @@ We provide an optional ssh client built into [cli](#connect) for connecting to a
 You can get a list of workspaces in a {{site.product_mini_name}} server that have an SSH agent deployed. These are the workspaces that you can SSH into.
 
 ```shell  {% assign action="list-workspaces"%}
-$ docker run -ti <volume-mounts> {% if site.product_mini_cli=="codenvy" %}codenvy/cli action {{action}} [parameters]{% else %}eclipse/che action {{action}} [parameters]{% endif %} 
+$ docker run -ti <volume-mounts> {% if site.product_mini_cli=="codenvy" %}codenvy/cli action {{action}} [parameters]{% else %}eclipse/che action {{action}} [parameters]{% endif %}
 
 NAME                      ID                         STATUS
 wksp-v4l8(No Sync Agent)  workspaceolhvwg1bjuepyfar  RUNNING
@@ -46,15 +46,15 @@ One nice aspect of our SSH capabilities is that they are all done inside of a Do
 ```shell    {% assign action="ssh"%}
 # Connect to the machine in a workspace that is designated as the dev machine.
 # Each workspace always has one machine that is a dev machine with a dev agent on it.
-$ docker run -ti <volume-mounts> {% if site.product_mini_cli=="codenvy" %}codenvy/cli action {{action}} <workspace> [machine-name] [parameters]{% else %}eclipse/che action {{action}} <workspace> [machine-name] [parameters]{% endif %} 
+$ docker run -ti <volume-mounts> {% if site.product_mini_cli=="codenvy" %}codenvy/cli {{action}} <workspace> [machine-name] [parameters]{% else %}eclipse/che {{action}} <workspace> [machine-name] [parameters]{% endif %}
 
 # Arguments
-    workspace             # Workspace name or id.  
-    machine-name          # Connect to a secondary machine in the workspace(docker compose)
+    workspace                   # Workspace name or id.  
+    machine-name                # Connect to a secondary machine in the workspace(docker compose)
 # Parameters
-    --url <url>           # {{ site.product_mini_name }} host where workspaces are running
-{% if site.product_mini_cli=="codenvy" %}    --user <login email>        # Codenvy user name
-    --password <login password> # Codenvy password{% endif %}
+    --url <url>                 # {{ site.product_mini_name }} host where workspaces are running
+    --user <login email>        # {{ site.product_mini_name }} user name
+    --password <login password> # {{ site.product_mini_name }} password{% endif %}
 ```
 
 ### SSH With Native Tools
