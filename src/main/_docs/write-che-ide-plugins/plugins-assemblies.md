@@ -14,6 +14,7 @@ Everything can be customized allowing you to create any new kind of cloud IDE or
 Custom assemblies are git projects that are generated in the same structure of Che itself. Your custom assembly will inherit its libraries from Che and allow you locations to override default behaviors with your own.
 
 The assembly development lifecycle:
+
 1. Generate - We provide an `archetype` utility to generate new custom assemblies that already contain basic customizations.
 2. Build - Use the `archetype` utility or `mvn clean install` to package the custom assembly for execution.
 3. Run - The custom assembly is executed with the standard CLI by mounting it to `:/assembly`. The new binaries will be used instead of those that are distributed within the standard `eclipse/che-server` Docker image.
@@ -28,7 +29,7 @@ An archetype is a maven technique for generating code templates. A single archet
 Your host system must have Maven 3.3+ installed to facilitate generation and compiling of custom assemblies. You must pass in your Maven's M2 repository path on your host. Our archetype generator will download libraries into that repository making repeated compilations faster over time. On most Linux based systems, your M2 repository is located at `/home/user/.m2/repository` and it is `%USERPROFILE%/.m2/repository` for Windows. We default your M2 repository to `/home/user/.m2/repository`. Use the `/m2` mount to chnage this.
 
 The syntax is:
-```
+```shell
 USAGE: DOCKER_PARAMS eclipse/che-cli:nightly archetype ACTION [PARAMETERS]
 
 Use an archetype to generate, build or run a custom che assembly
