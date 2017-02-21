@@ -1,16 +1,14 @@
 # Eclipse Che Docs 
 Eclipse Che uses Jekyll 3.3.1 to generate documentation from this reposistory as a static html webpages. 
 
+This repository houses documentation for Eclipse Che ([repo](https://github.com/eclipse/che) / [site](https://eclipse.com/che/)). Content is held in markdown files in [/src/main/_docs](https://github.com/codenvy/che-docs/tree/master/src/main/_docs). Images should be placed in [/src/main/_docs/assets/imgs](https://github.com/codenvy/che-docs/tree/master/src/main/_docs/assets/imgs).
+
+Docs are built using Jekyll and the output is static HTML that is hosted at [https://eclipse.com/che/docs](https://eclipse.com/che/docs) and in the product at `{che-domain}/docs`.
+
 ### Viewing Generated Documentation
 Latest shipped release of documentation can viewed at [https://www.eclipse.org/che/docs/](https://www.eclipse.org/che/docs/). 
 
 Nightly documentation of this repository and can be viewed at [https://www.eclipse.org/che/docs-versions/nightly/](https://www.eclipse.org/che/docs-versions/nightly/). 
-
-### Overview of Documentation
-
-This repository houses documentation for Eclipse Che ([repo](https://github.com/eclipse/che) / [site](https://eclipse.com/che/)). Content is held in markdown files in [/src/main/_docs](https://github.com/codenvy/che-docs/tree/master/src/main/_docs). Images should be placed in [/src/main/_docs/assets/imgs](https://github.com/codenvy/che-docs/tree/master/src/main/_docs/assets/imgs).
-
-Docs are built using Jekyll and the output is static HTML that is hosted at [https://eclipse.com/che/docs](https://eclipse.com/che/docs) and in the product at `{che-domain}/docs`.
 
 # Linking to Docs and Images
 Because the docs are generated into static HTML linking to docs and images is a bit unusual. We provide a custom plugin [_plugins/links.rb](_plugins/links.rb) to create links.
