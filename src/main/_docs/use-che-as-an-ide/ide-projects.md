@@ -10,6 +10,10 @@ You can place any number of projects into a workspace.
 
 Projects are combinations of modules, folders and files. Projects can be mapped 1:1 to a source code repository. If a project is given a type, then {{ site.product_mini_name }} will active plug-ins related to that type. For example, projects with the maven project type will automatically get the Java plug-in, which provides a variety of intellisense for Java projects.
 
+## Manage Projects
+1. User is able to manage projects by using the dashboard or the IDE. User can add, edit and remove projects.
+2. Projects can be deleted from a workspace, only when the workspace is running. In other case they will be in read-only mode.
+
 # Modules  
 A module is a portion of a project that can have sets of commands run against it where the sub-directory is treated as the root working directory. Modules make it possible to organize a single repository into multiple, independently buildable and runnable units. To create a module, right click on a folder in the IDE explorer tree and select `Create Module`.  You can then execute commands directly against this module.
 
