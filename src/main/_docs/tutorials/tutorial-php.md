@@ -22,9 +22,7 @@ The `index.php` file contains a single instruction that will print "Hello World!
 ```php
 <?php
 
-echo "Hello World!"
-
-?>
+echo "Hello World!";
 ```
 
 You can use the editor to edit the script. The PHP editor provides rich [IntelliSense]({{base}}{{site.links["ide-intellisense"]}}) features like syntax hightlighting, code completion, code validation, code navigation, etc.
@@ -91,7 +89,6 @@ class SimpleTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($foo);
     }
 }
-?>
 ```
 
 This test basically checks nothing but demonstrates use of composer-provided frameworks. Having required `vendor/autoload.php` it is possible to use any functions of `phpunit`.
@@ -135,7 +132,6 @@ $app->get('/:name', function ($name) {
 });
 
 $app->run();
-?>
 ```
 
 This script creates a REST service that takes a path parameter and returns it as `Hello $pathParam`. So, `http://<your-che-host>:$port/$appName/Che` should return `Hello Che`.
@@ -152,4 +148,3 @@ Now, navigate to `http://<your-che-host>:$port/$project/Che` to find `Hello Che`
 
 ![slim.png]({{base}}{{site.links["slim.png"]}})
 {% endif %}
-
