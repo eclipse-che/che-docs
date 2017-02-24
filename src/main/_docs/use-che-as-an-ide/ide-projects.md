@@ -10,10 +10,6 @@ You can place any number of projects into a workspace.
 
 Projects are combinations of modules, folders and files. Projects can be mapped 1:1 to a source code repository. If a project is given a type, then {{ site.product_mini_name }} will active plug-ins related to that type. For example, projects with the maven project type will automatically get the Java plug-in, which provides a variety of intellisense for Java projects.
 
-## Manage Projects
-1. User is able to manage projects by using the dashboard or the IDE. User can add, edit and remove projects.
-2. Projects can be deleted from a workspace, only when the workspace is running. In other case they will be in read-only mode.
-
 # Modules  
 A module is a portion of a project that can have sets of commands run against it where the sub-directory is treated as the root working directory. Modules make it possible to organize a single repository into multiple, independently buildable and runnable units. To create a module, right click on a folder in the IDE explorer tree and select `Create Module`.  You can then execute commands directly against this module.
 
@@ -31,3 +27,9 @@ Plug-in developers can define their own project types. Since project types trigg
 6. **Project types support multiple inheritance.** A child project type may extend the attribute set of a parent type.
 7. **Projects may have parent-child relationships with other projects** in a workspace. Child projects are called modules.
 8. **Modules may have different project types than their parents.** Modules may physically exist within the tree structure of the parent (as its subfolders) or outside (the parent is a soft link to the module project).
+
+# Manage Projects
+
+Projects can be managed by using the IDE, with the project explorer or in the Dashboard. In the IDE, new projects can be added or imported into a workspace. It is also possible to edit the project's configuration and its type.
+
+Projects can also be managed in the dashboard. To perform certain actions, it requires the workspace to be running. It is impossible for example to create a new project into a workspace if the workspace is not running. Similarly, to delete projects from a workspace, the workspace must be running as well. If the workspace is not running, you can still get details about the projects, but in read-only mode.
