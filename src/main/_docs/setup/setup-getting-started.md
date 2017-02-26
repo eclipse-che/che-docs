@@ -17,6 +17,8 @@ You can get a hosted version of Eclipse Che with Codenvy at [codenvy.io](http://
 # How to Get Help
 
 ### Support  
+If you are having a problem starting Che or workspaces, there are two diagnostic utilities that can help: `docker run eclipse/che info` on the command-line for diagnosing boot-time issues and a "diagnostic" page that you can launch from the lower corner of the dashboard that loads when Che first opens in your browser.
+
 Post questions or issues [on GitHub](https://github.com/eclipse/che/issues). Please follow the [guidelines on issue reporting](https://github.com/eclipse/che/blob/master/CONTRIBUTING.md) and provide:
 
 - output of 'docker run eclipse/che info' command
@@ -198,6 +200,8 @@ Workspace Agent --> Che Server
       172.17.42.1 or 192.168.99.1
    4. Else, print connection exception
 ```
+
+If you suspect that blocked ports, firewall, Che's network configuration, or websockets are preventing Che from working properly, we provide a browser diagnostic in the lower right corner that runs tests between the browser and the Che server and a generated workspace.
 
 # Versions
 Each version of Che is available as a Docker image tagged with a label that matches the version, such as `eclipse/che:5.0.0-M7`. You can see all versions available by running `docker run eclipse/che version` or by [browsing DockerHub](https://hub.docker.com/r/eclipse/che/tags/).
