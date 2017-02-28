@@ -19,6 +19,9 @@ permalink: /:categories/git-svn/
 
 The following sections describe how to connect and authenticate users to a remote git/svn repository. Any operations that involves authentication on the remote repository will need to be done via the IDE interface unless authentication is setup seperately for the workspace machine(terminal/commands). Authentication information setup through the following documentation are stored on {{ site.product_mini_name }} server for each user and can be used on any of the user workspaces.
 
+# Git Using Custom SSH Port
+If your Git provider is running SSH on a non-standard port, you will need to use alternate Git URL syntax to access the Git server. In this situation, you need to use the `ssh://user@host:1234/path/to/repo` format with the SSH protocol applied to the beginning of the URL.
+
 # Git Using SSH Keys  
 Private repositories will require a secure SSH connection and most developers who plan to push to a repo will clone it via SSH, so an SSH key pair needs to be generated. SSH keys are saved in user preferences, so you need to generate the SSH key only once and it will be used in all workspaces.
 
@@ -76,7 +79,7 @@ oAuth for Github allows users via the IDE git menu to import projects using SSH 
 
 ![Clipboard9.jpg]({{base}}{{site.links["Clipboard9.jpg"]}}){:style="width: 30%"}
 
-### Setup environment variables.
+### Setup Environment Variables
 Set the following to environment variables in the `{{ site.data.env.filename }}` file then start/restart the {{ site.product_formal_name }} server. 
 
 ```YAML  
