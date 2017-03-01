@@ -7,7 +7,7 @@ permalink: /:categories/cli/
 ---
 {% include base.html %}
 
-The Docker image which runs Che is the Che CLI. It has various commands for running Che and also for allowing your end users to interact with their workspaces on the command line.
+The CLI is a Docker image that comes with a collection of commands to configure, interact and start Che. The CLI also contains commands for end users to interact with workspaces such as sync and ssh.
 
 ```
 USAGE:
@@ -56,6 +56,8 @@ GLOBAL COMMAND OPTIONS:
   --debug                              Enable debugging of che server
   --trace                              Activates trace output for debugging CLI
 ```
+
+The CLI has three primary phases: initialization, configuration, and start. The initialization phase is executed by `init` and will install version-specific files into the folder mounted to `/data`. This includes the universal configuration file named `che.env`, a version identifier, and a location where configuration files will be saved. The configuration is executed by the `config` command and takes as input your `che.env` configuration file, the OS of your host, and then generates an OS-specific set of configuration files in the `/data/instance` folder that can be used to run an instance of Che. The configuration phase will run an initialization if a folder is not found. Every execution of the `config` command will overwrite the files in `/data/instance` with the latest configuration. This way if an admin modifies any configuration file, the instance's configuration files will be updated to be guaranteed consistent. The CLI generates a large number of configuration files specific to running Che. The configuration files are sourced from Puppet templates that are stored in our GitHub repository under `/dockerfiles/init`. The start phase is executed by `start` and will use a configuration-generated `docker-compose-container.yml` file to launch Eclipse Che. The start phase always executes a `config` command, so any files that were edited in `/data/instance` will be overwritten with the generated configuration from the CLI.
 
 The CLI will hide most error conditions from standard out. Internal stack traces and error output is redirected to `cli.log`, which is saved in the host folder where `:/data` is mounted.
 
