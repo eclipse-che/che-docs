@@ -58,7 +58,7 @@ This will create the best performing workspace image by only installing the mini
 | `RUN apt-get install bash -y`   | `bash`   | Execs are performed as bash commands. It is uncommon that base Docker images do not have bash. However, some distributions as Alpine or Busybox only provide `sh`.   
 | User with `root` privileges   | To install our developer tools agents (like terminal access and intellisense) we need root access or a user who has sudo rights.   | `USER root` <br/><br/> or grant your preferred user sudo rights.   
 | Dockerfile <br/> `CMD tail -f /dev/null` <br/><br/> Compose <br/> `command: [tail, -f, /dev/null]`   | To keep a container running   | Non-terminating CMD   
-{% if site.product_mini_cli=="codenvy" %}| `RUN apt-get install rsync`   | `rsync` version 3.1.0 or above   | Rsync is performed periodically between the workspace and native host. {% endif %}
+{% if site.product_mini_cli=="codenvy" %}| `RUN apt-get install rsync`   | `rsync` version 3.1.0 or above   | Rsync is performed periodically between the workspace and native host of the codenvy server which provides the ability to scale workspaces across multiple server nodes. {% endif %}
 
 All Eclipse Che images must have a non-terminating `CMD` command so that the container doesn't shut down immediately after loading. If you want to override the default `CMD`, add `tail -f /dev/null` to the execution.  For example:
 
