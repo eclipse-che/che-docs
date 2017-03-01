@@ -99,6 +99,7 @@ Used to download Docker images that will be stored in your Docker images reposit
 -----
 
 *info*
+
 Displays system state and debugging information. `--network` runs a test to take your `CHE_HOST` value to test for networking connectivity simulating browser > ARTIK and ARTIK > workspace connectivity. `--bundle` will generate a support diagnostic bundle in a TAR file which includes the output of certain commands and your execution logs.
 
 -----
@@ -134,6 +135,7 @@ You can reinstall ARTIK on a folder that is already initialized and preserve you
 -----
 
 *offline*
+
 Saves all of the Docker images that ARTIK requires into `/backup/*.tar` files. Each image is saved as its own file. If the `backup` folder is available on a machine that is disconnected from the Internet and you start ARTIK with `--offline`, the CLI pre-boot sequence will load all of the Docker images in the `/backup/` folder.
 
 `--list` option will list all of the core images and optional stack images that can be downloaded. The core system images and the CLI will always be saved, if an existing TAR file is not found. `--image:<image-name>` will download a single stack image and can be used multiple times on the command line. You can use `--all-stacks` or `--no-stacks` to download all or none of the optional stack images.
@@ -141,11 +143,13 @@ Saves all of the Docker images that ARTIK requires into `/backup/*.tar` files. E
 -----
 
 *restart*
+
 Performs a `stop` followed by a `start`, respecting `--pull`, `--force`, and `--offline`.
 
 -----
 
 *restore*
+
 Restores `/instance` to its previous state. You do not need to worry about having the right Docker images. The normal start / stop / restart cycle ensures that the proper Docker images are available or downloaded, if not found.
 
 This command will destroy your existing `/instance` folder, so use with caution, or set these values to different folders when performing a restore.
@@ -153,11 +157,13 @@ This command will destroy your existing `/instance` folder, so use with caution,
 -----
 
 *rmi*
+
 Deletes the Docker images from the local registry that ARTIK has downloaded for this version.
 
 -----
 
 *ssh*
+
 Connects the current terminal where the command is started to the terminal of a machine of the workspace. If no machine is specified in the command, it will connect to the default machine which is the dev machine.
 The syntax is `ssh <workspace-name> [machine-name]`
 The ssh connection will work only if there is a workspace ssh key setup. A default ssh key is automatically generated when a workspace is created.
@@ -165,22 +171,26 @@ The ssh connection will work only if there is a workspace ssh key setup. A defau
 -----
 
 *start*
+
 Starts ARTIK and its services using `docker-compose`. If the system cannot find a valid configuration it will perform an `init`. Every `start` and `restart` will run a `config` to generate a new configuration set using the latest configuration. The starting sequence will perform pre-flight testing to see if any ports required by ARTIK are currently used by other services and post-flight checks to verify access to key APIs.  
 
 -----
 
 *stop*
+
 The default stop is a graceful stop where each workspace is stopped and confirmed shutdown before stopping system services. If workspaces are configured to snap on stop, then all snaps will be completed before system service shutdown begins. You can ignore workspace stop behavior and shut down only system services with --force flag. 
 
 -----
 
 *test*
+
 Performs some tests on your local instance of ARTIK. It can for example check the ability to create a workspace, start the workspace by using a custom Workspace runtime and then use it.
 The list of all the tests available can be obtained by providing only `test` command.
 
 -----
 
 *upgrade*
+
 Manages the sequence of upgrading ARTIK from one version to another. Run the Docker syntax with `codenvy/artik-cli version` to get a list of available versions that you can upgrade to.
 
 Upgrading ARTIK is done by using a `codenvy/artik-cli:<version>` that is newer than the version you currently have installed. For example, if you have 1.3.1 installed and want to upgrade to 1.4.0, then:
@@ -205,4 +215,5 @@ Run the Docker syntax with `codenvy/artik-cli version` to get a list of availabl
 -----
 
 *version*
+
 Provides information on the current version and the available versions that are hosted in ARTIK's repositories. `artik-cli upgrade` enforces upgrade sequences and will prevent you from upgrading one version to another version where data migrations cannot be guaranteed.
