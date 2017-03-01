@@ -34,19 +34,19 @@ There are two ways for you to create a custom recipe that can be used within Che
 ### Inherit From an Eclipse Che Base Image
 This is the easiest way to build a workspace from a custom recipe.  Eclipse Che base images are authored by Codenvy and hosted on DockerHub. These base images have all of the dependencies necessary for a Che workspace to operate normally.  These base images may have unnecessary dependencies for your project, like subversion. So if size and performance are essential, you can look to author your own. The Dockerfiles for Che's base images are located in [Codenvy's GitHub repository](https://github.com/eclipse/che-dockerfiles/tree/master/recipes).
 
-To reference Codenvy's Docker images in your Dockerfile or Docker compose recipe:
+To reference Che's Docker images in your Dockerfile or Docker compose recipe:
 
 ```shell  
 ##Dockerfile
-FROM codenvy/<image-name>
+FROM eclipse/<image-name>
 
 ##Compose
-image: codenvy/<image-name>
+image: eclipse/<image-name>
 ```
 
-Codenvy's base stacks, which include the minimum utilities for everything needed by Eclipse Che are `codenvy/ubuntu_jre` and `codenvy/debian_jre`.
+Che's base stacks, which include the minimum utilities for everything needed by Eclipse Che are `eclipse/ubuntu_jre` and `eclipse/debian_jre`.
 
-In Codenvy's repository, some recipes have sub-directories which represent tags. For example, the `/php/latest` directory in the GitHub repository would be pulled as `codenvy/php:latest` from Docker Hub.
+In Che's repository, some recipes have sub-directories which represent tags. For example, the `/php/latest` directory in the GitHub repository would be pulled as `eclipse/php:latest` from Docker Hub.
 
 ### Inherit From Non-Eclipse Che Base Images
 This will create the best performing workspace image by only installing the minimum dependencies and packages required for your workspace. The trade off is that you have to include [Che's runtime dependencies]({{base}}{{site.links["ws-recipes"]}}#che-runtime-required-dependencies) so we can work our magic in the workspace.
@@ -58,6 +58,7 @@ This will create the best performing workspace image by only installing the mini
 | `RUN apt-get install bash -y`   | `bash`   | Execs are performed as bash commands. It is uncommon that base Docker images do not have bash. However, some distributions as Alpine or Busybox only provide `sh`.   
 | User with `root` privileges   | To install our developer tools agents (like terminal access and intellisense) we need root access or a user who has sudo rights.   | `USER root` <br/><br/> or grant your preferred user sudo rights.   
 | Dockerfile <br/> `CMD tail -f /dev/null` <br/><br/> Compose <br/> `command: [tail, -f, /dev/null]`   | To keep a container running   | Non-terminating CMD   
+{% if site.product_mini_cli=="codenvy" %}| `RUN apt-get install rsync`   | `rsync` version 3.0.9 or above   | Rsync is performed periodically from the workspace's project files/folders to a subfolder in codenvy server's(master node) `/data` folder which provides the ability to scale workspaces across multiple server nodes. The files/folders in `/data` codenvy server are persisted to native host via the required docker volume mount between codenvy server and native host. {% endif %}
 
 All Eclipse Che images must have a non-terminating `CMD` command so that the container doesn't shut down immediately after loading. If you want to override the default `CMD`, add `tail -f /dev/null` to the execution.  For example:
 
