@@ -136,7 +136,7 @@ Saves all of the Docker images that Che requires into `/backup/*.tar` files. Eac
 `--list` option will list all of the core images and optional stack images that can be downloaded. The core system images and the CLI will always be saved, if an existing TAR file is not found. `--image:<image-name>` will download a single stack image and can be used multiple times on the command line. You can use `--all-stacks` or `--no-stacks` to download all or none of the optional stack images.
 
 ### restart
-Performs a `stop` followed by a `start`, respecting `--pull`, `--force`, and `--offline`.
+Performs a `stop` followed by a `start`, respecting `--pull`, `--force`, `--offline`, `--skip:config`, `--skip:preflight`, and `--skip:postflight`.
 
 ### restore
 Restores `/instance` to its previous state. You do not need to worry about having the right Docker images. The normal start / stop / restart cycle ensures that the proper Docker images are available or downloaded, if not found.
@@ -158,7 +158,9 @@ The syntax is `-v <path-on-your-machine>:/sync eclipse/che sync <workspace-name>
 To get extra information, the flag `--unison-verbose` can be used to display log of the underlying unison tool.
 
 ### start
-Starts Che and its services using `docker-compose`. If the system cannot find a valid configuration it will perform an `init`. Every `start` and `restart` will run a `config` to generate a new configuration set using the latest configuration. The starting sequence will perform pre-flight testing to see if any ports required by Che are currently used by other services and post-flight checks to verify access to key APIs.  
+Starts Che and its services using `docker-compose`. If the system cannot find a valid configuration it will perform an `init`. Every `start` and `restart` will run a `config` to generate a new configuration set using the latest configuration. The starting sequence will perform pre-flight testing to see if any ports required by Che are currently used by other services and post-flight checks to verify access to key APIs.
+
+You can skip pre-flight and post-flight checks with `--skip:preflight` and `--skip:postflight` respectively. The typical Che start sequence includes an invocation of the `config` method, which regenerates configuration files placed into the `/instance` folder. You can skip this generation with `--skip:config`. 
 
 ### stop
 The default stop is a graceful stop where each workspace is stopped and confirmed shutdown before stopping system services. If workspaces are configured to snap on stop, then all snaps will be completed before system service shutdown begins. You can ignore workspace stop behavior and shut down only system services with --force flag. 
