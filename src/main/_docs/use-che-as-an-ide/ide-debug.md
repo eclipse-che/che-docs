@@ -27,11 +27,15 @@ In a Debug Dialog (**Run > Edit Debug Configurations...**), choose if you want t
 
 ## Java Console Apps
 
-To debug console apps, pass debug arguments to JVM:
+To debug console apps (could be as well a stand-alone web app), pass debug arguments to JVM:
 
 ```shell  
 mvn clean install && java -jar -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y ${current.project.path}/target/*.jar
 ```
+
+Run the 'Java -jar' and turn on at the same time the 'Run > Debug > Debug debugNameJava', both server debug and client debug need to communicate. The Window Debug will appear and display your breakpoint list, click on 'Resume' and now the first breakpoint will be hit :)
+
+If the app is a web app, you may need to refresh the page to hit the breakpoint.
 
 ## Java Web Apps
 
