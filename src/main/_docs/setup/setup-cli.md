@@ -207,7 +207,7 @@ To get extra information, the flag `--unison-verbose` can be used to display log
 
 Starts Che and its services using `docker-compose`. If the system cannot find a valid configuration it will perform an `init`. Every `start` and `restart` will run a `config` to generate a new configuration set using the latest configuration. The starting sequence will perform pre-flight testing to see if any ports required by Che are currently used by other services and post-flight checks to verify access to key APIs.
 
-You can skip pre-flight and post-flight checks with `--skip:preflight` and `--skip:postflight` respectively. The typical Che start sequence includes an invocation of the `config` method, which regenerates configuration files placed into the `/instance` folder. You can skip this generation with `--skip:config`. 
+You can skip pre-flight and post-flight checks with `--skip:preflight` and `--skip:postflight` respectively. The typical Che start sequence includes an invocation of the `config` method, which regenerates configuration files placed into the `/instance` folder. You can skip this generation with `--skip:config`.  You can automatically print out the server logs to the console during the booting of the server by appending `--follow`. This flag is blocking and requires you to CTRL-C to interrupt the output.
 
 -----
 
