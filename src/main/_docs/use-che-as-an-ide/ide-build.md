@@ -9,9 +9,9 @@ permalink: /:categories/build/
 
 If your project has a built-in project type, {{ site.product_mini_name }} will install a series of type-specific commands that provide utilities for building projects. For example, {{ site.product_mini_name }} has a built-in `maven` project type that will install the Maven plug-in whenever one or more projects in your workspace are set with the `maven` project type.
 
-Plug-in developers can optionally provide typed commands, which will appear in the [Commands]({{base}}{{site.links["ide-commands"]}}#authoring) editor to simplify the creation of commands to perform compiling tasks.  With Maven, this includes dependencies update, project tree view for external libraries, and maven flag interpolation.
+Plug-in developers can optionally provide typed commands, which will appear in the [Commands]({{base}}{{site.links["ide-commands"]}}#authoring-command-instructions) editor to simplify the creation of commands to perform compiling tasks.  With Maven, this includes dependencies update, project tree view for external libraries, and maven flag interpolation.
 
-For all other projects, you can write custom [Commands]({{base}}{{site.links["ide-commands"]}}#authoring). Or, you can run command-line processes through the terminal.
+For all other projects, you can write custom [Commands]({{base}}{{site.links["ide-commands"]}}#authoring-command-instructions). Or, you can run command-line processes through the terminal.
 
 # Maven Commands  
 You can create maven-specific commands in the command editor. The maven plug-in installs a Maven section to the editor. This command type will add in the flags and path to executing the maven command so that you just provide the lifecycle and goal within the editor.
@@ -20,7 +20,7 @@ The commands are context sensitive. For example, if you create a `build` command
 
 You can reference the `${current.project.path}` macro within your command (see other [macros]({{base}}{{site.links["ide-commands"]}}#macros)). Its value is the path to the `pom.xml` from the current selection in the project tree. You can then target a single command to work for modules or projects.
 
-It is also possible to use custom commands to build and package your projects (`Run > Edit Commands > Custom`). `${current.project.path}` will provide you with the path to the currently selected project/module. 
+It is also possible to use custom commands to build and package your projects (`Run > Edit Commands > Custom`). `${current.project.path}` will provide you with the path to the currently selected project/module.
 
 ```shell  
 # cd to project directory using macro and run Maven build command
