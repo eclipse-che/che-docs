@@ -18,12 +18,12 @@ A command is defined by:
 
 ## Command Goals  
 A command is executed by the developer to achieve a particular step from his flow. We provide the ability to organize commands per goal:
-- _Build_: commands that build a workspace’s projects.  
-- _Test_: commands related to test execution.  
-- _Run_: commands that run a workspace’s projects.  
-- _Debug_: commands used to start a debugging session.  
-- _Deploy_: commands that are used to deploy a workspace’s projects onto specific servers or services.  
-- _Common_: general purpose commands.  
+- _Build_: Commands that build a workspace’s projects.  
+- _Test_: Commands related to test execution.  
+- _Run_: Commands that run a workspace’s projects.  
+- _Debug_: Commands used to start a debugging session.  
+- _Deploy_: Commands that are used to deploy a workspace’s projects onto specific servers or services.  
+- _Common_: General purpose commands.  
 
 ## Command Context  
 All commands are not applicable to every project. So we wanted to add the notion of context to a command. The context of a command defines the project(s) that the command can be used with. For example: a maven build command will be relevant only if the project is using maven.
