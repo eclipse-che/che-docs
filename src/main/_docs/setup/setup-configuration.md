@@ -349,7 +349,12 @@ If you'd like your users to work with projects which have their own Docker image
 
 These two tactics will allow user workspaces to perform `docker` commands from within their workspace to create and work with Docker containers that will be outside the workspace. In other words, this makes your user's workspace feel like their laptop where they would normally be performing `docker build` and `docker run` commands.
 
-You will need to make sure that your user's workspaces are powered from a stack that has Docker installed inside of it. Che's default images do not have Docker installed, but we have sample stacks (see the Che in Che stack).
+You will need to make sure that your user's workspaces are powered from a stack that has Docker installed inside of it. Codenvy's default images do not have Docker installed, but we have a sample stack called Eclipse Che that includes docker. Refer to the [che-in-che tutorial]({{ base }}({{base}}{{site.links["tutorial-che-in-che"]}}) for additional information.
+
+```shell
+# Update your che.env:
+CHE_WORKSPACE_VOLUME=/var/run/docker.sock:/var/run/docker.sock;
+```
 
 # Development Mode
 You can debug the Che binaries that are running within the Che server. You can debug either the binaries that are included within the `eclipse/che-server` image that you download from DockerHub or you can mount a local Che git repository to debug binaries built in a local assembly. By using local binaries, this allows Che developers to perform a rapid edit / build / run cycle without having to rebuild Che's Docker images.
