@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Introduction to Assemblies
+title: Introduction
 excerpt: ""
 layout: docs
 permalink: /:categories/intro/

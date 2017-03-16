@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Assembly Sample
+title: Sample
 excerpt: ""
 layout: docs
 permalink: /:categories/sample/
