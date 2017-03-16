@@ -22,7 +22,7 @@ The assembly development lifecycle:
 4. Customize - Add different types of custom extensions, agents, stacks, templates, and brand elements.
 5. Debug - Debug your customizations for browser, Che, and workspace extensions running within a custom assembly.
 
-# Generate
+# Archetype
 The CLI has an `archetype` command that can be used to generate custom assemblies of Eclipse Che and Codenvy.
 
 An archetype is a maven technique for generating code templates. A single archetype has an ID and generates a complete custom assembly. Differnent archetypes generate assemblies with different types of customizations. We make each archetype customize the minimal number of features to make learning about customizations simpler.
