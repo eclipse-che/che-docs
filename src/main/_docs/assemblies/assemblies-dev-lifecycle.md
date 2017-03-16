@@ -162,7 +162,7 @@ docker run -it --rm --name run-che \
 ```
 
 # Stop
-You can stop a custom assembly using the `stop` command of the `archetype` command or the CLI:
+You can stop a custom assembly with the CLI's `stop` command or with `archetype stop`:
 ```
 docker run -it --rm
   -v /var/run/docker.sock:/var/run/docker.sock 
