@@ -1,9 +1,9 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Assembly Dev Lifecycle
+title: Assembly Lifecycle
 excerpt: "An assembly is a packaging of Che libraries, extensions, agents, and branding elements to create a new Che distribution."
 layout: docs
-permalink: /:categories/dev-lifecycle/
+permalink: /:categories/assembly-lifecycle/
 ---
 {% include base.html %}
 You can create new Che products for re-distribution by generating a custom assembly. An assembly is a binary packaging of IDE extensions (written in Java / JavaScript), Che extensions (deployed in the Che server), workspace extensions (deployed in a workspace agent), custom agents, stacks, templates, custom CLI, and brand elements. When these are packaged together, a complete binary that can be run identically to how you run the standard Che assembly is provided. 

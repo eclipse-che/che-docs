@@ -1,9 +1,9 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Dependency Injection
+title: SDK Dependency Injection
 excerpt: ""
 layout: docs
-permalink: /:categories/dependency-injection-basics/
+permalink: /:categories/sdk-dependency-injection/
 ---
 {% include base.html %}
 In this section, we briefly introduce the usage of dependency injection in Che, on the client and on the server side. If you are already familiar with Guice and Gin, you might want to skip this part.

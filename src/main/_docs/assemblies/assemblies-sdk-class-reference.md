@@ -1,9 +1,9 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Java Class Reference
+title: SDK Class Reference
 excerpt: "JavaDoc for the Che & GWT classes available to developers"
 layout: docs
-permalink: /:categories/java-class-reference/
+permalink: /:categories/sdk-class-reference/
 ---
 {% include base.html %}
 

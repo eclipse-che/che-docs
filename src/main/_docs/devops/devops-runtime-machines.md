@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Runtime Machines
 excerpt: ""
 layout: docs
-permalink: /:categories/machines/
+permalink: /:categories/runtime-machines/
 ---
 {% include base.html %}
 

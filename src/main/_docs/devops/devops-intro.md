@@ -1,9 +1,9 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Workspaces
+title: Introduction
 excerpt: ""
 layout: docs
-permalink: /:categories/admin-intro/
+permalink: /:categories/intro/
 ---
 {% include base.html %}
 

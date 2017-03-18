@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Project Samples Data Model
 excerpt: "Defines code sample and commands used to bootstrap a new project in a workspace."
 layout: docs
-permalink: /:categories/data-model-samples/
+permalink: /:categories/project-samples-data-model/
 ---
 {% include base.html %}
 

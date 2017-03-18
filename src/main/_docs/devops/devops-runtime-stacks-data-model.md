@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Runtime Stacks Data Model
 excerpt: "Defines the runtimes for a workspace."
 layout: docs
-permalink: /:categories/data-model-stacks/
+permalink: /:categories/runtime-stacks-data-model/
 ---
 {% include base.html %}
 

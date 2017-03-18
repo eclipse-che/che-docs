@@ -1,9 +1,9 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Actions
+title: SDK Actions 
 excerpt: "Action API"
 layout: docs
-permalink: /:categories/actions/
+permalink: /:categories/sdk-actions/
 ---
 {% include base.html %}
 Actions allow you to add custom behavior to the Che IDE. They can be placed in menus, toolbars or context menus. An Action is a Java class, which implements the behavior to be executed. Additionally, it defines a text to be shown, a tooltip and an icon. In the following section, we describe the implementation of Actions more in detail.

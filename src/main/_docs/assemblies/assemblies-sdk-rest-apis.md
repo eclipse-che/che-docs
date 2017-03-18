@@ -1,9 +1,9 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: SDK: REST APIs
+title: SDK REST APIs
 excerpt: ""
 layout: docs
-permalink: /:categories/rest/
+permalink: /:categories/sdk-rest-apis/
 ---
 {% include base.html %}
 The components in an assembly communicate with one another using REST APIs. For example, REST is the format for how IDE plugins in the browser will talk to those running in a workspace agent or within the master server.

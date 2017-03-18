@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Runtime Stacks
 excerpt: "Stacks define the workspace runtime, commands, and configuration."
 layout: docs
-permalink: /:categories/stacks/
+permalink: /:categories/runtime-stacks/
 ---
 {% include base.html %}
 
