@@ -190,10 +190,32 @@ Our archetypes generate a functional custom assembly with some pre-built customi
 
 After you exclude / include new plugins, you just perform another build to package the assembly with the updated plugin list.
 
+#### Standard Assemblies
+There are five different places where you can include or exclude a plugin, which are items we call "standard assemblies". The "standard assemblies" generate packages that will be run as an asset in a different location. Che and Codenvy are distributed systems, so there are components that run in a browser, on the server, and within a workspace. Each one of these components are independently packaged into a "standard assembly".
+
+| Che Assembly Location | What Is Included |
+| `/assembly-che/assembly-ide-war` | GWT plugins that will be compiled into a new browser IDE as JavaScript | 
+| `/assembly-che/wsagent-war` | Java plugins that will run within a workspace's agent | 
+| `/assembly-che/wsagent-server` | Packages workspace agents into a Tomcat bundle | 
+| `/assembly-che/wsmaster-war` | Java plugins that will run within Che's core server | 
+| `/assembly-che/assembly-main` | Packages Che's core server into a Tomcat bundle | 
+
+And Codenvy's assemblies are slightly different:
+| Codenvy Assembly Location | What Is Included |
+| `/assembly-codenvy/compiling-ide-war` | GWT plugins that will be compiled into a new browser IDE as JavaScript | 
+| `/assembly-codenvy/assembly-ide-war` | Results of GWT plugins packaged into a new web app | 
+| `/assembly-codenvy/assembly-dashboard-war` | JavaScript plugins that will be packaged into the user dashboard | 
+| `/assembly-codenvy/assembly-factory-war` | Plugins for workspace automation with factories | 
+| `/assembly-codenvy/wsagent-war` | Java plugins that will run within a workspace's agent | 
+| `/assembly-codenvy/wsagent-server` | Packages workspace agents into a Tomcat bundle | 
+| `/assembly-codenvy/wsmaster-war` | Java plugins that will run within Che's core server | 
+| `/assembly-codenvy/assembly-main` | Packages Che's core server into a Tomcat bundle | 
+
+
 #### Exclude
 You can exclude existing Che or Codenvy plugins from your custom assembly.
 
-In `assembly-che/assembly-ide-war/pom.xml`, add an `<exclusions>` code block to the maven definition. You can provide an exclusion for each plugin provided by Che individually:
+In the appropriate assembly where you want to remove a plugin, such as `assembly-che/assembly-ide-war/pom.xml`, add an `<exclusions>` code block to the maven definition. You can provide an exclusion for each plugin provided by Che individually:
 
 ```
 <dependency>
@@ -242,7 +264,6 @@ You include your plugin by modifying the same assembly `pom.xml` and add a new `
 ```
 
 We require the maven POM to be sorted. If you get a sorting error, you can sort your modifications on the command line with `mvn sortpom:sort`.
-
 
 # IDE
 You can use your own IDE for developing plugins that are deployed within Che. We use Eclipse, Che and IntelliJ internally to create Che itself. You can [create a similar development environment and workflow](https://github.com/eclipse/che/wiki/Development-Workflow#ide-setup) for customizations that you make.

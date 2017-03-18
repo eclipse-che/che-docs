@@ -1,32 +1,34 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Extension Lifecycle
+title: Plugin Development Lifecycle
 excerpt: ""
 layout: docs
 permalink: /:categories/extension-lifecycle/
 ---
 {% include base.html %}
-This is an advanced section. You should use archetypes to build custom assemblies that have pre-packaged extensions as part of included plugins. Ultimately, if you want to modify the IDE or alter the REST API services in Che or a workspace agent, you need to write an extension. An extension is code that is compiled and packaged for deployment into Che.
+This is an advanced section. You should use archetypes to build custom assemblies that have pre-packaged plugins. Ultimately, if you want to modify the IDE or alter the REST API services in Che or a workspace agent, you need to write a plugin that contains extensions. An extension is code that is compiled and packaged for deployment into Che.
 
-This page discusses the details of how extensions are structured and built for advanced developers. 
+This page discusses the details of how plugins are structured and built. If you wanted to author a plugin from scratch, you could use the material in this page to understand how it is composed.
+
+In this document, we often interchangeably use `plugin` and `extension`. An extension is the code that is to be injected into the system. A plugin is the packaging of that extension(s).
 
 # Structure  
-The typical structure of a Che extension is composed of the following:
+The typical structure of a Che plugin is composed of the following:
 
 
 | File   | Details   
 | --- | ---
-| `/extension/pom.xml` | The `pom.xml` is a build file that compiles your extension and creates a JAR packaging of it.
-| `/extension/src/` | Your extension source and build files.
-| `/extension/target/` | Your JAR is placed in the `/target` directory and installed into your local maven repository.   
+| `/plugin/pom.xml` | The `pom.xml` is a build file that compiles your extension and creates a JAR packaging.
+| `/plugin/src/` | Your extension source and build files.
+| `/plugin/target/` | Your JAR is placed in the `/target` directory and installed into your local maven repository.   
 
-Depending on the complexity of your extension, you might create a multi-module structure. Each module is independently buildable, and they each would have their own `pom.xml`, `src`, and `target` entries.
+Depending on the complexity of your plugin, you might create a multi-module structure. Each module is independently buildable, and they each would have their own `pom.xml`, `src`, and `target` entries.
 
 | File   | Details   
 | --- | ---
-| `/extension/extension-ide`   | Your extension module for the IDE client.   
-| `/extension/extension-server`   | Your extension module for the server part.   
-| `/extension/extension-shared`   | Your extension module for the shared code between the server and the client.   
+| `/pluing/extension-ide`   | Your extension module for the IDE client.   
+| `/plugin/extension-server`   | Your extension module for the server part.   
+| `/plugin/extension-shared`   | Your extension module for the shared code between the server and the client.   
 
 Each module has a directory structure that is based upon maven and will include source code and a target where artifacts are placed.
 
