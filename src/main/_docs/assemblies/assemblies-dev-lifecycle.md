@@ -188,8 +188,60 @@ The Eclipse Che and Codenvy CLI have (mostly) identical syntax, so you can build
 # Customizing
 Our archetypes generate a functional custom assembly with some pre-built customizations. You can further customize an assembly by either a) excluding plugins or assets from Che / Codenvy, b) including new plugins or assets that you have created, or c) both. For example, if you want to replace Che's git plugin with an improvement that you make, you would both exclude the default one provided by Che and then include a new plugin that you author.
 
+After you exclude / include new plugins, you just perform another build to package the assembly with the updated plugin list.
+
 #### Exclude
+You can exclude existing Che or Codenvy plugins from your custom assembly.
+
+In `assembly-che/assembly-ide-war/pom.xml`, add an `<exclusions>` code block to the maven definition. You can provide an exclusion for each plugin provided by Che individually:
+
+```
+<dependency>
+  <groupId>org.eclipse.che</groupId>
+  <artifactId>assembly-ide-war</artifactId>
+  <classifier>classes</classifier>
+  <exclusions>
+    <exclusion>
+      <groupId>org.eclipse.che.plugin</groupId>
+      <artifactId>PLUGIN-IDENTIFIER</artifactId>
+    </exclusion>
+  </exclusions>
+</dependency>
+```
+
+You can do a similar activity for the Codenvy custom assembly as well located in `assembly-codenvy/assembly-ide-war/pom.xml`:
+
+```
+<dependency>
+  <groupId>com.codenvy.onpremises</groupId>
+  <artifactId>compiling-ide-war</artifactId>
+  <classifier>classes</classifier>
+  <exclusions>
+    <exclusion>
+      <groupId>com.codenvy.plugin</groupId>
+      <artifactId>PLUGIN-IDENTIFIER</artifactId>
+    </exclusion>
+  </exclusions>
+</dependency>
+```
+
+The `PLUGIN-IDENTIFIER` is the `artifactId` that is provided by the plugin. You can find this identifier in the `pom.xml` that is in the root folder for each plugin in Che and Codenvy's source repository.
+
+You can have as many `<exclusion>` blocks as necessary within a single `<exclusions>` tag. 
+
+We require the maven POM to be sorted. If you get a sorting error, you can sort your modifications on the command line with `mvn sortpom:sort`.
+
+
+
 #### Include
+You include your plugin by modifying the same assembly `pom.xml` and add a new `<dependency>` block:
+```
+<dependency>
+  <groupId>YOUR-PLUGIN-GROUP-IDENTIFIER</groupId>
+  <artifactId>YOUR-PLUGIN-IDENTIFIER</artifactId>
+</dependency>
+```
+
 
 # IDE
 You can use your own IDE for developing plugins that are deployed within Che. We use Eclipse, Che and IntelliJ internally to create Che itself. You can [create a similar development environment and workflow](https://github.com/eclipse/che/wiki/Development-Workflow#ide-setup) for customizations that you make.
