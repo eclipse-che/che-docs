@@ -6,7 +6,6 @@ layout: docs
 permalink: /:categories/dev-lifecycle/
 ---
 {% include base.html %}
-{% include base.html %}
 You can create new Che products for re-distribution by generating a custom assembly. An assembly is a binary packaging of IDE extensions (written in Java / JavaScript), Che extensions (deployed in the Che server), workspace extensions (deployed in a workspace agent), custom agents, stacks, templates, custom CLI, and brand elements. When these are packaged together, a complete binary that can be run identically to how you run the standard Che assembly is provided. 
 
 Everything can be customized allowing you to create any new kind of cloud IDE or workspace server.
@@ -93,7 +92,15 @@ We provide different archetypes that will generate custom assemblies with differ
 
 Each archetype has a unique artifactId, which you can specify on the command line with `--archid`. We also generate new versions of each archetype during each release of Che. You can choose a specific version of the archetype with the `--archversion` parameter.
 
-The full list of custom assemblies that you can generate is documented in the CLI and also on the repository for the [assembly generator](https://github.com/eclipse/che-archetypes/blob/master/README.md).
+The generator and templates for each assembly is in an [assembly generator repository](https://github.com/eclipse/che-archetypes/blob/master/README.md).
+
+| Archetype ID | Assembly Contents |
+| agent-archetype | Sample custom agent |
+| plugin-menu-archetype | IDE extension to customize the menu |
+| plugin-wizard-archetype | Custom C project type extension |
+| plugin-serverservice-archetype | Simple IDE extesion and a workspace service |
+| plugin-embedjs-archetype | IDE extension with JavaScript in widgets |
+| plugin-json-archetype | JSON project type, codeassistant, and workspace service |
 
 #### Overrides
 The custom assembly is generated as a Maven multi-module project. Maven scaffolds and expects a particular folder structure that separates source code, resources (like images), and test code into different folders. Maven uses a three-variable combination of artifactId, groupId, and version to uniquely identify a project. When we generate your custom assembly, default values for each of these are provided. You can override them on the command line with `--id`, `--group`, and `--version`.

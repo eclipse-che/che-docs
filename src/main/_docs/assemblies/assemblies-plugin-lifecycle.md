@@ -26,7 +26,7 @@ Depending on the complexity of your plugin, you might create a multi-module stru
 
 | File   | Details   
 | --- | ---
-| `/pluing/extension-ide`   | Your extension module for the IDE client.   
+| `/plugin/extension-ide`   | Your extension module for the IDE client.   
 | `/plugin/extension-server`   | Your extension module for the server part.   
 | `/plugin/extension-shared`   | Your extension module for the shared code between the server and the client.   
 
