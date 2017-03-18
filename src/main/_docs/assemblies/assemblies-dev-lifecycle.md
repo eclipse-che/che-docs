@@ -232,7 +232,6 @@ You can have as many `<exclusion>` blocks as necessary within a single `<exclusi
 We require the maven POM to be sorted. If you get a sorting error, you can sort your modifications on the command line with `mvn sortpom:sort`.
 
 
-
 #### Include
 You include your plugin by modifying the same assembly `pom.xml` and add a new `<dependency>` block:
 ```
@@ -241,6 +240,8 @@ You include your plugin by modifying the same assembly `pom.xml` and add a new `
   <artifactId>YOUR-PLUGIN-IDENTIFIER</artifactId>
 </dependency>
 ```
+
+We require the maven POM to be sorted. If you get a sorting error, you can sort your modifications on the command line with `mvn sortpom:sort`.
 
 
 # IDE
