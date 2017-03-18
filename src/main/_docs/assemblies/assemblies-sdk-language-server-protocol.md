@@ -1,9 +1,9 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Language Server Protocol
+title: SDK Language Server Protocol
 excerpt: ""
 layout: docs
-permalink: /:categories/languageserver/
+permalink: /:categories/sdk-language-server-protocol/
 ---
 
 {% include base.html %}

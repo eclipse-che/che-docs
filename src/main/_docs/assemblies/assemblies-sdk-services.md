@@ -1,9 +1,9 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Services
+title: SDK Services
 excerpt: ""
 layout: docs
-permalink: /:categories/serverworkspace-access/
+permalink: /:categories/sdk-services/
 ---
 {% include base.html %}
 Many simple extensions to Che are directly implemented in the IDE running in the browser. This has the advantage that the execution of simple actions do not require any server round-trips and are therefore typically very fast.

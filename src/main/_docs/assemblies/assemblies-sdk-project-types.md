@@ -1,9 +1,9 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Project Types
+title: SDK Project Types
 excerpt: ""
 layout: docs
-permalink: /:categories/project-types/
+permalink: /:categories/sdk-project-types/
 ---
 {% include base.html %}
 Project types allow you to provide custom project behavior for a certain language. Additionally, they allow you to specify specific project templates, which can be instantiated and already contain language specific content. Further, they allow the user to specify language specific properties for a project, e.g. compiler settings or dependencies. Finally, specific actions, e.g. in the context menu, can be associated with a project type.

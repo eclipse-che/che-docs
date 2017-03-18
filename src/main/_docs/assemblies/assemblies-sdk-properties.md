@@ -1,9 +1,9 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Properties
+title: SDK Properties
 excerpt: ""
 layout: docs
-permalink: /:categories/che-properties/
+permalink: /:categories/sdk-properties/
 ---
 {% include base.html %}
 # Referencing Properties in Extensions  

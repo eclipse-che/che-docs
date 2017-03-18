@@ -1,9 +1,9 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Plugin Development Lifecycle
+title: Plugin Lifecycle
 excerpt: ""
 layout: docs
-permalink: /:categories/extension-lifecycle/
+permalink: /:categories/plugin-lifecycle/
 ---
 {% include base.html %}
 This is an advanced section. You should use archetypes to build custom assemblies that have pre-packaged plugins. Ultimately, if you want to modify the IDE or alter the REST API services in Che or a workspace agent, you need to write a plugin that contains extensions. An extension is code that is compiled and packaged for deployment into Che.

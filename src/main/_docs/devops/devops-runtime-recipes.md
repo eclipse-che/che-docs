@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Runtime Recipes
 excerpt: ""
 layout: docs
-permalink: /:categories/recipes/
+permalink: /:categories/runtime-recipes/
 ---
 {% include base.html %}
 

@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Project Samples
 excerpt: "Sample code that can be used to bootstrap the content of a new project."
 layout: docs
-permalink: /:categories/samples/
+permalink: /:categories/project-samples/
 ---
 {% include base.html %}
 

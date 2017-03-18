@@ -1,9 +1,9 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Editors
+title: SDK Editors
 excerpt: ""
 layout: docs
-permalink: /:categories/code-editors/
+permalink: /:categories/sdk-code-editors/
 ---
 {% include base.html %}
 This part of the tutorial describes how to extend the Eclipse Che code editor to support a new language. It starts with defining a custom file type and associating it with the specific editor to be opened. Subsequently, we describe how to adapt and enhance the syntax highlighting as well as the code completion of the code editor.

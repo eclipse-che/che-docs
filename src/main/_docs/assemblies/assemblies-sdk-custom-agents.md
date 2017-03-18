@@ -1,55 +1,14 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Workspace Agents
+title: SDK Custom Agents
 excerpt: ""
 layout: docs
-permalink: /:categories/agents/
+permalink: /:categories/sdk-custom-agents/
 ---
+
 {% include base.html %}
 
-Agents are scripts that are executed after a [runtime machine]({{base}}{{site.links["ws-machines"]}}) is created. They add additional capabilities to the machines they're injected in - for example to allow terminal access or enhanced language services. Agents allow these services to be injected into machines built from stock Dockerfiles or Compose files.
-
-# Adding Agents to a Machine  
-Agents are added to [machines]({{base}}{{site.links["ws-machines"]}}) through [runtime stack]({{base}}{{site.links["ws-stacks"]}}) configuration. Eclipse Che's included stacks have been pre-configured to use certain agents. The agents needed for each pre-defined stack is determined by common tasks or file types found in [projects]({{base}}{{site.links["ide-projects"]}}).
-
-Adding agents to your own machines can be done by editing [machine information in the user dashboard]({{base}}{{site.links["ws-machines"]}}).
-
-# Adding Agents to a Custom Stack  
-Stacks use JSON format for configuration. Agents are included in the machines definition. Each stack requires a machine named `dev-machine` which always requires the terminal, ws-agent, and SSH agents. Language server agents need to be added to the dev-machine if you want [intellisense]({{base}}{{site.links["ide-intellisense"]}}) features when using the workspace IDE.
-
-```json  
-.......
-  workspaceConfig": {
-    "environments": {
-      "default": {
-        "recipe": {
-          "location": "eclipse/ubuntu_jdk8",
-          "type": "dockerimage"
-        },
-        "machines": {
-          "dev-machine": {
-            "servers": {},
-            "agents": [
-              "org.eclipse.che.terminal",
-              "org.eclipse.che.ws-agent",
-              "org.eclipse.che.ssh",
-              "org.eclipse.che.ls.php"
-            ],
-            "attributes": {
-              "memoryLimitBytes": "2147483648"
-            }
-          }
-        }
-      }
-    },
-.......
-```
-
-# Creating New Agents  
-
-Currently, all agents must be pre-defined within Che. We are thinking about a public registry for agents where they can be added and removed, but this is a future activity.
-
-A new agent has to implement the [Agent interface](https://github.com/eclipse/che/blob/master/agents/che-core-api-agent-shared/src/main/java/org/eclipse/che/api/agent/shared/model/Agent.java) and be bound into the container.
+All custom agents must be created and then packaged into a custom Che assembly. A new agent has to implement the [Agent interface](https://github.com/eclipse/che/blob/master/agents/che-core-api-agent-shared/src/main/java/org/eclipse/che/api/agent/shared/model/Agent.java) and be bound into the container.
 
 ```java
 public interface Agent {
@@ -100,7 +59,7 @@ Agents have an unique ID, a name, a set of other agents that they depend upon, p
 
 The scripts that you must provide with an agent have a large `if` block where you provide installation logic for each Linux distribution that we support. You can follow our [templates](https://github.com/eclipse/che/blob/master/agents/ls-json/src/main/resources/org.eclipse.che.ls.json.script.sh) for how to build agents of your own.
 
-### Adding Agents
+# Adding Agents
 
 * Create a sub module in the [agents folder](https://github.com/eclipse/che/tree/master/agents)
 * Create a resource file with the agent description:

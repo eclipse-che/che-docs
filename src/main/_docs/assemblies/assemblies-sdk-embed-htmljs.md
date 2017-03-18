@@ -1,9 +1,9 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Native HTML/JS
+title: SDK Embedded JavaScript
 excerpt: ""
 layout: docs
-permalink: /:categories/embed-htmljs/
+permalink: /:categories/sdk-embed-htmljs/
 ---
 {% include base.html %}
 The Che IDE is developed based on GWT. If you want to extend the Che UI with new UI components, the default is to develop those custom components using GWT, too. Please refer to [this tutorial]({{ base }}/docs/plugins/parts/index.html) to learn how to extend Che with new parts (view or editors).
