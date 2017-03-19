@@ -94,6 +94,7 @@ Each archetype has a unique artifactId, which you can specify on the command lin
 The generator and templates for each assembly is in an [assembly generator repository](https://github.com/eclipse/che-archetypes/blob/master/README.md).
 
 | Archetype ID | Assembly Contents |
+| ------------ | ---------------- |
 | agent-archetype | Sample custom agent |
 | plugin-menu-archetype | IDE extension to customize the menu |
 | plugin-wizard-archetype | Custom C project type extension |
@@ -199,6 +200,7 @@ After you exclude / include new plugins, you just perform another build to packa
 There are five different places where you can include or exclude a plugin, which are items we call "standard assemblies". The "standard assemblies" generate packages that will be run as an asset in a different location. Che and Codenvy are distributed systems, so there are components that run in a browser, on the server, and within a workspace. Each one of these components are independently packaged into a "standard assembly".
 
 | Che Assembly Location | What Is Included |
+| --------------------- | ---------------- |
 | `/assembly-che/assembly-ide-war` | GWT plugins that will be compiled into a new browser IDE as JavaScript | 
 | `/assembly-che/wsagent-war` | Java plugins that will run within a workspace's agent | 
 | `/assembly-che/wsagent-server` | Packages workspace agents into a Tomcat bundle | 
@@ -207,6 +209,7 @@ There are five different places where you can include or exclude a plugin, which
 
 And Codenvy's assemblies are slightly different:
 | Codenvy Assembly Location | What Is Included |
+| ------------------------- | ---------------- |
 | `/assembly-codenvy/compiling-ide-war` | GWT plugins that will be compiled into a new browser IDE as JavaScript | 
 | `/assembly-codenvy/assembly-ide-war` | Results of GWT plugins packaged into a new web app | 
 | `/assembly-codenvy/assembly-dashboard-war` | JavaScript plugins that will be packaged into the user dashboard | 
