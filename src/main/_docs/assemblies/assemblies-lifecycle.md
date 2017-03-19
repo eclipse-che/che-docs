@@ -39,7 +39,7 @@ MANDATORY DOCKER PARAMETERS:
   -v <path>:/archetype        Local path where your custom assembly will be generated
 
 OPTIONAL DOCKER PARAMETERS:
-  -v <path>:/m2               Local path to your host's Maven M2 repository
+  -v <path>:/m2               Local path to your hosts Maven M2 repository
 
 ACTION:
   all                         Generate, build and run a new custom assembly
