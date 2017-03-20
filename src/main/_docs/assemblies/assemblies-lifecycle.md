@@ -52,7 +52,7 @@ PARAMETERS:
   --archversion=<version>     Sets archetype version - default = tag of CLI image
   --version=<version>         Sets custom assembly version - default = archetype version
   --group=<group>             Sets groupId of generated assembly - default = com.sample
-  --id=<id>                   Sets artifaceId of generated assembly - default = assembly
+  --id=<id>                   Sets artifactId of generated assembly - default = ID of archetype
   --no:interactive            Disables interactive mode
 ```
 
@@ -340,13 +340,13 @@ assembly-che/assembly-wsagent-war
 assembly-codenvy
 # Same modules as Che, but configured for a Codenvy deployment
 
-plugins/assembly-ide
+plugins/<artifactid>/<artifactid>-ide
 # IDE extension written in Java & GWT
 
-plugins/assembly-server
+plugins/<artifactid>/<artifactid>-server
 # REST extension to run within a workspace
 
-plugins/assembly-shared
+plugins/<artifactid>/<artifactid>-shared
 # Code that is shared between IDE and server (will be packaged in both)
 
 build.include
@@ -364,7 +364,7 @@ stop.sh
 
 And because it is interesting, here is the file composition of the three plugins.
 
-`plugins/assembly-shared`:
+`plugins/<artifactid>/<artifactid>-shared`:
 ```shell
 pom.xml 
 # Basic module descriptor
@@ -373,7 +373,7 @@ src/main/java/com/sample/shared/Constants.java
 # Constants that are used across both IDE and server modules
 ```
 
-`plugins/assembly-server`:
+`plugins/<artifactid>/<artifactid>-server`:
 ```shell
 pom.xml
 # Basic module descriptor
@@ -385,7 +385,7 @@ src/main/java/com/sample/projecttype/SampleProjectType.java
 # Project type definition
 ```
 
-`plugins/assembly-ide`:
+`plugins/<artifactid>/<artifactid>-ide`:
 ```shell
 pom.xml 
 # Basic module descriptor
