@@ -1,14 +1,11 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Introduction
+title: Data Transfer Object
 excerpt: ""
 layout: docs
-permalink: /:categories/intro/
+permalink: /:categories/sdk-dto/
 ---
 {% include base.html %}
-
-
-# Data Transfer Object
 A data transfer object (DTO) is an object to exchange data with the client and server. DTOs are responsible for serializing (and deserializing) themselves into JSON. You can prepare custom DTOs for your extensions and plugins. You define a DTO interface and then our DTO utilities will generate implementations that can be included in your extension.
 
 # Interfaces
