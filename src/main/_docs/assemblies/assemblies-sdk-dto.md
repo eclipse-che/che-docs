@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Data Transfer Object
+title: SDK DTOs
 excerpt: ""
 layout: docs
 permalink: /:categories/sdk-dto/
