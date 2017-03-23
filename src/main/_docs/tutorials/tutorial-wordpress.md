@@ -49,7 +49,7 @@ ENV CHE_MYSQL_DB=che_db
 ENV CHE_MYSQL_USER=che
 ```
 
-You may verify that the db is there and MYSQL is running: `mysql -u che -p che`
+You may verify that the db is there and MYSQL is running: `mysql -u che -p che_db`
 
 # 4. Run Your Project  
 
