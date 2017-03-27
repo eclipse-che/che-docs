@@ -54,8 +54,7 @@ This will create the best performing workspace image by only installing the mini
 ### Che Runtime Required Dependencies
 
 | Dependency   | Why?   | How? (Ubuntu/Debian)   
-| --- | --- | ---
-| `RUN apt-get install bash -y`   | `bash`   | Execs are performed as bash commands. It is uncommon that base Docker images do not have bash. However, some distributions as Alpine or Busybox only provide `sh`.   
+| --- | --- | ---  
 | User with `root` privileges   | To install our developer tools agents (like terminal access and intellisense) we need root access or a user who has sudo rights.   | `USER root` <br/><br/> or grant your preferred user sudo rights.   
 | Dockerfile <br/> `CMD tail -f /dev/null` <br/><br/> Compose <br/> `command: [tail, -f, /dev/null]`   | To keep a container running   | Non-terminating CMD   
 {% if site.product_mini_cli=="codenvy" %}| `RUN apt-get install rsync`   | `rsync` version 3.0.9 or above   | Rsync is performed periodically from the workspace's project files/folders to a subfolder in codenvy server's(master node) `/data` folder which provides the ability to scale workspaces across multiple server nodes. The files/folders in `/data` codenvy server are persisted to native host via the required docker volume mount between codenvy server and native host. {% endif %}
