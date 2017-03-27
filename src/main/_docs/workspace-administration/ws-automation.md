@@ -32,7 +32,7 @@ Factories can be invoked in mutliple ways. You can replace the `codenvy.io` doma
 | Approach   | Example   
 | --- | ---
 |  Invoke Factory using its unique hashcode <br>`/f?id={hashcode}` <br>`/factory?id={hascode}`| https://codenvy.io/f?id=s38eam174ji42vty
-|  Invoke a named Factory <br> `/f?user={username}&name={factoryname}` <br>`/factory?user={username}&name={factoryname}`<br>`/factory/username/factoryname`  | https://codenvy.io/f?user=tylerjewell&name=starwars<br>https://codenvy.io/factory?user=tylerjewell&name=starwars<br>https://codenvy.io/factory/tylerjewell/starwars
+|  Invoke a named Factory <br> `/f?user={username}&name={factoryname}` <br>`/factory?user={username}&name={factoryname}`  | https://codenvy.io/f?user=tylerjewell&name=starwars<br>https://codenvy.io/factory?user=tylerjewell&name=starwars
 |  Invoke Factory for a specific git repo <br>`/f?url={git URL}`  | http://codenvy.io/f?url=https://github.com/eclipse/che<br>http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server<br>http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project
 
 Once the Factory is executed, it either loads an existing workspace or generates a new one, depending upon the Factory configuration.  The name of the workspace is determined within the Factory configuration and its name becomes part of the URL access.
