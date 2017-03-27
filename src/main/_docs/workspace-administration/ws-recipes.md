@@ -137,6 +137,9 @@ We really love pull requests. We are always looking to increase the set of stack
 # Multi-Container Recipes  
 The majority of the Docker Compose file syntax works with Eclipse Che. However, Che is a distributed system that supports multiple users on a single node, and in order to manage this distribution and multi-user capabilities, there are certain compose features that are not supported.
 
+## Dev Machine
+A multi-container workspace must have at least one machine/container designated as "DEV". This machine will have terminal, SSH and IDE tooling injected into it and have volume mounts such as `/projects` and those specified in server [volume mount]({{base}}{{site.links["ws-volume-mounts"]}}#sharing-volumes-between-containers) configuration.
+
 ## Unsupported Compose Syntax
 
 ### Local "build.context" and "build.dockerfile"
