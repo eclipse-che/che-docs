@@ -90,9 +90,9 @@ Each environments are constructed of one or more machines, each one is an indivi
 ```json 
  {
    "recipe": {
-      "content": STRING,
+      "content"    : STRING,
       "contentType": "application/x-yaml",
-      "type": "compose"
+      "type"       : "compose"
    }
  }   
 ```      
@@ -104,14 +104,14 @@ MUST contain an machine with name `dev-machine`.
  {
    "machines": {
       "db": {
-        "servers": {},
-        "agents": [STRING]
+        "servers"   : {},
+        "agents"    : [STRING]
         "attributes": {}
       },
       "dev-machine": {
-        "servers": {},
-        "agents": [STRING],
-        "attributes": {}
+        "servers"    : {},
+        "agents"     : [STRING],
+        "attributes" : {}
       }
     }
    } 
@@ -126,7 +126,7 @@ Describes configuration of servers that can be started inside of machine.
     "myserver" : {
      "port"      : STRING, // Port description of this server. Example "9090/udp" 
      "protocol"  : STRING, // Protocol for configuring preview url of this server.
-     "properties": {}
+     "properties": {}      // Server properties
      }
   }
 }
@@ -140,8 +140,8 @@ Present only in workspaces which state is `RUNNING`.
   "runtime" : {
      "activeEnv"   : STRING, // Active environment name
      "rootFolder"  : STRING, // The base folder for the workspace projects
-     "devMachine"  : {},     //
-     "machines"    : [{}]    //
+     "devMachine"  : {},     // Describes development machine only if its status is `RUNNING`
+     "machines"    : [{}]    // All the machines which statuses are `RUNNING` 
   }
 }      
 ```
@@ -166,9 +166,10 @@ Represents running machine configuration.
 ```json
  {
    "runtime":{
-      "properties"  : {}, // Machine specific properties map
-      "envVariables": {}, // Map of environment variables of machine
-      "servers"     : {}  // Mapping of exposed ports.
+      "projectsRoot": STRING, // Projects root path 
+      "properties"  : {},     // Machine specific properties map
+      "envVariables": {},     // Map of environment variables of machine
+      "servers"     : {}      // Mapping of exposed ports.
    }
 }
 ```
