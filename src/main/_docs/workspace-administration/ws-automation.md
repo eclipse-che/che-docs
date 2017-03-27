@@ -82,7 +82,6 @@ factory : {
   "policies"  : {},    // (Optional) Restrictions that limit behaviors
   "ide"       : {},    // (Optional) Trigger IDE UI actions tied to workspace events
   "creator"   : {},    // (Optional) Identifying information of author
-  "button"    : {}     // (Optional) Style dynamic button for Factory URL
 }
 ```
 
@@ -90,7 +89,7 @@ The `factory.workspace` is identical to the `workspace:{}` object for Eclipse Ch
 
 Codenvy maintains object compatibility with the workspace definition from Eclipse Che. You can export Eclipse Che workspaces and then reuse the workspace definition within a Factory. Codenvy workspaces are composed of 0..n projects, 0..n environments which contain machine stacks to run the code, 0..n commands to perform against the code, and a type.
 
-The `factory.policies`, `factory.ide`, `factory.creator`, and `factory.button` objects are unique to Factories. They provide meta information to the automation engine that alter the presentation of the Factory URL or the behavior of the provisioning.
+The `factory.policies`, `factory.ide` and `factory.creator` objects are unique to Factories. They provide meta information to the automation engine that alter the presentation of the Factory URL or the behavior of the provisioning.
 
 ## Gotchas
 A few rules to remember when creating Factories:
@@ -142,9 +141,6 @@ Policies are a way to send instructions to the automation engine about the numbe
 
 ```json  
 factory.policies : {
-  "type"      : [named | temp],       // Default = named        
-  "location"  : [acceptor | owner],   // Default = acceptor. Where workspace lives
-  "resources" : {},                   // Resource grant for newly created workspace
   "referer"   : STRING,               // Works only for clients from referer
   "since"     : EPOCHTIME,            // Factory works only after this date
   "until"     : EPOCHTIME,            // Factory works only before this date
@@ -159,26 +155,14 @@ factory.policies.resources : {
 }
 ```
 
-### Longevity
-`factory.policies.type` sets a newly created worskpace to be either named or temporary. A named workspace is given a persistent name and is only destroyed when a workspace administrator or owner destroys the workspace. It is essentially, persistent.  A temporary workspace will be destroyed by Codenvy based upon an internally configured policy. The default temporary workspace policy is that the workspace will be destroyed when idle for 10 minutes.  
-
-
-### Location and Chargeback
-`factory.policies.location` determines the user that will be charged the resources consumed by any workspace created by this Factory.  If `acceptor`, the person who clicks on the Factory will be charged for resource consumption in any chargeback model. If `owner` the person who authors the Factory will be charged for any resource consumption.
-
-It is important to note that all workspaces are internally assigned to the user who clicked on the Factory that generated the workspace.  The workspace is not physically owned by the `owner`.  Codenvy just allocates the resource billing to the `owner`. The user that represents `owner` in this configuration can disable resources and effectively, disable the workspace for the user that originally clicked on the Factory.
-
 ### Authentication
 Any user that clicks on a Factory URL must have a Codenvy account and be authenticated if the Factory configuration has `type : named` or `location : acceptor`. Both of these properties require Codenvy to understand either a permanent location or a user name in order to generate the workspace. Any user that is not authenticated will be presented a login screen after they click on the Factory URL.  Users without an account can create one using the same dialog.  
-
-### Anonymous Factories
-If a Factory is configured as `type : temp` and `location : owner`, then authentication is not required. Codenvy generates a temporary workspace and a temporary user.  This allows Factory authors to generate hack workspaces for temporary usage that simplify access for those people who do not want to take the time to create an account.
 
 ### Limitations
 You can use `since : EPOCHTIME`, `until : EPOCHTIME` and `referer` as a way to prevent the Factory from executing under certain conditions.  `since` and `until` represent a valid time window that will allow the Factory to activate. For example, instructors who want to create an exercise that can only be accessed for two hours could set these properties.  The `referer` will check the hostname of the acceptor and only allow the Factory to execute if there is a match.
 
 ### Multiplicity
-How many workspaces should be created?  If `count : perClick` then every click of the Factory URL will generate a different workspace, each with its own identifier, name and resources.  If `count : perUser`, then exactly one workspace will be generated for each unique user that clicks on the Factory URL. If the workspace has previously been generated, we will reopen the existing workspace and place the user into it.
+How many workspaces should be created?  If `create : perClick` then every click of the Factory URL will generate a different workspace, each with its own identifier, name and resources.  If `create : perUser`, then exactly one workspace will be generated for each unique user that clicks on the Factory URL. If the workspace has previously been generated, we will reopen the existing workspace and place the user into it.
 
 ## factory.ide Object
 
@@ -319,83 +303,10 @@ factory.creator : {
   "userId"    : STRING                 // Set by the system
 }
 ```
-## factory.button Object  
 
-```json  
-# Defines a visual button or logo that can front the Factory URL
-factory.button : {
-  "type"       : [logo | nologo],      // Sets whether button contains user's logo
-  "attributes" : {}                    // Properties of the button
-}
-
-factory.button.attributes : {
-  "color"   : [gray | white],          // Background color. Ignored if type = logo
-  "counter" : [false | true],          // Adds counter for clicks, updated daily
-  "logo"    : URL,                     // Button image URL. Ignored if type = nologo
-  "style"   : [horizontal | vertical]  // Counter direction. Ignored if type = logo
-
-}
-```
-We provide three button types with animations that execute when you hover over them.  You can save the button configuration with the Factory by filling in the `factory.button` object with the Factory configuration.  You can also use our button formats directly within Markdown and HTML using a JavaScript snippet.
-
-We have three types of buttons.
-
-| Button Type   | Sample    
-| --- | ---
-| White: 76 x 20 pixels  | ![alt](https://codenvy.io/factory/resources/factory-white.png)
-| Dark: 76 x 20 pixels  | ![alt](https://codenvy.io/factory/resources/factory-dark.png)
-| Logo: 104 x 104 image of your logo with our hover animation layered on top  | ![alt](https://files.readme.io/zolQfjkhT4KKn3P1xBdc_logo.PNG)   
-
-
-#### Button Animation  
-Button animations do not work withing Markdown documents, unfortunately.  Our docs are built using a Markdown editor, so these samples will not give you the hover animation.  
-
-### JavaScript Button: Configuration From Factory  
-You can save your button configuration within Codenvy when you generate the Factory configuration. You do this by filling in the `factory.button` fields as part of your `factory.json`. Your button configuration is saved within Codenvy and any logo image is uploaded and hosted on our servers. You can then reference this Factory button directly using JavaScript.
-
-```html  
-<script
-    type="text/javascript"
-    src="https://codenvy.com/factory/resources/factory.js?FACTORY_HASH_CODE"
-        >
-</script>
-```
-### JavaScript Button: Configuration Within JavaScript  
-You can reuse our buttons and animations without first having created a Factory.  
-
-```html  
-<script
-    type    = "text/javascript"
-    src     = "https://codenvy.com/factory/resources/factory.js"
-    style   = ["gray" | "white" | "advanced"]
-    counter = ["horizontal" | "vertical"]
-    url     = URL_TO_ACTIVATE_WHEN_BUTTON_CLICKED
-    logo    = URL_TO_YOUR_LOGO
-        >
-</script>
-```
-The `gray` style will cause the small dark animation button to load. The `white` does the small white animation button to load. Use `advanced` if you want to have your logo image loaded with our hover animation on top of it.  The `counter` will add a click counter to the button that is updated daily with the counts stored server side. The `style` attribute can be `white`, `dark` or `advanced`, which displays your logo.
-
-### Markdown Button  
+## Factory Badging  
 
 ```markdown  
 ![alt](https://codenvy.com/factory/resources/factory-white.png)](URL)
 ![alt](https://codenvy.com/factory/resources/factory-dark.png)](URL)
-```
-
-### Button Examples  
-
-```html  
-<script
-    type    = "text/javascript"
-    src     = "https://codenvy.com/factory/resources/factory.js"
-    style   = "advanced"
-    counter = "horizontal"
-    url     = "https://codenvy.com"
-    logo    = "http://bit.ly/1CjqxdR">
-</script>
-```
-
-```markdown  
-![alt](https://codenvy.com/factory/resources/factory-white.png)](https://codenvy.io/f?id=s38eam174ji42vty)
 ```
