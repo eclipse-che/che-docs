@@ -206,7 +206,7 @@ An alternative strategy is available, by setting `CHE_DOCKER_SERVER__EVALUATION_
 There are multiple techniques for connecting to Docker including Unix sockets, localhost, and remote connections over TCP protocol. Depending upon the type of connection you require and the location of the machine node running Docker, we use different parameters.
 
 ## Workspace Port Exposure  
-Inside your user's workspace containers, Che launches microservices on port `4401` and `4403`. We also launch SSH agents on port `22`. The bash terminal accessible in the workspace is also launched as an agent in the workspace on port `4411`. Custom stacks (configured in the dashboard) may expose additional services on different ports.
+Inside your user's workspace containers, Che launches microservices on port `4401` and `4403`. We also launch SSH agents on port `22`. The terminal accessible in the workspace is also launched as an agent in the workspace on port `4411`. Custom stacks (configured in the dashboard) may expose additional services on different ports.
 
 Docker uses ephemeral port mapping. The ports accessible to your clients start at port `32768` and go through a wide range. When we start services internal to Docker, they are mapped to one of these ports. It is these ports that the browser (or SSH) clients connect to, and would need to be opened if connecting through a firewall.
 
