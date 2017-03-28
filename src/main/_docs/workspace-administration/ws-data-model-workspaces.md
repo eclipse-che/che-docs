@@ -14,7 +14,7 @@ Workspace object representation in JSON format:
 ```json  
 {
   "id"           : STRING,         // The workspace Id  
-  "namespace"    : STRING,         // The namespace of the current workspace instance
+  "namespace"    : STRING,         // The namespace of the current workspace instance. Workspace name is unique per namespace.
   "isTemporary"  : [true | false], // Indicates that workspace is temporary, i.e exists only in runtime
   "status"       : STRING,         // The status of the current workspace instance
   "config"       : {},             // Configuration of this workspace instance
@@ -137,7 +137,6 @@ or
 ```json 
  {
    "recipe": {
-      "content"    : STRING,
       "location"   : "eclipse/ubuntu_jdk8"",
       "type"       : "dockerimage"
    }
@@ -177,6 +176,32 @@ Describes configuration of servers that can be started inside of machine.
      "properties": {}      // Server properties
      }
   }
+}
+```
+
+Example:
+```json
+"servers":{
+  "8080/tcp":{
+     "url":"http://172.17.0.1:32832",
+     "ref":"tomcat8",
+     "properties":{
+       "internalUrl":"http://172.17.0.1:32832",
+       "internalAddress":"172.17.0.1:32832"
+     },
+     "address":"172.17.0.1:32832",
+     "protocol":"http"
+  },
+  "9876/tcp":{
+     "url":"http://172.17.0.1:32831",
+     "ref":"codeserver",
+     "properties":{
+       "internalUrl":"http://172.17.0.1:32831",
+       "internalAddress":"172.17.0.1:32831"
+     },
+     "address":"172.17.0.1:32831",
+     "protocol":"http"
+   }
 }
 ```
 
