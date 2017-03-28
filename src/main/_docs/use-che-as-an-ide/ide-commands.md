@@ -49,11 +49,13 @@ fi
 | `${current.class.fqn}` | The fully qualified package.class name of the Java class currently active in the editor panel.
 | `${current.project.relpath}` | The path to the currently selected project relative to `/projects`. Effectively removes the `/projects` path from any project reference.
 | `${editor.current.file.name}` | Currently selected file in editor   
+| `${editor.current.file.basename}` | Currently selected file in editor without extension   
 | `${editor.current.file.path}` | Absolute path to the selected file in editor   
 | `${editor.current.file.relpath}` | Path relative to the `/projects` folder to the selected file in editor   
 | `${editor.current.project.name}` | Project name of the file currently selected in editor   
 | `${editor.current.project.type}` | Project type of the file currently selected in editor   
 | `${explorer.current.file.name}` | Currently selected file in project tree   
+| `${explorer.current.file.basename}` | Currently selected file in project tree without extension   
 | `${explorer.current.file.path}` | Absolute path to the selected file in project tree   
 | `${explorer.current.file.relpath}` | Path relative to the `/projects` folder in project tree   
 | `${explorer.current.project.name}` | Project name of the file currently selected in explorer   
