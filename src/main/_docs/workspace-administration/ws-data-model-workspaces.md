@@ -99,7 +99,7 @@ Each environments are constructed of one or more machines, each one is an indivi
  
 ### Machines map
 Additional information about machine(s) which is needed for purposes of CHE. 
-MUST contain an machine with name `dev-machine`.
+MUST contain machine with name `dev-machine`.
 ```json 
  {
    "machines": {
@@ -124,7 +124,7 @@ Describes configuration of servers that can be started inside of machine.
 {
  "servers": {
     "myserver" : {
-     "port"      : STRING, // Port description of this server. Example "9090/udp" 
+     "port"      : STRING, // Port description of this server. Example: "9090/udp" 
      "protocol"  : STRING, // Protocol for configuring preview url of this server.
      "properties": {}      // Server properties
      }
@@ -175,21 +175,21 @@ Represents running machine configuration.
 ```
 
 #### Runtime Servers object map
-Describes configuration of servers that can be started inside of machine.
+Describes configuration of servers that is started inside of machine.
 ```json 
 {
  "servers":{
     "4401/tcp":{
-      "url"       : STRING,   // Full url to this server. Example: `http://172.17.0.1:32836/api`
+      "url"       : STRING,   // Full url to this server. Example: "http://172.17.0.1:32836/api"
       "ref"       : STRING,   // Ref string
       "properties": {},       // Properties
-     "address"    : STRING,   // Adress. Example: `172.17.0.1:32836`
-     "protocol"   : STRING    // Server protocol. Example: `http`
+      "address"    : STRING,  // Adress. Example: "172.17.0.1:32836"
+      "protocol"   : STRING   // Server protocol. Example: "http"
     },
-   "8080/tcp":{
-      "url"       : STRING,
-      "ref"       : STRING
-      ...
+    "8080/tcp":{
+       "url"       : STRING,
+       "ref"       : STRING
+       ...
    }
 }
 ```
