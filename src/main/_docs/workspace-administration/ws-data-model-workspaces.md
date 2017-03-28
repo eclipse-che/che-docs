@@ -13,13 +13,13 @@ JSON workspace object defines the contents and structure of a workspace. A works
 Workspace object representation in JSON format:
 ```json  
 {
-  "id"           : STRING,  // The workspace Id  
-  "namespace"    : STRING,  // The namespace of the current workspace instance
-  "isTemporary"  : BOOLEAN, // Indicates that workspace is temporary, i.e exists only in runtime
-  "status"       : STRING,  // The status of the current workspace instance
-  "config"       : {},      // Configuration of this workspace instance
-  "runtime"      : {},      // The runtime of this workspace instance
-  "attributes"   : {}       // The workspace attributes
+  "id"           : STRING,         // The workspace Id  
+  "namespace"    : STRING,         // The namespace of the current workspace instance
+  "isTemporary"  : [true | false], // Indicates that workspace is temporary, i.e exists only in runtime
+  "status"       : STRING,         // The status of the current workspace instance
+  "config"       : {},             // Configuration of this workspace instance
+  "runtime"      : {},             // The runtime of this workspace instance
+  "attributes"   : {}              // The workspace attributes
 }
 ```
 Possible `status` values are: `STARTING`,`RUNNING`, `SNAPSHOTTING`, `STOPPING` and `STOPPED`. 
@@ -72,8 +72,8 @@ Each environments are constructed of one or more machines, each one is an indivi
  Content and location fields are mutually exclusive, i.e. only one can be present.
  The source of a machine configuration object is supporting several types when using `docker` as machine configuration type, here are the supported source options
  
- #### dockerfile type
- It provides a docker runtime. Link to the Dockerfile recipe can be provided by a link, using `location` field or by providing directly the content of the Dockerfile, using `content `field
+ #### dockerfile type  
+ It provides a docker runtime. Link to the Dockerfile recipe can be provided by a link, using `location` field or by providing directly the content of the Dockerfile, using `content` field
 ```json 
  {
    "recipe": [
@@ -85,6 +85,24 @@ Each environments are constructed of one or more machines, each one is an indivi
    ]
  }
 ```
+
+Examples:
+```json
+"recipe" : {
+    "type"    : "dockerfile",
+    "location": "http://beta.codenvy.com/api/recipe/recipec0v4ta2uz6jok0bn/script"
+}
+```
+or 
+```json
+"recipe": {
+    "type"   : "dockerfile",
+    "content": "FROM eclipse/ubuntu_jdk8
+                RUN echo hello world
+                ENV MYCUSTOM=VALUE"
+}
+```
+
  
  #### compose type
 ```json 
@@ -95,11 +113,41 @@ Each environments are constructed of one or more machines, each one is an indivi
       "type"       : "compose"
    }
  }   
-```      
+``` 
+
+Examples:
+```json
+"recipe" : {
+    "type"    : "compose",
+    "location": "http://beta.codenvy.com/api/recipe/recipec0v4ta2uz6jok0bn/script"
+}
+```
+or 
+```json
+"recipe" : {
+        "contentType": "application/x-yaml",
+        "type"       : "compose",
+        "content"    : "services:\n  db:\n    image: mysql\n    environment:\n      MYSQL_ROOT_PASSWORD: password\n      MYSQL_DATABASE: petclinic\n      MYSQL_USER: petclinic\n      MYSQL_PASSWORD: password\n    mem_limit: 1073741824\n  dev-machine:\n    image: eclipse/ubuntu_jdk8\n    mem_limit: 2147483648\n    depends_on:\n      - db\n"
+      }
+}
+```
+
+
+ #### dockerimage type
+```json 
+ {
+   "recipe": {
+      "content"    : STRING,
+      "location"   : "eclipse/ubuntu_jdk8"",
+      "type"       : "dockerimage"
+   }
+ }   
+``` 
+    
  
 ### Machines map
 Additional information about machine(s) which is needed for purposes of CHE. 
-MUST contain machine with name `dev-machine`.
+MUST contain one machine with name `dev-machine`, and, optionally, additional machines.
 ```json 
  {
    "machines": {
@@ -153,7 +201,7 @@ Represents running machine configuration.
   "devMachine":{
      "envName"     : STRING, // Name of environment that started this machine
      "id"          : STRING, // Machine identifier
-     "owner"       : STRING, // Machine owner (users identifier)
+     "owner"       : STRING, // Machine owner (user identifier)
      "status"      : STRING, // Runtime status of the machine
      "runtime"     : {},     // Runtime information about machine
      "config"      : {},     // Configuration used to create this machine
@@ -163,6 +211,7 @@ Represents running machine configuration.
 ```
 
 #### MachineRuntimeInfo object
+Represents running machine properties and variables.
 ```json
  {
    "runtime":{
