@@ -13,13 +13,13 @@ JSON workspace object defines the contents and structure of a workspace. A works
 Workspace object representation in JSON format:
 ```json  
 {
-  "id"           : STRING,         // The workspace Id  
-  "namespace"    : STRING,         // The namespace of the current workspace instance. Workspace name is unique per namespace.
-  "isTemporary"  : [true | false], // Indicates that workspace is temporary, i.e exists only in runtime
-  "status"       : STRING,         // The status of the current workspace instance
-  "config"       : {},             // Configuration of this workspace instance
-  "runtime"      : {},             // The runtime of this workspace instance
-  "attributes"   : {}              // The workspace attributes
+  "id"          : STRING,         // The workspace Id  
+  "namespace"   : STRING,         // The namespace of the current workspace instance. Workspace name is unique per namespace.
+  "isTemporary" : [true | false], // Indicates that workspace is temporary, i.e exists only in runtime
+  "status"      : STRING,         // The status of the current workspace instance
+  "config"      : {},             // Configuration of this workspace instance
+  "runtime"     : {},             // The runtime of this workspace instance
+  "attributes"  : {}              // The workspace attributes
 }
 ```
 Possible `status` values are: `STARTING`,`RUNNING`, `SNAPSHOTTING`, `STOPPING` and `STOPPED`. 
@@ -31,12 +31,12 @@ WorkspaceConfig JSON:
 
 ```json  
 "workspaceConfig": {
-  "name"           : STRING,    // The name of this workspace
-  "description"    : STRING,    // The workspace description
-  "defaultEnv"     : STRING,    // The name of env that powers this workspace
-  "environments"   : {},        // Map of runtime envs this workspace uses
-  "projects"       : [{}],      // List of projects included in the workspace
-  "commands"       : [{}]       // List of commands that build & run projects
+  "name"         : STRING,    // The name of this workspace
+  "description"  : STRING,    // The workspace description
+  "defaultEnv"   : STRING,    // The name of env that powers this workspace
+  "environments" : {},        // Map of runtime envs this workspace uses
+  "projects"     : [{}],      // List of projects included in the workspace
+  "commands"     : [{}]       // List of commands that build & run projects
 }
 ```
 
@@ -78,9 +78,9 @@ Each environments are constructed of one or more machines, each one is an indivi
  {
    "recipe": [
      {
-       "content"    : STRING,
-       "type"       : "dockerfile",
-       "contentType": "application/x-dockerfile"
+       "content"     : STRING,
+       "type"        : "dockerfile",
+       "contentType" : "application/x-dockerfile"
      }
    ]
  }
@@ -108,9 +108,9 @@ or
 ```json 
  {
    "recipe": {
-      "content"    : STRING,
-      "contentType": "application/x-yaml",
-      "type"       : "compose"
+      "content"     : STRING,
+      "contentType" : "application/x-yaml",
+      "type"        : "compose"
    }
  }   
 ``` 
@@ -137,8 +137,8 @@ or
 ```json 
  {
    "recipe": {
-      "location"   : "eclipse/ubuntu_jdk8"",
-      "type"       : "dockerimage"
+      "location" : "eclipse/ubuntu_jdk8"",
+      "type"     : "dockerimage"
    }
  }   
 ``` 
@@ -151,9 +151,9 @@ MUST contain one machine with name `dev-machine`, and, optionally, additional ma
  {
    "machines": {
       "db": {
-        "servers"   : {},
-        "agents"    : [STRING]
-        "attributes": {}
+        "servers"    : {},
+        "agents"     : [STRING]
+        "attributes" : {}
       },
       "dev-machine": {
         "servers"    : {},
@@ -171,9 +171,9 @@ Describes configuration of servers that can be started inside of machine.
 {
  "servers": {
     "myserver" : {
-     "port"      : STRING, // Port description of this server. Example: "9090/udp" 
-     "protocol"  : STRING, // Protocol for configuring preview url of this server.
-     "properties": {}      // Server properties
+     "port"       : STRING, // Port description of this server. Example: "9090/udp" 
+     "protocol"   : STRING, // Protocol for configuring preview url of this server.
+     "properties" : {}      // Server properties
      }
   }
 }
@@ -211,10 +211,10 @@ Present only in workspaces which state is `RUNNING`.
 ```json 
 {
   "runtime" : {
-     "activeEnv"   : STRING, // Active environment name
-     "rootFolder"  : STRING, // The base folder for the workspace projects
-     "devMachine"  : {},     // Describes development machine only if its status is `RUNNING`
-     "machines"    : [{}]    // All the machines which statuses are `RUNNING` 
+     "activeEnv"  : STRING, // Active environment name
+     "rootFolder" : STRING, // The base folder for the workspace projects
+     "devMachine" : {},     // Describes development machine only if its status is `RUNNING`
+     "machines"   : [{}]    // All the machines which statuses are `RUNNING` 
   }
 }      
 ```
@@ -240,10 +240,10 @@ Represents running machine properties and variables.
 ```json
  {
    "runtime":{
-      "projectsRoot": STRING, // Projects root path 
-      "properties"  : {},     // Machine specific properties map
-      "envVariables": {},     // Map of environment variables of machine
-      "servers"     : {}      // Mapping of exposed ports.
+      "projectsRoot" : STRING, // Projects root path 
+      "properties"   : {},     // Machine specific properties map
+      "envVariables" : {},     // Map of environment variables of machine
+      "servers"      : {}      // Mapping of exposed ports.
    }
 }
 ```
@@ -254,9 +254,9 @@ Describes configuration of servers that is started inside of machine.
 {
  "servers":{
     "4401/tcp":{
-      "url"       : STRING,   // Full url to this server. Example: "http://172.17.0.1:32836/api"
-      "ref"       : STRING,   // Ref string
-      "properties": {},       // Properties
+      "url"        : STRING,   // Full url to this server. Example: "http://172.17.0.1:32836/api"
+      "ref"        : STRING,   // Ref string
+      "properties" : {},       // Properties
       "address"    : STRING,  // Adress. Example: "172.17.0.1:32836"
       "protocol"   : STRING   // Server protocol. Example: "http"
     },
