@@ -22,9 +22,9 @@ It is possible to connect your Android phone or tablet to your machine and use `
 
 There are a few pre-requisites:
 
-* in `/conf/che.properties`:
-  - add `machine.server.extra.volume=/dev/bus/usb:/dev/bus/usb`
-  - set `machine.docker.privilege_mode` to `true`
+* in `che.env`:
+  - `CHE_WORKSPACE_VOLUME=/dev/bus/usb:/dev/bus/usb`
+  - `CHE_DOCKER_PRIVILEGED=true`
 
 Vagrant users and those running Che natively on Windows and Mac (i.e. where Virtual Box is involved) need to make sure that the VM can see USB devices connected to the host machine.
 

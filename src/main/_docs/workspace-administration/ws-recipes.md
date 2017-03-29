@@ -54,8 +54,7 @@ This will create the best performing workspace image by only installing the mini
 ### Che Runtime Required Dependencies
 
 | Dependency   | Why?   | How? (Ubuntu/Debian)   
-| --- | --- | ---
-| `RUN apt-get install bash -y`   | `bash`   | Execs are performed as bash commands. It is uncommon that base Docker images do not have bash. However, some distributions as Alpine or Busybox only provide `sh`.   
+| --- | --- | ---  
 | User with `root` privileges   | To install our developer tools agents (like terminal access and intellisense) we need root access or a user who has sudo rights.   | `USER root` <br/><br/> or grant your preferred user sudo rights.   
 | Dockerfile <br/> `CMD tail -f /dev/null` <br/><br/> Compose <br/> `command: [tail, -f, /dev/null]`   | To keep a container running   | Non-terminating CMD   
 {% if site.product_mini_cli=="codenvy" %}| `RUN apt-get install rsync`   | `rsync` version 3.0.9 or above   | Rsync is performed periodically from the workspace's project files/folders to a subfolder in codenvy server's(master node) `/data` folder which provides the ability to scale workspaces across multiple server nodes. The files/folders in `/data` codenvy server are persisted to native host via the required docker volume mount between codenvy server and native host. {% endif %}
@@ -137,6 +136,9 @@ We really love pull requests. We are always looking to increase the set of stack
 
 # Multi-Container Recipes  
 The majority of the Docker Compose file syntax works with Eclipse Che. However, Che is a distributed system that supports multiple users on a single node, and in order to manage this distribution and multi-user capabilities, there are certain compose features that are not supported.
+
+## Dev Machine
+A multi-container workspace must have at least one machine/container designated as "DEV". This machine will have terminal, SSH and IDE tooling injected into it and have volume mounts such as `/projects` and those specified in server [volume mount]({{base}}{{site.links["ws-volume-mounts"]}}#sharing-volumes-between-containers) configuration.
 
 ## Unsupported Compose Syntax
 
