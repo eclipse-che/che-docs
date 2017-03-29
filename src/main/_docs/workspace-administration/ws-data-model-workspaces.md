@@ -14,16 +14,15 @@ Workspace object representation in JSON format:
 ```json  
 {
   "id"          : STRING,         // The workspace Id  
-  "namespace"   : STRING,         // The namespace of the current workspace instance. Workspace name is unique per namespace.
+  "namespace"   : STRING,         // The namespace of the workspace. Workspace name is unique per namespace
   "isTemporary" : [true | false], // Indicates that workspace is temporary, i.e exists only in runtime
-  "status"      : STRING,         // The status of the current workspace instance
-  "config"      : {},             // Configuration of this workspace instance
-  "runtime"     : {},             // The runtime of this workspace instance
+  "status"      : STRING,         // The status of the workspace
+  "config"      : {},             // Configuration of the workspace
+  "runtime"     : {},             // The runtime used by the workspace
   "attributes"  : {}              // The workspace attributes
 }
 ```
-Possible `status` values are: `STARTING`,`RUNNING`, `SNAPSHOTTING`, `STOPPING` and `STOPPED`. 
-
+Possible `status` values are: `STARTING`,`RUNNING`, `SNAPSHOTTING`, `STOPPING` and `STOPPED`.
 
 ## WorkspaceConfig Object
 
@@ -31,20 +30,20 @@ WorkspaceConfig JSON:
 
 ```json  
 "workspaceConfig": {
-  "name"         : STRING,    // The name of this workspace
+  "name"         : STRING,    // The name of the workspace
   "description"  : STRING,    // The workspace description
   "defaultEnv"   : STRING,    // The name of env that powers this workspace
   "environments" : {},        // Map of runtime envs this workspace uses
   "projects"     : [{}],      // List of projects included in the workspace
-  "commands"     : [{}]       // List of commands that build & run projects
+  "commands"     : [{}]       // List of commands configured in the workspace
 }
 ```
 
 Every workspace can have one or more environments which are used to run the code against a stack of technology. Every workspace has exactly one environment which acts as a special "development environment", for which projects are synchronized into and developer services are injected, such as intellisense, workspace agents, SSH, and plug-ins.  
 
-Set `defaultEnv` to the name of the environment that should act as the Docker-powered environment that powers the workspace when it boots. This name must match the name given to an object in the `environments` array. Che will create a container off of this environment when the workspace is launched. 
+Set `defaultEnv` to the name of the environment that should act as the Docker-powered environment that powers the workspace when it boots. This name must match the name given to an object in the `environments` array. Che will create a container off of this environment when the workspace is launched.
 
-## Environments 
+## Environments
 Each environments are constructed of one or more machines, each one is an individual container. An environment can be comprised of multiple machines that are linked together, such as when you want a database running on a different machine than your debugger.
 ```json  
 {
@@ -56,8 +55,8 @@ Each environments are constructed of one or more machines, each one is an indivi
   }  
 }
 ```
-          
-### Recipe object 
+
+### Recipe object
 
 ```json  
  {
@@ -70,11 +69,16 @@ Each environments are constructed of one or more machines, each one is an indivi
  }
 ```
  Content and location fields are mutually exclusive, i.e. only one can be present.
- The source of a machine configuration object is supporting several types when using `docker` as machine configuration type, here are the supported source options
- 
- #### dockerfile type  
- It provides a docker runtime. Link to the Dockerfile recipe can be provided by a link, using `location` field or by providing directly the content of the Dockerfile, using `content` field
-```json 
+ The source of a machine configuration object is supporting several types when using `docker` as machine configuration type, here are the supported source options:
+ - `dockerfile`: to provide a link to a Dockerfile recipe or directly the content of a Dockerfile.
+ - `composetype`: to provide link to a Composefile or directly the content of the Composefile recipe.
+ - `dockerimage`: to provide a built Docker image.
+
+ See more details below.
+
+#### Dockerfile type  
+It provides a docker runtime. The Dockerfile recipe can be provided by a link, using `location` field or by providing directly the content of the Dockerfile, using `content` field.
+```json
  {
    "recipe": [
      {
@@ -90,10 +94,10 @@ Examples:
 ```json
 "recipe" : {
     "type"    : "dockerfile",
-    "location": "http://beta.codenvy.com/api/recipe/recipec0v4ta2uz6jok0bn/script"
+    "location": "http://codenvy.io/api/recipe/recipec0v4ta2uz6jok0bn/script"
 }
 ```
-or 
+or
 ```json
 "recipe": {
     "type"   : "dockerfile",
@@ -103,9 +107,11 @@ or
 }
 ```
 
- 
- #### compose type
-```json 
+
+#### Compose type
+It provides a multi-machine runtime from a compose definition that need to be built into image(s) or reference already-built image(s) docker runtime.
+
+```json
  {
    "recipe": {
       "content"     : STRING,
@@ -113,7 +119,7 @@ or
       "type"        : "compose"
    }
  }   
-``` 
+```
 
 Examples:
 ```json
@@ -122,7 +128,7 @@ Examples:
     "location": "http://beta.codenvy.com/api/recipe/recipec0v4ta2uz6jok0bn/script"
 }
 ```
-or 
+or
 ```json
 "recipe" : {
         "contentType": "application/x-yaml",
@@ -133,21 +139,23 @@ or
 ```
 
 
- #### dockerimage type
-```json 
+#### Dockerimage type
+Use `dockerimage` to provide use a Docker image.
+
+```json
  {
    "recipe": {
       "location" : "eclipse/ubuntu_jdk8"",
       "type"     : "dockerimage"
    }
  }   
-``` 
-    
- 
+```
+
+
 ### Machines map
-Additional information about machine(s) which is needed for purposes of CHE. 
+Additional information about machine(s) which is needed for purposes of Che.
 MUST contain one machine with name `dev-machine`, and, optionally, additional machines.
-```json 
+```json
  {
    "machines": {
       "db": {
@@ -161,17 +169,17 @@ MUST contain one machine with name `dev-machine`, and, optionally, additional ma
         "attributes" : {}
       }
     }
-   } 
+   }
  }     
 ```      
 
 #### Server Object
 Describes configuration of servers that can be started inside of machine.
-```json 
+```json
 {
  "servers": {
     "myserver" : {
-     "port"       : STRING, // Port description of this server. Example: "9090/udp" 
+     "port"       : STRING, // Port description of this server. Example: "9090/udp"
      "protocol"   : STRING, // Protocol for configuring preview url of this server.
      "properties" : {}      // Server properties
      }
@@ -208,20 +216,20 @@ Example:
 
 ## Runtime Object
 Present only in workspaces which state is `RUNNING`.
-```json 
+```json
 {
   "runtime" : {
      "activeEnv"  : STRING, // Active environment name
      "rootFolder" : STRING, // The base folder for the workspace projects
      "devMachine" : {},     // Describes development machine only if its status is `RUNNING`
-     "machines"   : [{}]    // All the machines which statuses are `RUNNING` 
+     "machines"   : [{}]    // All the machines which statuses are `RUNNING`
   }
 }      
 ```
 
 ### DevMachine object
 Represents running machine configuration.
-```json 
+```json
 {
   "devMachine":{
      "envName"     : STRING, // Name of environment that started this machine
@@ -240,7 +248,7 @@ Represents running machine properties and variables.
 ```json
  {
    "runtime":{
-      "projectsRoot" : STRING, // Projects root path 
+      "projectsRoot" : STRING, // Projects root path
       "properties"   : {},     // Machine specific properties map
       "envVariables" : {},     // Map of environment variables of machine
       "servers"      : {}      // Mapping of exposed ports.
@@ -250,7 +258,7 @@ Represents running machine properties and variables.
 
 #### Runtime Servers object map
 Describes configuration of servers that is started inside of machine.
-```json 
+```json
 {
  "servers":{
     "4401/tcp":{
@@ -267,4 +275,3 @@ Describes configuration of servers that is started inside of machine.
    }
 }
 ```
-
