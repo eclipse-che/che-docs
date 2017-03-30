@@ -35,8 +35,7 @@ che.server.ip = localhost
 che.server.port = 8080
 
 # Configure how Che boots with environment variables.
-# Chefile supports the full Che configuration list:
-# {{base}}/docs/setup/configuration/index.html
+# Chefile supports the full Che configuration list of che.env
 che.server.properties['CHE_VERSION']='nightly'
 che.server.properties['CHE_PROPERTY_http__proxy']='http://localhost:1234'
 
@@ -44,7 +43,7 @@ che.server.properties['CHE_PROPERTY_http__proxy']='http://localhost:1234'
 workspace.name = “happy”
 
 # Define the Docker image to use to power the workspace's runtime
-# This must conform to [recipe requirements]({{base}}{{site.links("ws-recipes")}})
+# This must conform to recipe requirements
 workspace.runtime.docker.image="eclipse/alpine_jdk8"
 
 # You can - instead - define the runtime using a Dockerfile in a git repo

@@ -78,12 +78,16 @@ samples.source.parameters : {
 You can add predefined sets of commands that will appear in the command selector for any user that creates a project from this sample.
 
 ```json  
-samples.commands : [{  
-  # Add command JSON objects here
+samples.commands : [{
+  "name"                : STRING,                   # The name of a command               
+  "type"                : ["mvn" | "custom"],       # Type of the command
+  "commandLine"         : STRING,                   # Instructions to be execute in machine   
+  "attributes":{                
+    "previewUrl"        : STRING,                   # Instructions to generate previewURL
+    "goal": ["Build" | "Run" | "Test" | "Debug" | "Deploy" | "Common"]   # Goal of the command         
+  }  
 }]
 ```
-
-See Command {% assign docs_todo="What is link/page" %} reference.
 
 ## Tags
 Tags are used for stacks and samples objects. Those values are used to determine if a sample is compatible with a stack. Tags are used to filter the list of project samples that a user can choose when selecting a stack in the user dashboard.
@@ -123,10 +127,11 @@ samples.tags : [{
       {  
         "name":"build",               
         "type":"mvn",                 
-        "commandLine":"mvn -f ${current.project.path} clean install 
-                           && cp ${current.project.path}/target/*.war $TOMEE_HOME/webapps/ROOT.war",   
+        "commandLine":"mvn -f ${current.project.path} clean install
+                           \ncp ${current.project.path}/target/*.war $TOMEE_HOME/webapps/ROOT.war",   
         "attributes":{                
-          "previewUrl":""             
+          "previewUrl":"",
+          "goal":"Build"             
         }
       },
       {  
@@ -134,7 +139,8 @@ samples.tags : [{
         "type":"custom",        
         "commandLine":"$TOMEE_HOME/bin/catalina.sh run",
         "attributes":{  
-          "previewUrl":"http://${server.port.8080}"
+          "previewUrl":"http://${server.port.8080}",
+          "goal":"Run"   
         }
       },
       {  
@@ -142,27 +148,30 @@ samples.tags : [{
         "type":"custom",      
         "commandLine":"$TOMEE_HOME/bin/catalina.sh stop",
         "attributes":{  
-          "previewUrl":""
+          "previewUrl":"",
+          "goal":"Run"   
         }
       },
       {  
         "name":"build and run",
         "type":"mvn",
-        "commandLine":"mvn -f ${current.project.path} clean install 
-                           && cp ${current.project.path}/target/*.war $TOMEE_HOME/webapps/ROOT.war 
-                           && $TOMEE_HOME/bin/catalina.sh run",
+        "commandLine":"mvn -f ${current.project.path} clean install
+                           \ncp ${current.project.path}/target/*.war $TOMEE_HOME/webapps/ROOT.war
+                           \n$TOMEE_HOME/bin/catalina.sh run",
         "attributes":{  
-           "previewUrl":"http://${server.port.8080}"
+           "previewUrl":"http://${server.port.8080}",
+           "goal":"Run"
         }
       },
       {  
         "name":"debug",        
         "type":"mvn",        
-        "commandLine":"mvn -f ${current.project.path} clean install 
-                           && cp ${current.project.path}/target/*.war $TOMEE_HOME/webapps/ROOT.war 
-                           && $TOMEE_HOME/bin/catalina.sh jpda run",        
+        "commandLine":"mvn -f ${current.project.path} clean install
+                           \ncp ${current.project.path}/target/*.war $TOMEE_HOME/webapps/ROOT.war
+                           \n$TOMEE_HOME/bin/catalina.sh jpda run",        
         "attributes":{  
-          "previewUrl":"http://${server.port.8080}"
+          "previewUrl":"http://${server.port.8080}",
+          "goal":"Debug"
         }
       }
     ],
