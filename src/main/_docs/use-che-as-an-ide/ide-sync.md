@@ -26,7 +26,6 @@ mysql     workspacewia89343k4  RUNNING
 --url <url>           # Che or Codenvy host where workspaces are running
 --user <email>        # Codenvy user name
 --password <password> # Codenvy password
---unison-verbose      # Display verbose output of unison tool used by sync command
 ```
 
 # Mount and Sync 
@@ -37,7 +36,7 @@ We provide a Docker container that bridges your remote Che workspace with your l
 This particular approach is fast because your local IDE has local I/O performance for all file actions. The synchronizer runs in the background asynchronously, and synchronizes your local changes into the workspace. The reverse course is true as well. This asynchronous approach provides a non-blocking I/O performance that is essential.
 
 ## Use
-To synchronize your IDE you'll use the [{{ site.product_formal_name }} CLI]{{base}}{{site.links["setup-cli"]}}) installed. The synchronization will take place with the current directory. It is probably best to start in an empty directory, otherwise the utility will synchronize the contents of an existing directory onto the workspace.
+To synchronize your IDE you'll use the [{{ site.product_formal_name }} CLI]({{base}}{{site.links["setup-cli"]}}) installed. The synchronization will take place with the current directory. It is probably best to start in an empty directory, otherwise the utility will synchronize the contents of an existing directory onto the workspace.
 
 ```shell  
 mkdir sync
@@ -59,6 +58,7 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
 --url <url>           # Che or Codenvy host where workspaces are running
 --user <email>        # Codenvy user name
 --password <password> # Codenvy password
+--unison-verbose      # Display verbose output of unison tool used by sync command
 ```
 
 This will make a secure connection to the workspace and unison-sync the contents to the local host directory. You will be asked for the password that you retrieved from the SSH configuration. The synchronization will run continuously and the command will not return until you press CTRL-C, at which point the synchronization will be terminated.
