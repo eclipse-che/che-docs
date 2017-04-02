@@ -59,6 +59,16 @@ To add the associated public key to a git repository/account  using **gitlab.com
 
 ![GitLabSSH.jpg]({{base}}{{site.links["GitLabSSH.jpg"]}})
 
+
+### BitBucket Example
+You can setup ssh to a dedicated BitBucket Server. Each user will still need to setup their own SSH key for authentication to the BitBucket Server which will be similar to [GitHub/GitLab SSH examples](#git-ssh-examples).
+
+![BBS_SSH_1.jpg]({{base}}{{site.links["BBS_SSH_1.jpg"]}}){:style="width: 30%"}  
+
+![BBS_SSH_2.jpg]({{base}}{{site.links["BBS_SSH_2.jpg"]}})
+
+![BBS_SSH_3.jpg]({{base}}{{site.links["BBS_SSH_3.jpg"]}})
+
 ## Import Project from Repository Using SSH
 Import project from the IDE `Workspace > Import Project > GIT/SUBVERSION` menu.
 
