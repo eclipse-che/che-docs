@@ -1,9 +1,9 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Up and Down
+title: Chedir - Up and Down
 excerpt: "Control the lifecycle of the workspace and Che server"
 layout: docs
-permalink: /:categories/up-and-down/
+permalink: /:categories/chedir-up-and-down/
 ---
 {% include base.html %}
 In the first version of Chedir, each Chedir directory maps to a single Che server containing a single workspace. That workspace can have multiple projects and source repositories that are part of it.
@@ -47,4 +47,4 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
 ```
 
 ## NEXT STEPS
-[Author a custom Chefile]({{base}}/docs/chedir/chefiles/index.html) to tailor how the workspace is created and adapted to your project.
+[Author a custom Chefile]({{base}}{{site.links["chedir-chefiles"]}}) to tailor how the workspace is created and adapted to your project.

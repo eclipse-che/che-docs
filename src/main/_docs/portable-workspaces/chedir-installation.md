@@ -1,12 +1,12 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Installation
+title: Chedir - Installation
 excerpt: "Installing, upgrading and uninstalling Chedir"
 layout: docs
-permalink: /:categories/installation/
+permalink: /:categories/chedir-installation/
 ---
 {% include base.html %}
-Installing Chedir is extremely easy. Just [get the Che CLI]({{base}}/docs/setup/getting-started/index.html) and you have everything you need to run Chedir on any operating system. Docker and Git Bash (installed by Docker) are required for the Che CLI.
+Installing Chedir is extremely easy. Just [get the Che CLI]({{base}}{{site.links["setup-cli"]}}) and you have everything you need to run Chedir on any operating system. Docker and Git Bash (installed by Docker) are required for the Che CLI.
 
 # Backwards Compatibility  
 Chedir requires Eclipse Che 4.7+. Chefiles are not supported to run on older versions of Che.

@@ -1,9 +1,9 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Why Chedir?
+title: Chedir - Why Chedir?
 excerpt: "Create and configure reproducible and portable developer workspaces."
 layout: docs
-permalink: /:categories/why/
+permalink: /:categories/chedir-why/
 ---
 {% include base.html %}
 

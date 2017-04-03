@@ -1,16 +1,16 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Getting Started
+title: Chedir - Getting Started
 excerpt: "Convert any repository into a developer workspace."
 layout: docs
-permalink: /:categories/getting-started/
+permalink: /:categories/chedir-getting-started/
 ---
 {% include base.html %}
 The Chedir getting started guide will walk you through your first Chedir project, and show the basic features Chedir has to offer.
 
-If you are curious what benefits Chedir has to offer, you should also read the [Why Chedir?]({{base}}/docs/chedir/why/index.html) page.
+If you are curious what benefits Chedir has to offer, you should also read the [Why Chedir?]({{base}}{{site.links["chedir-why"]}}) page.
 
-Before diving into your first workspace, please check how to use the latest version of Chedir, which is also part of the [Eclipse Che CLI]({{base}}/docs/setup/getting-started/index.html). And since Docker is required for everything related to Che, make sure that is installed as well.
+Before diving into your first workspace, please check how to use the latest version of Chedir, which is also part of the [Eclipse Che CLI]({{base}}{{site.links["setup-cli"]}}). And since Docker is required for everything related to Che, make sure that is installed as well.
 
 
 ```shell  
@@ -46,4 +46,4 @@ The rest of this guide will walk you through setting up a more complete project,
 
 
 ## NEXT STEPS
-You have just created your first developer workspace with Chedir. Read on to learn more about [project setup]({{base}}/docs/chedir/project-setup/index.html).
+You have just created your first developer workspace with Chedir. Read on to learn more about [project setup]({{base}}{{site.links["chedir-project-setup"]}}).
