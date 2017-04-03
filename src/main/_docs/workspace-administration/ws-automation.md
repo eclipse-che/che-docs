@@ -7,50 +7,94 @@ permalink: /:categories/workspace-automation/
 ---
 {% include base.html %}
 
-
 A Factory is a template used to generate new or open existing workspaces with a URL. Factories can be used to create replicas of existing workspaces or to automate the provisioning of staticly or dynamically defined workspaces.
 
+Factories are available with Eclipse Che and Codenvy.
+
 # Try a Factory
-Clone a public Codenvy workspace: [http://codenvy.io/f?id=omriatu352kkthua](http://codenvy.io/f?id=omriatu352kkthua).
+Clone a public workspace on `codenvy.io`:
+[![Try a Factory](https://codenvy.io/factory/resources/codenvy-contribute.svg)](http://codenvy.io/f?id=omriatu352kkthua)
 
-# Definitions
+---
 
-| Term   | Definition   
-| --- | ---
-| **Factory**   | A URL that, when clicked, generates a new or loads an existing workspace, and then onboards the user into that workspace.   
-| **Factory Configuration**   | A JSON object that defines the rules and behavior for how the Factory should work.   
-| **Workspace Configuration**   | A JSON object that defines the contents and structure of a workspace. A workspace configuration is used within a Factory Configuration to define the workspace to be generated.   
-| **Owner**   | The user that authored a Factory. An owner can choose to have the resources consumed by workspaces generated from the Factory taken from the owner's account or the acceptor's.   
-| **Acceptor**   | Any user that clicks on a Factory URL to open or generate a workspace. The acceptor is made a member or owner of the workspace depending upon the configuration.   
-| **Named Workspace**   | A workspace bound to a user and is destroyed when a workspace administrator  destroys it.   
-| **Temporary Workspace**   | A workspace that has a limited lifespan. Codenvy destroys temp workspaces when they are idle.   
+## Contents
+
+- TOC
+{:toc}
+
+---
+
+# Definitions  
+Below are a list of some {{ site.product_mini_name }} specific terms that we use across documentation for Factories.
+
+[remove the table and put a formatting more appropriated similar to how github is handling it: https://help.github.com/articles/github-glossary/]
+
+**Factory**
+: A URL that, when clicked, generates a new or loads an existing workspace, and then onboards the user into that workspace.
+<br>
+
+**Factory Configuration**
+: A JSON object that defines the rules and behavior for how the Factory should work.
+
+##### Workspace Configuration  
+A JSON object that defines the contents and structure of a workspace. A workspace configuration is used within a Factory Configuration to define the workspace to be generated.
+
+##### Owner  
+A JSON object that defines the contents and structure of a workspace. A workspace configuration is used within a Factory Configuration to define the workspace to be generated.
+
+##### Acceptor  
+Any user that clicks on a Factory URL to open or generate a workspace. The acceptor is the owner the workspace created by the Factory.  
+
+##### Named Workspace (to be removed)
+A workspace bound to a user and is destroyed when a workspace administrator destroys it.   
 
 
 # Using Factories
-Factories can be invoked in mutliple ways. You can replace the `codenvy.io` domain with the hostname of any Codenvy on-premises installation.
+Factories can be invoked in multiple ways. You can replace the {% if site.product_mini_cli=="codenvy" %}`codenvy.io` domain with the hostname of any Codenvy on-premises installation.{% else %}`localhost:8080` domain with the hostname of any Che installation.{% endif %}
 
-| Approach   | Example   
-| --- | ---
-|  Invoke Factory using its unique hashcode <br>`/f?id={hashcode}` <br>`/factory?id={hascode}`| https://codenvy.io/f?id=s38eam174ji42vty
-|  Invoke a named Factory <br> `/f?user={username}&name={factoryname}` <br>`/factory?user={username}&name={factoryname}`  | https://codenvy.io/f?user=tylerjewell&name=starwars<br>https://codenvy.io/factory?user=tylerjewell&name=starwars
-|  Invoke Factory for a specific git repo <br>`/f?url={git URL}`  | http://codenvy.io/f?url=https://github.com/eclipse/che<br>http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server<br>http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project
+{% if site.product_mini_cli=="codenvy" %}Using Factories on `codenvy.io` require the user to be authenticated. Users who are not authenticated will be presented a login screen after they click on the Factory URL.  Users without an account can create one using the same dialog. domain with the hostname of any Codenvy on-premises installation.{% else %}{% endif %}
+
+##### Invoke Factory using its unique hashcode  
+
+| Format | `/f?id={hashcode}`<br>`/factory?id={hascode}`
+| Sample | {% if site.product_mini_cli=="codenvy" %} [https://codenvy.io/f?id=s38eam174ji42vty](https://codenvy.io/f?id=s38eam174ji42vty){% else %}[https://localhost:8080/f?id=s38eam174ji42vty](https://localhost:8080/f?id=s38eam174ji42vty){% endif %}
+
+##### Invoke Factory using its unique hashcode  
+
+**Format**
+: `/f?id={hashcode}`<br>`/factory?id={hascode}`
+
+**Sample**
+: {% if site.product_mini_cli=="codenvy" %}[https://codenvy.io/f?id=s38eam174ji42vty](https://codenvy.io/f?id=s38eam174ji42vty){% else %}[https://localhost:8080/f?id=s38eam174ji42vty](https://localhost:8080/f?id=s38eam174ji42vty){% endif %}
+
+##### Invoke a named Factory
+
+| Format | `/f?user={username}&name={factoryname}`<br>`/factory?user={username}&name={factoryname}`
+| Sample | {% if site.product_mini_cli=="codenvy" %} [https://codenvy.io/f?user=tylerjewell&name=starwars](https://codenvy.io/f?user=tylerjewell&name=starwars)<br>[https://codenvy.io/factory?user=tylerjewell&name=starwars](https://codenvy.io/factory?user=tylerjewell&name=starwars){% else %}[https://localhost:8080/f?user=che&name=starwars](https://localhost:8080/f?user=che&name=starwars)<br>[https://localhost:8080/factory?user=che&name=starwars](https://localhost:8080/factory?user=che&name=starwars){% endif %}
+
+##### Invoke Factory for a specific git repo  
+
+| Format | `/f?url={git URL}`
+| Sample | {% if site.product_mini_cli=="codenvy" %} [http://codenvy.io/f?url=https://github.com/eclipse/che](http://codenvy.io/f?url=https://github.com/eclipse/che)<br>[http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server](http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server)<br>[http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project](http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project){% else %}[http://localhost:8080/f?url=https://github.com/eclipse/che](http://localhost:8080/f?url=https://github.com/eclipse/che)<br>[http://localhost:8080/f?url=https://github.com/eclipse/che/tree/language-server](http://localhost:8080/f?url=https://github.com/eclipse/che/tree/language-server)<br>[http://localhost:8080/f?url=https://gitlab.com/benoitf/simple-project](http://localhost:8080/f?url=https://gitlab.com/benoitf/simple-project){% endif %}
 
 Once the Factory is executed, it either loads an existing workspace or generates a new one, depending upon the Factory configuration.  The name of the workspace is determined within the Factory configuration and its name becomes part of the URL access.
 
-| Generated Workspace   | Example   
-| --- | ---
-| Shorthand access to the workspace <br>`/ws/{workspace}` | https://codenvy.io/ws/car
-| Fully qualified access to the workspace <br>`/ws/{workspace}/{username}` | https://codenvy.io/ws/car/tylerjewell
-| 2nd workspace with same name generated by same user from same Factory <br><br>`/ws/{workspace}-1/{username}`  | https://codenvy.io/ws/car-1/tylerjewell
+Fully qualified access to the workspace
+: _Format:_ `/ws/{username}/{workspace}`
+: _Sample:_ {% if site.product_mini_cli=="codenvy" %}[https://codenvy.io/tylerjewell/car](https://codenvy.io/tylerjewell/car){% else %}[https://localhost:8080/tylerjewell/car](https://localhost:8080/tylerjewell/car){% endif %}
+
+
+2nd workspace with same name generated by same user from same Factory
+: _Format:_ `{username}/{workspace}-1`
+: _Sample:_ {% if site.product_mini_cli=="codenvy" %}[https://codenvy.io/tylerjewell/car-1](https://codenvy.io/tylerjewell/car){% else %}[https://localhost:8080/tylerjewell/car](https://localhost:8080/tylerjewell/car-1){% endif %}
 
 
 # Creating Factories
-You can create Factories that are saved with a unique hash code in the dashboard. Navigate to the `Factories` page and hit the `+` button in the top-right. You can create a Factory with a pretty name in the dashboard or by invoking a URL within your workspace.  If you generate a Factory template using your workspace URL, your Factory inherits the existing definition of your workspace.
+You can create Factories that are saved with a unique hash code in the dashboard. Navigate to the `Factories` page and hit the `Create Factory` button. You can create a Factory with a pretty name in the dashboard or by invoking a URL within your workspace.  If you generate a Factory template using your workspace URL, your Factory inherits the existing definition of your workspace.
 
 | Create New Factory   | Example   
 | --- | ---
-| Create a new Factory with pretty name <br>`/ws/{workspace}/{user}/factory/{pretty}?save`   | [https://codenvy.io/ws/eclipseche/tylerjewell/factory/starwars?save](https://codenvy.com/ws/eclipseche/tylerjewell/factory/starwars?save)
-| Create a new Factory from the dashboard <br>`Dashboard > Factories > Create` | [https://codenvy.io/f?id=s38eam174ji42vty](https://codenvy.com/f?id=s38eam174ji42vty)   
+| Create a new Factory from the dashboard <br>`Dashboard > Factories > Create Factory` | [https://codenvy.io/f?id=s38eam174ji42vty](https://codenvy.com/f?id=s38eam174ji42vty)   
 | Create on-demand URL Factory by specifying the remote URL In that case the configuration may be stored inside the repository. |[http://codenvy.io/f?url=https://github.com/eclipse/che](http://codenvy.io/f?url=https://github.com/eclipse/che)<br>[http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server](http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server)<br>[http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project](http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project)
 
 You can also author a Factory from scratch using a `factory.json` file and then generating a Factory URL using our CLI or API.
@@ -67,13 +111,13 @@ URL can include a branch or a subfolder. Here is an example of url parameters:
 There are 2 ways of customizing the runtime and configuration
 
 ### Customizing only the runtime
-Providing a `.codenvy.dockerfile` inside the repository will signal to the Codenvy URL Factory to use this dockerfile for the workspace agent runtime. By default imported projects are set to a `blank` project type, however project type can be set in the `codenvy.json` or workspace defintion that the Factory inherits from.
+Providing a `.factory.dockerfile` inside the repository will signal to the {{ site.product_mini_name }} URL Factory to use this dockerfile for the workspace agent runtime. By default imported projects are set to a `blank` project type, however project type can be set in the `.factory.json` or workspace definition that the Factory inherits from.
 
 ### Customizing the project and runtime
-Providing a `.codenvy.json` file inside the repository will signal to the Codenvy URL Factory to configure the project and runtime according to this configuration file. When a `.codenvy.json` file is stored inside the repository, any `.codenvy.dockerfile` content is ignored as the workspace runtime configuration is defined inside the JSON file.
+Providing a `.factory.json` file inside the repository will signal to the {{ site.product_mini_name }} URL Factory to configure the project and runtime according to this configuration file. When a `.factory.json` file is stored inside the repository, any `.factory.dockerfile` content is ignored as the workspace runtime configuration is defined inside the JSON file.
 
 # Factory JSON Syntax
-A Factory configuration is a JSON snippet either stored within Codenvy or as a `factory.json` file. You can create Factories within the IDE using our URL syntax, within the dashboard, or on the command line with the API and CLI.
+A Factory configuration is a JSON snippet either stored within {{ site.product_mini_name }} or as a `.factory.json` file. You can create Factories within the IDE using our URL syntax, within the dashboard, or on the command line with the API and CLI.
 
 ```json  
 factory : {
@@ -87,9 +131,11 @@ factory : {
 
 The `factory.workspace` is identical to the `workspace:{}` object for Eclipse Che and contains the structure of the workspace. Learn more about [the workspace JSON object](https://www.eclipse.org/che/docs/server/create-workspaces/index.html).
 
-Codenvy maintains object compatibility with the workspace definition from Eclipse Che. You can export Eclipse Che workspaces and then reuse the workspace definition within a Factory. Codenvy workspaces are composed of 0..n projects, 0..n environments which contain machine stacks to run the code, 0..n commands to perform against the code, and a type.
+You can export {{ site.product_mini_name }} workspaces and then reuse the workspace definition within a Factory. {{ site.product_mini_name }} workspaces are composed of 0..n projects, 0..n environments which contain machine stacks to run the code, 0..n commands to perform against the code, and a type.
 
 The `factory.policies`, `factory.ide` and `factory.creator` objects are unique to Factories. They provide meta information to the automation engine that alter the presentation of the Factory URL or the behavior of the provisioning.
+
+
 
 ## Gotchas
 A few rules to remember when creating Factories:
@@ -101,7 +147,7 @@ A mixin adds additional behaviors to a project as a set of new project type attr
 
 | Mixin ID   | Description   
 | --- | ---
-| `pullrequest`  | Enables pull request workflow where Codenvy handles local & remote branching, forking, and pull request issuance. Pull requests generated from within Codenvy have another Factory placed into the comments of pull requests that a PR reviewer can consume. Adds contribution panel to the IDE. If this mixin is set, then it uses attribute values for `project.attributes.local_branch` and `project.attributes.contribute_to_branch`. <br><br> The `pullrequest` mixin requires additional configuration from the `attributes` object of the project.  If present, Codenvy will use the project attributes as defined in the Factory. If not provided, Codenvy will set defaults for the attributes. <br><br> Learn more about other mixins, on [`project : {}` object for Eclipse Che](https://www.eclipse.org/che/docs/server/rest-api/index.html)
+| `pullrequest`  | Enables pull request workflow where {{ site.product_mini_name }} handles local & remote branching, forking, and pull request issuance. Pull requests generated from within {{ site.product_mini_name }} have another Factory placed into the comments of pull requests that a PR reviewer can consume. Adds contribution panel to the IDE. If this mixin is set, then it uses attribute values for `project.attributes.local_branch` and `project.attributes.contribute_to_branch`. <br><br> The `pullrequest` mixin requires additional configuration from the `attributes` object of the project.  If present, {{ site.product_mini_name }} will use the project attributes as defined in the Factory. If not provided, {{ site.product_mini_name }} will set defaults for the attributes. <br><br> Learn more about other mixins, on [`project : {}` object for Eclipse Che](https://www.eclipse.org/che/docs/server/rest-api/index.html)
 
 ## Pull Request Mixin Attributes
 Project attributes alter the behavior of the IDE or workspace.
@@ -114,7 +160,7 @@ Different Eclipse Che and Codenvy plug-ins can add their own attributes to affec
 | `contribute_to_branch` | Name of the branch that a pull request will be contributed to. Default is the value of `project.source.parameters.branch`, which is the name of the branch this project was cloned from.
 
 <br>
- Here is a snippet that demonstrates full configuration of the contribution mixin.
+Here is a snippet that demonstrates full configuration of the contribution mixin.
 
 ```json  
 factory.workspace.project : {
@@ -136,7 +182,7 @@ factory.workspace.project : {
 ```
 
 
-## factory.policies Object
+## Policies
 Policies are a way to send instructions to the automation engine about the number of workspaces to create and their meta data such as lifespan, resource allocation, and chargeback location.
 
 ```json  
@@ -155,16 +201,13 @@ factory.policies.resources : {
 }
 ```
 
-### Authentication
-Any user that clicks on a Factory URL must have a Codenvy account and be authenticated if the Factory configuration has `type : named` or `location : acceptor`. Both of these properties require Codenvy to understand either a permanent location or a user name in order to generate the workspace. Any user that is not authenticated will be presented a login screen after they click on the Factory URL.  Users without an account can create one using the same dialog.  
-
 ### Limitations
 You can use `since : EPOCHTIME`, `until : EPOCHTIME` and `referer` as a way to prevent the Factory from executing under certain conditions.  `since` and `until` represent a valid time window that will allow the Factory to activate. For example, instructors who want to create an exercise that can only be accessed for two hours could set these properties.  The `referer` will check the hostname of the acceptor and only allow the Factory to execute if there is a match.
 
 ### Multiplicity
 How many workspaces should be created?  If `create : perClick` then every click of the Factory URL will generate a different workspace, each with its own identifier, name and resources.  If `create : perUser`, then exactly one workspace will be generated for each unique user that clicks on the Factory URL. If the workspace has previously been generated, we will reopen the existing workspace and place the user into it.
 
-## factory.ide Object
+## IDE Customization
 
 ```json  
 factory.ide.{event} : {          // event = onAppLoaded, onProjectsLoaded, onAppClosed
@@ -177,9 +220,14 @@ factory.ide.{event}.actions : [{
 }]
 ```
 You can instruct the Factory to invoke a series of IDE actions based upon events in the lifecycle of the workspace.
-* `onAppLoaded` - triggered when the IDE is loaded
-* `onProjectsLoaded` - triggered when the workspace and all projects have been activated
-* `onAppClosed` - triggered when the IDE is closed
+`onAppLoaded`  
+: Triggered when the IDE is loaded
+
+`onProjectsLoaded`  
+: Triggered when the workspace and all projects have been activated
+
+`onAppClosed`  
+: Triggered when the IDE is closed
 
 This is an example that associates a variety of actions with all of the events.
 
@@ -229,7 +277,7 @@ This is an example that associates a variety of actions with all of the events.
   }
 }
 ```
-Each event type has a set of actions that can be triggered. There is no ordering of actions executed when you provide a list; Codenvy will asynchronously invoke multiple actions if appropriate. Some actions can be configured in how they perform and will have an associated `properties : {}` object.
+Each event type has a set of actions that can be triggered. There is no ordering of actions executed when you provide a list; {{ site.product_mini_name }} will asynchronously invoke multiple actions if appropriate. Some actions can be configured in how they perform and will have an associated `properties : {}` object.
 
 ### onProjectsLoaded Event
 
@@ -262,8 +310,9 @@ This action will open a file as a tab in the editor. You can provide this action
   }
 }
 ```
+
 #### Action: Find / Replace Values After Project Cloning  
-If you create a project from a factory, you can have Codenvy perform a find / replace on values in the imported source code after it is imported into the project tree. This essentially lets you parameterize your source code.
+If you create a project from a factory, you can have {{ site.product_mini_name }} perform a find / replace on values in the imported source code after it is imported into the project tree. This essentially lets you parameterize your source code.
 
 Parameterizing source code allows you to create projects whose source code will be different for each click on the Factory. The most common use of this is inserting a developer-specific key into the source code. Each developer has their own key which is known to you. That key is inserted as the replacement variable and then inserted into the source code when that user invokes the Factory URL.
 
@@ -292,7 +341,7 @@ The `replaceMode` property indicates which replacement algorithm should be appli
 
 It is possible to combine two replacement methods. Priority is given to singlepass. If no replacement method is specified, `variable_singlepass` mode will be used.
 
-## factory.creator Object  
+## Creator  
 This object has meta information that you can embed within the Factory. These attributes do not affect the automation behavior or the behavior of the generated workspace.
 
 ```json  
@@ -304,9 +353,19 @@ factory.creator : {
 }
 ```
 
+{% if site.product_mini_cli=="che" %}
+Eclipse Che does not provide user management capabilities, the `factory.creator` is always be bound to a simulated `Che` user.
+{% endif %}
+
 ## Factory Badging  
 
+If you have projects on GitHub or Gitlab, you can help your contributors to get started by providing them ready-to-code developer workspaces. Create a factory and add the following badge on your repositories `readme.md`:
+![https://codenvy.io/factory/resources/codenvy-contribute.svg](https://codenvy.io/factory/resources/codenvy-contribute.svg)
+
+Use the following Markdown syntax:
 ```markdown  
-![alt](https://codenvy.com/factory/resources/factory-white.png)](URL)
-![alt](https://codenvy.com/factory/resources/factory-dark.png)](URL)
+![https://codenvy.io/factory/resources/codenvy-contribute.svg](your-factory-url)
 ```
+
+{% if site.product_mini_cli=="codenvy" %}
+{% endif %}
