@@ -23,7 +23,7 @@ You can make use of Docker from within your workspaces. You need to have a works
 There are two ways to configure this.
 
 ### Mount Docker Socket
-In `che.properties`, add `machine.server.extra.volume=/var/run/docker.sock:/var/run/docker.sock`. This will have your workspace containers perform a volume mount of the Docker socket so that the Docker client in your workspace will use the parent daemon for any Docker CLI commands. If you are using the {{ site.product_mini_name }} CLI you can set `CHE_PROPERTY_machine_server_extra_volume=/var/run/docker.sock:/var/run/docker.sock` to achieve the same behavior.  You may need to set up permissions for `/var/run/docker.sock` on the host with `sudo chmod 777 /var/run/docker.sock`.
+In `{{site.data.env["filename"]}}`, add `{{site.data.env["CHE_WORKSPACE_VOLUME"]}}=/var/run/docker.sock:/var/run/docker.sock`. This will have your workspace containers perform a volume mount of the Docker socket so that the Docker client in your workspace will use the parent daemon for any Docker CLI commands. If you are using the {{ site.product_mini_name }} CLI you can set `-e {{site.data.env["CHE_WORKSPACE_VOLUME"]}}=/var/run/docker.sock:/var/run/docker.sock` to achieve the same behavior.  You may need to set up permissions for `/var/run/docker.sock` on the host with `sudo chmod 777 /var/run/docker.sock`.
 
 ### Configure Your Docker Daemon
 Configure your Docker daemon to listen on TCP.  First, add the following to your Docker configuration file (on Ubuntu it's `/etc/default/docker` - see the Docker docs for the location for your OS):
@@ -51,13 +51,13 @@ Once the keypair is created run this command from your docker host.
 
 `$ docker exec [CONTAINER ID] cat /home/user/.ssh/id_rsa.pub`
 # Mount Host Volumes Into Workspaces  
-You can have folders on your host system mounted and available for access within your workspaces. In `che.properties`, add `machine.server.extra.volume=<host-mount-path>:<ws-mount-path>`. You can have multiple volumes mounted by seaparting them with semicolons.
+You can have folders on your host system mounted and available for access within your workspaces. In `{{site.data.env["filename"]}}`, add `{{site.data.env["CHE_WORKSPACE_VOLUME"]}}=<host-mount-path>:<ws-mount-path>`. You can have multiple volumes mounted by seaparting them with semicolons.
 
 When your workspace containers are created, they will volume mount this location from the host.
 
 You can also set this using the {{ site.product_mini_name }} CLI with an environment variable.
-`CHE_PROPERTY_machine_server_extra_volume=/var/run/docker.sock:/var/run/docker.sock` to achieve the same behavior.  You may need to set up permissions for `/var/run/docker.sock` on the host with `sudo chmod 777 /var/run/docker.sock`.
+`{{site.data.env["CHE_WORKSPACE_VOLUME"]}}=/var/run/docker.sock:/var/run/docker.sock` to achieve the same behavior.  You may need to set up permissions for `/var/run/docker.sock` on the host with `sudo chmod 777 /var/run/docker.sock`.
 
 ```text  
-CHE_PROPERTY_machine_server_extra_volume=/c/Users/tyler:/projects/tyler;/c/Users/allsyon:/projects/allyson
+{{site.data.env["CHE_WORKSPACE_VOLUME"]}}=/c/Users/tyler:/projects/tyler;/c/Users/allsyon:/projects/allyson
 ```

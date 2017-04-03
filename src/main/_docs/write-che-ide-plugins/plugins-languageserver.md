@@ -91,3 +91,26 @@ Once complete, compile and run Che. If everything has worked you will see your a
 
 The agent can be added by default in a Stack, our [Stack documentation]({{base}}{{site.links["ws-stacks"]}}) explains how to create and edit stacks.
 
+### 4. Implement Code Action Commands
+Through the LSP command "textDocument/codeAction", a language server can contribute items to the quick-assist menu in an editor. The language server returns a list of LSP `Command` objects. These command objects are mapped to Che actions by looking up an action by id in the `ActionManager` using the `command` field of the command object. 
+The extra parameters from the command object are passed to the action by using an extended `ActionEvent`:
+
+```java
+
+public class QuickassistActionEvent extends ActionEvent {
+
+	private List<Object> arguments;
+
+	public QuickassistActionEvent(Presentation presentation, ActionManager actionManager, PerspectiveManager perspectiveManager, List<Object> arguments) {
+		super(presentation, actionManager, perspectiveManager);
+		this.arguments= arguments;
+	}
+
+	public List<Object> getArguments() {
+		return arguments;
+	}
+}
+```
+
+Language server launcher IDE plugins may contribute their own actions to be called. The language server plugin itself contributes an action with the id "lsp.applyTextEdit", which will apply a list of LSP `TextEdit` objects in the currently active editor.
+

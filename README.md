@@ -51,6 +51,10 @@ New sections are represented as folders in https://github.com/codenvy/che-docs/t
 # Building Docs
 Docs are built using a Docker image with Jekyll inside it. You need Docker and Bash installed to build and host the Che docs.
 
+You can use codenvy.io factory to easily compile and view documentation. Just click [here](https://codenvy.io/f?name=che-codenvy-docs&user=jdrummond).
+
+You can also use the following locally.
+
 ```
 $ git clone http://github.com/eclipse/che-docs
 $ cd che-docs/src/main/

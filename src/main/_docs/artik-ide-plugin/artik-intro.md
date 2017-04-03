@@ -6,13 +6,7 @@ layout: artik
 permalink: /:categories/
 ---
 {% include base.html %}
-Samsung ARTIK™ is the integrated Smart IoT platform providing the fastest path to secure, interoperable, and intelligent IoT products and services.
 
-The Samsung ARTIK™ IDE is powered by the open source Eclipse Che project so you will periodically see references to Eclipse Che in these docs.
+The joint project between Codenvy and Samsung to investigate an IoT IDE for ARTIK based on Eclipse Che has been put on hold and is no longer supported. However, ARTIK and Che are both separately supported.
 
-## Getting Started
-To install the IDE click on the Getting Started for your platform on the right. Those guides will walk you through installation, configuration and a brief overview of the IDE itself.
-
-Get more information on:
-- [Samsung ARTIK™](https://www.artik.io/)
-- [Eclipse Che](https://eclipse.org/che/)
+You can get more information on [Samsung ARTIK™](https://www.artik.io/) from the ARTIK site. You can get more information on [Eclipse Che](https://eclipse.org/che/) from the project website.
