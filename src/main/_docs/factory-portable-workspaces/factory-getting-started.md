@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Factory - Getting Started
 excerpt: "Convert any repository into a developer workspace."
 layout: docs
-permalink: /:categories/factory-getting-started/
+permalink: /:categories/getting-started/
 ---
 {% include base.html %}
 

@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Factory - Glossary
 excerpt: "Specific terms used across documentation for Factories."
 layout: docs
-permalink: /:categories/factory-glossary/
+permalink: /:categories/glossary/
 ---
 {% include base.html %}
 

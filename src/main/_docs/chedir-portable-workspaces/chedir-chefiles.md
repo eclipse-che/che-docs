@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Chedir - Chefile
 excerpt: "Customize how the Che server, workspace, and project are generated from your project"
 layout: docs
-permalink: /:categories/chedir-chefiles/
+permalink: /:categories/chefiles/
 ---
 {% include base.html %}
 You can create a Chefile and place it into the root of your repository. The Chefile contains the configuration that will be used to setup the Che server and Che workspace.

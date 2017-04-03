@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Chedir - Up and Down
 excerpt: "Control the lifecycle of the workspace and Che server"
 layout: docs
-permalink: /:categories/chedir-up-and-down/
+permalink: /:categories/up-and-down/
 ---
 {% include base.html %}
 In the first version of Chedir, each Chedir directory maps to a single Che server containing a single workspace. That workspace can have multiple projects and source repositories that are part of it.

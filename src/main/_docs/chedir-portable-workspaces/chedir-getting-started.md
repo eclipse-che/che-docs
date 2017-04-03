@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Chedir - Getting Started
 excerpt: "Convert any repository into a developer workspace."
 layout: docs
-permalink: /:categories/chedir-getting-started/
+permalink: /:categories/getting-started/
 ---
 {% include base.html %}
 The Chedir getting started guide will walk you through your first Chedir project, and show the basic features Chedir has to offer.

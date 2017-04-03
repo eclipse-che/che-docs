@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Factory - JSON Reference
 excerpt: "Creating a Factory."
 layout: docs
-permalink: /:categories/factory-json-reference/
+permalink: /:categories/json-reference/
 ---
 {% include base.html %}
 

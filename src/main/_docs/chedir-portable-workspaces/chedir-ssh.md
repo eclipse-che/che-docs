@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Chedir - SSH
 excerpt: "SSH into your workspace"
 layout: docs
-permalink: /:categories/chedir-ssh/
+permalink: /:categories/ssh/
 ---
 {% include base.html %}
 

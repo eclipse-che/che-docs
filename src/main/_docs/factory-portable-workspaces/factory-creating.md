@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Factory - Creating
 excerpt: "Creating a Factory."
 layout: docs
-permalink: /:categories/factory-creating/
+permalink: /:categories/creating/
 ---
 {% include base.html %}
 

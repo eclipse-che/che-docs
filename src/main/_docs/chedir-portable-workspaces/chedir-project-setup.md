@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Chedir - Project Setup
 excerpt: ""
 layout: docs
-permalink: /:categories/chedir-project-setup/
+permalink: /:categories/project-setup/
 ---
 {% include base.html %}
 
