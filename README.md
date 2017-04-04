@@ -1,3 +1,6 @@
+[![Workspace](https://codenvy.io/factory/resources/codenvy-contribute.svg)](https://codenvy.io/f?name=che-codenvy-docs&user=jdrummond)
+
+
 # Eclipse Che Docs 
 Eclipse Che uses Jekyll 3.3.1 to generate documentation from this reposistory as a static html webpages. 
 
@@ -8,6 +11,12 @@ Docs are built using Jekyll and the output is static HTML that is hosted at [htt
 ### Viewing Generated Documentation
 - Documentation for the latest release: [https://www.eclipse.org/che/docs/](https://www.eclipse.org/che/docs/)
 - Documentation for nightly builds: [https://www.eclipse.org/che/docs-versions/nightly/](https://www.eclipse.org/che/docs-versions/nightly/)
+
+# Editing Docs
+# Editing Docs
+[![Workspace](https://codenvy.io/factory/resources/codenvy-contribute.svg)](https://codenvy.io/f?name=che-codenvy-docs&user=jdrummond)
+  
+Get a workpsace on `codenvy.io` which include all dependencies to edit and preview your changes by clicking on the image above.
 
 # Linking to Docs and Images
 Because the docs are generated into static HTML linking to docs and images is a bit unusual. We provide a custom plugin [_plugins/links.rb](_plugins/links.rb) to create links.
