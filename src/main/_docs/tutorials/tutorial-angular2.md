@@ -56,11 +56,11 @@ export class AppComponent {
 
 Add this element in `src/app/app.component.html`:
 
-```html
+```
 <h1>
-  {{title}}
+  {{bracesLeft}}title{{bracesRight}}
   <br>
-  {{newtitle}}
+  {{bracesLeft}}newTitle{{bracesRight}}
 </h1>
 ```
 
