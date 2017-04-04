@@ -19,13 +19,11 @@ factory : {
 }
 ```
 
-The `factory.workspace` is identical to the `workspace:{}` object for Eclipse Che and contains the structure of the workspace. Learn more about [the workspace JSON object](https://www.eclipse.org/che/docs/server/create-workspaces/index.html).
+The `factory.workspace` is identical to the `workspace:{}` object for Eclipse Che and contains the structure of the workspace. Learn more about [the workspace JSON object]({{base}}{{site.links["ws-data-model-workspaces"]}}).
 
 You can export {{ site.product_mini_name }} workspaces and then reuse the workspace definition within a Factory. {{ site.product_mini_name }} workspaces are composed of 0..n projects, 0..n environments which contain machine stacks to run the code, 0..n commands to perform against the code, and a type.
 
 The `factory.policies`, `factory.ide` and `factory.creator` objects are unique to Factories. They provide meta information to the automation engine that alter the presentation of the Factory URL or the behavior of the provisioning.
-
-
 
 ## Gotchas
 A few rules to remember when creating Factories:
@@ -33,7 +31,7 @@ A few rules to remember when creating Factories:
 - Any users created in your Dockerfile must have no password set for the SSH keys.
 
 ## Mixins
-A mixin adds additional behaviors to a project as a set of new project type attributes.  Mixins are reusable across any project type. You define the mixins to add to a project by specifying an array of strings, with each string containing the identifier for the mixin.  For example, `"mixins" : [ "tour", "pullrequest" ]`.
+A mixin adds additional behaviors to a project as a set of new project type attributes.  Mixins are reusable across any project type. You define the mixins to add to a project by specifying an array of strings, with each string containing the identifier for the mixin.  For example, `"mixins" : [ "pullrequest" ]`.
 
 | Mixin ID   | Description   
 | --- | ---
@@ -73,7 +71,6 @@ factory.workspace.project : {
 
 
 ## Policies
-Policies are a way to send instructions to the automation engine about the number of workspaces to create and their meta data such as lifespan, resource allocation, and chargeback location.
 
 ```json  
 factory.policies : {
@@ -91,8 +88,6 @@ factory.policies.resources : {
 }
 ```
 
-### Limitations
-You can use `since : EPOCHTIME`, `until : EPOCHTIME` and `referer` as a way to prevent the Factory from executing under certain conditions.  `since` and `until` represent a valid time window that will allow the Factory to activate. For example, instructors who want to create an exercise that can only be accessed for two hours could set these properties.  The `referer` will check the hostname of the acceptor and only allow the Factory to execute if there is a match.
 
 ### Multiplicity
 How many workspaces should be created?  If `create : perClick` then every click of the Factory URL will generate a different workspace, each with its own identifier, name and resources.  If `create : perUser`, then exactly one workspace will be generated for each unique user that clicks on the Factory URL. If the workspace has previously been generated, we will reopen the existing workspace and place the user into it.
@@ -187,7 +182,7 @@ Each event type has a set of actions that can be triggered. There is no ordering
 
 | Action   | Properties?   | Description   
 | --- | --- | ---
-| `warnOnClose`   | No   | Opens a warning popup when the user closes the browser tab wtih a project that has uncommitted changes. Requires `project.parameters.keepVcs` to be `true`.   
+| `warnOnClose`   | No   | Opens a warning popup when the user closes the browser tab with a project that has uncommitted changes. Requires `project.parameters.keepVcs` to be `true`.   
 
 #### Action: Open File
 This action will open a file as a tab in the editor. You can provide this action multiple times to have multiple files open. The file property is a relative reference to a file in the project’s source tree. The `file` parameter is the relative path within the workspace to the file that should be opened by the editor. Note that projects are located in the workspaces `/projects` folder.
