@@ -102,6 +102,12 @@ Below is the list of all possible actions which can be configured with your Fact
 
 See [JSON reference]({{base}}{{site.links["factory-json-reference"]}}#ide-customization) to learn how to configure Factory actions.
 
+# Pull Request Workflow
+Factory can be configured for dedicated workflow. The pull request workflow handles local & remote branching, forking, and pull request issuance. Pull requests generated from within {{ site.product_mini_name }} have another Factory placed into the comments of pull requests that a PR reviewer can consume.
+
+When enabled, the pull request workflow adds a contribution panel to the IDE.
+![pull-request-panel.png]({{base}}{{site.links["pull-request-panel.png"]}}){:style="width: 50%"}  
+
 
 {% if site.product_mini_cli=="codenvy" %}
 # Repository Badging  
