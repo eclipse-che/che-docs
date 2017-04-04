@@ -21,7 +21,11 @@ factory : {
 
 The `factory.workspace` is identical to the `workspace:{}` object for Eclipse Che and contains the structure of the workspace. Learn more about [the workspace JSON object]({{base}}{{site.links["ws-data-model-workspaces"]}}).
 
-You can export {{ site.product_mini_name }} workspaces and then reuse the workspace definition within a Factory. {{ site.product_mini_name }} workspaces are composed of 0..n projects, 0..n environments which contain machine stacks to run the code, 0..n commands to perform against the code, and a type.
+You can export {{ site.product_mini_name }} workspaces and then reuse the workspace definition within a Factory. {{ site.product_mini_name }} workspaces are composed of:
+- 0..n projects
+- 0..n environments which contain machines to run the code
+- 0..n commands to execute against the code and machines
+- a type
 
 The `factory.policies`, `factory.ide` and `factory.creator` objects are unique to Factories. They provide meta information to the automation engine that alter the presentation of the Factory URL or the behavior of the provisioning.
 
@@ -89,10 +93,10 @@ factory.policies.resources : {
 ```
 
 ### Limitations
-You can use `since : EPOCHTIME`, `until : EPOCHTIME` and `referer` as a way to prevent the Factory from executing under certain conditions.  `since` and `until` represent a valid time window that will allow the Factory to activate. For example, instructors who want to create an exercise that can only be accessed for two hours could set these properties.  The `referer` will check the hostname of the acceptor and only allow the Factory to execute if there is a match.
+You can use `since : EPOCHTIME`, `until : EPOCHTIME` and `referer` as a way to prevent the Factory from executing under certain conditions.  `since` and `until` represent a valid time window that will allow the Factory to activate. The `referer` will check the hostname of the acceptor and only allow the Factory to execute if there is a match.
 
 ### Multiplicity
-How many workspaces should be created?  If `create : perClick` then every click of the Factory URL will generate a different workspace, each with its own identifier, name and resources.  If `create : perUser`, then exactly one workspace will be generated for each unique user that clicks on the Factory URL. If the workspace has previously been generated, we will reopen the existing workspace and place the user into it.
+If `create : perClick` is used, then every click of the Factory URL will generate a new workspace, each with its own identifier, name and resources.  If `create : perUser` is used, then only one workspace will be generated for each unique user that clicks on the Factory URL. If the workspace has previously been generated, we will reopen the existing workspace.
 
 ## IDE Customization
 
@@ -107,14 +111,15 @@ factory.ide.{event}.actions : [{
 }]
 ```
 You can instruct the Factory to invoke a series of IDE actions based upon events in the lifecycle of the workspace.
+
 `onAppLoaded`  
-: Triggered when the IDE is loaded
+: Triggered when the IDE is loaded.
 
 `onProjectsLoaded`  
-: Triggered when the workspace and all projects have been activated
+: Triggered when the workspace and all projects have been activated.
 
 `onAppClosed`  
-: Triggered when the IDE is closed
+: Triggered when the IDE is closed.
 
 This is an example that associates a variety of actions with all of the events.
 
@@ -122,12 +127,12 @@ This is an example that associates a variety of actions with all of the events.
 "ide" : {  
   "onProjectsLoaded" : {                // Actions triggered when a project is opened
     "actions" : [{  
-      "id" : "openFile",                // Opens a file in editor. Open addl files by repeating
-      "properties" : {                  // Specifies which file to open (include project name)
+      "id" : "openFile",                // Opens a file in editor. Can add multiple
+      "properties" : {                  // The file to open (include project name)
         "file" : "/my-project/pom.xml"
       }
     }, {  
-      "id" : "findReplace",             // Find and replace values in source code
+      "id" : "findReplace",                          // Find and replace in code
       "properties" : {  
         "in"          : "(pom\\.xm.*)|(test\\..*)",  // Which files?
         "find"        : "GROUP_ID",                  // What to replace?
@@ -137,7 +142,7 @@ This is an example that associates a variety of actions with all of the events.
     }, {  
       "id" : "runCommand",              // Launch command after IDE opens
       "properties" : {    
-        "name" : "MCI"
+        "name" : "MCI"                  // Command name
       }
     }
   ]},
@@ -241,5 +246,5 @@ factory.creator : {
 ```
 
 {% if site.product_mini_cli=="che" %}
-Eclipse Che does not provide user management capabilities, the `factory.creator` is always be bound to a simulated `Che` user.
+Eclipse Che does not provide user management capabilities, the `factory.creator` is always bound to a simulated `Che` user.
 {% endif %}

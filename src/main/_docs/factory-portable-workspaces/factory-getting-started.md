@@ -12,7 +12,7 @@ A Factory is a template used to generate new or open existing workspaces with a 
 Factories are available with Eclipse Che and Codenvy.
 
 # Try a Factory
-Clone a public workspace on `codenvy.io`:
+Clone a public workspace on `codenvy.io` by clicking the button below.
 [![Try a Factory](https://codenvy.io/factory/resources/codenvy-contribute.svg){:style="width: 30%"} ](http://codenvy.io/f?id=omriatu352kkthua)
 
 # Using Factories
@@ -50,6 +50,6 @@ Once the Factory is executed, it either loads an existing workspace or generates
 
 ## NEXT STEPS
 You have just created your first developer workspace using Factories. Read on to learn more about:
-- [Factory Creating]({{base}}{{site.links["factory-creating"]}}).
-- [Factory JSON Reference]({{base}}{{site.links["factory-json-reference"]}}).
-- [Glossary]({{base}}{{site.links["factory-glossary"]}}).
+- How to [create factories]({{base}}{{site.links["factory-creating"]}}).
+- Customizing factories with the [Factory JSON reference]({{base}}{{site.links["factory-json-reference"]}}).
+- Factory terms in the [glossary]({{base}}{{site.links["factory-glossary"]}}).
