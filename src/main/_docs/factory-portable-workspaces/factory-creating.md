@@ -26,22 +26,83 @@ URL can include a branch or a subfolder. Here is an example of url parameters:
 - `?url=https://github.com/eclipse/che/tree/5.0.0/dashboard` subfolder dashboard is imported by using 5.0.0 branch
 
 ## Customizing URL Factories
-There are 2 ways of customizing the runtime and configuration
+There are 2 ways of customizing the runtime and configuration:
 
-**Customizing only the runtime**
+**Customizing only the runtime**  
 Providing a `.factory.dockerfile` inside the repository will signal to the {{ site.product_mini_name }} URL Factory to use this dockerfile for the workspace agent runtime. By default imported projects are set to a `blank` project type, however project type can be set in the `.factory.json` or workspace definition that the Factory inherits from.
 
-**Customizing the project and runtime**
+**Customizing the project and runtime**  
 Providing a `.factory.json` file inside the repository will signal to the {{ site.product_mini_name }} URL Factory to configure the project and runtime according to this configuration file. When a `.factory.json` file is stored inside the repository, any `.factory.dockerfile` content is ignored as the workspace runtime configuration is defined inside the JSON file.
 
 
+# Factory policies
+Policies are a way to send instructions to the automation engine about the number of workspaces to create and their meta data such as lifespan, resource allocation.
+
+### Limitations  
+**Referer**
+: Checks the hostname of the acceptor and only allow the Factory to execute if there is a match.
+
+**Since** & **Until**
+: Defines valid time window that will allow the Factory to activate. For example, instructors who want to create an exercise that can only be accessed for two hours could set these properties.
+
+**Resources**
+: Limits the RAM for the workspace created from the Factory.
+
+
+### Multiplicity  
+Defines how many workspaces should be created from the factory.
+
+**Multiple Workspaces: perClick**
+: Every click of the Factory URL will generate a different workspace, each with its own identifier, name and resources.  
+
+**Single Workspace: perUser**
+: Exactly one workspace will be generated for each unique user that clicks on the Factory URL. If the workspace has previously been generated, we will reopen the existing workspace and place the user into it.
+
+See [JSON reference]({{base}}{{site.links["factory-json-reference"]}}#policies) to learn how to configure Factory policies.
+
+# IDE Customization
+You can instruct the Factory to invoke a series of IDE actions based upon events in the lifecycle of the workspace.
+
+### Lifecycle Events
+The lifecycle of the workspace is defined with the following events:
+- `onAppLoaded` : Triggered when the IDE is loaded.
+- `onProjectsLoaded` : Triggered when the workspace and all projects have been activated.
+- `onAppClosed` : Triggered when the IDE is closed.
+
+Each event type has a set of actions that can be triggered. There is no ordering of actions executed when you provide a list; {{ site.product_mini_name }} will asynchronously invoke multiple actions if appropriate.
+
+### Factory Actions
+
+Below is the list of all possible actions which can be configured with your Factory.
+
+**Run Command**  
+: _Description:_ Specify the name of the command to invoke after the IDE is loaded.
+: _Associated Event:_ `onProjectsLoaded`
+
+**Open File**  
+: _Description:_ Open project files as a tab in the editor.  
+: _Associated Event:_ `onProjectsLoaded`
+
+**Find and Replace**
+: _Description:_ Find and replace text in source files with regex.  
+: _Associated Event:_ `onProjectsLoaded`
+
+**Open a Welcome Page**
+: _Description:_ Customize content of a welcome panel displayed when the workspace is loaded.  
+: _Associated Event:_ `onAppLoaded`
+
+**Warm on Uncommitted Changes**
+: _Description:_ Opens a warning popup when the user closes the browser tab with a project that has uncommitted changes.  
+: _Associated Event:_ `onAppClosed`
+
+See [JSON reference]({{base}}{{site.links["factory-json-reference"]}}#ide-customization) to learn how to configure Factory actions.
 
 
 {% if site.product_mini_cli=="codenvy" %}
 # Repository Badging  
 
 If you have projects on GitHub or Gitlab, you can help your contributors to get started by providing them ready-to-code developer workspaces. Create a factory and add the following badge on your repositories `readme.md`:
-![https://codenvy.io/factory/resources/codenvy-contribute.svg](https://codenvy.io/factory/resources/codenvy-contribute.svg)
+![https://codenvy.io/factory/resources/codenvy-contribute.svg](https://codenvy.io/factory/resources/codenvy-contribute.svg){:style="width: 30%"}
 
 Use the following Markdown syntax:
 ```markdown  
