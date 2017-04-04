@@ -10,10 +10,15 @@ permalink: /:categories/creating/
 # Creating Factories
 You can create Factories that are saved with a unique hash code in the dashboard. Navigate to the `Factories` page and hit the `Create Factory` button. You can create a Factory with a pretty name in the dashboard or by invoking a URL within your workspace.  If you generate a Factory template using your workspace URL, your Factory inherits the existing definition of your workspace.
 
-| Create New Factory   | Example   
-| --- | ---
-| Create a new Factory from the dashboard <br>`Dashboard > Factories > Create Factory` | [https://codenvy.io/f?id=s38eam174ji42vty](https://codenvy.com/f?id=s38eam174ji42vty)   
-| Create on-demand URL Factory by specifying the remote URL In that case the configuration may be stored inside the repository. |[http://codenvy.io/f?url=https://github.com/eclipse/che](http://codenvy.io/f?url=https://github.com/eclipse/che)<br>[http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server](http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server)<br>[http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project](http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project)
+**Create a new Factory from the dashboard**  
+
+| Action | `Dashboard > Factories > Create Factory`.
+| Sample Factory | [https://codenvy.io/f?id=s38eam174ji42vty](https://codenvy.com/f?id=s38eam174ji42vty)
+
+**Create on-demand URL Factory**
+
+| Action | Specify the remote URL In that case the configuration may be stored inside the repository.
+| Sample Factories | [http://codenvy.io/f?url=https://github.com/eclipse/che](http://codenvy.io/f?url=https://github.com/eclipse/che)<br>[http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server](http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server)<br>[http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project](http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project)
 
 You can also author a Factory from scratch using a `factory.json` file and then generating a Factory URL using our CLI or API. Learn more about [Factory JSON reference]({{base}}{{site.links["factory-json-reference"]}})
 
@@ -38,7 +43,7 @@ Providing a `.factory.json` file inside the repository will signal to the {{ sit
 # Factory policies
 Policies are a way to send instructions to the automation engine about the number of workspaces to create and their meta data such as lifespan, resource allocation.
 
-### Limitations  
+## Limitations  
 **Referer**
 : Checks the hostname of the acceptor and only allow the Factory to execute if there is a match.
 
@@ -49,7 +54,7 @@ Policies are a way to send instructions to the automation engine about the numbe
 : Limits the RAM for the workspace created from the Factory.
 
 
-### Multiplicity  
+## Multiplicity  
 Defines how many workspaces should be created from the factory.
 
 **Multiple Workspaces: perClick**
@@ -63,7 +68,7 @@ See [JSON reference]({{base}}{{site.links["factory-json-reference"]}}#policies) 
 # IDE Customization
 You can instruct the Factory to invoke a series of IDE actions based upon events in the lifecycle of the workspace.
 
-### Lifecycle Events
+## Lifecycle Events
 The lifecycle of the workspace is defined with the following events:
 - `onAppLoaded` : Triggered when the IDE is loaded.
 - `onProjectsLoaded` : Triggered when the workspace and all projects have been activated.
@@ -71,7 +76,7 @@ The lifecycle of the workspace is defined with the following events:
 
 Each event type has a set of actions that can be triggered. There is no ordering of actions executed when you provide a list; {{ site.product_mini_name }} will asynchronously invoke multiple actions if appropriate.
 
-### Factory Actions
+## Factory Actions
 
 Below is the list of all possible actions which can be configured with your Factory.
 
