@@ -18,7 +18,7 @@ Clone a public workspace on `codenvy.io`:
 # Using Factories
 Factories can be invoked from a Factory URL built in multiple ways. You can replace the {% if site.product_mini_cli=="codenvy" %}`codenvy.io` domain with the hostname of any Codenvy on-premises installation.{% else %}`localhost:8080` domain with the hostname of any Che installation.{% endif %}
 
-{% if site.product_mini_cli=="codenvy" %}Using Factories on `codenvy.io` require the user to be authenticated. Users who are not authenticated will be presented a login screen after they click on the Factory URL.  Users without an account can create one using the same dialog. domain with the hostname of any Codenvy on-premises installation.{% else %}{% endif %}
+{% if site.product_mini_cli=="codenvy" %}Using Factories on `codenvy.io` require the user to be authenticated. Users who are not authenticated will be presented a login screen after they click on the Factory URL.  Users without an account can create one using the same dialog.{% else %}{% endif %}
 
 #### Invoke Factory using its unique hashcode  
 
