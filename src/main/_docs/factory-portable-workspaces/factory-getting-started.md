@@ -20,12 +20,12 @@ Factories can be invoked from a Factory URL built in multiple ways. You can repl
 
 {% if site.product_mini_cli=="codenvy" %}Using Factories on `codenvy.io` require the user to be authenticated. Users who are not authenticated will be presented a login screen after they click on the Factory URL.  Users without an account can create one using the same dialog. domain with the hostname of any Codenvy on-premises installation.{% else %}{% endif %}
 
-- Invoke Factory using its unique hashcode  
+#### Invoke Factory using its unique hashcode  
 
 | Format | `/f?id={hashcode}`<br>`/factory?id={hascode}`
 | Sample | {% if site.product_mini_cli=="codenvy" %} [https://codenvy.io/f?id=s38eam174ji42vty](https://codenvy.io/f?id=s38eam174ji42vty){% else %}[https://localhost:8080/f?id=s38eam174ji42vty](https://localhost:8080/f?id=s38eam174ji42vty){% endif %}
 
-- Invoke a named Factory
+#### Invoke a named Factory
 
 | Format | `/f?user={username}&name={factoryname}`<br>`/factory?user={username}&name={factoryname}`
 | Sample | {% if site.product_mini_cli=="codenvy" %} [https://codenvy.io/f?user=tylerjewell&name=starwars](https://codenvy.io/f?user=tylerjewell&name=starwars)<br>[https://codenvy.io/factory?user=tylerjewell&name=starwars](https://codenvy.io/factory?user=tylerjewell&name=starwars){% else %}[https://localhost:8080/f?user=che&name=starwars](https://localhost:8080/f?user=che&name=starwars)<br>[https://localhost:8080/factory?user=che&name=starwars](https://localhost:8080/factory?user=che&name=starwars){% endif %}
@@ -50,6 +50,6 @@ Once the Factory is executed, it either loads an existing workspace or generates
 
 ## NEXT STEPS
 You have just created your first developer workspace using Factories. Read on to learn more about:
-- [Factory authoring]({{base}}{{site.links["factory-creating"]}}).
+- [Factory Creating]({{base}}{{site.links["factory-creating"]}}).
 - [Factory JSON Reference]({{base}}{{site.links["factory-json-reference"]}}).
 - [Glossary]({{base}}{{site.links["factory-glossary"]}}).
