@@ -8,29 +8,35 @@ permalink: /:categories/creating/
 {% include base.html %}
 
 # Creating Factories
-You can create Factories that are saved with a unique hash code in the dashboard. Navigate to the `Factories` page and hit the `Create Factory` button. You can create a Factory with a pretty name in the dashboard or by invoking a URL within your workspace.  If you generate a Factory template using your workspace URL, your Factory inherits the existing definition of your workspace.
+There are several ways to create factories outlined below.
 
-**Create a new Factory from the dashboard**  
+## Create a Factory in the Dashboard
 
-| Action | `Dashboard > Factories > Create Factory`.
+| Action | In the user dashboard: `Dashboard > Factories > Create Factory`.
 | Sample Factory | [https://codenvy.io/f?id=s38eam174ji42vty](https://codenvy.com/f?id=s38eam174ji42vty)
 
-**Create on-demand URL Factory**
+Creating a Factory in the dashboard gives you the most freedom and control. The simplest way is to create a Factory based on an existing workspace, but you can also create Factories based on a template we provide or by pasting in a `factory.json` file and then generating a Factory URL using our CLI or API. Learn more the JSON structure and options in our [Factory JSON reference]({{base}}{{site.links["factory-json-reference"]}}).
 
-| Action | Specify the remote URL In that case the configuration may be stored inside the repository.
+## Create a Factory in the IDE
+
+| Action | In the IDE: `Workspace > Create Factory`.
+| Sample Factory | [https://codenvy.io/f?id=s38eam174ji42vty](https://codenvy.com/f?id=s38eam174ji42vty)
+
+Creating a Factory from inside the IDE in a running workspace will generate a Factory to replicate that workspace including both runtime and project settings.
+
+## Create a Factory based on a Repo
+
+| Action | Specify the repo URL. In this case the configuration must be stored inside the repository.
 | Sample Factories | [http://codenvy.io/f?url=https://github.com/eclipse/che](http://codenvy.io/f?url=https://github.com/eclipse/che)<br>[http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server](http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server)<br>[http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project](http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project)
 
-You can also author a Factory from scratch using a `factory.json` file and then generating a Factory URL using our CLI or API. Learn more about [Factory JSON reference]({{base}}{{site.links["factory-json-reference"]}}).
+URL Factories work with GitHub and GitLab repositories. By using URL Factories, the project referenced by the URL is automatically imported.
 
-# URL Factories  
-URL Factories are working with github and gitlab repositories. By using URL Factories, the project referenced by the URL is imported.
-
-URL can include a branch or a subfolder. Here is an example of url parameters:
+The Factory URL can include a branch or a subfolder. Here is an example of optional parameters:
 - `?url=https://github.com/eclipse/che` che will be imported with master branch
 - `?url=https://github.com/eclipse/che/tree/5.0.0` che is imported by using 5.0.0 branch
 - `?url=https://github.com/eclipse/che/tree/5.0.0/dashboard` subfolder dashboard is imported by using 5.0.0 branch
 
-## Customizing URL Factories
+### Customizing URL Factories
 There are 2 ways of customizing the runtime and configuration.
 
 **Customizing only the runtime**  
@@ -39,16 +45,15 @@ Providing a `.factory.dockerfile` inside the repository will signal to the {{ si
 **Customizing the project and runtime**  
 Providing a `.factory.json` file inside the repository will signal to the {{ site.product_mini_name }} URL Factory to configure the project and runtime according to this configuration file. When a `.factory.json` file is stored inside the repository, any `.factory.dockerfile` content is ignored as the workspace runtime configuration is defined inside the JSON file.
 
-
 # Factory policies
-Policies are a way to send instructions to the automation engine about the number of workspaces to create and their meta data such as lifespan, resource allocation.
+Policies are a way to send instructions to the automation engine about the number of workspaces to create and their meta data such as lifespan and resource allocation.
 
 ## Limitations  
 **Referer**
-: Checks the hostname of the acceptor and only allow the Factory to execute if there is a match.
+: Checks the hostname of the acceptor and only allows the Factory to execute if there is a match.
 
 **Since** & **Until**
-: Defines valid time window that will allow the Factory to activate. For example, instructors who want to create an exercise that can only be accessed for two hours could set these properties.
+: Defines the time window in which the Factory can be activated. For example, instructors who want to create an exercise that can only be accessed for two hours could set these properties.
 
 **Resources**
 : Limits the RAM for the workspace created from the Factory.
@@ -61,7 +66,7 @@ Defines how many workspaces should be created from the factory.
 : Every click of the Factory URL will generate a different workspace, each with its own identifier, name and resources.  
 
 **Single Workspace: perUser**
-: Exactly one workspace will be generated for each unique user that clicks on the Factory URL. If the workspace has previously been generated, we will reopen the existing workspace and place the user into it.
+: Exactly one workspace will be generated for each unique user that clicks on the Factory URL. If the workspace has previously been generated, we will reopen the existing workspace.
 
 See [JSON reference]({{base}}{{site.links["factory-json-reference"]}}#policies) to learn how to configure Factory policies.
 
@@ -85,7 +90,7 @@ Below is the list of all possible actions which can be configured with your Fact
 : _Associated Event:_ `onProjectsLoaded`
 
 **Open File**  
-: _Description:_ Open project files as a tab in the editor.  
+: _Description:_ Open project files in the editor.  
 : _Associated Event:_ `onProjectsLoaded`
 
 **Find and Replace**
@@ -100,19 +105,20 @@ Below is the list of all possible actions which can be configured with your Fact
 : _Description:_ Opens a warning popup when the user closes the browser tab with a project that has uncommitted changes.  
 : _Associated Event:_ `onAppClosed`
 
-See [JSON reference]({{base}}{{site.links["factory-json-reference"]}}#ide-customization) to learn how to configure Factory actions.
+See the [Factory JSON reference]({{base}}{{site.links["factory-json-reference"]}}#ide-customization) to learn how to configure Factory actions.
 
 # Pull Request Workflow
-Factory can be configured for dedicated workflow. The pull request workflow handles local & remote branching, forking, and pull request issuance. Pull requests generated from within {{ site.product_mini_name }} have another Factory placed into the comments of pull requests that a PR reviewer can consume.
+Factories can be configured with a dedicated pull request workflow. The PR workflow handles local & remote branching, forking, and issuing the pull request. Pull requests generated from within {{ site.product_mini_name }} have another Factory placed into the comments of the pull requests that a PR reviewer can use to quickly start the workspace.
 
 When enabled, the pull request workflow adds a contribution panel to the IDE.
 ![pull-request-panel.png]({{base}}{{site.links["pull-request-panel.png"]}}){:style="width: 50%"}  
 
 
 {% if site.product_mini_cli=="codenvy" %}
+
 # Repository Badging  
 
-If you have projects on GitHub or Gitlab, you can help your contributors to get started by providing them ready-to-code developer workspaces. Create a factory and add the following badge on your repositories `readme.md`:
+If you have projects in GitHub or GitLab, you can help your contributors to get started by providing them ready-to-code developer workspaces. Create a factory and add the following badge on your repositories `readme.md`:
 ![https://codenvy.io/factory/resources/codenvy-contribute.svg](https://codenvy.io/factory/resources/codenvy-contribute.svg){:style="width: 30%"}
 
 Use the following Markdown syntax:
@@ -124,5 +130,7 @@ Use the following Markdown syntax:
 
 ## NEXT STEPS
 Read on to learn more about:
-- [Factory JSON Reference]({{base}}{{site.links["factory-json-reference"]}}).
-- [Glossary]({{base}}{{site.links["factory-glossary"]}}).
+- Customizing factories with the [Factory JSON reference]({{base}}{{site.links["factory-json-reference"]}}).
+- Factory terms in the [glossary]({{base}}{{site.links["factory-glossary"]}}).
+
+Or jump back to the [Factory getting started page]({{base}}{{site.links["factory-getting-started"]}}) if you missed it.
