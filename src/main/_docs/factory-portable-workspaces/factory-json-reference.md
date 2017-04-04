@@ -88,6 +88,8 @@ factory.policies.resources : {
 }
 ```
 
+### Limitations
+You can use `since : EPOCHTIME`, `until : EPOCHTIME` and `referer` as a way to prevent the Factory from executing under certain conditions.  `since` and `until` represent a valid time window that will allow the Factory to activate. For example, instructors who want to create an exercise that can only be accessed for two hours could set these properties.  The `referer` will check the hostname of the acceptor and only allow the Factory to execute if there is a match.
 
 ### Multiplicity
 How many workspaces should be created?  If `create : perClick` then every click of the Factory URL will generate a different workspace, each with its own identifier, name and resources.  If `create : perUser`, then exactly one workspace will be generated for each unique user that clicks on the Factory URL. If the workspace has previously been generated, we will reopen the existing workspace and place the user into it.
@@ -241,7 +243,3 @@ factory.creator : {
 {% if site.product_mini_cli=="che" %}
 Eclipse Che does not provide user management capabilities, the `factory.creator` is always be bound to a simulated `Che` user.
 {% endif %}
-
-
-## NEXT STEPS
-You have just created your first developer workspace with Chedir. Read on to learn more about [project setup]({{base}}/docs/chedir/project-setup/index.html).
