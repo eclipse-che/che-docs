@@ -20,7 +20,7 @@ You can create Factories that are saved with a unique hash code in the dashboard
 | Action | Specify the remote URL In that case the configuration may be stored inside the repository.
 | Sample Factories | [http://codenvy.io/f?url=https://github.com/eclipse/che](http://codenvy.io/f?url=https://github.com/eclipse/che)<br>[http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server](http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server)<br>[http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project](http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project)
 
-You can also author a Factory from scratch using a `factory.json` file and then generating a Factory URL using our CLI or API. Learn more about [Factory JSON reference]({{base}}{{site.links["factory-json-reference"]}})
+You can also author a Factory from scratch using a `factory.json` file and then generating a Factory URL using our CLI or API. Learn more about [Factory JSON reference]({{base}}{{site.links["factory-json-reference"]}}).
 
 # URL Factories  
 URL Factories are working with github and gitlab repositories. By using URL Factories, the project referenced by the URL is imported.
@@ -31,7 +31,7 @@ URL can include a branch or a subfolder. Here is an example of url parameters:
 - `?url=https://github.com/eclipse/che/tree/5.0.0/dashboard` subfolder dashboard is imported by using 5.0.0 branch
 
 ## Customizing URL Factories
-There are 2 ways of customizing the runtime and configuration:
+There are 2 ways of customizing the runtime and configuration.
 
 **Customizing only the runtime**  
 Providing a `.factory.dockerfile` inside the repository will signal to the {{ site.product_mini_name }} URL Factory to use this dockerfile for the workspace agent runtime. By default imported projects are set to a `blank` project type, however project type can be set in the `.factory.json` or workspace definition that the Factory inherits from.
