@@ -13,7 +13,6 @@ Docs are built using Jekyll and the output is static HTML that is hosted at [htt
 - Documentation for nightly builds: [https://www.eclipse.org/che/docs-versions/nightly/](https://www.eclipse.org/che/docs-versions/nightly/)
 
 # Editing Docs
-# Editing Docs
 [![Workspace](https://codenvy.io/factory/resources/codenvy-contribute.svg)](https://codenvy.io/f?name=che-codenvy-docs&user=jdrummond)
   
 Get a workpsace on `codenvy.io` which include all dependencies to edit and preview your changes by clicking on the image above.
