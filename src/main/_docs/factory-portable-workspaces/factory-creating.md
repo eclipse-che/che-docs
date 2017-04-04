@@ -45,7 +45,7 @@ If you have projects on GitHub or Gitlab, you can help your contributors to get 
 
 Use the following Markdown syntax:
 ```markdown  
-![https://codenvy.io/factory/resources/codenvy-contribute.svg](your-factory-url)
+[![Developer Workspace](https://codenvy.io/factory/resources/codenvy-contribute.svg)](your-factory-url)
 ```
 {% endif %}
 
