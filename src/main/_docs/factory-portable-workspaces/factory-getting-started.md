@@ -13,7 +13,7 @@ Factories are available with Eclipse Che and Codenvy.
 
 # Try a Factory
 Clone a public workspace on `codenvy.io` by clicking the button below.
-[![Try a Factory](https://codenvy.io/factory/resources/codenvy-contribute.svg){:style="width: 30%"} ](http://codenvy.io/f?id=omriatu352kkthua)
+[![Try a Factory ](https://codenvy.io/factory/resources/codenvy-contribute.svg){:style="width: 30%;"}{:href="http://codenvy.io/f?id=omriatu352kkthua"}](http://codenvy.io/f?id=omriatu352kkthua)
 
 # Using Factories
 Factories can be invoked from a Factory URL built in multiple ways. You can replace the {% if site.product_mini_cli=="codenvy" %}`codenvy.io` domain with the hostname of any Codenvy on-premises installation.{% else %}`localhost:8080` domain with the hostname of any Che installation.{% endif %}
