@@ -17,12 +17,16 @@ There are several ways to create factories outlined below.
 
 Creating a Factory in the dashboard gives you the most freedom and control. The simplest way is to create a Factory based on an existing workspace, but you can also create Factories based on a template we provide or by pasting in a `factory.json` file and then generating a Factory URL using our CLI or API. Learn more the JSON structure and options in our [Factory JSON reference]({{base}}{{site.links["factory-json-reference"]}}).
 
+A Factory created from the dashboard will be persisted onto {{ site.product_mini_name }} and kept when upgrading to a newer version.
+
 ## Create a Factory in the IDE
 
 | Action | In the IDE: `Workspace > Create Factory`.
 | Sample Factory | [https://codenvy.io/f?id=s38eam174ji42vty](https://codenvy.com/f?id=s38eam174ji42vty)
 
 Creating a Factory from inside the IDE in a running workspace will generate a Factory to replicate that workspace including both runtime and project settings.
+
+A Factory created from the dashboard will be persisted onto {{ site.product_mini_name }} and kept when upgrading to a newer version.
 
 ## Create a Factory based on a Repo
 
@@ -44,6 +48,8 @@ Providing a `.factory.dockerfile` inside the repository will signal to the {{ si
 
 **Customizing the project and runtime**  
 Providing a `.factory.json` file inside the repository will signal to the {{ site.product_mini_name }} URL Factory to configure the project and runtime according to this configuration file. When a `.factory.json` file is stored inside the repository, any `.factory.dockerfile` content is ignored as the workspace runtime configuration is defined inside the JSON file.
+
+
 
 # Factory policies
 Policies are a way to send instructions to the automation engine about the number of workspaces to create and their meta data such as lifespan and resource allocation.
@@ -112,7 +118,6 @@ Factories can be configured with a dedicated pull request workflow. The PR workf
 
 When enabled, the pull request workflow adds a contribution panel to the IDE.
 ![pull-request-panel.png]({{base}}{{site.links["pull-request-panel.png"]}}){:style="width: 50%"}  
-
 
 {% if site.product_mini_cli=="codenvy" %}
 
