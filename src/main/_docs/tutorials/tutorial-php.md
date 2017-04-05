@@ -33,6 +33,8 @@ The PHP stack has the `run php script` command that allows you to run the curren
 
 While you have the `index.php` file on focus in the PHP editor, run the `run php script` command in the CMD command widget. "Hello World!" will be printed in the Terminal panel.
 
+![php.png]({{base}}{{site.links["tutorial-php-1.png"]}})
+
 # 4. Run as a Web App
 
 The PHP stack includes the Apache Web Server and has commands for starting, stopping and restarting it.
@@ -40,6 +42,8 @@ The PHP stack includes the Apache Web Server and has commands for starting, stop
 `start apache` will start the server and tail apache error and access logs. It will also produce a preview URL that will point to your current project directory that Apache is already listening (Document root is changed to `projects`).
 
 You should see a Hello World page. Open `index.php`, edit it, refresh the preview page in your browser to see live changes.
+
+![php.png]({{base}}{{site.links["tutorial-php-2.png"]}})
 
 # 5. Debug
 
@@ -102,6 +106,7 @@ Time: 27 ms, Memory: 2.75MB
 OK (1 test, 1 assertion)
 ```
 
+{% if TODO==0 %}
 # 7. Create a REST Service With Slim  
 Slim makes it possible to create REST services. Let's add this framework to `composer.json`:
 
@@ -142,3 +147,4 @@ Apache needs to be restarted. Run `restart apache` command in the CMD command wi
 Now, navigate to `http://<your-che-host>:$port/$project/Che` to find `Hello Che` in a response:
 
 ![slim.png]({{base}}{{site.links["slim.png"]}})
+{% endif %}
