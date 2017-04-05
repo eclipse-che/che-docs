@@ -100,12 +100,34 @@ http://localhost:8080/swagger/?url=http://192.168.99.100:32773/ide/ext/docs/swag
 
 #### Create a Project In A Workspace
 ```shell  
-curl -X POST -H 'Content-Type: application/json' -d '{ "mixins": [ "git" ], "description": "A hello world Java application.\ "name": "console-java-simple\ "type": "maven\ "path": "/console-java-simple\ "attributes": { "maven.artifactId": [ "console-java-simple" ], "maven.parent.version": [ "" ], "maven.test.source.folder": [ "src/test/java" ], "maven.version": [ "1.0-SNAPSHOT" ], "maven.parent.groupId": [ "" ], "languageVersion": [ "1.8.0_45" ], "language": [ "java" ], "maven.source.folder": [ "src/main/java" ], "git.repository.remotes": [ "https://github.com/che-samples/console-java-simple.git" ], "maven.groupId": [ "org.eclipse.che.examples" ], "maven.packaging": [ "jar" ], "vcs.provider.name": [ "git" ], "maven.resource.folder": [], "git.current.branch.name": [ "master" ], "maven.parent.artifactId": [ "" ] } }' http://localhost:8080/api/ext/project/workspacesq6co30qcxi1kqsj?name=console-java-simple
+curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{
+      "links": [],
+      "name": "web-java-spring",
+      "attributes": {},
+      "type": "maven",
+      "source": {
+        "location": "https://github.com/che-samples/web-java-spring.git",
+        "type": "git",
+        "parameters": {}
+      },
+      "path": "/web-java-spring",
+      "description": "A basic example using Spring servlets. The app returns values entered into a submit form.",
+      "problems": [],
+      "mixins": []
+ }' 'http://localhost:8080/api/workspace/workspace6y86s5qlnzbczow9/project'curl -X POST -H 'Content-Type: application/json' -d '{ "mixins": [ "git" ], "description": "A hello world Java application.\ "name": "console-java-simple\ "type": "maven\ "path": "/console-java-simple\ "attributes": { "maven.artifactId": [ "console-java-simple" ], "maven.parent.version": [ "" ], "maven.test.source.folder": [ "src/test/java" ], "maven.version": [ "1.0-SNAPSHOT" ], "maven.parent.groupId": [ "" ], "languageVersion": [ "1.8.0_45" ], "language": [ "java" ], "maven.source.folder": [ "src/main/java" ], "git.repository.remotes": [ "https://github.com/che-samples/console-java-simple.git" ], "maven.groupId": [ "org.eclipse.che.examples" ], "maven.packaging": [ "jar" ], "vcs.provider.name": [ "git" ], "maven.resource.folder": [], "git.current.branch.name": [ "master" ], "maven.parent.artifactId": [ "" ] } }' http://localhost:8080/api/ext/project/workspacesq6co30qcxi1kqsj?name=console-java-simple
 ```
 
 #### Create a Command In A Workspace
 ```shell  
-curl -X POST -H 'Content-Type: application/json' -d '{ "name": "build\ "type": "mvn\ "attributes": {}, "commandLine": "mvn -f ${current.project.path} clean install" }' http://localhost:8080/ide/api/workspace/workspacesq6co30qcxi1kqsj/command
+curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{
+  "attributes": {
+    "goal": "Run",
+    "previewUrl": "http://${server.port.8080}"
+  },
+  "type": "custom",
+  "commandLine": "echo \u0027Hello World\u0027",
+  "name": "hello world"
+}' 'http://localhost:8080/api/workspace/workspace6y86s5qlnzbczow9/command'
 ```
 
 #### Execute a Command And Stream Output
@@ -135,11 +157,27 @@ In {{ site.product_mini_name }} a **Project** is an instance of a **Project Type
 
 ```shell  
 # Get workspace id
-curl http://localhost:8080/api/workspace
+curl -X GET --header 'Accept: application/json' 'http://localhost:8080/api/workspace?skipCount=0&maxItems=30'
 
 # Create the project
-curl -X POST -H 'Content-Type: application/json' -d '{"name":"my-first-sample\ "attributes":{"maven.version":["1.0-SNAPSHOT"], "maven.packaging":["jar"], "maven.source.folder":["src/main/java"], "maven.test.source.folder":["src/test/java"], "maven.artifactId":["my.artifactId"], "maven.groupId":["my.groupId"]}, "links":[], "type":"maven\ "source":{"location":null, "type":null, "parameters":{}}, "contentRoot":null, "modules":[], "path":null, "description":null, "problems":[], "mixins":[]}'
-http://localhost:8080/api/ext/project/workspacex4zl7nvex1yldosj?name=my-first-sample
+curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{
+      "source": {
+        "location": "",
+        "type": "",
+        "parameters": {}
+      },
+      "links": [],
+      "mixins": [],
+      "problems": [],
+      "name": "test",
+      "type": "blank",
+      "path": "/test",
+      "attributes": {
+        "commands": [
+           "{\"commandLine\":\"echo \\\"hello\\\"\", \"name\":\"newCustom-2\", \"attributes\":{\"previewUrl\":\"\", \"goal\":\"Run\"}, \"type\":\"custom\"}"
+        ]
+      }
+    }' 'http://163.172.154.199:8080/api/workspace/workspace6y86s5qlnzbczow9/project'
 ```
 
 #### Remove a Project
