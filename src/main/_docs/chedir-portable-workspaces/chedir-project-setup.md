@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Project Setup
+title: Chedir - Project Setup
 excerpt: ""
 layout: docs
 permalink: /:categories/project-setup/
@@ -29,4 +29,4 @@ The Chefile is meant to be committed to version control with your project, if yo
 
 
 ## NEXT STEPS
-[Cycle your workspace up and down]({{base}}/docs/chedir/up-and-down/index.html) in a custom Che server.
+[Cycle your workspace up and down]({{base}}{{site.links["chedir-up-and-down"]}}) in a custom Che server.

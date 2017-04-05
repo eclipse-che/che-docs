@@ -6,11 +6,24 @@ layout: docs
 permalink: /:categories/glossary/
 ---
 {% include base.html %}
+
 **Artifacts**: The packaged results of build processes executed by a command. Build artifacts are stored in your project tree, can be downloaded, or injected into other machines where they are used during process execution.
 
 **Command**: A configuration that defines a process that will execute within a machine. Commands can be used to launch builds, runs, unit tests or any process that is needed to execute against the files of a project. A command defines how a process will start and stop. Commands have scope and can be made reusable to different users depending upon where it is saved. Commands are injected into any machine controlled by Che, whether that machine is local or remote.
 
 **Compose Recipe**: A Docker syntax for defining the configuration and startup sequence of a set of containers.
+
+**Factory**
+: A URL that, when clicked, generates a new or loads an existing workspace, and then onboards the user into that workspace.
+
+**Factory Acceptor**  
+: Any user that clicks on a Factory URL to open or generate a workspace. The acceptor is the owner the workspace created by the Factory.
+
+**Factory Owner**
+: A JSON object that defines the contents and structure of a workspace. A workspace configuration is used within a Factory Configuration to define the workspace to be generated.
+
+**Factory Configuration**
+: A JSON object that defines the rules and behavior for how the Factory should work.
 
 **Machine**: A virtual environment that contains a stack of software to be used when executing your project source code and artifacts. Project source code and build artifacts are stored within the machine and synchronized with your central project storage. A machine accepts commands that can start, modify or stop processes. A machine can be active (running) or suspended (saved snapshot) or destroyed (shutdown). The lifecycle of a machine such as booting or shutdown is triggered on various user events such as opening the IDE. Machines are granted an allocation of workspace resources for its execution. Machines can have type where different machines of the same type can be used interchangeably within the same project. Eclipse Che provides a native CLI and Docker implementation of Che server and machines.
 
@@ -43,3 +56,6 @@ permalink: /:categories/glossary/
 **Template**: A template is a packaged set of sample code that is launched in the workspace when a user creates a new project. Users can select from a template while using the user dashboard. Templates have both sample code and a default set of commands associated with them. Templates are loaded based upon the type of stack selected. You can add your own templates to the default Che distribution.
 
 **User**: Anyone interacting with the system.
+
+**Workspace Configuration**
+: A JSON object that defines the contents and structure of a workspace. A workspace configuration is used within a Factory Configuration to define the workspace to be generated.

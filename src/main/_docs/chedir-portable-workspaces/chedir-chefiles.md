@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Chefile
+title: Chedir - Chefile
 excerpt: "Customize how the Che server, workspace, and project are generated from your project"
 layout: docs
 permalink: /:categories/chefiles/
