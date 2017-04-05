@@ -131,6 +131,6 @@ Use the following Markdown syntax:
 ## NEXT STEPS
 Read on to learn more about:
 - Customizing factories with the [Factory JSON reference]({{base}}{{site.links["factory-json-reference"]}}).
-- Factory terms in the [glossary]({{base}}{{site.links["factory-glossary"]}}).
+- Factory terms in the [glossary]({{base}}{{site.links["setup-glossary"]}}).
 
 Or jump back to the [Factory getting started page]({{base}}{{site.links["factory-getting-started"]}}) if you missed it.

@@ -52,4 +52,4 @@ Once the Factory is executed, it either loads an existing workspace or generates
 You have just created your first developer workspace using Factories. Read on to learn more about:
 - How to [create factories]({{base}}{{site.links["factory-creating"]}}).
 - Customizing factories with the [Factory JSON reference]({{base}}{{site.links["factory-json-reference"]}}).
-- Factory terms in the [glossary]({{base}}{{site.links["factory-glossary"]}}).
+- Factory terms in the [glossary]({{base}}{{site.links["setup-glossary"]}}).

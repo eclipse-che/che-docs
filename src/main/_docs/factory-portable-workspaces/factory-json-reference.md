@@ -171,7 +171,7 @@ This is an example that associates a variety of actions with all of the events.
 ```
 Each event type has a set of actions that can be triggered. There is no ordering of actions executed when you provide a list; {{ site.product_mini_name }} will asynchronously invoke multiple actions if appropriate. Some actions can be configured in how they perform and will have an associated `properties : {}` object.
 
-### onProjectsLoaded Event
+###### onProjectsLoaded Event
 
 | Action   | Properties?   | Description   
 | --- | --- | ---
@@ -179,13 +179,13 @@ Each event type has a set of actions that can be triggered. There is no ordering
 | `openFile`   | Yes   | Open project files as a tab in the editor.   
 | `findReplace`   | Yes   | Find and replace text in source files with regex.   
 
-### onAppLoaded Event
+###### onAppLoaded Event
 
 | Action   | Properties?   | Description   
 | --- | --- | ---
 | `openWelcomePage`   | Yes   | Customize the content of the welcome panel when the workspace is loaded.   
 
-### onAppClosed Event
+###### onAppClosed Event
 
 | Action   | Properties?   | Description   
 | --- | --- | ---
