@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Assembly Dev Lifecycle
 excerpt: "An assembly is a packaging of Che libraries, extensions, agents, and branding elements to create a new Che distribution."
 layout: docs
-permalink: /:categories/dev-lifecycle/
+permalink: /:categories/assembly-lifecycle/
 ---
 {% include base.html %}
 
