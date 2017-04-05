@@ -7,14 +7,14 @@ permalink: /:categories/admin-intro/
 ---
 {% include base.html %}
 
-{{site.product_formal_name}}'s power comes from the unique Eclipse Che workspaces which are portable and shareable because they are composed of projects (source files) and environments (runtimes). 
+{{site.product_formal_name}}'s power comes from the unique Eclipse Che workspaces which are portable and shareable because they are composed of projects (source files) and environments (runtimes).
 
 # Workspace Activation
 
 ## 1. Create a workspace with a production runtime
 
 - A Docker image or a “recipe”, for example a Dockerfile / Composefile
-- Runtimes can inherit from other kinds of “machines” such as SSH 
+- Runtimes can inherit from other kinds of “machines” such as SSH
 - Images are built, if necessary, and run with additional run + volume mount parameters
 - We provide numerous "stacks" with pre-defined Docker compose and image runtimes.
 
@@ -71,6 +71,13 @@ permalink: /:categories/admin-intro/
 - Che web IDE is included by default
 
 ![machine.png]({{base}}{{site.links["machine.png"]}})
+
+# Workspace Access
+You can access directly to a workspace by using it's fully qualified access to the workspace
+
+| Format | `/{username}/{workspace}`
+| Sample | {% if site.product_mini_cli=="codenvy" %}[https://codenvy.io/tylerjewell/car](https://codenvy.io/tylerjewell/car){% else %}[https://localhost:8080/tylerjewell/car](https://localhost:8080/tylerjewell/car){% endif %}
+
 
 # Where To Go From Here  
 {{site.product_mini_name}} provides a lot of flexibility to administrators and users. You can start by choosing from our stack library that is within the user dashboard.
