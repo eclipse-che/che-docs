@@ -22,7 +22,7 @@ Factories can be invoked from a Factory URL built in multiple ways. You can repl
 
 #### Invoke Factory using its unique hashcode  
 
-| Format | `/f?id={hashcode}`<br>`/factory?id={hascode}`
+| Format | `/f?id={hashcode}`<br>`/factory?id={hashcode}`
 | Sample | {% if site.product_mini_cli=="codenvy" %} [https://codenvy.io/f?id=s38eam174ji42vty](https://codenvy.io/f?id=s38eam174ji42vty){% else %}[https://localhost:8080/f?id=s38eam174ji42vty](https://localhost:8080/f?id=s38eam174ji42vty){% endif %}
 
 #### Invoke a named Factory
