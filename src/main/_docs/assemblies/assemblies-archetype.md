@@ -1,3 +1,12 @@
+---
+tags: [ "eclipse" , "che" ]
+title: Archetype 
+excerpt: ""
+layout: docs
+permalink: /:categories/archetype/
+---
+{% include base.html %}
+
 We have added a new command to the CLI, `archetype` which can be used to generate custom assemblies of Eclipse Che and Codenvy.
 
 An assembly is a bundling of extensions, plugins, stacks, agents, branding elements, and a CLI
@@ -53,12 +62,13 @@ We provide a variety of different archetypes that will generate custom assemblie
 
 For example:
 ```
+# Eclipse Che 5.7.0 or higher
 docker run -it --rm
   -v /var/run/docker.sock:/var/run/docker.sock 
   -v /c/archetype:/archetype 
   -v /c/tmp:/data 
   -v /c/Users/Tyler/.m2/repository:/m2 
-    eclipse/che-cli:5.7.0 
+    eclipse/che
       archetype all --no:interactive
 ```
 This is syntax on Windows will:

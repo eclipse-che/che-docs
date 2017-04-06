@@ -28,10 +28,12 @@ We have a number of different archetypes, which are flavors of custom assemblies
 Our examples are usually part of a common broader example: an implementation of adding JSON language support to Eclipse Che. This includes a custom language server packaged as an agent, editor extensions to provide JSON validation, a new file type with an icon, syntax highlighting, and suggestions for auto completion which are sourced from a workspace agent. The completed source code for the sample plugin is [located in GitHub](https://github.com/eclipse/che/tree/master/samples/sample-plugin-json), but you will get more value from generating various custom assemblies with our generator.
 
 # Terminology
-Assembly: A new packaging of Che or Codenvy that includes plugins, custom branding, and custom installation utilities. A custom assembly is composed of "standard assemblies", which are the individually deployable elements of the distributed system.
+[Archetype]({{base}}{{site.links["assemblies-archetype"]}}): An archetype is a maven technique for generating code templates. A single archetype has an ID and generates a complete custom assembly. Differnent archetypes generate assemblies with different types of customizations. We make each archetype customize the minimal number of features to make learning about customizations simpler.
+
+[Assembly]({{base}}{{site.links["assemblies-assembly-lifecycle"]}}): A new packaging of Che or Codenvy that includes plugins, custom branding, and custom installation utilities. A custom assembly is composed of "standard assemblies", which are the individually deployable elements of the distributed system.
 
 Standard Assembly: Individual packages of things that are deployed as part of the distributed system. For example, the IDE is a standard assembly that is deployed as JavaScript and the workspace agent is another standard assembly that is deployed inside of a user's workspace.
 
-Plugin: A packaging of extensions that will be compiled into a custom assembly. Each standard assembly can have multiple plugins, such as a workspace agent having plugins for git and file management. A plugin is also composed of one or more extensions, which are the code elements that make up the plugin.
+[Plugin]({{base}}{{site.links["assemblies-plugin-lifecycle"]}}): A packaging of extensions that will be compiled into a custom assembly. Each standard assembly can have multiple plugins, such as a workspace agent having plugins for git and file management. A plugin is also composed of one or more extensions, which are the code elements that make up the plugin.
 
 Extension: The code that makes up a plugin. Depending upon where extensions will be packaged, their code is in different languages. For example, IDE plugins are authored in Java and JavaScript. However, workspace agents can be authored in Java, Go, or other languages.
