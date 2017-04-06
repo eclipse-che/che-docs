@@ -146,24 +146,19 @@ This is an example that associates a variety of actions with all of the events.
       }
     }
   ]},
-
-  "onAppLoaded" : {                     // Actions to be triggered after IDE is loaded
-    "actions" : [{  
-      "id" : "openWelcomePage",         // Show a custom welcome panel and message
-      "properties" : {  
-        "authenticatedContentUrl"    : "http://media.npr.org/images/picture-show-flickr-promo.jpg",
-        "authenticatedIconUrl"       : "https://codenvy.com/wp-content/uploads/2014/01/icon-android.png",
-        "authenticatedTitle"         : "Welcome, John",
-        "authenticatedNotification"  : "We are glad you are back!",
-        "nonAuthenticatedContentUrl" : "http://media.npr.org/images/picture-show-flickr-promo.jpg",
-        "nonAuthenticatedIconUrl"    : "https://codenvy.com/wp-content/uploads/2014/01/icon-android.png",
-        "nonAuthenticatedTitle"      : "Welcome, Anonymous"
-      }
-    }
-  ]},
-
+  "onAppLoaded": {
+     "actions": [
+        {
+           "properties:{
+              "greetingTitle": "Getting Started",			// Title of a Welcome tab
+              "greetingContentUrl": "http://example.com/README.html"	// HTML to be loaded into a tab
+           },
+           "id": "openWelcomePage"
+        }
+     ]
+  },
   "onAppClosed" : {                     // Actions to be triggered when IDE is closed
-    "actions" : [{  
+    "actions" : [{
       "id" : "warnOnClose"              // Show warning when closing browser tab
     }]
   }
@@ -183,7 +178,7 @@ Each event type has a set of actions that can be triggered. There is no ordering
 
 | Action   | Properties?   | Description   
 | --- | --- | ---
-| `openWelcomePage`   | Yes   | Customize the content of the welcome panel when the workspace is loaded.   
+| `openWelcomePage`   | Yes   | Customize the content of the welcome panel when the workspace is loaded. Note that browsers block http resources that are loaded into https pages.
 
 ###### onAppClosed Event
 
