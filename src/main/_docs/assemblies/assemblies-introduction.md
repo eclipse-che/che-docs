@@ -12,7 +12,7 @@ Che is commonly extended in three ways: the browser IDE, the Che Server, or a wo
 
 1. The browser IDE can be extended with new features such as actions, editors, views, or syntax highlighting. Some of these extensions will run entirely within the browser and others may make use of services available over an API running inside the Che server or within a workspace. In other words, your browser extensions can interact and control functions that are running on the server or inside of a workspace.
 
-2 The Che Server can be extended by new plugins. Plugins expose their services through RESTful APIs that are then accessible by the browser IDE. Some capabilities, like project types, are done on the server. Server plugins can also access a workspace to access files, projects or control the Docker container of the workspace.
+2. The Che Server can be extended by new plugins. Plugins expose their services through RESTful APIs that are then accessible by the browser IDE. Some capabilities, like project types, are done on the server. Server plugins can also access a workspace to access files, projects or control the Docker container of the workspace.
 
 3. A user's workspace can be extended to provide new APIs inside of agents to be used by the Che server or the browser IDE.
 ![image05.png]({{ base }}/docs/assets/imgs/image05.png)  
@@ -28,10 +28,17 @@ We have a number of different archetypes, which are flavors of custom assemblies
 Our examples are usually part of a common broader example: an implementation of adding JSON language support to Eclipse Che. This includes a custom language server packaged as an agent, editor extensions to provide JSON validation, a new file type with an icon, syntax highlighting, and suggestions for auto completion which are sourced from a workspace agent. The completed source code for the sample plugin is [located in GitHub](https://github.com/eclipse/che/tree/master/samples/sample-plugin-json), but you will get more value from generating various custom assemblies with our generator.
 
 # Terminology
-Assembly: A new packaging of Che or Codenvy that includes plugins, custom branding, and custom installation utilities. A custom assembly is composed of "standard assemblies", which are the individually deployable elements of the distributed system.
+**Assembly**
+: A new packaging of Che or Codenvy that includes plugins, custom branding, and custom installation utilities. A custom assembly is composed of "standard assemblies", which are the individually deployable elements of the distributed system.
 
-Standard Assembly: Individual packages of things that are deployed as part of the distributed system. For example, the IDE is a standard assembly that is deployed as JavaScript and the workspace agent is another standard assembly that is deployed inside of a user's workspace.
+**Standard Assembly**
+: Individual packages of things that are deployed as part of the distributed system. For example, the IDE is a standard assembly that is deployed as JavaScript and the workspace agent is another standard assembly that is deployed inside of a user's workspace.
 
-Plugin: A packaging of extensions that will be compiled into a custom assembly. Each standard assembly can have multiple plugins, such as a workspace agent having plugins for git and file management. A plugin is also composed of one or more extensions, which are the code elements that make up the plugin.
+**Plugin**
+: A packaging of extensions that will be compiled into a custom assembly. Each standard assembly can have multiple plugins, such as a workspace agent having plugins for git and file management. A plugin is also composed of one or more extensions, which are the code elements that make up the plugin.
 
-Extension: The code that makes up a plugin. Depending upon where extensions will be packaged, their code is in different languages. For example, IDE plugins are authored in Java and JavaScript. However, workspace agents can be authored in Java, Go, or other languages.
+**Extension**
+: The code that makes up a plugin. Depending upon where extensions will be packaged, their code is in different languages. For example, IDE plugins are authored in Java and JavaScript. However, workspace agents can be authored in Java, Go, or other languages.
+
+# Next Steps
+The [assembly lifecycle page]({{base}}{{site.links["assemblies-assembly-lifecycle"]}}) outlines how assemblies and archetypes work and how to get started building them.
