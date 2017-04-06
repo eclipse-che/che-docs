@@ -30,6 +30,7 @@ An archetype is a maven technique for generating code templates. A single archet
 Your host system must have Maven 3.3+ installed to facilitate generation and compiling of custom assemblies. You must pass in your Maven's M2 repository path on your host. Our archetype generator will download libraries into that repository making repeated compilations faster over time. On most Linux based systems, your M2 repository is located at `/home/user/.m2/repository` and it is `%USERPROFILE%/.m2/repository` for Windows. We default your M2 repository to `/home/user/.m2/repository`. Use the `/m2` mount to chnage this.
 
 The syntax is:
+
 ```shell
 USAGE: DOCKER_PARAMS eclipse/che-cli:nightly archetype ACTION [PARAMETERS]
 
@@ -82,10 +83,28 @@ docker run -it --rm
     eclipse/che-cli:5.4.0 
       archetype all --no:interactive
 ```
+
 This command:
 
 #### Linux
-On Linux, the Maven utility launched by the CLI may have problems writing files to your host system during the generation phase. To overcome this limitation, in the `docker run ...` syntax add `--user={uid}` before the image name where `uid` is the user identity of your current users. This user identity will be passed into the various CLI utilities to execute under that user identity.
+On Linux, the Maven utility launched by the CLI may have problems writing files to your host system during the generation phase. To overcome this limitation, in the `docker run ...` syntax before the image name add `--user={uid}` where UID is the user identity of your current users. This user identity will be passed into the various CLI utilities to execute under that user identity.
+
+Example
+
+```
+      -v /etc/group:/etc/group:ro \
+      -v /etc/passwd:/etc/passwd:ro \
+      --user=1000:100  \
+      --group-add 999 \
+```
+
+To determine which user and group to use in the command type `id` in a bash shell - you'll get output similar to the following:
+
+```
+uid=1000(florent) gid=100(users) groups=100(users),24(cdrom),25(floppy),29(audio),30(dip),44(video),46(plugdev),108(netdev),999(docker)
+```
+
+For `--user` you need the ID of your user (1000 in the example above) and their group (100). For `--group-add` you need the ID of the group associated with `docker` (999).
 
 #### Archetypes List
 We provide different archetypes that will generate custom assemblies with different types of customizations. You can see the list of available archetypes by running the `archetype` command without `--no:interactive`. You will be prompted to choose from a list. These archetypes are provided as small sets of customization to simplify the learning experience for new developers with Che. For each of the archetypes that we provide, we also have a short section discussing the relevant elements modified to make the assembly work.
@@ -137,7 +156,26 @@ docker run -it --rm --name build-che \
            -w /home/user/che-build \
               eclipse/che-dev mvn clean install
 ```
-If this were a Linux system, there would be additional volume mounts required and you must set the user identity with `--user`. The full syntax for this Docker image is [within the Che repository](https://github.com/eclipse/che/blob/master/dockerfiles/dev/Dockerfile).
+If this were a Linux system, there would be additional volume mounts required and you must set the user identity with `--user`. 
+
+Example:
+
+```
+      -v /etc/group:/etc/group:ro \
+      -v /etc/passwd:/etc/passwd:ro \
+      --user=1000:1000  \
+      --group-add 999 \
+```
+
+To determine which user and group to use in the command type `id` in a bash shell - you'll get output similar to the following:
+
+```
+uid=1000(florent) gid=100(users) groups=100(users),24(cdrom),25(floppy),29(audio),30(dip),44(video),46(plugdev),108(netdev),999(docker)
+```
+
+For `--user` you need the ID of your user (1000 in the example above) and their group (100). For `--group-add` you need the ID of the group associated with `docker` (999).
+
+The full syntax for this Docker image is [within the Che repository](https://github.com/eclipse/che/blob/master/dockerfiles/dev/Dockerfile).
 
 #### Native
 While the Docker approach to compiling an assembly is simple, it is slower. You can perform a native build with `mvn clean install` in the root of the assembly (the folder with the `pom.xml`) or any module that is a sub-folder within the assembly. If you have the right utilities installed, Maven will go about downloading necessary dependencies, perform compilation, execute unit tests, and give you a custom assembly. The custom assembly is placed into the `/target` sub-folder of the assembly that is built. 
