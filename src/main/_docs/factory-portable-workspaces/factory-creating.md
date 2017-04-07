@@ -49,8 +49,6 @@ Providing a `.factory.dockerfile` inside the repository will signal to the {{ si
 **Customizing the project and runtime**  
 Providing a `.factory.json` file inside the repository will signal to the {{ site.product_mini_name }} URL Factory to configure the project and runtime according to this configuration file. When a `.factory.json` file is stored inside the repository, any `.factory.dockerfile` content is ignored as the workspace runtime configuration is defined inside the JSON file.
 
-
-
 # Factory policies
 Policies are a way to send instructions to the automation engine about the number of workspaces to create and their meta data such as lifespan and resource allocation.
 
@@ -61,15 +59,11 @@ Policies are a way to send instructions to the automation engine about the numbe
 **Since** & **Until**
 : Defines the time window in which the Factory can be activated. For example, instructors who want to create an exercise that can only be accessed for two hours could set these properties.
 
-**Resources**
-: Limits the RAM for the workspace created from the Factory.
-
-
 ## Multiplicity  
 Defines how many workspaces should be created from the factory.
 
 **Multiple Workspaces: perClick**
-: Every click of the Factory URL will generate a different workspace, each with its own identifier, name and resources.  
+: Every click of the Factory URL will generate a different workspace, each with its own identifier, name and resources.
 
 **Single Workspace: perUser**
 : Exactly one workspace will be generated for each unique user that clicks on the Factory URL. If the workspace has previously been generated, we will reopen the existing workspace.
@@ -99,10 +93,6 @@ Below is the list of all possible actions which can be configured with your Fact
 : _Description:_ Open project files in the editor.  
 : _Associated Event:_ `onProjectsLoaded`
 
-**Find and Replace**
-: _Description:_ Find and replace text in source files with regex.  
-: _Associated Event:_ `onProjectsLoaded`
-
 **Open a Welcome Page**
 : _Description:_ Customize content of a welcome panel displayed when the workspace is loaded.  
 : _Associated Event:_ `onAppLoaded`
@@ -112,6 +102,21 @@ Below is the list of all possible actions which can be configured with your Fact
 : _Associated Event:_ `onAppClosed`
 
 See the [Factory JSON reference]({{base}}{{site.links["factory-json-reference"]}}#ide-customization) to learn how to configure Factory actions.
+
+## Find and Replace
+
+Sometimes you may not want to expose certain sensitive information in source code (passwords, URLs, account names, API keys etc). Factories make it possible to replace variables or placeholders with real values. Find and replace can be run as a **Run Command** during `onProjectsLoaded` event. You can use `sed`, `awk` or any other tools that are available in your workspace environment.
+
+Find in the [Factory JSON reference]({{base}}{{site.links["factory-json-reference"]}}#ide-customization) a sample showing how to configure a "Find and Replace" command.
+Alternatively, you may also add IDE actions in Factory tab, in User Dashboard.
+
+![actions.png]({{base}}{{site.links["actions.png"]}}){:style="width: 50%"}
+
+Use [https://www.gnu.org/software/sed/manual/html_node/Regular-Expressions.html](regular expressions) in sed, both in find/replace and file/file types patterns.
+
+
+
+
 
 # Pull Request Workflow
 Factories can be configured with a dedicated pull request workflow. The PR workflow handles local & remote branching, forking, and issuing the pull request. Pull requests generated from within {{ site.product_mini_name }} have another Factory placed into the comments of the pull requests that a PR reviewer can use to quickly start the workspace.
