@@ -183,6 +183,46 @@ This action will open a file as a tab in the editor. You can provide this action
 }
 ```
 
+#### Action: Find and Replace
+If you create a project from a factory, you can have {{ site.product_mini_name }} perform a find / replace on values in the imported source code after it is imported into the project tree. This essentially lets you parameterize your source code. Find and replace can be run as a **Run Command** during `onProjectsLoaded` event. You can use `sed`, `awk` or any other tools that are available in your workspace environment.
+
+Define a command for your workspace in `factory.workspace.workspaceConfig.commands`:
+
+```
+{
+  "commandLine": "sed -i 's/***/userId984hfy6/g' /projects/console-java-simple/README.md",
+  "name": "replace",
+  "attributes": {
+    "goal": "Common",
+    "previewUrl": ""
+  },
+  "type": "custom"
+}
+```
+
+In this example, we have created a named command `replace` which replaces `***` with a string in project's README.md.
+
+Then register this command to the execution list linked to `onProjectsLoaded` event. In this example, `replace` command is executed after project is imported into a workspace:
+
+```
+"ide": {
+    "onProjectsLoaded": {
+      "actions": [
+        {
+          "properties": {
+            "name": "replace"
+          },
+          "id": "runCommand"
+        }
+      ]
+    }
+  }
+```
+
+Use [https://www.gnu.org/software/sed/manual/html_node/Regular-Expressions.html](regular expressions) in sed, both in find/replace and file/file types patterns.
+
+
+
 ## Creator  
 This object has meta information that you can embed within the Factory. These attributes do not affect the automation behavior or the behavior of the generated workspace.
 

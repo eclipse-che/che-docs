@@ -105,45 +105,18 @@ See the [Factory JSON reference]({{base}}{{site.links["factory-json-reference"]}
 
 ## Find and Replace
 
-Sometimes you may not want to expose certain sensitive information in source code (passwords, URLs, account names, API keys etc). Factories make it possible to replace variables or placeholders with real values. Find and replace can be run as an `onProjectsLoaded` action. You can use `sed`, `awk` or any other tools that are available in your workspace environment.
+Sometimes you may not want to expose certain sensitive information in source code (passwords, URLs, account names, API keys etc). Factories make it possible to replace variables or placeholders with real values. Find and replace can be run as a **Run Command** during `onProjectsLoaded` event. You can use `sed`, `awk` or any other tools that are available in your workspace environment.
 
-First, create a command for your workspace:
-
-```
-{
-  "commandLine": "sed -i 's/***/userId984hfy6/g' /projects/console-java-simple/README.md",
-  "name": "replace",
-  "attributes": {
-    "goal": "Common",
-    "previewUrl": ""
-  },
-  "type": "custom"
-}
-```
-
-In this example, we have created a named command `replace` which replaces `***` with a string in project's README.md.
-
-Next, add this command to the execution list. In this example, `replace` command is executed after project is imported into a workspace:
-
-```
-"ide": {
-    "onProjectsLoaded": {
-      "actions": [
-        {
-          "properties": {
-            "name": "replace"
-          },
-          "id": "runCommand"
-        }
-      ]
-    }
-  }
-```
-You may also add IDE actions in factory tab, in User Dashboard.
+Find in the [Factory JSON reference]({{base}}{{site.links["factory-json-reference"]}}#ide-customization) a sample showing how to configure a "Find and Replace" command.
+Alternatively, you may also add IDE actions in Factory tab, in User Dashboard.
 
 ![actions.png]({{base}}{{site.links["actions.png"]}}){:style="width: 50%"}
 
-You can use [https://www.gnu.org/software/sed/manual/html_node/Regular-Expressions.html](regular expressions) in sed, both in find/replace and file/file types patterns.
+Use [https://www.gnu.org/software/sed/manual/html_node/Regular-Expressions.html](regular expressions) in sed, both in find/replace and file/file types patterns.
+
+
+
+
 
 # Pull Request Workflow
 Factories can be configured with a dedicated pull request workflow. The PR workflow handles local & remote branching, forking, and issuing the pull request. Pull requests generated from within {{ site.product_mini_name }} have another Factory placed into the comments of the pull requests that a PR reviewer can use to quickly start the workspace.
