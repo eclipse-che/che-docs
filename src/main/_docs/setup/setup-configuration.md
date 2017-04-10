@@ -310,13 +310,17 @@ CHE_DOCKER_REGISTRY=<registry-url>
 ```
 
 ### Managing Snapshots in Registries
-Che marks old snapshots for deletion from the registry, however, they won't be deleted until the garbage collector in the registry is triggered. Due to the implementation of the GC in a Docker registry, the registry needs to be read-only during the duration of the GC process. As a result we strongly recommend either triggering the GC manually when it's known that images aren't being pushed to the registry, or scheduled for a time when there's a low likelihood of pushes to the registry.
+Che marks old snapshots for deletion from the registry by deleting the snapshot manifests which reference the image layers. However, the image layers themselves (which consume the disk space) must be removed by the registry itself as part of a garbage collection (it removes layers that have no manifests). Che does not automatically trigger a GC event in the registry because during GC the registry needs to be in read-only mode which would cause new image pushes to fail.
+
+We recommend either triggering the GC manually from time-to-time or when disk space becomes limited and when it's known that images aren't being pushed to the registry. Alternatively, registry GCs can be scheduled if there's a consistent time of day when there's a low likelihood of pushes to the registry.
 
 To execute the GC in a registry on a host (local or remote):
 `bin/registry garbage-collect </path/to/config.yml>`
 
 To execute the GC in a registry inside a container:
 `docker exec -ti <registry container name/id> bin/registry garbage-collect /etc/docker/registry/config.yml`
+
+Read more about registries in the [Docker documentation](https://docs.docker.com/registry/).
 
 ## Custom Dockerfiles and Composefiles for Workspaces
 Within Che, your workspaces are powered by a set of runtime environments. The default runtime is Docker. Typically, admins have pre-built images in a Docker registry which are pulled when the workspace is created. You can optionally provide custom Dockerfiles (or let your users provide their own Dockerfiles), which will dynamically create a workspace image when a user creates a new workspace.
