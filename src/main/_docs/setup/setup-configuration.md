@@ -301,17 +301,6 @@ CHE_WORKSPACE_AUTO__SNAPSHOT=false
 CHE_WORKSPACE_AUTO__RESTORE=false
 ```
 
-### Using Snapshots with Private Registries
-The default configuration of workspace snapshots is to save to local disk but you can configure Che to save your workspace snapshots to a private registry that you have installed, such as JFrog's Artifactory or Docker's Enterprise Registry. 
-
-```shell
-# Use a Docker registry for workspace snapshots. If false, snaps are saved to disk.
-CHE_DOCKER_REGISTRY__FOR__SNAPSHOTS=false
-
-# Registry snapshot namespace
-CHE_DOCKER_NAMESPACE=NULL
-```
-
 ### Save Workspace Snapshots in a Private Registry
 The default configuration for workspace snapshots is to have them written to disk as TAR files. This is faster, but not centralized. You can have workspace snapshots saved in a private registry instead. In `che.env`:
 
@@ -319,6 +308,19 @@ The default configuration for workspace snapshots is to have them written to dis
 CHE_DOCKER_REGISTRY__FOR__SNAPSHOTS=true
 CHE_DOCKER_REGISTRY=<registry-url>
 ```
+
+### Managing Snapshots in Registries
+Che marks old snapshots for deletion from the registry by deleting the snapshot manifests which reference the image layers. However, the image layers themselves (which consume the disk space) must be removed by the registry itself as part of a garbage collection (it removes layers that have no manifests). Che does not automatically trigger a GC event in the registry because during GC the registry needs to be in read-only mode which could cause new image pushes to fail.
+
+We recommend either triggering the GC manually from time-to-time or when disk space becomes limited and when it's known that images aren't being pushed to the registry. Alternatively, registry GCs can be scheduled if there's a consistent time of day when there's a low likelihood of pushes to the registry.
+
+To execute the GC in a registry on a host (local or remote):
+`bin/registry garbage-collect </path/to/config.yml>`
+
+To execute the GC in a registry inside a container:
+`docker exec -ti <registry container name/id> bin/registry garbage-collect /etc/docker/registry/config.yml`
+
+Read more about registries in the [Docker documentation](https://docs.docker.com/registry/).
 
 ## Custom Dockerfiles and Composefiles for Workspaces
 Within Che, your workspaces are powered by a set of runtime environments. The default runtime is Docker. Typically, admins have pre-built images in a Docker registry which are pulled when the workspace is created. You can optionally provide custom Dockerfiles (or let your users provide their own Dockerfiles), which will dynamically create a workspace image when a user creates a new workspace.
