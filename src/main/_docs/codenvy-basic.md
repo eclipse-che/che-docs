@@ -29,10 +29,6 @@ To make Full assembly of ide we need to declare in assembly/compiling-ide-war/po
             <classifier>classes</classifier>
             <exclusions>
                 <exclusion>
-                    <artifactId>che-plugin-sdk-env-local</artifactId>
-                    <groupId>org.eclipse.che.plugin</groupId>
-                </exclusion>
-                <exclusion>
                     <artifactId>che-plugin-product-info</artifactId>
                     <groupId>org.eclipse.che.plugin</groupId>
                 </exclusion>
@@ -104,10 +100,6 @@ To make Custom assembly of IDE based on minimal Codenvy IDE* we need to declare 
                 <exclusion>
                     <artifactId>che-wsagent-core</artifactId>
                     <groupId>org.eclipse.che.core</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>che-plugin-sdk-env-local</artifactId>
-                    <groupId>org.eclipse.che.plugin</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
