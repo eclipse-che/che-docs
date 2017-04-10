@@ -1,12 +1,15 @@
-Two maven modules for ws-agent represents minimum set of components that need to start workspace agent. ```che-ide-core``` is core ide part, ```che-wsagent-core``` is core server side part of workspace agent.
+Two maven modules for ws-agent represents minimum set of components of a workspace agent that need to start workspace agent. 
+
+- ```che-ide-core```: Core ide component.
+- ```che-wsagent-core```: Core server side component.
 
 **How to use them**
-We will use them in two ways:
- - As a fundament of our full assembly.
- - As a fundament for our samples.
+We will use them as fundaments in two ways:
+ - Full assembly.
+ - Samples.
 
 **Full assembly of IDE**
-To make Full assembly of ide we need to declare in assembly/assembly-ide-war/pom.xml
+To make full assembly of ide we need to declare in assembly/assembly-ide-war/pom.xml.
 1. IDE Core
 ```
         <dependency>
@@ -14,15 +17,15 @@ To make Full assembly of ide we need to declare in assembly/assembly-ide-war/pom
             <artifactId>che-ide-core</artifactId>
         </dependency>
 ```
-2.  All IDE plugins we have in Che.
+2.  All IDE plugins we have in Che
 ```
-     <dependency>
-            <groupId>org.eclipse.che.plugin</groupId>
-            <artifactId>*</artifactId>
+        <dependency>
+           <groupId>org.eclipse.che.plugin</groupId>
+           <artifactId>*</artifactId>
         </dependency>
 ```
-**Custom assembly of IDE based on minimal Che IDE**
-To make Custom assembly of IDE based on minimal Che IDE* we need to declare in assembly/assembly-ide-war/pom.xml
+**Minimal assembly of IDE**
+To make minimal assembly we need to declare in assembly/assembly-ide-war/pom.xml.
 1. IDE Core
 ```
         <dependency>
@@ -30,7 +33,7 @@ To make Custom assembly of IDE based on minimal Che IDE* we need to declare in a
             <artifactId>che-ide-core</artifactId>
         </dependency>
 ```
-2.  IDE part of custom plugin.
+2.  IDE custom plugin
 ```
         <dependency>
             <groupId>my.plugin</groupId>
@@ -48,8 +51,8 @@ To make Custom assembly of IDE based on minimal Che IDE* we need to declare in a
         </dependency>
 ```
 
-**Full assembly of Ws-agent server war**
-1. Core Ws agent war
+**Full assembly of ws-agent server war**
+1. Core ws-agent war
 ```
     <dependency>
             <groupId>org.eclipse.che.core</groupId>
@@ -57,14 +60,14 @@ To make Custom assembly of IDE based on minimal Che IDE* we need to declare in a
             <type>war</type>
         </dependency>
 ```
-2.  Swagger support
+2. Swagger support
 ```
         <dependency>
             <groupId>org.eclipse.che.lib</groupId>
             <artifactId>che-swagger-module</artifactId>
         </dependency>
 ```
-3.All ws-agent plugins
+3. All ws-agent plugins
 
 ```
        <dependency>
@@ -73,7 +76,7 @@ To make Custom assembly of IDE based on minimal Che IDE* we need to declare in a
         </dependency>
 ```
 **Custom assembly of ws-agent base minimal Che ws-agent**
-1. Core Ws agent war
+1. Core ws-agent war
 ```
     <dependency>
             <groupId>org.eclipse.che.core</groupId>
