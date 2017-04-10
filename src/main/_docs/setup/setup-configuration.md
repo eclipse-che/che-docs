@@ -310,7 +310,7 @@ CHE_DOCKER_REGISTRY=<registry-url>
 ```
 
 ### Managing Snapshots in Registries
-Che marks old snapshots for deletion from the registry by deleting the snapshot manifests which reference the image layers. However, the image layers themselves (which consume the disk space) must be removed by the registry itself as part of a garbage collection (it removes layers that have no manifests). Che does not automatically trigger a GC event in the registry because during GC the registry needs to be in read-only mode which would cause new image pushes to fail.
+Che marks old snapshots for deletion from the registry by deleting the snapshot manifests which reference the image layers. However, the image layers themselves (which consume the disk space) must be removed by the registry itself as part of a garbage collection (it removes layers that have no manifests). Che does not automatically trigger a GC event in the registry because during GC the registry needs to be in read-only mode which could cause new image pushes to fail.
 
 We recommend either triggering the GC manually from time-to-time or when disk space becomes limited and when it's known that images aren't being pushed to the registry. Alternatively, registry GCs can be scheduled if there's a consistent time of day when there's a low likelihood of pushes to the registry.
 
