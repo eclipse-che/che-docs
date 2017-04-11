@@ -317,129 +317,6 @@ You include your plugin by modifying the same assembly `pom.xml` and add a new `
 
 We require the maven POM to be sorted. If you get a sorting error, you can sort your modifications on the command line with `mvn sortpom:sort`.
 
-### Minimal and Standard Assemblies
-There are two ways to build an assembly
-1. As a minimal framework into which you can add plugins.
-2. As a standard assembly with all included default plugins.
-
-There are two maven modules that you will need to consider:
-- ```che-ide-core```: The core components of the IDE.
-- ```che-wsagent-core```: The core components of the Che server.
-
-#### How to use them
-These two modules will be used to create either an assembly or samples.
-
-#### Standard IDE Assembly
-To make a standard assembly of the IDE, we need to declare it in `assembly/assembly-ide-war/pom.xml`.
-
-1. Standard IDE core only
-
-```
-   <dependency>
-      <groupId>org.eclipse.che.core</groupId>
-      <artifactId>che-ide-core</artifactId>
-   </dependency>
-```
-
-2.  Standard IDE core plus all Che IDE plugins
-
-```
-   <dependency>
-      <groupId>org.eclipse.che.plugin</groupId>
-      <artifactId>*</artifactId>
-   </dependency>
-```
-
-#### Minimal IDE Assembly
-To make a minimal assembly of the IDE, we need to declare it in `assembly/assembly-ide-war/pom.xml`.
-
-1. Minimal IDE core only
-
-```
-   <dependency>
-      <groupId>org.eclipse.che.core</groupId>
-      <artifactId>che-ide-core</artifactId>
-   </dependency>
-```
-
-2.  Minimal IDE core plus all Che IDE plugins
-
-```
-   <dependency>
-      <groupId>my.plugin</groupId>
-      <artifactId>plugin-json-ide</artifactId>
-   </dependency>
-```
-
-3.  Minimal IDE WAR that will be reused to get some resources
-
-```
-   <dependency>
-      <groupId>org.eclipse.che</groupId>
-      <artifactId>assembly-ide-war</artifactId>
-      <type>war</type>
-      <scope>runtime</scope>
-   </dependency>
-```
-
-#### Full Assembly of ws-agent Server WAR
-
-1. Core ws-agent WAR
-
-```
-   <dependency>
-      <groupId>org.eclipse.che.core</groupId>
-      <artifactId>che-wsagent-core</artifactId>
-      <type>war</type>
-   </dependency>
-```
-
-2. Swagger support
-
-```
-   <dependency>
-      <groupId>org.eclipse.che.lib</groupId>
-      <artifactId>che-swagger-module</artifactId>
-   </dependency>
-```
-
-3. All ws-agent plugins
-
-```
-   <dependency>
-      <groupId>org.eclipse.che.plugin</groupId>
-      <artifactId>che-plugin-*</artifactId>
-   </dependency>
-```
-
-#### Custom assembly of minimal Che ws-agent
-
-1. Core ws-agent war
-```
-    <dependency>
-      <groupId>org.eclipse.che.core</groupId>
-      <artifactId>che-wsagent-core</artifactId>
-      <type>war</type>
-   </dependency>
-```
-
-2. Server side plugins
-```
-   <dependency>
-      <groupId>my.plugin</groupId>
-      <artifactId>plugin-json-server</artifactId>
-   </dependency>
-```
-
-#### Size Differences for Minimal and Standard Assemblies
-
-| Value  | Minimal  |  Standard |
-|---|---|---|
-| ws-agent WAR size    |   17MB | 34 MB  |
-| GWT compilation  |   4min  |  6min |
-| GWT scripts size  |  4.5 MB |   7.7 MB |
-| IDE WAR size  |   6.3MB |   8MB |      
-
 # IDE
 You can use your own IDE for developing plugins that are deployed within Che. We use Eclipse, Che and IntelliJ internally to create Che itself. You can [create a similar development environment and workflow](https://github.com/eclipse/che/wiki/Development-Workflow#ide-setup) for customizations that you make.
 
@@ -473,6 +350,130 @@ Your custom assembly inherits from a base platform from Eclipse Che or Codenvy. 
 ```
 
 You can then rebuild your assembly normally. The parent reference will trigger Maven to download the new dependency libraries that relate to that particular version.
+
+# Creating Assemblies
+
+## Minimal and Standard Assemblies
+There are two ways to build an assembly
+1. As a minimal framework into which you can add plugins.
+2. As a standard assembly with all included default plugins.
+
+There are two maven modules that you will need to consider:
+- ```che-ide-core```: The core components of the IDE.
+- ```che-wsagent-core```: The core components of the Che server.
+
+These two modules will be used to create either a standard assembly or a sample.
+
+### Standard IDE Assembly
+To make a standard assembly of the IDE, we need to declare it in `assembly/assembly-ide-war/pom.xml`.
+
+1. Standard IDE core only
+
+```
+   <dependency>
+      <groupId>org.eclipse.che.core</groupId>
+      <artifactId>che-ide-core</artifactId>
+   </dependency>
+```
+
+2.  Standard IDE core plus all Che IDE plugins
+
+```
+   <dependency>
+      <groupId>org.eclipse.che.plugin</groupId>
+      <artifactId>*</artifactId>
+   </dependency>
+```
+
+### Minimal IDE Assembly
+To make a minimal assembly of the IDE, we need to declare it in `assembly/assembly-ide-war/pom.xml`.
+
+1. Minimal IDE core only
+
+```
+   <dependency>
+      <groupId>org.eclipse.che.core</groupId>
+      <artifactId>che-ide-core</artifactId>
+   </dependency>
+```
+
+2.  Minimal IDE core plus all Che IDE plugins
+
+```
+   <dependency>
+      <groupId>my.plugin</groupId>
+      <artifactId>plugin-json-ide</artifactId>
+   </dependency>
+```
+
+3.  Minimal IDE WAR that will be reused to get some resources
+
+```
+   <dependency>
+      <groupId>org.eclipse.che</groupId>
+      <artifactId>assembly-ide-war</artifactId>
+      <type>war</type>
+      <scope>runtime</scope>
+   </dependency>
+```
+
+### Full Assembly of ws-agent Server WAR
+
+1. Core ws-agent WAR
+
+```
+   <dependency>
+      <groupId>org.eclipse.che.core</groupId>
+      <artifactId>che-wsagent-core</artifactId>
+      <type>war</type>
+   </dependency>
+```
+
+2. Swagger support
+
+```
+   <dependency>
+      <groupId>org.eclipse.che.lib</groupId>
+      <artifactId>che-swagger-module</artifactId>
+   </dependency>
+```
+
+3. All ws-agent plugins
+
+```
+   <dependency>
+      <groupId>org.eclipse.che.plugin</groupId>
+      <artifactId>che-plugin-*</artifactId>
+   </dependency>
+```
+
+### Custom assembly of minimal Che ws-agent
+
+1. Core ws-agent war
+```
+    <dependency>
+      <groupId>org.eclipse.che.core</groupId>
+      <artifactId>che-wsagent-core</artifactId>
+      <type>war</type>
+   </dependency>
+```
+
+2. Server side plugins
+```
+   <dependency>
+      <groupId>my.plugin</groupId>
+      <artifactId>plugin-json-server</artifactId>
+   </dependency>
+```
+
+### Size Differences for Minimal and Standard Assemblies
+
+| Value  | Minimal  |  Standard |
+|---|---|---|
+| ws-agent WAR size    |   17MB | 34 MB  |
+| GWT compilation  |   4min  |  6min |
+| GWT scripts size  |  4.5 MB |   7.7 MB |
+| IDE WAR size  |   6.3MB |   8MB |      
 
 # Production Mode
 TODO: Discuss how to take a custom assembly that is ready for deployment and then package it within a custom Docker image to replace `eclipse/che-server` with a new image that contains a custom assembly's binaries.
