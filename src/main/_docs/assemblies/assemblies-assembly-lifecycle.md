@@ -231,9 +231,14 @@ The `archetype generate` command will generate two custom assemblies: one for Ec
 The Eclipse Che and Codenvy CLI have (mostly) identical syntax, so you can build and run either custom assembly. By default, the `archetype build` and `archetype run` commands default to the Che custom assembly.  You can switch to the Codenvy assembly by appending `--codenvy` to either command.
 
 # Customizing
-Our archetypes generate a functional custom assembly with some pre-built customizations. You can further customize an assembly by either a) excluding plugins or assets from Che / Codenvy, b) including new plugins or assets that you have created, or c) both. For example, if you want to replace Che's git plugin with an improvement that you make, you would both exclude the default one provided by Che and then include a new plugin that you author.
+Our archetypes generate a functional custom assembly with some pre-built customizations. You can further customize an assembly by:
+- Excluding plugins or assets from Che / Codenvy
+- Including new plugins or assets that you have created
+- Both
 
-After you exclude / include new plugins, you just perform another build to package the assembly with the updated plugin list.
+For example, if you want to replace Che's git plugin with an improvement that you make, you would both exclude the default one provided by Che and then include a new plugin that you author.
+
+After you exclude / include new plugins, perform another build to package the assembly with the updated plugin list.
 
 #### Standard Assemblies
 There are five different places where you can include or exclude a plugin, which are items we call "standard assemblies". The "standard assemblies" generate packages that will be run as an asset in a different location. Che and Codenvy are distributed systems, so there are components that run in a browser, on the server, and within a workspace. Each one of these components are independently packaged into a "standard assembly".
@@ -301,7 +306,6 @@ You can have as many `<exclusion>` blocks as necessary within a single `<exclusi
 
 We require the maven POM to be sorted. If you get a sorting error, you can sort your modifications on the command line with `mvn sortpom:sort`.
 
-
 #### Include
 You include your plugin by modifying the same assembly `pom.xml` and add a new `<dependency>` block:
 ```
@@ -312,6 +316,129 @@ You include your plugin by modifying the same assembly `pom.xml` and add a new `
 ```
 
 We require the maven POM to be sorted. If you get a sorting error, you can sort your modifications on the command line with `mvn sortpom:sort`.
+
+### Minimal and Standard Assemblies
+There are two ways to build an assembly
+1. As a minimal framework into which you can add plugins.
+2. As a standard assembly with all included default plugins.
+
+There are two maven modules that you will need to consider:
+- ```che-ide-core```: The core components of the IDE.
+- ```che-wsagent-core```: The core components of the Che server.
+
+#### How to use them
+These two modules will be used to create either an assembly or samples.
+
+#### Standard IDE Assembly
+To make a standard assembly of the IDE, we need to declare it in `assembly/assembly-ide-war/pom.xml`.
+
+1. Standard IDE core only
+
+```
+   <dependency>
+      <groupId>org.eclipse.che.core</groupId>
+      <artifactId>che-ide-core</artifactId>
+   </dependency>
+```
+
+2.  Standard IDE core plus all Che IDE plugins
+
+```
+   <dependency>
+      <groupId>org.eclipse.che.plugin</groupId>
+      <artifactId>*</artifactId>
+   </dependency>
+```
+
+#### Minimal IDE Assembly
+To make a minimal assembly of the IDE, we need to declare it in `assembly/assembly-ide-war/pom.xml`.
+
+1. Minimal IDE core only
+
+```
+   <dependency>
+      <groupId>org.eclipse.che.core</groupId>
+      <artifactId>che-ide-core</artifactId>
+   </dependency>
+```
+
+2.  Minimal IDE core plus all Che IDE plugins
+
+```
+   <dependency>
+      <groupId>my.plugin</groupId>
+      <artifactId>plugin-json-ide</artifactId>
+   </dependency>
+```
+
+3.  Minimal IDE WAR that will be reused to get some resources
+
+```
+   <dependency>
+      <groupId>org.eclipse.che</groupId>
+      <artifactId>assembly-ide-war</artifactId>
+      <type>war</type>
+      <scope>runtime</scope>
+   </dependency>
+```
+
+#### Full Assembly of ws-agent Server WAR
+
+1. Core ws-agent WAR
+
+```
+   <dependency>
+      <groupId>org.eclipse.che.core</groupId>
+      <artifactId>che-wsagent-core</artifactId>
+      <type>war</type>
+   </dependency>
+```
+
+2. Swagger support
+
+```
+   <dependency>
+      <groupId>org.eclipse.che.lib</groupId>
+      <artifactId>che-swagger-module</artifactId>
+   </dependency>
+```
+
+3. All ws-agent plugins
+
+```
+   <dependency>
+      <groupId>org.eclipse.che.plugin</groupId>
+      <artifactId>che-plugin-*</artifactId>
+   </dependency>
+```
+
+#### Custom assembly of minimal Che ws-agent
+
+1. Core ws-agent war
+```
+    <dependency>
+      <groupId>org.eclipse.che.core</groupId>
+      <artifactId>che-wsagent-core</artifactId>
+      <type>war</type>
+   </dependency>
+```
+
+2. Server side plugins
+```
+   <dependency>
+      <groupId>my.plugin</groupId>
+      <artifactId>plugin-json-server</artifactId>
+   </dependency>
+```
+
+#### Size Differences for Minimal and Standard Assemblies
+
+| Value  | Minimal  |  Standard |
+|---|---|---|
+| ws-agent WAR size    |   17MB | 34 MB  |
+| GWT compilation  |   4min  |  6min |
+| GWT scripts size  |  4.5 MB |   7.7 MB |
+| IDE WAR size  |   6.3MB |   8MB |      
 
 # IDE
 You can use your own IDE for developing plugins that are deployed within Che. We use Eclipse, Che and IntelliJ internally to create Che itself. You can [create a similar development environment and workflow](https://github.com/eclipse/che/wiki/Development-Workflow#ide-setup) for customizations that you make.
