@@ -86,19 +86,32 @@ http://localhost:8080/swagger/\
 ```
 
 ### Workspace Agent APIs  
-Each workspace has its own set of APIs. The workspace agent advertises its swagger configuration using a special URL. You access the workspace agent's APIs through the workspace master. The workspace master connects to the agent, grabs the swagger configuration, and executes it within the workspace master.  You can find the hostname and port number of your workspace in the IDE in the operations perspective. The operations view displays a table of servers that are executing within the currently active workspace. One of those servers will be labeled as the workspace agent and it will display the hostname and port number of the agent.
+Each workspace has its own set of APIs. The workspace agent advertises its swagger configuration on a different port.  
 
 ```shell  
-# Swagger access URL
-http://{workspace-master-host}/swagger/?url=http://{workspace-agent-host}/ide/ext/docs/swagger.json
 
 # Example
-http://localhost:8080/swagger/?url=http://192.168.99.100:32773/ide/ext/docs/swagger.json
-```  
+http://172.19.20.16:8080/swagger/?url=http://172.19.20.16:32771/api/docs/swagger.json
+
+where 32771 is an exposed port mapped to port 4401
+```
+
+You can get workspace agent port from workspace runtime or by running `docker inspect` against a workspace container.
+
+`GET localhost:8080/api/workspace/ws-id` `> runtime > devMachine > runtime > servers > links > 4401/tcp > address`.
+
+You can also run `docker ps`, get workspace container ID (image name is smth like `eclipse-che/workspacef4g2rqfw2222d81u_machine5c0ezeh7jixthtft_che_dev-machine`) and then run:
+
+`docker inspect $containerID --format='{{(index (index .NetworkSettings.Ports "4401/tcp") 0).HostPort}}'`
 
 # Using REST APIs
 
 #### Create a Project In A Workspace
+
+##### Save Project Into Workspace Configuration  
+
+This API calls adds a project to workspace configuration and does not physically import a project into a workspace.
+
 ```shell  
 curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{
       "links": [],
@@ -114,7 +127,70 @@ curl -X POST --header 'Content-Type: application/json' --header 'Accept: applica
       "description": "A basic example using Spring servlets. The app returns values entered into a submit form.",
       "problems": [],
       "mixins": []
- }' 'http://localhost:8080/api/workspace/workspace6y86s5qlnzbczow9/project'curl -X POST -H 'Content-Type: application/json' -d '{ "mixins": [ "git" ], "description": "A hello world Java application.\ "name": "console-java-simple\ "type": "maven\ "path": "/console-java-simple\ "attributes": { "maven.artifactId": [ "console-java-simple" ], "maven.parent.version": [ "" ], "maven.test.source.folder": [ "src/test/java" ], "maven.version": [ "1.0-SNAPSHOT" ], "maven.parent.groupId": [ "" ], "languageVersion": [ "1.8.0_45" ], "language": [ "java" ], "maven.source.folder": [ "src/main/java" ], "git.repository.remotes": [ "https://github.com/che-samples/console-java-simple.git" ], "maven.groupId": [ "org.eclipse.che.examples" ], "maven.packaging": [ "jar" ], "vcs.provider.name": [ "git" ], "maven.resource.folder": [], "git.current.branch.name": [ "master" ], "maven.parent.artifactId": [ "" ] } }' http://localhost:8080/api/ext/project/workspacesq6co30qcxi1kqsj?name=console-java-simple
+ }' 'http://localhost:8080/api/workspace/workspace6y86s5qlnzbczow9/project'
+ ```
+
+ ##### Import a Project Into a Running Workspace
+
+ This method physically imports a project into a workspace. A project must have project type defined and a list of mandatory attributes (depends on the project type).
+
+ Get a list of all available registered project types:
+
+`GET http://localhost:32768/api/project-type` (32768 is an example, and should be replaced with an actual workspace agent exposed port)
+
+ ```shell
+ curl -X POST -H 'Content-Type: application/json' -d '{  
+   "mixins":[  
+      "git"
+   ],
+   "description":"A hello world Java application.\ "   name":"console-java-simple\ "   type":"maven\ "   path":"/console-java-simple\ "   attributes":{  
+      "maven.artifactId":[  
+         "console-java-simple"
+      ],
+      "maven.parent.version":[  
+         ""
+      ],
+      "maven.test.source.folder":[  
+         "src/test/java"
+      ],
+      "maven.version":[  
+         "1.0-SNAPSHOT"
+      ],
+      "maven.parent.groupId":[  
+         ""
+      ],
+      "languageVersion":[  
+         "1.8.0_45"
+      ],
+      "language":[  
+         "java"
+      ],
+      "maven.source.folder":[  
+         "src/main/java"
+      ],
+      "git.repository.remotes":[  
+         "https://github.com/che-samples/console-java-simple.git"
+      ],
+      "maven.groupId":[  
+         "org.eclipse.che.examples"
+      ],
+      "maven.packaging":[  
+         "jar"
+      ],
+      "vcs.provider.name":[  
+         "git"
+      ],
+      "maven.resource.folder":[  
+
+      ],
+      "git.current.branch.name":[  
+         "master"
+      ],
+      "maven.parent.artifactId":[  
+         ""
+      ]
+   }
+}' http://localhost:32768/api/project/workspacesq6co30qcxi1kqsj
 ```
 
 #### Create a Command In A Workspace
