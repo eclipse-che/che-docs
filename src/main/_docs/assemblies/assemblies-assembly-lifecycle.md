@@ -353,7 +353,6 @@ You can then rebuild your assembly normally. The parent reference will trigger M
 
 # Creating Assemblies
 
-## Minimal and Standard Assemblies
 There are two ways to build an assembly
 1. As a minimal framework into which you can add plugins.
 2. As a standard assembly with all included default plugins.
@@ -366,10 +365,10 @@ There are two maven modules that you will need to consider:
 
 These two modules will be used to create either a standard assembly or a sample.
 
-### Standard IDE Assembly
+## Standard IDE Assembly
 To make a standard assembly of the IDE, we need to declare it in `assembly/assembly-ide-war/pom.xml`.
 
-1. Standard IDE core only
+**1) Standard IDE core only**
 
 ```
    <dependency>
@@ -378,7 +377,7 @@ To make a standard assembly of the IDE, we need to declare it in `assembly/assem
    </dependency>
 ```
 
-2.  Standard IDE core plus all Che IDE plugins
+**2) Standard IDE core plus all Che IDE plugins**
 
 ```
    <dependency>
@@ -387,10 +386,10 @@ To make a standard assembly of the IDE, we need to declare it in `assembly/assem
    </dependency>
 ```
 
-### Minimal IDE Assembly
+## Minimal IDE Assembly
 To make a minimal assembly of the IDE, we need to declare it in `assembly/assembly-ide-war/pom.xml`.
 
-1. Minimal IDE core only
+**1) Minimal IDE core only**
 
 ```
    <dependency>
@@ -399,7 +398,7 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-2.  Minimal IDE core plus all Che IDE plugins
+**2) Minimal IDE core plus all Che IDE plugins**
 
 ```
    <dependency>
@@ -408,7 +407,7 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-3.  Minimal IDE WAR that will be reused to get some resources
+**3) Minimal IDE WAR that will be reused to get some resources**
 
 ```
    <dependency>
@@ -419,9 +418,9 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-### Standard Assembly of ws-agent Server WAR
+## Standard Assembly of ws-agent Server WAR
 
-1. Core ws-agent WAR
+**1) Core ws-agent WAR**
 
 ```
    <dependency>
@@ -431,7 +430,7 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-2. Swagger support
+**2) Swagger support**
 
 ```
    <dependency>
@@ -440,7 +439,7 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-3. All ws-agent plugins
+**3) All ws-agent plugins**
 
 ```
    <dependency>
@@ -449,9 +448,10 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-### Custom Assembly of Minimal Che ws-agent
+## Custom Assembly of Minimal Che ws-agent
 
-1. Core ws-agent war
+**1) Core ws-agent war**
+
 ```
     <dependency>
       <groupId>org.eclipse.che.core</groupId>
@@ -460,22 +460,14 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-2. Server side plugins
+**2) Server side plugins**
+
 ```
    <dependency>
       <groupId>my.plugin</groupId>
       <artifactId>plugin-json-server</artifactId>
    </dependency>
 ```
-
-### Size Differences for Minimal and Standard Assemblies
-
-| Value  | Minimal  |  Standard |
-|---|---|---|
-| ws-agent WAR size    |   17MB | 34 MB  |
-| GWT compilation  |   4min  |  6min |
-| GWT scripts size  |  4.5 MB |   7.7 MB |
-| IDE WAR size  |   6.3MB |   8MB |      
 
 {% endif %}
 
@@ -487,10 +479,10 @@ There are two maven modules that you will need to consider:
 
 These two modules will be used to create either a standard assembly or a sample.
 
-### Standard IDE Assembly
+## Standard IDE Assembly
 To make a standard assembly of the IDE, we need to declare it in `assembly/compiling-ide-war/pom.xml`.
 
-1. Standard IDE core only
+**1) Standard IDE core only**
 
 ```
    <dependency>
@@ -499,7 +491,7 @@ To make a standard assembly of the IDE, we need to declare it in `assembly/compi
    </dependency>
 ```
 
-2.  All IDE plugins we have in Codenvy.
+**2)  All IDE plugins we have in Codenvy**
 
 ```
    <dependency>
@@ -508,7 +500,7 @@ To make a standard assembly of the IDE, we need to declare it in `assembly/compi
    </dependency>
 ```
 
-3.  All IDE plugins we have in Che.
+**3) All IDE plugins we have in Che**
 
 ```
    <dependency>
@@ -524,10 +516,10 @@ To make a standard assembly of the IDE, we need to declare it in `assembly/compi
    </dependency>
 ```
 
-### Minimal IDE Assembly
+## Minimal IDE Assembly
 To make a minimal assembly of the IDE, we need to declare it in `assembly/assembly-ide-war/pom.xml`.
 
-1. Codenvy IDE Core
+**1) Codenvy IDE Core**
 
 ```
    <dependency>
@@ -537,7 +529,7 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-2.  IDE Part of a Custom Plugin
+**2) IDE Part of a Custom Plugin**
 
 ```
    <dependency>
@@ -547,7 +539,7 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-3.  IDE WAR is Reused to Get Key Resources
+**3) IDE WAR is Reused to Get Key Resources**
 
 ```
    <dependency>
@@ -558,9 +550,9 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-### Standard Assembly of ws-agent Server WAR
+## Standard Assembly of ws-agent Server WAR
 
-1. Core ws-agent WAR
+**1) Core ws-agent WAR**
 
 ```
    <dependency>
@@ -570,7 +562,7 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-2.  Swagger Support
+**2) Swagger support**
 
 ```
    <dependency>
@@ -579,7 +571,7 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-3. All Codenvy ws-agent Plugins
+**3) All Codenvy ws-agent plugins**
 
 ```
    <dependency>
@@ -588,7 +580,7 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-4. All Che ws-agent Plugins
+**4) All Che ws-agent plugins**
 
 ```
    <dependency>
@@ -604,9 +596,9 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-### Custom Assembly of Minimal Codenvy ws-agent
+## Custom Assembly of Minimal Codenvy ws-agent
 
-1. Core Ws Agent WAR
+**1) Core Ws Agent WAR**
 
 ```
    <dependency>
@@ -616,7 +608,7 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-2. Server Side Plugin
+**2) Server Side Plugin**
 
 ```
    <dependency>
