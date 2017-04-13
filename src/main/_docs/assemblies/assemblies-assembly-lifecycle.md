@@ -358,9 +358,11 @@ There are two ways to build an assembly
 1. As a minimal framework into which you can add plugins.
 2. As a standard assembly with all included default plugins.
 
+{% if site.product_mini_cli=="che" %}
+
 There are two maven modules that you will need to consider:
 - ```che-ide-core```: The core components of the IDE.
-- ```che-wsagent-core```: The core components of the Che server.
+- ```che-wsagent-core```: The core components of the server-side workspace agent.
 
 These two modules will be used to create either a standard assembly or a sample.
 
@@ -417,7 +419,7 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-### Full Assembly of ws-agent Server WAR
+### Standard Assembly of ws-agent Server WAR
 
 1. Core ws-agent WAR
 
@@ -447,7 +449,7 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
    </dependency>
 ```
 
-### Custom assembly of minimal Che ws-agent
+### Custom Assembly of Minimal Che ws-agent
 
 1. Core ws-agent war
 ```
@@ -474,6 +476,156 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
 | GWT compilation  |   4min  |  6min |
 | GWT scripts size  |  4.5 MB |   7.7 MB |
 | IDE WAR size  |   6.3MB |   8MB |      
+
+{% endif %}
+
+{% if site.product_mini_cli=="codenvy" %}
+
+There are two maven modules that you will need to consider:
+- ```codenvy-ide-core```: The core components of the IDE.
+- ```codenvy-wsagent-core```: The core components of the server-side workspace agent.
+
+These two modules will be used to create either a standard assembly or a sample.
+
+### Standard IDE Assembly
+To make a standard assembly of the IDE, we need to declare it in `assembly/compiling-ide-war/pom.xml`.
+
+1. Standard IDE core only
+
+```
+   <dependency>
+      <groupId>org.eclipse.che.core</groupId>
+      <artifactId>che-ide-core</artifactId>
+   </dependency>
+```
+
+2.  All IDE plugins we have in Codenvy.
+
+```
+   <dependency>
+      <groupId>com.codenvy.plugin</groupId>
+      <artifactId>codenvy-plugin-*</artifactId>
+   </dependency>
+```
+
+3.  All IDE plugins we have in Che.
+
+```
+   <dependency>
+      <groupId>org.eclipse.che</groupId>
+      <artifactId>assembly-ide-war</artifactId>
+      <classifier>classes</classifier>
+      <exclusions>
+         <exclusion>
+            <artifactId>che-plugin-product-info</artifactId>
+            <groupId>org.eclipse.che.plugin</groupId>
+         </exclusion>
+      </exclusions>
+   </dependency>
+```
+
+### Minimal IDE Assembly
+To make a minimal assembly of the IDE, we need to declare it in `assembly/assembly-ide-war/pom.xml`.
+
+1. Codenvy IDE Core
+
+```
+   <dependency>
+      <groupId>com.codenvy.onpremises</groupId>
+      <artifactId>codenvy-ide-core</artifactId>
+      <scope>provided</scope>
+   </dependency>
+```
+
+2.  IDE Part of a Custom Plugin
+
+```
+   <dependency>
+      <groupId>my.plugin</groupId>
+      <artifactId>plugin-json-ide</artifactId>
+      <scope>provided</scope>
+   </dependency>
+```
+
+3.  IDE WAR is Reused to Get Key Resources
+
+```
+   <dependency>
+      <groupId>com.codenvy.onpremises</groupId>
+      <artifactId>assembly-ide-war</artifactId>
+      <type>war</type>
+      <scope>runtime</scope>
+   </dependency>
+```
+
+### Standard Assembly of ws-agent Server WAR
+
+1. Core ws-agent WAR
+
+```
+   <dependency>
+      <groupId>com.codenvy.onpremises.wsagent</groupId>
+      <artifactId>codenvy-wsagent-core</artifactId>
+      <type>war</type>
+   </dependency>
+```
+
+2.  Swagger Support
+
+```
+   <dependency>
+      <groupId>org.eclipse.che.lib</groupId>
+      <artifactId>che-swagger-module</artifactId>
+   </dependency>
+```
+
+3. All Codenvy ws-agent Plugins
+
+```
+   <dependency>
+      <groupId>com.codenvy.plugin</groupId>
+      <artifactId>codenvy-plugin-*</artifactId>
+   </dependency>
+```
+
+4. All Che ws-agent Plugins
+
+```
+   <dependency>
+      <groupId>org.eclipse.che</groupId>
+      <artifactId>assembly-wsagent-war</artifactId>
+      <classifier>classes</classifier>
+      <exclusions>
+         <exclusion>
+            <artifactId>che-wsagent-core</artifactId>
+            <groupId>org.eclipse.che.core</groupId>
+         </exclusion>
+      </exclusions>
+   </dependency>
+```
+
+### Custom Assembly of Minimal Codenvy ws-agent
+
+1. Core Ws Agent WAR
+
+```
+   <dependency>
+      <groupId>com.codenvy.onpremises.wsagent</groupId>
+      <artifactId>codenvy-wsagent-core</artifactId>
+      <type>war</type>
+   </dependency>
+```
+
+2. Server Side Plugin
+
+```
+   <dependency>
+      <groupId>my.plugin</groupId>
+      <artifactId>plugin-json-server</artifactId>
+   </dependency>
+```
+
+{% endif %}
 
 # Production Mode
 TODO: Discuss how to take a custom assembly that is ready for deployment and then package it within a custom Docker image to replace `eclipse/che-server` with a new image that contains a custom assembly's binaries.
