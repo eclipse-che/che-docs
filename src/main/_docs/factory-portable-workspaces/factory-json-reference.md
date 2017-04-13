@@ -172,13 +172,14 @@ Each event type has a set of actions that can be triggered. There is no ordering
 | `warnOnClose`   | No   | Opens a warning popup when the user closes the browser tab with a project that has uncommitted changes. Requires `project.parameters.keepVcs` to be `true`.
 
 #### Action: Open File
-This action will open a file as a tab in the editor. You can provide this action multiple times to have multiple files open. The file property is a relative reference to a file in the project’s source tree. The `file` parameter is the relative path within the workspace to the file that should be opened by the editor. Note that projects are located in the workspaces `/projects` folder.
+This action will open a file as a tab in the editor. You can provide this action multiple times to have multiple files open. The file property is a relative reference to a file in the project’s source tree. The `file` parameter is the relative path within the workspace to the file that should be opened by the editor. The `line` parameter is optional and can be used to move the editor cursor to a specific line when the file is opened. Note that projects are located in the workspaces `/projects` folder.
 
 ```json  
 {  
   "id" : "openFile",
-    "properties" : {  
-    "file" : "/my-project/pom.xml"
+    "properties" : {
+      "file" : "/my-project/pom.xml",
+      "line" : "50"
   }
 }
 ```
