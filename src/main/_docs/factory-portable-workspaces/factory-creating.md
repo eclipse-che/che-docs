@@ -90,7 +90,7 @@ Below is the list of all possible actions which can be configured with your Fact
 : _Associated Event:_ `onProjectsLoaded`
 
 **Open File**  
-: _Description:_ Open project files in the editor. Optionally define line to be highlighted.   
+: _Description:_ Open project files in the editor.  
 : _Associated Event:_ `onProjectsLoaded`
 
 **Open a Welcome Page**
