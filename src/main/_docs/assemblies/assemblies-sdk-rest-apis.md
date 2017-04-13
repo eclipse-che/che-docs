@@ -18,7 +18,7 @@ private void getProjectType(@NotNull String workspaceId,
                             @NotNull String id,
                             @NotNull AsyncCallback<ProjectTypeDto> callback) {
 
-    final String url = extPath + "/project-type/" + workspaceId + '/' + id;
+    final String url = appContext.getDevMachine().getWsAgentBaseUrl() + "/project-type/";
     asyncRequestFactory.createGetRequest(url)
                        .header(ACCEPT, APPLICATION_JSON)
                        .loader(loaderFactory.newLoader("Getting info about project type..."))
@@ -82,23 +82,132 @@ In addition to browsing the included REST APIs, we provide a few different examp
 ![Swagger.PNG]({{ base }}/docs/assets/imgs/Swagger.PNG)
 
 ```http  
-http://localhost:8080/swagger/\
+http://localhost:8080/swagger/
 ```
 
 ### Workspace Agent APIs  
-Each workspace has its own set of APIs. The workspace agent advertises its swagger configuration using a special URL. You access the workspace agent's APIs through the workspace master. The workspace master connects to the agent, grabs the swagger configuration, and executes it within the workspace master.  You can find the hostname and port number of your workspace in the IDE in the operations perspective. The operations view displays a table of servers that are executing within the currently active workspace. One of those servers will be labeled as the workspace agent and it will display the hostname and port number of the agent.
+Each workspace has its own set of APIs. The workspace agent advertises its swagger configuration on a different port.  
 
 ```shell  
-# Swagger access URL
-http://{workspace-master-host}/swagger/?url=http://{workspace-agent-host}/ide/ext/docs/swagger.json
 
 # Example
-http://localhost:8080/swagger/?url=http://192.168.99.100:32773/ide/ext/docs/swagger.json
-```  
+http://172.19.20.16:8080/swagger/?url=http://172.19.20.16:32771/api/docs/swagger.json
+
+where 32771 is an exposed port mapped to port 4401
+```
+
+* You can get ws-agent API endpoint from workspace runtime:
+
+`GET localhost:8080/api/workspace/ws-id` `> runtime > devMachine > runtime > servers > links > 4401/tcp > address`.
+
+* You can get workspace agent port by running `docker inspect` against a workspace container. Get workspace container ID (image name is smth like `eclipse-che/workspacef4g2rqfw2222d81u_machine5c0ezeh7jixthtft_che_dev-machine`) and then run:
+
+`docker inspect $containerID --format='{{(index (index .NetworkSettings.Ports "4401/tcp") 0).HostPort}}'`
+
+* API endpoint can be retrieved from your Java code as well:
+
+`appContext.getDevMachine().getWsAgentBaseUrl()`
 
 # Using REST APIs
 
-#### Create a Project In A Workspace
+Below are examples on how to call some ws-master and ws-agent APIs.
+
+# Project API
+In {{ site.product_mini_name }} a **Project** is an instance of a **Project Type** with concrete values for all attributes and a set of associated Source Code that resides within the Project’s file system.
+
+
+## Import a Project Into a Running Workspace
+
+This call physically imports a project into a workspace. A project must have project type defined and a list of mandatory attributes (depends on the project type).
+
+Get a list of all available registered project types:
+
+`GET http://localhost:32768/api/project-type`
+
+```shell
+curl -X POST -H 'Content-Type: application/json' -d '{ [
+  "mixins":[  
+     "git"
+  ],
+  "description":"A hello world Java application.\ "   name":"console-java-simple\ "   type":"maven\ "   path":"/console-java-simple\ "   attributes":{  
+     "maven.artifactId":[  
+        "console-java-simple"
+     ],
+     "maven.test.source.folder":[  
+        "src/test/java"
+     ],
+     "maven.version":[  
+        "1.0-SNAPSHOT"
+     ],
+     "maven.source.folder":[  
+        "src/main/java"
+     ],
+     "maven.groupId":[  
+        "org.eclipse.che.examples"
+     ],
+     "maven.packaging":[  
+        "jar"
+     ]
+  }
+]
+}' http://localhost:32768/api/project/workspacesq6co30qcxi1kqsj/batch
+```
+
+#### Remove a Project
+
+```shell  
+curl -X DELETE http://localhost:8080/api/ext/project/workspacex4zl7nvex1yldosj/my-first-sample
+```
+
+# Project Type API
+
+A **Project Type** is a behavior that apples a named group of attribute definitions, pre-defined attributes, and an associated set of machine images.
+
+For example, within {{ site.product_mini_name }}, maven is a Project Type. Each Project Type can have a different set of attributes associated with it as defined by the author of the Project Type. Project Types can have both mandatory and optional attributes. Some attributes are pre-defined and cannot be changed. Some attributes can be derived by the extension at runtime and others must be defined by the Developer User when constructing a new Project.
+
+Each Project Type has an associated set of machine images that are instantiated at runtime to execute Builders and Runners.
+
+A single Project Type can have many machines associated with it that can be interchangeably used by developers. For example, a maven project can have multiple machines with different JVM, application server types, and versions, with the Project successfully executing within each machine.
+
+Get a list of all available registered project types:
+
+`GET http://localhost:32768/api/project-type`
+
+Get a particular project type:
+
+`GET http://localhost:32768/api/project-type/maven`
+
+#### Estimate a Project Against a Project Type
+
+```shell  
+curl http://localhost:32768/api/project/estimate/c-simple-console?type=node-js
+```
+
+# Editing API
+#### Create a New File
+
+```shell
+curl -X POST -d 'var i = 1;' http://localhost:32768/api/project/file/c-simple-console?name=newfile.js
+```
+
+#### Editing an Existing File
+
+```shell
+curl -X PUT -d $'var i = 1;\nvar test = "hello Eclipse Che";' http://localhost:32768/api/project/file/c-simple-console?name=newfile.js
+```
+
+#### Deleting an Existing File
+
+```shell
+curl -X DELETE http://localhost:32768/api/project/c-simple-console/newfile.js
+```
+
+# Workspace API
+
+##### Save Project Into Workspace Configuration  
+
+This API calls adds a project to workspace configuration and **does not** physically import a project into a workspace.
+
 ```shell  
 curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{
       "links": [],
@@ -114,10 +223,11 @@ curl -X POST --header 'Content-Type: application/json' --header 'Accept: applica
       "description": "A basic example using Spring servlets. The app returns values entered into a submit form.",
       "problems": [],
       "mixins": []
- }' 'http://localhost:8080/api/workspace/workspace6y86s5qlnzbczow9/project'curl -X POST -H 'Content-Type: application/json' -d '{ "mixins": [ "git" ], "description": "A hello world Java application.\ "name": "console-java-simple\ "type": "maven\ "path": "/console-java-simple\ "attributes": { "maven.artifactId": [ "console-java-simple" ], "maven.parent.version": [ "" ], "maven.test.source.folder": [ "src/test/java" ], "maven.version": [ "1.0-SNAPSHOT" ], "maven.parent.groupId": [ "" ], "languageVersion": [ "1.8.0_45" ], "language": [ "java" ], "maven.source.folder": [ "src/main/java" ], "git.repository.remotes": [ "https://github.com/che-samples/console-java-simple.git" ], "maven.groupId": [ "org.eclipse.che.examples" ], "maven.packaging": [ "jar" ], "vcs.provider.name": [ "git" ], "maven.resource.folder": [], "git.current.branch.name": [ "master" ], "maven.parent.artifactId": [ "" ] } }' http://localhost:8080/api/ext/project/workspacesq6co30qcxi1kqsj?name=console-java-simple
-```
+ }' 'http://localhost:8080/api/workspace/workspace6y86s5qlnzbczow9/project'
+ ```
 
 #### Create a Command In A Workspace
+
 ```shell  
 curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{
   "attributes": {
@@ -126,145 +236,32 @@ curl -X POST --header 'Content-Type: application/json' --header 'Accept: applica
   },
   "type": "custom",
   "commandLine": "echo \u0027Hello World\u0027",
-  "name": "hello world"
+  "name": "hello world",
+  "goal": "run"
 }' 'http://localhost:8080/api/workspace/workspace6y86s5qlnzbczow9/command'
 ```
 
-#### Execute a Command And Stream Output
-```shell  
-# Get the machine Id
-curl http://localhost:8080/ide/api/machine?workspace=workspacesq6co30qcxi1kqsj
-
-# Open websocket connection
-wscat -c ws://localhost:8080/ide/api/ws/workspacesq6co30qcxi1kqsj
-
-# Subscribe to output channel
-> {"uuid":"12345678-1234-1234-1234-123456789123", "method":"POST","path":null,"headers":[{"name":"x-everrest-websocket-message-type","value":"subscribe-channel"}],"body":"{\"channel\":\"process:output:ABCDEFGH-AAAA-BBBB-CCCC-ABCDEFGHIJKL\"}"}  
-
-# In other window execute the command
-curl -X POST -H 'Content-Type: application/json' -d '{"name": "build\ "type": "mvn\ "attributes": {}, "commandLine": "mvn -f /projects/console-java-simple clean install"}' http://localhost:8080/ide/api/machine/machineugqib6icjyj2afva/command?outputChannel=process:output:ABCDEFGH-AAAA-BBBB-CCCC-ABCDEFGHIJKL
-
-# Get output messages (in subscription window)
-<{"method":"POST"headers":[{"name":"x-everrest-websocket-message-type"value":"subscribe-channel"}],"responseCode":200,"body":"{\"channel\":\"process:output:ABCDEFGH-AAAA-BBBB-CCCC-ABCDEFGHIJKL\"}"uuid":"12345678-1234-1234-1234-123456789123"}
-< {"headers":[{"name":"x-everrest-websocket-channel"value":"process:output:ABCDEFGH-AAAA-BBBB-CCCC-ABCDEFGHIJKL"},{"name":"x-everrest-websocket-message-type"value":"none"}],"responseCode":0,"body":"\"[STDOUT] [INFO] Scanning for projects...\""}
-< ...
-```
-
-# Project API
-In {{ site.product_mini_name }} a **Project** is an instance of a **Project Type** with concrete values for all attributes and a set of associated Source Code that resides within the Project’s file system.
-
-#### Create a Maven Project
-
-```shell  
-# Get workspace id
-curl -X GET --header 'Accept: application/json' 'http://localhost:8080/api/workspace?skipCount=0&maxItems=30'
-
-# Create the project
-curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{
-      "source": {
-        "location": "",
-        "type": "",
-        "parameters": {}
-      },
-      "links": [],
-      "mixins": [],
-      "problems": [],
-      "name": "test",
-      "type": "blank",
-      "path": "/test",
-      "attributes": {
-        "commands": [
-           "{\"commandLine\":\"echo \\\"hello\\\"\", \"name\":\"newCustom-2\", \"attributes\":{\"previewUrl\":\"\", \"goal\":\"Run\"}, \"type\":\"custom\"}"
-        ]
-      }
-    }' 'http://163.172.154.199:8080/api/workspace/workspace6y86s5qlnzbczow9/project'
-```
-
-#### Remove a Project
-
-```shell  
-curl -X DELETE http://localhost:8080/api/ext/project/workspacex4zl7nvex1yldosj/my-first-sample
-```
-
-# Project Type API
-A **Project Type** is a behavior that apples a named group of attribute definitions, pre-defined attributes, and an associated set of machine images.
-
-For example, within {{ site.product_mini_name }}, maven is a Project Type. Each Project Type can have a different set of attributes associated with it as defined by the author of the Project Type. Project Types can have both mandatory and optional attributes. Some attributes are pre-defined and cannot be changed. Some attributes can be derived by the extension at runtime and others must be defined by the Developer User when constructing a new Project.
-
-Each Project Type has an associated set of machine images that are instantiated at runtime to execute Builders and Runners.
-
-A single Project Type can have many machines associated with it that can be interchangeably used by developers. For example, a maven project can have multiple machines with different JVM, application server types, and versions, with the Project successfully executing within each machine.
-
-#### Estimate a Project Against a Project Type
-
-```shell  
-curl http://localhost:8080/api/ext/project/workspacee1p60f8ge4vukxxz/estimate/my-first-sample?type=maven\
-```
-
-# Editing API
-#### Create a New File
-
-```shell
-curl -X POST -d 'var i = 1;' http://localhost:8080/api/ext/project/workspacesq6co30qcxi1kqsj/file/my-first-sample?name=newfile.js
-```
-
-#### Editing an Existing File
-
-```shell
-curl -X PUT -d $'var i = 1;\nvar test = "hello Eclipse Che";' http://localhost:8080/api/ext/project/workspacesq6co30qcxi1kqsj/file/my-first-sample/newfile.js
-```
-
-#### Deleting an Existing File
-
-```shell
-curl -X DELETE http://localhost:8080/api/ext/project/workspacex4zl7nvex1yldosj/my-first-sample/newfile.js
-```
-
-# Workspace API
 Sample cURL code that creates a workspace named `workspace-debian` and displays resulting data in console:
 
 #### Create a Workspace
 
 ```shell
-# use of http://localhost:8080/api/workspace
-curl -X POST -H 'Content-Type: application/json' -d '{"environments":{"workspace-debian":{"name":"workspace-debian"recipe":null,"machineConfigs":[{"name":"ws-machine"limits":{"memory":1000},"type":"docker"source":{"location":"http://localhost:8080/ide/api/recipe/recipe_debian/script"type":"recipe"},"dev":true}]}},"name":"workspace-debian"attributes":{},"projects":[],"defaultEnvName":"workspace-debian"description":null,"commands":[],"links":[]}' http://localhost:8080/api/workspace/config?account=che
+curl -X POST -H 'Content-Type: application/json' -d '{"name":"myworkspace","projects":[],"commands":[{"name":"build","type":"mvn","attributes":{"goal":"Build","previewUrl":""},"commandLine":"mvn clean install"],"environments":{"myworkspace":{"recipe":{"location":"eclipse/ubuntu_jdk8","type":"dockerimage"},"machines":{"dev-machine":{"attributes":{"memoryLimitBytes":"2147483648"},"agents":["org.eclipse.che.exec","org.eclipse.che.terminal","org.eclipse.che.ws-agent","org.eclipse.che.ssh"],"servers":{}}}}},"defaultEnv":"myworkspace","links":[]}' http://localhost:8080/api/workspace
 ```
 
 # Launching {{ site.product_mini_name }} IDE via REST API
+
 After a workspace has been created it can be started via REST API:
 
 #### Start a Workspace
 
 ```shell
-# Start a workspace by its name, with a given environment
-curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' 'http://localhost:8080/api/workspace/name/workspace-debian/runtime?environment=workspace-debian'
-```
-
-# Events API
-Events circulate information between processes in a publish/subscribe model. Event notifications are provided on Websocket channels. Clients can subscribe to these channels.
-
-#### Execute a Command and Get Output
-
-```shell
-# Get the workspace Id
-curl http://localhost:8080/ide/api/workspace
-
-# Open websocket connection
-wscat -c ws://localhost:8080/ide/api/ws/workspacesq6co30qcxi1kqsj
-
-# Subscribe to output channel
-> {"uuid":"12345678-1234-1234-1234-123456789123","method":"POST","path":null,"headers":[{"name":"x-everrest-websocket-message-type","value":"subscribe-channel"}],"body":"{\"channel\":\"process:output:ABCDEFGH-AAAA-BBBB-CCCC-ABCDEFGHIJKL\"}"}
-
-# In another window execute a command
-curl -X POST -H 'Content-Type: application/json' -d '{ "name": "build\ "type": "mvn\ "attributes": {}, "commandLine": "mvn -f /projects/my-first-sample clean install" }' http://localhost:8080/ide/api/machine/machineugqib6icjyj2afva/command?outputChannel=process:output:ABCDEFGH-AAAA-BBBB-CCCC-ABCDEFGHIJKL
-
-# Get output messages (in subscription window)
-< {"method":"POST","headers":[{"name":"x-everrest-websocket-message-type","value":"subscribe-channel"}],"responseCode":200,"body":"{\"channel\":\"process:output:ABCDEFGH-AAAA-BBBB-CCCC-ABCDEFGHIJKL\"}","uuid":"12345678-1234-1234-1234-123456789123"}
-< {"headers":[{"name":"x-everrest-websocket-channel","value":"process:output:ABCDEFGH-AAAA-BBBB-CCCC-ABCDEFGHIJKL"},{"name":"x-everrest-websocket-message-type","value":"none"}],"responseCode":0,"body":"\"[STDOUT] [INFO] Scanning for projects...\""}
-< ...
+# Start a workspace by its ID, with a given environment
+curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' 'http://localhost:8080/api/workspace/workspace01oqb9ptzrperis7/runtime?environment=myworkspace'
 ```
 
 # Stacks API
+
 Stacks are the templating mechanism that defines how the runtime of a workspace will be generated and started.
 
 #### List Stacks Tagged With 'Node'
@@ -285,61 +282,9 @@ Swagger: http://localhost:8080/swagger/#!/stack/searchStacks
 To create a stack, you need to define its configuration according to the [stack data model]({{base}}{{site.links["ws-data-model-stacks"]}}) and send it in a POST request:
 
 ```shell  
-curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"name":"my-custom-stack"source":{"origin":"codenvy/ubuntu_jdk8"type":"image"},"components":[],"tags":["my-custom-stack","Ubuntu","Git","Subversion"],"id":"stack15l7wsfqffxokhle","workspaceConfig":{"environments":{"default":{"machines":{"default":{"attributes":{"memoryLimitBytes":"1048576000"},"servers":{},"agents":["org.eclipse.che.terminal"org.eclipse.che.ws-agent"org.eclipse.che.ssh"]}},"recipe":{"location":"codenvy/ubuntu_jdk8","type":"dockerimage"}}},"defaultEnv":"default","projects":[],"name":"default"commands":[],"links":[]},"creator":"che","description":"Default Blank Stack.","scope":"general"}' http://localhost:8080/api/stack
+curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"name":"my-custom-stack"source":{"origin":"codenvy/ubuntu_jdk8"type":"image"},"components":[],"tags":["my-custom-stack","Ubuntu","Git","Subversion"],"id":"stack15l7wsfqffxokhle","workspaceConfig":{"environments":{"default":{"machines":{"default":{"attributes":{"memoryLimitBytes":"1048576000"},"servers":{},"agents":["org.eclipse.che.terminal","org.eclipse.che.ws-agent","org.eclipse.che.ssh"]}},"recipe":{"location":"codenvy/ubuntu_jdk8","type":"dockerimage"}}},"defaultEnv":"default","projects":[],"name":"default"commands":[],"links":[]},"creator":"che","description":"Default Blank Stack.","scope":"general"}' http://localhost:8080/api/stack
 
 ```
-
-Output:
-
-```json  
-{
-  "name": "my-custom-stack",
-  "source": {
-    "origin": "codenvy/ubuntu_jdk8",
-    "type": "image"
-  },
-  "components": [],
-  "tags": [
-    "my-custom-stack",
-    "Ubuntu",
-    "Git",
-    "Subversion"
-  ],
-  "id": "stackocriwhwviu1kjm2r",
-  "workspaceConfig": {
-    "environments": {
-      "default": {
-        "machines": {
-          "default": {
-            "attributes": {
-              "memoryLimitBytes": "1048576000"
-            },
-            "servers": {},
-            "agents": [
-              "org.eclipse.che.terminal",
-              "org.eclipse.che.ws-agent",
-              "org.eclipse.che.ssh"
-            ]
-          }
-        },
-        "recipe": {
-          "location": "codenvy/ubuntu_jdk8",
-          "type": "dockerimage"
-        }
-      }
-    },
-    "defaultEnv": "default",
-    "projects": [],
-    "name": "default",
-    "commands": [],
-    "links": []
-  },
-  "creator": "che",
-  "description": "Default Blank Stack.",
-  "scope": "general"
-}
-```
-
 
 #### Update a Stack
 
@@ -349,58 +294,8 @@ You can update the stack configuration in a PUT request:
 curl -X PUT --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"name":"my-custom-stack","source":{"origin":"codenvy/ubuntu_jdk8","type":"image"},"components":[],"tags":["my-custom-stack","Ubuntu","Git","Subversion"],"id":"stacki7jf4x4n2cz6r3cr","workspaceConfig":{"environments":{"default":{"machines":{"default":{"attributes":{"memoryLimitBytes":"1048576000"},"servers":{},"agents":["org.eclipse.che.terminal","org.eclipse.che.ws-agent","org.eclipse.che.ssh"]}},"recipe":{"location":"codenvy/ubuntu_jdk8","type":"dockerimage"}}},"defaultEnv":"default","projects":[],"name":"default","commands":[],"links":[]},"creator":"che","description":"NEW-DESCRIPTION","scope":"general"}' http://localhost:8080/api/stack/${id}
 ```
 
-Output:
-
-```json  
-
-{
-  "name": "my-custom-stack",
-  "source": {
-    "origin": "codenvy/ubuntu_jdk8",
-    "type": "image"
-  },
-  "components": [],
-  "tags": [
-    "my-custom-stack",
-    "Ubuntu",
-    "Git",
-    "Subversion"
-  ],
-  "workspaceConfig": {
-    "environments": {
-      "default": {
-        "machines": {
-          "default": {
-            "attributes": {
-              "memoryLimitBytes": "1048576000"
-            },
-            "servers": {},
-            "agents": [
-              "org.eclipse.che.terminal",
-              "org.eclipse.che.ws-agent",
-              "org.eclipse.che.ssh"
-            ]
-          }
-        },
-        "recipe": {
-          "location": "codenvy/ubuntu_jdk8",
-          "type": "dockerimage"
-        }
-      }
-    },
-    "defaultEnv": "default",
-    "projects": [],
-    "name": "default",
-    "commands": [],
-    "links": []
-  },
-  "creator": "che",
-  "description": "Default Blank Stack.",
-  "scope": "general"
-}
-```
-
 #### Delete a Stack
+
 To delete a stack you need to pass the stack ID as a path parameter:
 
 ```shell  
