@@ -301,3 +301,17 @@ To delete a stack you need to pass the stack ID as a path parameter:
 ```shell  
 curl -X DELETE --header 'Accept: application/json' http://localhost:8080/api/stack/${id}
 ```
+
+# Commands API (Exec Agent)
+
+When you launch a workspace, an exec agent is injected into a running container and runs there on port 4412 (internal). You can get an external published port exactly the same way it's done for a ws-agent. Below is an example on how to get exec-agent endpoint in your Java code:
+
+```java
+String execAgentUrl = devMachine.getExecAgentUrl();
+```
+
+#### Run a Command
+
+curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"name":"build","commandLine":"cd /projects/web-java-spring && mvn clean install","type":"maven"}' 'http://172.19.20.16:32768/process'
+
+See complete exec agent [docs](https://github.com/eclipse/che/tree/master/agents/go-agents/docs)
