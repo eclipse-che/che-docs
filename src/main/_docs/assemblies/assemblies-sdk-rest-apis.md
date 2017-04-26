@@ -102,7 +102,9 @@ where 32771 is an exposed port mapped to port 4401
 
 * You can get workspace agent port by running `docker inspect` against a workspace container. Get workspace container ID (image name is smth like `eclipse-che/workspacef4g2rqfw2222d81u_machine5c0ezeh7jixthtft_che_dev-machine`) and then run:
 
-`docker inspect $containerID --format='{{(index (index .NetworkSettings.Ports "4401/tcp") 0).HostPort}}'`
+{% raw %}
+docker inspect $containerID --format='{{(index (index .NetworkSettings.Ports "4401/tcp") 0).HostPort}}'
+{% endraw %}
 
 * API endpoint can be retrieved from your Java code as well:
 
