@@ -56,6 +56,15 @@ To add the associated public key to a git repository/account  using **gitlab.com
 
 ![GitLabSSH.jpg]({{base}}{{site.links["GitLabSSH.jpg"]}})
 
+### BitBucket Example
+You can setup ssh to a dedicated BitBucket Server. Each user will still need to setup their own SSH key for authentication to the BitBucket Server which will be similar to [GitHub/GitLab SSH examples](#git-ssh-examples).
+
+![BBS_SSH_1.jpg]({{base}}{{site.links["BBS_SSH_1.jpg"]}}){:style="width: 30%"}  
+
+![BBS_SSH_2.jpg]({{base}}{{site.links["BBS_SSH_2.jpg"]}})
+
+![BBS_SSH_3.jpg]({{base}}{{site.links["BBS_SSH_3.jpg"]}})
+
 ## Import Project from Repository Using SSH
 Import project from the IDE `Workspace > Import Project > GIT/SUBVERSION` menu.
 
@@ -77,7 +86,7 @@ oAuth for Github allows users via the IDE git menu to import projects using SSH 
 ![Clipboard9.jpg]({{base}}{{site.links["Clipboard9.jpg"]}}){:style="width: 30%"}
 
 ### Setup environment variables.
-Set the following to environment variables in the `{{ site.data.env.filename }}` file then start/restart the {{ site.product_formal_name }} server. 
+Set the following to environment variables in the `{{ site.data.env.filename }}` file then start/restart the {{ site.product_formal_name }} server.
 
 ```YAML  
 {{ site.data.env.OAUTH_GITHUB_CLIENTID }}=yourClientID
@@ -110,7 +119,7 @@ SSH to your BitBucket Server instance and generate RSA key-pairs
 $ openssl genrsa -out private.pem 1024
 # copy the key and pem to a location where it can be accessed
 $ openssl rsa -in private.pem -pubout > public.pub`
-$ openssl pkcs8 -topk8 -inform pem -outform pem -nocrypt -in private.pem -out privatepkcs8.pem 
+$ openssl pkcs8 -topk8 -inform pem -outform pem -nocrypt -in private.pem -out privatepkcs8.pem
 ```
 
 ### 2. Setup Codenvy in BitBucket Server
@@ -123,7 +132,7 @@ In the Bitbucket Server as an Admin:
   - Application Name : Codenvy
   - Service Provider Name : Codenvy
   - Consumer key : {added by you} (Save this string, you will need it later)
-  - Shared secret : {added by you} 
+  - Shared secret : {added by you}
   - Request Token URL : {your Bitbucket Server URL}/plugins/servlet/oauth/request-token
   - Access token URL : {your Bitbucket Server URL}/plugins/servlet/oauth/access-token
   - Authorize URL : {your Bitbucket Server URL}/plugins/servlet/oauth/authorize
@@ -138,7 +147,7 @@ In the following screen press the pencil icon to edit and select the 'Incoming A
 ### 4. Configure Codenvy Properties
 In the `codenvy.env` file add (or change if they already exist):
 - bitbucket_consumer_key : the consumer key you have entered before
-- bitbucket_private_key : the key from privatepkcs8.pem file 
+- bitbucket_private_key : the key from privatepkcs8.pem file
 - (The key must not contain ‘----BEGIN PRIVATE KEY-----’ and ‘-----END PRIVATE KEY-----’ rows) (The key must be specified as a single raw)
 - bitbucket_endpoint : replace the default Bitbucket url by your Bitbucket Server url
 
