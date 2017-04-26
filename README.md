@@ -15,7 +15,7 @@ Docs are built using Jekyll and the output is static HTML that is hosted at [htt
 # Editing Docs
 [![Workspace](https://codenvy.io/factory/resources/codenvy-contribute.svg)](https://codenvy.io/f?name=che-codenvy-docs&user=jdrummond)
   
-Get a workpsace on `codenvy.io` which include all dependencies to edit and preview your changes by clicking on the image above.
+Get a workspace on `codenvy.io` which include all dependencies to edit and preview your changes by clicking on the image above.
 
 # Linking to Docs and Images
 Because the docs are generated into static HTML linking to docs and images is a bit unusual. We provide a custom plugin [_plugins/links.rb](_plugins/links.rb) to create links.
