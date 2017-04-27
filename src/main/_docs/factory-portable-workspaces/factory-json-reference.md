@@ -19,7 +19,7 @@ factory : {
 }
 ```
 
-The `factory.workspace` is identical to the `workspace:{}` object for Eclipse Che and contains the structure of the workspace. Learn more about [the workspace JSON object]({{base}}{{site.links["ws-data-model-workspaces"]}}).
+The `factory.workspace` is identical to the `workspace:{}` object for Eclipse Che and contains the structure of the workspace. Learn more about [the workspace JSON object]({{base}}{{site.links["devops-workspaces-data-model"]}}).
 
 You can export {{ site.product_mini_name }} workspaces and then reuse the workspace definition within a Factory. {{ site.product_mini_name }} workspaces are composed of:
 - 0..n projects

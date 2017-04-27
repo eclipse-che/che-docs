@@ -3,7 +3,7 @@ tags: [ "eclipse" , "che" ]
 title: Workspace Data Model
 excerpt: "Defines workspace configuration"
 layout: docs
-permalink: /:categories/data-model-workspaces/
+permalink: /:categories/workspaces-data-model/
 ---
 {% include base.html %}
 
