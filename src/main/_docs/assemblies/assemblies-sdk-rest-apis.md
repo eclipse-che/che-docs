@@ -91,9 +91,9 @@ Each workspace has its own set of APIs. The workspace agent advertises its swagg
 ```shell  
 
 # Example
-http://172.19.20.16:8080/swagger/?url=http://172.19.20.16:32771/api/docs/swagger.json
+http://172.19.20.16:8080/swagger/?url=http://172.17.0.1/37639_172.17.0.1/api/docs/swagger.json
 
-where 32771 is an exposed port mapped to port 4401
+where 37639 is an exposed port mapped to port 4401
 ```
 
 * You can get ws-agent API endpoint from workspace runtime:
