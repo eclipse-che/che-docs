@@ -151,8 +151,8 @@ In the `codenvy.env` file add (or change if they already exist):
 - (The key must not contain ‘----BEGIN PRIVATE KEY-----’ and ‘-----END PRIVATE KEY-----’ rows) (The key must be specified as a single raw)
 - bitbucket_endpoint : replace the default Bitbucket url by your Bitbucket Server url
 
-### 5. Restart Codenvy
-Restart your Codenvy server to enable the integration.
+### 5. Restart {{ site.product_mini_name }}
+Restart your {{ site.product_mini_name }}  server to enable the integration.
 
 ## GitLab oAuth
 Currently it's not possible for {{ site.product_mini_name }} to use oAuth integration with GitLab. Although GitLab supports oAuth for clone operations, pushes are not supported. You can track [this GitLab issue](https://gitlab.com/gitlab-org/gitlab-ce/issues/18106) in their issue management system.
@@ -171,6 +171,6 @@ Committer name and email are set in `Profile > Preferences > Git > Committer`. O
 ![Clipboard2.jpg]({{base}}{{site.links["Clipboard2.jpg"]}}){:style="width: 60%"}
 
 # Git Workspace Clients  
-After importing repository, you can perform the most common Git operations using interactive menus or as terminal commands. Terminal git commands require it's own authentication setup through `Profile > Preferences > SSH > Machine`.
+After importing repository, you can perform the most common Git operations using interactive menus or as terminal commands. Terminal git commands require it's own authentication setup, which means that keys generated in the IDE will work only when Git is used in the IDE menus. Git installed in a terminal is a different git system. You may generate keys in `~/.ssh` there as well.
 
 ![git-menu.png]({{base}}{{site.links["git-menu.png"]}}){:style="width: auto"}

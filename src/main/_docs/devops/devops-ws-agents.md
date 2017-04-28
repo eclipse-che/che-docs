@@ -15,7 +15,7 @@ Agents are added to [machines]({{base}}{{site.links["ws-machines"]}}) through [r
 Adding agents to your own machines can be done by editing [machine information in the user dashboard]({{base}}{{site.links["ws-machines"]}}).
 
 # Adding Agents to a Custom Stack  
-Stacks use JSON format for configuration. Agents are included in the machines definition. Each stack requires a machine named `dev-machine` which always requires the terminal, ws-agent, and SSH agents. Language server agents need to be added to the dev-machine if you want [intellisense]({{base}}{{site.links["ide-intellisense"]}}) features when using the workspace IDE.
+Stacks use JSON format for configuration. Agents are included in the machines definition. Each stack requires a machine named `dev-machine` which always requires terminal, exec and ws-agent. Language server agents need to be added to the dev-machine if you want [intellisense]({{base}}{{site.links["ide-intellisense"]}}) features when using the workspace IDE.
 
 ```json  
 .......
@@ -137,7 +137,7 @@ if echo ${LINUX_TYPE} | grep -qi "rhel"; then
 ############################
 elif echo ${LINUX_TYPE} | grep -qi "Red Hat"; then
     ...
-    
+
 # Ubuntu 14.04 16.04 / Linux Mint 17
 ####################################
 elif echo ${LINUX_TYPE} | grep -qi "ubuntu"; then
@@ -195,10 +195,10 @@ public class WsMasterModule extends AbstractModule {
     @Override
     protected void configure() {
         ...
-        
+
         Multibinder<Agent> agents = Multibinder.newSetBinder(binder(), Agent.class);
         agents.addBinding().to(MyAgent.class);
-        
+
         ...
     }
 }
