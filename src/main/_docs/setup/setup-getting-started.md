@@ -9,6 +9,8 @@ permalink: /:categories/getting-started/
 
 Eclipse Che is a developer workspace server and cloud IDE. You install, run, and manage Eclipse Che with Docker.
 
+The recommended way to install Che is on a machine with Docker 1.11+ by typing: `docker run eclipse/che start`. Alternatively, you can use the [Yatta profile]() - this is especially helpful for users who use Yatta for their Eclipse desktop IDE.
+
 ### Download
 This is the administration guide for the on-premises installation of Eclipse Che. This document discusses the installation, configuration, and operation of Che that you host on your own hardware or IaaS provider.
 
