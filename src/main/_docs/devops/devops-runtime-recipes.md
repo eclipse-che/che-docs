@@ -32,32 +32,31 @@ There are two ways for you to create a custom recipe that can be used within Che
 2. Inherit from a non-Eclipse Che base Docker image, then add both your dependencies, and Che's dependencies (most flexible).
 
 ### Inherit From an Eclipse Che Base Image
-This is the easiest way to build a workspace from a custom recipe.  Eclipse Che base images are authored by Codenvy and hosted on DockerHub. These base images have all of the dependencies necessary for a Che workspace to operate normally.  These base images may have unnecessary dependencies for your project, like subversion. So if size and performance are essential, you can look to author your own. The Dockerfiles for Che's base images are located in [Codenvy's GitHub repository](https://github.com/eclipse/che-dockerfiles/tree/master/recipes).
+This is the easiest way to build a workspace from a custom recipe.  Eclipse Che base images are authored by Codenvy and hosted on DockerHub. These base images have all of the dependencies necessary for a Che workspace to operate normally. These base images may have unnecessary dependencies for your project, like subversion. So if size and performance are essential, you can look to author your own. The Dockerfiles for Che's base images are located in [Che GitHub repository](https://github.com/eclipse/che-dockerfiles/tree/master/recipes).
 
-To reference Codenvy's Docker images in your Dockerfile or Docker compose recipe:
+To reference Che Docker images in your Dockerfile or Docker compose recipe:
 
 ```shell  
 ##Dockerfile
-FROM codenvy/<image-name>
+FROM eclipse/<image-name>
 
 ##Compose
-image: codenvy/<image-name>
+image: eclipse/<image-name>
 ```
 
-Codenvy's base stacks, which include the minimum utilities for everything needed by Eclipse Che are `codenvy/ubuntu_jre` and `codenvy/debian_jre`.
+Che base stacks, which include the minimum utilities for everything needed by Eclipse Che are `eclipse/stack-base:debian` and `eclipse/stack-base:ubuntu`. The majority of Che ready to go images are based on Ubuntu. All stacks have the right CMD, so that containers do not exit just after starting.
 
-In Codenvy's repository, some recipes have sub-directories which represent tags. For example, the `/php/latest` directory in the GitHub repository would be pulled as `codenvy/php:latest` from Docker Hub.
+In `che-dockerfiles` repository, some recipes have sub-directories which represent tags. For example, the `/php/gae` directory in the GitHub repository would be pulled as `eclipse/php:gae` from Docker Hub.
 
 ### Inherit From Non-Eclipse Che Base Images
 This will create the best performing workspace image by only installing the minimum dependencies and packages required for your workspace. The trade off is that you have to include [Che's runtime dependencies]({{base}}{{site.links["ws-recipes"]}}#che-runtime-required-dependencies) so we can work our magic in the workspace.
 
 ### Che Runtime Required Dependencies
 
-| Dependency   | Why?   | How? (Ubuntu/Debian)   
+| Dependency   | Why?   | How? (Ubuntu/Debian)
 | --- | --- | ---
-| `RUN apt-get install bash -y`   | `bash`   | Execs are performed as bash commands. It is uncommon that base Docker images do not have bash. However, some distributions as Alpine or Busybox only provide `sh`.   
-| User with `root` privileges   | To install our developer tools agents (like terminal access and intellisense) we need root access or a user who has sudo rights.   | `USER root` <br/><br/> or grant your preferred user sudo rights.   
-| Dockerfile <br/> `CMD tail -f /dev/null` <br/><br/> Compose <br/> `command: [tail, -f, /dev/null]`   | To keep a container running   | Non-terminating CMD   
+| User with `root` privileges   | To install our developer tools agents (like terminal access and intellisense) we need root access or a user who has sudo rights.   | `USER root` <br/><br/> or grant your preferred user sudo rights without password prompt.
+| Non-terminating CMD  | To keep a container running | Dockerfile <br/> `CMD tail -f /dev/null` <br/><br/> Compose <br/> `command: [tail, -f, /dev/null]`
 
 All Eclipse Che images must have a non-terminating `CMD` command so that the container doesn't shut down immediately after loading. If you want to override the default `CMD`, add `tail -f /dev/null` to the execution.  For example:
 
@@ -72,19 +71,19 @@ command: [sudo, service, apache2, start, &&, tail, -f, /dev/null]
 ### Maven Dependencies (Optional)
 If you want to use Che with the maven plug-in, then you need to add these additional dependencies.
 
-| Dependency   | Why?   | How?   
+| Dependency   | Why?   | How?
 | --- | --- | ---
-| `mvn`   | Maven plugin needs Maven 3.3.9 or higher.   | `wget -qO- \http://apache.ip-connect.vn.ua/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-3.3.9-bin.tar.gz\ | tar -zx --strip-components=1 -C /home/user/apache-maven-3.3.9/`   
-| `M2_HOME` environment variable exported   | Maven plugin uses this variable to detect if Maven is installed.   | Dockerfile <br/> `ENV M2_HOME /home/user/apache-maven-3.3.9` <br/><br/> Compose <br/><br/> `environment:`<br/><br/> `- M2_HOME=/home/user/apache-maven-3.3.9`   
+| `mvn`   | Maven plugin needs Maven 3.3.9 or higher.   | `wget -qO- \http://apache.ip-connect.vn.ua/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-3.3.9-bin.tar.gz\ | tar -zx --strip-components=1 -C /home/user/apache-maven-3.3.9/`
+| `M2_HOME` environment variable exported   | Maven plugin uses this variable to detect if Maven is installed.   | Dockerfile <br/> `ENV M2_HOME /home/user/apache-maven-3.3.9` <br/><br/> Compose <br/><br/> `environment:`<br/><br/> `- M2_HOME=/home/user/apache-maven-3.3.9`
 
 ### Other Optional Dependencies
 
-| Dependency   | Why?   | How? (Ubuntu/Debian)   
+| Dependency   | Why?   | How? (Ubuntu/Debian)
 | --- | --- | ---
-| Java 1.8 (OpenJDK)   | Required to compile and run Java code.   | `apt-get install openjdk-8-jdk`   
-| Required to import projects stored in git repositories. Git is the default importer in Che (all sample apps are imported as git repositories).   | `apt-get install git -y`   | `git`   
-| Required to import projects stored in subversion repositories.   | `svn`   | `apt-get install subversion -y`   
-| SSH access to a running workspace. If you do not provide this command, when you click `SSH` in the IDE, you will be presented with an access error.   | `sshd`   | `apt-get -y install openssh-server -y && mkdir /var/run/sshd && sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd` <br/><br/>Dockerfile<br/>`CMD /usr/sbin/sshd -D && tail -f /dev/null`<br/><br/>Compose<br/> `command: [/usr/sbin/sshd, -D, &&, tail, -f, /dev/null]`   
+| `svn`  | Required to import projects stored in subversion repositories. | `sudo apt-get install subversion -y`
+
+Even though Che workspaces require Java 1.8, it is ok not to have it in your custom image. In this case, Che agent will automatically install it. Of course, this takes time (openjdk package is installed via a package manager like apt-get, dnf or yum).
+
 
 ### Exposing Ports (Mandatory)
 
@@ -223,9 +222,3 @@ The Che server can be configured to give all containers privileged access by set
 
 ### Environment File
 The `env_file` compose command is not supported. Environment variables can be manually entered in compose file or `source /<path>/<environment filename>` can be added to the `command` compose command.
-
-### Known Bugs
-
-| Syntax   | Bug   
-| --- | ---
-| command:   | Space separated `command` syntax is not working. Suggested work around is to use bracket syntax.<br/>[https://github.com/eclipse/che/issues/2365](https://github.com/eclipse/che/issues/2365)<br/><br/> <code class="highlighter highlighter-rouge-td">## Not working<br/>command: tail -f /dev/null<br/><br/>## Working<br/>command: [tail, -f, /dev/null]<br/></code>   

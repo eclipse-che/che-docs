@@ -8,12 +8,12 @@ permalink: /:categories/debug/
 {% include base.html %}
 
  Debuggers are included in Che for:
- 
+
   * [Java](#java)
   * [C/C++](#gdb) (via GDB)
   * [PHP](#php) (via Zend debugger, zDebug and Z-Ray)
   * [Node.js](#nodejs) (via GDB)
-  
+
 # Java  
 Java debugger is deployed with the workspace agent, i.e. runs in the workspace. It can connect to local processes (those running in a workspace) or remote ones.
 
@@ -43,7 +43,11 @@ $TOMCAT_HOME/bin/catalina.sh jpda run
 
 You can add debug commands to CMD widget to permanently save them with the workspace config.
 # GDB  
-GDB can be used to debug **C/C++** and **Node.js** projects.
+GDB can be used to debug **C/C++** and **Node.js** projects. In Docker 1.13+, a container requires privileged mode for gdb and gdbserver to start. In `che.env` configure workspace container privileged mode and restart {{ site.product_mini_name }} :
+
+```
+{{ site.product_mini_name }}_DOCKER_PRIVILEGED=false
+```
 
 ## Debugging Local Binary
 
@@ -197,7 +201,7 @@ Now you are ready to trigger the debug session:
 
 ### Using Z-Ray
 
-[Z-Ray](http://www.zend.com/en/products/server/z-ray) is a productivity tool, part of [Zend Server](http://www.zend.com/en/products/zend_server), that is available in the Zend stack. Z-Ray requires no installation or configuraton. It is injected into the response coming from your PHP app and shown right in the browser you are using for development. 
+[Z-Ray](http://www.zend.com/en/products/server/z-ray) is a productivity tool, part of [Zend Server](http://www.zend.com/en/products/zend_server), that is available in the Zend stack. Z-Ray requires no installation or configuraton. It is injected into the response coming from your PHP app and shown right in the browser you are using for development.
 
 Among other features, it also has the capability to trigger a debug session:
 
@@ -237,7 +241,7 @@ You can set breakpoints in the editor at any time by clicking on the line number
 
 {{site.product_formal_name}}'s workspaces have machine(s) that are docker container(s). Docker container's exposed ports are given an ephemeral port. The preview url provides an easy way convert an internal port to it's external ephemeral port counter part.
 
-1. Add a command `Run > Edit Commands` 
+1. Add a command `Run > Edit Commands`
 1. Give the command a name like "View Preview URL"
 1. Add a fictitious command `echo` for required command line
 1. Provide the preview URL for your app such as `http://${server.port.<port>}/`
