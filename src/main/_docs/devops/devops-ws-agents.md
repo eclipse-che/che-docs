@@ -12,10 +12,10 @@ Agents are scripts that are executed after a [runtime machine]({{base}}{{site.li
 # Adding Agents to a Machine  
 Agents are added to [machines]({{base}}{{site.links["ws-machines"]}}) through [runtime stack]({{base}}{{site.links["ws-stacks"]}}) configuration. Eclipse Che's included stacks have been pre-configured to use certain agents. The agents needed for each pre-defined stack is determined by common tasks or file types found in [projects]({{base}}{{site.links["ide-projects"]}}).
 
-Adding agents to your own machines can be done by editing [machine information in the user dashboard]({{base}}{{site.links["ws-machines"]}}).
+Adding agents to your own machines can be done by editing [machine information in the user dashboard]({{base}}{{site.links["ws-machines"]}}). Note that the Java JDK is required in the stack for agents to execute.
 
 # Adding Agents to a Custom Stack  
-Stacks use JSON format for configuration. Agents are included in the machines definition. Each stack requires a machine named `dev-machine` which always requires terminal, exec and ws-agent. Language server agents need to be added to the dev-machine if you want [intellisense]({{base}}{{site.links["ide-intellisense"]}}) features when using the workspace IDE.
+Stacks use JSON format for configuration. Agents are included in the machines definition. Each stack requires a machine named `dev-machine` which always requires terminal, exec and ws-agent - this machine must have a Java JDK in it for executing agents. Language server agents need to be added to the dev-machine if you want [intellisense]({{base}}{{site.links["ide-intellisense"]}}) features when using the workspace IDE.
 
 ```json  
 .......
