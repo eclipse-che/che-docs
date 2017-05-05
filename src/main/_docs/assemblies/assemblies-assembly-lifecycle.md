@@ -118,7 +118,7 @@ The generator and templates for each assembly is in an [assembly generator repos
 | `agent-archetype` | Sample custom agent |
 | `plugin-menu-archetype` | IDE extension to customize the menu |
 | `plugin-wizard-archetype` | Custom C project type extension |
-| `plugin-serverservice-archetype` | Simple IDE extesion and a workspace service |
+| `plugin-serverservice-archetype` | Simple IDE extension and a workspace service |
 | `plugin-embedjs-archetype` | IDE extension with JavaScript in widgets |
 | `plugin-json-archetype` | JSON project type, codeassistant, and workspace service |
 
