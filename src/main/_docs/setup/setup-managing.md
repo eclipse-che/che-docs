@@ -115,11 +115,9 @@ For a simple separation of workspaces for small development teams, without requi
 Codenvy provides an implementation of Eclipse Che that is multi-tenant, multi-user with distributed access and permissions controls for teams. Each user has a different login which enables access controls, workspace collaboration, and other forms of sharing. You can install Codenvy with a CLI that is nearly identical to Che with `docker run codenvy/cli start`. Learn more at [https://codenvy.com](https://codenvy.com).
 
 ## Authenticated Access  
-The Che server itself is unauthenticated. Che is extensible allowing different dashboard front ends or proxies to implement authenticated access to the Che server. Bitnami's deployment of Eclipse Che includes an authenticated front-end implemented as a proxy. Many users deploy nginx in front of Che to provide an authentication layer within the system.
+The Che server itself is unauthenticated. Che is extensible allowing different dashboard front ends or proxies to implement authenticated access to the Che server.
 
-Bitnami requires an existing account with cloud providers such as Google, Amazon AWS, or Microsoft Azure which may require monthly service charges from cloud providers.  Refer to [Usage: Private Cloud]({{ base }}/docs/setup/bitnami/index.html) for additional information.
-
-Codenvy also provides an implementation of Eclipse Che that has multi-user and multi-tenant capabilities.
+Codenvy provides an implementation of Eclipse Che that has authentication, multi-user and multi-tenant capabilities.
 
 ## HTTP/S  
 HTTPS is not provided by Eclipse Che. It would require a more complex architecture with multi-service deployments, making Che more challenging for developers and small teams to use. Codenvy gives you the option of running the system with HTTP/S and providing your own SSL certificate.
