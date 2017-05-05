@@ -57,23 +57,10 @@ By default machines are automatically snapshotted when they are stopped. By defa
 {{site.data.env["WORKSPACE_AUTO__SNAPSHOT"]}}=true
 {{site.data.env["WORKSPACE_AUTO__RESTORE"]}}=true
 ```
+ See our other docs [for details on setting up a local or remote Docker Registry]({{base}}{{site.links["setup-configuration"]}}).
 
-If you turn off auto-snapshotting it is still possible to snapshot workspaces by going to the machine perspective by clicking the button on the far right of the menu bar. Then choose Machines > Snapshot from the top menu bar. See our other docs [for details on setting up a local or remote Docker Registry]({{base}}{{site.links["setup-configuration"]}}).
-
-![che-create-snapshot.jpg]({{base}}{{site.links["che-create-snapshot.jpg"]}})
-
-## Machine Information
-Information on each machine is provided by {{site.product_formal_name}} server.
-
-### Operations Perspective Machine Information
-Information on each machine can be viewed in the operations perspective in the IDE. You can toggle between the code perspective and operations perspective by clicking the pair of buttons in the top-right of the menu bar.
-
-The operations perspective provides general meta information such as name, status, id, etc. Also, there is externally exposed machine port information in the server tab section. Exposed ports are used in in various ways such as [priview urls]({{base}}{{site.links["ide-previews"]}}), allowing SSH into a machine, debug server ports, and various ports used by {{site.product_formal_name}} server to interact with the machine.
-
-![Che-machine-information.jpg]({{base}}{{site.links["Che-machine-information.jpg"]}})
 
 ### Dashboard Machine Information
 Information on each machine can be viewed in the in the `Dashboard`. Information on each machine in a workspace can be viewed after clicking on the workspace name, selecting the `Runtime` tab, and clicking the expand button located next to each machine. Machine information includes source, ram, [agents]({{base}}{{site.links["ws-agents"]}}), exposed ports, and environment variables. All of these configuration items can be changed on a stopped workspace/machine. If the workspace/machine is running, the workspace will be stopped automatically. The saved configuration items will be used the next time the work space is started and will supersede any values given in the original workspace stack. Changes made to the runtime configuration will only effect the workspace and will not be saved to original stack to be create other workspaces from.
 
 ![Che-machine-information-edit.jpg]({{base}}{{site.links["Che-machine-information-edit.jpg"]}})
-

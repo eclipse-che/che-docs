@@ -24,7 +24,7 @@ python ${current.project.path}/main.py
 ```
 
 #### Interactive Mode
-If your application expects user input, run it from the Terminal, since commands are executed in a non-interactive mode.\n\nAlso, some commands have prompts (for instance, if or not a user is OK with sending use stats). If this is the case, commands have to be passed with confirmation flags, like `-y` or `echo yes | ${command}`.  
+If your application expects user input, run it from the Terminal, since commands are executed in a non-interactive mode. Also, some commands have prompts (for instance, if or not a user is OK with sending use stats). If this is the case, commands have to be passed with confirmation flags, like `-y` or `echo yes | ${command}`.  
 
 # Web Apps  
 If your application should be deployed with a web server like Tomcat, Wildfly, Jetty or Apache, there are 3 mandatory things to be accomplished:
@@ -32,7 +32,7 @@ If your application should be deployed with a web server like Tomcat, Wildfly, J
 * copy sources/build artifacts to `'deployments'` directory of a chosen web server, for instance `/webapps` in Tomcat, `/standalone/deployments/` in Wildfly, `/var/www/html` for Apache.
 * configure a web server (if necessary)
 * start a web server (unless it is automatically started when a machine starts)
-* find the right port which is mapped to the internal server port (`Servers` tab in machine perspective)
+* find the right port which is mapped to the internal server [port]({{base}}{{site.links["ide-previews"]}})
 
 ## Copy Sources/Build Artifacts
 
@@ -44,7 +44,7 @@ cp ${current.project.path}/target/*.war /home/user/tomcat8/webapps/ROOT.war
 ```
 
 ### $TOMCAT_HOME
-Pre-defined Java stacks have Tomcat 8 on board with $TOMCAT_HOME environment variable pointing to `home/user/tomcat8`  
+Pre-defined Java stacks have Tomcat 8 on board with $TOMCAT_HOME environment variable pointing to `/home/user/tomcat8`  
 
 ```shell  
 cp ${current.project.path}/target/*.war $TOMCAT_HOME/webapps/ROOT.war

@@ -44,7 +44,7 @@ ${che.home}/templates
 
 When `assembly-main` module is compiled, it unpacks `che-core-ide-templates-${CHE_VERSION}.jar` into `/templates` directory that you will find in `${CHE_HOME}` after compilation is completed.
 
-Templates JSON file is packed into  `che-core-ide-templates-${CHE_VERSION}.jar` which is part of [che-core](https://github.com/eclipse/che/tree/master/core).
+Templates JSON file is packed into  `che-core-ide-templates-${CHE_VERSION}.jar` which is part of [ide modules](https://github.com/eclipse/che/tree/master/ide).
 
 When Che is up, it looks for `project.template_description.location_dir` property and attempts to load all `.json` files with template descriptors:
 

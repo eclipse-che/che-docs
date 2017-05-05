@@ -40,7 +40,7 @@ elif [ "$BUILD_OR_RUN" = "--run" ]; then
 	COMMAND="jekyll serve -w --force_polling --incremental"	
 
   echo ""
-	echo "Connect to local server at http://localhost:9080"
+	echo "View generated docs at http://localhost:9080/docs/"
   echo ""
 fi
 

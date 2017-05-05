@@ -61,5 +61,20 @@ Also simple regular expression (regexp) can be used when you find a file. To rep
 
 ![navigate-to-file.png]({{base}}{{site.links["navigate-to-file.png"]}})
 
+## Soft Wrap
+
+Long lines of text can be wrapped if they don't fit inside the window.
+
+![soft-wrap-editor.png]({{base}}{{site.links["soft-wrap-editor.png"]}})
+
+By default the feature is disabled. But You can easily enable it by going to `Profile > Preferences > IDE > Editor` and turning on an appropriate option.
+
+![soft-wrap.png]({{base}}{{site.links["soft-wrap.png"]}})
+
+Also we have an option to enable the feature for the currently active editor. You can go to `Edit > Soft Wrap` and turn on soft wrapping for the editor without changing an option in Preferences. When soft wrap is enabled the `Soft Wrap` menu item will be displayed checked.
+
+![soft-wrap-edit-menu-item.png]({{base}}{{site.links["soft-wrap-edit-menu-item.png"]}})
+
+
 # Alternative: Use a Desktop IDE  
 You can use a desktop IDE or editor with an Eclipse Che workspace by following the instructions in our [Local IDE Sync]({{base}}{{site.links["ide-sync"]}}) docs.

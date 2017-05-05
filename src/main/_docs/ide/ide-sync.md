@@ -29,7 +29,7 @@ mysql     workspacewia89343k4  RUNNING
 --unison-verbose      # Display verbose output of unison tool used by sync command
 ```
 
-# Mount and Sync 
+# Mount and Sync
 
 ## How
 We provide a Docker container that bridges your remote Che workspace with your local file system. Inside of the `che-mount` Docker container, we create an `sshfs` connection to the remote workspace using your user name, password, and workspace port number. Inside of that Docker container, we then use `unison`, a high performance file system synchronizer to synchronize the contents of the remote workspace with a directory within the container. Your local host will then volume mount the synchronized directory, for which those files appear. The `unison` synchronizer is run every minute, and will capture both changes made locally on your host and any changes made in the remote workspace.
@@ -37,7 +37,7 @@ We provide a Docker container that bridges your remote Che workspace with your l
 This particular approach is fast because your local IDE has local I/O performance for all file actions. The synchronizer runs in the background asynchronously, and synchronizes your local changes into the workspace. The reverse course is true as well. This asynchronous approach provides a non-blocking I/O performance that is essential.
 
 ## Use
-To synchronize your IDE you'll use the [{{ site.product_formal_name }} CLI]{{base}}{{site.links["setup-cli"]}}) installed. The synchronization will take place with the current directory. It is probably best to start in an empty directory, otherwise the utility will synchronize the contents of an existing directory onto the workspace.
+To synchronize your IDE you'll use the [{{ site.product_formal_name }} CLI]({{base}}{{site.links["setup-cli"]}}) installed. The synchronization will take place with the current directory. It is probably best to start in an empty directory, otherwise the utility will synchronize the contents of an existing directory onto the workspace.
 
 ```shell  
 mkdir sync
@@ -59,6 +59,7 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
 --url <url>           # Che or Codenvy host where workspaces are running
 --user <email>        # Codenvy user name
 --password <password> # Codenvy password
+--unison-verbose      # Display verbose output of unison tool used by sync command
 ```
 
 This will make a secure connection to the workspace and unison-sync the contents to the local host directory. You will be asked for the password that you retrieved from the SSH configuration. The synchronization will run continuously and the command will not return until you press CTRL-C, at which point the synchronization will be terminated.
@@ -99,14 +100,14 @@ docker run --rm -it --cap-add SYS_ADMIN --device /dev/fuse
             -v <path-to-sync-profile>:/profile
             -u $(id -u ${USER})
             -e CHE_VERSION=${CHE_VERSION}
-            -v <host-dir>:/mnthost 
+            -v <host-dir>:/mnthost
                   eclipse/che-mount <ws-id|ws-name>
 
 # On Mac or Windows:
 docker run --rm -it --cap-add SYS_ADMIN --device /dev/fuse
            --name che-mount
            -v <path-to-sync-profile>:/profile
-           -v <host-dir>:/mnthost 
+           -v <host-dir>:/mnthost
            -e CHE_VERSION=${CHE_VERSION}
               eclipse/che-mount <ip> <ws-id|ws-name>
 
