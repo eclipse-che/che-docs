@@ -341,7 +341,25 @@ docker exec -ti <che-container-name> curl http://<workspace-container-ip>:4401/w
 #### Workspace Address Resolution Strategy
 By default, the Che server will connect to workspace containers according to the 'default' strategy. The order of precedence, Che will use `CHE_DOCKER_IP` if it is set, if not, it will use the address `docker-ip`. If `docker-ip` cannot be determined, it will default to `localhost` for Unix socket connections, and `DOCKER_HOST`. 
 
-An alternative strategy is available, by setting `CHE_DOCKER_SERVER__EVALUATION__STRATEGY` to 'docker-local'. In this mode, Che will attempt to communicate with workspace containers directly, using `workspace-container-ip`, with `localhost`/`DOCKER_HOST` as a fallback as in the default strategy. This can avoid some issues with ephemeral ports and firewalls (see section 'Firewalls', below), but will cause workspace creation to fail if the Che server is configured to not launch workspaces within the same Docker network.
+Alternatives strategies are available by setting `CHE_DOCKER_SERVER__EVALUATION__STRATEGY`.
+By setting it to 'docker-local', Che will attempt to communicate with workspace containers directly, using `workspace-container-ip`, with `localhost`/`DOCKER_HOST` as a fallback as in the default strategy. This can avoid some issues with ephemeral ports and firewalls (see section 'Firewalls', below), but will cause workspace creation to fail if the Che server is configured to not launch workspaces within the same Docker network.
+
+By setting it to 'custom', Che will allow to customize the links by using a template by using the property che.docker.server_evaluation_strategy.custom.template that can be defined by using `CHE_DOCKER_SERVER__EVALUATION__STRATEGY_CUSTOM_TEMPLATE` environment variable.
+
+Here are macros available for the custom server evaluation strategy:
+ * serverName: server reference exposing the port (like tomcat8, ws-agent, etc)
+ * machineName: name of the machine of the workspace. (like devMachine)
+ * workspaceId: id of the workspace
+ * internalIp: IP of the internal address of che (che.docker.ip property)
+ * externalIP: IP of the external address of che
+ * externalAddresss : external address of che (che.docker.ip.external or if null che.docker.ip)
+ * chePort : Che listening port number of workspace master
+ * wildcardNipDomain : get external address transformed into a nip.io DNS sub-domain
+ * wildcardXipDomain : get external address transformed into a xip.io DNS sub-domain
+ 
+Here is an example `che.docker.server_evaluation_strategy.custom.template=<serverName>.<machineName>.<workspaceId>.<wildcardNipDomain>:<chePort>`
+
+
 
 ## Docker Connectivity
 There are multiple techniques for connecting to Docker including Unix sockets, localhost, and remote connections over TCP protocol. Depending upon the type of connection you require and the location of the machine node running Docker, we use different parameters.
