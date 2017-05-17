@@ -218,7 +218,13 @@ Here are macros available for the custom server evaluation strategy:
  
 Here is an example `che.docker.server_evaluation_strategy.custom.template=<serverName>.<machineName>.<workspaceId>.<wildcardNipDomain>:<chePort>`
 
-
+#### Single-port routing.
+By enabling single-port, using `CHE_SINGLE_PORT=true` in `che.env` file , all browser traffic to Che or any workspace will be routed through the value that you have set to `CHE_PORT`, or 8080 if not set.
+Setting this property will transform the launch sequence of Che to launch a Traefik reverse proxy. The reverse proxy will act as the traffic endpoint for all browser communications.
+When a new workspace is started or stopped, Che will update Traefik's configuration with rules for how browser traffic should be routed to Che or a workspace. 
+With single-port, each service running in a workspace and exposing ports has its own hostname. Example : workspace agent will have a hostname like : ws-agent.workspace-id....domain.name. By default the domain name will use nip.io which allow to provide wildcard DNS without any
+user configuration. The strategy used for the hosts is using the template provided by the `CHE_DOCKER_SERVER__EVALUATION__STRATEGY_CUSTOM_TEMPLATE` property with default value `<serverName>.<machineName>.<workspaceId>.<wildcardNipDomain>:<chePort>` 
+If you've your own domain and then DNS server, you may want to add wildcard DNS entry matching a pattern. For example updating the property to the value `<serverName>.<machineName>.<workspaceId>.che.foobar.com:<chePort>` will require a wildcard `*.che.foobar.com` entry in DNS server resolving to the IP of the che server.
 
 ## Docker Connectivity
 There are multiple techniques for connecting to Docker including Unix sockets, localhost, and remote connections over TCP protocol. Depending upon the type of connection you require and the location of the machine node running Docker, we use different parameters.
