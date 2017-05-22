@@ -21,7 +21,7 @@ Currently Eclipse Che implements the [2.x protocol version](https://github.com/M
 Language server integration is divided into 2 steps: an install followed by a separately triggered start. Language servers aren't started when the agent starts. Instead they are started in a second step which can be triggered at any time. This is done to reduce resource consumption and reduce workspace startup time.
 
 1. The language server agent is launched when the workspace starts - its job is to install all dependencies and prepare the `bash` launcher file that will be used to start the language server.
-2. The [launcher](https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver/src/main/java/org/eclipse/che/api/languageserver/launcher/LanguageServerLauncher.java) is triggered andstarts the language server. We suggest triggering the launcher when the user begins interacting with file types related to the language server. Once launched, the language server is registered with specific file types (covered in more detail below).
+2. The [launcher](https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver/src/main/java/org/eclipse/che/api/languageserver/launcher/LanguageServerLauncher.java) is triggered and starts the language server. We suggest triggering the launcher when the user begins interacting with file types related to the language server. Once launched, the language server is registered with specific file types (covered in more detail below).
 
 ### 2. Adding a Language Server Agent
 
@@ -47,13 +47,15 @@ public interface LanguageServerLauncher {
      * 
      * @param projectPath
      *      absolute path to the project
+     * @param client
+     *      an interface implementing handlers for server->client communication
      */
-    LanguageServer launch(String projectPath) throws LanguageServerException;
+    LanguageServer launch(String projectPath, LanguageClient client) throws LanguageServerException;
 
     /**
-     * Gets supported languages that language server is registered with.
+     * Gets the ID of the language this launcher supports
      */
-    LanguageDescription getLanguageDescription();
+    String getLanguageId();
 
     /**
      * Indicates if language server is installed and is ready to be started. 
@@ -73,7 +75,7 @@ Follow our language server launchers and descriptions examples:
 * [C#](https://github.com/eclipse/che/blob/master/plugins/plugin-csharp/che-plugin-csharp-lang-server/src/main/java/org/eclipse/che/plugin/csharp/languageserver/CSharpLanguageServerLauncher.java)
 * [JSON](https://github.com/eclipse/che/blob/master/plugins/plugin-json/che-plugin-json-server/src/main/java/org/eclipse/che/plugin/json/languageserver/JsonLanguageServerLauncher.java)
 
-### 3. Bind the Language Server Launcher
+### 3. Bind the Language Server Launcher and Language Description
 
 ```java
 @DynaModule
@@ -81,6 +83,13 @@ public class MyLanguageServerModule extends AbstractModule {
     @Override
     protected void configure() {
         Multibinder.newSetBinder(binder(), LanguageServerLauncher.class).addBinding().to(MyLanguageServerLauncher.class);
+        LanguageDescription description = new LanguageDescription();
+        description.setFileExtensions(asList("foo", "bar"));
+        description.setFileNames(asList("foobar.txt", "foobar.xml"));
+        
+        description.setLanguageId("myLanguage");
+        description.setMimeType("text/foobar");
+        Multibinder.newSetBinder(binder(), LanguageDescription.class).addBinding().toInstance(description);
     }
 }
 ```
