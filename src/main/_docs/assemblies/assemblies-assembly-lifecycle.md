@@ -630,7 +630,11 @@ If you want to deploy your custom Che binaries in a production mode, i.e. make t
 ORGANIZATION="yourOrg"
 PREFIX="yourCustomAssembly"
 ```
-Usually, `ORGANIZATION` is your DockerHub/container registry account. `PREFIX` is used in image names. With the above properties you will have `yourOrg/yourCustomAssembly-server` server image, `yourOrg/yourCustomAssembly-cli`, and `yourOrg/yourCustomAssembly-init` images.
+Usually, `ORGANIZATION` is your DockerHub/container registry account. `PREFIX` is used in image names. With the above properties you will have:
+
+* `yourOrg/yourCustomAssembly-server` server image
+* `yourOrg/yourCustomAssembly-cli` cli image
+* `yourOrg/yourCustomAssembly-init` init image with the default configuration
 
 
 All Dockerfiles inherit base Che images. You should make sure that che-parent version in you root `pom.xml` is identical to the tag in `FROM` instruction in all 3 Dockerfiles (server, cli and init). If you stay with Che master, then nightly tags are OK. If you depend on a tagged Che version, use the same tag in a Dockerfile:
@@ -661,25 +665,25 @@ latest.ver
 
 `latest.ver` file should also contain the latest version which makes it convenient to tag images in CI systems. This makes it possible to run images without tags, so that Docker automatically pulls the latest tag. `latest.ver` is optional though.
 
-6. Run `build.sh` in all 3 subdirs in dockerfiles directory. By default all images will be tagged as `nightly`. You may specify tag with `--tag=$TAG` argument passed to a script.
+6. Run `build.sh` in all 3 subdirs in `dockerfiles` directory. By default all images will be tagged as `nightly`. You may specify tag with `--tag=$TAG` argument passed to a script.
 
 7. Run your custom Che:
 
 ```
-docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v ~/che-data:/data yourOrg/yourCustomAssembly-cli:nightly
+docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v ~/che-data:/data yourOrg/yourCustomAssembly-cli:nightly start
 ```
 
 You may run the latest (no tag) or a particular tag too:
 
 ```
-docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v ~/che-data:/data yourOrg/yourCustomAssembly-cli:0.1.0
+docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v ~/che-data:/data yourOrg/yourCustomAssembly-cli:0.1.0 start
 ```
 
 Once `dockerfiles` directory is a part of your custom Che assembly repo, you may set up CI jobs to regularly build and push nightly and tagged images.
 
-8. Optional. Custom Che configuration. If your assembly needs custom config (default configuration comes with the init image), you need to work with addons. See example for [OpenShift plugin]  (https://github.com/codenvy/plugin-openshift/tree/master/dockerfiles/init/addon)
+8. Optional. Custom Che configuration. If your assembly needs custom config (default configuration comes with the `init` image), you need to work with addons. See example for [OpenShift plugin](https://github.com/codenvy/plugin-openshift/tree/master/dockerfiles/init/addon)
 
-Just mimic structure and approach, remove unnecessary properties and add your custom ones. If your assembly does not use custom properties, you do not need a custom init image, and may use `eclipse/che-init:$TAG` in `dockerfiles/build.include`
+Just mimic structure and approach, remove unnecessary properties and add your custom ones. If your assembly does not use custom properties, you do not need a custom init image at all, and may use `eclipse/che-init:$TAG` in `dockerfiles/build.include`
 
 
 # Example
