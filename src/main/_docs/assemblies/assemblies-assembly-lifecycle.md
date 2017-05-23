@@ -7,7 +7,7 @@ permalink: /:categories/assembly-lifecycle/
 ---
 {% include base.html %}
 
-You can create new Che products for re-distribution by generating a custom assembly. An assembly is a binary packaging of IDE extensions (written in Java / JavaScript), Che extensions (deployed in the Che server), workspace extensions (deployed in a workspace agent), custom agents, stacks, templates, custom CLI, and brand elements. When these are packaged together, a complete binary that can be run identically to how you run the standard Che assembly is provided. 
+You can create new Che products for re-distribution by generating a custom assembly. An assembly is a binary packaging of IDE extensions (written in Java / JavaScript), Che extensions (deployed in the Che server), workspace extensions (deployed in a workspace agent), custom agents, stacks, templates, custom CLI, and brand elements. When these are packaged together, a complete binary that can be run identically to how you run the standard Che assembly is provided.
 
 Everything can be customized allowing you to create any new kind of cloud IDE or workspace server.
 
@@ -62,11 +62,11 @@ The `generate` action will generate a new Maven multi-module project into the fo
 
 ```
 docker run -it --rm
-  -v /var/run/docker.sock:/var/run/docker.sock 
-  -v /c/archetype:/archetype 
-  -v /c/tmp:/data 
-  -v /c/Users/Tyler/.m2/repository:/m2 
-    eclipse/che-cli:5.4.0 
+  -v /var/run/docker.sock:/var/run/docker.sock
+  -v /c/archetype:/archetype
+  -v /c/tmp:/data
+  -v /c/Users/Tyler/.m2/repository:/m2
+    eclipse/che-cli:5.4.0
       archetype generate
 ```
 
@@ -76,11 +76,11 @@ You can skip interactive mode along with generate, build and run the new assembl
 
 ```
 docker run -it --rm
-  -v /var/run/docker.sock:/var/run/docker.sock 
-  -v /c/archetype:/archetype 
-  -v /c/tmp:/data 
-  -v /c/Users/Tyler/.m2/repository:/m2 
-    eclipse/che-cli:5.4.0 
+  -v /var/run/docker.sock:/var/run/docker.sock
+  -v /c/archetype:/archetype
+  -v /c/tmp:/data
+  -v /c/Users/Tyler/.m2/repository:/m2
+    eclipse/che-cli:5.4.0
       archetype all --no:interactive
 ```
 
@@ -132,11 +132,11 @@ Given the example we started above, you compile it with:
 
 ```
 docker run -it --rm
-  -v /var/run/docker.sock:/var/run/docker.sock 
-  -v /c/archetype:/archetype 
-  -v /c/tmp:/data 
-  -v /c/Users/Tyler/.m2/repository:/m2 
-    eclipse/che-cli:5.4.0 
+  -v /var/run/docker.sock:/var/run/docker.sock
+  -v /c/archetype:/archetype
+  -v /c/tmp:/data
+  -v /c/Users/Tyler/.m2/repository:/m2
+    eclipse/che-cli:5.4.0
       archetype build
 ```
 
@@ -156,7 +156,7 @@ docker run -it --rm --name build-che \
            -w /home/user/che-build \
               eclipse/che-dev mvn clean install
 ```
-If this were a Linux system, there would be additional volume mounts required and you must set the user identity with `--user`. 
+If this were a Linux system, there would be additional volume mounts required and you must set the user identity with `--user`.
 
 Example:
 
@@ -178,7 +178,7 @@ For `--user` you need the ID of your user (1000 in the example above) and their 
 The full syntax for this Docker image is [within the Che repository](https://github.com/eclipse/che/blob/master/dockerfiles/dev/Dockerfile).
 
 #### Native
-While the Docker approach to compiling an assembly is simple, it is slower. You can perform a native build with `mvn clean install` in the root of the assembly (the folder with the `pom.xml`) or any module that is a sub-folder within the assembly. If you have the right utilities installed, Maven will go about downloading necessary dependencies, perform compilation, execute unit tests, and give you a custom assembly. The custom assembly is placed into the `/target` sub-folder of the assembly that is built. 
+While the Docker approach to compiling an assembly is simple, it is slower. You can perform a native build with `mvn clean install` in the root of the assembly (the folder with the `pom.xml`) or any module that is a sub-folder within the assembly. If you have the right utilities installed, Maven will go about downloading necessary dependencies, perform compilation, execute unit tests, and give you a custom assembly. The custom assembly is placed into the `/target` sub-folder of the assembly that is built.
 
 Compiling an assembly requires other tools like Java, Angular, Go to be installed on your host system. Each module of the assembly requires different dependencies. You can view the README.md in Che's source repository for the requirements to build that module. We also discuss many of the requirements and techniques for improving build performance [in the Che wiki](https://github.com/eclipse/che/wiki/Development-Workflow) where the internal development workflow is discussed.
 
@@ -186,20 +186,20 @@ Compiling an assembly requires other tools like Java, Angular, Go to be installe
 After you have generated a custom assembly, we provide a `build.sh` that will work for Windows, Mac and Linux within the root of each repository. You can run this script as an alternative to authoring the CLI syntax by hand.
 
 # Run
-A custom assembly is packaged into a set of binaries that can be used with the Che Docker image to launch Che servers. The finalized build is located in `assembly/assembly-main/target`. 
+A custom assembly is packaged into a set of binaries that can be used with the Che Docker image to launch Che servers. The finalized build is located in `assembly/assembly-main/target`.
 
 You can run this custom assembly either by using the `archetype` command or with the Che CLI. The `archetype run` action will use your assembly details and launch the Che CLI automatically with the proper location of the custom assembly. Given the example we have started, this would look like (note that mounting the M2 repository is not required as we are not building with Maven):
 
 ```
 docker run -it --rm
-  -v /var/run/docker.sock:/var/run/docker.sock 
-  -v /c/archetype:/archetype 
-  -v /c/tmp:/data 
-    eclipse/che-cli:5.4.0 
+  -v /var/run/docker.sock:/var/run/docker.sock
+  -v /c/archetype:/archetype
+  -v /c/tmp:/data
+    eclipse/che-cli:5.4.0
       archetype run
 ```
 
-Optionally, you can use the Che CLI to run a custom assembly by mounting `/assembly` to the exploded location of the assembly that has already been built. While developing Che and Codenvy itself, our engineers keep a branch open, work on customizations, and then build those customizations into an assembly that they mount with the CLI. 
+Optionally, you can use the Che CLI to run a custom assembly by mounting `/assembly` to the exploded location of the assembly that has already been built. While developing Che and Codenvy itself, our engineers keep a branch open, work on customizations, and then build those customizations into an assembly that they mount with the CLI.
 
 The exploded assembly is usually something like `assembly/assembly-main/target/eclipse-che-<version>/eclipse-che-<version>/`. You can use the rest of the CLI's options and parameters as you normally would. For example, given the sample we started with, the CLI direct launch equivalent would be:
 ```
@@ -216,10 +216,10 @@ Within the assembly itself is a `run.sh` script that works for Windows, Mac, and
 You can stop a custom assembly with the CLI's `stop` command or with `archetype stop`:
 ```
 docker run -it --rm
-  -v /var/run/docker.sock:/var/run/docker.sock 
-  -v /c/archetype:/archetype 
-  -v /c/tmp:/data 
-    eclipse/che-cli:5.4.0 
+  -v /var/run/docker.sock:/var/run/docker.sock
+  -v /c/archetype:/archetype
+  -v /c/tmp:/data
+    eclipse/che-cli:5.4.0
       archetype stop
 ```
 
@@ -245,24 +245,24 @@ There are five different places where you can include or exclude a plugin, which
 
 | Che Assembly Location | What Is Included |
 | --------------------- | ---------------- |
-| `/assembly-che/assembly-ide-war` | GWT plugins that will be compiled into a new browser IDE as JavaScript | 
-| `/assembly-che/wsagent-war` | Java plugins that will run within a workspace's agent | 
-| `/assembly-che/wsagent-server` | Packages workspace agents into a Tomcat bundle | 
-| `/assembly-che/wsmaster-war` | Java plugins that will run within Che's core server | 
-| `/assembly-che/assembly-main` | Packages Che's core server into a Tomcat bundle | 
+| `/assembly-che/assembly-ide-war` | GWT plugins that will be compiled into a new browser IDE as JavaScript |
+| `/assembly-che/wsagent-war` | Java plugins that will run within a workspace's agent |
+| `/assembly-che/wsagent-server` | Packages workspace agents into a Tomcat bundle |
+| `/assembly-che/wsmaster-war` | Java plugins that will run within Che's core server |
+| `/assembly-che/assembly-main` | Packages Che's core server into a Tomcat bundle |
 
 And Codenvy's assemblies are slightly different:
 
 | Codenvy Assembly Location | What Is Included |
 | ------------------------- | ---------------- |
-| `/assembly-codenvy/compiling-ide-war` | GWT plugins that will be compiled into a new browser IDE as JavaScript | 
-| `/assembly-codenvy/assembly-ide-war` | Results of GWT plugins packaged into a new web app | 
-| `/assembly-codenvy/assembly-dashboard-war` | JavaScript plugins that will be packaged into the user dashboard | 
-| `/assembly-codenvy/assembly-factory-war` | Plugins for workspace automation with factories | 
-| `/assembly-codenvy/wsagent-war` | Java plugins that will run within a workspace's agent | 
-| `/assembly-codenvy/wsagent-server` | Packages workspace agents into a Tomcat bundle | 
-| `/assembly-codenvy/wsmaster-war` | Java plugins that will run within Che's core server | 
-| `/assembly-codenvy/assembly-main` | Packages Che's core server into a Tomcat bundle | 
+| `/assembly-codenvy/compiling-ide-war` | GWT plugins that will be compiled into a new browser IDE as JavaScript |
+| `/assembly-codenvy/assembly-ide-war` | Results of GWT plugins packaged into a new web app |
+| `/assembly-codenvy/assembly-dashboard-war` | JavaScript plugins that will be packaged into the user dashboard |
+| `/assembly-codenvy/assembly-factory-war` | Plugins for workspace automation with factories |
+| `/assembly-codenvy/wsagent-war` | Java plugins that will run within a workspace's agent |
+| `/assembly-codenvy/wsagent-server` | Packages workspace agents into a Tomcat bundle |
+| `/assembly-codenvy/wsmaster-war` | Java plugins that will run within Che's core server |
+| `/assembly-codenvy/assembly-main` | Packages Che's core server into a Tomcat bundle |
 
 
 #### Exclude
@@ -302,7 +302,7 @@ You can do a similar activity for the Codenvy custom assembly as well located in
 
 The `PLUGIN-IDENTIFIER` is the `artifactId` that is provided by the plugin. You can find this identifier in the `pom.xml` that is in the root folder for each plugin in Che and Codenvy's source repository.
 
-You can have as many `<exclusion>` blocks as necessary within a single `<exclusions>` tag. 
+You can have as many `<exclusion>` blocks as necessary within a single `<exclusions>` tag.
 
 We require the maven POM to be sorted. If you get a sorting error, you can sort your modifications on the command line with `mvn sortpom:sort`.
 
@@ -620,18 +620,82 @@ To make a minimal assembly of the IDE, we need to declare it in `assembly/assemb
 {% endif %}
 
 # Production Mode
-TODO: Discuss how to take a custom assembly that is ready for deployment and then package it within a custom Docker image to replace `eclipse/che-server` with a new image that contains a custom assembly's binaries.
+
+If you want to deploy your custom Che binaries in a production mode, i.e. make them reusable and independent from a locally mounted repo, you may build your own custom Che CLI. Building a custom CLI also makes it possible to setup CI systems that will generate nightly and tagged images.
+
+1. In the root of your custom Che assembly repo, create a directory `dockerfiles`
+2. Copy all files and directories as in this [example](https://github.com/codenvy/plugin-openshift/tree/master/dockerfiles)
+4. In [build.include](https://github.com/codenvy/plugin-openshift/blob/master/dockerfiles/build.include) change values of the following properties:
+```
+ORGANIZATION="yourOrg"
+PREFIX="yourCustomAssembly"
+```
+Usually, `ORGANIZATION` is your DockerHub/container registry account. `PREFIX` is used in image names. With the above properties you will have:
+
+* `yourOrg/yourCustomAssembly-server` server image
+* `yourOrg/yourCustomAssembly-cli` cli image
+* `yourOrg/yourCustomAssembly-init` init image with the default configuration
+
+
+All Dockerfiles inherit base Che images. You should make sure that che-parent version in you root `pom.xml` is identical to the tag in `FROM` instruction in all 3 Dockerfiles (server, cli and init). If you stay with Che master, then nightly tags are OK. If you depend on a tagged Che version, use the same tag in a Dockerfile:
+
+`FROM eclipse/che-server:nightly`
+
+or
+
+`FROM eclipse/che-server:5.10.0`
+
+
+5. In `dockerfiles/cli/version/$TAG/images` make sure that your custom images are used. There is no need to change `IMAGE_COMPOSE`, just server and init images:
+
+```
+IMAGE_INIT=yourOrg/yourCustomAssembly-init:0.1.0
+IMAGE_CHE=yourOrg/yourCustomAssembly-server:0.1.0
+IMAGE_COMPOSE=docker/compose:1.8.1
+```
+
+When building tagged images with `build.sh` make sure you use an existing version otherwise CLI won't be able to find it. It is reasonable to always have `nightly`, 'latest' tagged tagged with the latest version and all tagged versions as well:
+
+```
+/0.1.0
+/latest
+/nightly
+latest.ver
+```
+
+`latest.ver` file should also contain the latest version which makes it convenient to tag images in CI systems. This makes it possible to run images without tags, so that Docker automatically pulls the latest tag. `latest.ver` is optional though.
+
+6. Run `build.sh` in all 3 subdirs in `dockerfiles` directory. By default all images will be tagged as `nightly`. You may specify tag with `--tag=$TAG` argument passed to a script.
+
+7. Run your custom Che:
+
+```
+docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v ~/che-data:/data yourOrg/yourCustomAssembly-cli:nightly start
+```
+
+You may run the latest (no tag) or a particular tag too:
+
+```
+docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v ~/che-data:/data yourOrg/yourCustomAssembly-cli:0.1.0 start
+```
+
+Once `dockerfiles` directory is a part of your custom Che assembly repo, you may set up CI jobs to regularly build and push nightly and tagged images.
+
+8. Optional. Custom Che configuration. If your assembly needs custom config (default configuration comes with the `init` image), you need to work with addons. See example for [OpenShift plugin](https://github.com/codenvy/plugin-openshift/tree/master/dockerfiles/init/addon)
+
+Just mimic structure and approach, remove unnecessary properties and add your custom ones. If your assembly does not use custom properties, you do not need a custom init image at all, and may use `eclipse/che-init:$TAG` in `dockerfiles/build.include`
+
 
 # Example
 Let's walk through the folder structure for the custom assembly generated by the archetype identified by `plugin-wizard-archetype`. This is a custom assembly that has a server-side and IDE plugin that work with one another.
 
 ```shell
 pom.xml
-# Describes dependencies that are used throughout the custom assembly. 
+# Describes dependencies that are used throughout the custom assembly.
 # Disables license and sortpom plugin executions defined in the parent POM.
 
 assembly-che/assembly-ide-war
-# Repackages the IDE by declaring dependencies from the source Che assembly along with 
+# Repackages the IDE by declaring dependencies from the source Che assembly along with
 # including a new custom plugin and its associated shared model.
 # Contains instructions for generating a master IDE GWT XML from dependencies.
 # Contains GWT plugin for compiling into different browser types (permutations).
@@ -639,7 +703,7 @@ assembly-che/assembly-ide-war
 # Contains the WAR plugin configuration for adding resources (like icons) from the parent.
 
 assembly-che/assembly-main
-# Packages Che's server Tomcat which inclues the `assembly-ide-war`.
+# Packages Che's server Tomcat which includes the `assembly-ide-war`.
 
 assembly-che/assembly-wsagent-server
 # Packages the workspace agent's Tomcat server, which includes `assembly-wsagent-war`.
@@ -676,7 +740,7 @@ And because it is interesting, here is the file composition of the three plugins
 
 `plugins/<artifactid>/<artifactid>-shared`:
 ```shell
-pom.xml 
+pom.xml
 # Basic module descriptor
 
 src/main/java/com/sample/shared/Constants.java
@@ -688,7 +752,7 @@ src/main/java/com/sample/shared/Constants.java
 pom.xml
 # Basic module descriptor
 
-src/main/java/com/sample/inject/SampleWizardModule.java 
+src/main/java/com/sample/inject/SampleWizardModule.java
 # Dependency injection module, where binding of project type occurs
 
 src/main/java/com/sample/projecttype/SampleProjectType.java
@@ -697,16 +761,16 @@ src/main/java/com/sample/projecttype/SampleProjectType.java
 
 `plugins/<artifactid>/<artifactid>-ide`:
 ```shell
-pom.xml 
+pom.xml
 # Basic module descriptor
 
-src/main/java/com/sample/ide/SampleWizardExtension.java 
+src/main/java/com/sample/ide/SampleWizardExtension.java
 # Extension definiton responsible for registering actions, menus, registrars, etc.
 
-src/main/java/com/sample/ide/SampleWizardLocalizationConstant.java 
+src/main/java/com/sample/ide/SampleWizardLocalizationConstant.java
 # Interface for accessing GWT Localization constants written in .properties file
 
-src/main/java/com/sample/ide/SampleWizardResources.java 
+src/main/java/com/sample/ide/SampleWizardResources.java
 # Interface for accessing GWT resources, like SVG icons
 
 ### The action package contains Actions to be triggered by buttons, menus, etc:
@@ -714,33 +778,33 @@ src/main/java/com/sample/ide/action/NewXFileAction.java
 # Action which in this example will be triggered by menu selection
 
 ### The file package contains classes related to the "New X File" form:
-src/main/java/com/sample/ide/file/NewXFilePresenter.java 
+src/main/java/com/sample/ide/file/NewXFilePresenter.java
 # Presenter class, responsible for logic of file creation
 
-src/main/java/com/sample/ide/file/NewXFileView.java 
+src/main/java/com/sample/ide/file/NewXFileView.java
 # View interface class, which is used in the presenter
 
-src/main/java/com/sample/ide/file/NewXFileViewImpl.java 
+src/main/java/com/sample/ide/file/NewXFileViewImpl.java
 # View implementation class, containing GWT or JavaScript code to display the form
 
-src/main/java/com/sample/ide/file/NewXFileView.ui.xml 
-# UIBinder XML file, A GWT concept to provide declarative layout of the "New X File" form 
+src/main/java/com/sample/ide/file/NewXFileView.ui.xml
+# UIBinder XML file, A GWT concept to provide declarative layout of the "New X File" form
 
 ### The inject package contains GIN dependency injection module:
-src/main/java/com/sample/ide/inject/SampleWizardGinModule.java 
+src/main/java/com/sample/ide/inject/SampleWizardGinModule.java
 # Dependency injection GIN module, which binds constructors to your classes
 
 ### The wizard package contains a custom Project Wizard page:
-src/main/java/com/sample/ide/wizard/SamplePagePresenter.java 
+src/main/java/com/sample/ide/wizard/SamplePagePresenter.java
 # Presenter class, responsible for logic of Project Wizard custom project creation page
 
-src/main/java/com/sample/ide/wizard/SamplePageView.java 
+src/main/java/com/sample/ide/wizard/SamplePageView.java
 # View interface class, which is used in the presenter
 
 src/main/java/com/sample/ide/wizard/SamplePageViewImpl.java
 # View implementation class, which contains GWT code for the Project Wizard creation page
 
-src/main/java/com/sample/ide/wizard/SamplePageViewImpl.ui.xml 
+src/main/java/com/sample/ide/wizard/SamplePageViewImpl.ui.xml
 # A UIBinder XML file, which is a GWT declarative layout of the Project Wizard creation page
 
 src/main/java/com/sample/ide/wizard/SampleWizardRegistrar.java
@@ -748,13 +812,13 @@ src/main/java/com/sample/ide/wizard/SampleWizardRegistrar.java
 
 
 ### Resources define the plugin's GWT module, files like icons, and properties
-src/main/resouces/com/sample/SampleWizard.gwt.xml 
+src/main/resouces/com/sample/SampleWizard.gwt.xml
 # GWT XML module snippet - will be included into a global GWT module created during build
 
-src/main/resouces/com/sample/ide/SampleWizardLocalizationConstant.properties 
+src/main/resouces/com/sample/ide/SampleWizardLocalizationConstant.properties
 # Properties of string constants, which  are used in GWT code for form names and so on
 
-src/main/resouces/com/sample/ide/svg/c_file.svg 
+src/main/resouces/com/sample/ide/svg/c_file.svg
 # SVG icon for custom project type displayed in the project wizard form
 
 src/main/resouceseclipse/che-cli/ide/svg/category.svg
