@@ -38,9 +38,13 @@ Snapshots are important to preserve the internal state of a machine that is not 
 
 Note that once you've snapshotted a workspace, changing the environment or machine names inside the workspace will result in the snapshot being lost.
 
-Snapshots image a machine and then it is committed, tagged, and optionally pushed into a Docker registry. You can use a local Docker registry or a remote one. See [Configuration]({{base}}{{site.links["setup-configuration"]}}) for information on how to setup a docker registry.
+Snapshots image a machine and then commit, tag, and optionally push that image into a Docker registry. By default machines are automatically snapshotted when they are stopped.
 
-By default machines are automatically snapshotted when they are stopped. By default, {{site.product_mini_name}} does not need a local/remote Docker registry to create snapshots. If no registry is used, a container is committed into an image which is then tagged, so that next time a workspace is started with this image. The behavior is regulated with the following environment variables:
+**Note that snapshots do not include the contents of the machine's `tmp` folder.**
+
+By default, {{site.product_mini_name}} does not need a local/remote Docker registry to create snapshots. However, you can [configure]({{base}}{{site.links["setup-configuration"]}}) a local or remote Docker registry to use for snapshots.
+
+If no registry is used, a container is committed into an image which is then tagged, so that next time a workspace is started with this image. The behavior is regulated with the following environment variables:
 
 ```shell  
 # Provide in {{site.data.env["filename"]}}
