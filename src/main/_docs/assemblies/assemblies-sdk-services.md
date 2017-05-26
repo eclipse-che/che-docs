@@ -12,15 +12,15 @@ However, more complex operations, especially when accessing resources from a pro
 Services can either be deployed on the server or directly in a workspace. Server services provide generic features which are not depending on the Workspace or its content, e.g. user management. Workspace services can access the contents of a project (e.g. source files) and also trigger operations in the workspace (such as compilation).
 In the following, we will describe how to create server and workspace services and how they are consumed from the client IDE. As the specification of workspace services is a special case of specifying server services, we will start with a simple server service, including an introduction of general basics about services.
 Based on that, in the subsequent section “Workspace Services”, we will describe a more complex example, which accesses the files of a specific project.
-Server and Workspace services need to be deployed differently, please refer to the section [Create and build extensions]({{ base }}/docs/plugins/create-and-build-extensions/index.html) to learn how.
+Server and Workspace services need to be deployed differently, please refer to the section [Create and build extensions]({{ base }}{{site.links["assemblies-plugin-lifecycle"]}}) to learn how.
 
 ## Server Services
 The following diagram shows all components of server services. The classes highlighted in dark grey are to be implemented for the extension. The `ServerService` offers a REST service to be consumed.
 The IDE plugin implements a client class (`MyClient`), which calls the REST service using Che helper classes. The result is made available by a Java API, which is to be defined based on the result type. By calling the client class, different components of the IDE, such as `Actions` or `CodeCompletionProcessors`, can consume the `ServerService` without having to deal with the REST API itself.
-![image15.png]({{ base }}/docs/assets/imgs/image15.png)
+![image15.png]({{ base }}{{site.links["image15.png"]}})
 In the following, we will describe how to build a simple example server service that accepts a String {name} and responds with "Hello {name} !".
 Further, we will demonstrate how this service can be consumed from within the client IDE.
-
+c
 Every REST service defines the path under which it is reachable. In the following code example, the path consists of two parts. The first one identifies the service itself and is specified with the @Path annotation of the class itself, in this case “hello”.
 The second part of the path defines a parameter for the @GET method to be called and is specified with the @Path annotation at the method `#sayHello` itself, in this case “name”.
 In combination, this example will register a service that will listen to localhost:8080/api/hello/{name}, where {name} is an arbitrary String to be passed by the client.
@@ -37,14 +37,14 @@ public class MyService {
   public String sayHello(@PathParam("name") String name) {
     return "Hello " + name + " !";
   }
-}
+}s
 ```
 To make the server service consumable within the IDE, we implement a client encapsulating the REST call (see following code example).
 Therefore, the client will offer a method `#getHello`, which can be called by any IDE component with a parameter “name”. To send an asynchronous REST request, the client uses two Che utilities, the `AsyncRequestFactory` and the `LoaderFactory`, which both get injected into the constructor.
 
 The `AsyncRequestFactory` simplifies the creation of REST calls by providing a method `#createGetRequest` which will create a request using the provided parameter as a path. It will automatically prefix this path with the current server URL used by the IDE, so the parameter “hello” would be bound to http://serveradress/hello.
 
-The request is sent by passing in an `Unmarshaller`. It is responsible for unmarshalling the response from the transport format (JSON) to a Java type, e.g. a String. Che already provides a collection of `Unmarshallers`, please see the section [Calling Workspace APIs]( {{base}}/docs/plugins/calling-workspace-apis/index.html) for details.
+The request is sent by passing in an `Unmarshaller`. It is responsible for unmarshalling the response from the transport format (JSON) to a Java type, e.g. a String. Che already provides a collection of `Unmarshallers`, please see the section [Calling Workspace APIs]( {{base}}{{site.links["assemblies-sdk-rest-apis"]}}) for details.
 
 Finally, the send method returns a `Promise`, which can be consumed by callers on `MyClient` (see below) to retrieve the answer from the server.
 
@@ -126,7 +126,7 @@ public class MyAction extends Action {
 ## Workspace Services
 
 Workspace services are special types of server services, they are deployed directly within the workspace agent. Therefore, they can access the content of a workspace, e.g. projects, source files, etc. Furthermore, they can trigger native operations in the running workspace.
-Besides their different scope, workspace services are developed like standard server services using REST. Therefore, we recommend to first cover the previous section about [Server Services]({{ base }}/docs/plugins/serverworkspace-access/index.html#server-services). The main difference between workspace and server services is where they are actually deployed to. Please refer to the section [Create and build extensions]({{ base }}/docs/plugins/create-and-build-extensions/index.html) to learn how to deploy services correctly.
+Besides their different scope, workspace services are developed like standard server services using REST. Therefore, we recommend to first cover the previous section about [Server Services]({{ base }}{{site.links["assemblies-sdk-services"]}}#server-services). The main difference between workspace and server services is where they are actually deployed to. Please refer to the section [Create and build extensions]({{ base }}{{site.links["assemblies-plugin-lifecycle"]}}) to learn how to deploy services correctly.
 
 In the following, we describe an example workspace service from the JSON example, which accesses a selected project and counts the number of lines in all JSON files. This demonstrates how to access files and their content. In a custom use case, this could be adapted to do any kind of file operation, e.g. parsing contents for auto completion. After introducing the service, we demonstrate how it can be consumed by an action from within the IDE.
 
@@ -192,7 +192,7 @@ String url = this.appContext.getDevMachine().getWsAgentBaseUrl()
   + appContext.getCurrentProject().getProjectConfig().getPath();
 ```
 
-Besides the specific path, workspace services can be consumed like any other server service using the REST utilities of Che. Please have a look at the sections [Server Services]({{ base }}/docs/plugins/serverworkspace-access/index.html#server-services) and Client Server Communication for more details.
+Besides the specific path, workspace services can be consumed like any other server service using the REST utilities of Che. Please have a look at the sections [Server Services]({{ base }}{{site.links["assemblies-sdk-services"]}}) and Client Server Communication for more details.
 
 The following example action consumes the workspace service defined above and shows the result using the notification manager.
 

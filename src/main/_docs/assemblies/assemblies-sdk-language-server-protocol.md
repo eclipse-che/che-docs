@@ -25,7 +25,7 @@ Language server integration is divided into 2 steps: an install followed by a se
 
 ### 2. Adding a Language Server Agent
 
-Follow the documentation on how to [add new agent]({{base}}{{site.links["ws-agents"]}}#creating-new-agents).
+Follow the documentation on how to [add new agent]({{base}}{{site.links["devops-ws-agents"]}}#creating-new-agents).
 
 Examples of existed language server agents you can learn from:
 
@@ -89,5 +89,5 @@ Once complete, compile and run Che. If everything has worked you will see your a
 
 ![Che-machine-information-edit.jpg]({{base}}{{site.links["Che-machine-information-edit.jpg"]}})
 
-The agent can be added by default in a Stack, our [Stack documentation]({{base}}{{site.links["ws-stacks"]}}) explains how to create and edit stacks.
+The agent can be added by default in a Stack, our [Stack documentation]({{base}}{{site.links["devops-runtime-stacks"]}}) explains how to create and edit stacks.
 

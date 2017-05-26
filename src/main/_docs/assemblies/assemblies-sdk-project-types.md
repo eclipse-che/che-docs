@@ -83,7 +83,7 @@ public final class Constants {
 }
 ```
 
-To make our new project type available in Che, we need to register it using Guice. The following example code registers the `JsonExampleProjectType` from above as a `ProjectTypeDef`. Che will automatically pick up all bound `ProjectTypeDefs`. Please see our [Dependency Injection Basics]({{ base }}/docs/plugins/dependency-injection-basics/index.html) section for a general introduction of this mechanism.
+To make our new project type available in Che, we need to register it using Guice. The following example code registers the `JsonExampleProjectType` from above as a `ProjectTypeDef`. Che will automatically pick up all bound `ProjectTypeDefs`. Please see our [Dependency Injection Basics]({{ base }}{{site.links["assemblies-sdk-dependency-injection"]}}) section for a general introduction of this mechanism.
 
 ```java  
 org.eclipse.che.plugin.jsonexample.inject.JsonExampleGuiceModule
@@ -101,7 +101,7 @@ public class JsonExampleGuiceModule extends AbstractModule {
 By defining the new project type, Che will add a new entry in the “New” menu of the IDE and allow us to create a new and empty project:
 
 
-![image03.png]({{ base }}/docs/assets/imgs/image03.png)
+![image03.png]({{ base }}{{site.links["image03.png"]}})
 
 Typical project types often need to be initialized with some default content, e.g. some files. This can be done by implementing a `CreateProjectHandler` (subtype of `ProjectHandler`). In the method `#onProjectCreate`, you can access the base folder, as well as the attributes and options of the project.
 
@@ -157,22 +157,22 @@ projectHandlerMultibinder.addBinding().to(JsonExampleCreateProjectHandler.class)
 ```
 Once the ProjectHandler has been added and executed, the example project will already contain the files  in the IDE:
 
-![image08.png]({{ base }}/docs/assets/imgs/image08.png)
+![image08.png]({{ base }}{{site.links["image08.png"]}}/docs/assets/imgs/)
 ## Project Creation Wizard
 Project creation wizards are executed once the user creates a new project. They allow you to enter general properties (such as a name and a description), but also project-specific properties (e.g. a compiler option, a project dependency, etc.). Without providing a specific project creation wizard, Che already allows you to enter the general properties available for all projects as shown in the following screenshot for the JSON example project type we have defined in the previous section of the tutorial:
 
 
-![image03.png]({{ base }}/docs/assets/imgs/image03.png)
+![image03.png]({{ base }}{{site.links["image03.png"]}})
 
 In this section, we will describe how to extend the default project creation wizard with a new page allowing it to enter an additional property. As part of the JSON example, we will allow the user to enter the URL of a JSON Schema. We will later use the schema to validate JSON files on the server.
 Therefore, we will add a new page to the JSON project creation wizard allowing to enter the schema url property:
 
-![image14.png]({{ base }}/docs/assets/imgs/image14.png)
+![image14.png]({{ base }}{{site.links["image14.png"]}})
 This page serves as a simple example, it can be adapted for any other project specific property.
 
 The following diagram shows all components for the extension of the project wizard. The classes highlighted in dark grey are to be implemented for the project wizards extension.
 
-![ProjectType-JsonExample.png]({{ base }}/docs/assets/imgs/ProjectType-JsonExample.png)
+![ProjectType-JsonExample.png]({{ base }}{{site.links["ProjectType-JsonExample.png"]}})
 Before we look at the detailed implementations, we will first give an overview of all participating components.
 As a first step, we need to implement a `ProjectWizardRegistrar`. It holds a set of `AbstractWizardPages`. These pages are added to the default wizard and displayed during project creation. Our implementation of a `ProjectWizardRegistrar` is in `JsonExampleProjectWizardRegistrar` and contributes one wizard page (see its method `#getWizardPages`) which will contain exactly one field for entering a JSON schema URL.
 
@@ -349,15 +349,15 @@ SchemaUrlPageViewImpl.ui.xml
                   <g:Label ui:field="labelUrlError" width="100%"    wordWrap="true"/>
               </g:FlowPanel>
           </g:FlowPanel>
-      </g:north>
+      </g:north>wo
   </g:DockLayoutPanel>
 </ui:UiBinder>
 ```
 
 By adapting the `SchemaUrlPageViewImpl.ui.xml` you can customize the layout of the final wizard page. The example page will look like this:
-![image14.png]({{ base }}/docs/assets/imgs/image14.png)
+![image14.png]({{ base }}{{site.links["image14.png"]}})
 ##Project-specific Actions
-Actions allow you to add custom behavior to the Che IDE. They can be placed in menus, toolbars or context menus. Some actions shall only be available on a specific project type. In the JSON example, we place two actions in the context menu of the defined project type. The screenshot shows a project-specific `HelloWorldAction`, as well as another project specific action implemented in the section [Server/Workspace Access]({{ base }}/docs/plugins/serverworkspace-access/index.html#workspace-services).
+Actions allow you to add custom behavior to the Che IDE. They can be placed in menus, toolbars or context menus. Some actions shall only be available on a specific project type. In the JSON example, we place two actions in the context menu of the defined project type. The screenshot shows a project-specific `HelloWorldAction`, as well as another project specific action implemented in the section [Server/Workspace Access]({{ base }}{{site.links["assemblies-sdk-services"]}}#workspace-services).
 
 
-![image00.png]({{ base }}/docs/assets/imgs/image00.png)
+![image00.png]({{ base }}{{site.links["image00.png"]}})

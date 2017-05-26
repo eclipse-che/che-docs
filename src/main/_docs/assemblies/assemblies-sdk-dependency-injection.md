@@ -8,7 +8,7 @@ permalink: /:categories/sdk-dependency-injection/
 {% include base.html %}
 In this section, we briefly introduce the usage of dependency injection in Che, on the client and on the server side. If you are already familiar with Guice and Gin, you might want to skip this part.
 
-Che uses dependency injection to wire the different components, in order to create objects as well as register and retrieve extensions. Therefore, dependency injection is technically the core mechanism of communicating with the framework and connecting custom extensions. This includes accessing framework services and objects (e.g. a file type or a [file type registry]({{ base }}/docs/plugins/code-editors/index.html)) and providing custom objects to the framework (e.g. a [custom wizard]({{ base }}/docs/plugins/project-types/index.html)).
+Che uses dependency injection to wire the different components, in order to create objects as well as register and retrieve extensions. Therefore, dependency injection is technically the core mechanism of communicating with the framework and connecting custom extensions. This includes accessing framework services and objects (e.g. a file type or a [file type registry]({{ base }}{{site.links["assemblies-sdk-code-editors"]}})) and providing custom objects to the framework (e.g. a [custom wizard]({{ base }}{{site.links["assemblies-sdk-project-types"]}})).
 
 Che uses the existing dependency injection framework [Guice](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0ahUKEwi69oT_sO3MAhXKOxQKHYMIB58QFggcMAA&url=https%3A%2F%2Fgithub.com%2Fgoogle%2Fguice&usg=AFQjCNHss97LwiVZ_GVp7HlDZgZYvWIbyQ&bvm=bv.122448493,d.bGg) on the server-side and the GWT version of Guice, [Gin](https://github.com/google-code-export/google-gin), on the client-side.
 
@@ -31,7 +31,7 @@ The dependency injection framework needs to know how to identify the correct obj
 
   * Second, if there can be several objects of the required type and you want a specific object out of those, you can additionally specify a key using the annotation `@Named`.
 
-In the following example, for the second parameter, the framework will look for an object which is of type `MyClass` has been explicitly registered with the key `MyID`. Please [see the following]({{ base }}/docs/plugins/dependency-injection-basics/index.html#providing-objects) section how to provide objects to be consumed that way.
+In the following example, for the second parameter, the framework will look for an object which is of type `MyClass` has been explicitly registered with the key `MyID`. Please [see the following]({{ base }}{{site.links["assemblies-sdk-dependency-injection"]}}#providing-objects) section how to provide objects to be consumed that way.
 
 ```java  
 public class MyClass {

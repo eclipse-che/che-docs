@@ -74,5 +74,5 @@ permalink: /:categories/intro/
 # Where To Go From Here  
 {{site.product_mini_name}} provides a lot of flexibility to administrators and users. You can start by choosing from our stack library that is within the user dashboard.
 
-Or, if you want to distribute your own workspace configuration, study how to add a [Runtime Stack]({{base}}{{site.links["ws-stacks"]}}) or a [Project Sample]({{base}}{{site.links["ws-samples"]}})
-In the [Stacks]({{base}}{{site.links["ws-stacks"]}}) section, we also provide instructions for how to write custom Dockerfiles or Docker Compose files that will act as a workspace recipes.
+Or, if you want to distribute your own workspace configuration, study how to add a [Runtime Stack]({{base}}{{site.links["devops-runtime-stacks"]}}) or a [Project Sample]({{base}}{{site.links["devops-project-samples"]}})
+In the [Stacks]({{base}}{{site.links["devops-runtime-stacks"]}}) section, we also provide instructions for how to write custom Dockerfiles or Docker Compose files that will act as a workspace recipes.

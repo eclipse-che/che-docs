@@ -7,13 +7,13 @@ permalink: /:categories/runtime-stacks/
 ---
 {% include base.html %}
 
-A stack is a runtime configuration for a workspace. It contains a [runtime recipe]({{base}}{{site.links["ws-recipes"]}}), meta information like tags, description, environment name, and security policies. Since Che supports different kinds of runtimes, there are different stack recipe formats.
+A stack is a runtime configuration for a workspace. It contains a [runtime recipe]({{base}}{{site.links["devops-runtime-recipes"]}}), meta information like tags, description, environment name, and security policies. Since Che supports different kinds of runtimes, there are different stack recipe formats.
 
-Stacks are displayed within the user dashboard and stack tags are used to filter the [project code samples]({{base}}{{site.links["ws-samples"]}}) that are available. It is possible to have a single stack with a variety of different project samples, each of which are filtered differently.
+Stacks are displayed within the user dashboard and stack tags are used to filter the [project code samples]({{base}}{{site.links["devops-project-samples"]}}) that are available. It is possible to have a single stack with a variety of different project samples, each of which are filtered differently.
 
-You can use Che's [built-in stacks]({{base}}{{site.links["ws-stacks"]}}#using-stacks-to-create-a-new-workspace) or [author your own custom stacks]({{base}}{{site.links["ws-stacks"]}}#custom-stack).
+You can use Che's [built-in stacks]({{base}}{{site.links["devops-runtime-stacks"]}}#using-stacks-to-create-a-new-workspace) or [author your own custom stacks]({{base}}{{site.links["devops-runtime-stacks"]}}#custom-stack).
 
-A stack is different from a [recipe]({{base}}{{site.links["ws-recipes"]}}). A stack is a JSON definition with meta information which includes a reference to a recipe. A recipe is either a [Dockerfile](https://docs.docker.com/engine/reference/builder/) or a [Docker compose file](https://docs.docker.com/compose/) used by Che to create a runtime that will be embedded within the workspace.  It is also possible to write a custom plug-in that replaces the default Docker machine implementation within Che with another one. For details on this, see [Building Extensions]({{base_che}}{{site.links["plugins-create-and-build-extensions"]}}) and / or start a dialog with the core Che engineers at `che-dev@eclipse.org`.
+A stack is different from a [recipe]({{base}}{{site.links["devops-runtime-recipes"]}}). A stack is a JSON definition with meta information which includes a reference to a recipe. A recipe is either a [Dockerfile](https://docs.docker.com/engine/reference/builder/) or a [Docker compose file](https://docs.docker.com/compose/) used by Che to create a runtime that will be embedded within the workspace.  It is also possible to write a custom plug-in that replaces the default Docker machine implementation within Che with another one. For details on this, see [Building Extensions]({{base_che}}{{site.links["assemblies-plugin-lifecycle"]}}) and / or start a dialog with the core Che engineers at `che-dev@eclipse.org`.
 
 # Using Stacks To Create a New Workspace  
 To create a new workspace in the user dashboard:
@@ -35,9 +35,9 @@ Che provides a wider range of stacks which you can browse from the “Stack libr
 ![che-stacks2.jpg]({{base}}{{site.links["che-stacks2.jpg"]}})
 
 ## Custom Stack
-User can create their own stack from the "Custom stack" tab. Using Che's interface the user can provide a [runtime recipe]({{base}}{{site.links["ws-recipes"]}}) from an existing external recipe file or by writing a recipe directly.
+User can create their own stack from the "Custom stack" tab. Using Che's interface the user can provide a [runtime recipe]({{base}}{{site.links["devops-runtime-recipes"]}}) from an existing external recipe file or by writing a recipe directly.
 
-Che provides a form that can be used to write a recipe directly or copied/pasted from an existing location. A recipe can be written directly as a Dockerfile or a Docker compose file and Che will detect which one it is automatically based on syntax. Refer to [runtime recipes]({{base}}{{site.links["ws-recipes"]}}) documentation for additional information.
+Che provides a form that can be used to write a recipe directly or copied/pasted from an existing location. A recipe can be written directly as a Dockerfile or a Docker compose file and Che will detect which one it is automatically based on syntax. Refer to [runtime recipes]({{base}}{{site.links["devops-runtime-recipes"]}}) documentation for additional information.
 
 # Stack Administration  
 ## Stack Loading
@@ -132,7 +132,7 @@ In the user dashboard, click the `Stacks` to view all the available stacks. New 
 }
 ```
 
-Learn more about the stack data model on the [following page]({{base}}{{site.links["ws-data-model-stacks"]}})
+Learn more about the stack data model on the [following page]({{base}}{{site.links["devops-runtime-stacks-data-model"]}})
 
 ## Create a Stack
 A stack can be created from scratch using a skeleton template or duplicated from an existing stack.
@@ -166,13 +166,13 @@ Stacks can be deleted by clicking the checkbox on the left then the delete butto
 ![Che-Stack-Delete.jpg]({{ base }}{{site.links["Che-Stack-Delete.jpg"]}})
 
 ## Register a Custom Stack
-Che has a stack API that you can call to manage your custom stacks. See the [Stacks]({{base_che}}{{site.links["server-stack"]}}) page in section _Use Che as a workspace server_ section.
+Che has a stack API that you can call to manage your custom stacks. See the [Stacks]({{base_che}}{{site.links["devops-runtime-stacks"]}}) page in section _Use Che as a workspace server_ section.
 
 # Adding Stacks to the Che Default Assembly  
 If you are extending Eclipse Che, you can alter the default stacks provided with your custom assembly. In order to do that, you have to modify the `stacks.json` which is used to initialize Che's stacks.
 This file is located here:
 [https://github.com/eclipse/che/blob/master/ide/che-core-ide-stacks/src/main/resources/stacks.json](https://github.com/eclipse/che/blob/master/ide/che-core-ide-stacks/src/main/resources/stacks.json)
 
-To create a stack, you need to define its configuration according to the [stack data model]({{base}}{{site.links["ws-data-model-stacks"]}}).
+To create a stack, you need to define its configuration according to the [stack data model]({{base}}{{site.links["devops-runtime-stacks-data-model"]}}).
 
 Also, if you believe your custom stack would be useful to others issue a pull request against the `stacks.json` at [https://github.com/eclipse/che/blob/master/ide/che-core-ide-stacks/src/main/resources/stacks.json](https://github.com/eclipse/che/blob/master/ide/che-core-ide-stacks/src/main/resources/stacks.json). If accepted this will add your stack to the default stack library in the product.

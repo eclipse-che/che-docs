@@ -26,7 +26,7 @@ In a Debug Dialog (**Run > Edit Debug Configurations...**), choose if you want t
 ![debug-configurations.png]({{base}}{{site.links["debug-configurations.png"]}})
 
 ## Java Console Apps
-
+l
 To debug console apps, pass debug arguments to JVM:
 
 ```shell  
@@ -36,7 +36,7 @@ mvn clean install && java -jar -Xdebug -Xrunjdwp:transport=dt_socket,address=800
 ## Java Web Apps
 
 To debug a web application, you need to start a web server in a debug mode. Debug arguments may vary depending on the web server in use. For example, to start Tomcat in a debug mode, run:
-
+st
 ```text  
 $TOMCAT_HOME/bin/catalina.sh jpda run
 ```
@@ -214,7 +214,7 @@ That's all!
 
 # NodeJS
 
-The Node.js ready-to-go [stack]({{ base }}{{ site.links["ws-stacks"] }}) comes with a Node.js debugger module installed and configured. The Dockerfile is located in the [eclipse/che-dockerfiles](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/node/latest/Dockerfile) repository.
+The Node.js ready-to-go [stack]({{ base }}{{ site.links["devops-runtime-stacks"] }}) comes with a Node.js debugger module installed and configured. The Dockerfile is located in the [eclipse/che-dockerfiles](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/node/Dockerfile) repository.
 
 The debugging workflow is:
 

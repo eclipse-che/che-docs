@@ -20,10 +20,10 @@ Eclipse Che is offered as hosted SaaS at Codenvy.com. See our [Eclipse Che site]
 # 2. Develop with Che  
 Now that you have access to Che at codenvy.com there are a lot of fun things to try:
 
-- Become familiar with Che through [one of our tutorials]({{ base }}/docs/tutorials/multi-machine/index.html).
-- [Import a project]({{ base }}/docs/ide/import-a-project/index.html) and setup [git authentication]({{ base }}/docs/ide/git-svn/index.html).
-- Use [commands]({{ base }}/docs/ide/commands/index.html) to build and run a project.
-- Create a [preview URL]({{ base }}/docs/ide/previews/index.html) to share your app.
-- Setup a [debugger]( {{ base }}/docs/ide/debug/index.html).
-- Create reproducible workspaces with [chedir]({{ base }}/docs/chedir/getting-started/index.html).
-- Create a [custom runtime stack]({{ base }}/docs/workspace/stacks/index.html).
+- Become familiar with Che through [one of our tutorials]({{ base }}{{site.links["tutorials-multi-machine"]}}).
+- [Import a project]({{ base }}{{site.links["ide-import-a-project"]}}) and setup [git authentication]({{ base }}{{site.links["ide-git-svn"]}}).
+- Use [commands]({{ base }}{{site.links["ide-projects"]}}) to build and run a project.
+- Create a [preview URL]({{ base }}{{site.links["ide-previews"]}}) to share your app.
+- Setup a [debugger]( {{ base }}{{site.links["ide-debug"]}}).
+- Create reproducible workspaces with [chedir]({{ base }}{{site.links["chedir-getting-started"]}}).
+- Create a [custom runtime stack]({{ base }}{{site.links["devops-runtime-stacks"]}}).

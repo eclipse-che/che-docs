@@ -16,7 +16,7 @@ You can get a hosted version of Eclipse Che with Codenvy at [codenvy.io](http://
 
 # How to Get Help
 
-### Support  
+### Support 
 If you are having a problem starting Che or workspaces, there are two diagnostic utilities that can help: `docker run eclipse/che info` on the command-line for diagnosing boot-time issues and a "diagnostic" page that you can launch from the lower corner of the dashboard that loads when Che first opens in your browser.
 
 Post questions or issues [on GitHub](https://github.com/eclipse/che/issues). Please follow the [guidelines on issue reporting](https://github.com/eclipse/che/blob/master/CONTRIBUTING.md) and provide:
@@ -80,13 +80,13 @@ docker run <DOCKER_OPTIONS> -e CHE_HOST=<your-ip> eclipse/che start
 # Develop with Che  
 Now that Che is running there are a lot of fun things to try:
 
-- Become familiar with Che through [one of our tutorials]({{ base }}/docs/tutorials/multi-machine/index.html).
-- [Import a project]({{ base }}/docs/ide/import-a-project/index.html) and setup [git authentication]({{ base }}/docs/ide/git-svn/index.html).
-- Use [commands]({{ base }}/docs/ide/commands/index.html) to build and run a project.
-- Create a [preview URL]({{ base }}/docs/ide/previews/index.html) to share your app.
-- Setup a [debugger]( {{ base }}/docs/ide/debug/index.html).
-- Create reproducible workspaces with [chedir]({{ base }}/docs/chedir/getting-started/index.html).
-- Create a [custom runtime stack]({{ base }}/docs/workspace/stacks/index.html).
+- Become familiar with Che through [one of our tutorials]({{ base }}{{site.links["tutorials-multi-machine"]}}).
+- [Import a project]({{ base }}{{site.links["ide-import-a-project"]}}) and setup [git authentication]({{ base }}{{site.links["ide-git-svn"]}}).
+- Use [commands]({{ base }}{{site.links["ide-projects"]}}) to build and run a project.
+- Create a [preview URL]({{ base }}{{site.links["ide-previews"]}}) to share your app.
+- Setup a [debugger]( {{ base }}{{site.links["ide-debug"]}}).
+- Create reproducible workspaces with [chedir]({{ base }}{{site.links["chedir-getting-started"]}}).
+- Create a [custom runtime stack]({{ base }}{{site.links["devops-runtime-stacks"]}}).
 
 # Pre-Reqs  
 
@@ -241,7 +241,7 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
 ```
 
 # Hosting
-If you are hosting Che at a cloud service like DigitalOcean, or [Bitnami]({{base}}{{site.links["setup-bitnami"]}})  `CHE_HOST` must be set to the server's IP address or its DNS.
+If you are hosting Che at a cloud service like DigitalOcean, AWS or Scaleways `CHE_HOST` must be set to the server's IP address or its DNS.
 
 We will attempt to auto-set `CHE_HOST` by running an internal utility `docker run --net=host eclipse/che-ip:nightly`. This approach is not fool-proof. This utility is usually accurate on desktops, but usually fails on hosted servers. You can explicitly set this value to the IP address of your server:
 

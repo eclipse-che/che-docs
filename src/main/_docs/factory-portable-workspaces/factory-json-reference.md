@@ -39,7 +39,7 @@ A mixin adds additional behaviors to a project as a set of new project type attr
 
 | Mixin ID   | Description
 | --- | ---
-| `pullrequest`  | Enables pull request workflow where {{ site.product_mini_name }} handles local & remote branching, forking, and pull request issuance. Pull requests generated from within {{ site.product_mini_name }} have another Factory placed into the comments of pull requests that a PR reviewer can consume. Adds contribution panel to the IDE. If this mixin is set, then it uses attribute values for `project.attributes.local_branch` and `project.attributes.contribute_to_branch`. <br><br> The `pullrequest` mixin requires additional configuration from the `attributes` object of the project.  If present, {{ site.product_mini_name }} will use the project attributes as defined in the Factory. If not provided, {{ site.product_mini_name }} will set defaults for the attributes. <br><br> Learn more about other mixins, on [`project : {}` object for Eclipse Che](https://www.eclipse.org/che/docs/server/rest-api/index.html)
+| `pullrequest`  | Enables pull request workflow where {{ site.product_mini_name }} handles local & remote branching, forking, and pull request issuance. Pull requests generated from within {{ site.product_mini_name }} have another Factory placed into the comments of pull requests that a PR reviewer can consume. Adds contribution panel to the IDE. If this mixin is set, then it uses attribute values for `project.attributes.local_branch` and `project.attributes.contribute_to_branch`. <br><br> The `pullrequest` mixin requires additional configuration from the `attributes` object of the project.  If present, {{ site.product_mini_name }} will use the project attributes as defined in the Factory. If not provided, {{ site.product_mini_name }} will set defaults for the attributes. <br><br> Learn more about other mixins, on [`project : {}` object for Eclipse Che]{{site.links["assemblies-sdk-rest-apis"]}}
 
 ## Pull Request Mixin Attributes
 Project attributes alter the behavior of the IDE or workspace.
@@ -220,7 +220,7 @@ Then register this command to the execution list linked to `onProjectsLoaded` ev
   }
 ```
 
-Use [https://www.gnu.org/software/sed/manual/html_node/Regular-Expressions.html](regular expressions) in sed, both in find/replace and file/file types patterns.
+Use [regular expressions](https://www.gnu.org/software/sed/manual/html_node/Regular-Expressions.html) in sed, both in find/replace and file/file types patterns.
 
 
 

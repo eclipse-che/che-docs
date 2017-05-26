@@ -6,12 +6,12 @@ layout: docs
 permalink: /:categories/sdk-embed-htmljs/
 ---
 {% include base.html %}
-The Che IDE is developed based on GWT. If you want to extend the Che UI with new UI components, the default is to develop those custom components using GWT, too. Please refer to [this tutorial]({{ base }}/docs/plugins/parts/index.html) to learn how to extend Che with new parts (view or editors).
+The Che IDE is developed based on GWT. If you want to extend the Che UI with new UI components, the default is to develop those custom components using GWT, too. Please refer to [this tutorial]({{ base }}{{site.links["assemblies-sdk-parts"]}}) to learn how to extend Che with new parts (view or editors).
 
 However, as Che is a browser application based on HTML and JavaScript, it is also possible to embed native web components. Those do not have to be based on GWT. This also enables you to reuse any kind of existing UI component in Che. As an existing example, Che embeds the Orion code editor.
 
 # Details  
-For instructions on how to build and run an extension, see [Building Extensions]({{ base }}/docs/plugins/create-and-build-extensions/index.html).
+For instructions on how to build and run an extension, see [Building Extensions]({{ base }}{{site.links["assemblies-plugin-lifecycle"]}}).
 
 ```javascript  
 Location:     github.com/eclipse/che/samples/sample-plugin-embedjs
@@ -23,15 +23,15 @@ artifactId:   che-sample-plugin-embedjs-ide
 # Steps  
 In this tutorial, we demonstrate, how to embed a minimal HTML/JavaScript component into Che. We will create a custom part, which shows a "Hello World" produced by a simple JavaScript snippet (see screenshot below). You can extend this example, to embed any HTML/JavaScript component you like.
 
-![che_helloworld.png]({{ base }}/docs/assets/imgs/che_helloworld.png)
+![che_helloworld.png]({{ base }}{{site.links["che_helloworld.png"]}})
 
-The following example is based on a simple part, which is opened by a sample action. Therefore, we recommend to get familiar with the implementation of [Parts]({{ base }}/docs/plugins/parts/index.html) and [Actions]({{ base }}/docs/plugins/actions/index.html) first.
+The following example is based on a simple part, which is opened by a sample action. Therefore, we recommend to get familiar with the implementation of [Parts]({{ base }}{{site.links["assemblies-sdk-parts"]}}) and [Actions]({{ base }}{{site.links["assemblies-sdk-actions"]}}) first.
 
 The `HelloWorldView` is a default view, in this example, the `HelloWorldView` just creates an empty Panel. The panel will finally be represented by a HTML element in the running browser application.
 
 In the `HelloWorldPresenter` we use the GWT `ScriptInjector` library to inject a custom script (helloWorld.js) into the main window of the browser application. Finally, we use `HelloWorldOverlay` to call the custom JavaScript from within our GWT application. In our example, it will modify the HTML element, which represents the Panel, and will add the "Hello World from JavaScript" text to it.
 
-![Selection_017.png]({{ base }}/docs/assets/imgs/Selection_017.png)
+![Selection_017.png]({{ base }}{{site.links["Selection_017.png"]}})
 
 The `HelloWorld.js` contains a simple function, which replaces the text content of an arbitrary element in the DOM. It could also add new elements and therefore embed an arbitrary sub component to running the browser application.
 
@@ -125,4 +125,4 @@ public class HelloWorldViewOverlay extends JavaScriptObject {
 
 # Use  
 This particular extension adds an action to the main context menu group. This is the group that appears when you right click on the project tree. To verify that your plugin is installed, you can also check the Profile > Preferences > Plugins > List to verify that the "Hello world from JavaScript example" plugin has been installed.
-![Capture_embed.PNG]({{ base }}/docs/assets/imgs/Capture_embed.PNG)
+![Capture_embed.PNG]({{ base }}{{site.links["Capture_embed.PNG"]}})

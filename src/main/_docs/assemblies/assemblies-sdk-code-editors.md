@@ -31,7 +31,7 @@ The following diagram shows all components of a typical file type registration. 
 The class `MyGinModule` is responsible for creating the new file type. The icon for the new file type will go to a GWT resource class (`MyRessources`). Finally, the class `MyExtension` creates a `FileTypeRegistration` in Che's `FileTypeRegistry`.
 
 ![image11.png]({{ base }}/docs/assets/imgs/image11.png)
-If you haven’t used Gin or dependency injection before, we recommend you have a look at our brief [dependency injection introduction]({{ base }}/docs/plugins/dependency-injection-basics/index.html).
+If you haven’t used Gin or dependency injection before, we recommend you have a look at our brief [dependency injection introduction]({{ base }}{{site.links["assemblies-sdk-dependency-injection"]}}).
 
 First, we define a new class `GinModule` for the instantiation of the custom `FileType`. It enables other classes to access the new file type using dependency injection. When adding more extensions later, the `GinModule` class can also create other components and mappings. So we will not call it `FileTypeGinModule`, but more generically `MyGinModule`. For now, the `GinModule` just provides the custom file type using the ID `MyFileType`. This makes the custom file type available for injection for other components using the annotation `@Named(“MyFileType”)`.
 
@@ -97,7 +97,7 @@ After registering the file type, Che can map the extension to the definition of 
 
 ![image.png]({{ base }}/docs/assets/imgs/image.png)
 
-As you can see in the screenshot above, Che will open any new file type in the default editor. This even works without defining any editor extension. You might want to contribute another editor type for the new file type later. This is done by adding an editor extension and associating the file type with an editor provider. We will cover this more in detail in the section [Code Completion]({{ base }}/docs/plugins/code-editors/index.html#code-completion). As we do not have a custom editor provider, yet, the following example code associates the example file type with the default text editor. Please note, this step is redundant in this example, as Che will associate any unknown file type with the default editor anyways.
+As you can see in the screenshot above, Che will open any new file type in the default editor. This even works without defining any editor extension. You might want to contribute another editor type for the new file type later. This is done by adding an editor extension and associating the file type with an editor provider. We will cover this more in detail in the section [Code Completion](#code-completion). As we do not have a custom editor provider, yet, the following example code associates the example file type with the default text editor. Please note, this step is redundant in this example, as Che will associate any unknown file type with the default editor anyways.
 
 Since we might want to add more extensions to the editor, again, we use a more generic name for the extension class. As we extend the Che default editor, written in JavaScript and internally referred to a “JSEditor”, we follow the convention of other existing plugins and call the extension `MyJsEditorExtension`. The following extension class gets the `EditorRegistry`, the file type and the `DefaultTextEditorProvider` injected and creates the editor registration. As mentioned, this will have no visible effect in the example. However, if we would replace the Default Text Editor Provider with our own provider (`CustomEditorProvider`), we could extend or replace the editor used for our new file type.
 
@@ -116,12 +116,12 @@ public class MyJsEditorExtension {
 }
 ```
 
-So far, we have defined a new file type, which can be opened with the default text editor. Currently, the text editor provides no syntax highlighting and code completion, as it knows nothing about the format or grammar of our new language. The syntax highlighting of the default editor is actually provided by the embedded orion editor (referred to as JSEditor). Please refer to the section [syntax highlighting]({{ base }}/docs/plugins/code-editors/index.html#syntax-highlighting) to learn how to extend it and add syntax highlighting for the new file type.
+So far, we have defined a new file type, which can be opened with the default text editor. Currently, the text editor provides no syntax highlighting and code completion, as it knows nothing about the format or grammar of our new language. The syntax highlighting of the default editor is actually provided by the embedded orion editor (referred to as JSEditor). Please refer to the section [syntax highlighting](#syntax-highlighting) to learn how to extend it and add syntax highlighting for the new file type.
 
 Further, the new file type can only be created using the generic “New” action and enter the extension manually. If you want to define a custom action, visible in the “New” menu, please refer to the section New File Actions.
 
 ## JSON File Type (already supported by Che)
-The [continuous JSON example]({{ base }}/docs/plugins/introduction/index.html#the-json-example), which is used throughout this tutorial uses the file type ".json". As Che already registeres a JSON file type out of the box, that means, the necessary registrations, described above for the "my" file type example are already existing in the Che core framework. For reference, the corresponding registrations can be found in the following classes and can be used as another example.
+The continuous JSON example, which is used throughout this tutorial uses the file type ".json". As Che already registeres a JSON file type out of the box, that means, the necessary registrations, described above for the "my" file type example are already existing in the Che core framework. For reference, the corresponding registrations can be found in the following classes and can be used as another example.
 
 ### File Type Definition
 
@@ -358,7 +358,7 @@ In the example, we have shown, how to extend the code completion and used a stat
 ## Syntax Highlighting
 Syntax highlighting allows you to mark characters and keywords in certain colors, based on a given grammar. To enable syntax highlighting in the browser IDE, Che embeds the existing [Orion Editor](https://wiki.eclipse.org/Orion). It already provides a wide range of supported grammars to be used. Please refer to the section “contentType parameter” within [this document](https://wiki.eclipse.org/Orion/How_Tos/Code_Edit) for a list of supported types.
 
-If the orion editor already knows the language you want to support, you need to associate the file extension with the content type defined by orion. As an example, we could associate our a custom file type `.my` ([see here for its definition]({{ base }}/docs/plugins/code-editors/index.html#file-types)) with the existing content type `Json`, which is already supported by the Orion editor. Therefore, we add the following line to `org.eclipse.che.ide.jseditor.client.filetype.ExtensionFileTypeIdentifier`:
+If the orion editor already knows the language you want to support, you need to associate the file extension with the content type defined by orion. As an example, we could associate our a custom file type `.my` ([see here for its definition](#file-types)) with the existing content type `Json`, which is already supported by the Orion editor. Therefore, we add the following line to `org.eclipse.che.ide.jseditor.client.filetype.ExtensionFileTypeIdentifier`:
 
 *che/core/ide/che-core-ide-api/src/main/java/org/eclipse/che/ide/api/editor/filetype/ExtensionFileTypeIdentifier.java*
 

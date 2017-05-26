@@ -27,7 +27,7 @@ private void getProjectType(@NotNull String workspaceId,
 
 }
 ```
-This example comes from the class used by the IDE to ask the server to provide a response on what the current project type is within the currently active workspace. The `asyncRequestFactory` object was instantiated by the system as an input parameter. Calling the `createGetRequest()` method with the GET REST URL as an input will generate a request and a response. The `.loader()` method is an optional display component that will appear on the screen while the contents of the response are loading. The `send()` method takes a callback object which will be invoked by the system when a response is delivered.
+This example comes from the class used by the IDE to ask the server to provide a response on what the current project type is within the currently active workspace. The `asyncRequestFactory` object was instantiated by the system as an input parameter. Calling the `createGetRequest()` method with the GET REST URL ass an input will generate a request and a response. The `.loader()` method is an optional display component that will appear on the screen while the contents of the response are loading. The `send()` method takes a callback object which will be invoked by the system when a response is delivered.
 
 In the [debugger implementation class](https://github.com/eclipse/che/blob/e3407ae74674c5f84af89341826ec5e98106f90e/plugins/plugin-java/che-plugin-java-ext-debugger-java-client/src/main/java/org/eclipse/che/ide/ext/java/jdi/client/debug/DebuggerServiceClientImpl.java), you can see a range of REST calls for different individual functions such as step into, step over, and  so forth.
 
@@ -79,7 +79,7 @@ In addition to browsing the included REST APIs, we provide a few different examp
 
 ### Workspace Master APIs  
 
-![Swagger.PNG]({{ base }}/docs/assets/imgs/Swagger.PNG)
+![Swagger.PNG]({{ base }}{{site.links["Swagger.PNG"]}})
 
 ```http  
 http://localhost:8080/swagger/
@@ -281,7 +281,7 @@ Swagger: http://localhost:8080/swagger/#!/stack/searchStacks
 
 #### Create a New Stack
 
-To create a stack, you need to define its configuration according to the [stack data model]({{base}}{{site.links["ws-data-model-stacks"]}}) and send it in a POST request:
+To create a stack, you need to define its configuration according to the [stack data model]({{base}}{{site.links["devops-runtime-stacks-data-model"]}}) and send it in a POST request:
 
 ```shell  
 curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"name":"my-custom-stack"source":{"origin":"codenvy/ubuntu_jdk8"type":"image"},"components":[],"tags":["my-custom-stack","Ubuntu","Git","Subversion"],"id":"stack15l7wsfqffxokhle","workspaceConfig":{"environments":{"default":{"machines":{"default":{"attributes":{"memoryLimitBytes":"1048576000"},"servers":{},"agents":["org.eclipse.che.terminal","org.eclipse.che.ws-agent","org.eclipse.che.ssh"]}},"recipe":{"location":"codenvy/ubuntu_jdk8","type":"dockerimage"}}},"defaultEnv":"default","projects":[],"name":"default"commands":[],"links":[]},"creator":"che","description":"Default Blank Stack.","scope":"general"}' http://localhost:8080/api/stack

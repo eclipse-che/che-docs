@@ -7,7 +7,7 @@ permalink: /:categories/sdk-actions/
 ---
 {% include base.html %}
 Actions allow you to add custom behavior to the Che IDE. They can be placed in menus, toolbars or context menus. An Action is a Java class, which implements the behavior to be executed. Additionally, it defines a text to be shown, a tooltip and an icon. In the following section, we describe the implementation of Actions more in detail.
-To make Actions available in the Che IDE, they need to be registered and placed into ActionGroups. Thereby, you specify the location (e.g. a menu or toolbar), where the actions is shown. The registration of actions is described in the subsequent section [Registering Actions]({{ base }}/docs/plugins/actions/index.html#registering-actions).
+To make Actions available in the Che IDE, they need to be registered and placed into ActionGroups. Thereby, you specify the location (e.g. a menu or toolbar), where the actions is shown. The registration of actions is described in the subsequent section [Registering Actions](#registering-actions).
 
 ## Authoring Actions
 Simple `Actions` directly inherit from `org.eclipse.che.ide.api.action.Action`. In the constructor, we use the super class to configure our action with the following parameters:
@@ -56,14 +56,14 @@ public class HelloWorldActionWithIcon extends Action {
     public HelloWorldActionWithIcon(
             NotificationManager notificationManager) {
         super("Say Hello World", "Say Hello World Action", null, SampleActionsResources.INSTANCE.icon());
-        this.notificationManager = notificationManager;
+        this.notifpricationManager = notificationManager;
     }
 
     /...
 }
 ```
 ## Registering Actions
-Once we have implemented a custom action, we must register it. This is done in the custom `Extension` class , which is used for other extensions, too (see [Dependency Injection Basics]({{ base }}/docs/plugins/dependency-injection-basics/index.html) ).
+Once we have implemented a custom action, we must register it. This is done in the custom `Extension` class , which is used for other extensions, too (see [Dependency Injection Basics]({{ base }}{{site.links["assemblies-sdk-dependency-injection"]}}) ).
 
 As a first step, we register the `HelloWorldAction` itself at the `ActionManager`. Thereby, Che is aware of the action to be executed. Along with the registration, an action must be associated with a unique ID, which allows to reference the `Action`.
 
@@ -129,7 +129,7 @@ toolbar.add(helloWorldActionWithIcon, Constraints.FIRST);
 
 By default, actions will always be visible to the user and enabled. However, certain actions shall only be visible or enabled based on the current state of Che. The implementation of an action is responsible for managing its visibility and enabled state.
 
-Therefore, you need to implement the method `Action.update()` in a custom action. The method is periodically called by the IDE for updating the state. The object of type `ActionEvent` passed to this method carries the information about the current context for the action, e.g. the current perspective of the current selection. Additional information about the current state of the IDE can be retrieved form the service `AppContext`. See an example [here]({{ base }}/docs/plugins/actions/index.html#projectperspective-specific-actions-json-example)
+Therefore, you need to implement the method `Action.update()` in a custom action. The method is periodically called by the IDE for updating the state. The object of type `ActionEvent` passed to this method carries the information about the current context for the action, e.g. the current perspective of the current selection. Additional information about the current state of the IDE can be retrieved form the service `AppContext`. See an example [here](#projectperspective-specific-actions-json-example)
 
 The `ActionEvent` allows access to the specific presentation which needs to be updated. As every action can be included in multiple groups and appear in multiple places within the IDE user interface, the visibility and enabled state can not centrally be controlled for an action. For every place where the action appears, a new Presentation is created on which the visibility and enabled state is set alternatively. Please note, that the `ActionEvent` instance is also passed to the `actionPerformed()` method, when the action is executed.
 
@@ -199,15 +199,15 @@ public class CreateMyFileAction extends AbstractNewResourceAction {
 ```
 
 ## Project/Perspective-specific Actions (JSON Example)
-In this part of the tutorial, as part of the [JSON example]({{ base }}/docs/plugins/introduction/index.html#the-json-example) we describe how to add project- and perspective-specific actions, meaning  actions that are only available for a specific project type and within specific perspectives. As we want to define several actions of this type, we will create a template implementation and then inherit from it for the implementation of several actions.
+In this part of the tutorial, as part of the this JSON example we describe how to add project- and perspective-specific actions, meaning  actions that are only available for a specific project type and within specific perspectives. As we want to define several actions of this type, we will create a template implementation and then inherit from it for the implementation of several actions.
 
-These example actions will be placed in the context menu on the specific [JSON project type]({{base}}/docs/plugins/project-types/index.html#custom-project-type)  defined before. The following diagram shows all components of a project type registration. The classes highlighted in dark grey are to be implemented for the extension.
+These example actions will be placed in the context menu on the specific [JSON project type]({{base}}{{site.links["assemblies-sdk-project-types"]}}#custom-project-type)  defined before. The following diagram shows all components of a project type registration. The classes highlighted in dark grey are to be implemented for the extension.
 
 First, our actions must determine whether they are available based on the current app context, in our case, based on the current project type. As we want to add several project specific actions, it makes sense to extract this behavior into an abstract class, in our case `MyAbstractProjectSpecificAction`. By inheriting from this abstract base class, we can now easily add project specific actions implementing the actual behavior to be executed.
 
 As described before, to make an action available in Che, it needs to be registered at the `ActionManager`. This is done in an `Extension`.
 
-![image04.png]({{ base }}/docs/assets/imgs/image04.png)
+![image04.png]({{ base }}{{site.links["image04.png"]}})
 
 In the following example, we first define the perspective- and project specific template action. Then, we define a simple action for the JSON example and register it in the context menu of the JSON project type. The action itself will trigger a simple notification once executed. However, the action could be adapted to execute any kind of behavior.
 
@@ -290,7 +290,7 @@ public class HelloWorldAction extends JsonExampleProjectAction {
   }
 }
 ```
-Once we have implemented a custom action, we must register it. This is done in the custom extension class `JsonExampleExtension`, which has been used for other extensions before (see [Dependency Injection Basics]({{ base }}/docs/plugins/dependency-injection-basics/index.html) ).
+Once we have implemented a custom action, we must register it. This is done in the custom extension class `JsonExampleExtension`, which has been used for other extensions before (see [Dependency Injection Basics]({{ base }}{{site.links["assemblies-sdk-dependency-injection"]}}) ).
 
 To keep all JSON example related actions together, we define a new `ActionGroup` called “JSON Example”. The second parameter defines that the group is displayed as a popup. After registering the new group at the `ActionManager`, we add our custom `HelloWorldAction` to it.
 
@@ -322,9 +322,9 @@ public class JsonExampleExtension {
   }
 }
 ```
-Finally, we can open the context menu on our custom project type and trigger the example action, the screenshot show the `HelloWorldAction`, as well as another project specific action defined in the section [Server/Workspace Access]({{ base }}/docs/plugins/serverworkspace-access/index.html).
+Finally, we can open the context menu on our custom project type and trigger the example action, the screenshot show the `HelloWorldAction`, as well as another project specific action defined in the section [Server/Workspace Access]({{ base }}{{site.links["assemblies-sdk-workspace"]}}).
 
-![image00.png]({{ base }}/docs/assets/imgs/image00.png)
+![image00.png]({{ base }}{{site.links["image00.png"]}})
 
 ## Further Example Actions
 In this section, we provide a collection of existing example actions to demonstrate the variety of possible locations and behavior to be executed.
@@ -361,7 +361,7 @@ public class RedirectToDashboardWorkspacesAction extends Action {
     }
 }
 ```
-The following example (from the [JSON example]({{ base }}/docs/plugins/introduction/index.html#the-json-example)) executes a server call to retrieve and display the number of lines of code from all JSON files within a project:
+The following example executes a server call to retrieve and display the number of lines of code from all JSON files within a project:
 
 *che/samples/sample-plugin-json/che-sample-plugin-json-ide/src/main/java/org/eclipse/che/plugin/jsonexample/ide/action/CountLinesAction.java*
 
