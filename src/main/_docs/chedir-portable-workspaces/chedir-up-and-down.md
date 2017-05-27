@@ -8,7 +8,7 @@ permalink: /:categories/up-and-down/
 {% include base.html %}
 In the first version of Chedir, each Chedir directory maps to a single Che server containing a single workspace. That workspace can have multiple projects and source repositories that are part of it.
 
-You can boot both a Che server and a worskpace (with its embedded runtimes) with a single command:
+You can boot both a Che server and a workspace (with its embedded runtimes) with a single command:
 ```shell  
 docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
                     -v <path>:/data
