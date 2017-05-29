@@ -32,7 +32,7 @@ In the user dashboard's workspace detail view for a specific workspace:
 2. Click "Download" or "Copy to Clipboard" to get a copy of the workspace JSON which can be imported into another {{ site.product_mini_name }} instance.
 
 To import the JSON in another {{ site.product_mini_name }} instance:
-
+f
 1. Ensure that the two instances are running the same {{ site.product_mini_name }} version.
 2. In the user dashboard select "Workspaces" from the left navigation bar.
 3. Click "Add Workspace".
@@ -75,7 +75,7 @@ docker push <repository>/<image-name>
 
 
 ## Share with Codenvy Factories
-Codenvy, which is based on Eclipse Che, includes "Factories" - templates used to generate new or open existing workspaces with a URL. Factories can be used to clone existing workspaces or repeatedly generate consistent workspaces for teams. For additional information see Codenvy's documentation on [Factories](https://codenvy.com/docs/integration-guide/workspace-automation/index.html).
+Codenvy, which is based on Eclipse Che, includes "Factories" - templates used to generate new or open existing workspaces with a URL. Factories can be used to clone existing workspaces or repeatedly generate consistent workspaces for teams. For additional information see Codenvy's documentation on [Factories]({{ base }}{{site.links["factory-getting-started"]}}).
 
 # Pair Programming  
 The Che community has been working on pair programming technology that will allow multiple users to work in the same workspace instance. This could be done through multiple Che editors, or with a mix of Che and desktop IDEs.

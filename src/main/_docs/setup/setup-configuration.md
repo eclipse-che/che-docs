@@ -90,10 +90,10 @@ Refer to [GitHub using OAuth]({{base}}{{site.links["ide-git-svn"]}}#github-oauth
 Refer to [GitLab using OAuth]({{base}}{{site.links["ide-git-svn"]}}#gitlab-oauth) for configuration information.
 
 # Stacks
-[Stacks]({{ base }}/docs/workspace/stacks/index.html) define the recipes used to create workspace runtimes. They appear in the stack library of the dashboard. You can create your own.
+[Stacks]({{ base }}{{site.links["devops-runtime-stacks"]}}) define the recipes used to create workspace runtimes. They appear in the stack library of the dashboard. You can create your own.
 
 # Sample Projects
-Code [sampes]({{ base }}/docs/workspace/samples/index.html) allow you to define sample projects that are cloned into a workspace if the user chooses it when creating a new project. You can add your own.
+Code [samples]({{ base }}{{site.links["devops-project-samples"]}}) allow you to define sample projects that are cloned into a workspace if the user chooses it when creating a new project. You can add your own.
 
 # Workspace Limits
 You can place limits on how users interact with the system to control overall system resource usage. You can define how many workspaces created, RAM consumed, idle timeout, and a variety of other parameters. See "Workspace Limits" in `che.env`.
@@ -122,7 +122,7 @@ Che relies on web sockets to stream content between workspaces and the browser. 
 ## Topology  
 The Che server runs in its own Docker container, "Che Docker Container", and each workspace gets an embedded runtime which can be a set of additional Docker containers, "Docker Container(n)". All containers are managed by a common Docker daemon, "docker-ip", making them siblings of each other. This includes the Che server and its workspaces - each workspace runtime environment has a set of containers that is a sibling to the Che server, not a child.
 
-![Capture.PNG]({{ base }}/docs/assets/imgs/Capture.PNG)
+![Capture.PNG]({{ base }}{{site.links["Capture.PNG"]}})
 
 ## Connectivity  
 The browser client initiates communication with the Che server by connecting to `che-ip`. This IP address must be accessible by your browser clients. Internally, Che runs on Tomcat which is bound to port `8080`. This port can be altered by setting `CHE_PORT` during start or in your `che.env`.
@@ -277,7 +277,7 @@ There are many third party firewall services. Different versions of Windows OS a
 6. In the `Name` dialog box, type a name and description for this rule, and then click `Finish`.
 
 # Docker
-Eclipse Che workspace runtimes are powered by one or more Docker containers. When a user creates a workpace, they do so from a [stack]({{base}}{{site.links["ws-stacks"]}}) which includes a Dockerfile or reference to a Docker image which will be used to create the containers for the workspace runtimes. Che stacks can pull that image from a public registry, like DockerHub, or a private registry. Images in a registry can be publicly visible or private, which require user credentials to access. You can also set up a private registry to act as a mirror to Docker Hub.  And, if you are running Eclipse Che behind a proxy, you can configure the Docker daemon registry to operate behind a proxy.
+Eclipse Che workspace runtimes are powered by one or more Docker containers. When a user creates a workpace, they do so from a [stack]({{base}}{{site.links["devops-runtime-stacks"]}}) which includes a Dockerfile or reference to a Docker image which will be used to create the containers for the workspace runtimes. Che stacks can pull that image from a public registry, like DockerHub, or a private registry. Images in a registry can be publicly visible or private, which require user credentials to access. You can also set up a private registry to act as a mirror to Docker Hub.  And, if you are running Eclipse Che behind a proxy, you can configure the Docker daemon registry to operate behind a proxy.
 
 ## Private Images  
 When users create a workspace in Eclipse Che, they must select a Docker image to power the workspace. We provide ready-to-go stacks which reference images hosted at the public Docker Hub, which do not require any authenticated access to pull. You can provide your own images that are stored in a local private registry or at Docker Hub. The images may be publicly or privately visible, even if they are part of a private registry.
@@ -351,7 +351,7 @@ Within Che, your workspaces are powered by a set of runtime environments. The de
 
 To use your custom Dockerfiles, you can:
 
-1. Create a [custom stack]({{ base }}/docs/workspace/stacks/index.html#custom-stack), which includes a [recipe]({{ base }}/docs/workspace/recipes/index.html) with your Dockerfile.
+1. Create a [custom stack]({{ base }}{{site.links["devops-runtime-stacks"]}}#custom-stack), which includes a [recipe]({{ base }}{{site.links["devops-runtime-recipes"]}}) with your Dockerfile.
 2. Or, users can create a custom recipe when creating a workspace that references your registry.
 
 ## Privileged Mode

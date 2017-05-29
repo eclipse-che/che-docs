@@ -112,7 +112,7 @@ Alternatively, you may also add IDE actions in Factory tab, in User Dashboard.
 
 ![actions.png]({{base}}{{site.links["actions.png"]}}){:style="width: 50%"}
 
-Use [https://www.gnu.org/software/sed/manual/html_node/Regular-Expressions.html](regular expressions) in sed, both in find/replace and file/file types patterns.
+Use [regular expressions](https://www.gnu.org/software/sed/manual/html_node/Regular-Expressions.html) in sed, both in find/replace and file/file types patterns.
 
 
 

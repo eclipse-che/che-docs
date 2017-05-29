@@ -29,7 +29,7 @@ Let's import WP from an [official WordPress GitHub repo](https://github.com/Word
 
 ### Select Stack
 Che offers a certified PHP image with Apache2, MySQL, git, curl and a number of popular PHP extensions.
-[Dockerfile](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/php/ubuntu/Dockerfile).
+[Dockerfile](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/php/Dockerfile).
 
 ### Configure Workspace
 Give your workspace a nice name and configure RAM, i.e. apply the memory limit to a workspace machine.
@@ -38,7 +38,7 @@ Give your workspace a nice name and configure RAM, i.e. apply the memory limit t
 Select `Create Project`.  The project construction process goes through a number of steps including creating a new workspace, downloading an image to use for the workspace environment, instantiating that environment, installing Che services into the workspace, and then creating your project.
 
 Click the `Open in IDE` button to open your project in the IDE.
-
+d
 # 3. Start MySQL Server  
 After the project is successfully created, you can start MySQL server either in the terminal (you can find it on the Consoles panel and open it by clicking `+` button) or using a command widget (CMD) - `sudo service mysql start`
 

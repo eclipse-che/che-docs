@@ -10,11 +10,11 @@ Parts represent the content of the Che workbench, i.e. views and editors within 
 
 ## Create a custom Part
 Creating a part in Che consists of two four components, which are marked in grey in the diagram below. In this section, we provide a general overview, in the following sections, we describe the concrete implementation more in detail.
-The central component is the implementation of the view itself (`MyViewImpl`). It will create all the UI widgets, which are shown within a part. `MyViewImpl` inherits from `BaseView`, a base implementation of common functionality for all views provided by Che. If the view needs to be accessed by other components, e.g. to set a selection, public methods should be extracted to an interface (`MyView`). To allow other components to get an instance of `MyView`, the interface is bound to the implementation within `MyGinModule`. See the section [Dependency Injection Basics]({{ base }}/docs/plugins/dependency-injection-basics/index.html) for more details about this.
+The central component is the implementation of the view itself (`MyViewImpl`). It will create all the UI widgets, which are shown within a part. `MyViewImpl` inherits from `BaseView`, a base implementation of common functionality for all views provided by Che. If the view needs to be accessed by other components, e.g. to set a selection, public methods should be extracted to an interface (`MyView`). To allow other components to get an instance of `MyView`, the interface is bound to the implementation within `MyGinModule`. See the section [Dependency Injection Basics]({{ base }}{{site.links["assemblies-sdk-dependency-injection"]}}) for more details about this.
 As mentioned before, the view implementation is responsible for the content of a view. The integration into the Che IDE, including configuring the tab (title, icon, etc.) is done by a part presenter (`MyPartPresenter`), which inherits from `BasePresenter`. Part presenter are called by Che or a custom action to interact with a part, e.g. to open it or to fill it with content. The part presenter forwards relevant calls to the implementation of a view (encapsulated by the interface).
 
 
-![Selection_005.png]({{ base }}/docs/assets/imgs/Selection_005.png)
+![Selection_005.png]({{ base }}{{site.links["Selection_005.png"]}})
 In the following sections, we describe the implementation of the mentioned components more in detail. As an example, we create a part displaying "Hello World" and define an action to open it.
 
 ### Implementing a View
@@ -28,7 +28,7 @@ In the last line of the example, we call the method `#setContenWidget` of the ba
 ```java  
 package org.eclipse.che.plugin.parts.ide.helloworldview;
 
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.usder.client.ui.Label;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.eclipse.che.ide.api.parts.PartStackUIResources;
@@ -48,7 +48,7 @@ public class HelloWorldViewImpl extends BaseView<HelloWorldView.ActionDelegate> 
 
 As mentioned in the introduction of this section, an explicit interface should defined, when implementing a view, encapsulating all interaction with other components (see following listing). Therefore, the interface contains all methods, which shall be accessible by other components. In the following example, the interface defines a method `#setVisible` to allow controlling the visibility of the view. This method is already implemented by `BaseView` so we do not need to implement it in `HelloWorldViewImpl`. If you need to provide any other methods for a view, e.g. to pass in some input parameters to be shown, you should extend the view interface accordingly.
 
-Following the GWT pattern, the view interface also defines an `ActionDelegate`. This interface can be implemented by components, which want to listen to events triggered with the view, e.g. a button click. Our `HelloWorldView`is currently not triggering any actions, so the interface is empty. Please see the section (Interacting from within views)[{{ base }}/docs/plugins/parts/index.html#interacting-from-within-a-view] below for more details.
+Following the GWT pattern, the view interface also defines an `ActionDelegate`. This interface can be implemented by components, which want to listen to events triggered with the view, e.g. a button click. Our `HelloWorldView`is currently not triggering any actions, so the interface is empty. Please see the section (Interacting from within views)[{{ base }}{{site.links["assemblies-sdk-parts"]}}#interacting-from-within-a-view] below for more details.
 
 *che/samples/sample-plugin-parts/che-sample-plugin-parts-ide/src/main/java/org/eclipse/che/plugin/parts/ide/helloworldview/HelloWorldView.java*
 
@@ -69,7 +69,7 @@ public interface HelloWorldView extends View<HelloWorldView.ActionDelegate> {
 }
 ```
 
-Finally, we have to make our view available for other components, using dependency injection. This is done in `MyGinModule`, which can contain other bindings, too. Please see the section [Dependency Injection Basics]({{ base }}/docs/plugins/dependency-injection-basics/index.html) for more details about this binding.
+Finally, we have to make our view available for other components, using dependency injection. This is done in `MyGinModule`, which can contain other bindings, too. Please see the section [Dependency Injection Basics]({{ base }}{{site.links["assemblies-sdk-dependency-injection"]}}) for more details about this binding.
 
 *che/samples/sample-plugin-parts/che-sample-plugin-parts-ide/src/main/java/org/eclipse/che/plugin/parts/ide/inject/MyGinModule.java*
 
@@ -208,7 +208,7 @@ The following locations are supported by Che:
 * `INFORMATION`: area under the editor, 'console' area
 
 After a pat has been opened, it must be activated to ensure that it gets visible and receives the focus. This is done using `WorkspaceAgent#setActivePart`.
-The following code example shows an action, which opens the "Hello World" part defined before. Please see the section [Actions]({{ base }}/docs/plugins/actions/index.html) for more details about the implementation of actions.
+The following code example shows an action, which opens the "Hello World" part defined before. Please see the section [Actions]({{ base }}{{site.links["assemblies-sdk-actions"]}}) for more details about the implementation of actions.
 
 *che/samples/sample-plugin-parts/che-sample-plugin-parts-ide/src/main/java/org/eclipse/che/plugin/parts/ide/helloworldview/HelloWorldViewAction.java*
 

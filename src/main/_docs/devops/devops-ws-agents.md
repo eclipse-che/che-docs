@@ -7,12 +7,12 @@ permalink: /:categories/ws-agents/
 ---
 {% include base.html %}
 
-Agents are scripts that are executed after a [runtime machine]({{base}}{{site.links["ws-machines"]}}) is created. They add additional capabilities to the machines they're injected in - for example to allow terminal access or enhanced language services. Agents allow these services to be injected into machines built from stock Dockerfiles or Compose files.
+Agents are scripts that are executed after a [runtime machine]({{base}}{{site.links["devops-runtime-machines"]}}) is created. They add additional capabilities to the machines they're injected in - for example to allow terminal access or enhanced language services. Agents allow these services to be injected into machines built from stock Dockerfiles or Compose files.
 
 # Adding Agents to a Machine  
-Agents are added to [machines]({{base}}{{site.links["ws-machines"]}}) through [runtime stack]({{base}}{{site.links["ws-stacks"]}}) configuration. Eclipse Che's included stacks have been pre-configured to use certain agents. The agents needed for each pre-defined stack is determined by common tasks or file types found in [projects]({{base}}{{site.links["ide-projects"]}}).
+Agents are added to [machines]({{base}}{{site.links["devops-runtime-machines"]}}) through [runtime stack]({{base}}{{site.links["devops-runtime-stacks"]}}) configuration. Eclipse Che's included stacks have been pre-configured to use certain agents. The agents needed for each pre-defined stack is determined by common tasks or file types found in [projects]({{base}}{{site.links["ide-projects"]}}).
 
-Adding agents to your own machines can be done by editing [machine information in the user dashboard]({{base}}{{site.links["ws-machines"]}}).
+Adding agents to your own machines can be done by editing [machine information in the user dashboard]({{base}}{{site.links["devops-runtime-machines"]}}).
 
 # Adding Agents to a Custom Stack  
 Stacks use JSON format for configuration. Agents are included in the machines definition. Each stack requires a machine named `dev-machine` which always requires terminal, exec and ws-agent. Language server agents need to be added to the dev-machine if you want [intellisense]({{base}}{{site.links["ide-intellisense"]}}) features when using the workspace IDE.

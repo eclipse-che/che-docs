@@ -23,17 +23,17 @@ Factories can be invoked from a Factory URL built in multiple ways. You can repl
 #### Invoke Factory using its unique hashcode  
 
 | Format | `/f?id={hashcode}`<br>`/factory?id={hashcode}`
-| Sample | {% if site.product_mini_cli=="codenvy" %} [https://codenvy.io/f?id=s38eam174ji42vty](https://codenvy.io/f?id=s38eam174ji42vty){% else %}[https://localhost:8080/f?id=s38eam174ji42vty](https://localhost:8080/f?id=s38eam174ji42vty){% endif %}
+| Sample | {% if site.product_mini_cli=="codenvy" %} https://codenvy.io/f?id=s38eam174ji42vty{% else %}https://localhost:8080/f?id=s38eam174ji42vty{% endif %}
 
 #### Invoke a named Factory
 
 | Format | `/f?user={username}&name={factoryname}`<br>`/factory?user={username}&name={factoryname}`
-| Sample | {% if site.product_mini_cli=="codenvy" %} [https://codenvy.io/f?user=tylerjewell&name=starwars](https://codenvy.io/f?user=tylerjewell&name=starwars)<br>[https://codenvy.io/factory?user=tylerjewell&name=starwars](https://codenvy.io/factory?user=tylerjewell&name=starwars){% else %}[https://localhost:8080/f?user=che&name=starwars](https://localhost:8080/f?user=che&name=starwars)<br>[https://localhost:8080/factory?user=che&name=starwars](https://localhost:8080/factory?user=che&name=starwars){% endif %}
+| Sample | {% if site.product_mini_cli=="codenvy" %} https://codenvy.io/f?user=tylerjewell&name=starwars<br>https://codenvy.io/factory?user=tylerjewell&name=starwars{% else %}https://localhost:8080/f?user=che&name=starwars<br>https://localhost:8080/factory?user=che&name=starwars{% endif %}
 
 #### Invoke Factory for a specific git repo  
 
 | Format | `/f?url={git URL}`
-| Sample | {% if site.product_mini_cli=="codenvy" %} [http://codenvy.io/f?url=https://github.com/eclipse/che](http://codenvy.io/f?url=https://github.com/eclipse/che)<br>[http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server](http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server)<br>[http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project](http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project){% else %}[http://localhost:8080/f?url=https://github.com/eclipse/che](http://localhost:8080/f?url=https://github.com/eclipse/che)<br>[http://localhost:8080/f?url=https://github.com/eclipse/che/tree/language-server](http://localhost:8080/f?url=https://github.com/eclipse/che/tree/language-server)<br>[http://localhost:8080/f?url=https://gitlab.com/benoitf/simple-project](http://localhost:8080/f?url=https://gitlab.com/benoitf/simple-project){% endif %}
+| Sample | {% if site.product_mini_cli=="codenvy" %} http://codenvy.io/f?url=https://github.com/eclipse/che<br>http://codenvy.io/f?url=https://github.com/eclipse/che/tree/language-server<br>http://codenvy.io/f?url=https://gitlab.com/benoitf/simple-project{% else %}http://localhost:8080/f?url=https://github.com/eclipse/che<br>http://localhost:8080/f?url=https://github.com/eclipse/che/tree/language-server<br>http://localhost:8080/f?url=https://gitlab.com/benoitf/simple-project{% endif %}
 
 Once the Factory is executed, it either loads an existing workspace or generates a new one, depending upon the Factory configuration.  The name of the workspace is determined within the Factory configuration and its name becomes part of the URL access with the format `{hostname}/{username}/{workspace}`.
 

@@ -7,22 +7,22 @@ permalink: /:categories/runtime-recipes/
 ---
 {% include base.html %}
 
-A recipe defines part of the runtime of a workspace. A recipe is included in a [stack]({{base}}{{site.links["ws-stacks"]}}) along with meta information that defines how the workspace runtime should be created. When creating custom workspace runtime it's often best to create a custom [stack]({{base}}{{site.links["ws-stacks"]}}) with a custom recipe.
+A recipe defines part of the runtime of a workspace. A recipe is included in a [stack]({{base}}{{site.links["devops-runtime-stacks"]}}) along with meta information that defines how the workspace runtime should be created. When creating custom workspace runtime it's often best to create a custom [stack]({{base}}{{site.links["devops-runtime-stacks"]}}) with a custom recipe.
 
 Workspaces can have a single runtime or multiple runtimes.  Che uses Docker, though Che could handle runtimes other than Docker, to create runtime(s) from [Dockerfiles](https://docs.docker.com/engine/reference/builder/) for a single-container runtime, or [compose files](https://docs.docker.com/compose/overview/) to create single-container/multi-container runtime(s).
 
-Che provides recipes for all of the ["Ready-to-go" stacks]({{base}}{{site.links["ws-stacks"]}}#ready-to-go-stacks) for things like Java, PHP, Node, ASP.NET, and C++.
+Che provides recipes for all of the ["Ready-to-go" stacks]({{base}}{{site.links["devops-runtime-stacks"]}}#ready-to-go-stacks) for things like Java, PHP, Node, ASP.NET, and C++.
 
 A recipe references either a Dockerfile or compose definition that need to be built into image(s) or reference already-built image(s). When a workspace is created from a particular stack, Che will take a recipe, create or use existing Docker image(s) from it, and then create runtime Docker container(s) from that/those image(s). That/Those runtime Docker container(s) will be your workspace runtime(s).
 
-[Workspace agents]({{base}}{{site.links["ws-agents"]}}) include the additional libraries that you may need, such as yum or npm, along with the runtime services that Che needs, such as Java and Tomcat, a SSH daemon. [Workspace agents]({{base}}{{site.links["ws-agents"]}}) are then injected into runtime Docker container(s) from Docker images such as certified minimal versions of Linux operating systems like Alpine, Debian or Ubuntu with added [Che dependencies]({{base}}{{site.links["ws-recipes"]}}#che-runtime-required-dependencies).
+[Workspace agents]({{base}}{{site.links["devops-ws-agents"]}}) include the additional libraries that you may need, such as yum or npm, along with the runtime services that Che needs, such as Java and Tomcat, a SSH daemon. [Workspace agents]({{base}}{{site.links["devops-ws-agents"]}}) are then injected into runtime Docker container(s) from Docker images such as certified minimal versions of Linux operating systems like Alpine, Debian or Ubuntu with added [Che dependencies]({{base}}{{site.links["devops-runtime-recipes"]}}#che-runtime-required-dependencies).
 
 # Single-Container Recipes  
 
 ## Defining
 You can author your own recipe as a way to make your workspace runtime shareable. You can provide a URL to a custom recipe (Dockerfile or Docker compose file) or write a new custom recipe (Dockerfile or Docker compose file) from the dashboard.
 
-Please note, Eclipse Che only [supports certain compose syntax]({{base}}{{site.links["ws-recipes"]}}#multi-container-recipes).
+Please note, Eclipse Che only [supports certain compose syntax]({{base}}{{site.links["devops-runtime-recipes"]}}#multi-container-recipes).
 
 ![che-recipe-write.jpg]({{ base }}{{site.links["che-recipe-write.jpg"]}})
 
@@ -49,7 +49,7 @@ Che base stacks, which include the minimum utilities for everything needed by Ec
 In `che-dockerfiles` repository, some recipes have sub-directories which represent tags. For example, the `/php/gae` directory in the GitHub repository would be pulled as `eclipse/php:gae` from Docker Hub.
 
 ### Inherit From Non-Eclipse Che Base Images
-This will create the best performing workspace image by only installing the minimum dependencies and packages required for your workspace. The trade off is that you have to include [Che's runtime dependencies]({{base}}{{site.links["ws-recipes"]}}#che-runtime-required-dependencies) so we can work our magic in the workspace.
+This will create the best performing workspace image by only installing the minimum dependencies and packages required for your workspace. The trade off is that you have to include [Che's runtime dependencies]({{base}}{{site.links["devops-runtimev-recipes"]}}#che-runtime-required-dependencies) so we can work our magic in the workspace.
 
 ### Che Runtime Required Dependencies
 
@@ -117,7 +117,7 @@ expose:
 
 There is no way to expose a port once the workspace is running. To expose an additional ports, the ports need to be added to the runtime recipe or added directly to the runtime instance via the dashboard `Workspaces>(click workspace name)>Runtime Tab`.
 
-![Che-recipe-expose-ports.jpg]({{ base }}{{site.links["Che-recipe-expose-ports.jpg"]}})
+![che-workspace-runtime-servers.png]({{ base }}{{site.links["che-workspace-runtime-servers.png"]}})
 
 ## Issue a Pull Request To Improve Recipes
 We really love pull requests. We are always looking to increase the set of stacks that are available for development. Please suggest a fix or add a new base image recipe.  To do so, issue [pull requests](https://github.com/codenvy/dockerfiles). If you add a new Dockerfile, it will be added as a source for a new automated build at DockerHub.  Please sign the [Eclipse contributor agreement](https://eclipse.org/legal/ECA.php) before making a contribution. Your contribution will be licensed as [EPL 1.0](https://www.eclipse.org/legal/epl-v10.html).
@@ -192,7 +192,7 @@ container_name: my_container
 `container_name` is skipped during execution. Instead, Che generates container names based on its own internal patterns. Because many developers could be running the same Compose file on the same Che workspace node at the same time naming conflicts need to be avoided.
 
 ### Volumes
-Volumes are not supported in the Che system. Instead we suggest using `volumes_from` to gain access to [volume mount]({{base}}{{site.links["ws-volume-mounts"]}}#sharing-volumes-between-containers) of the `dev-machine`.
+Volumes are not supported in the Che system. Instead we suggest using `volumes_from` to gain access to [volume mount]({{base}}{{site.links["devops-volume-mounts"]}}) of the `dev-machine`.
 
 ### Networks
 
