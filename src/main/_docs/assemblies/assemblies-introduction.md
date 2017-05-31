@@ -17,7 +17,7 @@ Che is commonly extended in three ways: the browser IDE, the Che Server, or a wo
 3. A user's workspace can be extended to provide new APIs inside of agents to be used by the Che server or the browser IDE.
 ![image05.png]({{ base }}/docs/assets/imgs/image05.png)  
 
-We do not organize the documentation by component, but instead by types of customizations. You will oftne add a new capability to Che that requires server and client side extensions, so a single custom assembly may have multiple plugins that collectively are required for the distributed system to properly operate.
+We do not organize the documentation by component, but instead by types of customizations. You will often add a new capability to Che that requires server and client side extensions, so a single custom assembly may have multiple plugins that collectively are required for the distributed system to properly operate.
 
 Technically, client and server extensions are different components, however, they can be organized a single plugin with several sub-components.
 
