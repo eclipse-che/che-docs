@@ -637,7 +637,7 @@ Usually, `ORGANIZATION` is your DockerHub/container registry account. `PREFIX` i
 * `yourOrg/yourCustomAssembly-init` init image with the default configuration
 
 
-All Dockerfiles inherit base Che images. You should make sure that che-parent version in you root `pom.xml` is identical to the tag in `FROM` instruction in all 3 Dockerfiles (server, cli and init). If you stay with Che master, then nightly tags are OK. If you depend on a tagged Che version, use the same tag in a Dockerfile:
+All Dockerfiles inherit base Che images. You should make sure that che-parent version in your root `pom.xml` is identical to the tag in `FROM` instruction in all 3 Dockerfiles (server, cli and init). If you stay with Che master, then nightly tags are OK. If you depend on a tagged Che version, use the same tag in a Dockerfile:
 
 `FROM eclipse/che-server:nightly`
 
