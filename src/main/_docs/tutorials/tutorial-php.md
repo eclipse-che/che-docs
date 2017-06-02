@@ -58,8 +58,8 @@ In project root, create `composer.json` file with the following contents:
 
 ```json
 {
-    "require": {
-        "phpunit/phpunit": "5.7.*"
+    "require-dev": {
+        "phpunit/phpunit": "^6.1"
     }
 }
 ```
@@ -70,7 +70,7 @@ In the `Processes` panel, click New Terminal (+) button. This will open up a bas
 
 ```sh
 $ cd /projects/web-php-simple
-$ composer update --no-dev
+$ composer update
 ```
 
 This will install the `phpunit` framework into `vendor` directory in the project.
@@ -80,9 +80,9 @@ Now, let's write a simple test. Create a `test.php` file:
 ```php
 <?php
 
-require_once 'vendor/autoload.php';
+use PHPUnit\Framework\TestCase;
 
-class SimpleTest extends PHPUnit_Framework_TestCase {
+class SimpleTest extends TestCase {
 
     public function testTrueIsTrue() {
         $foo = true;
@@ -97,11 +97,11 @@ Run the test:
 
 ```sh
 $ vendor/bin/phpunit test.php
-PHPUnit 5.7.9 by Sebastian Bergmann and contributors.
+PHPUnit 6.1.4 by Sebastian Bergmann and contributors.
 
 .                                                                   1 / 1 (100%)
 
-Time: 27 ms, Memory: 2.75MB
+Time: 24 ms, Memory: 4.00MB
 
 OK (1 test, 1 assertion)
 ```
@@ -113,12 +113,14 @@ Slim makes it possible to create REST services. Let's add this framework to `com
 ```json
 {
     "require": {
-        "phpunit/phpunit": "5.7.*",
         "slim/slim": "2.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.1"
     }
 }
 ```
-Run `composer update --no-dev` to download all `slim` dependencies. The framework is ready to be used now. Let's modify `index.php` so that it looks like this:
+Run `composer update` to download all `slim` dependencies. The framework is ready to be used now. Let's modify `index.php` so that it looks like this:
 
 ```php
 <?php
