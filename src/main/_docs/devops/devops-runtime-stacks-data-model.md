@@ -70,7 +70,7 @@ Every workspace can have one or more environments which are used to run the code
 Set `defaultEnv` to the name of the environment that should act as the Docker-powered environment that powers the workspace when it boots. This name must match the name given to an object in the `environments` array. Che will create a container off of this environment when the workspace is launched.
 
 ## Environments
-Each environments are constructed of one or more machines, each one is an individual container. An environment can be comprised of multiple machines that are linked together, such as when you want a database running on a different machine than your debugger.
+Each environment is constructed of one or more machines, each one is an individual container. An environment can be comprised of multiple machines that are linked together, such as when you want a database running on a different machine than your debugger.
 
 ```json  
 "environment": {
