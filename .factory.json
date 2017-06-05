@@ -1,0 +1,89 @@
+{
+  "v": "4.0",
+  "name": "che-docs",
+  "workspace": {
+    "defaultEnv": "default",
+    "environments": {
+      "default": {
+        "machines": {
+          "dev-machine": {
+            "attributes": {
+              "memoryLimitBytes": "3221225472"
+            },
+            "servers": {},
+            "agents": [
+              "org.eclipse.che.terminal",
+              "org.eclipse.che.ws-agent",
+              "org.eclipse.che.ssh"
+            ]
+          }
+        },
+        "recipe": {
+          "type": "compose",
+          "content": "services:\n  dev-machine:\n    image: jdrummond/ubuntu_jekyll\n",
+          "contentType": "application/x-yaml"
+        }
+      }
+    },
+    "projects": [
+      {
+        "links": [],
+        "name": "che-docs",
+        "attributes": {},
+        "type": "blank",
+        "source": {
+          "location": "https://github.com/eclipse/che-docs.git",
+          "type": "git",
+          "parameters": {}
+        },
+        "path": "/che-docs",
+        "description": "Che documentation generated via jekyll.",
+        "problems": [],
+        "mixins": [
+          "pullrequest"
+        ]
+      }
+    ],
+    "name": "che-docs",
+    "commands": [
+      {
+        "commandLine": "mkdir -p /projects/che-docs/target; cd /projects/che-docs/target ; jekyll serve -s /projects/che-docs/src/main --force_polling --host $(/sbin/ifconfig eth1 | grep 'inet addr:' | cut -d: -f2)",
+        "name": "Che Jekyll Serve Full",
+        "attributes": {
+          "previewUrl": "http://${server.port.4000}/docs/"
+        },
+        "type": "custom"
+      },
+      {
+        "commandLine": "mkdir -p /projects/che-docs/target; cd /projects/che-docs/target ; jekyll serve -s /projects/che-docs/src/main --force_polling --incremental --host $(/sbin/ifconfig eth1 | grep 'inet addr:' | cut -d: -f2)",
+        "name": "Che Jekyll Serve Incremental",
+        "attributes": {
+          "previewUrl": "http://${server.port.4000}/docs/"
+        },
+        "type": "custom"
+      },
+      {
+        "commandLine": "sudo apt-get update && sudo apt-get install libcurl3 && sudo gem install html-proofer && mkdir -p /projects/link-checker && cd /projects/che-docs/target/_site/docs && htmlproofer  --assume-extension . &> /projects/link-checker/che-docs-errors.log",
+        "name": "HTMLProofer Che",
+        "attributes": {
+          "previewUrl": ""
+        },
+        "type": "custom"
+      }
+    ],
+    "links": []
+  },
+  "id": "49bxtfztv73y9fwn",
+  "ide": {
+    "onProjectsLoaded": {
+      "actions": [
+        {
+          "properties": {
+            "name": "Che Jekyll Serve Incremental"
+          },
+          "id": "runCommand"
+        }
+      ]
+    }
+  }
+}
