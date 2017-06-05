@@ -1,5 +1,4 @@
 [https://localhost:8080/f?url=https://github.com/eclipse/che-docs](https://localhost:8080/f?url=https://github.com/eclipse/che-docs)
-[https://codenvy.io/f?url?url=https://github.com/eclipse/che-docs](https://codenvy.io/f?url?url=https://github.com/eclipse/che-docs)
 
 # Eclipse Che Docs 
 Eclipse Che uses Jekyll 3.3.1 to generate documentation from this reposistory as a static html webpages. 
@@ -14,7 +13,6 @@ Docs are built using Jekyll and the output is static HTML that is hosted at [htt
 
 # Editing Docs
 [https://localhost:8080/f?url=https://github.com/eclipse/che-docs](https://localhost:8080/f?url=https://github.com/eclipse/che-docs)
-[https://codenvy.io/f?url?url=https://github.com/eclipse/che-docs](https://codenvy.io/f?url?url=https://github.com/eclipse/che-docs)
   
 Get a workpsace on `codenvy.io` which include all dependencies to edit and preview your changes by clicking on the image above.
 
@@ -60,7 +58,7 @@ New sections are represented as folders in https://github.com/codenvy/che-docs/t
 # Building Docs
 Docs are built using a Docker image with Jekyll inside it. You need Docker and Bash installed to build and host the Che docs.
 
-You can use codenvy.io factory to easily compile and view documentation. Just click [https://localhost:8080/f?url=https://github.com/eclipse/che-docs](https://localhost:8080/f?url=https://github.com/eclipse/che-docs) or [https://codenvy.io/f?url?url=https://github.com/eclipse/che-docs](https://codenvy.io/f?url?url=https://github.com/eclipse/che-docs).
+You can use codenvy.io factory to easily compile and view documentation. Just click [https://localhost:8080/f?url=https://github.com/eclipse/che-docs](https://localhost:8080/f?url=https://github.com/eclipse/che-docs).
 
 You can also use the following locally.
 
