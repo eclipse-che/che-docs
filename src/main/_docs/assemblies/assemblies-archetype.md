@@ -21,7 +21,7 @@ Your host system must have Maven 3.3+ installed to facilitate generation and com
 assemblies. You must pass in your Maven's M2 repository path on your host. Our archetype generator
 will download libraries into that repository making repeated compilations faster over time.
 On most Linux based systems, your M2 is located at '/home/user/.m2' and it is '%USERPROFILE%/.m2'
-for Windows. We default your M2 repository to '/home/user/.m2'. Use the '/m2' mount to chnage this.
+for Windows. We default your M2 repository to '/home/user/.m2'. Use the '/m2' mount to change this.
 
 Your custom assembly will be generated in the host path mounted to '/archetype'. This generates a
 Maven multi-module project. You can enter the folder and build it with 'mvn clean install' or use
