@@ -91,11 +91,20 @@ class SimpleTest extends TestCase {
 }
 ```
 
-This test basically checks nothing but demonstrates use of composer-provided frameworks.
+This test basically checks nothing but demonstrates use of composer-provided frameworks. Having required `vendor/autoload.php` it is possible to use any functions of `phpunit`.
 
-Run the test. Right-click on the `test.php` file and select `Run Test` > `PHPUnit`. The test will be executed and the result will be displayed in the `Test Results` pane.
+Run the test:
 
-![phpunit-results.png]({{base}}{{site.links["phpunit-results.png"]}})
+```sh
+$ vendor/bin/phpunit test.php
+PHPUnit 6.1.4 by Sebastian Bergmann and contributors.
+
+.                                                                   1 / 1 (100%)
+
+Time: 24 ms, Memory: 4.00MB
+
+OK (1 test, 1 assertion)
+```
 
 {% if TODO==0 %}
 # 7. Create a REST Service With Slim  
