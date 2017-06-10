@@ -77,7 +77,7 @@ samples.source.parameters : {
 ## Commands
 You can add predefined sets of commands that will appear in the command selector for any user that creates a project from this sample.
 
-Refer to the following documentation for [Commands JSON object reference]({{base}}{{site.links["devops-runtime-stacks-data-model"]}}#Commands)
+Refer to the following documentation for [Commands JSON object reference]({{base}}{{site.links["devops-runtime-stacks-data-model"]}}#Commands).
 
 ## Tags
 Tags are used for stacks and samples objects. Those values are used to determine if a sample is compatible with a stack. Tags are used to filter the list of project samples that a user can choose when selecting a stack in the user dashboard.
