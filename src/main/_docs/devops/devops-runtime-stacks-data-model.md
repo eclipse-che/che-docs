@@ -7,7 +7,7 @@ permalink: /:categories/runtime-stacks-data-model/
 ---
 {% include base.html %}
 
-Admins and users typically use our graphical dashboard for adding and configuring stacks within the product. However, you can also add these directly with REST or in the product using a JSON data model. 
+Admins and users typically use our graphical dashboard for adding and configuring stacks within the product. However, you can also add these directly with REST or in the product using a JSON data model.
 
 # Stack Object
 Stacks are referenced in JSON format:
@@ -294,10 +294,11 @@ When authoring a project template we recommend to predefine commands to register
 
 ```json  
 "commands" : {  
-  "commandLine": "",                                     // Command to run on target machine
-  "name": "",                                            // Unique Command name displayed in IDE
-  "type": "custom"|"maven"|"java"|"gwt"|"gwt_sdm_che",    // Type will filter and provide different interface in IDE
+  "commandLine": "",                                       // Command to run on target machine
+  "name": "",                                              // Unique Command name displayed in IDE
+  "type": "custom"|"maven"|"java"|"gwt"|"gwt_sdm_che",     // Type will filter and provide different interface in IDE
   "attributes": {
+    "goal": "Build"|"Run"|"Debug"|"Test"|"Deploy"|"Common" // Assign goal to filter and associate with interface components in IDE  
     "previewUrl": "http://${server.port.8080}/${current.project.relpath}"
   }
 }
@@ -310,6 +311,7 @@ When authoring a project template we recommend to predefine commands to register
   "commandLine" : STRING,       // Process to execute in the workspace
   "workingDir"  : STRING        // (Optional) Location in workpace to execute command
   "attributes"  : {
+    "goal"      : STRING        // (Optional) Associate a goal to the command
     "previewUrl": STRING        // (Optional) Refer preview URL
   }
 }
@@ -400,13 +402,16 @@ JSON:
         "commandLine": "mvn clean install -f ${current.project.path}",
         "name": "build",
         "type": "mvn",
-        "attributes": {}
+        "attributes": {
+          goal:"Build"
+        }
       },
       {
         "commandLine": "mvn -f /projects/console-java-simple clean install",
         "name": "console-java-simple: build",
         "type": "mvn",
         "attributes": {
+          goal:"Build",
           "previewUrl": ""
         }
       },
@@ -415,6 +420,7 @@ JSON:
         "name": "console-java-simple: run",        
         "type": "mvn",
         "attributes": {
+          goal:"Run",
           "previewUrl": ""
         }
       }
