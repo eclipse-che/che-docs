@@ -77,13 +77,7 @@ samples.source.parameters : {
 ## Commands
 You can add predefined sets of commands that will appear in the command selector for any user that creates a project from this sample.
 
-```json  
-samples.commands : [{  
-  # Add command JSON objects here
-}]
-```
-
-See Command {% assign docs_todo="What is link/page" %} reference.
+Refer to the following documentation for [Commands JSON object reference]({{base}}{{site.links["devops-runtime-stacks-data-model"]}}#Commands).
 
 ## Tags
 Tags are used for stacks and samples objects. Those values are used to determine if a sample is compatible with a stack. Tags are used to filter the list of project samples that a user can choose when selecting a stack in the user dashboard.
@@ -123,7 +117,7 @@ samples.tags : [{
       {  
         "name":"build",               
         "type":"mvn",                 
-        "commandLine":"mvn -f ${current.project.path} clean install 
+        "commandLine":"mvn -f ${current.project.path} clean install
                            && cp ${current.project.path}/target/*.war $TOMEE_HOME/webapps/ROOT.war",   
         "attributes":{                
           "previewUrl":""             
@@ -148,8 +142,8 @@ samples.tags : [{
       {  
         "name":"build and run",
         "type":"mvn",
-        "commandLine":"mvn -f ${current.project.path} clean install 
-                           && cp ${current.project.path}/target/*.war $TOMEE_HOME/webapps/ROOT.war 
+        "commandLine":"mvn -f ${current.project.path} clean install
+                           && cp ${current.project.path}/target/*.war $TOMEE_HOME/webapps/ROOT.war
                            && $TOMEE_HOME/bin/catalina.sh run",
         "attributes":{  
            "previewUrl":"http://${server.port.8080}"
@@ -158,8 +152,8 @@ samples.tags : [{
       {  
         "name":"debug",        
         "type":"mvn",        
-        "commandLine":"mvn -f ${current.project.path} clean install 
-                           && cp ${current.project.path}/target/*.war $TOMEE_HOME/webapps/ROOT.war 
+        "commandLine":"mvn -f ${current.project.path} clean install
+                           && cp ${current.project.path}/target/*.war $TOMEE_HOME/webapps/ROOT.war
                            && $TOMEE_HOME/bin/catalina.sh jpda run",        
         "attributes":{  
           "previewUrl":"http://${server.port.8080}"
