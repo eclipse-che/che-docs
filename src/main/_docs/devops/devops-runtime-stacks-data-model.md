@@ -403,7 +403,7 @@ JSON:
         "name": "build",
         "type": "mvn",
         "attributes": {
-          goal:"Build"
+          "goal": "Build"
         }
       },
       {
@@ -411,7 +411,7 @@ JSON:
         "name": "console-java-simple: build",
         "type": "mvn",
         "attributes": {
-          goal:"Build",
+          "goal": "Build",
           "previewUrl": ""
         }
       },
@@ -420,7 +420,7 @@ JSON:
         "name": "console-java-simple: run",        
         "type": "mvn",
         "attributes": {
-          goal:"Run",
+          "goal": "Run",
           "previewUrl": ""
         }
       }
