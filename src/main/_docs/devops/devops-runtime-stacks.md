@@ -41,7 +41,10 @@ Che provides a form that can be used to write a recipe directly or copied/pasted
 
 # Stack Administration  
 ## Stack Loading
-In 5.x, we introduced an underlying database for storing product configuration state, including the state of stacks and templates. In previous versions, we primarily allowed stack configuration through a `stacks.json` object file that was in the base of a Che assembly. The `stacks.json` object file is still there, and if you provide any stack definitions within it, they will be loaded (and override!) any stacks in the database whenever Che starts. We will be removing support for the JSON configuration approach in upcoming releases as it is error prone.
+
+Stacks are loaded from a JSON file that is packaged into resources of a special component deployed with a workspace makes. This JSON isn't exposed to users and stack management is performed in User Dashboard (that uses REST API).
+
+Stacks are loaded from a JSON file only when the database is initialized, i.e. when a user first stats Che. This is the default policy that can be changed. To keep getting updates with new Che stacks, set `CHE_PREDEFINED_STACKS_RELOAD__ON__START=true` in `che.env`. When set to true, stack.json will be used to update Che database, each time Che server starts.
 
 ## Configuring Stacks
 In the user dashboard, click the `Stacks` to view all the available stacks. New stacks can be created and existing stacks can be modified/searched.
