@@ -42,7 +42,7 @@ Che provides a form that can be used to write a recipe directly or copied/pasted
 # Stack Administration  
 ## Stack Loading
 
-Stacks are loaded from a JSON file that is packaged into resources of a special component deployed with a workspace makes. This JSON isn't exposed to users and stack management is performed in User Dashboard (that uses REST API).
+Stacks are loaded from a JSON file that is packaged into resources of a special component deployed with a workspace master. This JSON isn't exposed to users and stack management is performed in User Dashboard (that uses REST API).
 
 Stacks are loaded from a JSON file only when the database is initialized, i.e. when a user first stats Che. This is the default policy that can be changed. To keep getting updates with new Che stacks, set `CHE_PREDEFINED_STACKS_RELOAD__ON__START=true` in `che.env`. When set to true, stack.json will be used to update Che database, each time Che server starts.
 
@@ -179,3 +179,10 @@ This file is located here:
 To create a stack, you need to define its configuration according to the [stack data model]({{base}}{{site.links["devops-runtime-stacks-data-model"]}}).
 
 Also, if you believe your custom stack would be useful to others issue a pull request against the `stacks.json` at [https://github.com/eclipse/che/blob/master/ide/che-core-ide-stacks/src/main/resources/stacks.json](https://github.com/eclipse/che/blob/master/ide/che-core-ide-stacks/src/main/resources/stacks.json). If accepted this will add your stack to the default stack library in the product.
+
+# Adding Stacks to the Che Custom Assembly 
+
+It is possible to provide custom stacks and package them into Che assembly instead of default Che stacks.
+A JAR with stacks.json should be put into Workspace Master WAR, as well as default "che-core-ide-stacks" JAR should be excluded from it.
+Che archetype "stacks-archetype" shows an example of replacing default stacks with custom ones. 
+
