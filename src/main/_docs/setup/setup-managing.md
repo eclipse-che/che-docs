@@ -40,7 +40,7 @@ Workspaces are both portable and shared. Multiple browser clients (and humans!) 
 
 ![che_farm.png]({{ base }}/docs/assets/imgs/che_farm.png)
 
-You can deploy Che in a farm with an Nginx router. Each user would be provisioned their own Che instance, either running on its own port in a VM. In this configuration, each user can have their own workspaces and identity profile. Note that since Che exports two IP addresses, one for Che and another for the workspace machine running Docker, your router will need to manage traffic for all possible routes between browser, Che and machines.{%assign docs_todo="Provide link"%} 
+You can deploy Che in a farm with an Nginx router. Each user would be provisioned their own Che instance, either running on its own port in a VM. In this configuration, each user can have their own workspaces and identity profile. Note that since Che exports two IP addresses, one for Che and another for the workspace machine running Docker, your router will need to manage traffic for all possible routes between browser, Che and machines.{%assign docs_todo="Provide link"%}
 
 ## Scaling Che with Codenvy  
 Your Eclipse Che workspaces and plug-ins will work within [Codenvy](http://codenvy.com). Codenvy is a multi-tenant, multi-user and elastic cloud installed locally or used as a SaaS:
@@ -80,9 +80,10 @@ The upgrade process:
 5. Backs up your installation
 6. Initializes the new version
 7. Starts Che
+8. Important! If `CHE_PREDEFINED_STACKS_RELOAD__ON__START` is set to false, stacks packaged into new binaries won't be saved into a database.
 
 # Backup
-You can run `che backup` to create a copy of the relevant configuration information, user data, projects, and workspaces. We do not save workspace snapshots as part of a routine backup exercise. You can run `che restore` to recover che from a particular backup snapshot. The backup is saved as a TAR file that you can keep in your records. You can then use `che restore` to recover your user data and configuration.
+You can run `che backup` to create a copy of the relevant configuration information, user data, projects, and workspaces. We do not save workspace snapshots as part of a routine backup exercise. You can run `che restore` to recover Che from a particular backup snapshot. The backup is saved as a TAR file that you can keep in your records. You can then use `che restore` to recover your user data and configuration.
 
 # Security
 Eclipse Che is designed as a single identity system to be used by an individual or small team working in a trusted environment. The following outlines some of the security capabilities and known gaps in Che.

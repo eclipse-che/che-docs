@@ -92,6 +92,8 @@ Refer to [GitLab using OAuth]({{base}}{{site.links["ide-git-svn"]}}#gitlab-oauth
 # Stacks
 [Stacks]({{ base }}{{site.links["devops-runtime-stacks"]}}) define the recipes used to create workspace runtimes. They appear in the stack library of the dashboard. You can create your own.
 
+`CHE_PREDEFINED_STACKS_RELOAD__ON__START` (false by default) defines stack loading policy. When set to false, stacks are loaded from a json file only once - when database is initialized. When set to true, json is sourced every time Che server starts.
+
 # Sample Projects
 Code [samples]({{ base }}{{site.links["devops-project-samples"]}}) allow you to define sample projects that are cloned into a workspace if the user chooses it when creating a new project. You can add your own.
 
@@ -149,7 +151,7 @@ Che goes through a progression algorithm to establish the protocol, IP address a
 #        4. Else, use DOCKER_HOST
 #    - If CHE_DOCKER_SERVER__EVALUATION__STRATEGY is 'docker-local':
 #        1. Use the address of the workspace container within the docker network
-#        2. If address cannot be read, use steps 3 and 4 from the default strategy. 
+#        2. If address cannot be read, use steps 3 and 4 from the default strategy.
 #
 # Browser --> Workspace Connection:
 #    1. Use the value of che.docker.ip
@@ -190,7 +192,7 @@ docker exec -ti <che-container-name> curl http://<workspace-container-ip>:4401/w
 ```
 
 #### DNS Resolution
-The default behavior is for Che and its workspaces to inherit DNS resolver servers from the host. You can override these resolvers by setting `CHE_DNS_RESOLVERS` in the `che.env` file and restarting Che. DNS resolvers allow programs and services that are deployed within a user workspace to perform DNS lookups with public or internal resolver servers. In some environments, custom resolution of DNS entries (usually to an internal DNS provider) is required to enable the Che server and the workspace runtimes to have lookup ability for internal services. 
+The default behavior is for Che and its workspaces to inherit DNS resolver servers from the host. You can override these resolvers by setting `CHE_DNS_RESOLVERS` in the `che.env` file and restarting Che. DNS resolvers allow programs and services that are deployed within a user workspace to perform DNS lookups with public or internal resolver servers. In some environments, custom resolution of DNS entries (usually to an internal DNS provider) is required to enable the Che server and the workspace runtimes to have lookup ability for internal services.
 
 ```shell
 # Update your che.env with comma separated list of resolvers:
@@ -198,7 +200,7 @@ CHE_DNS_RESOLVERS=10.10.10.10,8.8.8.8
 ```
 
 #### Workspace Address Resolution Strategy
-By default, the Che server will connect to workspace containers according to the 'default' strategy. The order of precedence, Che will use `CHE_DOCKER_IP` if it is set, if not, it will use the address `docker-ip`. If `docker-ip` cannot be determined, it will default to `localhost` for Unix socket connections, and `DOCKER_HOST`. 
+By default, the Che server will connect to workspace containers according to the 'default' strategy. The order of precedence, Che will use `CHE_DOCKER_IP` if it is set, if not, it will use the address `docker-ip`. If `docker-ip` cannot be determined, it will default to `localhost` for Unix socket connections, and `DOCKER_HOST`.
 
 Alternatives strategies are available by setting `CHE_DOCKER_SERVER__EVALUATION__STRATEGY`.
 By setting it to 'docker-local', Che will attempt to communicate with workspace containers directly, using `workspace-container-ip`, with `localhost`/`DOCKER_HOST` as a fallback as in the default strategy. This can avoid some issues with ephemeral ports and firewalls (see section 'Firewalls', below), but will cause workspace creation to fail if the Che server is configured to not launch workspaces within the same Docker network.
@@ -215,15 +217,15 @@ Here are macros available for the custom server evaluation strategy:
  * chePort : Che listening port number of workspace master
  * wildcardNipDomain : get external address transformed into a nip.io DNS sub-domain
  * wildcardXipDomain : get external address transformed into a xip.io DNS sub-domain
- 
+
 Here is an example `che.docker.server_evaluation_strategy.custom.template=<serverName>.<machineName>.<workspaceId>.<wildcardNipDomain>:<chePort>`
 
 #### Single-port routing.
 By enabling single-port, using `CHE_SINGLE_PORT=true` in `che.env` file , all browser traffic to Che or any workspace will be routed through the value that you have set to `CHE_PORT`, or 8080 if not set.
 Setting this property will transform the launch sequence of Che to launch a Traefik reverse proxy. The reverse proxy will act as the traffic endpoint for all browser communications.
-When a new workspace is started or stopped, Che will update Traefik's configuration with rules for how browser traffic should be routed to Che or a workspace. 
+When a new workspace is started or stopped, Che will update Traefik's configuration with rules for how browser traffic should be routed to Che or a workspace.
 With single-port, each service running in a workspace and exposing ports has its own hostname. Example : workspace agent will have a hostname like : ws-agent.workspace-id....domain.name. By default the domain name will use nip.io which allow to provide wildcard DNS without any
-user configuration. The strategy used for the hosts is using the template provided by the `CHE_DOCKER_SERVER__EVALUATION__STRATEGY_CUSTOM_TEMPLATE` property with default value `<serverName>.<machineName>.<workspaceId>.<wildcardNipDomain>:<chePort>` 
+user configuration. The strategy used for the hosts is using the template provided by the `CHE_DOCKER_SERVER__EVALUATION__STRATEGY_CUSTOM_TEMPLATE` property with default value `<serverName>.<machineName>.<workspaceId>.<wildcardNipDomain>:<chePort>`
 If you've your own domain and then DNS server, you may want to add wildcard DNS entry matching a pattern. For example updating the property to the value `<serverName>.<machineName>.<workspaceId>.che.foobar.com:<chePort>` will require a wildcard `*.che.foobar.com` entry in DNS server resolving to the IP of the che server.
 
 ## Docker Connectivity
@@ -383,12 +385,12 @@ CHE_WORKSPACE_VOLUME=/var/run/docker.sock:/var/run/docker.sock;
 3. Configure Docker daemon to listen to listen to tcp socket and specify `DOCKER_HOST` environment variable in workspace machine. Each host environment will have different network topology/configuration so below is only to be used as general example.
 Configure your Docker daemon to listen on TCP.  First, add the following to your Docker configuration file (on Ubuntu it's `/etc/default/docker` - see the Docker docs for the location for your OS):
 
-Second, export `DOCKER_HOST` variable in your workspace. You can do this in the terminal or make it permanent by adding `ENV DOCKER_HOST=tcp://$IP:2375` to a workspace recipe, where `$IP` is your docker daemon machine IP.   
+Second, export `DOCKER_HOST` variable in your workspace. You can do this in the terminal or make it permanent by adding `ENV DOCKER_HOST=tcp://$IP:2375` to a workspace recipe, where `$IP` is your docker daemon machine IP.
 
 ```shell
 # Listen using the default unix socket, and on specific IP address on host.
 # This will vary greatly depending on your host OS.
-sudo dockerd -H unix:///var/run/docker.sock -H tcp://0.0.0.0:2375 
+sudo dockerd -H unix:///var/run/docker.sock -H tcp://0.0.0.0:2375
 # Verify that the Docker API is responding at: http://$IP:2375/containers/json
 ```
 ```shell
