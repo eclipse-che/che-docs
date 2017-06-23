@@ -121,6 +121,7 @@ The generator and templates for each assembly is in an [assembly generator repos
 | `plugin-serverservice-archetype` | Simple IDE extension and a workspace service |
 | `plugin-embedjs-archetype` | IDE extension with JavaScript in widgets |
 | `plugin-json-archetype` | JSON project type, codeassistant, and workspace service |
+| `stacks-archetype` | An assembly with a custom stacks module |
 
 #### Overrides
 The custom assembly is generated as a Maven multi-module project. Maven scaffolds and expects a particular folder structure that separates source code, resources (like images), and test code into different folders. Maven uses a three-variable combination of artifactId, groupId, and version to uniquely identify a project. When we generate your custom assembly, default values for each of these are provided. You can override them on the command line with `--id`, `--group`, and `--version`.

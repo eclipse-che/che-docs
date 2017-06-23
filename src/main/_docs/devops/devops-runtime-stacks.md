@@ -44,7 +44,7 @@ Che provides a form that can be used to write a recipe directly or copied/pasted
 
 Stacks are loaded from a JSON file that is packaged into resources of a special component deployed with a workspace master. This JSON isn't exposed to users and stack management is performed in User Dashboard (that uses REST API).
 
-Stacks are loaded from a JSON file only when the database is initialized, i.e. when a user first stats Che. This is the default policy that can be changed. To keep getting updates with new Che stacks, set `CHE_PREDEFINED_STACKS_RELOAD__ON__START=true` in `che.env`. When set to true, stack.json will be used to update Che database, each time Che server starts.
+Stacks are loaded from a JSON file only when the database is initialized, i.e. when a user first stats Che. This is the default policy that can be changed. To keep getting updates with new Che stacks, set `CHE_PREDEFINED_STACKS_RELOAD__ON__START=true` in `che.env`. When set to true, stacks.json will be used to update Che database, each time Che server starts. This means Che will get all stacks in stacks.json and upload them to a DB. This way, you may make sure that you keep existing custom stacks (user-created) and get stack updates from new Che releases. New and edited stacks (for example those with fixes in stack definition) will be merged in. Conflicts are possible though, since for example, if a new Che version provides a new stack with the name "My Cool Stack" and a stack with this name somehow exists in a database, such a stack won't be saved to a DB.
 
 ## Configuring Stacks
 In the user dashboard, click the `Stacks` to view all the available stacks. New stacks can be created and existing stacks can be modified/searched.
@@ -172,17 +172,23 @@ Stacks can be deleted by clicking the checkbox on the left then the delete butto
 Che has a stack API that you can call to manage your custom stacks. See the [Stacks]({{base_che}}{{site.links["devops-runtime-stacks"]}}) page in section _Use Che as a workspace server_ section.
 
 # Adding Stacks to the Che Default Assembly  
-If you are extending Eclipse Che, you can alter the default stacks provided with your custom assembly. In order to do that, you have to modify the `stacks.json` which is used to initialize Che's stacks.
-This file is located here:
-[https://github.com/eclipse/che/blob/master/ide/che-core-ide-stacks/src/main/resources/stacks.json](https://github.com/eclipse/che/blob/master/ide/che-core-ide-stacks/src/main/resources/stacks.json)
+
+If you believe your custom stack would be useful to others issue a pull request against the `stacks.json` at [https://github.com/eclipse/che/blob/master/ide/che-core-ide-stacks/src/main/resources/stacks.json](https://github.com/eclipse/che/blob/master/ide/che-core-ide-stacks/src/main/resources/stacks.json). If accepted this will add your stack to the default stack library in the product.
 
 To create a stack, you need to define its configuration according to the [stack data model]({{base}}{{site.links["devops-runtime-stacks-data-model"]}}).
 
-Also, if you believe your custom stack would be useful to others issue a pull request against the `stacks.json` at [https://github.com/eclipse/che/blob/master/ide/che-core-ide-stacks/src/main/resources/stacks.json](https://github.com/eclipse/che/blob/master/ide/che-core-ide-stacks/src/main/resources/stacks.json). If accepted this will add your stack to the default stack library in the product.
+# Adding Stacks to the Che Custom Assembly
 
-# Adding Stacks to the Che Custom Assembly 
+It is possible to provide custom stacks and package them into Che assembly instead of using the default Che stacks.
+A JAR with stacks.json should be [packaged to Workspace Master WAR](https://github.com/eclipse/che-archetypes/blob/master/stacks-archetype/src/main/resources/archetype-resources/assembly-che/assembly-wsmaster-war/pom.xml#L29-L33), as well as default ["che-core-ide-stacks" JAR should be excluded](https://github.com/eclipse/che-archetypes/blob/master/stacks-archetype/src/main/resources/archetype-resources/assembly-che/assembly-wsmaster-war/pom.xml#L62-L64) from it. You can do it manually, but [Che archetype]({{base}}{{site.links["assemblies-archetype"]}}) will do it for you.
 
-It is possible to provide custom stacks and package them into Che assembly instead of default Che stacks.
-A JAR with stacks.json should be put into Workspace Master WAR, as well as default "che-core-ide-stacks" JAR should be excluded from it.
-Che archetype "stacks-archetype" shows an example of replacing default stacks with custom ones. 
+Che archetype `stacks-archetype` shows an example of replacing default stacks with a custom one:
 
+```
+docker run -it --rm
+  -v /var/run/docker.sock:/var/run/docker.sock
+  -v /c/archetype:/archetype
+  -v /c/tmp:/data
+  -v /c/Users/User/.m2/repository:/m2
+    eclipse/che archetype generate --archid=stacks-archetype --che
+```
