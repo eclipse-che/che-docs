@@ -23,3 +23,5 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
 ```
 
 This will output a factory object that can be imported into any Codenvy system. Once imported, you will have a URL that can be shared with others allowing for remote execution of the Chedir up capability.
+
+Note: Che is also searching for .Chefile name (hidden file on Linux/MacOs) in addition to Chefile.
