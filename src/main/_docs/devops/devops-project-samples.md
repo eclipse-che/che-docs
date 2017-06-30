@@ -12,7 +12,7 @@ A template is a packaged set of sample code that is launched in the workspace wh
 # Project Templates  
 Che provides stacks with project templates (code samples).  It is possible to have a single stack with a variety of different project templates, which provide sample code to get started with or wizard-driven templates.
 
-In the user dashboard and after a stack is selected, Che propose a list of project templates that you can import in your workspace. You can either start with the ready-to-run project samples or use the wizard-driven templates.
+In the user dashboard and after a stack is selected, Che propose a list of project templates that you can import in your workspace.
 
 ![templates.png]({{ base }}{{site.links["templates.png"]}})
 

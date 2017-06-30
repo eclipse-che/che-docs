@@ -23,43 +23,46 @@ When you execute this command, you'll see the URL for the user dashboard.
 The Che dashboard will open. It is where you manage your projects and workspaces. If you do not have any projects in Che, you'll be asked to create a new project.  If you already have projects in Che, click on `New Project` button in the menu bar.
 
 # 2. Create a Node Project  
-There are several options which you can choose to start your Node.js project:
+To start your Node.js project do the following steps:
+
+### Select Stack
+
+Your project will be inserted into a workspace, which has a provided Docker runtime. Stacks are the recipes or images used to define the runtime environment for the workspace where your project will be placed.
+
+![node-stack.jpg]({{base}}{{site.links["node-stack.jpg"]}})
+
+You can filter stacks by following types:
+1. *Quick Start.* Environments that have a large variety of tools already installed optimized for projects of a particular type. For this example, we will select the Node stack which will create a container with Ubuntu git, nodejs, npm, gulp, bower, grunt, yeoman, angular, and karma installed.
+2. *Single Machine.* Offers stacks that provide environments with one machine inside it.
+3. *Multi Machine.* Offers stacks that provide environments with several machine inside it (example - application and database).
+
+Choose the `Quick Start` section and `Node` stack.
+
+### Configure Workspace
+
+![node-stack-ram.jpg]({{base}}{{site.links["node-stack-ram.jpg"]}})
+
+Paste your workspace name and configure its RAM. RAM will be the memory limit applied to the machines running your workspace environment. Create a new workspace with any name and set its RAM to 1GB.
+
 
 ### Select Source
-![ScreenShot2016-09-30at5.53.20PM.png]({{base}}{{site.links["ScreenShot2016-09-30at5.53.20PM.png"]}})
 This informs Che where the source code for your project is going to come from. It is possible to start a new blank, template, sample project or import one from another location. Choosing the first option will present you with a set of samples that are preconfigured. If you already have a project at a valid URL, choose the second option.  Che gives you choices on how to source the project from Git, GitHub, ZIP, etc..
 
 We will create a project from a provided template.
 
-### Select Stack
-![ScreenShot2016-09-30at6.13.02PM.png]({{base}}{{site.links["ScreenShot2016-09-30at6.13.02PM.png"]}})
-Your project will be inserted into a workspace, which has a provided Docker runtime. Stacks are the recipes or images used to define the runtime environment for the workspace where your project will be placed. There are three ways to choose a stack:
-
-There are three different options provided in here:
-1. *Ready-To-Go Stacks.* Environments that have a large variety of tools already installed optimized for projects of a particular type. For this example, we will select the Node stack which will create a container with Ubuntu git, nodejs, npm, gulp, bower, grunt, yeoman, angular, and karma installed.
-2. *Stack Library.* Offers finer grained stacks that can be used to create specific technology layers needed for a project. Ubuntu and Debian stacks, for example, are minimal stacks with only an operating system and Che tools installed.
-3. *Custom Stack.* You can provide your own custom stack.
-
-Choose the `Ready-To-Go Node` stack.
-
-### Configure Workspace
-
-![ScreenShot2016-09-30at5.55.07PM.png]({{base}}{{site.links["ScreenShot2016-09-30at5.55.07PM.png"]}})
-
-Paste your workspace name and configure its RAM. RAM will be the memory limit applied to the machines running your workspace environment. Create a new workspace with any name and set its RAM to 1GB.
 
 ### Select Template.
 
-![ScreenShot2016-09-30at6.15.03PM.png]({{base}}{{site.links["ScreenShot2016-09-30at6.15.03PM.png"]}})
+![node-stack-sample.jpg]({{base}}{{site.links["node-stack-sample.jpg"]}})
 
-A template is a Che-provided set of code, configuration, and commands that can be imported to operate within Che. There are two types of templates:
-1. Ready-to-run project samples. These samples have a compilable source tree and embedded commands. The list of templates available are filtered based upon the stack chosen.
-2. Wizard-driven project configuration. This creates a blank project and then opens the IDE's project configuration wizard to let you scaffold a new project based upon a set of configurable parameters. This option is only available if there an appropriate project type available for the stack chosen.
+A template is a Che-provided set of code, configuration, and commands that can be imported to operate within Che. Samples have a compilable source tree and embedded commands. The list of templates available are filtered based upon the stack chosen.
 
 Choose the `web-nodejs-simple` template.
 
 ### Project Metadata
 You can set a name and description of your project. The name is what will appear as the root node in the project explorer in the IDE.
+
+![node-stack-sample-metadata.jpg]({{base}}{{site.links["node-stack-sample-metadata.jpg"]}})
 
 ### Create the Project
 

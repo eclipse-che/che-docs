@@ -24,8 +24,6 @@ You can author your own recipe as a way to make your workspace runtime shareable
 
 Please note, Eclipse Che only [supports certain compose syntax]({{base}}{{site.links["devops-runtime-recipes"]}}#multi-container-recipes).
 
-![che-recipe-write.jpg]({{ base }}{{site.links["che-recipe-write.jpg"]}})
-
 There are two ways for you to create a custom recipe that can be used within Che:
 
 1. Inherit from an Eclipse Che base Docker image and then add your dependencies (easiest).
