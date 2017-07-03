@@ -100,6 +100,8 @@ Code [samples]({{ base }}{{site.links["devops-project-samples"]}}) allow you to 
 # Workspace Limits
 You can place limits on how users interact with the system to control overall system resource usage. You can define how many workspaces created, RAM consumed, idle timeout, and a variety of other parameters. See "Workspace Limits" in `che.env`.
 
+Per default, a workspace will be stopped after one hour of inactivity.
+
 You can also set limits on Docker's allocation of CPU to workspaces, which may be necessary if you have a very dense workspace population where users are competing for limited physical resources.
 
 # Hostname
