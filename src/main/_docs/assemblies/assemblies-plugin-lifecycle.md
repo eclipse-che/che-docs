@@ -364,6 +364,6 @@ In the IDE GWT module:
 <set-property name="user.agent" value="safari"/>
 
 <!-- Reduces compiler permutations through some GWT magic. -->
-<!-- See https://code.google.com/p/google-web-toolkit/wiki/SoftPermutations. -->
+<!-- See https://github.com/gwtproject/old_google_code_wiki/blob/master/SoftPermutations.wiki.md -->
 <collapse-all-properties />
 ```

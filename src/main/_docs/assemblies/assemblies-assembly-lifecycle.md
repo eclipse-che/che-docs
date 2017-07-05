@@ -25,7 +25,7 @@ The assembly development lifecycle:
 # Archetype
 The CLI has an `archetype` command that can be used to generate custom assemblies of Eclipse Che and Codenvy.
 
-An archetype is a maven technique for generating code templates. A single archetype has an ID and generates a complete custom assembly. Differnent archetypes generate assemblies with different types of customizations. We make each archetype customize the minimal number of features to make learning about customizations simpler.
+An archetype is a maven technique for generating code templates. A single archetype has an ID and generates a complete custom assembly. Different archetypes generate assemblies with different types of customizations. We make each archetype customize the minimal number of features to make learning about customizations simpler.
 
 Your host system must have Maven 3.3+ installed to facilitate generation and compiling of custom assemblies. You must pass in your Maven's M2 repository path on your host. Our archetype generator will download libraries into that repository making repeated compilations faster over time. On most Linux based systems, your M2 repository is located at `/home/user/.m2/repository` and it is `%USERPROFILE%/.m2/repository` for Windows. We default your M2 repository to `/home/user/.m2/repository`. Use the `/m2` mount to change this.
 
@@ -66,7 +66,7 @@ docker run -it --rm
   -v /c/archetype:/archetype
   -v /c/tmp:/data
   -v /c/Users/Tyler/.m2/repository:/m2
-    eclipse/che-cli:5.7.0
+    eclipse/che-cli:5.14.0
       archetype generate
 ```
 
@@ -80,14 +80,14 @@ docker run -it --rm
   -v /c/archetype:/archetype
   -v /c/tmp:/data
   -v /c/Users/Tyler/.m2/repository:/m2
-    eclipse/che-cli:5.7.0
+    eclipse/che-cli:5.14.0
       archetype all --no:interactive
 ```
 
 This command:
 
 #### Linux
-On Linux, the Maven utility launched by the CLI may have problems writing files to your host system during the generation phase. To overcome this limitation, in the `docker run ...` syntax before the image name add `--user={uid}` where UID is the user identity of your current users. This user identity will be passed into the various CLI utilities to execute under that user identity.
+On Linux, the Maven utility launched by the CLI may have problems writing files to your host system during the generation phase. To overcome this limitation create the host mount directories before launching docker, and in the `docker run ...` syntax before the image name add `--user={uid}` where UID is the user identity of your current users. This user identity will be passed into the various CLI utilities to execute under that user identity.
 
 Example
 
@@ -96,6 +96,24 @@ Example
       -v /etc/passwd:/etc/passwd:ro \
       --user=1000:100  \
       --group-add 999 \
+```
+
+Therefore a full set of commands may look like this to do an interactive generate:
+
+```
+mkdir /tmp/archetype
+mkdir /tmp/data
+docker run -it --rm  \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /tmp/archetype:/archetype \
+  -v /tmp/data:/data \
+  -v ~/.m2/repository:/m2 \
+  -v /etc/group:/etc/group:ro \
+  -v /etc/passwd:/etc/passwd:ro \
+  --user=1000:1000 \
+  --group-add 999 \
+    eclipse/che-cli:5.14.0 \
+      archetype generate
 ```
 
 To determine which user and group to use in the command type `id` in a bash shell - you'll get output similar to the following:
@@ -137,7 +155,7 @@ docker run -it --rm
   -v /c/archetype:/archetype
   -v /c/tmp:/data
   -v /c/Users/Tyler/.m2/repository:/m2
-    eclipse/che-cli:5.7.0
+    eclipse/che-cli:5.14.0
       archetype build
 ```
 
@@ -162,10 +180,18 @@ If this were a Linux system, there would be additional volume mounts required an
 Example:
 
 ```
-      -v /etc/group:/etc/group:ro \
-      -v /etc/passwd:/etc/passwd:ro \
-      --user=1000:1000  \
-      --group-add 999 \
+docker run -it --rm  \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /tmp/archetype:/archetype \
+  -v /tmp/data:/data \
+  -v ~/:/home/$USER/ \
+  -v /etc/group:/etc/group:ro \
+  -v /etc/passwd:/etc/passwd:ro \
+  --user=1000:1000 \
+  --group-add 999 \
+  -w /archetype/assembly \
+    eclipse/che-dev \
+      mvn clean install
 ```
 
 To determine which user and group to use in the command type `id` in a bash shell - you'll get output similar to the following:
@@ -196,7 +222,22 @@ docker run -it --rm
   -v /var/run/docker.sock:/var/run/docker.sock
   -v /c/archetype:/archetype
   -v /c/tmp:/data
-    eclipse/che-cli:5.7.0
+    eclipse/che-cli:5.14.0
+      archetype run
+```
+
+On Linux:
+
+```
+docker run -it --rm \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /tmp/archetype:/archetype \
+  -v /tmp/data:/data \
+  -v /etc/group:/etc/group:ro \
+  -v /etc/passwd:/etc/passwd:ro \
+  --user=1000:1000 \
+  --group-add 999 \
+    eclipse/che-cli:5.14.0 \
       archetype run
 ```
 
@@ -207,9 +248,19 @@ The exploded assembly is usually something like `assembly/assembly-main/target/e
 docker run -it --rm --name run-che \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v /c/tmp:/data \
-           -v /c/archetype/assembly/assembly-main/target/eclipse-che-5.7.0/eclipse-che-5.7.0:/assembly \
-              eclipse/che:5.7.0 start --skip:nightly"
+           -v /c/archetype/assembly/assembly-main/target/eclipse-che-5.14.0/eclipse-che-5.14.0:/assembly \
+              eclipse/che:5.14.0 start --skip:nightly
 ```
+
+On Linux:
+```
+docker run -it --rm --name run-che \
+           -v /var/run/docker.sock:/var/run/docker.sock \
+           -v /tmp/data:/data \
+           -v /tmp/archetype/assembly/assembly-main/target/eclipse-che-5.14.0/eclipse-che-5.14.0:/assembly \
+              eclipse/che:5.14.0 start --skip:nightly
+```
+
 
 Within the assembly itself is a `run.sh` script that works for Windows, Mac, and Linux to run the custom assembly using Docker. You can pass either `run.sh --che` or `run.sh --codenvy` to choose whether you are starting Che or Codenvy.
 
@@ -220,7 +271,22 @@ docker run -it --rm
   -v /var/run/docker.sock:/var/run/docker.sock
   -v /c/archetype:/archetype
   -v /c/tmp:/data
-    eclipse/che-cli:5.7.0
+    eclipse/che-cli:5.14.0
+      archetype stop
+```
+
+On Linux:
+
+```
+docker run -it --rm \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /tmp/archetype:/archetype \
+  -v /tmp/data:/data \
+  -v /etc/group:/etc/group:ro \
+  -v /etc/passwd:/etc/passwd:ro \
+  --user=1000:1000 \
+  --group-add 999 \
+    eclipse/che-cli:5.14.0 \
       archetype stop
 ```
 
