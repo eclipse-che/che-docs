@@ -66,7 +66,7 @@ docker run -it --rm
   -v /c/archetype:/archetype
   -v /c/tmp:/data
   -v /c/Users/Tyler/.m2/repository:/m2
-    eclipse/che-cli:5.7.0
+    eclipse/che-cli:5.14.0
       archetype generate
 ```
 
@@ -80,7 +80,7 @@ docker run -it --rm
   -v /c/archetype:/archetype
   -v /c/tmp:/data
   -v /c/Users/Tyler/.m2/repository:/m2
-    eclipse/che-cli:5.7.0
+    eclipse/che-cli:5.14.0
       archetype all --no:interactive
 ```
 
@@ -155,7 +155,7 @@ docker run -it --rm
   -v /c/archetype:/archetype
   -v /c/tmp:/data
   -v /c/Users/Tyler/.m2/repository:/m2
-    eclipse/che-cli:5.7.0
+    eclipse/che-cli:5.14.0
       archetype build
 ```
 
@@ -214,7 +214,7 @@ docker run -it --rm
   -v /var/run/docker.sock:/var/run/docker.sock
   -v /c/archetype:/archetype
   -v /c/tmp:/data
-    eclipse/che-cli:5.7.0
+    eclipse/che-cli:5.14.0
       archetype run
 ```
 
@@ -225,8 +225,8 @@ The exploded assembly is usually something like `assembly/assembly-main/target/e
 docker run -it --rm --name run-che \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v /c/tmp:/data \
-           -v /c/archetype/assembly/assembly-main/target/eclipse-che-5.7.0/eclipse-che-5.7.0:/assembly \
-              eclipse/che:5.7.0 start --skip:nightly"
+           -v /c/archetype/assembly/assembly-main/target/eclipse-che-5.14.0/eclipse-che-5.14.0:/assembly \
+              eclipse/che:5.14.0 start --skip:nightly"
 ```
 
 Within the assembly itself is a `run.sh` script that works for Windows, Mac, and Linux to run the custom assembly using Docker. You can pass either `run.sh --che` or `run.sh --codenvy` to choose whether you are starting Che or Codenvy.
@@ -238,7 +238,7 @@ docker run -it --rm
   -v /var/run/docker.sock:/var/run/docker.sock
   -v /c/archetype:/archetype
   -v /c/tmp:/data
-    eclipse/che-cli:5.7.0
+    eclipse/che-cli:5.14.0
       archetype stop
 ```
 
