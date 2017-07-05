@@ -87,7 +87,7 @@ docker run -it --rm
 This command:
 
 #### Linux
-On Linux, the Maven utility launched by the CLI may have problems writing files to your host system during the generation phase. To overcome this limitation, in the `docker run ...` syntax before the image name add `--user={uid}` where UID is the user identity of your current users. This user identity will be passed into the various CLI utilities to execute under that user identity.
+On Linux, the Maven utility launched by the CLI may have problems writing files to your host system during the generation phase. To overcome this limitation create the host mount directories before launching docker, and in the `docker run ...` syntax before the image name add `--user={uid}` where UID is the user identity of your current users. This user identity will be passed into the various CLI utilities to execute under that user identity.
 
 Example
 
@@ -96,6 +96,24 @@ Example
       -v /etc/passwd:/etc/passwd:ro \
       --user=1000:100  \
       --group-add 999 \
+```
+
+Therefore a full set of commands may look like this to do an interactive generate:
+
+```
+mkdir /tmp/archetype
+mkdir /tmp/data
+docker run -it --rm  \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /tmp/archetype:/archetype \
+  -v /tmp/data:/data \
+  -v ~/.m2/repository:/m2 \
+  -v /etc/group:/etc/group:ro \
+  -v /etc/passwd:/etc/passwd:ro \
+  --user=1000:1000 \
+  --group-add 999 \
+    eclipse/che-cli:5.14.0 \
+      archetype generate
 ```
 
 To determine which user and group to use in the command type `id` in a bash shell - you'll get output similar to the following:
