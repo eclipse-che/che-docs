@@ -42,8 +42,8 @@ Implement the [LanguageServerLauncher interface](https://github.com/eclipse/che/
 ```java
 public interface LanguageServerLauncher {
 
-    /**
-     * Initializes and starts language server.
+    //**
+     * Initializes and starts a language server.
      *
      * @param projectPath
      *      absolute path to the project
@@ -53,21 +53,18 @@ public interface LanguageServerLauncher {
     LanguageServer launch(String projectPath, LanguageClient client) throws LanguageServerException;
 
     /**
-     * Gets the ID of the language this launcher supports
+     * Gets the language server description
      */
-    String getLanguageId();
+    LanguageServerDescription getDescription();
 
     /**
-     * Indicates if language server is installed and is ready to be started.
-     * Returns {@code true} if everything is ok and {@code false} otherwise.
-     * {@code false} might be return when language server agent failed and couldn't create launcher file.
+     * Indicates if language server is installed and is ready to be started.  
      */
     boolean isAbleToLaunch();
 }
 ```
 
-You will need a [LanguageDescription](https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver-shared/src/main/java/org/eclipse/che/api/languageserver/shared/model/LanguageDescription.java)
-to describe the file types that your language server will be registered with.
+[LanguageServerDescription](https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver-shared/src/main/java/org/eclipse/che/api/languageserver/shared/model/LanguageServerDescription.java) and [LanguageDescription](https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver-shared/src/main/java/org/eclipse/che/api/languageserver/shared/model/LanguageDescription.java) are used to describe the types of file your language server will make contributions to.
 
 Follow our language server launchers and descriptions examples:
 
@@ -76,6 +73,8 @@ Follow our language server launchers and descriptions examples:
 * [JSON](https://github.com/eclipse/che/blob/master/plugins/plugin-json/che-plugin-json-server/src/main/java/org/eclipse/che/plugin/json/languageserver/JsonLanguageServerLauncher.java)
 
 ### 4. Bind the Language Server Launcher and Language Description
+A language description tells the system that a LSP-based editor should be used for a particular file and associates a language identifier with
+those files. It can be configured in your plugin's module definition:
 
 ```java
 @DynaModule
@@ -92,6 +91,15 @@ public class MyLanguageServerModule extends AbstractModule {
         Multibinder.newSetBinder(binder(), LanguageDescription.class).addBinding().toInstance(description);
     }
 }
+```
+Any time results from language servers are required, the system finds all contributing language servers by matching the their `LanguageServerDescription` against the file URI and the associated language identifier. A language server can register multiple `DocumentFilter` instances. The results of the operations are merged. When only a single language server can be used (like when formatting, for example), servers will be prioritized, with those matching ".*" at the end of the list. If multiple servers have the same priority, the first registered will be chosen. For example, here is the language server decription for the JSON server:
+
+```java
+ description = new LanguageServerDescription(
+    "org.eclipse.che.plugin.json.languageserver",
+    null,
+    Arrays.asList(new DocumentFilter(JsonModule.LANGUAGE_ID, ".*\\.(json|bowerrc|jshintrc|jscsrc|eslintrc|babelrc)",
+    null)));
 ```
 
 Once complete, compile and run Che. If everything has worked you will see your agent listed in the list of `Agents`:

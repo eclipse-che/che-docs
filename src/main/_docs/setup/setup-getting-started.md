@@ -123,6 +123,13 @@ docker run hello-world
 
 Sometimes Fedora and RHEL/CentOS users will encounter issues with SElinux. Try disabling selinux with `setenforce 0` and check if resolves the issue. If using the latest docker version and/or disabling selinux does not fix the issue then please file a issue request on the [issues](https://github.com/eclipse/che/issues) page.
 
+#### Known Issues
+You can search Che's GitHub issues for items labeled `kind/bug` to see known issues.
+
+There are two known issues where features work on Docker 1.13+, but do not on Docker 1.12:
+1. SELinux: https://github.com/eclipse/che/issues/4747
+2. `CHE_DOCKER_ALWAYS__PULL__IMAGE`: https://github.com/eclipse/che/issues/5503
+
 #### Internal/External Ports
 The default port required to run Che is `8080`. Che performs a preflight check when it boots to verify that the port is available. You can pass `-e CHE_PORT=<port>` in Docker portion of the start command to change the port that Che starts on.
 
