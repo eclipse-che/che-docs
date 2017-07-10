@@ -50,6 +50,12 @@ You can preview an HTML file by right-clicking it in the project explorer and se
 
 ![che-previewHTML.jpg]({{base}}{{site.links["che-previewHTML.jpg"]}})
 
+# Preview Images
+You can easily preview image by simple double-clicking it in the project explorer. The image will be opened in the editor area.
+Also you can open the image in the dedicated browser tab by right-clicking the image in the project explorer and selecting `Preview` from the popup menu.
+
+![preview-in-context-menu.png]({{base}}{{site.links["preview-in-context-menu.png"]}})
+
 # Editor Basics
 
 ## Navigate to file
