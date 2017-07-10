@@ -12,15 +12,15 @@ A multi-machine recipe allows multiple runtimes to communicate/share data. In th
 Use your Codenvy.io account for the following or if you are using {{ site.product_formal_name }} refer to the [getting started documentation]({{base}}{{site.links["setup-getting-started"]}}) 
 
 # 2. Create Workspace  
-Click the "Dashboard" menu item in the dashboard. Click the "New Workspace" button if there are existing workspaces or make sure "Select Source" category is set to "New from blank, template, or sample project" if one or more workspace exists.
+Click the "Dashboard" menu item in the dashboard. Click the "Create Workspace" button if there are existing workspaces.
 
 ![che-multimachine-tutorial3.jpg]({{base}}{{site.links["che-multimachine-tutorial3.jpg"]}}){:style="width: 60%"}
 
-Select "Java-MySQL" from the list of available stacks.
+Select "Multi Machine" section and "Java-MySQL" stack from the list of available stacks.
 
 ![che-multimachine-tutorial1.jpg]({{base}}{{site.links["che-multimachine-tutorial1.jpg"]}}){:style="width: 60%"}
 
-The other workspace information can remain as it is. Click the "create" button at the bottom to create the workspace.
+The other workspace information can remain as it is. Click the "create" button at the bottom or at the right top to create the workspace.
 
 ![che-multimachine-tutorial2.jpg]({{base}}{{site.links["che-multimachine-tutorial2.jpg"]}}){:style="width: 60%"}
 

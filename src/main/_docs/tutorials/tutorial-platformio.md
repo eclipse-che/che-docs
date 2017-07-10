@@ -19,7 +19,7 @@ This example uses the EmonTX connected to a RaspberryPi3 with the PlatformIO rem
 
 5. Go to the Che dashboard and  create workspace from ```PlatformIO``` stack
 
-![2f03377e-a2e7-11e6-8464-24cd8d2fd2b4.png]({{base}}{{site.links["2f03377e-a2e7-11e6-8464-24cd8d2fd2b4.png"]}})
+![platformIO-stack.jpg]({{base}}{{site.links["platformIO-stack.jpg"]}})
 
 6. In Che choose Workspace > Import Project and import the EmonTX firmware code from GitHub: https://github.com/openenergymonitor/emonTxFirmware.git
 

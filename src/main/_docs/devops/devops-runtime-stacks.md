@@ -22,22 +22,12 @@ To create a new workspace in the user dashboard:
 - Click `Workspaces` > `Add Workspace`
 - Hit the “+” next to `Recent Workspaces`
 
-![che-stacks1.jpg]({{base}}{{site.links["che-stacks1.jpg"]}})  
+![che-stacks1.png]({{base}}{{site.links["che-stacks1.png"]}})  
 
-The stack selection form is available in the “Select Workspace” section, it allows you to choose stacks provided with Che or create and edit your own stack.
+The stack selection form is available in the “Select Stack” section, it allows you to choose stacks provided with Che or create and edit your own stack.
 
-## Ready-To-Go Stacks
-Che provides ready-to-go stacks for various technologies. These stacks provide a default set of tools and commands that are related to a particular technology.
-
-## Stack Library
-Che provides a wider range of stacks which you can browse from the “Stack library” tab. This list contains advanced stacks which can also be used as runtime configuration for your workspaces.
-
-![che-stacks2.jpg]({{base}}{{site.links["che-stacks2.jpg"]}})
-
-## Custom Stack
-User can create their own stack from the "Custom stack" tab. Using Che's interface the user can provide a [runtime recipe]({{base}}{{site.links["devops-runtime-recipes"]}}) from an existing external recipe file or by writing a recipe directly.
-
-Che provides a form that can be used to write a recipe directly or copied/pasted from an existing location. A recipe can be written directly as a Dockerfile or a Docker compose file and Che will detect which one it is automatically based on syntax. Refer to [runtime recipes]({{base}}{{site.links["devops-runtime-recipes"]}}) documentation for additional information.
+## Quick Start Stacks
+Che provides quick start stacks for various technologies. These stacks provide a default set of tools and commands that are related to a particular technology.
 
 # Stack Administration  
 ## Stack Loading
