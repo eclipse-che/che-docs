@@ -40,7 +40,7 @@ Workspaces are both portable and shared. Multiple browser clients (and humans!) 
 
 ![che_farm.png]({{ base }}/docs/assets/imgs/che_farm.png)
 
-You can deploy Che in a farm with an Nginx router. Each user would be provisioned their own Che instance, either running on its own port in a VM. In this configuration, each user can have their own workspaces and identity profile. Note that since Che exports two IP addresses, one for Che and another for the workspace machine running Docker, your router will need to manage traffic for all possible routes between browser, Che and machines.{%assign docs_todo="Provide link"%} 
+You can deploy Che in a farm with an Nginx router. Each user would be provisioned their own Che instance, either running on its own port in a VM. In this configuration, each user can have their own workspaces and identity profile. Note that since Che exports two IP addresses, one for Che and another for the workspace machine running Docker, your router will need to manage traffic for all possible routes between browser, Che and machines.{%assign docs_todo="Provide link"%}
 
 ## Scaling Che with Codenvy  
 Your Eclipse Che workspaces and plug-ins will work within [Codenvy](http://codenvy.com). Codenvy is a multi-tenant, multi-user and elastic cloud installed locally or used as a SaaS:
@@ -80,9 +80,10 @@ The upgrade process:
 5. Backs up your installation
 6. Initializes the new version
 7. Starts Che
+8. Important! If `CHE_PREDEFINED_STACKS_RELOAD__ON__START` is set to false, stacks packaged into new binaries won't be saved into a database.
 
 # Backup
-You can run `che backup` to create a copy of the relevant configuration information, user data, projects, and workspaces. We do not save workspace snapshots as part of a routine backup exercise. You can run `che restore` to recover che from a particular backup snapshot. The backup is saved as a TAR file that you can keep in your records. You can then use `che restore` to recover your user data and configuration.
+You can run `che backup` to create a copy of the relevant configuration information, user data, projects, and workspaces. We do not save workspace snapshots as part of a routine backup exercise. You can run `che restore` to recover Che from a particular backup snapshot. The backup is saved as a TAR file that you can keep in your records. You can then use `che restore` to recover your user data and configuration.
 
 # Security
 Eclipse Che is designed as a single identity system to be used by an individual or small team working in a trusted environment. The following outlines some of the security capabilities and known gaps in Che.
@@ -115,11 +116,9 @@ For a simple separation of workspaces for small development teams, without requi
 Codenvy provides an implementation of Eclipse Che that is multi-tenant, multi-user with distributed access and permissions controls for teams. Each user has a different login which enables access controls, workspace collaboration, and other forms of sharing. You can install Codenvy with a CLI that is nearly identical to Che with `docker run codenvy/cli start`. Learn more at [https://codenvy.com](https://codenvy.com).
 
 ## Authenticated Access  
-The Che server itself is unauthenticated. Che is extensible allowing different dashboard front ends or proxies to implement authenticated access to the Che server. Bitnami's deployment of Eclipse Che includes an authenticated front-end implemented as a proxy. Many users deploy nginx in front of Che to provide an authentication layer within the system.
+The Che server itself is unauthenticated. Che is extensible allowing different dashboard front ends or proxies to implement authenticated access to the Che server.
 
-Bitnami requires an existing account with cloud providers such as Google, Amazon AWS, or Microsoft Azure which may require monthly service charges from cloud providers.  Refer to [Usage: Private Cloud]({{ base }}/docs/setup/bitnami/index.html) for additional information.
-
-Codenvy also provides an implementation of Eclipse Che that has multi-user and multi-tenant capabilities.
+Codenvy provides an implementation of Eclipse Che that has authentication, multi-user and multi-tenant capabilities.
 
 ## HTTP/S  
 HTTPS is not provided by Eclipse Che. It would require a more complex architecture with multi-service deployments, making Che more challenging for developers and small teams to use. Codenvy gives you the option of running the system with HTTP/S and providing your own SSL certificate.

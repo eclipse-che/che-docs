@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: SSH
+title: Chedir - SSH
 excerpt: "SSH into your workspace"
 layout: docs
 permalink: /:categories/ssh/

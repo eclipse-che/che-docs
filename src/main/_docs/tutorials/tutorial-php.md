@@ -33,6 +33,8 @@ The PHP stack has the `run php script` command that allows you to run the curren
 
 While you have the `index.php` file on focus in the PHP editor, run the `run php script` command in the CMD command widget. "Hello World!" will be printed in the Terminal panel.
 
+![php.png]({{base}}{{site.links["tutorial-php-1.png"]}})
+
 # 4. Run as a Web App
 
 The PHP stack includes the Apache Web Server and has commands for starting, stopping and restarting it.
@@ -40,6 +42,8 @@ The PHP stack includes the Apache Web Server and has commands for starting, stop
 `start apache` will start the server and tail apache error and access logs. It will also produce a preview URL that will point to your current project directory that Apache is already listening (Document root is changed to `projects`).
 
 You should see a Hello World page. Open `index.php`, edit it, refresh the preview page in your browser to see live changes.
+
+![php.png]({{base}}{{site.links["tutorial-php-2.png"]}})
 
 # 5. Debug
 
@@ -54,8 +58,8 @@ In project root, create `composer.json` file with the following contents:
 
 ```json
 {
-    "require": {
-        "phpunit/phpunit": "5.7.*"
+    "require-dev": {
+        "phpunit/phpunit": "^6.1"
     }
 }
 ```
@@ -66,7 +70,7 @@ In the `Processes` panel, click New Terminal (+) button. This will open up a bas
 
 ```sh
 $ cd /projects/web-php-simple
-$ composer update --no-dev
+$ composer update
 ```
 
 This will install the `phpunit` framework into `vendor` directory in the project.
@@ -76,9 +80,9 @@ Now, let's write a simple test. Create a `test.php` file:
 ```php
 <?php
 
-require_once 'vendor/autoload.php';
+use PHPUnit\Framework\TestCase;
 
-class SimpleTest extends PHPUnit_Framework_TestCase {
+class SimpleTest extends TestCase {
 
     public function testTrueIsTrue() {
         $foo = true;
@@ -87,33 +91,27 @@ class SimpleTest extends PHPUnit_Framework_TestCase {
 }
 ```
 
-This test basically checks nothing but demonstrates use of composer-provided frameworks. Having required `vendor/autoload.php` it is possible to use any functions of `phpunit`.
+This test basically checks nothing but demonstrates use of composer-provided frameworks.
 
-Run the test:
+Run the test. Right-click on the `test.php` file and select `Run Test` > `PHPUnit`. The test will be executed and the result will be displayed in the `Test Results` pane.
 
-```sh
-$ vendor/bin/phpunit test.php
-PHPUnit 5.7.9 by Sebastian Bergmann and contributors.
+![phpunit-results.png]({{base}}{{site.links["phpunit-results.png"]}})
 
-.                                                                   1 / 1 (100%)
-
-Time: 27 ms, Memory: 2.75MB
-
-OK (1 test, 1 assertion)
-```
-
+{% if TODO==0 %}
 # 7. Create a REST Service With Slim  
 Slim makes it possible to create REST services. Let's add this framework to `composer.json`:
 
 ```json
 {
     "require": {
-        "phpunit/phpunit": "5.7.*",
         "slim/slim": "2.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.1"
     }
 }
 ```
-Run `composer update --no-dev` to download all `slim` dependencies. The framework is ready to be used now. Let's modify `index.php` so that it looks like this:
+Run `composer update` to download all `slim` dependencies. The framework is ready to be used now. Let's modify `index.php` so that it looks like this:
 
 ```php
 <?php
@@ -142,3 +140,4 @@ Apache needs to be restarted. Run `restart apache` command in the CMD command wi
 Now, navigate to `http://<your-che-host>:$port/$project/Che` to find `Hello Che` in a response:
 
 ![slim.png]({{base}}{{site.links["slim.png"]}})
+{% endif %}

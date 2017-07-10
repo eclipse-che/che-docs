@@ -90,10 +90,12 @@ Refer to [GitHub using OAuth]({{base}}{{site.links["ide-git-svn"]}}#github-oauth
 Refer to [GitLab using OAuth]({{base}}{{site.links["ide-git-svn"]}}#gitlab-oauth) for configuration information.
 
 # Stacks
-[Stacks]({{ base }}/docs/workspace/stacks/index.html) define the recipes used to create workspace runtimes. They appear in the stack library of the dashboard. You can create your own.
+[Stacks]({{ base }}{{site.links["devops-runtime-stacks"]}}) define the recipes used to create workspace runtimes. They appear in the stack library of the dashboard. You can create your own.
+
+`CHE_PREDEFINED_STACKS_RELOAD__ON__START` (false by default) defines stack loading policy. When set to false, stacks are loaded from a json file only once - when database is initialized. When set to true, json is sourced every time Che server starts.
 
 # Sample Projects
-Code [sampes]({{ base }}/docs/workspace/samples/index.html) allow you to define sample projects that are cloned into a workspace if the user chooses it when creating a new project. You can add your own.
+Code [samples]({{ base }}{{site.links["devops-project-samples"]}}) allow you to define sample projects that are cloned into a workspace if the user chooses it when creating a new project. You can add your own.
 
 # Workspace Limits
 You can place limits on how users interact with the system to control overall system resource usage. You can define how many workspaces created, RAM consumed, idle timeout, and a variety of other parameters. See "Workspace Limits" in `che.env`.
@@ -122,7 +124,7 @@ Che relies on web sockets to stream content between workspaces and the browser. 
 ## Topology  
 The Che server runs in its own Docker container, "Che Docker Container", and each workspace gets an embedded runtime which can be a set of additional Docker containers, "Docker Container(n)". All containers are managed by a common Docker daemon, "docker-ip", making them siblings of each other. This includes the Che server and its workspaces - each workspace runtime environment has a set of containers that is a sibling to the Che server, not a child.
 
-![Capture.PNG]({{ base }}/docs/assets/imgs/Capture.PNG)
+![Capture.PNG]({{ base }}{{site.links["Capture.PNG"]}})
 
 ## Connectivity  
 The browser client initiates communication with the Che server by connecting to `che-ip`. This IP address must be accessible by your browser clients. Internally, Che runs on Tomcat which is bound to port `8080`. This port can be altered by setting `CHE_PORT` during start or in your `che.env`.
@@ -149,7 +151,7 @@ Che goes through a progression algorithm to establish the protocol, IP address a
 #        4. Else, use DOCKER_HOST
 #    - If CHE_DOCKER_SERVER__EVALUATION__STRATEGY is 'docker-local':
 #        1. Use the address of the workspace container within the docker network
-#        2. If address cannot be read, use steps 3 and 4 from the default strategy. 
+#        2. If address cannot be read, use steps 3 and 4 from the default strategy.
 #
 # Browser --> Workspace Connection:
 #    1. Use the value of che.docker.ip
@@ -190,7 +192,7 @@ docker exec -ti <che-container-name> curl http://<workspace-container-ip>:4401/w
 ```
 
 #### DNS Resolution
-The default behavior is for Che and its workspaces to inherit DNS resolver servers from the host. You can override these resolvers by setting `CHE_DNS_RESOLVERS` in the `che.env` file and restarting Che. DNS resolvers allow programs and services that are deployed within a user workspace to perform DNS lookups with public or internal resolver servers. In some environments, custom resolution of DNS entries (usually to an internal DNS provider) is required to enable the Che server and the workspace runtimes to have lookup ability for internal services. 
+The default behavior is for Che and its workspaces to inherit DNS resolver servers from the host. You can override these resolvers by setting `CHE_DNS_RESOLVERS` in the `che.env` file and restarting Che. DNS resolvers allow programs and services that are deployed within a user workspace to perform DNS lookups with public or internal resolver servers. In some environments, custom resolution of DNS entries (usually to an internal DNS provider) is required to enable the Che server and the workspace runtimes to have lookup ability for internal services.
 
 ```shell
 # Update your che.env with comma separated list of resolvers:
@@ -198,15 +200,39 @@ CHE_DNS_RESOLVERS=10.10.10.10,8.8.8.8
 ```
 
 #### Workspace Address Resolution Strategy
-By default, the Che server will connect to workspace containers according to the 'default' strategy. The order of precedence, Che will use `CHE_DOCKER_IP` if it is set, if not, it will use the address `docker-ip`. If `docker-ip` cannot be determined, it will default to `localhost` for Unix socket connections, and `DOCKER_HOST`. 
+By default, the Che server will connect to workspace containers according to the 'default' strategy. The order of precedence, Che will use `CHE_DOCKER_IP` if it is set, if not, it will use the address `docker-ip`. If `docker-ip` cannot be determined, it will default to `localhost` for Unix socket connections, and `DOCKER_HOST`.
 
-An alternative strategy is available, by setting `CHE_DOCKER_SERVER__EVALUATION__STRATEGY` to 'docker-local'. In this mode, Che will attempt to communicate with workspace containers directly, using `workspace-container-ip`, with `localhost`/`DOCKER_HOST` as a fallback as in the default strategy. This can avoid some issues with ephemeral ports and firewalls (see section 'Firewalls', below), but will cause workspace creation to fail if the Che server is configured to not launch workspaces within the same Docker network.
+Alternatives strategies are available by setting `CHE_DOCKER_SERVER__EVALUATION__STRATEGY`.
+By setting it to 'docker-local', Che will attempt to communicate with workspace containers directly, using `workspace-container-ip`, with `localhost`/`DOCKER_HOST` as a fallback as in the default strategy. This can avoid some issues with ephemeral ports and firewalls (see section 'Firewalls', below), but will cause workspace creation to fail if the Che server is configured to not launch workspaces within the same Docker network.
+
+By setting it to 'custom', Che will allow to customize the links by using a template by using the property che.docker.server_evaluation_strategy.custom.template that can be defined by using `CHE_DOCKER_SERVER__EVALUATION__STRATEGY_CUSTOM_TEMPLATE` environment variable.
+
+Here are macros available for the custom server evaluation strategy:
+ * serverName: server reference exposing the port (like tomcat8, ws-agent, etc)
+ * machineName: name of the machine of the workspace. (like devMachine)
+ * workspaceId: id of the workspace
+ * internalIp: IP of the internal address of che (che.docker.ip property)
+ * externalIP: IP of the external address of che
+ * externalAddresss : external address of che (che.docker.ip.external or if null che.docker.ip)
+ * chePort : Che listening port number of workspace master
+ * wildcardNipDomain : get external address transformed into a nip.io DNS sub-domain
+ * wildcardXipDomain : get external address transformed into a xip.io DNS sub-domain
+
+Here is an example `che.docker.server_evaluation_strategy.custom.template=<serverName>.<machineName>.<workspaceId>.<wildcardNipDomain>:<chePort>`
+
+#### Single-port routing.
+By enabling single-port, using `CHE_SINGLE_PORT=true` in `che.env` file , all browser traffic to Che or any workspace will be routed through the value that you have set to `CHE_PORT`, or 8080 if not set.
+Setting this property will transform the launch sequence of Che to launch a Traefik reverse proxy. The reverse proxy will act as the traffic endpoint for all browser communications.
+When a new workspace is started or stopped, Che will update Traefik's configuration with rules for how browser traffic should be routed to Che or a workspace.
+With single-port, each service running in a workspace and exposing ports has its own hostname. Example : workspace agent will have a hostname like : ws-agent.workspace-id....domain.name. By default the domain name will use nip.io which allow to provide wildcard DNS without any
+user configuration. The strategy used for the hosts is using the template provided by the `CHE_DOCKER_SERVER__EVALUATION__STRATEGY_CUSTOM_TEMPLATE` property with default value `<serverName>.<machineName>.<workspaceId>.<wildcardNipDomain>:<chePort>`
+If you've your own domain and then DNS server, you may want to add wildcard DNS entry matching a pattern. For example updating the property to the value `<serverName>.<machineName>.<workspaceId>.che.foobar.com:<chePort>` will require a wildcard `*.che.foobar.com` entry in DNS server resolving to the IP of the che server.
 
 ## Docker Connectivity
 There are multiple techniques for connecting to Docker including Unix sockets, localhost, and remote connections over TCP protocol. Depending upon the type of connection you require and the location of the machine node running Docker, we use different parameters.
 
 ## Workspace Port Exposure  
-Inside your user's workspace containers, Che launches microservices on port `4401` and `4403`. We also launch SSH agents on port `22`. The bash terminal accessible in the workspace is also launched as an agent in the workspace on port `4411`. Custom stacks (configured in the dashboard) may expose additional services on different ports.
+Inside your user's workspace containers, Che launches microservices on port `4401` and `4403`. We also launch SSH agents on port `22`. The terminal accessible in the workspace is also launched as an agent in the workspace on port `4411`. Custom stacks (configured in the dashboard) may expose additional services on different ports.
 
 Docker uses ephemeral port mapping. The ports accessible to your clients start at port `32768` and go through a wide range. When we start services internal to Docker, they are mapped to one of these ports. It is these ports that the browser (or SSH) clients connect to, and would need to be opened if connecting through a firewall.
 
@@ -253,7 +279,7 @@ There are many third party firewall services. Different versions of Windows OS a
 6. In the `Name` dialog box, type a name and description for this rule, and then click `Finish`.
 
 # Docker
-Eclipse Che workspace runtimes are powered by one or more Docker containers. When a user creates a workpace, they do so from a [stack]({{base}}{{site.links["ws-stacks"]}}) which includes a Dockerfile or reference to a Docker image which will be used to create the containers for the workspace runtimes. Che stacks can pull that image from a public registry, like DockerHub, or a private registry. Images in a registry can be publicly visible or private, which require user credentials to access. You can also set up a private registry to act as a mirror to Docker Hub.  And, if you are running Eclipse Che behind a proxy, you can configure the Docker daemon registry to operate behind a proxy.
+Eclipse Che workspace runtimes are powered by one or more Docker containers. When a user creates a workpace, they do so from a [stack]({{base}}{{site.links["devops-runtime-stacks"]}}) which includes a Dockerfile or reference to a Docker image which will be used to create the containers for the workspace runtimes. Che stacks can pull that image from a public registry, like DockerHub, or a private registry. Images in a registry can be publicly visible or private, which require user credentials to access. You can also set up a private registry to act as a mirror to Docker Hub.  And, if you are running Eclipse Che behind a proxy, you can configure the Docker daemon registry to operate behind a proxy.
 
 ## Private Images  
 When users create a workspace in Eclipse Che, they must select a Docker image to power the workspace. We provide ready-to-go stacks which reference images hosted at the public Docker Hub, which do not require any authenticated access to pull. You can provide your own images that are stored in a local private registry or at Docker Hub. The images may be publicly or privately visible, even if they are part of a private registry.
@@ -301,17 +327,6 @@ CHE_WORKSPACE_AUTO__SNAPSHOT=false
 CHE_WORKSPACE_AUTO__RESTORE=false
 ```
 
-### Using Snapshots with Private Registries
-The default configuration of workspace snapshots is to save to local disk but you can configure Che to save your workspace snapshots to a private registry that you have installed, such as JFrog's Artifactory or Docker's Enterprise Registry. 
-
-```shell
-# Use a Docker registry for workspace snapshots. If false, snaps are saved to disk.
-CHE_DOCKER_REGISTRY__FOR__SNAPSHOTS=false
-
-# Registry snapshot namespace
-CHE_DOCKER_NAMESPACE=NULL
-```
-
 ### Save Workspace Snapshots in a Private Registry
 The default configuration for workspace snapshots is to have them written to disk as TAR files. This is faster, but not centralized. You can have workspace snapshots saved in a private registry instead. In `che.env`:
 
@@ -320,12 +335,25 @@ CHE_DOCKER_REGISTRY__FOR__SNAPSHOTS=true
 CHE_DOCKER_REGISTRY=<registry-url>
 ```
 
+### Managing Snapshots in Registries
+Che marks old snapshots for deletion from the registry by deleting the snapshot manifests which reference the image layers. However, the image layers themselves (which consume the disk space) must be removed by the registry itself as part of a garbage collection (it removes layers that have no manifests). Che does not automatically trigger a GC event in the registry because during GC the registry needs to be in read-only mode which could cause new image pushes to fail.
+
+We recommend either triggering the GC manually from time-to-time or when disk space becomes limited and when it's known that images aren't being pushed to the registry. Alternatively, registry GCs can be scheduled if there's a consistent time of day when there's a low likelihood of pushes to the registry.
+
+To execute the GC in a registry on a host (local or remote):
+`bin/registry garbage-collect </path/to/config.yml>`
+
+To execute the GC in a registry inside a container:
+`docker exec -ti <registry container name/id> bin/registry garbage-collect /etc/docker/registry/config.yml`
+
+Read more about registries in the [Docker documentation](https://docs.docker.com/registry/).
+
 ## Custom Dockerfiles and Composefiles for Workspaces
 Within Che, your workspaces are powered by a set of runtime environments. The default runtime is Docker. Typically, admins have pre-built images in a Docker registry which are pulled when the workspace is created. You can optionally provide custom Dockerfiles (or let your users provide their own Dockerfiles), which will dynamically create a workspace image when a user creates a new workspace.
 
 To use your custom Dockerfiles, you can:
 
-1. Create a [custom stack]({{ base }}/docs/workspace/stacks/index.html#custom-stack), which includes a [recipe]({{ base }}/docs/workspace/recipes/index.html) with your Dockerfile.
+1. Create a [custom stack]({{ base }}{{site.links["devops-runtime-stacks"]}}#custom-stack), which includes a [recipe]({{ base }}{{site.links["devops-runtime-recipes"]}}) with your Dockerfile.
 2. Or, users can create a custom recipe when creating a workspace that references your registry.
 
 ## Privileged Mode
@@ -342,14 +370,43 @@ CHE_DOCKER_PRIVILEGED=true
 If you are running a private registry internally to your company, you can [optionally mirror Docker Hub](https://docs.docker.com/registry/recipes/mirror/). Your private registry will download and cache any images that your users reference from the public Docker Hub. You need to [configure your Docker daemon to make use of mirroring](https://docs.docker.com/registry/recipes/mirror).
 
 ## Using Docker In Workspaces
-If you'd like your users to work with projects which have their own Docker images and Docker build capabilities inside of their workspace, then you need to configure the workspace to work with Docker. You have two options:
+If you'd like your users to work with projects which have their own Docker images and Docker build capabilities inside of their workspace, then you need to configure the workspace to work with Docker. You have three options:
 
-1. Activate Docker's prvileged mode, where your user workspaces have access to the host.
-2. Configure Che to setup workspaces to volume mount your host Daemon
+1. Activate Docker's privileged mode, where your user workspaces have access to the host.
+```shell
+# Update your codenvy.env to allow all Codenvy workspaces machines/containers privileged rights:
+CHE_DOCKER_PRIVILEGED=true;
+```
+2. Configure Che's workspaces to volume mount the host docker daemon socket file.
+```shell
+# Update your codenvy.env to allow all Codenvy workspaces to volume mount their host Daemon when starting:
+CHE_WORKSPACE_VOLUME=/var/run/docker.sock:/var/run/docker.sock;
+```
+3. Configure Docker daemon to listen to listen to tcp socket and specify `DOCKER_HOST` environment variable in workspace machine. Each host environment will have different network topology/configuration so below is only to be used as general example.
+Configure your Docker daemon to listen on TCP.  First, add the following to your Docker configuration file (on Ubuntu it's `/etc/default/docker` - see the Docker docs for the location for your OS):
 
-These two tactics will allow user workspaces to perform `docker` commands from within their workspace to create and work with Docker containers that will be outside the workspace. In other words, this makes your user's workspace feel like their laptop where they would normally be performing `docker build` and `docker run` commands.
+Second, export `DOCKER_HOST` variable in your workspace. You can do this in the terminal or make it permanent by adding `ENV DOCKER_HOST=tcp://$IP:2375` to a workspace recipe, where `$IP` is your docker daemon machine IP.
 
-You will need to make sure that your user's workspaces are powered from a stack that has Docker installed inside of it. Che's default images do not have Docker installed, but we have sample stacks (see the Che in Che stack).
+```shell
+# Listen using the default unix socket, and on specific IP address on host.
+# This will vary greatly depending on your host OS.
+sudo dockerd -H unix:///var/run/docker.sock -H tcp://0.0.0.0:2375
+# Verify that the Docker API is responding at: http://$IP:2375/containers/json
+```
+```shell
+# In workspace machine
+docker -H tcp://$IP:2375 ps
+
+# Shorter form
+export DOCKER_HOST="tcp://$IP:2375"
+docker ps
+```
+
+These three tactics will allow user workspaces to perform `docker` commands from within their workspace to create and work with Docker containers that will be outside the workspace. In other words, this makes your user's workspace feel like their laptop where they would normally be performing `docker build` and `docker run` commands.
+
+You will need to make sure that your user's workspaces are powered from a stack that has Docker installed inside of it. Che's default Docker recipe images do not have Docker installed, but there is a sample Docker recipe image eclipse/alpine_jdk8 created from our [dockerfile](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/alpine_jdk8/Dockerfile) that includes docker which can be used as new stack's base image. Refer to the [che-in-che tutorial]({{ base }}({{base}}{{site.links["tutorial-che-in-che"]}}) for additional information.
+
+{% assign todo="SSH tunneling can also allow for using desktop docker daemon." %}
 
 # Development Mode
 You can debug the Che binaries that are running within the Che server. You can debug either the binaries that are included within the `eclipse/che-server` image that you download from DockerHub or you can mount a local Che git repository to debug binaries built in a local assembly. By using local binaries, this allows Che developers to perform a rapid edit / build / run cycle without having to rebuild Che's Docker images.

@@ -8,6 +8,9 @@ permalink: /:categories/gradle/
 {% include base.html %}
 Gradle is an open source build automation system that builds upon the concepts of Apache Ant and Apache Maven and introduces a Groovy-based domain-specific language (DSL) instead of the XML form used by Apache Maven of declaring the project configuration.
 
+Che currently only _supports Gradle on the command line, but does not yet have a native project type like it does for Maven (which can inspect the dependencies list and automatically download them).  The command line configuration of Gradle means that you either use the javac or maven project type, but then configure classpath and other variables in the workspace to work with Gradle._  Please watch [issue #2669](https://github.com/eclipse/che/issues/2669) to track progress about this feature.
+
+
 *Instructions - Create a New Project*
 ```text  
 # When on the User Dashboard, create a custom stack. The recipe goes as follows:

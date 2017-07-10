@@ -16,9 +16,8 @@ Eclipse Che provides:
 
 # Getting Started  
 You can get started with Che by:
-- [Installing it locally]({{ base }}/docs/setup/getting-started/index.html)
+- [Installing it]({{ base }}/docs/setup/getting-started/index.html)
 - [Creating a hosted SaaS account]({{ base }}/docs/setup/getting-started-saas-cloud/index.html)
-- [Installing it in a cloud instance you control]({{ base }}/docs/setup/bitnami/index.html)
 
 # Workspace Model  
 
@@ -29,7 +28,7 @@ Each workspace is isolated from one another and is responsible for managing the 
 ![Docker--CodenvyMeeting(1).png]({{ base }}/docs/assets/imgs/Docker--CodenvyMeeting(1).png)
 A workspace contains one or more runtimes. The default runtime within our workspaces are Docker containers, but these runtimes can be replaced with other types of "machines" that offer different characteristics. We, for example, provide an SSH machine type and will soon provide localhost machines. The advantage of Docker as the runtime type allows users to define the contents of their runtime using Dockerfiles, for which we can then dynamically construct workspace runtimes without the user having to learn a lot of complex Docker syntax.
 ![Docker--CodenvyMeeting(2).png]({{ base }}/docs/assets/imgs/Docker--CodenvyMeeting(2).png)
-A workspace can have 0..n projects, with each project mapping to 0..1 remote version control repositories such as git, subversion, or mercurial. Projects are mounted into the workspace, so that they are available both inside of the workspace and also available on long term storage. Each project has a "type", such as "maven", which when selected will activate a series of plugins that alter the behavior of the workspace to accommodate that project type. Projects can have different types and they can also have modules which are sub-portions of a project that have their own typing and behaviors.
+A workspace can have 0..n projects, with each project mapping to 0..1 remote version control repositories such as git, subversion, or mercurial. Projects are mounted into the workspace, so that they are available both inside of the workspace and also available on long term storage. Each project has a "type", such as "maven", which when selected will activate a series of plugins that alter the behavior of the workspace to accommodate that project type. Projects can have different types and they can also have remodules which are sub-portions of a project that have their own typing and behaviors.
 ![Docker--CodenvyMeeting(3).png]({{ base }}/docs/assets/imgs/Docker--CodenvyMeeting(3).png)
 Each workspace has its own private browser IDE hosted within it. The browser IDE provided by Che is packaged as JavaScript and CSS, but our IDE could be replaced with other IDEs. Since each workspace has its own server runtimes, each workspace can have a customized IDE with different plugins packaged within it.
 ![Docker--CodenvyMeeting(4).png]({{ base }}/docs/assets/imgs/Docker--CodenvyMeeting(4).png)

@@ -1,6 +1,6 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Factories
+title: Chedir - Factories
 excerpt: "Convert Chefiles for execution by factories"
 layout: docs
 permalink: /:categories/factories/

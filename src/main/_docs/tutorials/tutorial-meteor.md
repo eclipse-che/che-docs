@@ -27,7 +27,7 @@ When in User Dashboard, go to `Workspaces` tab and click `(+)` button. It will t
 We’ll create a new workspace using recipe, so choose an appropriate option in the menu.
 
 ### Select Stack
-Our workspace will be created from a **Custom Stack** (tab on the far right). We’ll use a certified Debian based Codenvy image with NodeJS 5.6.0 and Meteor installed ([Recipe](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/meteor/latest/Dockerfile)).
+Our workspace will be created from a **Custom Stack** (tab on the far right). We’ll use a certified Debian based Codenvy image with NodeJS 5.6.0 and Meteor installed ([Recipe](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/meteor/Dockerfile)).
 
 Our custom recipe will be:
 
@@ -58,7 +58,7 @@ Preview URL is very important. When a process starts on a particular port in the
 `http://${server.port.3000}`  
 
 `${server.port.3000}` will return `currentHost:mappedPort`.
-See: [IDE Macros]({{ base }}{{base}}{{site.links["ide-commands"]}}#macros).
+See: [IDE Macros]({{ base }}{{site.links["ide-commands"]}}).
 
 If you switch to a Machine perspective, Servers tab, you will find all available port mappings, including the meteor one.
 
@@ -69,8 +69,8 @@ Save your custom command, run it and click the preview URL. Congrats! Your first
 
 `eclipse/node` image is built on top of eclipse/ubuntu_jre that has all the things required to run a Che workspace. Node installation was performed according to instructions in the official `node` Dockerfiles on DockerHub.
 
-If you need a different node version, we recommend taking a look at the original [Dockerfile](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/meteor/ubuntu/Dockerfile) and grab instructions from official [Node Dockerfiles](https://github.com/nodejs/docker-node/tree/0c722500f66fb5f606a57824babe9798ae98667b).
-
+If you need a different node version, we recommend taking a look at the original [Dockerfile](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/meteor/Dockerfile) and grab instructions from official [Node Dockerfiles](https://github.com/nodejs/docker-node/tree/0c722500f66fb5f606a57824babe9798ae98667b).
+[]
 ## Can I install anything through npm?
 
 Yes, if you need things like bower, gulp, ionic and what not, just add an extra RUN instruction to your custom recipe:

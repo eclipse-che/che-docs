@@ -1,16 +1,20 @@
+[https://localhost:8080/f?url=https://github.com/eclipse/che-docs](https://localhost:8080/f?url=https://github.com/eclipse/che-docs)
+
 # Eclipse Che Docs 
 Eclipse Che uses Jekyll 3.3.1 to generate documentation from this reposistory as a static html webpages. 
-
-## Viewing Generated Documentation
-Latest shipped release of documentation can viewed at [https://www.eclipse.org/che/docs/](https://www.eclipse.org/che/docs/). 
-
-Nightly documentation of this repository and can be viewed at [https://www.eclipse.org/che/docs-versions/nightly/](https://www.eclipse.org/che/docs-versions/nightly/). 
-
-## Viewing Generated Documentation
 
 This repository houses documentation for Eclipse Che ([repo](https://github.com/eclipse/che) / [site](https://eclipse.com/che/)). Content is held in markdown files in [/src/main/_docs](https://github.com/codenvy/che-docs/tree/master/src/main/_docs). Images should be placed in [/src/main/_docs/assets/imgs](https://github.com/codenvy/che-docs/tree/master/src/main/_docs/assets/imgs).
 
 Docs are built using Jekyll and the output is static HTML that is hosted at [https://eclipse.com/che/docs](https://eclipse.com/che/docs) and in the product at `{che-domain}/docs`.
+
+### Viewing Generated Documentation
+- Documentation for the latest release: [https://www.eclipse.org/che/docs/](https://www.eclipse.org/che/docs/)
+- Documentation for nightly builds: [https://www.eclipse.org/che/docs-versions/nightly/](https://www.eclipse.org/che/docs-versions/nightly/)
+
+# Editing Docs
+[https://localhost:8080/f?url=https://github.com/eclipse/che-docs](https://localhost:8080/f?url=https://github.com/eclipse/che-docs)
+  
+Get a workpsace on `codenvy.io` which include all dependencies to edit and preview your changes by clicking on the image above.
 
 # Linking to Docs and Images
 Because the docs are generated into static HTML linking to docs and images is a bit unusual. We provide a custom plugin [_plugins/links.rb](_plugins/links.rb) to create links.
@@ -24,7 +28,6 @@ To link to a subsection of a markdown file add `#<section name>` at end of the l
 
 ### Linking to an Image
 To add a link to `/docs/assets/imgs/quick-documentation.png` into your MD you can use: `![quick-documentation.png]({{base}}{{sites.links["quick-documentation.png"]}})`
-
 
 ### Understanding the Links Plugin
 The links plugin uses the following variables in [_config.yml](https://github.com/codenvy/che-docs/blob/master/src/main/_config.yml) file:
@@ -47,13 +50,17 @@ permalink: /:categories/chefiles/   // Should match the other files in the folde
 ---
 {% include base.html %}             // Do not change, allows relative paths to work
 ```
-You content can start after this.
+Your content can start after this.
 
 ### Adding a New Section
 New sections are represented as folders in https://github.com/codenvy/che-docs/tree/master/src/main/_docs. Folder names must contain lowercase a-z characters and `-` to seperate words.
     
 # Building Docs
 Docs are built using a Docker image with Jekyll inside it. You need Docker and Bash installed to build and host the Che docs.
+
+You can use codenvy.io factory to easily compile and view documentation. Just click [https://localhost:8080/f?url=https://github.com/eclipse/che-docs](https://localhost:8080/f?url=https://github.com/eclipse/che-docs).
+
+You can also use the following locally.
 
 ```
 $ git clone http://github.com/eclipse/che-docs

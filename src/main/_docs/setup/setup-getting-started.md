@@ -16,7 +16,9 @@ You can get a hosted version of Eclipse Che with Codenvy at [codenvy.io](http://
 
 # How to Get Help
 
-### Support  
+### Support 
+If you are having a problem starting Che or workspaces, there are two diagnostic utilities that can help: `docker run eclipse/che info` on the command-line for diagnosing boot-time issues and a "diagnostic" page that you can launch from the lower corner of the dashboard that loads when Che first opens in your browser.
+
 Post questions or issues [on GitHub](https://github.com/eclipse/che/issues). Please follow the [guidelines on issue reporting](https://github.com/eclipse/che/blob/master/CONTRIBUTING.md) and provide:
 
 - output of 'docker run eclipse/che info' command
@@ -78,13 +80,13 @@ docker run <DOCKER_OPTIONS> -e CHE_HOST=<your-ip> eclipse/che start
 # Develop with Che  
 Now that Che is running there are a lot of fun things to try:
 
-- Become familiar with Che through [one of our tutorials]({{ base }}/docs/tutorials/multi-machine/index.html).
-- [Import a project]({{ base }}/docs/ide/import-a-project/index.html) and setup [git authentication]({{ base }}/docs/ide/git-svn/index.html).
-- Use [commands]({{ base }}/docs/ide/commands/index.html) to build and run a project.
-- Create a [preview URL]({{ base }}/docs/ide/previews/index.html) to share your app.
-- Setup a [debugger]( {{ base }}/docs/ide/debug/index.html).
-- Create reproducible workspaces with [chedir]({{ base }}/docs/chedir/getting-started/index.html).
-- Create a [custom runtime stack]({{ base }}/docs/workspace/stacks/index.html).
+- Become familiar with Che through [one of our tutorials]({{ base }}{{site.links["tutorials-multi-machine"]}}).
+- [Import a project]({{ base }}{{site.links["ide-import-a-project"]}}) and setup [git authentication]({{ base }}{{site.links["ide-git-svn"]}}).
+- Use [commands]({{ base }}{{site.links["ide-projects"]}}) to build and run a project.
+- Create a [preview URL]({{ base }}{{site.links["ide-previews"]}}) to share your app.
+- Setup a [debugger]( {{ base }}{{site.links["ide-debug"]}}).
+- Create reproducible workspaces with [chedir]({{ base }}{{site.links["chedir-getting-started"]}}).
+- Create a [custom runtime stack]({{ base }}{{site.links["devops-runtime-stacks"]}}).
 
 # Pre-Reqs  
 
@@ -120,6 +122,13 @@ docker run hello-world
 ```
 
 Sometimes Fedora and RHEL/CentOS users will encounter issues with SElinux. Try disabling selinux with `setenforce 0` and check if resolves the issue. If using the latest docker version and/or disabling selinux does not fix the issue then please file a issue request on the [issues](https://github.com/eclipse/che/issues) page.
+
+#### Known Issues
+You can search Che's GitHub issues for items labeled `kind/bug` to see known issues.
+
+There are two known issues where features work on Docker 1.13+, but do not on Docker 1.12:
+1. SELinux: https://github.com/eclipse/che/issues/4747
+2. `CHE_DOCKER_ALWAYS__PULL__IMAGE`: https://github.com/eclipse/che/issues/5503
 
 #### Internal/External Ports
 The default port required to run Che is `8080`. Che performs a preflight check when it boots to verify that the port is available. You can pass `-e CHE_PORT=<port>` in Docker portion of the start command to change the port that Che starts on.
@@ -199,6 +208,8 @@ Workspace Agent --> Che Server
    4. Else, print connection exception
 ```
 
+If you suspect that blocked ports, firewall, Che's network configuration, or websockets are preventing Che from working properly, we provide a browser diagnostic in the lower right corner that runs tests between the browser and the Che server and a generated workspace.
+
 # Versions
 Each version of Che is available as a Docker image tagged with a label that matches the version, such as `eclipse/che:5.0.0-M7`. You can see all versions available by running `docker run eclipse/che version` or by [browsing DockerHub](https://hub.docker.com/r/eclipse/che/tags/).
 
@@ -237,7 +248,7 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
 ```
 
 # Hosting
-If you are hosting Che at a cloud service like DigitalOcean, or [Bitnami]({{base}}{{site.links["setup-bitnami"]}})  `CHE_HOST` must be set to the server's IP address or its DNS.
+If you are hosting Che at a cloud service like DigitalOcean, AWS or Scaleways `CHE_HOST` must be set to the server's IP address or its DNS.
 
 We will attempt to auto-set `CHE_HOST` by running an internal utility `docker run --net=host eclipse/che-ip:nightly`. This approach is not fool-proof. This utility is usually accurate on desktops, but usually fails on hosted servers. You can explicitly set this value to the IP address of your server:
 
@@ -248,7 +259,7 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
                        eclipse/che:<version> [COMMAND]
 ```
 # Run As User
-On Linux or Mac, you can run Eclipse Che's container with a different user identity on Linux or Mac. The default is to run the Che container as root. You can  pass `--user uid:gid` or `-e CHE_USER=uid:gid` as a `docker run` parameter before the `eclipse/che` Docker image. The CLI will start the `eclipse/che-server` image with the same `uid:gid` combination along with mounting `/etc/group` and `etc/passwd`. When Che is run as a custom user, all files written from within the Che server to the host (such as `che.env` or `cli.log` will be written to disk with the custom user as the owner of the files. This feature is not available on Windows.
+On Linux or Mac, you can run Eclipse Che's container with a different user identity. The default is to run the Che container as root. You can  pass `--user uid:gid` or `-e CHE_USER=uid:gid` as a `docker run` parameter before the `eclipse/che` Docker image. The CLI will start the `eclipse/che-server` image with the same `uid:gid` combination along with mounting `/etc/group` and `etc/passwd`. When Che is run as a custom user, all files written from within the Che server to the host (such as `che.env` or `cli.log` will be written to disk with the custom user as the owner of the files. This feature is not available on Windows.
 
 # Multiple Containers
 If you want to run multiple Che instances at the same time on the same host, each execution of Che needs to have a different:
