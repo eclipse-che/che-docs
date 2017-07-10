@@ -27,3 +27,32 @@ Plug-in developers can define their own project types. Since project types trigg
 6. **Project types support multiple inheritance.** A child project type may extend the attribute set of a parent type.
 7. **Projects may have parent-child relationships with other projects** in a workspace. Child projects are called modules.
 8. **Modules may have different project types than their parents.** Modules may physically exist within the tree structure of the parent (as its subfolders) or outside (the parent is a soft link to the module project).
+
+# Manage Projects Through IDE
+
+#### Create/Import Projects
+Projects can be managed by using the IDE with the project explorer and drop down menu at top. New projects can be imported from an remote source such as [Git/SVN]({{base}}{{site.links["ide-git-svn"]}}) or hosted zip file(URL required) with `Workspace > Import Project ...` menu item.  New projects can be created from internal [project samples]({{base}}{{site.links["ws-samples"]}}) with `Workspace > Create Project ..` menu item. 
+
+#### Configure Projects
+It is also possible to edit the project's configuration with `Project > Update Project Configuration ...` menu item. Projects type is selected from the list on the left of the project configuration popup window interface. Every project type will have a parent folder, name, and description information associated with it. Depending on the project type selected additional information can be filled in by clicking the `Next` button at bottom pertaining to the particular project type.
+
+#### Project Explorer
+![project-tree.png]({{base}}{{site.links["project-tree.png"]}})
+
+On the left side of the IDE, a panel is displaying the project explorer which allow you to browse the sources of your project. You can use your mouse to expand/collapse the folders and packages and right click files/folders to bring up menu options.
+<% assign TODO="Add screenshoot che-ide-project-<number>.png" %>
+
+but you are also able to navigate in the project explorer using your keyboard. Use:
+- `up arrow` and `down arrow` to navigate in the tree,
+- `left arrow` and `right arrow` to expand/collapse folders and packages,
+- `enter` to open a file.
+
+<% assign TODO="Need to add additional things that can be done in project explorer like copy" %>
+
+# Manage Projects Through Dashboard
+<% assign TODO="The following about impossible to create project into a workspace if the workspace is not running is misleading a little. Editing workspace configuration directly projects can be added with starting workspace. I don't think we need to have it." %>
+Projects can also be managed in the dashboard. 
+<% assign TODO="We need to add much more about how this is done and link to other documentation that contains more information. Need to add workspace item and dashboard item  to create project instructions. Needs to describe how stacks can be edited to add them manually." %>
+
+# Manage Projects Through API
+Projects can be added through the Che's REST API through curl commands. See [projects page]({{base}}{{site.links["server-api-projects"]}}) in `Developers Guide - Rest API` for additional information.
