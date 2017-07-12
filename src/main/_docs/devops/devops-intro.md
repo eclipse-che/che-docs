@@ -10,6 +10,7 @@ permalink: /:categories/intro/
 {{site.product_formal_name}}'s power comes from the unique Eclipse Che workspaces which are portable and shareable because they are composed of projects (source files) and environments (runtimes). 
 
 # Workspace Activation
+
 ## 1. Create a workspace with a production runtime
 
 - A Docker image or a “recipe”, for example a Dockerfile / Composefile
