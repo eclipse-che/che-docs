@@ -209,9 +209,6 @@ While the Docker approach to compiling an assembly is simple, it is slower. You 
 
 Compiling an assembly requires other tools like Java, Angular, Go to be installed on your host system. Each module of the assembly requires different dependencies. You can view the README.md in Che's source repository for the requirements to build that module. We also discuss many of the requirements and techniques for improving build performance [in the Che wiki](https://github.com/eclipse/che/wiki/Development-Workflow) where the internal development workflow is discussed.
 
-#### Scripts
-After you have generated a custom assembly, we provide a `build.sh` that will work for Windows, Mac and Linux within the root of each repository. You can run this script as an alternative to authoring the CLI syntax by hand.
-
 # Run
 A custom assembly is packaged into a set of binaries that can be used with the Che Docker image to launch Che servers. The finalized build is located in `assembly/assembly-main/target`.
 
@@ -261,9 +258,6 @@ docker run -it --rm --name run-che \
               eclipse/che:5.14.0 start --skip:nightly
 ```
 
-
-Within the assembly itself is a `run.sh` script that works for Windows, Mac, and Linux to run the custom assembly using Docker. You can pass either `run.sh --che` or `run.sh --codenvy` to choose whether you are starting Che or Codenvy.
-
 # Stop
 You can stop a custom assembly with the CLI's `stop` command or with `archetype stop`:
 ```
@@ -289,8 +283,6 @@ docker run -it --rm \
     eclipse/che-cli:5.14.0 \
       archetype stop
 ```
-
-Within the assembly is a `stop.sh` script that works for Windows, Mac, and Linux to run the custom assembly using Docker. You can pass either `stop.sh --che` or `stop.sh --codenvy` to choose whether you are starting Che or Codenvy.
 
 # Che vs. Codenvy
 The `archetype generate` command will generate two custom assemblies: one for Eclipse Che and one for Codenvy, which is an enterprise adaptation of Che that adds multi-node scalability, a user database, and security controls. Eclipse Che extensions are deployable within a Codenvy custom assembly. There are some elements of configuration that are slightly different between the assemblies, so we provide both to provide comparison between the various packages.
@@ -790,17 +782,6 @@ plugins/<artifactid>/<artifactid>-server
 plugins/<artifactid>/<artifactid>-shared
 # Code that is shared between IDE and server (will be packaged in both)
 
-build.include
-# Utility funcations used by other scripts to define Docker and OS parameters
-
-build.sh
-# Compile a custom assembly into a package using Docker
-
-run.sh
-# Run a packaged custom assembly using the CLI
-
-stop.sh
-# Stop a running custom assembly
 ```
 
 And because it is interesting, here is the file composition of the three plugins.
