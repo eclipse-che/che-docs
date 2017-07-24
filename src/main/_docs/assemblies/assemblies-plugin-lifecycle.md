@@ -165,7 +165,6 @@ After you compile your extension, they will be packaged as JAR files. Those JAR 
 | --- | ---
 | `/che/assembly/pom.xml`   | **Both server-side and client-side extensions.** Due to a temporary limitation in version management, your dependency must also be added to the root Che build artifact.   
 | `/che/assembly/assembly-ide-war/pom.xml`   | **Client-side (IDE) extensions.** Build file for main Che assembly.client side components, extension dependency should be added to this `pom.xml`.   
-| `/che/assembly/assembly-ide-war/src/main/resources/org/eclipse/che/ide/IDE.gwt.xml`   | **Client-side (IDE) extensions.** Client-side extensions are authored in GWT. Add your extension GWT module as an inheritance to this IDE GWT module.   
 | `/che/assembly/assembly-wsagent-war/pom.xml`   | **Server-side workspace extensions.** Build file that generates the Che web application agent that is deployed inside of a running workspace. You can add your extension to be included with this agent by adding it as a dependency in this file. Update this if your extension brings a new server-side service or component, or extends an existing API deployed with a workspace agent.   
 | `/che/assembly/assembly-wsmaster-war/pom.xml`   | **Server-side Che server extensions.** Add your extension as a dependency here if you want your server-side APIs to be accessible as part of the Che server. We call the workspace master (Che server) the location where master functions are provide like add / remove workspace. But if you just want server-side functionality that is available to the IDE, it must go into the workspace, which we call a workspace agent.   
 | `che/assembly/assembly-wsagent-server/pom.xml`   | **Optional**  This assembly constructs all of the pieces to create a Che agent server that will be packaged and deployed into any running workspace that has the dev-agent deployed into it. This Che agent server runs a Tomcat server that deploys any of your server-side workspace extensions along with other APIs required by Che to manage the workspace.   
@@ -220,20 +219,7 @@ To include your jar files within the Che assemblies you have to introduce your e
 ```
 You can insert the dependency anywhere in the list. After you have inserted it, run `mvn sortpom:sort` and maven will order the `pom.xml` for you.
 
-Second, link your GUI extension into the GWT app. You will add an `<inherits>` tag to the module definition. The name of the extension is derived from the direction + package structure that you have given your extension.  For example:
-
-```xml  
-<inherits name='org.eclipse.che.plugin.embedjsexample.EmbedJSExample'/>
-```
-
-And this means that in our embed sample, there is a file with a `*.gwt.xml` extension in a folder structure identical to the name above.
-
-```shell  
-# This name was derived from the package structure in your sample:
-/che/samples/sample-plugin-embedjs/che-sample-plugin-embedjs-ide/src/main/resources/org/eclipse/che/plugin/embedjsexample/EmbedJSExample.gwt.xml
-```
-
-Once you have added the IDE extension to both locations, you need to rebuild the IDE.
+Once you have added the IDE extension, you need to rebuild the IDE.
 
 ```shell  
 # Build a new IDE.war
@@ -341,9 +327,9 @@ CHE RUNTIME
 
 The Che assembly is the root Che project that builds a number of assemblies from a set of system plug-ins together with your custom plug-in. The Che assembly has a master configuration file, `/assembly/assembly-ide-war/src/main/resources/org/eclipse/che/ide/IDE.gwt.xml` which defines the modules to compile into the application.
 
-To manually add your plug-in to the Che assembly, you update the `IDE.gwt.xml` file and the assembly `pom.xml` with information about your plug-in. When the Che assembly is built, it will download your extension as a dependency and compile it into the Che IDE application. The Che IDE application will use dependency injection to load any Gin modules.  When you boot Che within tomcat or another application server, Che uses Guice to load any server-side modules for dependency injection.
+To manually add your plug-in to the Che assembly, you update the assembly `pom.xml` with information about your plug-in. Inheritance to gwt.xml is automatically added when an assembly is compiled. When the Che assembly is built, it will download your extension as a dependency and compile it into the Che IDE application. The Che IDE application will use dependency injection to load any Gin modules.  When you boot Che within tomcat or another application server, Che uses Guice to load any server-side modules for dependency injection.
 
-Your extension may require access to types provides by Che or the Che API, i.e. if you are implemenenting a custom project type or wizard. Che objects can be injected with Gin and Guice which enables your extension to make use of them.
+Your extension may require access to types provides by Che or the Che API, i.e. if you are implementing a custom project type or wizard. Che objects can be injected with Gin and Guice which enables your extension to make use of them.
 
 
 # Improving Incremental Builds  
