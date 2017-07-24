@@ -45,16 +45,16 @@ Execute this command, click the preview URL link. The page should say `app works
 
 # 4. Update App
 
-In `src/app/app.component.ts` add another title:
+In `src/app/app.component.ts` add another title by editing the existing AppComponent class:
 
 ```javascript
 export class AppComponent {
   title = 'app works!';
-  newtitle = 'Indeed!';
+  newTitle = 'Indeed!';
 }
 ```
 
-Add this element in `src/app/app.component.html`:
+Add the newTitle element in `src/app/app.component.html`:
 
 ```
 <h1>
