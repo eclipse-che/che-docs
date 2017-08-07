@@ -64,7 +64,7 @@ public interface LanguageServerLauncher {
 }
 ```
 
-[LanguageServerDescription](https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver-shared/src/main/java/org/eclipse/che/api/languageserver/shared/model/LanguageServerDescription.java) and [LanguageDescription](https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver-shared/src/main/java/org/eclipse/che/api/languageserver/shared/model/LanguageDescription.java) are used to describe the types of file your language server will make contributions to.
+[LanguageServerDescription](https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver/src/main/java/org/eclipse/che/api/languageserver/registry/LanguageServerDescription.java) and [LanguageDescription](https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver-shared/src/main/java/org/eclipse/che/api/languageserver/shared/model/LanguageDescription.java) are used to describe the types of file your language server will make contributions to.
 
 Follow our language server launchers and descriptions examples:
 
