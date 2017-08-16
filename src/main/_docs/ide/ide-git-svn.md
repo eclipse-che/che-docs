@@ -179,3 +179,7 @@ After importing repository, you can perform the most common Git operations using
 Files in project explorer and editor tabs can be colored according to their Git Status:
 
 ![project-explorer-editor-tabs-git-colors.png]({{base}}{{site.links["project-explorer-editor-tabs-git-colors.png"]}}){:style="width: auto"}
+
+* Green: new files that are staged in index.
+* Blue: files that contain changes.
+* Yellow: files that are not staged in index.
