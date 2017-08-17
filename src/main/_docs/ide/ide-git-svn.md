@@ -174,3 +174,12 @@ Committer name and email are set in `Profile > Preferences > Git > Committer`. O
 After importing repository, you can perform the most common Git operations using interactive menus or as terminal commands. Terminal git commands require it's own authentication setup, which means that keys generated in the IDE will work only when Git is used in the IDE menus. Git installed in a terminal is a different git system. You may generate keys in `~/.ssh` there as well.
 
 ![git-menu.png]({{base}}{{site.links["git-menu.png"]}}){:style="width: auto"}
+
+# Git in the Project Explorer and editors  
+Files in project explorer and editor tabs can be colored according to their Git Status:
+
+![project-explorer-editor-tabs-git-colors.png]({{base}}{{site.links["project-explorer-editor-tabs-git-colors.png"]}}){:style="width: auto"}
+
+* Green: new files that are staged in index.
+* Blue: files that contain changes.
+* Yellow: files that are not staged in index.
