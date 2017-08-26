@@ -47,7 +47,7 @@ Che base stacks, which include the minimum utilities for everything needed by Ec
 In `che-dockerfiles` repository, some recipes have sub-directories which represent tags. For example, the `/php/gae` directory in the GitHub repository would be pulled as `eclipse/php:gae` from Docker Hub.
 
 ### Inherit From Non-Eclipse Che Base Images
-This will create the best performing workspace image by only installing the minimum dependencies and packages required for your workspace. The trade off is that you have to include [Che's runtime dependencies]({{base}}{{site.links["devops-runtimev-recipes"]}}#che-runtime-required-dependencies) so we can work our magic in the workspace.
+This will create the best performing workspace image by only installing the minimum dependencies and packages required for your workspace. The trade off is that you have to include [Che's runtime dependencies]({{base}}{{site.links["devops-runtime-recipes"]}}#che-runtime-required-dependencies) so we can work our magic in the workspace.
 
 ### Che Runtime Required Dependencies
 
