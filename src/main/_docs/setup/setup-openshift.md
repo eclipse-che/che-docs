@@ -79,7 +79,7 @@ You can set different deployment options using environment variables:
 * `CHE_OPENSHIFT_PROJECT`: the OpenShift namespace where Che will be deployed (default is `eclipse-che` for ocp and minishift and `${OPENSHIFT_ID}-che` for osio)
 * `CHE_IMAGE_REPO`: `che-server` Docker image repository that will be used for deployment (default is `docker.io/eclipse/che-server`)
 * `CHE_IMAGE_TAG`: `che-server` Docker image tag that will be used for deployment (default is `nightly-centos`)
-* `CHE_LOG_LEVEL`: Log level of che-server (default is `DEBUG`)
+* `CHE_LOG_LEVEL`: Logging level of output for Che server. Can be `debug` or `info` (default is `DEBUG`)
 * `CHE_DEBUGGING_ENABLED`: If set to `true` the script will create the OpenShift service to debug che-server (default is `true`)
 * `CHE_KEYCLOAK_DISABLED`: If this is set to true Keycloack authentication will be disabled (default is `true` for ocp and minishift, `false` for osio)
 * `OPENSHIFT_NAMESPACE_URL`: The Che application hostname (default is unset for ocp, `${CHE_OPENSHIFT_PROJECT}.$(minishift ip).nip.io` for minishift, `${CHE_OPENSHIFT_PROJECT}.8a09.starter-us-east-2.openshiftapps.com` for osio)
