@@ -95,5 +95,5 @@ Defining a custom Runtime Stack using [a recipe]({{base}}{{site.links["devops-ru
 
 However it is still possible to define new Runtime Stacks using already built Docker images that have been pushed to a Docker registry. Instructions to create a custom Runtime Stack can be found [here]({{base}}{{site.links["devops-runtime-stacks"]}}).
 
-When using a custom Docker image that image must meet [the normal criteria]({{base}}{{site.links["devops-runtime-recipes"]}}#che-runtime-required-dependencies) required to run as a Che runtime. In addition it should follow the [guidelines to creat Docker images to run on OpenShift](https://docs.openshift.org/latest/creating_images/guidelines.html#openshift-origin-specific-guidelines).
+When using a custom Docker image that image must meet [the normal criteria]({{base}}{{site.links["devops-runtime-recipes"]}}#che-runtime-required-dependencies) required to run as a Che runtime. In addition it should follow the [guidelines to create Docker images to run on OpenShift](https://docs.openshift.org/latest/creating_images/guidelines.html#openshift-origin-specific-guidelines).
 Some examples of Dockerfiles used to create such images can be found [here](https://github.com/redhat-developer/che-dockerfiles/tree/master/recipes).
