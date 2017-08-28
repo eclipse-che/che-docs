@@ -48,7 +48,7 @@ curl -fsSL ${STACKS_SCRIPT_URL} -o stacks-che.sh
 bash get-che.sh && wait-che.sh && stacks-che.sh
 ```
 
-# Deploy Che on openshift.io  (only for developers that want to test changes they are making to Che)
+# Deploy Che on openshift.io (only for developers that want to test changes they are making to Che)
 
 Use environment variables to set deployment options
 
