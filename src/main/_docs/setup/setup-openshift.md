@@ -11,6 +11,12 @@ You can run the Che server and its workspaces with OpenShift.
 OpenShift is built on top of Kubernetes and has built-in Docker registry, reverse proxy and OAuth server.
 OpenShift is ideal to deploy Che as enterprise wide cloud IDE.
 
+We currently support Che deployment for the following OpenShift flavours:
+
+- [OpenShift Container Platform](#deploy-che-on-openshift-container-platform)
+- [minishift](#deploy-che-on-minishift)
+- [openshift.io](#deploy-che-on-openshiftio) (for Che developers only)
+
 # Deploy Che on OpenShift Container Platform
 
 Use environment variables to set deployment options
@@ -48,7 +54,9 @@ curl -fsSL ${STACKS_SCRIPT_URL} -o stacks-che.sh
 bash get-che.sh && wait-che.sh && stacks-che.sh
 ```
 
-# Deploy Che on openshift.io (only for developers that want to test changes they are making to Che)
+# Deploy Che on openshift.io
+
+Please note that deploying Che on [openshift.io](openshift.io) is only intended for Che developers and osio contributors. This is useful when a developer wants to test how changes will work on [openshift.io](openshift.io) but is not supposed to work for every [openshift.io](openshift.io) user.
 
 Use environment variables to set deployment options
 
