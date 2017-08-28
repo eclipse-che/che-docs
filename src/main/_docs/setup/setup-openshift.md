@@ -34,10 +34,10 @@ Download and run deployment scripts
 DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/deploy_che.sh
 WAIT_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/wait_until_che_is_available.sh
 STACKS_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/replace_stacks.sh
-curl -fsSL ${DEPLOY_SCRIPT_URL} -o get-che.sh
-curl -fsSL ${WAIT_SCRIPT_URL} -o wait-che.sh
-curl -fsSL ${STACKS_SCRIPT_URL} -o stacks-che.sh
-bash get-che.sh && wait-che.sh && stacks-che.sh
+curl -fsSL ${DEPLOY_SCRIPT_URL} -o ./get-che.sh
+curl -fsSL ${WAIT_SCRIPT_URL} -o ./wait-che.sh
+curl -fsSL ${STACKS_SCRIPT_URL} -o ./stacks-che.sh
+bash ./get-che.sh && bash ./wait-che.sh && bash ./stacks-che.sh
 ```
 
 # Deploy Che on Minishift
@@ -48,10 +48,10 @@ Download and run deployment scripts
 DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/deploy_che.sh
 WAIT_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/wait_until_che_is_available.sh
 STACKS_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/replace_stacks.sh
-curl -fsSL ${DEPLOY_SCRIPT_URL} -o get-che.sh
-curl -fsSL ${WAIT_SCRIPT_URL} -o wait-che.sh
-curl -fsSL ${STACKS_SCRIPT_URL} -o stacks-che.sh
-bash get-che.sh && wait-che.sh && stacks-che.sh
+curl -fsSL ${DEPLOY_SCRIPT_URL} -o ./get-che.sh
+curl -fsSL ${WAIT_SCRIPT_URL} -o ./wait-che.sh
+curl -fsSL ${STACKS_SCRIPT_URL} -o ./stacks-che.sh
+bash ./get-che.sh && bash ./wait-che.sh && bash ./stacks-che.sh
 ```
 
 # Deploy Che on openshift.io
@@ -71,10 +71,10 @@ Download and run deployment scripts
 DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/deploy_che.sh
 WAIT_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/wait_until_che_is_available.sh
 STACKS_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/replace_stacks.sh
-curl -fsSL ${DEPLOY_SCRIPT_URL} -o get-che.sh
-curl -fsSL ${WAIT_SCRIPT_URL} -o wait-che.sh
-curl -fsSL ${STACKS_SCRIPT_URL} -o stacks-che.sh
-bash get-che.sh && wait-che.sh && stacks-che.sh
+curl -fsSL ${DEPLOY_SCRIPT_URL} -o ./get-che.sh
+curl -fsSL ${WAIT_SCRIPT_URL} -o ./wait-che.sh
+curl -fsSL ${STACKS_SCRIPT_URL} -o ./stacks-che.sh
+bash ./get-che.sh && bash ./wait-che.sh && bash ./stacks-che.sh
 ```
 
 # Deployment Options
