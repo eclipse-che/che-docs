@@ -7,6 +7,9 @@ permalink: /:categories/selenium/
 ---
 {% include base.html %}
 
+Eclipse Che is providing a set of automated tests. This documentation explain how to configure your system in order to be able to the Selenium tests suite.
+
+You can find the Selenium tests suite [here: https://github.com/eclipse/che/tree/master/selenium](https://github.com/eclipse/che/tree/master/selenium)
 
 #### 1. Register OAuth application 
 
