@@ -1,7 +1,7 @@
 [https://localhost:8080/f?url=https://github.com/eclipse/che-docs](https://localhost:8080/f?url=https://github.com/eclipse/che-docs)
 
 # Eclipse Che Docs 
-Eclipse Che uses Jekyll 3.3.1 to generate documentation from this reposistory as a static html webpages. 
+Eclipse Che uses Jekyll 3.3.1 to generate documentation from this repository as a static html webpages. 
 
 This repository houses documentation for Eclipse Che ([repo](https://github.com/eclipse/che) / [site](https://eclipse.com/che/)). Content is held in markdown files in [/src/main/_docs](https://github.com/codenvy/che-docs/tree/master/src/main/_docs). Images should be placed in [/src/main/_docs/assets/imgs](https://github.com/codenvy/che-docs/tree/master/src/main/_docs/assets/imgs).
 
