@@ -185,13 +185,14 @@ Files in project explorer and editor tabs can be colored according to their Git 
 * Yellow: files that are not staged in index.
 
 ## Reviewing changes with the diff window
-With the diff window it is possible to review changes between two states of code. To view the diff, use `Git`->`Compare`->`<Select-to-what>` from main menu. Then if you changed more then one file the list of changed files will be opened. Select a file to compare with double click on it or click on `Compare` button after selection.
+With the diff window it is possible to review changes between two states of code. To view the diff, use `Git`->`Compare`->`<Select-to-what>` from main menu. If more than one file has changed the list of changed files will be opened first. To select a file to compare double-click on it or select a file then click the `Compare` button.
 
 ![git-diff-widget.png]({{base}}{{site.links["git-diff-widget.png"]}}){:style="width: auto"}
 
-Your changes are displayed on the left editor and you compare with the version of the file that is displayed on the right editor. You can use the left editor to do some edits and fixes while you are reviewing your changes.
+Your changes are displayed in the left editor and the file being compared to is on the right. The left editor can be used for editing and fixes.
 
-When you have multiple files to review, as part of your commit for example, you have the ability to navigate under all the files that are changes. The number of files that are reviewable is displayed in the title of the wizard. Use `Next` and `Previous` buttons to navigate to the next or previous file correspondingly.
-For a keyboard navigation between the files, you can also use the following shortcuts: `Alt + .` for `Next` and `Alt + ,` for `Previous` (i.e. `Alt + >` and `Alt + <` without `Shift`).
+When you have multiple files to review you have the ability to navigate under all the files that are changed. The number of files that are reviewable is displayed in the title of the wizard. Use `Next` and `Previous` buttons to navigate to the next or previous file correspondingly.
+
+For a keyboard navigation between the files you can use: `Alt + .` for `Next` and `Alt + ,` for `Previous`.
 
 The `Refresh` button updates difference links between editors.
