@@ -146,7 +146,9 @@ Open any Java multi-module project and create a new folder with a simple Maven p
  As a result, it will be automatically configured as a Maven module in your project tree. Maven plugin watches changes in `pom.xml` and automatically imports changes (dependencies, configuration etc).
  
 To enable/disable viewing the maven artifact ID in the project explorer, go to menu Profile > Preferences and select the 'Maven' page in the 'Plug-ins' tab:
-![maven-artifact-id.jpg]({{base}}{{site.links["maven-artifact-id.jpg"]}})  
+![maven-artifact-id.jpg]({{base}}{{site.links["maven-artifact-id.jpg"]}})
+
+Project explorer displays only maven artifact IDs that are different from their package name.
 
 ### Dependency Management
 If you make changes to dependencies in POM, they will be automatically updated. You can also manually reimport the project: right click on your Maven project, choose `Maven > Reimport`.
