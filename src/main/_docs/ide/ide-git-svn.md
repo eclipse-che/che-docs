@@ -184,8 +184,8 @@ Files in project explorer and editor tabs can be colored according to their Git 
 * Blue: files that contain changes.
 * Yellow: files that are not staged in index.
 
-## Reviewing changes with the diff wizard
-With the diff wizard it is possible to review changes between two states of code.
+## Reviewing changes with the diff window
+With the diff window it is possible to review changes between two states of code. To view the diff, use `Git`->`Compare`->`<Select-to-what>` from main menu. Then if you changed more then one file the list of changed files will be opened. Select a file to compare with double click on it or click on `Compare` button after selection.
 
 ![git-diff-widget.png]({{base}}{{site.links["git-diff-widget.png"]}}){:style="width: auto"}
 
