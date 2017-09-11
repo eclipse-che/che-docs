@@ -183,3 +183,14 @@ Files in project explorer and editor tabs can be colored according to their Git 
 * Green: new files that are staged in index.
 * Blue: files that contain changes.
 * Yellow: files that are not staged in index.
+
+# Git Diff widget
+With the diff widget it is possible to review changes between two states of code.
+
+![git-diff-widget.png]({{base}}{{site.links["git-diff-widget.png"]}}){:style="width: auto"}
+
+In case of comparison with the latest code version it is editable (left side).
+Use `Next` and `Previous` buttons to jump to the next or previous diff correspondingly.
+In case if code was modified and a user switches to another diff the current changes will be saved.
+To faster navigation one could use shortcuts: `Alt + .` and `Alt + ,` (i.e. `Alt + >` and `Alt + <` without `Shift`).
+The `Refresh` button updates difference links between editors. 
