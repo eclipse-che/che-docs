@@ -36,8 +36,10 @@ f
 1. Ensure that the two instances are running the same {{ site.product_mini_name }} version.
 2. In the user dashboard select "Workspaces" from the left navigation bar.
 3. Click "Add Workspace".
-4. Under "Select Source" choose "Import an existing workspace configuration".
-5. Paste the JSON in the text editing area.
+4. Click "Add Stack".
+5. Click "No" on creating a stack from a recipe dialog.
+6. Click "Show" on raw configuration.
+7. Paste the JSON in the text editing area.
 
 ![che-sharing4.jpg]({{base}}{{site.links["che-sharing4.jpg"]}})
 

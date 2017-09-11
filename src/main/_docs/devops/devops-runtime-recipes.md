@@ -113,7 +113,7 @@ expose:
 
 **3: You can also get the published port automatically by using a macro** in a [command]({{base}}{{site.links["ide-commands"]}}). When authoring a command, set its preview URL to `${server.port.<your-apps-port>}` where `<your-apps-port>` is the port in your recipe's expose command. When the command is executed, this macro is translated into a `host:port` URL.
 
-There is no way to expose a port once the workspace is running. To expose an additional ports, the ports need to be added to the runtime recipe or added directly to the runtime instance via the dashboard `Workspaces>(click workspace name)>Runtime Tab`.
+There is no way to expose a port once the workspace is running. To expose an additional ports, the ports need to be added to the runtime recipe or added directly to the runtime instance via the dashboard `Workspaces>(click workspace name)>Servers Tab`.
 
 ![che-workspace-runtime-servers.png]({{ base }}{{site.links["che-workspace-runtime-servers.png"]}})
 
