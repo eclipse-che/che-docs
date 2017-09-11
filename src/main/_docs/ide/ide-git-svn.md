@@ -175,7 +175,7 @@ After importing repository, you can perform the most common Git operations using
 
 ![git-menu.png]({{base}}{{site.links["git-menu.png"]}}){:style="width: auto"}
 
-# Git in the Project Explorer and editors  
+## Git in the Project Explorer and editors  
 Files in project explorer and editor tabs can be colored according to their Git Status:
 
 ![project-explorer-editor-tabs-git-colors.png]({{base}}{{site.links["project-explorer-editor-tabs-git-colors.png"]}}){:style="width: auto"}
@@ -184,13 +184,14 @@ Files in project explorer and editor tabs can be colored according to their Git 
 * Blue: files that contain changes.
 * Yellow: files that are not staged in index.
 
-# Git Diff widget
-With the diff widget it is possible to review changes between two states of code.
+## Reviewing changes with the diff wizard
+With the diff wizard it is possible to review changes between two states of code.
 
 ![git-diff-widget.png]({{base}}{{site.links["git-diff-widget.png"]}}){:style="width: auto"}
 
-In case of comparison with the latest code version it is editable (left side).
-Use `Next` and `Previous` buttons to jump to the next or previous diff correspondingly.
-In case if code was modified and a user switches to another diff the current changes will be saved.
-To faster navigation one could use shortcuts: `Alt + .` and `Alt + ,` (i.e. `Alt + >` and `Alt + <` without `Shift`).
-The `Refresh` button updates difference links between editors. 
+Your changes are displayed on the left editor and you compare with the version of the file that is displayed on the right editor. You can use the left editor to do some edits and fixes while you are reviewing your changes.
+
+When you have multiple files to review, as part of your commit for example, you have the ability to navigate under all the files that are changes. The number of files that are reviewable is displayed in the title of the wizard. Use `Next` and `Previous` buttons to navigate to the next or previous file correspondingly.
+For a keyboard navigation between the files, you can also use the following shortcuts: `Alt + .` for `Next` and `Alt + ,` for `Previous` (i.e. `Alt + >` and `Alt + <` without `Shift`).
+
+The `Refresh` button updates difference links between editors.
