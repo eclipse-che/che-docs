@@ -189,7 +189,7 @@ With the diff window it is possible to review changes between two states of code
 
 ![git-diff-widget.png]({{base}}{{site.links["git-diff-widget.png"]}}){:style="width: auto"}
 
-Your changes are displayed in the left editor and the file being compared to is on the right. The left editor can be used for editing and fixes.
+Your changes are displayed in the left editor and the file being compared to is on the right. The left editor can be used for editing and fixing your changes.
 
 When you have multiple files to review you have the ability to navigate under all the files that are changed. The number of files that are reviewable is displayed in the title of the wizard. Use `Next` and `Previous` buttons to navigate to the next or previous file correspondingly.
 
