@@ -173,6 +173,13 @@ Committer name and email are set in `Profile > Preferences > Git > Committer`. O
 # Git Workspace Clients  
 After importing repository, you can perform the most common Git operations using interactive menus or as terminal commands. Terminal git commands require it's own authentication setup, which means that keys generated in the IDE will work only when Git is used in the IDE menus. Git installed in a terminal is a different git system. You may generate keys in `~/.ssh` there as well.
 
+To faster access to the most frequently used git functionality one can use keyboard shortcuts. 
+* Commit: `Alt + c`
+* Push to remote: `Alt + Shift + c`
+* Pull from remote: `Alt + p`
+* Work with branches: `Ctrl + b`
+* Compare current changes with the latest repository version: `Ctrl + Alt + d`
+
 ![git-menu.png]({{base}}{{site.links["git-menu.png"]}}){:style="width: auto"}
 
 ## Git in the Project Explorer and editors  
