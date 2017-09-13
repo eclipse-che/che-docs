@@ -196,19 +196,15 @@ To commit your changes use the git commit window. To show it click `Git` -> `Com
 
 ![git-commit-tree-view.png]({{base}}{{site.links["git-commit-tree-view.png"]}}){:style="width: auto"}
 
-Then you can select files which will be added to index and committed.
-Note, that initial state of files which will be added to commit depends on current selection in project explorer: all files in the selected item will be checked by default, but you could easily change it.
-After files selection you have to type commit message in the text area under files tree.
-Optionally you could select `Amend previous commit` checkbox to replace previous commit 
-(for more details [see git docs](https://git-scm.com/docs/git-commit#git-commit---amend)).
-When you checked it, the message of commit under replacing will appear in the text area. You could change it as you want.
-Also it is possible to push your commit to remote repository by checking `Push committed changes to` checkbox and selecting branch you want to push into. 
+You can select files which will be added to index and committed.
 
-When you adjusted all options you want click `Commit` button to proceed.
-Note, the `Commit` button is active if you have selected at least 1 file and typed commit message or checked `Amend previous commit`.
+All files in the selected package / folder in the project explorer will be checked by default. After selecting files, type the commit message in the text area. Optionally you could select `Amend previous commit` to replace previous commit (for more details [see git docs](https://git-scm.com/docs/git-commit#git-commit---amend)).
 
-Behavior or files list is the same as in compare window (see [Reviewing changed files](#git-compare) section).
-Double click on any altered file will open diff window with it.
+Push the commit to a remote repository by checking `Push committed changes to` checkbox and selecting branch to push into. 
+
+Click `Commit` to proceed (the `Commit` button is active as long as at least 1 file is selected and a commit message is present or `Amend previous commit` is checked.
+
+Behavior for files in the list view is the same as in compare window (see [Reviewing changed files](#git-compare) section). Double clicking a file will open diff window with it.
 
 ## Pushing changes to remote repository
 To push your commits to remote use the git push dialog.
