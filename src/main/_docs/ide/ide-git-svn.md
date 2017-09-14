@@ -202,7 +202,7 @@ All files in the selected package / folder in the project explorer will be check
 
 Push the commit to a remote repository by checking `Push committed changes to` checkbox and selecting branch to push into. 
 
-Click `Commit` to proceed (the `Commit` button is active as long as at least 1 file is selected and a commit message is present or `Amend previous commit` is checked.
+Click `Commit` to proceed (the `Commit` button is active as long as at least 1 file is selected and a commit message is present or `Amend previous commit` is checked).
 
 Behavior for files in the list view is the same as in compare window (see [Reviewing changed files](#git-compare) section). Double clicking a file will open diff window with it.
 
