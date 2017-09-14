@@ -175,6 +175,13 @@ After importing repository, you can perform the most common Git operations using
 
 ![git-menu.png]({{base}}{{site.links["git-menu.png"]}}){:style="width: auto"}
 
+To faster access to the most frequently used git functionality one can use keyboard shortcuts. 
+* Commit: `Alt + c`
+* Push to remote: `Alt + Shift + c`
+* Pull from remote: `Alt + p`
+* Work with branches: `Ctrl + b`
+* Compare current changes with the latest repository version: `Ctrl + Alt + d`
+
 ## Git in the Project Explorer and editors  
 Files in project explorer and editor tabs can be colored according to their Git Status:
 
@@ -184,14 +191,86 @@ Files in project explorer and editor tabs can be colored according to their Git 
 * Blue: files that contain changes.
 * Yellow: files that are not staged in index.
 
-## Reviewing changes with the diff window
-With the diff window it is possible to review changes between two states of code. To view the diff, use `Git`->`Compare`->`<Select-to-what>` from main menu. If more than one file has changed the list of changed files will be opened first. To select a file to compare double-click on it or select a file then click the `Compare` button.
+## Committing changes
+To commit your changes use the git commit window. To show it click `Git` -> `Commit...` from main menu or just use `Alt + c` shortcut.
+
+![git-commit-tree-view.png]({{base}}{{site.links["git-commit-tree-view.png"]}}){:style="width: auto"}
+
+You can select files which will be added to index and committed.
+
+All files in the selected package / folder in the project explorer will be checked by default. After selecting files, type the commit message in the text area. Optionally you could select `Amend previous commit` to replace previous commit (for more details [see git docs](https://git-scm.com/docs/git-commit#git-commit---amend)).
+
+Push the commit to a remote repository by checking `Push committed changes to` checkbox and selecting branch to push into. 
+
+Click `Commit` to proceed (the `Commit` button is active as long as at least 1 file is selected and a commit message is present or `Amend previous commit` is checked).
+
+Behavior for files in the list view is the same as in compare window (see [Reviewing changed files](#git-compare) section). Double clicking a file will open diff window with it.
+
+## Pushing changes to remote repository
+To push your commits to remote use the git push dialog.
+To open it use `Git` -> `Remotes...` -> `Push` from main menu or `Alt + Shift + c` shortcut.
+
+![git-push.png]({{base}}{{site.links["git-push.png"]}}){:style="width: auto"}
+
+Then choose remote repository to push into and select local and remote branch.
+Optionally by checking `Force push` is possible to push with force.
+After this, hit `Push` button to proceed.
+
+## Pulling changes from remote repository
+To get changes from remote repository use the git pull dialog.
+To open it use `Git` -> `Remotes...` -> `Pull` from main menu or `Alt + p` shortcut.
+
+![git-pull.png]({{base}}{{site.links["git-pull.png"]}}){:style="width: auto"}
+
+Then choose remote repository to pull from and select remote and local branch.
+Optionally by checking `Rebase instead of merge` is possible to keep your local commits on top 
+(for more information [see git docs](https://git-scm.com/docs/git-pull#git-pull--r)).
+After this, hit `Pull` button to proceed.
+
+## Managing branches
+To manage your git branches use branches window.
+To open it use `Git` -> `Branches...` from main menu or `Ctrl + b` shortcut.
+
+![git-branches-window.png]({{base}}{{site.links["git-branches-window.png"]}}){:style="width: auto"}
+
+In the middle of the window is placed a list of all branches in current project.
+It is possible to display only local or only remote branches by `Show branches` drop-down above.
+
+Buttons in the bottom describes allowed actions with branches.
+To checkout, delete or rename a branch one should select branch from the list first.  
+
+## <a name="git-compare"></a> Reviewing changed files
+Git compare window is used to show files which was changed.
+This widget could be invoked from different places for different states, but the most frequently used way is to use `Git` -> `Compare` -> `<Select-to-what>` from main menu or use `Ctrl + Alt + d` shortcut to compare current state of code to the latest local commit. Another way is to select an object in project tree and click `Git` -> `Select-to-what` from item's context menu. 
+Note, this widget shows changed files in the selected object in project explorer. To see all changes select project folder. 
+Note, if only one file was changed, diff window will be shown instead of compare window.
+
+![git-compare-tree-view.png]({{base}}{{site.links["git-compare-tree-view.png"]}}){:style="width: auto"}
+
+By default, affected files is listed as a tree.
+With `Expand all directories` and `Collapse all directories` buttons above the tree a user can adjust tree state.
+By clicking `View as list` button is possible to switch representation of changed files to a list, where each file is shown with its full path.
+To return to the tree view just click `Group by directories` button.
+
+![git-compare-list-view.png]({{base}}{{site.links["git-compare-list-view.png"]}}){:style="width: auto"}
+
+To view diff for a file select it and click `Compare` button or just double click on a file name.
+
+## Reviewing code changes with the diff window
+With the diff window it is possible to review changes between two states of code.
+To view the diff, use `Git`->`Compare`->`<Select-to-what>` from main menu.
+If more than one file has changed the list of changed files will be opened first.
+To select a file to compare double-click on it or select a file then click the `Compare` button.
+Another way to open diff is to select a file in project explorer and use `Git` -> `Select-to-what` from context menu or directly from editor's context menu.
 
 ![git-diff-widget.png]({{base}}{{site.links["git-diff-widget.png"]}}){:style="width: auto"}
 
-Your changes are displayed in the left editor and the file being compared to is on the right. The left editor can be used for editing and fixing your changes.
+Your changes are displayed in the left editor and the file being compared to is on the right.
+The left editor can be used for editing and fixing your changes.
 
-When you have multiple files to review you have the ability to navigate under all the files that are changed. The number of files that are reviewable is displayed in the title of the wizard. Use `Next` and `Previous` buttons to navigate to the next or previous file correspondingly.
+When you have multiple files to review you have the ability to navigate under all the files that are changed.
+The number of files that are reviewable is displayed in the title of the wizard.
+Use `Next` and `Previous` buttons to navigate to the next or previous file correspondingly.
 
 For a keyboard navigation between the files you can use: `Alt + .` for `Next` and `Alt + ,` for `Previous`.
 
