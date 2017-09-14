@@ -241,7 +241,8 @@ To checkout, delete or rename a branch one should select branch from the list fi
 
 ## <a name="git-compare"></a> Reviewing changed files
 Git compare window is used to show files which was changed.
-This widget could be invoked from different places for different states, but the most frequently used way is to use `Git` -> `Compare` -> `<Select-to-what>` or use `Ctrl + Alt + d` shortcut to compare current state of code to the latest local commit.
+This widget could be invoked from different places for different states, but the most frequently used way is to use `Git` -> `Compare` -> `<Select-to-what>` from main menu or use `Ctrl + Alt + d` shortcut to compare current state of code to the latest local commit. Another way is to select an object in project tree and click `Git` -> `Select-to-what` from item's context menu. 
+Note, this widget shows changed files in the selected object in project explorer. To see all changes select project folder. 
 Note, if only one file was changed, diff window will be shown instead of compare window.
 
 ![git-compare-tree-view.png]({{base}}{{site.links["git-compare-tree-view.png"]}}){:style="width: auto"}
@@ -260,6 +261,7 @@ With the diff window it is possible to review changes between two states of code
 To view the diff, use `Git`->`Compare`->`<Select-to-what>` from main menu.
 If more than one file has changed the list of changed files will be opened first.
 To select a file to compare double-click on it or select a file then click the `Compare` button.
+Another way to open diff is to select a file in project explorer and use `Git` -> `Select-to-what` from context menu or directly from editor's context menu.
 
 ![git-diff-widget.png]({{base}}{{site.links["git-diff-widget.png"]}}){:style="width: auto"}
 
