@@ -26,9 +26,7 @@ export OPENSHIFT_NAMESPACE_URL=<CHE_HOSTNAME> # e.g. che-eclipse-che.52.173.199.
 export OPENSHIFT_FLAVOR=ocp
 ```
 
-* Install pre-requisites:
-
-  Deployment scripts require the [jq](https://stedolan.github.io/jq/) command installed locally.
+* Install [jq](https://stedolan.github.io/jq/) command locally.
 
 * Download and run deployment scripts:
 
