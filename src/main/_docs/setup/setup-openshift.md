@@ -29,9 +29,9 @@ export OPENSHIFT_FLAVOR=ocp
 Download and run deployment scripts:
 
 ```shell
-DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/deploy_che.sh
-WAIT_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/wait_until_che_is_available.sh
-STACKS_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/replace_stacks.sh
+DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/deploy_che.sh
+WAIT_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/wait_until_che_is_available.sh
+STACKS_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/replace_stacks.sh
 curl -fsSL ${DEPLOY_SCRIPT_URL} -o ./get-che.sh
 curl -fsSL ${WAIT_SCRIPT_URL} -o ./wait-che.sh
 curl -fsSL ${STACKS_SCRIPT_URL} -o ./stacks-che.sh
@@ -43,9 +43,9 @@ bash ./get-che.sh && bash ./wait-che.sh && bash ./stacks-che.sh
 Download and run deployment scripts:
 
 ```shell
-DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/deploy_che.sh
-WAIT_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/wait_until_che_is_available.sh
-STACKS_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/replace_stacks.sh
+DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/deploy_che.sh
+WAIT_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/wait_until_che_is_available.sh
+STACKS_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/replace_stacks.sh
 curl -fsSL ${DEPLOY_SCRIPT_URL} -o ./get-che.sh
 curl -fsSL ${WAIT_SCRIPT_URL} -o ./wait-che.sh
 curl -fsSL ${STACKS_SCRIPT_URL} -o ./stacks-che.sh
@@ -66,9 +66,9 @@ export OPENSHIFT_FLAVOR=osio
 Download and run deployment scripts:
 
 ```shell
-DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/deploy_che.sh
-WAIT_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/wait_until_che_is_available.sh
-STACKS_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/cli/scripts/openshift/replace_stacks.sh
+DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/deploy_che.sh
+WAIT_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/wait_until_che_is_available.sh
+STACKS_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/replace_stacks.sh
 curl -fsSL ${DEPLOY_SCRIPT_URL} -o ./get-che.sh
 curl -fsSL ${WAIT_SCRIPT_URL} -o ./wait-che.sh
 curl -fsSL ${STACKS_SCRIPT_URL} -o ./stacks-che.sh
