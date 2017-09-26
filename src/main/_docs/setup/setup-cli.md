@@ -120,6 +120,18 @@ Used to download Docker images that will be stored in your Docker images reposit
 
 `download` is invoked by `che init` before initialization to download images for the version specified by `eclipse/che:<version>`.
 
+It is possible to override the docker images used by the CLI by setting the following
+environment variables:
+
+- `IMAGE_INIT` to override the default `eclipse/che-init:<version>` docker image,
+- `IMAGE_CHE` to override the default `eclipse/che-server:<version>` docker image.
+
+For example if, for both images, you need to use to use a given tag in you own docker account, you can add the following parameters to the docker command:
+
+```
+-e IMAGE_INIT=myDockerAccount/che-init:givenTag -e IMAGE_CHE=myDockerAccount/che-server:givenTag
+```
+
 -----
 
 *info*
