@@ -9,8 +9,11 @@ permalink: /:categories/getting-started/
 
 # Start Multi-User Che
 
-```docker run -it -e CHE_MULTIUSER=true -e CHE_HOST=${EXTERNAL_IP} -e CHE_KEYCLOAK_AUTH-SERVER-URL=http://${EXTERNAL_IP}:5050/auth -v /var/run/docker.sock:/var/run/docker.sock -v ~/.che-multiuser:/data eclipse/che start
-```
+Use the following syntax to start Che multi-user assembly:
+
+`
+docker run -it -e CHE_MULTIUSER=true -e CHE_HOST=${EXTERNAL_IP} -e CHE_KEYCLOAK_AUTH-SERVER-URL=http://${EXTERNAL_IP}:5050/auth -v /var/run/docker.sock:/var/run/docker.sock -v ~/.che-multiuser:/data eclipse/che start
+`
 
 `${EXTERNAL_IP}` should be a public IP accessible for all users who will reach a running instance of Che server. You may drop `CHE_HOST` and `CHE_KEYCLOAK_AUTH-SERVER-URL` envs if you are running Che locally and will access it from within the same network. In this case, there are some auto detection and defaults (like `eth0` and `docker0` IPs).
 
@@ -26,7 +29,7 @@ With `CHE_MULTIUSER=true` Che CLI is instructed to generate a special composefil
 
 ## Che Server - KeyCloak
 
-KeyCloak server URL is passed as environment variable to CLI - `CHE_KEYCLOAK_AUTH-SERVER-URL`. A new installation of Che will bring own KeyCloak server running in a Docker container and properly configured to communicate with Che server.
+KeyCloak server URL is passed as environment variable to CLI -  `CHE_KEYCLOAK_AUTH-SERVER-URL`. A new installation of Che will bring own KeyCloak server running in a Docker container which is properly configured to communicate with Che server.
 
 ## Che Server - PostgreSQL
 
@@ -43,7 +46,7 @@ CHE_JDBC_MAX__IDLE=10
 CHE_JDBC_MAX__WAIT__MILLIS=-1
 ```
 
-`postgres` will be resolved to PostgreSQL container IP if Che is launched with CLI (powered by Docker Compose). User profile information is directly retrieved from KeyCloak database.
+Hostname `postgres` will be resolved to PostgreSQL container IP if Che is launched with CLI (powered by Docker Compose). User profile information is directly retrieved from KeyCloak database.
 
 
 ## KeyCloak PostgreSQL
