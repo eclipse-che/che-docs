@@ -18,3 +18,7 @@ keycloak provides a user friendly page to [connect LDAP/Active Directory](http:/
 ## Social Login
 
 KeyCloak offers social login buttons such as GitHub, Facebook, Twitter, OpenShift etc. See: Instructions to [enable Login with GitHub](http://www.keycloak.org/docs/latest/server_admin/topics/identity-broker/social/github.html).
+
+# SMTP Configuration/Email Notifications
+
+Eclipse Che does not provide any out-of-the-box SMTP servers. This functionality is enabled in KeyCloak itself, Che real settings > Email. You will need to provide host, port, username and password, if necessary. Eclipse Che is shipped with the default theme that is used for email templates itself (registration, email confirmation, password recovery, failed login etc).
