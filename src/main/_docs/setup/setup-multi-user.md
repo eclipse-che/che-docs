@@ -80,3 +80,7 @@ You can either create a new realm and a public client or use existing ones. A fe
 * it should be a public client
 * `redirectUris` should be `${CHE_HOST}/*`. If no `redirectUris` provided or the one used is not in the list of `redirectUris`, KeyCloak will display an error.
 * webOrigins should be `${CHE_HOST}`. If no `webOrigins` provided, KC script won't be injected into a page because of CORS error.
+
+# SMTP Configuration
+
+Eclipse Che does not provide any out-of-the-box SMTP servers. To enable this functionality,
