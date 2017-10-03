@@ -17,6 +17,8 @@ docker run -it -e CHE_MULTIUSER=true -e CHE_HOST=${EXTERNAL_IP} -e CHE_KEYCLOAK_
 
 `${EXTERNAL_IP}` should be a public IP accessible for all users who will reach a running instance of Che server. You may drop `CHE_HOST` and `CHE_KEYCLOAK_AUTH-SERVER-URL` envs if you are running Che locally and will access it from within the same network. In this case, there are some auto detection and defaults (like `eth0` and `docker0` IPs).
 
+If the abovementioned environment variables are not provided, Che CLI will attempt to auto-detect your server IP. However, it is possible that such auto-detection may produce erroneous results, especially in case of a complex network setup.
+
 # What's Under the Hood
 
 With `CHE_MULTIUSER=true` Che CLI is instructed to generate a special composefile that will be executed to produce config and run:

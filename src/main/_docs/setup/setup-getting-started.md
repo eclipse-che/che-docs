@@ -16,7 +16,7 @@ You can get a hosted version of Eclipse Che with Codenvy at [codenvy.io](http://
 
 # How to Get Help
 
-### Support 
+### Support
 If you are having a problem starting Che or workspaces, there are two diagnostic utilities that can help: `docker run eclipse/che info` on the command-line for diagnosing boot-time issues and a "diagnostic" page that you can launch from the lower corner of the dashboard that loads when Che first opens in your browser.
 
 Post questions or issues [on GitHub](https://github.com/eclipse/che/issues). Please follow the [guidelines on issue reporting](https://github.com/eclipse/che/blob/master/CONTRIBUTING.md) and provide:
@@ -139,8 +139,9 @@ All ports are TCP unless otherwise noted.
 
 |Port >>>>>>>>>>>>>>>>|Service >>>>>>>>>>>>>>>>|Notes|
 |---|---|---|
+|5000|KeyCloak Port|
 |8080|Tomcat Port|
-|8000|Server Debug Port|Users developing Che extensions and custom assemblies would use this debug port to connect a remote debugger to che server. 
+|8000|Server Debug Port|Users developing Che extensions and custom assemblies would use this debug port to connect a remote debugger to che server.
 |32768-65535|Docker and Che Agents|Users who launch servers in their workspace bind to ephemeral ports in this range. This range can be limited.
 
 #### Internet Connection
@@ -179,9 +180,9 @@ Che Server --> Workspace Connection:
        2. Else, if server connects over Unix socket, then use localhost
        3. Else, use DOCKER_HOST
    - If CHE_DOCKER_SERVER__EVALUATION__STRATEGY is 'docker-local':
-       1. Use the address of the workspace container within the docker network 
+       1. Use the address of the workspace container within the docker network
           and exposed ports
-       2. If address is missing, if server connects over Unix socket, then use 
+       2. If address is missing, if server connects over Unix socket, then use
           localhost and exposed ports
        3. Else, use DOCKER_HOST and published ports
 
@@ -193,14 +194,14 @@ Browser --> Workspace Connection:
        4. Else, use DOCKER_HOST
    - If CHE_DOCKER_SERVER__EVALUATION__STRATEGY is 'docker-local':
        1. If set use the value of CHE_DOCKER_IP_EXTERNAL
-       2. Else use the address of the workspace container within the docker network, 
+       2. Else use the address of the workspace container within the docker network,
           if it is set
-       3. If address is missing, if server connects over Unix socket, then use 
+       3. If address is missing, if server connects over Unix socket, then use
           localhost
        4. Else, use DOCKER_HOST
 
 Workspace Agent --> Che Server
-   1. Default is 'http://che-host:${SERVER_PORT}/wsmaster/api', where 'che-host' 
+   1. Default is 'http://che-host:${SERVER_PORT}/wsmaster/api', where 'che-host'
       is IP of server.
    2. Else, use value of CHE_WORKSPACE_CHE__SERVER__ENDPOINT
    3. Else, if 'docker0' interface is unreachable, then 'che-host' replaced with
