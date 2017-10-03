@@ -9,7 +9,7 @@ permalink: /:categories/organizations/
 
 # Organizations in Eclipse Che
 
-Organization allow to regroup developers on Eclipse Che and allocate resources. Resources and permissions are controlled and allocated within Eclipse Cheadmin dashboard by system administrator.
+Organization allow to regroup developers on Eclipse Che and allocate resources. Resources and permissions are controlled and allocated within Eclipse Che admin dashboard by system administrator.
 
 ## Roles
 There are two main different roles in an organization:  
@@ -61,6 +61,19 @@ Note: Users with the green checkmark beside their name already have an account o
 Workspace is created inside of an organization and uses the resources of this very organization. Workspace creator has to choose the organization on workspace creation page:
 ![organization-create-workspace.png]({{base}}/docs/assets/imgs/organization-create-workspace.png)
 
+## Email Notifications
+
+When a user joins or leaves an organization, Che server can send a notification in case SMTP is properly configured in `che.env`. By default, Che does not offer any built-in SMTP server. You may use any mail server you want. Below is an example on how to use own Gmail to send notification emails:
+
+```
+CHE_MAIL_PORT=465
+CHE_MAIL_HOST=smtp.gmail.com
+CHE_MAIL_SMTP_STARTTLS_ENABLE=true
+CHE_MAIL_SMTP_AUTH=true
+CHE_MAIL_SMTP_AUTH_USERNAME=no-reply@gmail.com
+CHE_MAIL_SMTP_AUTH_PASSWORD=maILspa3mer
+```
+
 ## Create Sub-Organization
 The creation of sub-organization can be done from organization details page by selecting Sub-Organizations tab and clicking "Add Sub-Organization" button.
 The flow of sub-organization creation is the same as for [organization]({{base}}{{site.links["admin-organizations"]}}#creating-an-organization).
@@ -74,7 +87,7 @@ The sub-organization members can be added only from the list of parent organizat
 
 ![organization-settings.png]({{base}}/docs/assets/imgs/organization-settings.png)
 
-Organization settings are visible to all members of the organization, but only the Eclipse Chesystem administrator is able to modify the settings.
+Organization settings are visible to all members of the organization, but only the Eclipse Che system administrator is able to modify the settings.
 
 ## Rename an Organization or Sub-Organization
 **Action restricted to**: Eclipse Che system administrator and admins of the organization.
@@ -84,7 +97,7 @@ To rename an Organization, click in the "Name" textfield and start editing the n
 The name of the organization is restricted to the following rules:  
 - Only alphanumeric characters or a single "-" can be used  
 - Spaces cannot be used in organization names  
-- Each organization name must be unique within the Eclipse Cheinstall
+- Each organization name must be unique within the Eclipse Che install
 - Each sub-organization name must be unique within an organization
 
 ## Leave an Organization or Sub-Organization
@@ -101,7 +114,7 @@ This action can't be reverted and all workspaces created under the organization 
 All members of the organization will receive an email notification to inform about organization deletion.
 
 ## Manage Organization and Sub-Organization Limits
-**Action restricted to**: Eclipse Chesystem administrator and admins of the organization.
+**Action restricted to**: Eclipse Che system administrator and admins of the organization.
 The organization default caps are taken from the system configuration. The admin of the organization can manage only the limits of it's sub-organizations.
 By default, there are no resource limits applied to the organization so all members can benefit from all the allocated resources. If an organization admin wishes to set limits they have three options:  
 - **Workspace Cap**: The maximum number of workspaces that can exist in the organization.  
@@ -109,24 +122,23 @@ By default, there are no resource limits applied to the organization so all memb
 - **Workspace RAM Cap**: The maximum total RAM organization workspaces can use in GB.  
 
 ## Update Organization and Sub-Organization Member Roles
-**Action restricted to**: Eclipse Chesystem administrator and admins of the organization.
+**Action restricted to**: Eclipse Che system administrator and admins of the organization.
 
 To edit the role of a organization member click on the "Edit" button in the "Actions" column:
 ![organization-edit-role-action.png]({{base}}/docs/assets/imgs/organization-edit-role-action.png)
 
-You'll get a popup where you can update the role of the selected member:
+You'll get a pop-up where you can update the role of the selected member:
 ![organization-edit-role.png]({{base}}/docs/assets/imgs/organization-edit-role.png)
 
 Click "Save" to confirm the update.
 
-
 ## Remove Organization and Sub-Organization Members
-**Action restricted to**: Eclipse Chesystem administrator and admins of the organization.
+**Action restricted to**: Eclipse Che system administrator and admins of the organization.
 
 To remove a member from the organization, you can click on the "Delete" button in the "Actions" column:
 ![organization-remove-single-member.png]({{base}}/docs/assets/imgs/organization-remove-single-member.png)
 
-You'll get a confirmation popup, where you can confirm or cancel your action.
+You'll get a confirmation pop-up, where you can confirm or cancel your action.
 
 You can also select multiple members from the organization, using the checkboxes. A delete button will appear in the header of the table:
 ![organization-remove-members.png]({{base}}/docs/assets/imgs/organization-remove-members.png)

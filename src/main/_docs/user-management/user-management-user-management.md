@@ -1,15 +1,17 @@
 ---
 tags: [ "eclipse" , "che" ]
-title: Multi-User Setup
+title: User Management
 excerpt: ""
 layout: docs
 permalink: /:categories/user-management/
 ---
 {% include base.html %}
 
-# User Management in Che
+# Auth and User Management
 
-Eclipse Che relies on KeyCloak to create, import, manage, delete and authenticate users. KeyCloak uses own authentication mechanisms and user storage. Eclipse Che requies KeyCloak token to validate it when access to Che resources is requested.
+Eclipse Che relies on KeyCloak to create, import, manage, delete and authenticate users. KeyCloak uses own authentication mechanisms and user storage. Eclipse Che requires KeyCloak token to validate it when access to Che resources is requested.
+
+KeyCloak can create and authenticate users by itself or rely on 3rd party identity management systems and providers.
 
 ## User Federation
 

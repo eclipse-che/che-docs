@@ -1,9 +1,9 @@
 ---
-tags: [ "eclipse" , "che" ]
-title: Multi-User Setup
+tags: [ "eclipse" , "che", "multi-user" ]
+title: Multi-User Installation
 excerpt: ""
 layout: docs
-permalink: /:categories/getting-started/
+permalink: /:categories/multi-user/
 ---
 {% include base.html %}
 

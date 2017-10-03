@@ -26,7 +26,7 @@ The following permissions are applicable to workspaces:
 
 | Permission      | Description                                             |
 | --------------- | ------------------------------------------------------- |
-| read            | Allows reading a workspace's configuration.
+| read            | Allows reading workspace configuration.
 | use             | Allows using a workspace and interacting with it.
 | run             | Allows starting and stopping a workspace.
 | configure       | Allows defining and changing a workspace configuration.

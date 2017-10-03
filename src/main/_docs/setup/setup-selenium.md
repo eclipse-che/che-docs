@@ -11,7 +11,7 @@ Eclipse Che is providing a set of automated tests. This documentation explain ho
 
 You can find the Selenium tests suite [here: https://github.com/eclipse/che/tree/master/selenium](https://github.com/eclipse/che/tree/master/selenium)
 
-#### 1. Register OAuth application 
+#### 1. Register OAuth application
 
 Go to [OAuth application page](https://github.com/settings/applications/new) and register a new application:
 * `Application name` : `Che`
@@ -19,7 +19,7 @@ Go to [OAuth application page](https://github.com/settings/applications/new) and
 * `Application description` : `Che`
 * `Authorization callback URL` : `http://<YOUR_IP_ADDRESS>:8080/api/oauth/callback`
 
-Substitute `CHE_OAUTH_GITHUB_CLIENTID` and `CHE_OAUTH_GITHUB_CLIENTSECRET` properties in `che.env` with `Client ID` and `Client Secret` taken from 
+Substitute `CHE_OAUTH_GITHUB_CLIENTID` and `CHE_OAUTH_GITHUB_CLIENTSECRET` properties in `che.env` with `Client ID` and `Client Secret` taken from
 newly created [OAuth application](https://github.com/settings/developers).
 
 #### 2. Add configuration file
@@ -38,7 +38,7 @@ google.user=<GOOGLE_USER>
 google.password=<GOOGLE_PASSWORD>
 ```
 
-#### 3. Prepare repository 
+#### 3. Prepare repository
 Fork all repositories from [https://github.com/idexmai?tab=repositories](https://github.com/idexmai?tab=repositories) into the main GitHub account.
 Fork the repository [https://github.com/iedexmain1/pull-request-plugin-fork-test](https://github.com/iedexmain1/pull-request-plugin-fork-test) into the auxiliary GitHub account.
 
@@ -117,4 +117,3 @@ HOW TO of usage:
     Analyse tests results:
         ./selenium-tests.sh --compare-with-ci [CI job number]
 ```
-
