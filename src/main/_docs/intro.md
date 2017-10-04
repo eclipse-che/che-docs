@@ -21,11 +21,9 @@ You can get started with Che by:
 
 # Single and Multi-User flavors
 
+Che is shipped as two different assemblies - single and multi user. A single user Che does not have any components that provide multi tenancy and permissions. Thus, Che server and workspaces are not secured. This makes a single user Che a good choice for developers working on plugins and custom assemblies, as well as users evaluating Che (quick starts).
 
-Che is shipped as two different assemblies - single and multi user. A single user Che does not have any components that provide multi tenancy and permissions. Thus, Che server and workspaces are not secured with any tokens. This makes a single user Che a good choice for developers working on plugins and custom assemblies, as well as users evaluating Che (quick starts).
-
-A multi user Che provides multi-tenancy i.e. users accounts and workspaces are isolated and secured with KeyCloak tokens. Che uses [KeyCloack](http://www.keycloak.org/) as a mechanism to register, manage and authenticate users. Permissions API regulates access to different entities in Che, such as workspaces, stacks, recipes, organizations etc. User information is stored in a persistent DB that supports migrations (PostgreSQL).
-
+A [multi user Che]({{base}}{{site.links["setup-multi-user"]}}) provides multi-tenancy i.e. users accounts and workspaces are isolated and secured with KeyCloak tokens. Che uses [KeyCloak](http://www.keycloak.org/) as a mechanism to register, manage and authenticate users. Permissions API regulates access to different entities in Che, such as workspaces, stacks, recipes, organizations etc. User information is stored in a persistent DB that supports migrations (PostgreSQL).
 
 # Workspace Model  
 
