@@ -14,6 +14,7 @@ Use the following syntax to start Che multi-user assembly:
 `
 docker run -it -e CHE_MULTIUSER=true -e CHE_HOST=${EXTERNAL_IP} -v /var/run/docker.sock:/var/run/docker.sock -v ~/.che-multiuser:/data eclipse/che start
 `
+`~/.che-multiuser` is any local path. This is where Che data and config will be stored.
 
 `${EXTERNAL_IP}` should be a public IP accessible for all users who will reach a running instance of Che server. You may drop `CHE_HOST` env if you are running Che locally and will access it from within the same network. In this case, Che CLI will attempt to auto-detect your server IP. However, it is possible that such auto-detection may produce erroneous results, especially in case of a complex network setup. If you run Che as a cloud server, i.e. accessible for external users, it is recommended to explicitly provide an external IP for `CHE_HOST`
 
@@ -42,7 +43,7 @@ You can use own KeyCloak server. However, either create a new realm and a public
 
 * it should be a public client
 * `redirectUris` should be `${CHE_HOST}/*`. If no `redirectUris` provided or the one used is not in the list of `redirectUris`, KeyCloak will display an error.
-* webOrigins should be `${CHE_HOST}`. If no `webOrigins` provided, KC script won't be injected into a page because of CORS error.
+* `webOrigins` should be `${CHE_HOST}`. If no `webOrigins` provided, KC script won't be injected into a page because of CORS error.
 
 
 ## Che Server - PostgreSQL
