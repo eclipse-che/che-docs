@@ -32,14 +32,13 @@ With `CHE_MULTIUSER=true` Che CLI is instructed to generate a special composefil
 
 KeyCloak server URL is retrieved from environment variable `CHE_KEYCLOAK_AUTH-SERVER-URL`. A new installation of Che will bring own KeyCloak server running in a Docker container which is properly configured to communicate with Che server. Realm and client are mandatory as well. By defaults KC envs are set to:
 
-
 ```
-CHE_KEYCLOAK_AUTH__SERVER__URL=http://${EXTERNAL_IP}:5050/auth
+CHE_KEYCLOAK_AUTH__SERVER__URL=http://${CHE_HOST}:5050/auth
 CHE_KEYCLOAK_REALM=che
 CHE_KEYCLOAK_CLIENT__ID=che-public
 ```
 
-You can use own KeyCloak server. However, either create a new realm and a public client or use existing ones. A few things to keep in mind when creating or re-using realms and clients:
+You can use own KeyCloak server. However, either create a new realm and a public client or use existing ones (in this case, re-configure Che in `che.env`). A few things to keep in mind when creating or re-using realms and clients:
 
 * it should be a public client
 * `redirectUris` should be `${CHE_HOST}/*`. If no `redirectUris` provided or the one used is not in the list of `redirectUris`, KeyCloak will display an error.

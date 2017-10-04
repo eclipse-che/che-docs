@@ -15,7 +15,7 @@ KeyCloak can create and authenticate users by itself or rely on 3rd party identi
 
 ## User Federation
 
-keycloak provides a user friendly page to [connect LDAP/Active Directory](http://www.keycloak.org/docs/latest/server_admin/topics/user-federation.html). There are a number of [fields to be populated](http://www.keycloak.org/docs/latest/server_admin/topics/user-federation/ldap.html) on the config page, and those are specific to your particular LDAP instance, user filters, preferable mode etc. It is possible to test connection and authentication even before saving any particular storage provider.
+Keycloak provides a user friendly page to [connect LDAP/Active Directory](http://www.keycloak.org/docs/latest/server_admin/topics/user-federation.html). There are a number of [fields to be populated](http://www.keycloak.org/docs/latest/server_admin/topics/user-federation/ldap.html) on the config page, and those are specific to your particular LDAP instance, user filters, preferable mode etc. It is possible to test connection and authentication even before saving any particular storage provider.
 
 ## Social Login
 
@@ -31,4 +31,4 @@ Keycloak provides UI to add, delete and edit users. See: [Keycloak User Manageme
 
 # SMTP Configuration/Email Notifications
 
-Eclipse Che does not provide any out-of-the-box SMTP servers. This functionality is enabled in KeyCloak itself, Che real settings > Email. You will need to provide host, port, username and password, if necessary. Eclipse Che is shipped with the default theme that is used for email templates itself (registration, email confirmation, password recovery, failed login etc).
+Eclipse Che does not provide any out-of-the-box SMTP servers. This functionality is enabled in KeyCloak itself, che realm settings > Email. You will need to provide host, port, username and password, if necessary. Eclipse Che is shipped with the default theme that is used for email templates (registration, email confirmation, password recovery, failed login etc).

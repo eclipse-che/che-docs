@@ -71,7 +71,7 @@ CHE_MAIL_HOST=smtp.gmail.com
 CHE_MAIL_SMTP_STARTTLS_ENABLE=true
 CHE_MAIL_SMTP_AUTH=true
 CHE_MAIL_SMTP_AUTH_USERNAME=no-reply@gmail.com
-CHE_MAIL_SMTP_AUTH_PASSWORD=maILspa3mer
+CHE_MAIL_SMTP_AUTH_PASSWORD=password
 ```
 
 ## Create Sub-Organization

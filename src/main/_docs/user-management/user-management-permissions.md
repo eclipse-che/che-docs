@@ -7,9 +7,9 @@ permalink: /:categories/permissions/
 ---
 {% include base.html %}
 
-Permissions are used to control user actions. Rather than provide a fixed set of roles we use a broader set of permissions that can be applied in any combination to establish the security you need.
+Permissions are used to control user actions. Rather than providing a fixed set of roles we use a broader set of permissions that can be applied in any combination of objects to establish the security model you need.
 
-Che also provides a mechanisms and layers which allow to define "who" is allowed to do "what". Any user and administrator can control resources managed by Che and allow certain actions or behaviors for other users or groups. For example as owner of a workspace, you can grant other users permission to see and/or use your workspace.
+Che also provides a mechanisms and layers which allow to define "who" is allowed to do "what". Any user and administrator can control resources managed by Che and allow certain actions or behaviors for other users or groups. For example as workspace owner you can grant other users permission to see and/or use your workspace.
 
 Permissions can be applied to:
 - Workspace
@@ -29,7 +29,7 @@ The following permissions are applicable to workspaces:
 | read            | Allows reading workspace configuration.
 | use             | Allows using a workspace and interacting with it.
 | run             | Allows starting and stopping a workspace.
-| configure       | Allows defining and changing a workspace configuration.
+| configure       | Allows defining and changing workspace configuration.
 | setPermissions  | Allows updating workspace permissions for other users.
 | delete          | Allows deleting the workspace.
 
