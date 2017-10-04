@@ -9,28 +9,23 @@ permalink: /:categories/organizations/
 
 # Organizations in Eclipse Che
 
-Organization allow to regroup developers on Eclipse Che and allocate resources. Resources and permissions are controlled and allocated within Eclipse Che admin dashboard by system administrator.
+Organizations allow admins to group Eclipse Che users and allocate resources. Resources and permissions are controlled and allocated within the admin dashboard by a system administrator.
 
 ## Roles
-There are two main different roles in an organization:  
+There are two different roles in an organization:  
 
-- **Admin**: Organization's admins are able to manage the organization. Admins can edit settings, manage members, resources and sub-organization.  
-- **Members**: Organization's members are able create workspace, manage own workspaces and use any other workspaces they have permissions for.  
+- **Admin**: Organization admins are able to manage the organization. Admins can edit settings, manage members, resources and sub-organization.  
+- **Members**: Organization members are able create workspaces, manage their own workspaces and use any workspaces they have permissions for.  
 
-Alternatively there is **System Admin** role. Such a user is able to create root organizations, manage all resources, members and sub-organizations.
-
-## Organization Workspaces
-Workspaces created in an organization use organization resources granted and allocated by the system administrator.
-
-## Organization Workspace Resources
-Resources for organization are taken from the parent one. Admins can control whether all, or a portion of the resources, that are shared with the sub-organization.  
+There is also a **System Admin** role which sits above the organization construct. System Admins are able to create root organizations, as well as manage all resources, members and sub-organizations.
 
 ## Organization Structure
-Organizations can have sub-organizations.
-Root organizations are the starting point of each group of developers. Multiple root organizations are allowed onto your system. Root organizations can be created only be the System Admin. The management of the root organization's resources is also allowed only to the system admin of your Eclipse Che installation.
+Top level organizations are called "root organizations." Any organization can 0..n sub-organizations.
+
+Multiple root organizations are allowed and can be created only be the System Admin. Management of root organizations' resources can only be done by the System Admin.
 
 # Creating an Organization
-Eclipse Che system administrator is able to create organizations.
+Only the System Admin is able to create root organizations. Organization Admins can create sub-organizations.
 
 To create an organization, use the menu in the left sidebar, which leads to the list of organizations:  
 ![organization-menu.png]({{base}}/docs/assets/imgs/organization-menu.png){:style="width: 30%"}  
@@ -113,7 +108,12 @@ This action can't be reverted and all workspaces created under the organization 
 
 All members of the organization will receive an email notification to inform about organization deletion.
 
-## Manage Organization and Sub-Organization Limits
+## Managing Organizations
+
+### Organization Resources
+Workspaces created in an organization use the resources allocated by the system administrator to that organization. Resources for sub-organizations are taken from the parent organization. Admins can control whether all, or a portion of the parent's resources are available to the sub-organization.  
+
+### Managing Limits
 **Action restricted to**: Eclipse Che system administrator and admins of the organization.
 The organization default caps are taken from the system configuration. The admin of the organization can manage only the limits of it's sub-organizations.
 By default, there are no resource limits applied to the organization so all members can benefit from all the allocated resources. If an organization admin wishes to set limits they have three options:  
@@ -121,7 +121,7 @@ By default, there are no resource limits applied to the organization so all memb
 - **Running Workspace Cap**: The maximum number of workspaces which can run simultaneously in the organization.  
 - **Workspace RAM Cap**: The maximum total RAM organization workspaces can use in GB.  
 
-## Update Organization and Sub-Organization Member Roles
+### Update Organization and Sub-Organization Member Roles
 **Action restricted to**: Eclipse Che system administrator and admins of the organization.
 
 To edit the role of a organization member click on the "Edit" button in the "Actions" column:
@@ -132,7 +132,7 @@ You'll get a pop-up where you can update the role of the selected member:
 
 Click "Save" to confirm the update.
 
-## Remove Organization and Sub-Organization Members
+### Remove Organization and Sub-Organization Members
 **Action restricted to**: Eclipse Che system administrator and admins of the organization.
 
 To remove a member from the organization, you can click on the "Delete" button in the "Actions" column:
