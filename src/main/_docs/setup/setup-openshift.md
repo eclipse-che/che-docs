@@ -17,7 +17,7 @@ We currently support Che deployment for the following OpenShift flavours:
 
 # Deploy Che on OpenShift Container Platform
 
-Use environment variables to set [deployment options](#deployment-options):
+* Use environment variables to set [deployment options](#deployment-options):
 
 ```shell
 export OPENSHIFT_ENDPOINT=<OCP_ENDPOINT_URL> # e.g. https://opnshmdnsy3t7twsh.centralus.cloudapp.azure.com:8443
@@ -26,7 +26,9 @@ export OPENSHIFT_NAMESPACE_URL=<CHE_HOSTNAME> # e.g. che-eclipse-che.52.173.199.
 export OPENSHIFT_FLAVOR=ocp
 ```
 
-Download and run deployment scripts:
+* Install [jq](https://stedolan.github.io/jq/) command locally.
+
+* Download and run deployment scripts:
 
 ```shell
 DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/deploy_che.sh
