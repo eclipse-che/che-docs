@@ -129,4 +129,4 @@ public class QuickassistActionEvent extends ActionEvent {
 }
 ```
 
-Language server launcher IDE plugins may contribute their own actions to be called. The language server plugin itself contributes an action with the id "lsp.applyTextEdit", which will apply a list of LSP `TextEdit` objects in the currently active editor.
+Language server launcher IDE plugins may contribute their own actions to be called. The language server plugin itself contributes two actions with the ids "lsp.applyTextEdit" and "lsp.applyWorkspaceEdit". The first will apply a list of LSP `TextEdit` objects in the currently active editor. The second one applies a an LSP `WorkspaceEdit` to files in the workspace, either in an editor if the file is open, or on disk if they are not.
