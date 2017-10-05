@@ -12,7 +12,9 @@ The Language Server Protocol is used between a tool (the client) and a language 
 
 You can learn more about the language server specification on the [LSP GitHub page](https://github.com/Microsoft/language-server-protocol).
 
-Currently Eclipse Che implements the [2.x protocol version](https://github.com/Microsoft/language-server-protocol/blob/master/versions/protocol-2-x.md).
+Currently Eclipse Che implements the [3.x protocol version](https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md). 
+
+Note that, Eclipse Che also implements the snippet syntax used in VSCode. It is not versioned in the LSP specification, but the supported syntax is described [here](https://github.com/Microsoft/vscode/blob/0ebd01213a65231f0af8187acaf264243629e4dc/src/vs/editor/contrib/snippet/browser/snippet.md).
 
 ## Creating A Language Server
 
