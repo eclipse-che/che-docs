@@ -16,19 +16,19 @@ In this document, we often interchangeably use `plugin` and `extension`. An exte
 The typical structure of a Che plugin is composed of the following:
 
 
-| File   | Details   
+| File   | Details
 | --- | ---
 | `/plugin/pom.xml` | The `pom.xml` is a build file that compiles your extension and creates a JAR packaging.
 | `/plugin/src/` | Your extension source and build files.
-| `/plugin/target/` | Your JAR is placed in the `/target` directory and installed into your local maven repository.   
+| `/plugin/target/` | Your JAR is placed in the `/target` directory and installed into your local maven repository.
 
 Depending on the complexity of your plugin, you might create a multi-module structure. Each module is independently buildable, and they each would have their own `pom.xml`, `src`, and `target` entries.
 
-| File   | Details   
+| File   | Details
 | --- | ---
-| `/plugin/extension-ide`   | Your extension module for the IDE client.   
-| `/plugin/extension-server`   | Your extension module for the server part.   
-| `/plugin/extension-shared`   | Your extension module for the shared code between the server and the client.   
+| `/plugin/extension-ide`   | Your extension module for the IDE client.
+| `/plugin/extension-server`   | Your extension module for the server part.
+| `/plugin/extension-shared`   | Your extension module for the shared code between the server and the client.
 
 Each module has a directory structure that is based upon maven and will include source code and a target where artifacts are placed.
 
@@ -161,13 +161,13 @@ After you compile your extension, they will be packaged as JAR files. Those JAR 
 
 ## Che Files For Linking
 
-| File   | Details   
+| File   | Details
 | --- | ---
-| `/che/assembly/pom.xml`   | **Both server-side and client-side extensions.** Due to a temporary limitation in version management, your dependency must also be added to the root Che build artifact.   
-| `/che/assembly/assembly-ide-war/pom.xml`   | **Client-side (IDE) extensions.** Build file for main Che assembly.client side components, extension dependency should be added to this `pom.xml`.   
-| `/che/assembly/assembly-wsagent-war/pom.xml`   | **Server-side workspace extensions.** Build file that generates the Che web application agent that is deployed inside of a running workspace. You can add your extension to be included with this agent by adding it as a dependency in this file. Update this if your extension brings a new server-side service or component, or extends an existing API deployed with a workspace agent.   
-| `/che/assembly/assembly-wsmaster-war/pom.xml`   | **Server-side Che server extensions.** Add your extension as a dependency here if you want your server-side APIs to be accessible as part of the Che server. We call the workspace master (Che server) the location where master functions are provide like add / remove workspace. But if you just want server-side functionality that is available to the IDE, it must go into the workspace, which we call a workspace agent.   
-| `che/assembly/assembly-wsagent-server/pom.xml`   | **Optional**  This assembly constructs all of the pieces to create a Che agent server that will be packaged and deployed into any running workspace that has the dev-agent deployed into it. This Che agent server runs a Tomcat server that deploys any of your server-side workspace extensions along with other APIs required by Che to manage the workspace.   
+| `/che/assembly/pom.xml`   | **Both server-side and client-side extensions.** Due to a temporary limitation in version management, your dependency must also be added to the root Che build artifact.
+| `/che/assembly/assembly-ide-war/pom.xml`   | **Client-side (IDE) extensions.** Build file for main Che assembly.client side components, extension dependency should be added to this `pom.xml`.
+| `/che/assembly/assembly-wsagent-war/pom.xml`   | **Server-side workspace extensions.** Build file that generates the Che web application agent that is deployed inside of a running workspace. You can add your extension to be included with this agent by adding it as a dependency in this file. Update this if your extension brings a new server-side service or component, or extends an existing API deployed with a workspace agent.
+| `/che/assembly/assembly-wsmaster-war/pom.xml`   | **Server-side Che server extensions.** Add your extension as a dependency here if you want your server-side APIs to be accessible as part of the Che server. We call the workspace master (Che server) the location where master functions are provide like add / remove workspace. But if you just want server-side functionality that is available to the IDE, it must go into the workspace, which we call a workspace agent.
+| `che/assembly/assembly-wsagent-server/pom.xml`   | **Optional**  This assembly constructs all of the pieces to create a Che agent server that will be packaged and deployed into any running workspace that has the dev-agent deployed into it. This Che agent server runs a Tomcat server that deploys any of your server-side workspace extensions along with other APIs required by Che to manage the workspace.
 
 ## Your Extension Identifier
 Every extension has a unique maven identifier. You will need to reference this identifier as a dependency. You can define your own identifiers for extensions or pull the identifier out of the `pom.xml` of the extension you are working with.  For example, in the samples that are provided with che the `samples/sample-plugin-embedjs/` has a single module for the IDE, and the identifier for the IDE extension is located in `sample/sample-plugin-embedjs/che-sample-plugin-embedjs-ide/pom.xml`.
@@ -319,8 +319,8 @@ pom.xml  ---------->  builds  --------->  YourExtension.java
   Che IDE  -------->  injects  -------->  YourGinModule.java      (optional)
 
 
-CHE RUNTIME                              
------------                              
+CHE RUNTIME
+-----------
 @boot  ------------>  injects  -------->  YourGuiceModule.java    (optional)
 
 ```
@@ -340,16 +340,26 @@ There are a number of tweaks you can use to speed up the various stages of devel
 mvn clean install -DskipTests -Dskip-validate-sources -Dgwt.compiler.localWorkers=4 -Dfindbugs.skip=true
 ```
 
-In the IDE GWT module:
+In the IDE GWT module `ide/che-core-ide-generators/src/main/resources/org/eclipse/che/util/gwt.xml.template` keep just one permutation:
 
-```xml  
-<!-- In /assembly/assembly-ide-war/src/main/resources/org/eclipse/che/ide/IDE.gwt.xml -->
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='_app'>
+$config.inherits: { module |     <inherits name="$module$"/>
+}$
+    <stylesheet src="$config.stylesheet$"/>
+    <entry-point class="$config.entryPoint$"/>
+    <!-- Tell Che to only build one type of browser JavaScript -->
+    <!-- Values can be 'safari' or 'firefox'.  Safari builds for chrome -->
+    <set-property name="user.agent" value="safari"/>
+$if(config.loggingEnabled)$
+    <inherits name="com.google.gwt.logging.Logging"/>
+    <!-- Disable logging to the server -->
+    <set-property name="gwt.logging.simpleRemoteHandler" value="DISABLED" />
+    <!-- Enable logging to the browser's console in SuperDev mode -->
+    <set-property name="gwt.logging.developmentModeHandler" value="ENABLED" />
+    <set-property name="gwt.logging.consoleHandler" value="ENABLED"/>
+$endif$
+</module>
 
-<!-- Tell Che to only build one type of browser JavaScript -->
-<!-- Values can be 'safari' or 'firefox'.  Safari builds for chrome -->
-<set-property name="user.agent" value="safari"/>
-
-<!-- Reduces compiler permutations through some GWT magic. -->
-<!-- See https://github.com/gwtproject/old_google_code_wiki/blob/master/SoftPermutations.wiki.md -->
-<collapse-all-properties />
 ```
