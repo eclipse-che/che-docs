@@ -16,8 +16,15 @@ Eclipse Che provides:
 
 # Getting Started  
 You can get started with Che by:
-- [Installing it]({{ base }}/docs/setup/getting-started/index.html)
+- [Installing it for a single user]({{base}}{{site.links["setup-getting-started"]}})
+- [Installing it for multi users]({{base}}{{site.links["setup-getting-started-multi-user"]}})
 - [Creating a hosted SaaS account]({{ base }}/docs/setup/getting-started-saas-cloud/index.html)
+
+# Single and Multi-User flavors
+
+Che is shipped as two different assemblies - single and multi user. A single user Che does not have any components that provide multi tenancy and permissions. Thus, Che server and workspaces are not secured. This makes a single user Che a good choice for developers working locally.
+
+A [multi user Che]({{base}}{{site.links["setup-getting-started-multi-user"]}}) provides multi-tenancy i.e. users accounts and workspaces are isolated and secured with KeyCloak tokens. Che uses [KeyCloak](http://www.keycloak.org/) as a mechanism to register, manage and authenticate users. Permissions API regulates access to different entities in Che, such as workspaces, stacks, recipes, organizations etc. User information is stored in a persistent DB that supports migrations (PostgreSQL).
 
 # Workspace Model  
 
@@ -70,11 +77,11 @@ Che provides an SDK for authoring new extensions, packaging extensions into plug
 ![Extensibility.PNG]({{ base }}/docs/assets/imgs/Extensibility.PNG)
 There are a number of aspects that can be modified within Che.
 
-| Type   | Description   
+| Type   | Description
 | --- | ---
-| IDE Extension   | Modify the look-and-feel, panels, editors, wizards, menus, toolbars, and pop-up boxes of the client. IDE extensions are authored in Java and transpiled into a JavaScript Web application that is hosted on the Che server as a WAR file.   
-| Che Server Extension  (aka, Worskspace Master)   | Add or modify the core APIs that run within the Che server for managing workspaces, environments and machines. Workspace extensions are authored in Java and packaged as JAR files.   
-| Workspace Extension  (aka, Workspace Agent)   | Create or modify project-specific extensions that run within a workspace machine and have local access to project files. Define machine behaviors, code templates, command instructions, scaffolding commands, and intellisense. The Che Java extension is authored as a workspace agent extension, deployed into the machine, and runs JDT core services from Eclipse to do local intellisense operations against the remote workspace.   
+| IDE Extension   | Modify the look-and-feel, panels, editors, wizards, menus, toolbars, and pop-up boxes of the client. IDE extensions are authored in Java and transpiled into a JavaScript Web application that is hosted on the Che server as a WAR file.
+| Che Server Extension  (aka, Worskspace Master)   | Add or modify the core APIs that run within the Che server for managing workspaces, environments and machines. Workspace extensions are authored in Java and packaged as JAR files.
+| Workspace Extension  (aka, Workspace Agent)   | Create or modify project-specific extensions that run within a workspace machine and have local access to project files. Define machine behaviors, code templates, command instructions, scaffolding commands, and intellisense. The Che Java extension is authored as a workspace agent extension, deployed into the machine, and runs JDT core services from Eclipse to do local intellisense operations against the remote workspace.
 
 Each extension type is packaged separately because they are deployed differently into the assembly. IDE extensions are transpiled using GWT to generate a cross-browser JavaScript. This application is packaged as a WAR file and hosted on the Che server.
 
