@@ -191,6 +191,14 @@ Files in project explorer and editor tabs can be colored according to their Git 
 * Blue: files that contain changes.
 * Yellow: files that are not staged in index.
 
+Editor displays change markers according to edited regions of the file:
+
+![editor-git-change-markers.png]({{base}}{{site.links["editor-git-change-markers.png"]}}){:style="width: auto"}
+
+* Yellow marker: modified line(s).
+* Green marker: new line(s).
+* White triangle: removed line(s).
+
 ## Committing changes
 To commit your changes use the git commit window. To show it click `Git` -> `Commit...` from main menu or just use `Alt + c` shortcut.
 
