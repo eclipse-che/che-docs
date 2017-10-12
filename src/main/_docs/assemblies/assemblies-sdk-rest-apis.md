@@ -91,14 +91,14 @@ Each workspace has its own set of APIs. The workspace agent advertises its swagg
 ```shell  
 
 # Example
-http://172.19.20.16:8080/swagger/?url=http://localhost:32824/api/docs/swagger.json
+http://172.19.20.16:8080/swagger/?url=http://localhost:32824/wsmaster/api/docs/swagger.json
 
 where 32824 is an exposed port mapped to port 4401
 ```
 
 * You can get ws-agent API endpoint from workspace runtime:
 
-`GET localhost:8080/api/workspace/ws-id` `> runtime > devMachine > runtime > servers > links > 4401/tcp > address`.
+`GET localhost:8080/wsmaster/api/workspace/ws-id` `> runtime > devMachine > runtime > servers > links > 4401/tcp > address`.
 
 * You can get workspace agent port by running `docker inspect` against a workspace container. Get workspace container ID (image name is smth like `eclipse-che/workspacef4g2rqfw2222d81u_machine5c0ezeh7jixthtft_che_dev-machine`) and then run:
 
@@ -225,7 +225,7 @@ curl -X POST --header 'Content-Type: application/json' --header 'Accept: applica
       "description": "A basic example using Spring servlets. The app returns values entered into a submit form.",
       "problems": [],
       "mixins": []
- }' 'http://localhost:8080/api/workspace/workspace6y86s5qlnzbczow9/project'
+ }' 'http://localhost:8080/wsmaster/api/workspace/workspace6y86s5qlnzbczow9/project'
  ```
 
 #### Create a Command In A Workspace
@@ -240,7 +240,7 @@ curl -X POST --header 'Content-Type: application/json' --header 'Accept: applica
   "commandLine": "echo \u0027Hello World\u0027",
   "name": "hello world",
   "goal": "run"
-}' 'http://localhost:8080/api/workspace/workspace6y86s5qlnzbczow9/command'
+}' 'http://localhost:8080/wsmaster/api/workspace/workspace6y86s5qlnzbczow9/command'
 ```
 
 Sample cURL code that creates a workspace named `workspace-debian` and displays resulting data in console:
@@ -248,7 +248,7 @@ Sample cURL code that creates a workspace named `workspace-debian` and displays 
 #### Create a Workspace
 
 ```shell
-curl -X POST -H 'Content-Type: application/json' -d '{"name":"myworkspace","projects":[],"commands":[{"name":"build","type":"mvn","attributes":{"goal":"Build","previewUrl":""},"commandLine":"mvn clean install"],"environments":{"myworkspace":{"recipe":{"location":"eclipse/ubuntu_jdk8","type":"dockerimage"},"machines":{"dev-machine":{"attributes":{"memoryLimitBytes":"2147483648"},"agents":["org.eclipse.che.exec","org.eclipse.che.terminal","org.eclipse.che.ws-agent","org.eclipse.che.ssh"],"servers":{}}}}},"defaultEnv":"myworkspace","links":[]}' http://localhost:8080/api/workspace
+curl -X POST -H 'Content-Type: application/json' -d '{"name":"myworkspace","projects":[],"commands":[{"name":"build","type":"mvn","attributes":{"goal":"Build","previewUrl":""},"commandLine":"mvn clean install"],"environments":{"myworkspace":{"recipe":{"location":"eclipse/ubuntu_jdk8","type":"dockerimage"},"machines":{"dev-machine":{"attributes":{"memoryLimitBytes":"2147483648"},"agents":["org.eclipse.che.exec","org.eclipse.che.terminal","org.eclipse.che.ws-agent","org.eclipse.che.ssh"],"servers":{}}}}},"defaultEnv":"myworkspace","links":[]}' http://localhost:8080/wsmaster/api/workspace
 ```
 
 # Launching {{ site.product_mini_name }} IDE via REST API
@@ -259,7 +259,7 @@ After a workspace has been created it can be started via REST API:
 
 ```shell
 # Start a workspace by its ID, with a given environment
-curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' 'http://localhost:8080/api/workspace/workspace01oqb9ptzrperis7/runtime?environment=myworkspace'
+curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' 'http://localhost:8080/wsmaster/api/workspace/workspace01oqb9ptzrperis7/runtime?environment=myworkspace'
 ```
 
 # Stacks API
@@ -269,12 +269,12 @@ Stacks are the templating mechanism that defines how the runtime of a workspace 
 #### List Stacks Tagged With 'Node'
 
 ```shell  
-curl --header 'Accept: application/json' http://localhost:8080/api/stack?tags=Node.JS
+curl --header 'Accept: application/json' http://localhost:8080/wsmaster/api/stack?tags=Node.JS
 ```
 
 Query parameter `tags` is optional and used to narrow down search results.
 
-It's possible to use multiple query parameters, e.g. `http://localhost:8080/api/stack?tags=Java&tags=Ubuntu`
+It's possible to use multiple query parameters, e.g. `http://localhost:8080/wsmaster/api/stack?tags=Java&tags=Ubuntu`
 
 Swagger: http://localhost:8080/swagger/#!/stack/searchStacks
 
@@ -284,7 +284,7 @@ Swagger: http://localhost:8080/swagger/#!/stack/searchStacks
 To create a stack, you need to define its configuration according to the [stack data model]({{base}}{{site.links["devops-runtime-stacks-data-model"]}}) and send it in a POST request:
 
 ```shell  
-curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"name":"my-custom-stack"source":{"origin":"codenvy/ubuntu_jdk8"type":"image"},"components":[],"tags":["my-custom-stack","Ubuntu","Git","Subversion"],"id":"stack15l7wsfqffxokhle","workspaceConfig":{"environments":{"default":{"machines":{"default":{"attributes":{"memoryLimitBytes":"1048576000"},"servers":{},"agents":["org.eclipse.che.terminal","org.eclipse.che.ws-agent","org.eclipse.che.ssh"]}},"recipe":{"location":"codenvy/ubuntu_jdk8","type":"dockerimage"}}},"defaultEnv":"default","projects":[],"name":"default"commands":[],"links":[]},"creator":"che","description":"Default Blank Stack.","scope":"general"}' http://localhost:8080/api/stack
+curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"name":"my-custom-stack"source":{"origin":"codenvy/ubuntu_jdk8"type":"image"},"components":[],"tags":["my-custom-stack","Ubuntu","Git","Subversion"],"id":"stack15l7wsfqffxokhle","workspaceConfig":{"environments":{"default":{"machines":{"default":{"attributes":{"memoryLimitBytes":"1048576000"},"servers":{},"agents":["org.eclipse.che.terminal","org.eclipse.che.ws-agent","org.eclipse.che.ssh"]}},"recipe":{"location":"codenvy/ubuntu_jdk8","type":"dockerimage"}}},"defaultEnv":"default","projects":[],"name":"default"commands":[],"links":[]},"creator":"che","description":"Default Blank Stack.","scope":"general"}' http://localhost:8080/wsmaster/api/stack
 
 ```
 
@@ -293,7 +293,7 @@ curl -X POST --header 'Content-Type: application/json' --header 'Accept: applica
 You can update the stack configuration in a PUT request:
 
 ```shell  
-curl -X PUT --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"name":"my-custom-stack","source":{"origin":"codenvy/ubuntu_jdk8","type":"image"},"components":[],"tags":["my-custom-stack","Ubuntu","Git","Subversion"],"id":"stacki7jf4x4n2cz6r3cr","workspaceConfig":{"environments":{"default":{"machines":{"default":{"attributes":{"memoryLimitBytes":"1048576000"},"servers":{},"agents":["org.eclipse.che.terminal","org.eclipse.che.ws-agent","org.eclipse.che.ssh"]}},"recipe":{"location":"codenvy/ubuntu_jdk8","type":"dockerimage"}}},"defaultEnv":"default","projects":[],"name":"default","commands":[],"links":[]},"creator":"che","description":"NEW-DESCRIPTION","scope":"general"}' http://localhost:8080/api/stack/${id}
+curl -X PUT --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"name":"my-custom-stack","source":{"origin":"codenvy/ubuntu_jdk8","type":"image"},"components":[],"tags":["my-custom-stack","Ubuntu","Git","Subversion"],"id":"stacki7jf4x4n2cz6r3cr","workspaceConfig":{"environments":{"default":{"machines":{"default":{"attributes":{"memoryLimitBytes":"1048576000"},"servers":{},"agents":["org.eclipse.che.terminal","org.eclipse.che.ws-agent","org.eclipse.che.ssh"]}},"recipe":{"location":"codenvy/ubuntu_jdk8","type":"dockerimage"}}},"defaultEnv":"default","projects":[],"name":"default","commands":[],"links":[]},"creator":"che","description":"NEW-DESCRIPTION","scope":"general"}' http://localhost:8080/wsmaster/api/stack/${id}
 ```
 
 #### Delete a Stack
@@ -301,7 +301,8 @@ curl -X PUT --header 'Content-Type: application/json' --header 'Accept: applicat
 To delete a stack you need to pass the stack ID as a path parameter:
 
 ```shell  
-curl -X DELETE --header 'Accept: application/json' http://localhost:8080/api/stack/${id}
+curl -X DELETE --header 'Accept: application/json' http://localhost:8080/wsmaster
+/api/stack/${id}
 ```
 
 # Commands API (Exec Agent)

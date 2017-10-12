@@ -17,7 +17,7 @@ Go to [OAuth application page](https://github.com/settings/applications/new) and
 * `Application name` : `Che`
 * `Homepage URL` : `http://<YOUR_IP_ADDRESS>:8080`
 * `Application description` : `Che`
-* `Authorization callback URL` : `http://<YOUR_IP_ADDRESS>:8080/api/oauth/callback`
+* `Authorization callback URL` : `http://<YOUR_IP_ADDRESS>:8080/wsmaster/api/oauth/callback`
 
 Substitute `CHE_OAUTH_GITHUB_CLIENTID` and `CHE_OAUTH_GITHUB_CLIENTSECRET` properties in `che.env` with `Client ID` and `Client Secret` taken from 
 newly created [OAuth application](https://github.com/settings/developers).
