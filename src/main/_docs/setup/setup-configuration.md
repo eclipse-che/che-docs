@@ -100,6 +100,8 @@ Code [samples]({{ base }}{{site.links["devops-project-samples"]}}) allow you to 
 # Workspace Limits
 You can place limits on how users interact with the system to control overall system resource usage. You can define how many workspaces created, RAM consumed, idle timeout, and a variety of other parameters.
 
+Per default, a workspace will be stopped after one hour of inactivity.
+
 You can also set limits on Docker's allocation of CPU to workspaces, which may be necessary if you have a very dense workspace population where users are competing for limited physical resources.
 
 Workspace idle timeout can be configured in `che.env` , so that inactive workspaces will be shutdown automatically over this length of time in milliseconds. By default, this value is set to 3600000 (1 hour). If set to "0", then workspaces will not be stopped automatically. Currently, keyboard and mouse interactions in IDE, as well as HTTP requests to ws-agent count as activity
