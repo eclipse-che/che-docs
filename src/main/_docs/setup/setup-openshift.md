@@ -15,6 +15,27 @@ We currently support Che deployment for the following OpenShift flavours:
 - [Minishift](#deploy-che-on-minishift)
 - [Openshift.io](#deploy-che-on-openshiftio) (only for developing Che itself)
 
+
+# Pre-Reqs
+
+
+* Install [jq](https://stedolan.github.io/jq/) command locally
+* Download [OpenShift Client Tools]()https://github.com/openshift/origin/releases/tag/v3.6.0 and add it to path
+
+# Deploy Multi User Che
+
+Deployment script and yaml files reside in Che repository, so you need to clone Che repository (https://github.com/eclipse/che).
+
+
+```shell
+git clone https://github.com/eclipse/che
+cd che/dockerfiles/init/modules/openshift/files/scripts
+export CHE_MULTI_USER=true
+./deploy_che.sh && ./wait_until_che_is_available.sh && ./replace_stacks.sh
+```
+By default `OPENSHIFT_FLAVOR` is `minishift`. If you want to deploy to OCP or OSIO, do additional exports as explained below.
+
+
 # Deploy Che on OpenShift Container Platform
 
 * Use environment variables to set [deployment options](#deployment-options):
@@ -25,8 +46,6 @@ export OPENSHIFT_TOKEN=<OCP_TOKEN>
 export OPENSHIFT_NAMESPACE_URL=<CHE_HOSTNAME> # e.g. che-eclipse-che.52.173.199.80.xip.io
 export OPENSHIFT_FLAVOR=ocp
 ```
-
-* Install [jq](https://stedolan.github.io/jq/) command locally.
 
 * Download and run deployment scripts:
 
