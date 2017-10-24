@@ -20,21 +20,21 @@ We currently support Che deployment for the following OpenShift flavours:
 
 
 * Install [jq](https://stedolan.github.io/jq/) command locally
-* Download [OpenShift Client Tools]()https://github.com/openshift/origin/releases/tag/v3.6.0 and add it to path
+* Download [OpenShift Client Tools](https://github.com/openshift/origin/releases/tag/v3.6.0) and add it to path
 
 # Deploy Multi User Che
 
-Deployment script and yaml files reside in Che repository, so you need to clone Che repository (https://github.com/eclipse/che).
+Deployment script and YAML files reside in Che repository, so you need to clone Che repository (https://github.com/eclipse/che).
 
+By default the command below uses MiniShift (`OPENSHIFT_FLAVOR=minishift`). If you want to deploy to OCP or OSIO, add additional exports as explained below.
 
 ```shell
 git clone https://github.com/eclipse/che
 cd che/dockerfiles/init/modules/openshift/files/scripts
 export CHE_MULTI_USER=true
+[insert any other export for the OpenShift flavor needed - explained below]
 ./deploy_che.sh && ./wait_until_che_is_available.sh && ./replace_stacks.sh
 ```
-By default `OPENSHIFT_FLAVOR` is `minishift`. If you want to deploy to OCP or OSIO, do additional exports as explained below.
-
 
 # Deploy Che on OpenShift Container Platform
 
