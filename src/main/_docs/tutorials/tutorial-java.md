@@ -13,7 +13,7 @@ Go to Workspaces tab in User Dashboard, pick any Java stack, create a workspace 
 When in the IDE, go to Workspace > Create Project > Java. A wizard will ask for a project name and sources directory location.
 
 # 3. Compile and run  
-When a project shows up in project explorer, open `src/Main.java`. Hit Ctrl+Space ti check code auto-completion, see error marking in action etc.
+When a project shows up in project explorer, open `src/Main.java`. Hit Ctrl+Space to check code auto-completion, see error marking in action etc.
 
 To compile and run the project, go to `Edit Commands`, choose Java type command, press `+` button to add a new command.
 
