@@ -9,7 +9,7 @@ permalink: /:categories/getting-started-multi-user/
 
 # Start Multi-User Che
 
-Elcipse Che is now available in single-user and multi-user assemblies. The multi-user assembly uses Keycloak for user authentication and is ideal for teams and collaboration. The single-user Che is suited to personal desktop use.
+Eclipse Che is now available in single-user and multi-user assemblies. The multi-user assembly uses Keycloak for user authentication and is ideal for teams and collaboration. The single-user Che is suited to personal desktop use.
 
 Use the following syntax to start Che's multi-user assembly:
 
