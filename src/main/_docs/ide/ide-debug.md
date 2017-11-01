@@ -46,8 +46,14 @@ You can add debug commands to CMD widget to permanently save them with the works
 GDB can be used to debug **C/C++** and **Node.js** projects. In Docker 1.13+, a container requires privileged mode for gdb and gdbserver to start. In `che.env` configure workspace container privileged mode and restart {{ site.product_mini_name }} :
 
 ```
-{{ site.product_mini_name }}_DOCKER_PRIVILEGED=false
+{{ site.product_mini_name }}_DOCKER_PRIVILEGED=true
 ```
+
+Since Che 5.20, privileged mode for debugging in docker is NOT required anymore. Che on Kubernetes or Openshift supports GDB debugging by default, because `seccomp:unconfined` is default. To enable GDB debugging in a docker based installation, the docker `securityOpt` parameter must be set to `seccomp:unconfiend`. This can be done by adding
+```
+{{ site.product_mini_name }}_DOCKER_SECURITYOPT=seccomp:unconfined
+```
+To your configuration.
 
 ## Debugging Local Binary
 
