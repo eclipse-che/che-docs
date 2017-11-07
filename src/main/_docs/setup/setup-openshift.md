@@ -42,7 +42,7 @@ export CHE_MULTI_USER=true
 
 ```shell
 export OPENSHIFT_ENDPOINT=<OCP_ENDPOINT_URL> # e.g. https://opnshmdnsy3t7twsh.centralus.cloudapp.azure.com:8443
-export OPENSHIFT_TOKEN=<OCP_TOKEN>
+export OPENSHIFT_TOKEN=<OCP_TOKEN> # e.g. $(oc whoami -t) after oc login -u <username>
 export OPENSHIFT_NAMESPACE_URL=<CHE_HOSTNAME> # e.g. che-eclipse-che.52.173.199.80.xip.io
 export OPENSHIFT_FLAVOR=ocp
 ```
