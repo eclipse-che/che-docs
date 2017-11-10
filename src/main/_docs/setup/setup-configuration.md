@@ -26,13 +26,6 @@ The version control sequence would be:
 4. Setup a new folder and copy `che.env` from version control into the folder you will mount to `:/data`.
 5. Run `che config` or `che start`.
 
-# Internal Configuration
-We provide a complete list of user-configurable properties in the `che.env` file. However, there are additional internal Che server properties that can also be configured. When we start the `che-server` Docker container, it is configured with a `che.properties` file to define a variety of internal operational details. You can [view the default file](https://github.com/eclipse/che/blob/08344fe62ebedfaa199e3258279b29acec7c88f8/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/codenvy/che.properties) in our GitHub repo.  
-
-You can override these properties or pass in new Che server properties by defining additional environment variables within `che.env`. The CLI will convert any `che.env` additional properties into custom `che.properties` that are passed into the server.
-
-Any variable with the format `CHE_PROPERTY_<name>=<value>` will be configured into property value. A single underscore `_` will be converted into a period `.`.  A double underscore `__` will be converted into a single underscore `_`.  For example:
-
 ```shell
 # This environment variable:
 CHE_PROPERTY_machine_ws__agent_max__start__time__ms=1000

@@ -21,10 +21,9 @@ All of these containers share a common Docker daemon that is running on the host
 
 # Step By Step Guide  
 ### Configure Che
-There are two values that you must set as environment variables. This requires the 4.7 CLI - previous versions of the CLI do not support converting environment variables into Che properties.
+There are two values that you must set as environment variables in che.env. This requires the 4.7 CLI.
 ```text  
-# This will create a che.properties value
-export CHE_PROPERTY_machine_server_extra_volume=/var/run/docker.sock:/var/run/docker.sock
+ CHE_PROPERTY_machine_server_extra_volume=/var/run/docker.sock:/var/run/docker.sock
 
 # Set CHE_DATA_FOLDER to a directory that you will remember.
 # This value will be needed inside of the workspace
