@@ -23,8 +23,6 @@ There are two exporting options available there, **Export to File** and **Export
 
 ![che-sharing3.jpg]{{base}}{{site.links["che-sharing3.jpg"]}})
 
-Finally, it's possible to take a snapshot of a running workspace, export it to a Docker image registry and share it with others.
-
 ### Export to File
 In the user dashboard's workspace detail view for a specific workspace:
 
@@ -55,23 +53,6 @@ In the user dashboard's workspace detail view for a specific workspace:
 
 This will push the workspace JSON to the remote host and start the workspace there.
 
-### Export to a Docker Registry
-Create a snapshot of the workspace you want to export by right-clicking the workspace name in the user dashboard or left navigation bar.
-
-Use the Docker CLI to rename, login and push the workspace Docker image to a Docker repository.
-
-In order to access the Docker CLI, you will need access to the host terminal. Below is an example of renaming and pushing a workspace Docker image to Docker Hub repository using the Docker CLI.
-
-```shell  
-#list all images. Look for the newest snapshot then tag it.
-docker images
-docker tag machine_snapshot_<hash> <repository>/<image-name>
-
-#Login to your Docker Hub account
-docker login
-
-docker push <repository>/<image-name>
-```
 
 **Projects Not Transferred** Volume mounted folders such as the `/projects` folder in the workspace will not be included in the Docker image. Users will need to add these projects in manually or as part of a recipe after loading the workspace image. Exporting to a Docker repository is useful if software was added or modification to the workspace environment have been made during while using the workspace.
 

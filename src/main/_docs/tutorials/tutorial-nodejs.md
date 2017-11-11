@@ -124,10 +124,3 @@ Docker exposes your express server port to a random port in the ephemeral range.
 You can add additional exposed ports to an existing workspace. Exposed ports can be defined in stacks dockerfile or compose file. If using ready-to-go node [stack]({{base}}{{site.links["devops-runtime-stacks"]}}) you can view dockerfile `EXPOSE` command on github repo [eclipse/che-dockerfiles](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/node/Dockerfile) for a list of exposed ports. Additional exposed ports can be added through dashboard `dashboard > select workspace > runtime > <expand machine> > server > add`.
 
 ![nodejs-tutorial-add-port.gif]({{ base }}{{ site.links["nodejs-tutorial-add-port.gif"] }})
-
-# 5. Snapshot Workspace  
-Che synchronizes your projects in and out of your workspace in between executions of the server. Changes made to projects are synchronized to long term storage. However, if your workspace is shut down, the internal state of the environment will not be saved to disk unless you snapshot it. The internal stage of the environment is any file that is not part of your project tree. For example, the express application installed in the previous steps will update the NPM repository within the environment. If the workspace is stopped (by you or the server), then when the workspace is restarted, it is restarted from the originating image that we downloaded when creating the project.
-
-A snapshot creates a new image that will be used to load the workspace, based upon the current contents of the environment.
-
-To snapshot the workspace right-click on the workspace in the left nav bar and choose "Snapshot."  The workspace will be stopped and snapshotted.
