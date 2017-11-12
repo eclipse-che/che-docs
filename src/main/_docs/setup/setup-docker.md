@@ -68,7 +68,7 @@ docker run -p 9000:9500 \
 ```
 
 ## Configuration
-Most important configuration properties are defined as environment variables that you pass into the container. You can also optionally pass in a custom `che.properties` which has internal Che configuration that is loaded when Che's tomcat is booted.  For example, to have Che listen on port 9000:
+Most important configuration properties are defined as environment variables that you pass into the container. For example, to have Che listen on port 9000:
 
 ```shell  
 docker run -p:9000:9000 \
@@ -121,34 +121,7 @@ docker run -p:8080:8080 \
            eclipse/che-server:5.0.0-latest
 ```
 
-## Override Che Internals
-Eclipse Che running in the container has its configuration in `/data/conf/che.properties`. This file is copied into the directory that you mount into `/data`. You can modify this file and restart Che if you want.
 
-You can also start a shell session in the context of the running container. This will allow you to browse all directories and use your favorite text editor.
-
-```shell  
-sudo docker exec -it che /bin/bash
-
-# You can also just edit /home/user/che/conf/che.properties`:
-sudo docker exec -it che vi /data/conf/che.properties
-
-# After you finish making changes, restart the contain
-docker restart che
-```
-
-You can save your Che configuration to reside outside of the container to be reusable between different container instances. Create a local `che.properties` file, volume mount it into the container, and also tell Che in the container where to locate this file.
-
-```shell  
-# Mount host directory with che.properties into container and inform Che where it is.
-# Place the folder with che.properties as a mount to /conf
-docker run -p:8080:8080 \
-           --name che \
-           --restart always \
-           -e CHE_IP=10.0.75.4 \
-           -v /var/run/docker.sock:/var/run/docker.sock \
-           -v <LOCAL_PATH>:/data \
-           -v /C/conf:/conf \
-           eclipse/che-server:5.0.0-latest
 ```
 
 ## Use Local Che Assembly
@@ -167,7 +140,7 @@ docker run -p:8080:8080 \
 ```
 
 ## Port Exposure
-Docker uses the ephemeral port range from `32768-65535`.  If you do not want to expose ports `32768-65535` because of the large port range, you need to reconfigure your Docker daemon to communicate over the `docker0` interface. You need to set  `DOCKER_MACHINE_HOST` to `172.17.0.1` and modify `machine.docker.che_api.endpoint` in the  `che.properties` file.
+Docker uses the ephemeral port range from `32768-65535`.  If you do not want to expose ports `32768-65535` because of the large port range, you need to reconfigure your Docker daemon to communicate over the `docker0` interface. You need to set  `DOCKER_MACHINE_HOST` to `172.17.0.1` and modify `machine.docker.che_api.endpoint` in the  `che.env` file.
 
 ```shell  
 # Modify your local che.properties with:
@@ -193,7 +166,6 @@ che:
    port: 8080:8080
    restart: always
    environment:
-     CHE_LOCAL_CONF_DIR=/C/conf
      CHE_ASSEMBLY=/home/my_assembly
      DOCKER_MACHINE_HOST=172.17.0.1
    volumes:
