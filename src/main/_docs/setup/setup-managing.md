@@ -31,7 +31,7 @@ Storage is consumed by:
 2. Project files.
 3. Workspace snapshots, which create new images saved in a registry.
 
-Generally, workspace images start at 180MB. If you permit workspace snapshots, those files can grow quite significantly, especially if your developers have large dependency sets such as maven repositories that they want captured in the snapshot.
+Generally, workspace images start at 180MB.
 
 ## Multi-Client Collaboration  
 Workspaces are both portable and shared. Multiple browser clients (and humans!) can connect to a single Che server running multiple workspaces, or if you prefer, to a single workspace. Users within a single workspace can make use of the runtime and project files. Che implements a last-write-wins policy when multiple users modify the same file.

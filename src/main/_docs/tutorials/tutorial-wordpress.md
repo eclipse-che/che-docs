@@ -78,9 +78,3 @@ Run Apache, click the preview URL and find your WordPress project started there.
 You will be prompted to connect your MySQL database (see details above). You can also connect an external database.
 
 A few steps to install WP and voilà, it’s done.
-
-# 5. Snapshot Workspace  
-
-The last step is to save your workspace.
-
-Go to Machine Perspective, choose `Machine > Create Snapshot`. It will create a new image which will be used to load the workspace, based upon the current contents of the environment.

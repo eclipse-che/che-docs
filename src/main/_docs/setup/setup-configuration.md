@@ -279,7 +279,7 @@ Eclipse Che workspace runtimes are powered by one or more Docker containers. Whe
 ## Private Images  
 When users create a workspace in Eclipse Che, they must select a Docker image to power the workspace. We provide ready-to-go stacks which reference images hosted at the public Docker Hub, which do not require any authenticated access to pull. You can provide your own images that are stored in a local private registry or at Docker Hub. The images may be publicly or privately visible, even if they are part of a private registry.
 
-If your stack images that Che wants to pull require authenticated access to any registry, or if you want Che to push snapshot images into a registry (also requiring authenticated access), then you must configure registry authentication.
+If your stack images that Che wants to pull require authenticated access to any registry then you must configure registry authentication.
 
 In `che.env`:
 
@@ -306,40 +306,6 @@ FROM <repository>/<image>:<tag>
 # Example:
 FROM my.registry.url:9000/image:latest
 ```
-
-## Workspace Snapshots
-By default any workspace stop event will automatically snapshot the workspace runtime (and all of its images). Anything in your workspace `/project` folder will be saved to the data folder you mounted into the Che container (see ["Logs and User Data"](#logs-and-user-data) for more information). We then use Docker to snapshot the remaining contents of the workspace into a Docker image. There is a matching auto-restore configuration item which will automatically restart the workspace from the latest saved Docker image on disk. When the workspace is started, your project files will be re-mounted or re-synced into `/projects`.
-
-You can configure auto-snapshot and auto-restore behaviors by modifiyng the [`che.env` file]({{base}}{{site.links["setup-configuration"]}}#internal-configuration):
-
-```shell
-# During the stop of the workspace automatically creates a snapshot if the value is {true},
-# Otherwise just stops the workspace.
-CHE_WORKSPACE_AUTO__SNAPSHOT=false
-
-# During the start of the workspace automatically restore it from a snapshot if the value is {true},
-# Otherwise create a new workspace.
-CHE_WORKSPACE_AUTO__RESTORE=false
-```
-
-### Save Workspace Snapshots in a Private Registry
-The default configuration for workspace snapshots is to have them written to disk as TAR files. This is faster, but not centralized. You can have workspace snapshots saved in a private registry instead. In `che.env`:
-
-```
-CHE_DOCKER_REGISTRY__FOR__SNAPSHOTS=true
-CHE_DOCKER_REGISTRY=<registry-url>
-```
-
-### Managing Snapshots in Registries
-Che marks old snapshots for deletion from the registry by deleting the snapshot manifests which reference the image layers. However, the image layers themselves (which consume the disk space) must be removed by the registry itself as part of a garbage collection (it removes layers that have no manifests). Che does not automatically trigger a GC event in the registry because during GC the registry needs to be in read-only mode which could cause new image pushes to fail.
-
-We recommend either triggering the GC manually from time-to-time or when disk space becomes limited and when it's known that images aren't being pushed to the registry. Alternatively, registry GCs can be scheduled if there's a consistent time of day when there's a low likelihood of pushes to the registry.
-
-To execute the GC in a registry on a host (local or remote):
-`bin/registry garbage-collect </path/to/config.yml>`
-
-To execute the GC in a registry inside a container:
-`docker exec -ti <registry container name/id> bin/registry garbage-collect /etc/docker/registry/config.yml`
 
 Read more about registries in the [Docker documentation](https://docs.docker.com/registry/).
 
