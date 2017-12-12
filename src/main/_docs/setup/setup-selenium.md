@@ -95,8 +95,10 @@ Define tests scope:
 Handle failing tests:
     --failed-tests                      Rerun failed tests that left after the previous try
     --regression-tests                  Rerun regression tests that left after the previous try
-    --rerun                             Automatically rerun failing tests
-    --compare-with-ci                   Compare failed tests with results on CI server
+    --rerun [ATTEMPTS]                  Automatically rerun failing tests.
+                                        Default attempts number is 1.
+    --compare-with-ci [BUILD NUMBER]    Compare failed tests with results on CI server.
+                                        Default build is the latest.
 
 Other options:
     --debug                             Run tests in debug mode
@@ -112,7 +114,7 @@ HOW TO of usage:
         ./selenium-tests.sh --multiuser
 
     Test Eclipse Che assembly and automatically rerun failing tests:
-        ./selenium-tests.sh --rerun
+        ./selenium-tests.sh --rerun [ATTEMPTS]
 
     Run single test or package of tests:
         ./selenium-tests.sh <...> --test=<TEST>
@@ -122,11 +124,11 @@ HOW TO of usage:
 
     Rerun failed tests:
         ./selenium-tests.sh <...> --failed-tests
-        ./selenium-tests.sh <...> --failed-tests --rerun
+        ./selenium-tests.sh <...> --failed-tests --rerun [ATTEMPTS]
 
     Debug selenium test:
         ./selenium-tests.sh -Mlocal --test=<TEST> --debug
 
     Analyse tests results:
-        ./selenium-tests.sh --compare-with-ci [CI job number]
+        ./selenium-tests.sh --compare-with-ci [BUILD NUMBER]
 ```
