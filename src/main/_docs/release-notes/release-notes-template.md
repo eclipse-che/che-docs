@@ -6,14 +6,14 @@ layout: release-notes
 permalink: /:categories/template/
 ---
 
-**Release note summary**
+## Release Summary
 
-This release note {version} release changes.
+Eclipse Che {version} includes:
 - **Feature1**: Quick value description 
 - **Feature2**: Quick value description 
 - ...
 
-## Upgrade
+### Upgrade
 Instruction how to upgrade
 
 ---
@@ -22,9 +22,17 @@ Instruction how to upgrade
 
 ### Feature1 (#ISSUE)
 
-{image}
+{image / animated gif}
 
-Feature description
+Feature description focusing on value to the user or contributor.
+
+Learn more in the documentation: {Link to the documentation}
+
+### Feature2 (#ISSUE)
+
+{image / animated gif}
+
+Feature description focusing on value to the user or contributor.
 
 Learn more in the documentation: {Link to the documentation}
 
