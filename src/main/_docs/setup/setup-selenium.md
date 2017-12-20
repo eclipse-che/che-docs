@@ -1,5 +1,5 @@
 ---
-tags: [ "eclipse" , "che" , "selenium" , "tests" ]
+tags: [ "eclipse" , "che" , "selenium" , "tests", "openshift" ]
 title: How to run selenium tests
 excerpt: ""
 layout: docs
@@ -9,17 +9,17 @@ permalink: /:categories/selenium/
 
 Eclipse Che is providing a set of automated tests. This documentation explain how to configure your system in order to be able to the Selenium tests suite.
 
-You can find the Selenium tests suite [here: https://github.com/eclipse/che/tree/master/selenium](https://github.com/eclipse/che/tree/master/selenium)
+You can find the Selenium tests suite [here: https://github.com/eclipse/che/tree/che6/selenium](https://github.com/eclipse/che/tree/master/selenium)
 
 #### 1. Register OAuth application
 
 Go to [OAuth application page](https://github.com/settings/applications/new) and register a new application:
 * `Application name` : `Che`
-* `Homepage URL` : `http://<YOUR_IP_ADDRESS>:8080`
+* `Homepage URL` : `http://<YOUR_IP_ADDRESS><:YOUR_CHE_PORT>`
 * `Application description` : `Che`
-* `Authorization callback URL` : `http://<YOUR_IP_ADDRESS>:8080/api/oauth/callback`
+* `Authorization callback URL` : `http://<YOUR_IP_ADDRESS><:YOUR_CHE_PORT>/api/oauth/callback`
 
-Substitute `CHE_OAUTH_GITHUB_CLIENTID` and `CHE_OAUTH_GITHUB_CLIENTSECRET` properties in `che.env` with `Client ID` and `Client Secret` taken from
+Substitute `CHE_OAUTH_GITHUB_CLIENTID` and `CHE_OAUTH_GITHUB_CLIENTSECRET` properties in `che.env` with `Client ID` and `Client Secret` taken from 
 newly created [OAuth application](https://github.com/settings/developers).
 
 #### 2. Add configuration file
@@ -27,13 +27,6 @@ newly created [OAuth application](https://github.com/settings/developers).
 Set `CHE_LOCAL_CONF_DIR` environment variable and point to the folder where selenium tests configuration will be stored.
 Create file `selenium.properties` in that folder with the following content:
 ```
-# Credentials of Eclipse Che multiuser assemblies
-che.admin_user.email=<CHE_ADMIN_EMAIL>
-che.admin_user.password=<CHE_ADMIN_PASSWORD>
-
-che.test_user.email=<CHE_USER_EMAIL>
-che.test_user.password=<CHE_USER_PASSWORD>
-
 # GitHub account credentials
 github.username=<MAIN_GITHUB_USERNAME>
 github.password=<MAIN_GITHUB_PASSWORD>
@@ -45,7 +38,16 @@ google.user=<GOOGLE_USER>
 google.password=<GOOGLE_PASSWORD>
 ```
 
-#### 3. Prepare repository
+In case of running of tests for Eclipse Che in Multi User mode you can set your own credentials of test user or admin instead of default ones
+export CHE_ADMIN_NAME=<che_admin_name>
+export CHE_ADMIN_EMAIL=<che_admin_email>
+export CHE_ADMIN_PASSWORD=<che_admin_password>
+
+export CHE_TESTUSER_NAME=<che_test_user_name>
+export CHE_TESTUSER_EMAIL=<che_test_user_email>
+export CHE_TESTUSER_PASSWORD=<che_test_user_password>
+
+#### 3. Prepare repository 
 Fork all repositories from [https://github.com/idexmai?tab=repositories](https://github.com/idexmai?tab=repositories) into the main GitHub account.
 Fork the repository [https://github.com/iedexmain1/pull-request-plugin-fork-test](https://github.com/iedexmain1/pull-request-plugin-fork-test) into the auxiliary GitHub account.
 
@@ -57,6 +59,14 @@ Follow the guide: [https://github.com/eclipse/che](https://github.com/eclipse/ch
 
 Simply launch `./selenium-tests.sh`
 
+### How to run tests on OpenShift
+#### 1. Set workspace runtime infrastructure implementation
+export CHE_INFRASTRUCTURE=openshift
+#### 2. Run tests and specify host and port of Che deployed to OpenShift
+Launch `./selenium-tests.sh --host=<Che host on openshift> --port=80`
+
+Example: `./selenium-tests.sh --host=che-spi.192.168.99.100.nip.io --port=80`
+
 Run tests configuration properties
 --------------------------------------
 ```
@@ -66,6 +76,7 @@ Options:
     --http                              Use 'http' protocol to connect to product
     --https                             Use 'https' protocol to connect to product
     --host=<PRODUCT_HOST>               Set host where product is deployed
+    --port=<PRODUCT_PORT>               Set port of the product, default is 8080
     --multiuser                         Run tests of Multi User Che
 
 Modes (defines environment to run tests):
@@ -78,7 +89,6 @@ Modes (defines environment to run tests):
         --threads=<THREADS>             Number of tests that will be run simultaneously. It also means the very same number of
                                         Web browsers will be opened on the developer machine.
                                         Default value is in range [2,5] and depends on available RAM.
-
 
     -Mgrid (default)                    All tests will be run in parallel among several docker containers.
                                         One container per thread. Recommended to run test suite.
@@ -109,7 +119,7 @@ Other options:
 HOW TO of usage:
     Test Eclipse Che single user assembly:
         ./selenium-tests.sh
-        
+
     Test Eclipse Che multi user assembly:
         ./selenium-tests.sh --multiuser
 

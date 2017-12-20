@@ -44,7 +44,7 @@ Implement the [LanguageServerLauncher interface](https://github.com/eclipse/che/
 ```java
 public interface LanguageServerLauncher {
 
-    /**
+    //**
      * Initializes and starts a language server.
      *
      * @param projectPath

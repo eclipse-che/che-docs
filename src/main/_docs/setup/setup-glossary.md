@@ -25,7 +25,7 @@ permalink: /:categories/glossary/
 **Factory Configuration**
 : A JSON object that defines the rules and behavior for how the Factory should work.
 
-**Machine**: A virtual environment that contains a stack of software to be used when executing your project source code and artifacts. Project source code and build artifacts are stored within the machine and synchronized with your central project storage. A machine accepts commands that can start, modify or stop processes. A machine can be active (running) or suspended (saved snapshot) or destroyed (shutdown). The lifecycle of a machine such as booting or shutdown is triggered on various user events such as opening the IDE. Machines are granted an allocation of workspace resources for its execution. Machines can have type where different machines of the same type can be used interchangeably within the same project. Eclipse Che provides a native CLI and Docker implementation of Che server and machines.
+**Machine**: A virtual environment that contains a stack of software to be used when executing your project source code and artifacts. Project source code and build artifacts are stored within the machine and synchronized with your central project storage. A machine accepts commands that can start, modify or stop processes. A machine can be active (running) or destroyed (shutdown). The lifecycle of a machine such as booting or shutdown is triggered on various user events such as opening the IDE. Machines are granted an allocation of workspace resources for its execution. Machines can have type where different machines of the same type can be used interchangeably within the same project. Eclipse Che provides a native CLI and Docker implementation of Che server and machines.
 
 **Modules**: A module is a directory in a project that can be independently built and run. Modules have their own project type and attributes, which can affect how the command behavior works for that directory apart from others or the project as a whole. Modules can be nested.
 
@@ -48,8 +48,6 @@ permalink: /:categories/glossary/
 **Runtime**: Instances of machines that provide an environment for agents and projects to run within the workspace.​
 
 **Resource**: Physical asset consumed by a workspace.  Resources can be defined differently for each workspace.
-
-**Snapshot**: A machine Instance saved to disk with its state preserved. Snapshots of machines are saved as Docker images. Machines and snapshots are bound to Workspaces.
 
 **Stack**: A stack is the configuration of a runtime that can be used to power a workspace. Users choose the stack that powers a workspace within the user dashboard. Stacks have a recipe that defines how the container should be created and also meta data that defines the tags associated with the stack.
 

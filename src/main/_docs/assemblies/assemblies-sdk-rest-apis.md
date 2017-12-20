@@ -27,7 +27,7 @@ private void getProjectType(@NotNull String workspaceId,
 
 }
 ```
-This example comes from the class used by the IDE to ask the server to provide a response on what the current project type is within the currently active workspace. The `asyncRequestFactory` object was instantiated by the system as an input parameter. Calling the `createGetRequest()` method with the GET REST URL as an input will generate a request and a response. The `.loader()` method is an optional display component that will appear on the screen while the contents of the response are loading. The `send()` method takes a callback object which will be invoked by the system when a response is delivered.
+This example comes from the class used by the IDE to ask the server to provide a response on what the current project type is within the currently active workspace. The `asyncRequestFactory` object was instantiated by the system as an input parameter. Calling the `createGetRequest()` method with the GET REST URL ass an input will generate a request and a response. The `.loader()` method is an optional display component that will appear on the screen while the contents of the response are loading. The `send()` method takes a callback object which will be invoked by the system when a response is delivered.
 
 In the [debugger implementation class](https://github.com/eclipse/che/blob/e3407ae74674c5f84af89341826ec5e98106f90e/plugins/plugin-java/che-plugin-java-ext-debugger-java-client/src/main/java/org/eclipse/che/ide/ext/java/jdi/client/debug/DebuggerServiceClientImpl.java), you can see a range of REST calls for different individual functions such as step into, step over, and  so forth.
 

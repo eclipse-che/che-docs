@@ -45,7 +45,6 @@ permalink: /:categories/intro/
 - 1..n Machines ⇒ machines have “type”, such as Docker or SSH and an SPI
 - State, such as “running”, “stopped”, “booting”
 - Runtime - the instantiated machines
-- Snapshot - saved machine state
 
 ### 0..n Agents
 
