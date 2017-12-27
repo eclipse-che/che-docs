@@ -5,14 +5,17 @@
     {% assign layout_docs = site.data.tutorials %}
     {% elsif page.layout == 'docs' %}
     {% assign layout_docs = site.data.docs %}
+    {% elsif page.layout == 'release-notes' %}
+    {% assign layout_docs = site.data.release-notes %}
     {% endif %}
     {% for section in layout_docs %}
     <optgroup label="{{ section.title }}">
-      {% include docs_option.html items=section.docs %}
       {% if page.layout == 'tutorials' %}
-      {% include docs_ul.html items=section.tutorials %}
+      {% include docs_option.html items=section.tutorials %}
       {% elsif page.layout == 'docs' %}
-      {% include docs_ul.html items=section.docs %}
+      {% include docs_option.html items=section.docs %}      
+      {% elsif page.layout == 'release-notes' %}
+      {% include docs_option.html items=section.release-notes %}
       {% endif %}
     </optgroup>
 
@@ -21,6 +24,8 @@
 
     {% if page.layout == 'tutorials' %}
     {% assign layout_docs = site.data.tutorials %}
+    {% elsif page.layout == 'release-notes' %}
+    {% assign layout_docs = site.data.release-notes %}
     {% else %}
     {% assign layout_docs = site.data.docs %}
     {% endif %}
