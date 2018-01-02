@@ -9,39 +9,46 @@ permalink: /:categories/angular2/
 
 # 1. Create Node Stack with angular/cli  
 
-When in User Dashboard, go to **Workspaces > Add Workspace > Runtime > Stack Authoring** and paste the following recipe:
+When in User Dashboard, go to **Stacks > Build Stack From Recipe** and paste the following recipe:
 
 ```text
-FROM codenvy/node
-RUN sudo npm install -g angular-cli
+FROM eclipse/node
+RUN sudo npm install -g @angular/cli
 EXPOSE 4200
 LABEL che:server:4200:ref=ng-serve che:server:4200:protocol=http
 ```
 
+Optional but recommended: name your new stack and give it a description, then expand the section under **Machines > DEV MACHINE**, then under
+**Agents** enable language support for Typescript, JSON, and Yaml.  
+
 # 2. Generate a project
 
-When the workspace is up, create the following command:
+When the workspace is up, make a new project by running these commands in the Terminal:
 
 ```
 cd /projects
 ng new myapp
 ```
 
-You can perform the above commands in the Terminal too.
+You could also make a Command for this in the Command Palette.
 
 # 3. Run App
 
-Now, when the project is generated and all dependencies are installed, it's time to run it. Create yet another command:
+Now, when the project is generated and all dependencies are installed, it's time to run it. Create a new command in the Command Palette, named ``Run Angular App``, with this command line:
 
-```text
+```sh
 cd ${current.project.path}
 ng serve --host 0.0.0.0
 ```
-Important! Make sure this command has preview URL as follows:
+and this preview URL:
 
-``${server.4200/tcp}``
+```sh
+${server.4200/tcp}
+```
 
-Execute this command, click the preview URL link. The page should say `app works`
+**Important!** Do not forget the preview URL, otherwise you will not be able to easily find the URL of your app.
+
+Execute this command, click the preview URL link. The page should say `Welcome to app`.
 
 # 4. Update App
 
@@ -49,19 +56,18 @@ In `src/app/app.component.ts` add another title by editing the existing AppCompo
 
 ```javascript
 export class AppComponent {
-  title = 'app works!';
-  newTitle = 'Indeed!';
+  title = 'app';
+  newTitle = 'indeed!';
 }
 ```
 
 Add the newTitle element in `src/app/app.component.html`:
 
-```
+```html
 <h1>
-  {{bracesLeft}}title{{bracesRight}}
-  <br>
-  {{bracesLeft}}newTitle{{bracesRight}}
+  Welcome to {{ title }}, {{ newTitle }} 
 </h1>
 ```
 
-As soon as the server picks up changes in files, you can preview them in a running app
+As soon as the server picks up changes in files, you can preview them in a running app.
+
