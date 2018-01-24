@@ -1,0 +1,418 @@
+---
+title: "DTO"
+keywords: framework, plugin, extension, dto
+tags: [extensions, dev_docs]
+sidebar: user_sidebar
+permalink: dto.html
+folder: dev_essentials
+---
+
+{% include links.html %}
+
+A data transfer object (DTO) is an object to exchange data with the client and server. DTOs are responsible for serializing (and deserializing) themselves into JSON. You can prepare custom DTOs for your extensions and plugins. You define a DTO interface and then our DTO utilities will generate implementations that can be included in your extension.
+
+## Interfaces
+
+Every DTO requires interfaces that must contain get-methods. Mark these interfaces with the `org.eclipse.che.dto.shared.DTO` annotation. Possible names for getter-methods are:
+
+```
+get...
+is...
+```
+
+For example:
+
+```java
+package com.codenvy.test.dto;
+
+import org.eclipse.che.dto.shared.DTO;
+
+@DTO
+public interface Item {
+    String getStatus();
+    void setStatus(String status);
+    boolean isHidden();
+    void setHidden(boolean hidden);
+}
+```
+
+## POM
+
+Update the `<plugins>` section of a `pom.xml` to include the DTO.
+
+1. `maven-compiler-plugin` - helps to run compilation of project in two steps.
+2. `che-core-api-dto-maven-plugin` - generates DTO implementations.
+3. `build-helper-maven-plugin` - adds generated files to project's sources.
+
+`che-core-api-dto-maven-plugin` has the following configuration parameters (all required):
+
+`dtoPackages`: names of packages which contains DTO interfaces.
+
+`outputDirectory`: name of directory to store generated files. Usually just set one property, e.g. `dto-generator-out-directory` and reuse it in configurations of plugins.
+
+`genClassName`: sets the name of an enclosing class where generated classes are placed.
+
+`impl`: either `server` or `client` to define which kind of DTO to generate.
+
+`dependencies` - each maven plugin has its own classloader. Plugin cannot see dependencies or build output of current project. So it's necessary to add current project as dependency for `che-core-api-dto-maven-plugin`. If DTOs from current project use DTOs from another project, then need add dependency to that project too.
+
+The following `pom.xml` snippet demonstrates how you can generate server-side DTOs:
+```
+...
+<properties>
+    <dto-generator-out-directory>${project.build.directory}/generated-sources/dto/</dto-generator-out-directory>
+</properties>
+....
+<build>
+<plugins>
+    <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+            <execution>
+                <id>pre-compile</id>
+                <phase>generate-sources</phase>
+                <goals>
+                    <goal>compile</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+    <plugin>
+        <groupId>org.eclipse.che.core</groupId>
+        <artifactId>che-core-api-dto-maven-plugin</artifactId>
+        <version>${che.core.version}</version>
+        <executions>
+            <execution>
+                <phase>process-sources</phase>
+                <goals>
+                    <goal>generate</goal>
+                </goals>
+            </execution>
+        </executions>
+        <configuration>
+            <dtoPackages>
+                <package>com.codenvy.test.dto</package>
+            </dtoPackages>
+            <outputDirectory>${dto-generator-out-directory}</outputDirectory>
+            <genClassName>com.codenvy.test.server.dto.DtoServerImpls</genClassName>
+            <impl>server</impl>
+        </configuration>
+        <dependencies>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>${project.artifactId}</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!--
+            Other dependencies if DTOs from current project need them.
+            -->
+        </dependencies>
+    </plugin>
+    <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+            <execution>
+                <id>add-resource</id>
+                <phase>process-sources</phase>
+                <goals>
+                    <goal>add-resource</goal>
+                </goals>
+                <configuration>
+                    <resources>
+                        <resource>
+                            <directory>${dto-generator-out-directory}/META-INF</directory>
+                            <targetPath>META-INF</targetPath>
+                        </resource>
+                    </resources>
+                </configuration>
+            </execution>
+            <execution>
+                <id>add-source</id>
+                <phase>process-sources</phase>
+                <goals>
+                    <goal>add-source</goal>
+                </goals>
+                <configuration>
+                    <sources>
+                        <source>${dto-generator-out-directory}</source>
+                    </sources>
+                </configuration>
+            </execution>
+        </executions>
+    </plugin>
+</plugins>
+</build>
+...
+```
+
+The following `pom.xml` snippet demonstrates how you can generate both types of DTOs (client and server):
+```
+...
+...
+<properties>
+    <dto-generator-out-directory>${project.build.directory}/generated-sources/dto/</dtogenerator-out-directory>
+</properties>
+...
+<build>
+<plugins>
+    <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+            <execution>
+                <id>pre-compile</id>
+                <phase>generate-sources</phase>
+                <goals>
+                    <goal>compile</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+    <plugin>
+        <groupId>org.eclipse.che.core</groupId>
+        <artifactId>che-core-api-dto-maven-plugin</artifactId>
+        <version>${che.core.version}</version>
+        <executions>
+            <execution>
+                <phase>process-sources</phase>
+                <goals>
+                    <goal>generate</goal>
+                </goals>
+                <configuration>
+                    <dtoPackages>
+                        <package>com.codenvy.test.dto</package>
+                    </dtoPackages>
+                    <outputDirectory>${dto-generator-out-directory}</outputDirectory>
+                    <genClassName>com.codenvy.test.client.dto.DtoClientImpls</genClassName>
+                    <impl>client</impl>
+                </configuration>
+            </execution>
+            <execution>
+                <phase>process-sources</phase>
+                <goals>
+                    <goal>generate</goal>
+                </goals>
+                <configuration>
+                    <dtoPackages>
+                        <package>com.codenvy.test.dto</package>
+                    </dtoPackages>
+                    <outputDirectory>${dto-generator-out-directory}</outputDirectory>
+                    <genClassName>com.codenvy.test.server.dto.DtoServerImpls</genClassName>
+                    <impl>server</impl>
+                </configuration>
+            </execution>
+        </executions>
+        <dependencies>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>${project.artifactId}</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!--
+            Other dependencies if DTOs from current project need them.
+            -->
+        </dependencies>
+    </plugin>
+    <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+            <execution>
+                <id>add-resource</id>
+                <phase>process-sources</phase>
+                <goals>
+                    <goal>add-resource</goal>
+                </goals>
+                <configuration>
+                    <resources>
+                        <resource>
+                            <directory>${dto-generator-out-directory}/META-INF</directory>
+                            <targetPath>META-INF</targetPath>
+                        </resource>
+                    </resources>
+                </configuration>
+            </execution>
+            <execution>
+                <id>add-source</id>
+                <phase>process-sources</phase>
+                <goals>
+                    <goal>add-source</goal>
+                </goals>
+                <configuration>
+                    <sources>
+                        <source>${dto-generator-out-directory}</source>
+                    </sources>
+                </configuration>
+            </execution>
+        </executions>
+    </plugin>
+</plugins>
+<resources>
+    ...
+    <resource>
+        <directory>${generated.sources.directory}</directory>
+    </resource>
+</resources>
+</build>
+...
+```
+
+Make sure that the directory with generated client-side DTOs is included in classpath resources.
+
+## Generate
+
+In order to generate DTOs, you build your project with maven:
+```
+mvn clean install
+```
+
+## Use: Server-Side
+
+```java
+// server-side DTO
+import org.eclipse.che.dto.server.DtoFactory;
+...
+
+// create instance and set fields
+MyJob job = DtoFactory.getInstance().createDto(MyJob.class);
+job.setStatus("success");
+job.setExitCode(0);
+
+// serialize to JSON
+String json = DtoFactory.getInstance().toJson(job);
+
+// deserialize from JSON
+MyJob job2 = DtoFactory.getInstance().createDtoFromJson(json, MyJob.class);
+```
+
+You can also use the static method `DtoFactory.newDto(MyJob.class)` that is a shortcut for `DtoFactory.getInstance().createDto(MyJob.class)`. See: [DtoFactory](https://github.com/eclipse/che/blob/master/core/che-core-api-dto/src/main/java/org/eclipse/che/dto/server/DtoFactory.java) for server side.
+
+## Use: Client-Side
+
+```java
+// client-side DTO
+import org.eclipse.che.ide.dto.DtoFactory;
+@Singleton
+public class MyPresenter {
+    @Inject
+    public MyPresenter(DtoFactory dtoFactory) {
+        // create instance and set fields
+        MyJob job = dtoFactory.createDto(MyJob.class);
+        job.setStatus("success");
+        job.setExitCode(0);
+
+        // serialize to JSON
+        String json = dtoFactory.toJson(job);
+
+        // deserialize from JSON
+        MyJob job2 = dtoFactory.createDtoFromJson(json, MyJob.class);
+    }
+}
+```
+See: client side [DtoFactory](https://github.com/eclipse/che/blob/master/ide/commons-gwt/src/main/java/org/eclipse/che/ide/dto/DtoFactory.java).
+
+## Method Chaining
+
+In addition to the standard getter and setter methods, our generator also adds a method `withXXX(T value)`. This is seimilar to a setter method, but also returns `this`. You can use this to do chaining. Instead of:
+
+```java
+MyJob job = DtoFactory.getInstance().createDto(MyJob.class);
+job.setStatus("success");
+job.setExitCode(0);
+```
+use:
+```java
+MyJob job =
+DtoFactory.getInstance().createDto(MyJob.class).withStatus("success").withExitCode(0);
+```
+
+Generator always add such methods in generated implementation for your DTO interfaces, but you still should add them to you interfaces so that they are externally accessible:
+
+```java
+package com.codenvy.test.dto;
+import org.eclipse.che.dto.shared.DTO;
+@DTO
+public interface MyJob {
+     String getStatus();
+     void setStatus(String status);
+     int getExitCode();
+     void setExitCode(int code);
+     String getError();
+     void setError(String error);
+     // for chaining
+     MyJob withStatus(String status);
+     MyJob withExitCode(int code);
+     MyJob withError(String error);
+}
+```
+
+## Delegate DTO Methods
+
+In some case we may need more then just getters and setters in DTO, but there is no common mechanism to generate such implementation for DTO interface. In this case `org.eclipse.che.dto.shared.DelegateTo` annotation may help. DTO interface bellow contains getters, setters and with methods and one more complex method for getting full name of user.
+
+```java
+@DTO
+public interface User {
+     String getFirstName();
+     void setFirstName(String firstName);
+     User withFirstName(String firstName);
+     String getLastName();
+     void setLastName(String lastName);
+     User withLastName(String lastName);
+     @DelegateTo(client = @DelegateRule(type = Util.class, method = "fullName"),
+     server = @DelegateRule(type = Util.class, method = "fullName"))
+     String getFullName();
+}
+```
+
+For method `getFullName` add annotation `DelegateTo`. Annotations may contains different delegate rules for client and server code.
+
+`DelegateTo` annotation:
+
+| Parameter | Description |
+|-----------|-------------|
+| `client`    | Rules for client code generator |
+| `server`    | Rules for server code generator |
+
+`DelegateRule` annotation
+
+| Parameter | Description |
+|-----------|-------------|
+| `type`      | Class that contains method to delegate method call |
+| `method`     | Name of method |
+
+```java
+public class Util {
+    public static String fullName(User user) {
+        return user.getFirstName() + " " + user.getLastName();
+    }
+}
+```
+
+Fragment of generated code for method `getFullName()`:
+
+```java
+public String getFullName() {
+    return Util.fullName(this);
+}
+```
+
+Requirements for methods to delegate DTO methods calls:
+
+1. Method must be public and static.
+2. Method must accept DTO interface as first parameter, if DTO method contains other parameters then the delegate method must accept the whole set of DTO method parameters starting from the second position.
+
+For example:
+
+```java
+@DelegateTo(client = @DelegateRule(type = Util.class, method = "fullName"),
+            server = @DelegateRule(type = Util.class, method = "fullName"))
+String getFullNameWithPrefix(String prefix);
+```
+
+Delegate method:
+```java
+public static String fullName(User user, String prefix) {
+    return prefix + " " + user.getFirstName() + " " + user.getLastName();
+}
+```

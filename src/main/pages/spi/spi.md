@@ -1,0 +1,40 @@
+---
+title: SPI&#58 Overview
+sidebar: user_sidebar
+keywords: dev docs
+permalink: spi_overview.html
+folder: spi
+---
+{% include links.html %}
+
+## Abstraction
+
+Che Workspace Runtime composed by set of running Machines can be deployed on top of any Infrastructure. Runtime is able to provide one or more Machines.
+
+As defined in a [workspace model][what_are_workspaces], a machine is termed as some set of hardware and|or software resources working under control of Operation System. Examples of such Infrastructure including:
+
+- Running Physical Computers
+- Virtual machines
+- Linux Containers
+
+Che Workspace Runtime **Service Provider Interface** (SPI) is a clean abstraction to allow pluggable Environment and Runtime Infrastructure.
+
+It defines two kinds of contracts to be implemented in order to:
+
+- describe Workspace Environment binding logical configuration of Machines along with implementation of a specific Recipe
+- let particular Runtime Infrastructure start and stop resources associated with Workspace Runtime, such as Docker Containers, Kubernetes Pods, volumes etc.
+- allow listening to infrastructure specific events, machines start/stop sequences, servers health checking thanks to asynchronous [JSON-RPC messaging][json-rpc].
+
+Strictly speaking, there are 2 kinds of SPI: one for Environment analyzing and transformation and another for applying effective environment and starting Workspace Runtime.
+
+The reason of decoupling `InternalEnvironment` from Runtime Infrastructure SPI is that some types of Recipes can be understandable/supported for more than one Infrastructure.
+
+## Motivation
+
+SPI is one of the main features of Che 6.
+
+There are several reasons to implement it, main of which include:
+
+- Big demand of using infractructures other than Docker, such as: OpenShift, Kubernetes, local machine which was too hard on Docker oriented implementation.
+- Needs to have more flexibility with deploying different tools on different machines, not to be "dev-machine oriented".
+- A client has to be better informed during Workspace starting, stopping and running including receiving detailed infrastructure specific events.

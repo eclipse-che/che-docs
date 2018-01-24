@@ -24,15 +24,10 @@
     <packaging>war</packaging>
     <name>Che :: Docs War</name>
     <scm>
-        <connection>scm:git:git@github.com:eclipse/che-docs.git</connection>
-        <developerConnection>scm:git:git@github.com:eclipse/che-docs.git</developerConnection>
+        <connection>scm:git:git@github.com:codenvy/che-docs.git</connection>
+        <developerConnection>scm:git:git@github.com:codenvy/che-docs.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
-    <properties>
-        <jetty.version>9.4.0.v20161208</jetty.version>
-        <maven.releases.repo.url>https://maven.codenvycorp.com/content/repositories/codenvy-private-releases/</maven.releases.repo.url>
-        <maven.snapshots.repo.url>https://maven.codenvycorp.com/content/repositories/codenvy-private-snapshots/</maven.snapshots.repo.url>
-    </properties>
     <repositories>
         <repository>
             <id>codenvy-public-repo</id>
@@ -58,64 +53,7 @@
         </pluginRepository>
     </pluginRepositories>
     <build>
-        <sourceDirectory>${project.build.directory}/che-docs-src</sourceDirectory>
         <plugins>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                  <execution>
-                    <id>copy-assets-resources</id>
-                    <phase>validate</phase>
-                    <goals>
-                      <goal>copy-resources</goal>
-                    </goals>
-                    <configuration>
-                      <outputDirectory>${project.build.directory}/che-docs-src/src/main/_docs/assets</outputDirectory>
-                      <resources>          
-                        <resource>
-                          <directory>${project.basedir}/src/main/_docs/assets</directory>
-                          <filtering>false</filtering>
-                          <excludes>
-                            <exclude>**/css/**</exclude>
-                            <exclude>**/fonts/**</exclude>
-                          </excludes>
-                        </resource>
-                      </resources>  
-                    </configuration>            
-                  </execution>
-                  <execution>
-                    <id>copy-docs-resources</id>
-                    <phase>validate</phase>
-                    <goals>
-                      <goal>copy-resources</goal>
-                    </goals>
-                    <configuration>
-                      <outputDirectory>${project.build.directory}/che-docs-src/src/main/_docs/che</outputDirectory>
-                      <resources>          
-                        <resource>
-                          <directory>${project.basedir}/src/main/_docs/</directory>
-                          <filtering>false</filtering>
-                          <excludes>
-                            <exclude>**/assets/**</exclude>
-                          </excludes>
-                        </resource>
-                      </resources> 
-                    </configuration>            
-                  </execution>
-                </executions>
-              </plugin>
-              <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -124,42 +62,31 @@
                         <exclude>**/**/*.js</exclude>
                         <exclude>**/**/*.html</exclude>
                         <exclude>**/**/*.svg</exclude>
+                        <exclude>**/**/*.css</exclude>
+                        <exclude>**/**/*.yml</exclude>
                     </excludes>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>${jetty.version}</version>
-                <configuration>
-                    <scanIntervalSeconds>10</scanIntervalSeconds>
-                    <webApp>
-                        <contextPath>/docs</contextPath>
-                    </webApp>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${project.build.directory}/_site" />
-                                <exec dir="${project.basedir}/src/main" executable="jekyll" failonerror="true">
-                                    <arg value="build" />
-                                    <arg value="--config" />
-                                    <arg value="${project.basedir}/src/main/_config.yml" />
-                                    <arg value="--destination" />
-                                    <arg value="${project.build.directory}/_site" />
-                                </exec>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>generate-site</id>
+                    <phase>generate-sources</phase>
+                    <goals>
+                        <goal>run</goal>
+                    </goals>
+                    <configuration>
+                        <target>
+                            <!-- build Jekyll docs with docker -->
+                            <exec executable="bash">
+                                <arg value="-c" />
+                                <arg value="docker run -v $(pwd):/che-docs eivantsov/jekyll-docs sh -c 'cd /che-docs/src/main; jekyll build'" />
+                            </exec>
+                        </target>
+                    </configuration>
+                </execution>
+            </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -168,7 +95,7 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <webResources>
                         <resource>
-                            <directory>target/_site/docs</directory>
+                            <directory>src/main/_site</directory>
                         </resource>
                     </webResources>
                 </configuration>

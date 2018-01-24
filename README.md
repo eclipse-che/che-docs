@@ -1,76 +1,87 @@
-[![Workspace](https://codenvy.io/factory/resources/codenvy-contribute.svg)](https://codenvy.io/f?url=https://github.com/eclipse/che-docs)
+## Eclipse Che Docs
 
-# Eclipse Che Docs 
-Eclipse Che uses Jekyll 3.3.1 to generate documentation from this repository as a static html webpages. 
+Che docs use Jekyll to convert `.md` files into html page. Docs are published at [https://www.eclipse.org/che/docs](https://www.eclipse.org/che/docs/). Updates are synced with a release cycle.
 
-This repository houses documentation for Eclipse Che ([repo](https://github.com/eclipse/che) / [site](https://eclipse.com/che/)). Content is held in markdown files in [/src/main/_docs](https://github.com/codenvy/che-docs/tree/master/src/main/_docs). Images should be placed in [/src/main/_docs/assets/imgs](https://github.com/codenvy/che-docs/tree/master/src/main/_docs/assets/imgs).
+## Build and Preview
 
-Docs are built using Jekyll and the output is static HTML that is hosted at [https://www.eclipse.org/che/docs/](https://www.eclipse.org/che/docs/) and in the product at `{che-domain}/docs`.
+There's `run.sh` script in the root of the repo that runs a Docker image, mounts sources and starts Jekyll. When running locally, docs are available at `localhost:4000`. Jekyll watches for changes in `.md` files and re-generates resources, so you can preview changes live.
 
-### Viewing Generated Documentation
-- Documentation for the latest release: [https://www.eclipse.org/che/docs/](https://www.eclipse.org/che/docs/)
-- Documentation for nightly builds: [https://www.eclipse.org/che/docs-versions/nightly/](https://www.eclipse.org/che/docs-versions/nightly/)
+## Adding a New Page
 
-# Editing Docs
-[![Workspace](https://codenvy.io/factory/resources/codenvy-contribute.svg)](https://codenvy.io/f?url=https://github.com/eclipse/che-docs)
-  
-Get a workpsace on `codenvy.io` which include all dependencies to edit and preview your changes by clicking on the image above.
+In order to add a new page, create `.md` file in `src/main/pages/${subdir}`. If there's no sub-directory that fits a new page, create one. Take a look at headers in pages to make sure the generated html page has expected name, title and keywords.
 
-# Linking to Docs and Images
-Because the docs are generated into static HTML linking to docs and images is a bit unusual. We provide a custom plugin [_plugins/links.rb](_plugins/links.rb) to create links.
-
-### Linking to a Page
-A link is defined as: `[<link description shown in html>]({{base}}{{sites.links["<file base name>"]}}#<section name>)`. For example to link to "_docs/workspace-administration/ws-agents.md" you would add the following to your MD:
-```
-[workspace agents]({{base}}{{sites.links["ws-agents"]}})
-```
-To link to a subsection of a markdown file add `#<section name>` at end of the link. The section name is the header text with spaces replaced by `-`. For example, the heading `# Creating New Agent` would be linked as `#creating-new-agents`.
-
-### Linking to an Image
-To add a link to `/docs/assets/imgs/quick-documentation.png` into your MD you can use: `![quick-documentation.png]({{base}}{{sites.links["quick-documentation.png"]}})`
-
-### Understanding the Links Plugin
-The links plugin uses the following variables in [_config.yml](https://github.com/codenvy/che-docs/blob/master/src/main/_config.yml) file:
-    - Each `defaults.value.categories` is used to create the permalink used in a markdown file.
-    - Each `collections` is used to find file paths for each markdown file specified in the [_data](https://github.com/codenvy/che-docs/tree/master/src/main/_data) folder.
-  - YAML files in [_data](https://github.com/codenvy/che-docs/tree/master/src/main/_data) are used to create the navigation bar on the right side of page.
-
-# Naming Conventions
-### Adding a New Markdown File
-The file name must always begin with a prefix for the section it is part of. See other pages in the section you are adding to for the prefix to be used.
-
-All new files need to have the same [front matter](https://jekyllrb.com/docs/frontmatter/) information at the top of the MD file:
-```markdown
+```yaml
 ---
-tags: [ "eclipse" , "che" ]         // Do not change
-title: Chefile                      // Your title, do not use quotation marks
-excerpt: "Che for your repo."       // Optional short summary
-layout: docs                        // Should use `docs` or `tutorial`
-permalink: /:categories/chefiles/   // Should match the other files in the folder
+title: "Single-User&#58 Install on Docker"
+keywords: docker, installation
+tags: [installation, docker]
+sidebar: user_sidebar
+permalink: docker.html
+folder: setup
 ---
-{% include base.html %}             // Do not change, allows relative paths to work
-```
-Your content can start after this.
-
-### Adding a New Section
-New sections are represented as folders in https://github.com/codenvy/che-docs/tree/master/src/main/_docs. Folder names must contain lowercase a-z characters and `-` to seperate words.
-    
-# Building Docs
-Docs are built using a Docker image with Jekyll inside it. You need Docker and Bash installed to build and host the Che docs.
-
-You can use codenvy.io factory to easily compile and view documentation. Just click [here](https://codenvy.io/f?url=https://github.com/eclipse/che-docs).
-
-You can also use the following locally.
-
-```
-$ git clone http://github.com/eclipse/che-docs
-$ cd che-docs/src/main/
-$ bash docs.sh --run
-
-# Markdown converted to static HTML and launches Jekyll server at http://localhost:9080
+{% include links.html %}
 ```
 
-The Jekyll server will scan for changes to the `.md` files every 2 seconds and auto-update the generated HTML.
+`{% include links.html %}` is mandatory to enable [links to other pages](#links).
 
-# Getting Help
-If you have questions or problems, please create an issue in this repo.
+### Naming
+
+Try to use short names and titles for pages. Use `_` or `-` in page names (`permalink` in page header).
+
+### Keywords
+
+Search script uses page titles, summary and keywords to search for relevant results. Make sure your keywords are relevant for the page you add.
+
+### Tags
+
+If you need to add a tag, take a look at available tags in `src/main/pages/tags` folder. Tags should be also registered in `src/main/_data/tags.yml` - so both a tag in `tags.yml` and a respective tag page should be created.
+
+## Links
+
+To post a link to an internal page, use the following syntax:
+
+```
+This is a [link][file_name]
+```
+
+Do not use `.md` or `.html`. Also, this file should be referenced in at least one sidebar `src/main/_data/sidebars`
+
+Links to anchors in internal pages:
+
+```
+This is a [link](file_name.html#tag)
+```
+
+Links to external pages:
+
+```
+This is a [link](https://github.com)
+```
+
+## Images
+
+Images are located in `src/main/images`
+
+To publish an image, use the following syntax
+
+```
+{% include image.html file="dir/img.png" %}
+```
+Do not drop images into the root of `images` directory - either choose an existing sub-dir or create one if none of them fit an image.
+
+Images are sized automatically. You can provide a URL to a full size image, as well as a caption:
+
+```
+{% include image.html file="devel/js_flow.png" url="images/devel/js_flow.png" caption="Click to view a larger image" %}
+```
+
+Please, do not post too many images unless it is absolutely necessary. Animated `.gif` images are preferred, especially when explaining how to use complex UI features.
+
+## How to Get Support
+
+* **GitHub issue:** open an issue in this repository
+* **Public Chat:** Join the public [eclipse-che](https://mattermost.eclipse.org/eclipse/channels/eclipse-che) Mattermost channel to discuss with community and contributors
+
+## How to Contribute
+
+We love pull requests and appreciate contributions that make docs more helpful for users. See: [Contribution guide](https://github.com/eclipse/che#contributing).
