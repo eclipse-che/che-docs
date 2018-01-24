@@ -1,101 +1,99 @@
-#
-# Copyright (c) 2012-2018 Red Hat, Inc.
-# All rights reserved. This program and the accompanying materials
-# are made available under the terms of the Eclipse Public License v1.0
-# which accompanies this distribution, and is available at
-# http://www.eclipse.org/legal/epl-v10.html
-#
-# Contributors:
-#   Red Hat, Inc. - initial API and implementation
-#
+repository: eclipse/che
 
-markdown: kramdown
-highlighter: rouge
+output: web
+# this property is useful for conditional filtering of content that is separate from the PDF.
 
+topnav_title: Eclipse Che Documentation
+# this appears on the top navigation bar next to the home button
 
-kramdown:
-  toc_levels:     1..1
-  smart_quotes:   lsquo,rsquo,ldquo,rdquo
-  input:          GFM
+site_title: Eclipse Che Documentation
+# this appears in the html browser tab for the site title (seen mostly by search engines, not users)
 
-repository: https://github.com/eclipse/che-docs/
-#help_url: https://github.com/jekyll/jekyll-help
+company_name: Eclipse Che
+# this appears in the footer
 
-timezone: America/Los_Angeles
+# github_editme_path: tomjoht/documentation-theme-jekyll/blob/gh-pages/
+# if you're using Github, provide the basepath to the branch you've created for reviews, following the sample here. if not, leave this value blank.
 
-collections:
-  docs:
-    output: true
-  tutorials:
-    output: true
+# gitlab_editme_path: tomjoht/documentation-theme-jekyll/blob/gh-pages/
+# if you're using GitLab, provide the basepath to the branch you've created for reviews, following the sample here. if not, leave this value blank.
 
-name: Eclipse Che Docs
-description: Cloud workspaces for development teams
-url: https://www.eclipse.org/che/
+# disqus_shortname: idrbwjekyll
+# if you're using disqus for comments, add the shortname here. if not, leave this value blank.
 
-product_name: "CHE"
-product_mini_name:  "Che"
-product_mini_cli: "che"
-product_formal_name: "Eclipse Che"
+# google_analytics: UA-66296557-1
+# if you have google-analytics ID, put it in. if not, edit this value to blank.
 
-twitter:
-  username: eclipse_che
+host: 127.0.0.1
+# the preview server used. Leave as is.
 
-logo: /img/logo-2x.png
+port: 4000
+# the port where the preview is rendered. You can leave this as is unless you have other Jekyll builds using this same port that might cause conflicts. in that case, use another port such as 4006.
 
 exclude:
-  - /dev/
-  - README.md
+  - .idea/
   - .gitignore
-  - docs.sh
-  - assembly/*
-  - _site/*
-  - pom.xml
+# these are the files and directories that jekyll will exclude from the build
 
- # The following are used to define markdown permalinks
+highlighter: rouge
+# library used for syntax highlighting
+
+markdown: kramdown
+kramdown:
+ input: GFM
+ auto_ids: true
+ hard_wrap: false
+ syntax_highlighter: rouge
+
+# filter used to process markdown. note that kramdown differs from github-flavored markdown in some subtle ways
+
+collections:
+  tooltips:
+    output: false
+# collections are declared here. this renders the content in _tooltips and processes it, but doesn't output it as actual files in the output unless you change output to true
+
 defaults:
   -
     scope:
-      path: "_docs/assemblies"
+      path: ""
+      type: "pages"
     values:
-      categories: [ "docs" , "assemblies" ]
+      layout: "page"
+      comments: true
+      search: true
+      sidebar: user_sidebar
+      topnav: topnav
   -
     scope:
-      path: "_docs/devops"
+      path: ""
+      type: "tooltips"
     values:
-      categories: [ "docs" , "devops" ]
+      layout: "page"
+      comments: true
+      search: true
+      tooltip: true
+
   -
     scope:
-      path: "_docs/ide"
+      path: ""
+      type: "posts"
     values:
-      categories: [ "docs" , "ide" ]
-  -
-    scope:
-      path: "_docs/setup"
-    values:
-      categories: [ "docs" , "setup" ]
-  -
-    scope:
-      path: "_docs/tutorials"
-    values:
-      categories: [ "docs" , "tutorials" ]
-  -
-    scope:
-      path: "_docs/chedir-portable-workspaces"
-    values:
-      categories: [ "docs" , "chedir"]
-  -
-    scope:
-      path: "_docs/factory-portable-workspaces"
-    values:
-      categories: [ "docs" , "factory"]
-  -
-    scope:
-      path: "_docs/che-data-model"
-    values:
-      categories: [ "docs" , "data-model" ]
-  -
-    scope:
-      path: "_docs/user-management"
-    values:
-      categories: [ "docs" , "user-management" ]
+      layout: "post"
+      comments: true
+      search: true
+      sidebar: home_sidebar
+      topnav: topnav
+
+# these are defaults used for the frontmatter for these file types
+
+sidebars:
+- user_sidebar
+- product1_sidebar
+- dev_sidebar
+- other
+
+description: "Intended as a documentation theme based on Jekyll for technical writers documenting software and other technical products, this theme has all the elements you would need to handle multiple products with both multi-level sidebar navigation, tags, and other documentation features."
+# the description is used in the feed.xml file
+
+# needed for sitemap.xml file only
+url: http://idratherbewriting.com
