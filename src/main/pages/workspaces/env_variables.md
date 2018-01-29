@@ -1,5 +1,5 @@
 ---
-title: "Env variables"
+title: "Environment variables"
 keywords: workspace, runtime, recipe, docker, stack, environment variables, env, envs
 tags: [workspace, runtime, docker, kubernetes]
 sidebar: user_sidebar
