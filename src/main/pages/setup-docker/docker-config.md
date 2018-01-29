@@ -4,7 +4,7 @@ keywords: docker, configuration
 tags: [installation, docker]
 sidebar: user_sidebar
 permalink: docker-config.html
-folder: configuration
+folder: setup-docker
 ---
 
 {% include links.html %}
@@ -483,9 +483,9 @@ Eclipse Che uses Docker to power its workspaces. Docker uses the [ephemeral port
 
 Docker will select its ports from anywhere in the ephemeral range. If you wish to reduce the size of the ephemeral range in order to improve security you can do so, however, keep in mind that each Che workspace will use at least 2 ports plus whatever ports are required for the services the user adds to their workspace.
 
-Limiting the ephemeral range can only be done at the host level - you can read more about it (and some of the risks in doing so) here: http://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html
+Limiting the ephemeral range can only be done at the host level - you can read more about it (and some of the risks in doing so) here: [http://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html](http://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html)
 
 To change the ephemeral range:
 
-* On Linux: http://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html#Linux
-* On Windows: http://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html#Windows
+* On Linux: [http://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html#Linux](http://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html#Linux)
+* On Windows: [http://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html#Windows](http://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html#Windows)

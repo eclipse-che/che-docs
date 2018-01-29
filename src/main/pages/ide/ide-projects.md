@@ -3,7 +3,7 @@ title: "Projects and Project Import"
 keywords: workspace, runtime, project, projects
 tags: [workspace, runtime]
 sidebar: user_sidebar
-permalink: ide_projects.html
+permalink: ide-projects.html
 folder: ide
 ---
 

@@ -3,7 +3,7 @@ title: "Single and Multi-User Che"
 keywords: single-user, Eclipse Che
 tags: [installation, getting_started]
 sidebar: user_sidebar
-permalink: single_multi_user.html
+permalink: single-multi-user.html
 folder: setup
 
 ---
@@ -26,9 +26,9 @@ If you plan using Che just on your local machine or just evaluate the platform, 
 
 By default **Che gets deployed as a single user** assembly both on Docker and OpenShift. Special flags must be provided to enable multi-user functionality.
 
-Proceed to installation:
 
-* Run on  Docker: [single-user][docker] or [multi-user][multi-user-docker]
-* Deploy to OpenShift: [single-user][openshift] or [multi-user][multi-user-openshift]
+Proceed to installation:
+- Installing it on Docker: [Single-user][docker-single-user] or [Multi-user][docker-multi-user]
+- Installing it on OpenShift: [Single-user][openshift-single-user] or [Multi-user][openshift-multi-user]
 
 {% include links.html %}

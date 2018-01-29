@@ -3,8 +3,8 @@ title: "Single-User&#58 Install on Docker"
 keywords: docker, installation
 tags: [installation, docker]
 sidebar: user_sidebar
-permalink: docker.html
-folder: setup
+permalink: docker-single-user.html
+folder: setup-docker
 ---
 
 ## Pre-Requisites
