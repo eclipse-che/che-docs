@@ -37,7 +37,7 @@ Clone addons repository onto your local machine and then install the add-on via:
 
 ```
 git clone https://github.com/minishift/minishift-addons
-minishift addons install <path_to_minishift-addons>
+minishift addons install <path_to_minishift-addons>/add-ons/che
 minishift addons enable che
 ```
 

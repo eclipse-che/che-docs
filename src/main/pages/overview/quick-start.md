@@ -32,6 +32,9 @@ docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v /local/path:/data
 
 Note that `/local/path` can be any path on your local machine where you want to store Che data and projects.
 
+MacOS users will also need to setup [IP alias](docker.html#pre-requisites).
+
+
 Installation and configuration docs:
 - [Single-user on Docker][docker-single-user]
 - [Multi-user on Docker][docker-multi-user]
