@@ -15,7 +15,7 @@ Pre-reqs: Running [MiniShift](https://docs.openshift.org/latest/minishift/gettin
 
 ```bash
 git clone https://github.com/minishift/minishift-addons
-minishift addons install <path_to_minishift-addons>
+minishift addons install <path_to_minishift-addons>/add-ons/che
 minishift addons enable che
 minishift addons apply \
     --addon-env CHE_DOCKER_IMAGE=eclipse/che-server:nightly \
@@ -38,6 +38,8 @@ docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v /local/path:/data
 ```
 
 Note that `/local/path` can be any path on your local machine where you want to store Che data and projects.
+
+MacOS users will also need to setup [IP alias](docker.html#pre-requisites).
 
 Installation and configuration docs:
 

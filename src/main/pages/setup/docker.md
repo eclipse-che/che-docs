@@ -15,7 +15,14 @@ folder: setup
 wget -qO- https://get.docker.com/ | sh
 ```
 
-* OS: Linux, MacOS, Windows
+* OS: Linux, MacOS, Windows.
+
+<span style="color:red; margin-left:41px;">**IMPORTANT!**</span>
+
+Mac-OS users need to create IP alias: `sudo ifconfig lo0 alias 192.168.65.2`.
+
+Note that IP `192.168.65.2` may differ on some Docker for Mac versions. You can get this IP in your Docer fro Mac app **Preferences > Advanced > Docker subnet**.
+
 * Min 1 CPU, 2GM RAM, 3GB disc space
 
 
