@@ -1,19 +1,36 @@
-# Content Guidelines
 ## Images
-Each release note is getting its own folder under `imgs`. Example: `imgs/release-notes-6_0` 
+
+Each release note is getting its own folder in images directory. Example: `src/main/images/release-notes-6.0.1`
 When adding an image, make sure to upload it in the right folder.
 Use the following syntax to refer to an image in your release note message:
-`![caption]({{base}}{{site.links["filename"]}})`
+
+```
+{% include image.html file="release-notes-${VERSION}/img.png" %}
+```
 
 ## Animated GIFs
+
 When recording an animated GIF, make sure to remember that it will be displayed on small screens. Record by zooming in your browser: usually `125%` is enough, but depending on the element you want to show, you might need to zoom in a bit more.
-For consistency: we recommand to record your animated gifs with a resolution of 800*600.
+For consistency: we recommend to record your animated gifs with a resolution of 800*600. [Peek](https://github.com/phw/peek) is the tool we recommend to use on Linux.
 
-# Create a new release note
-The release note file must be named: `release-notes-{version}.md` where `{version}` as the MAJOR_MINOR for example:`6_0``
-Create a `release-notes-{version}` folder in `assets/imgs/` where contributors can 
+## Create a new RN page
 
-**Referencing the release note to the documentation:**
-1- Verify the templating information in the header of the release notes (title, layout and permalink)
-2- In `_data/release_notes.yml`, add the new page to the list. This is used to generate the navigation between the realease notes. Order must be lastest release note at the top.
-3- In `_includes/primary-nav-items.html` make sure "Release Notes" navigation button point to the latest release note.
+Create a new release note file in: `src/main/pages/release_notes/release-{version}.md` where `{version}` as the MAJOR_MINOR for example:`6_0`. If your Release Note should reference some images, see [how to publish them](#images).
+
+## Reference Page in Navbar
+
+1. Verify the templating information in the header of the release notes (title, layout and permalink)
+2. Add a new Release Notes page to a release notes sidebar at `src/main/_data/sidebars/rn_sidebar` under `folderitems`:
+
+```yaml
+- title: 6.0.0
+  url: /release-6.0.0.html
+  output: web
+```
+
+3. In `src/main_data/topnav.yml` make sure "Release Notes" navigation button point to the latest release notes page - so just replace the version:
+
+```yaml
+- title: Release Notes
+  url: /release-${LATEST_VERSION}.html
+```
