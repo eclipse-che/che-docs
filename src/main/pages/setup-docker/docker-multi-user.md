@@ -3,7 +3,7 @@ title: "Multi-User&#58 Install on Docker"
 keywords: openshift, installation
 tags: [installation, docker]
 sidebar: user_sidebar
-permalink: multi-user-docker.html
+permalink: docker-multi-user.html
 folder: setup
 ---
 
@@ -27,7 +27,7 @@ With `CHE_MULTIUSER=true` Che CLI is instructed to generate a special Docker Com
 
 ## Deployment Diagram
 
-Multi-user Che on Docker does not differ much from a [multi-user deployment on OpenShift](multi-user-openshift#deployment-diagram) in terms of architecture and communication between services. There are a few differences though:
+Multi-user Che on Docker does not differ much from a [multi-user deployment on OpenShift](openshift-multi-user#deployment-diagram) in terms of architecture and communication between services. There are a few differences though:
 
 * containers instead of pods
 * volume mounts instead of PVCs

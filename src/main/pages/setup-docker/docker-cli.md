@@ -3,8 +3,8 @@ title: "CLI Reference"
 keywords: docker, configuration, CLI, cli
 tags: [installation, docker]
 sidebar: user_sidebar
-permalink: cli-reference.html
-folder: configuration
+permalink: docker-cli.html
+folder: setup-docker
 ---
 
 ## CLI Syntax and Commands

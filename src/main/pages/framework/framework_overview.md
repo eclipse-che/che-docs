@@ -1,5 +1,5 @@
 ---
-title: "Che As a Framework"
+title: "Extending Che"
 keywords: framework, overview, plugin, extension, language support, language server
 tags: [extensions, assembly]
 sidebar: user_sidebar
@@ -9,14 +9,9 @@ folder: framework
 
 {% include links.html %}
 
+## Introduction
 
-## Che as a Product
-
-Eclipse Che is available as a default build, i.e. something that is released and shipped on a regular basis. The regular build of Che contains almost all available plugins and comes with default configuration and settings. You can use Che as a standalone product on [Docker][docker] and [OpenShift][openshift].
-
-## Che as a Framework
-
-Eclipse Che is a platform that can be customized by:
+Eclipse Che is a platform that can be extended by:
 
 * adding client side plugins that bring new menus, panels and other UI components, [authored in GWT][ide-extensions-gwt]
 * adding client side plugins authored in [JavaScript/TypeScript][ide-extensions-js] (or any other JS frameworks)

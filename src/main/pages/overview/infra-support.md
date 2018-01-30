@@ -1,13 +1,21 @@
 ---
-title: "Docker vs OpenShift Deployment"
+title: "Infrastructures supported in Eclipse Che"
 keywords: docker, oepsnhift
-tags: [installation, docker, openshift]
+tags: [infrastructure, installation, docker, openshift]
 sidebar: user_sidebar
-permalink: docker_openshift.html
-folder: setup
+permalink: infra-support.html
+folder: overview
 ---
 
-## Comparison Table
+## Introduction
+Eclipse Che runs on different kind of infrastructure and container engine:
+- Docker
+- OpenShift: **[OpenShift Container Platform (OCP)](https://www.openshift.com/container-platform/index.html)**, **[OpenShift Online (OSO)](https://www.openshift.com/features/index.html)**, **[OpenShift Dedicated (OCD)](https://access.redhat.com/products/openshift-dedicated-red-hat/)**, **[MiniShift](https://www.openshift.org/minishift/)**
+- Kubernetes (soon)
+
+Each of the infrastructures is providing its own specificities which are detailed in this page.
+
+### Comparison Table
 
 |  Feature                 | **Docker**   | **OpenShift**                                                                              |
 | root access              | yes          | no (See: [Configuration](openshift-config.html#enable-ssh-and-sudo))                       |
@@ -38,9 +46,9 @@ Che on Docker allows workspace containers to be running in a [privileged mode](d
 
 Though deploying administering Che on Docker may seem a little bit easier than doing it in OpenShift, it's OpenShift that unleashes the power of Eclipse Che as a workspace server and cloud IDE.
 
-**[Install Single-User Che on Docker][docker]**
+**[Install Single-User Che on Docker][docker-single-user]**
 
-**[Install Multi-User Che on Docker][multi-user-docker]**
+**[Install Multi-User Che on Docker][docker-multi-user]**
 
 ## Deploying to OpenShift
 
@@ -62,8 +70,8 @@ To access running applications and processes in Che workspaces, Che creates serv
 
 OpenShift restarts failed deployments and offers health checks for pods. This can significantly minimize the effect of infrastructure outages.
 
-**[Deploy Single User Che to OpenShift][openshift]**
+**[Deploy Single User Che to OpenShift][openshift-single-user]**
 
-**[Deploy Multi-User Che to OpenShift][multi-user-openshift]**
+**[Deploy Multi-User Che to OpenShift][openshift-single-user]**
 
 {% include links.html %}

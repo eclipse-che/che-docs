@@ -3,8 +3,8 @@ title: "Single-User&#58 Deploy to OpenShift"
 keywords: openshift, installation, pvc, https, deployment
 tags: [installation, openshift]
 sidebar: user_sidebar
-permalink: openshift.html
-folder: setup
+permalink: openshift-single-user.html
+folder: setup-openshift
 ---
 ## Supported OpenShift Flavors and Versions
 

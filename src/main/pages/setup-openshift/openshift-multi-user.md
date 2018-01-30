@@ -3,8 +3,8 @@ title: "Multi-User&#58 Deploy to OpenShift"
 keywords: openshift, installation, ocp, multi-user, multi user, keycloak, postgres, s2i, deployment
 tags: [installation, openshift]
 sidebar: user_sidebar
-permalink: multi-user-openshift.html
-folder: setup
+permalink: openshift-multi-user.html
+folder: setup-openshift
 ---
 
 ## Deployment diagram
