@@ -3,7 +3,7 @@ title: "Version Control"
 keywords: workspace, runtime, project, projects, git, subversion, version control, clone, pull, push, ssh key, ssh keys, github, oauth, gitlab, bitbucket
 tags:
 sidebar: user_sidebar
-permalink: version_control.html
+permalink: version-control.html
 folder: ide
 ---
 

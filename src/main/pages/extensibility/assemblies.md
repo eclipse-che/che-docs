@@ -42,7 +42,7 @@ This module packages `ROOT.war` into Tomcat's `webapps` and adds configuration f
 
 ## assembly-wsmaster-war
 
-The core of Che platform as a workspace server that includes [workspace API][workspaces_rest_api], user profile and settings, [implementation of runtime infrastructure][spi_implementation]. Usually used as a dependency in custom assemblies, however, it is possible to extend it, for example, by providing support of a new infrastructure.
+The core of Che platform as a workspace server that includes [workspace API][workspaces_rest-api], user profile and settings, [implementation of runtime infrastructure][spi-implementation]. Usually used as a dependency in custom assemblies, however, it is possible to extend it, for example, by providing support of a new infrastructure.
 
 ## assembly-main
 

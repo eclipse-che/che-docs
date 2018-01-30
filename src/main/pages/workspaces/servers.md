@@ -11,7 +11,7 @@ folder: workspaces
 
 ## What Are Servers
 
-A server defines protocol and port of a process that runs in a machine. It also has a name and optional attributes, if this is a `special purpose` server, for example a [Language Server][TODO: language_servers]. In simple words, if you need to access a process in your workspace machine, you need to add a server. You can do it in User Dashboard or by editing workspace machine config:
+A server defines protocol and port of a process that runs in a machine. It also has a name and optional attributes, if this is a `special purpose` server, for example a [Language Server][TODO: language-servers]. In simple words, if you need to access a process in your workspace machine, you need to add a server. You can do it in User Dashboard or by editing workspace machine config:
 
 ```json
 "node": {
@@ -33,7 +33,7 @@ Just adding a server with port 3000 does not mean you can use this port to acces
 
 Say, you have added a server with port 3000 and started a workspace. There are multiple ways to get its preview URL:
 
-* Using a [macro][commands_ide_macro] in a command
+* Using a [macro][commands-ide-macro] in a command
 * In the IDE, `+` icon in the bottom panel under the editor
 {% include image.html file="workspaces/servers.png" %}
 * In User Dashboard, **Workspaces > YourWorkspace > Servers** tab

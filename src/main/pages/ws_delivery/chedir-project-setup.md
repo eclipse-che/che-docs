@@ -3,7 +3,7 @@ title: "Chedir Project Setup"
 keywords: chedir, factories
 tags: [chedir, factories]
 sidebar: user_sidebar
-permalink: chedir_project_setup.html
+permalink: chedir-project-setup.html
 folder: portable_ws
 ---
 
@@ -33,4 +33,4 @@ The Chefile is meant to be committed to version control with your project, if yo
 
 **NEXT STEPS**
 
-[Cycle your workspace up and down][chedir_up_and_down] in a custom Che server.
+[Cycle your workspace up and down][chedir-up-and-down] in a custom Che server.

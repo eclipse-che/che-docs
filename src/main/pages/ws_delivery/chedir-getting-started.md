@@ -3,7 +3,7 @@ title: "Getting Started"
 keywords: chedir, factories
 tags: [chedir, factories]
 sidebar: user_sidebar
-permalink: chedir_getting_started.html
+permalink: chedir-getting-started.html
 folder: portable_ws
 ---
 
@@ -11,7 +11,7 @@ folder: portable_ws
 
 The Chedir getting started guide will walk you through your first Chedir project, and show the basic features Chedir has to offer.
 
-If you are curious what benefits Chedir has to offer, you should also read the [Why Chedir][why_chedir] page.
+If you are curious what benefits Chedir has to offer, you should also read the [Why Chedir][why-chedir] page.
 
 Before diving into your first workspace, please check how to use the latest version of Chedir, which is also part of the [Eclipse Che CLI][docker]. And since Docker is required for everything related to Che, make sure that is installed as well.
 
@@ -47,4 +47,4 @@ Now imagine every repository that you work on being this easy to convert into a 
 
 The rest of this guide will walk you through setting up a more complete project, covering more features of Chedir.
 
-You have just created your first developer workspace with Chedir. Read on to learn more about [project setup][chedir_project_setup].
+You have just created your first developer workspace with Chedir. Read on to learn more about [project setup][chedir-project-setup].

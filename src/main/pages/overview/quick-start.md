@@ -41,7 +41,7 @@ Installation and configuration docs:
 - [Configuration on Docker][docker-config]
 - [Che CLI for Docker][docker-cli]
 
-Create and [start your first workspace][creating_starting_workspaces], import a [project][ide-projects], [build and run][commands_ide_macro] your project.
+Create and [start your first workspace][creating_starting_workspaces], import a [project][ide-projects], [build and run][commands-ide-macro] your project.
 
 
 ## OpenShift

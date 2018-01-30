@@ -1,7 +1,7 @@
 ---
 title: "IDE Extensions: JavaScript"
 keywords: framework, extensions, javascript, typescript, client side
-tags: [extensions, assembly, dev_docs]
+tags: [extensions, assembly, dev-docs]
 sidebar: user_sidebar
 permalink: ide-extensions-js.html
 folder: extensibility

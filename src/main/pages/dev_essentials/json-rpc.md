@@ -1,7 +1,7 @@
 ---
 title: "Communication: JSON-RPC"
 keywords: framework, plugin, extension, json rpc, communication, events, subscribe
-tags: [extensions, dev_docs]
+tags: [extensions, dev-docs]
 sidebar: user_sidebar
 permalink: json-rpc.html
 folder: dev_essentials

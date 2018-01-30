@@ -79,7 +79,7 @@ curl
 
 User's Keycloak token is used to execute queries to secured API on his behalf through REST clients. A valid token must be attached as request header or query parameter - `?token=$token`. Che Swagger can be accessed from `http://che_host:8080/swagger`. A user must be signed-in through Keycloak so that access token is included in request headers.
 
-By default, swagger loads `swagger.json` from [Master][che_master].
+By default, swagger loads `swagger.json` from [Master][che-master].
 
 To work with WS Agent, a URL to its `swagger.json` should be provided. It can be retrieved from [Workspace Runtime](workspace_data_model.html#runtime), by getting URL to [WS Agent server][servers] endpoint and adding `api/docs/swagger.json` to it. Also, to authenticate on WS Agent API, user must include Machine Token, which can be found in Workspace Runtime as well.
 

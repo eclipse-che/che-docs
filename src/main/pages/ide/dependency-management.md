@@ -3,7 +3,7 @@ title: "Dependency Management"
 keywords: workspace, runtime, project, projects, dependency management, maven, gradle
 tags: [workspace, runtime]
 sidebar: user_sidebar
-permalink: dependency_management.html
+permalink: dependency-management.html
 folder: ide
 ---
 
@@ -24,4 +24,4 @@ Gradle support comes with implementation of jtd.ls that natively supports both M
 
 ## NPM
 
-Once again, there's no plugin for Che that will automatically run npm install for JS projects. You can, however, author a [custom command][commands_ide_macro] to install dependencies.
+Once again, there's no plugin for Che that will automatically run npm install for JS projects. You can, however, author a [custom command][commands-ide-macro] to install dependencies.

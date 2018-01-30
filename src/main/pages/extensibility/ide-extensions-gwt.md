@@ -1,7 +1,7 @@
 ---
 title: "IDE Extensions: GWT"
 keywords: framework, extensions, gwt, client side
-tags: [extensions, assembly, dev_docs]
+tags: [extensions, assembly, dev-docs]
 sidebar: user_sidebar
 permalink: ide-extensions-gwt.html
 folder: extensibility
@@ -181,12 +181,12 @@ The second one requires *more time* to launch GWT CodeServer since it executes `
 
 **Note**, both commands have to be performed in the root folder of the Che project.
 
-Once codeserver is started, open the prompted URL, drag bookmarks on your bookmarks bar. Note that you may face the error saying there are no GWT modules on the page. It happens because the IDE is opened in an iframe. Just, cut `dashboard/#/ide/` from the URL. To debug client side code, follow instructions from [quickstart](che_in_che_quickstart.html#develop-and-debug-client-side).
+Once codeserver is started, open the prompted URL, drag bookmarks on your bookmarks bar. Note that you may face the error saying there are no GWT modules on the page. It happens because the IDE is opened in an iframe. Just, cut `dashboard/#/ide/` from the URL. To debug client side code, follow instructions from [quickstart](che-in-che-quickstart.html#develop-and-debug-client-side).
 
 
 ## Run in Che
 
-Once your extension is ready, you can build, run and debug it in [Che itself][che_in_che_quickstart]. Just use an existing sample and add a custom plugin with its dependencies.
+Once your extension is ready, you can build, run and debug it in [Che itself][che-in-che-quickstart]. Just use an existing sample and add a custom plugin with its dependencies.
 
 ## Add to a Custom Assembly
 

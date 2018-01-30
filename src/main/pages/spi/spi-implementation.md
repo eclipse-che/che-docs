@@ -2,7 +2,7 @@
 title: SPI&#58 Implementation
 sidebar: user_sidebar
 keywords: dev docs
-permalink: spi_implementation.html
+permalink: spi-implementation.html
 folder: spi
 ---
 

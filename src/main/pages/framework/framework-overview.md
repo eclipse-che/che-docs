@@ -3,7 +3,7 @@ title: "Extending Che"
 keywords: framework, overview, plugin, extension, language support, language server
 tags: [extensions, assembly]
 sidebar: user_sidebar
-permalink: framework_overview.html
+permalink: framework-overview.html
 folder: framework
 ---
 
@@ -17,7 +17,7 @@ Eclipse Che is a platform that can be extended by:
 * adding client side plugins authored in [JavaScript/TypeScript][ide-extensions-js] (or any other JS frameworks)
 * adding [server side components and agents][server-side-extensions] that get deployed to a workspace machines
 * adding support of [new infrastructure][spi_overview]
-* deploying custom [workspace master components][che_master]
-* enable language tooling via [Language Servers][language_servers]
+* deploying custom [workspace master components][che-master]
+* enable language tooling via [Language Servers][language-servers]
 
-On top of that Eclipse Che can be integrated into other platforms since it exposes [REST APIs][rest_api] for all server side components which makes it possible to create on demand workspaces serving needs of CI, support, issue tracking and other systems.
+On top of that Eclipse Che can be integrated into other platforms since it exposes [REST APIs][rest-api] for all server side components which makes it possible to create on demand workspaces serving needs of CI, support, issue tracking and other systems.

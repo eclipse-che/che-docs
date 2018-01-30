@@ -2,12 +2,12 @@
 title: Develop Your First Plugin Usign Che
 sidebar: user_sidebar
 keywords: dev docs, developer docs, plugins, extensions
-tags: [extensions, dev_docs, assembly]
-permalink: che_in_che_quickstart.html
+tags: [extensions, dev-docs, assembly]
+permalink: che-in-che-quickstart.html
 folder: extensibility
 ---
 
-Before you dive into information on how you can [extend Che framework][framework_overview] and build your own Che [assembly][assemblies], let's install and debug your first Che plugin using Che itself.
+Before you dive into information on how you can [extend Che framework][framework-overview] and build your own Che [assembly][assemblies], let's install and debug your first Che plugin using Che itself.
 
 ## Run Eclipse Che
 

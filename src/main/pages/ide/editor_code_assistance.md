@@ -3,7 +3,7 @@ title: "Editor and Code Assistance"
 keywords: workspace, runtime, project, editor, code-completion, code completion, code assistance, intellisense
 tags: [workspace, runtime]
 sidebar: user_sidebar
-permalink: editor_code_assistance.html
+permalink: editor-code-assistance.html
 folder: ide
 ---
 
@@ -24,7 +24,7 @@ At this moment, code assistance (including error marking, quick fixes, refactori
 
 Code assistance for **JavaScript** is provided by Orion editor itself.
 
-Code assistance for other languages is provided by [Language Servers][language_servers]. Eclipse Che supports code assistance for C#, PHP, Python, TypeScript, YAML and JSON. There are plans to add a language servers for Golang.
+Code assistance for other languages is provided by [Language Servers][language-servers]. Eclipse Che supports code assistance for C#, PHP, Python, TypeScript, YAML and JSON. There are plans to add a language servers for Golang.
 
 ## Editor Settings
 

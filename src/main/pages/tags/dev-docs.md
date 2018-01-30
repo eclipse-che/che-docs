@@ -1,8 +1,8 @@
 ---
 title: "Dev Docs pages"
-tagName: dev_docs
+tagName: dev-docs
 search: exclude
-permalink: tag_dev_docs.html
+permalink: tag_dev-docs.html
 sidebar: user_sidebar
 ---
 {% include taglogic.html %}

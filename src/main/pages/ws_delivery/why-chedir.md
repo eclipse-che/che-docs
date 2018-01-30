@@ -3,7 +3,7 @@ title: "Why Chedir?"
 keywords: chedir, factories
 tags: [chedir, factories]
 sidebar: user_sidebar
-permalink: why_chedir.html
+permalink: why-chedir.html
 folder: portable_ws
 ---
 

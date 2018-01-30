@@ -1,9 +1,9 @@
 ---
 title: "Language Servers"
 keywords: framework, language servers, code assistant,
-tags: [extensions, assembly, dev_docs]
+tags: [extensions, assembly, dev-docs]
 sidebar: user_sidebar
-permalink: language_servers.html
+permalink: language-servers.html
 folder: extensibility
 ---
 

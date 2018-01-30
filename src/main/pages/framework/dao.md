@@ -1,7 +1,7 @@
 ---
 title: "DAO"
 keywords: framework, overview, master, server, dao, database
-tags: [dev_docs]
+tags: [dev-docs]
 sidebar: user_sidebar
 permalink: dao.html
 folder: framework
@@ -14,7 +14,7 @@ Data access object (DAO) is an object that provides an interface of persisting o
 * Users, user profile and preferences
 * Accounts
 * [Workspaces][what_are_workspaces]
-* [Factories][factories_getting_started]
+* [Factories][factories-getting-started]
 * [Stacks][stacks]
 * [Permissions][permissions]
 * [Installers][installers]

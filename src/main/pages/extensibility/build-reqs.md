@@ -1,9 +1,9 @@
 ---
 title: "Build Requirements"
 keywords: java. maven, node, npm
-tags: [dev_docs]
+tags: [dev-docs]
 sidebar: user_sidebar
-permalink: build_reqs.html
+permalink: build-reqs.html
 folder: extensibility
 ---
 {% include links.html %}
@@ -43,7 +43,7 @@ We recommend mounting Maven repo (`-v ~/.m2:/home/user/.m2`) to persist dependen
 
 ## Build in Che
 
-See: [Che in Che quickstart][che_in_che_quickstart]
+See: [Che in Che quickstart][che-in-che-quickstart]
 
 ## Enforcers
 

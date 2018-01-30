@@ -3,7 +3,7 @@ title: "Chedir Installation"
 keywords: chedir, factories
 tags: [chedir, factories]
 sidebar: user_sidebar
-permalink: chedir_installation.html
+permalink: chedir-installation.html
 folder: portable_ws
 ---
 

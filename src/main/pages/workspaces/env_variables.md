@@ -17,6 +17,6 @@ Environment variables are defined per machine. Depending on the infrastructure, 
     }
 ```
 
-You can use environment variables in applications running in a workspace, [commands][commands_ide_macro] and in the terminal. Che server also injects some environment variables that a user does not control, though they are available to use in case you need them (API endpoint, workspace ID etc).
+You can use environment variables in applications running in a workspace, [commands][commands-ide-macro] and in the terminal. Che server also injects some environment variables that a user does not control, though they are available to use in case you need them (API endpoint, workspace ID etc).
 
 {% include image.html file="workspaces/env_variable.png" %}

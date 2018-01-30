@@ -1,7 +1,7 @@
 ---
 title: "Single and Multi-User Che"
 keywords: single-user, Eclipse Che
-tags: [installation, getting_started]
+tags: [installation, getting-started]
 sidebar: user_sidebar
 permalink: single-multi-user.html
 folder: setup

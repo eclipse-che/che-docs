@@ -27,6 +27,6 @@ There are multiple ways to import a project:
 
 1. Add a project to [workspace configuration][projects] in User Dashboard. Once workspace configuration is saved, and the workspace is being opened, the IDE will grab workspace config, and if there are projects associated with it, they will be automatically imported. If these projects can be found on a file system, the IDE skips this step.
 
-2. Import a project into a running workspace. This can be done in the IDE, Workspace > Import project menu. If you need to import a private project, [setup SSH keys][version_control].
+2. Import a project into a running workspace. This can be done in the IDE, Workspace > Import project menu. If you need to import a private project, [setup SSH keys][version-control].
 
 {% include image.html file="ide/import_project.png" %}

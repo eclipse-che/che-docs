@@ -1,7 +1,7 @@
 ---
 title: "IDE UI: Editor"
 keywords: framework, UI, themes, editor, syntax coloring
-tags: [extensions, assembly, dev_docs]
+tags: [extensions, assembly, dev-docs]
 sidebar: user_sidebar
 permalink: editor.html
 folder: extensibility

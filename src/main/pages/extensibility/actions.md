@@ -1,7 +1,7 @@
 ---
 title: "IDE UI: Actions"
 keywords: framework, UI, actions
-tags: [extensions, assembly, dev_docs]
+tags: [extensions, assembly, dev-docs]
 sidebar: user_sidebar
 permalink: actions.html
 folder: extensibility

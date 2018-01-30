@@ -1,7 +1,7 @@
 ---
 title: "IDE UI: Parts"
 keywords: framework, UI, parts
-tags: [extensions, assembly, dev_docs]
+tags: [extensions, assembly, dev-docs]
 sidebar: user_sidebar
 permalink: parts.html
 folder: extensibility

@@ -3,7 +3,7 @@ title: "Creating Factories"
 keywords: chedir, factories
 tags: [chedir, factories]
 sidebar: user_sidebar
-permalink: creating_factories.html
+permalink: creating-factories.html
 folder: ws_delivery
 ---
 
@@ -134,4 +134,4 @@ If you have projects in GitHub or GitLab, you can help your contributors to get 
 
 Read on to learn more about:
 - Customizing factories with the [Factory JSON reference][factories_json_reference].
-Or jump back to the [Factory getting started page][factories_getting_started] if you missed it.
+Or jump back to the [Factory getting started page][factories-getting-started] if you missed it.

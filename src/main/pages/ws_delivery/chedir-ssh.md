@@ -3,7 +3,7 @@ title: "SSH"
 keywords: chedir, factories
 tags: [chedir, factories]
 sidebar: user_sidebar
-permalink: chedir_ssh.html
+permalink: chedir-ssh.html
 folder: portable_ws
 ---
 

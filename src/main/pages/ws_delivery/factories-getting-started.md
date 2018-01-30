@@ -3,7 +3,7 @@ title: "Getting Started With Factories"
 keywords: chedir, factories
 tags: [chedir, factories]
 sidebar: user_sidebar
-permalink: factories_getting_started.html
+permalink: factories-getting-started.html
 folder: ws_delivery
 ---
 
@@ -41,5 +41,5 @@ Once the Factory is executed, it either loads an existing workspace or generates
 
 ## Next Steps
 You have just created your first developer workspace using Factories. Read on to learn more about:
-- How to [create factories][creating_factories].
+- How to [create factories][creating-factories].
 - Customizing factories with the [Factory JSON reference][factories_json_reference].

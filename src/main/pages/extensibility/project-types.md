@@ -1,9 +1,9 @@
 ---
 title: "Project Types"
 keywords: framework, overview, framework, project, project type, API
-tags: [extensions, assembly, dev_docs]
+tags: [extensions, assembly, dev-docs]
 sidebar: user_sidebar
-permalink: project_types.html
+permalink: project-types.html
 folder: extensibility
 ---
 

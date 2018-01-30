@@ -3,7 +3,7 @@ title: "Chedir Up and Down"
 keywords: chedir, factories
 tags: [chedir, factories]
 sidebar: user_sidebar
-permalink: chedir_up_and_down.html
+permalink: chedir-up-and-down.html
 folder: portable_ws
 ---
 
