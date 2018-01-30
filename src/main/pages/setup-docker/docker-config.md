@@ -117,7 +117,7 @@ There can be several Java processes running in a workspace machine. Some of the 
 
 **User-Defined Envs**
 
-A user can provide own [environment variables][env_variables] per workspace machine:
+A user can provide own [environment variables][env-variables] per workspace machine:
 
 ```
 JAVA_OPTS                                    # machine-wide java opts

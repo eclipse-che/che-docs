@@ -4,7 +4,7 @@ keywords: single-user, Eclipse Che
 tags: [installation, getting-started]
 sidebar: user_sidebar
 permalink: single-multi-user.html
-folder: setup
+folder: overview
 
 ---
 

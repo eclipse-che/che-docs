@@ -4,7 +4,7 @@ keywords: organizations, user management, permissions, authentication
 tags: [ldap, keycloak]
 sidebar: user_sidebar
 permalink: authentication.html
-folder: multiuser
+folder: user-management
 ---
 {% include links.html %}
 
