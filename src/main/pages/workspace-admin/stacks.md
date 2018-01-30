@@ -4,7 +4,7 @@ keywords: workspace, runtime, recipe, docker, stack
 tags: [workspace, runtime, docker, kubernetes]
 sidebar: user_sidebar
 permalink: stacks.html
-folder: workspace-automation
+folder: workspace-admin
 ---
 
 {% include links.html %}

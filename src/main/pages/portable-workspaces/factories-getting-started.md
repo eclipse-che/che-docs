@@ -4,7 +4,7 @@ keywords: chedir, factories
 tags: [chedir, factories]
 sidebar: user_sidebar
 permalink: factories-getting-started.html
-folder: workspace-automation
+folder: portable-workspaces
 ---
 
 {% include links.html %}
