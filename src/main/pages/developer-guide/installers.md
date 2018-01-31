@@ -3,7 +3,7 @@ title: "Installers"
 keywords: framework, overview, master, server, che server, framework
 tags: [extensions, assembly, dev-docs]
 sidebar: user_sidebar
-permalink: custom_installers.html
+permalink: custom-installers.html
 folder: developer-guide
 ---
 
