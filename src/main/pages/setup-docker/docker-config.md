@@ -92,7 +92,7 @@ Other `logback-logstash-encoder` appenders can be added as well. See <https://gi
 
 ## oAuth
 
-You can configure Google, GitHub, Microsoft or BitBucket oAuth for use when users perform git operations. See: [Version Control](version_control.html#github-oauth)
+You can configure Google, GitHub, Microsoft or BitBucket oAuth for use when users perform git operations. See: [Version Control](version-control.html#github-oauth)
 
 ## Stacks and Samples
 
@@ -112,12 +112,12 @@ Workspace idle timeout can be configured in `che.env` , so that inactive workspa
 
 ## JAVA_OPTS
 
-There can be several Java processes running in a workspace machine. Some of the Java agents are special purpose agents started in a machine to provide core and additional IDE functionality. These are workspace agent and a [Maven plugin][dependency_management] that are both started in own JVM. On top of that, you can run own Java programs and use build tools like Maven. A set of the following environment variables can help optimize RAM consumption:
+There can be several Java processes running in a workspace machine. Some of the Java agents are special purpose agents started in a machine to provide core and additional IDE functionality. These are workspace agent and a [Maven plugin][dependency-management] that are both started in own JVM. On top of that, you can run own Java programs and use build tools like Maven. A set of the following environment variables can help optimize RAM consumption:
 
 
 **User-Defined Envs**
 
-A user can provide own [environment variables][env_variables] per workspace machine:
+A user can provide own [environment variables][env-variables] per workspace machine:
 
 ```
 JAVA_OPTS                                    # machine-wide java opts

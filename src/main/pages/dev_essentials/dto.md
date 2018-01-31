@@ -1,7 +1,7 @@
 ---
 title: "DTO"
 keywords: framework, plugin, extension, dto
-tags: [extensions, dev_docs]
+tags: [extensions, dev-docs]
 sidebar: user_sidebar
 permalink: dto.html
 folder: dev_essentials

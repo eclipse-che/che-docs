@@ -4,7 +4,7 @@ keywords: openshift, installation
 tags: [installation, docker]
 sidebar: user_sidebar
 permalink: docker-multi-user.html
-folder: setup
+folder: setup-docker
 ---
 
 ## Run Syntax

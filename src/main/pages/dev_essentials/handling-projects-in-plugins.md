@@ -1,7 +1,7 @@
 ---
 title: "Handling Projects in Server and Client Side Plugins"
 keywords: framework, plugin, extension, project import, file system
-tags: [extensions, dev_docs]
+tags: [extensions, dev-docs]
 sidebar: user_sidebar
 permalink: handling-projects-in-plugins.html
 folder: dev_essentials

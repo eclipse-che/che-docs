@@ -1,7 +1,7 @@
 ---
 title: "Dependency Injection"
 keywords: framework, plugin, extension, DI, dependency injection
-tags: [extensions, dev_docs]
+tags: [extensions, dev-docs]
 sidebar: user_sidebar
 permalink: guice.html
 folder: dev_essentials

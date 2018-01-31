@@ -1,9 +1,10 @@
 ---
 title: Introduction to Eclipse Che
 keywords: overview
-tags: [overview, getting_started]
+tags: [overview, getting-started]
 sidebar: user_sidebar
 permalink: index.html
+folder: overview
 summary: Eclipse Che is a developer workspace server and cloud IDE
 
 ---

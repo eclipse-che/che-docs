@@ -11,7 +11,7 @@ folder: spi
 
 Che Workspace Runtime composed by set of running Machines can be deployed on top of any Infrastructure. Runtime is able to provide one or more Machines.
 
-As defined in a [workspace model][what_are_workspaces], a machine is termed as some set of hardware and|or software resources working under control of Operation System. Examples of such Infrastructure including:
+As defined in a [workspace model][what-are-workspaces], a machine is termed as some set of hardware and|or software resources working under control of Operation System. Examples of such Infrastructure including:
 
 - Running Physical Computers
 - Virtual machines
