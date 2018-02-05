@@ -14,6 +14,8 @@ Eclipse Che relies on [Keycloak](http://www.Keycloak.org) to create, import, man
 
 Keycloak can create and authenticate users by itself or rely on 3rd party identity management systems and providers.
 
+Default Keycloak credentials are `admin:admin`. You can find your Keycloak URL either in OpenShift web console > keycloak namespace (if you deployed to OpenShift) of go to `$CHE_HOST:5050/auth` if Che is running on Docker.
+
 ## Che and Keycloak
 
 When Che is deployed on OpenShift or installed on Docker, either deployment script or CLI makes sure that Keycloak is properly configured. When a `che-public` client is created, there are two important fields to be populated:
@@ -30,11 +32,13 @@ Keycloak provides a user friendly page to [connect LDAP/Active Directory](http:/
 
 Keycloak offers social login buttons such as GitHub, Facebook, Twitter, OpenShift etc. See: Instructions to [enable Login with GitHub](http://www.keycloak.org/docs/3.2/server_admin/topics/identity-broker/social/github.html).
 
-Default Keycloak credentials are `admin:admin`. You can find your Keycloak URL either in OpenShift web console > keycloak namespace (if you deployed to OpenShift) of go to `$CHE_HOST:5050/auth` if Che is running on Docker.
-
 If you add GitHub login, you can also enable ssh key upload to Che users' GitHub accounts. To enable this feature, make sure scopes are `repo,user,write:public_key`, and Store Tokens, Stored Tokens Readable are **ON** when you register a GitHub identity provider.
 
 {% include image.html file="git/kc_provider.png" %}
+
+Next thing is to add a default read-token role:
+
+{% include image.html file="git/kc_roles.png" %}
 
 Read more about [SHH key management](ide_projects.html#project-import-and-ssh-connection).
 

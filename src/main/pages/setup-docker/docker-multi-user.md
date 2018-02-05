@@ -7,6 +7,20 @@ permalink: docker-multi-user.html
 folder: setup-docker
 ---
 
+## System Requirements
+
+* Minimum 4GB RAM (just for the 3 Che containers and one 2GB workspace)
+* 2 CPU
+* Ports 8080, 5050 and the [ephemeral port]((https://en.wikipedia.org/wiki/Ephemeral_port)) range publicly available for inbound connections (`32768-65535`)
+
+## Known Issues
+
+Currently, when running Che Multi User on Windows, PostgreSQL has issues with file permissions that prevents DB from starting. As a workaround, mount a local storage path that is not a Win file system mount:
+
+`-v /chedata/:/data`
+
+We generally do not recommend running Che multi user on Windows for production use.
+
 ## Run Syntax
 
 ```
@@ -16,6 +30,8 @@ docker run -it -e CHE_MULTIUSER=true -e CHE_HOST=${EXTERNAL_IP} -v /var/run/dock
 `~/.che-multiuser` is any local path. This is where Che data and configuration will be stored.
 
 `${EXTERNAL_IP}` should be a public IP accessible to all users who will access the Che instance. You may drop `CHE_HOST` env if you are running Che locally and will access it from within the same network. In this case, Che CLI will attempt to auto-detect your server IP. However, auto-detection may produce erroneous results, especially in case of a complex network setup. If you run Che as a cloud server, i.e. accessible for external users we recommend explicitly providing an external IP for `CHE_HOST`.
+
+You **MUST** access multi-user Che using hostname/IP specified in `CHE_HOST` or manually add redirect URIs and Web Origins to [Keycloak client][user-management.html#che-and-keycloak].
 
 ## What's Under the Hood
 
@@ -34,5 +50,9 @@ Multi-user Che on Docker does not differ much from a [multi-user deployment on O
 * to need to pre-build Keycloak and Postgres images - configuration is mounted into containers
 * port 5050 needs to be publicly available (OpenShift uses route and service)
 * Che CLI pre-configures and populates values for envs like CHE_HOST, that is then used in Keycloak configuration files
+
+## What's Next?
+
+Now that you have a running Che Multi-User instance, let's [create a user, setup GitHub oAuth and login][user-management].
 
 {% include links.html %}
