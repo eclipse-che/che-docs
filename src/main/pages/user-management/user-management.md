@@ -14,7 +14,7 @@ Eclipse Che relies on [Keycloak](http://www.Keycloak.org) to create, import, man
 
 Keycloak can create and authenticate users by itself or rely on 3rd party identity management systems and providers.
 
-Default Keycloak credentials are `admin:admin`. You can find your Keycloak URL either in OpenShift web console > keycloak namespace (if you deployed to OpenShift) of go to `$CHE_HOST:5050/auth` if Che is running on Docker.
+Default Keycloak credentials are `admin:admin`. You can find your Keycloak URL either in OpenShift web console > keycloak namespace (if you deployed to OpenShift) of go to `$CHE_HOST:5050/auth` if Che is running on Docker. Admin user is also a pre-defined Che user with privileges on the system scope. So, you may use `admin:admin` credentials when loggin in to Che for the first time.
 
 ## Che and Keycloak
 
