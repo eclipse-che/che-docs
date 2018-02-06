@@ -42,7 +42,7 @@ cd ${LOCAL_PATH}/instance/config/openshift/scripts
 
 ```
 export CHE_MULTIUSER=true
-./deploy_che.sh && ./wait_until_che_is_available.sh
+./deploy_che.sh
 
 ```
 ## OpenShift Container platform
@@ -54,10 +54,8 @@ export OPENSHIFT_TOKEN=<OCP_TOKEN> # it depends on authentication scheme for you
 export OPENSHIFT_ROUTING_SUFFIX=<ROUTING-SUFFIX> # e.g. yourDomain.router.com
 export ENABLE_SSL=false # true by default. Set to false if you have self signed certs
 export OPENSHIFT_FLAVOR=ocp
-./deploy_che.sh && ./wait_until_che_is_available.sh
+./deploy_che.sh
 ```
-In both cases, you can additionally run `replace_stacks.sh` that will replace Che upstream stacks with the ones currently used in OSIO flavored Che.
-
 ## OpenShift Dedicated
 
 Instructions to deploy Che to OSD are identical to those for [OpenShift Container Platform](#openshift-container-platform)
