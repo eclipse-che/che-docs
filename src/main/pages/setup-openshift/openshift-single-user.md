@@ -111,10 +111,8 @@ Alternatively, you may download and run deployment scripts instead of using Mini
 
 ```shell
 DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/deploy_che.sh
-WAIT_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/wait_until_che_is_available.sh
 curl -fsSL ${DEPLOY_SCRIPT_URL} -o ./get-che.sh
-curl -fsSL ${WAIT_SCRIPT_URL} -o ./wait-che.sh
-bash ./get-che.sh && bash ./wait-che.sh
+bash ./get-che.sh
 ```
 
 ## OpenShift Container Platform
@@ -129,14 +127,12 @@ export ENABLE_SSL=false # true by default. Set to false if you have self signed 
 export OPENSHIFT_FLAVOR=ocp
 ```
 
-* Download and run deployment scripts:
+* Download and run deployment script:
 
 ```shell
 DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/deploy_che.sh
-WAIT_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/wait_until_che_is_available.sh
 curl -fsSL ${DEPLOY_SCRIPT_URL} -o ./get-che.sh
-curl -fsSL ${WAIT_SCRIPT_URL} -o ./wait-che.sh
-bash ./get-che.sh && bash ./wait-che.sh
+bash ./get-che.sh
 ```
 
 ## OpenShift Dedicated
@@ -154,14 +150,12 @@ export OPENSHIFT_TOKEN=<OSO_TOKEN> # Retrieve the OSO_TOKEN from https://console
 export OPENSHIFT_FLAVOR=osio
 ```
 
-Download and run deployment scripts:
+Download and run deployment script:
 
 ```shell
 DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/deploy_che.sh
-WAIT_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/wait_until_che_is_available.sh
 curl -fsSL ${DEPLOY_SCRIPT_URL} -o ./get-che.sh
-curl -fsSL ${WAIT_SCRIPT_URL} -o ./wait-che.sh
-bash ./get-che.sh && bash ./wait-che.sh
+bash ./get-che.sh
 ```
 
 ## Deployment Options and Configuration
