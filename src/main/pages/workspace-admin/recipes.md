@@ -56,9 +56,9 @@ Using Private Repositories:
 To use private repositories in a remote build context, you need to setup ssh keys on your host machine and add remote repository hostname/IP to the list of known hosts.
 
 ```yaml  
-## The following will use master branch and build in recipes/ubuntu_jre folder
+## The following will use master branch and build in recipes/stack-base/ubuntu folder
 build:
-  context: git@github.com:eclipse/che-dockerfiles.git#master:recipes/ubuntu_jre
+  context: git@github.com:eclipse/che-dockerfiles.git#master:recipes/stack-base/ubuntu
 ```
 
 **Build Image**
