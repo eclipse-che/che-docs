@@ -120,9 +120,9 @@ bash ./get-che.sh
 * Use environment variables to set [deployment options][openshift-config]:
 
 ```shell
-export OPENSHIFT_ENDPOINT=<OCP_ENDPOINT_URL> # e.g. https://opnshmdnsy3t7twsh.centralus.cloudapp.azure.com:8443
+export OPENSHIFT_ENDPOINT=<OCP_ENDPOINT_URL> # e.g. https://api.pro-us-east-1.openshift.com for OpenShift Online Pro
 export OPENSHIFT_TOKEN=<OCP_TOKEN> # it depends on authentication scheme for your OCP cluster - it can also be CHE_INFRA_OPENSHIFT_USERNAME and CHE_INFRA_OPENSHIFT_PASSWORD instead
-export OPENSHIFT_ROUTING_SUFFIX=<ROUTING-SUFFIX> # e.g. yourDomain.router.com
+export OPENSHIFT_ROUTING_SUFFIX=<ROUTING-SUFFIX> # e.g. yourDomain.router.com or b9ad.pro-us-east-1.openshiftapps.com for OpenShift Online Pro East Region
 export ENABLE_SSL=false # true by default. Set to false if you have self signed certs
 export OPENSHIFT_FLAVOR=ocp
 ```
