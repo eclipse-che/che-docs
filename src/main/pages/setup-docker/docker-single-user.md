@@ -34,7 +34,6 @@ All ports are TCP unless otherwise noted.
 
 |Port >>>>>>>>>>>>>>>>|Service >>>>>>>>>>>>>>>>|Notes|
 |---|---|---|
-|5000|Keycloak Port|Multi-user only
 |8080|Tomcat Port| Che server default port
 |8000|Server Debug Port|Users developing Che extensions and custom assemblies would use this debug port to connect a remote debugger to Che server.
 |32768-65535|Docker and Che Agents|Users who launch servers in their workspace bind to ephemeral ports in this range. This range can be limited.
