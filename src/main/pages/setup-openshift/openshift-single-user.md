@@ -127,6 +127,8 @@ export ENABLE_SSL=false # true by default. Set to false if you have self signed 
 export OPENSHIFT_FLAVOR=ocp
 ```
 
+If you use an authentication token, make sure you read how to deal with [token invalidation issues](openshift-multi-user.html#openshift-container-platform).
+
 * Download and run deployment script:
 
 ```shell
@@ -161,5 +163,9 @@ bash ./get-che.sh
 ## Deployment Options and Configuration
 
 See: [OpenShift Deployment Config][openshift-config]
+
+## What's Next
+
+Create and [start your first workspace][creating-starting-workspaces], [import a project][version-control].
 
 {% include links.html %}

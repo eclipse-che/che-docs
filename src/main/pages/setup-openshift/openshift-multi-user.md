@@ -60,6 +60,21 @@ export ENABLE_SSL=false # true by default. Set to false if you have self signed 
 export OPENSHIFT_FLAVOR=ocp
 ./deploy_che.sh
 ```
+
+**IMPORTANT!**
+
+If you provide a **token** rather than username/password, Che will use this token in the deployment script to login in and create all [Che infrastructure objects](#deployment-diagram), as well as when creating workspace pods and associated objects. A token may expire due to expiration timeout policy or it can be invalidated when a new token is requested. In this case, Fabric8 client library that Che uses to communicate with OpenShift will fail to create an object with this bad token and fall back to using a service account instead. There are two options here:
+
+1. Set identical values for `CHE_OPENSHIFT_PROJECT` and `CHE_INFRA_OPENSHIFT_PROJECT`. In this case Che server pod and workspace pods will be created in the same namespace, thus, `che` service account will have permissions to create objects in this namespace's scope.
+2. If you are a cluster admin, you may grant privileges to `che` service account so that it can create objects outside its namespace:
+
+```bash
+oadm policy add-cluster-role-to-user self-provisioner system:serviceaccount:eclipse-che:che
+
+# eclipse-che is the default namespace where Che server objects are created.
+# It can be overridden by `CHE_OPENSHIFT_PROJECT`
+```
+
 ## OpenShift Dedicated
 
 Instructions to deploy Che to OSD are identical to those for [OpenShift Container Platform](#openshift-container-platform)
