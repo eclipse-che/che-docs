@@ -30,9 +30,9 @@ Downgrades are possible, however, if database migrations have been previously pe
 Deployment script needs access to a running OpenShift instance either via username/password or a token:
 
 ```
-CHE_INFRA_OPENSHIFT_USERNAME
-CHE_INFRA_OPENSHIFT_PASSWORD
-CHE_INFRA_OPENSHIFT_TOKEN
+CHE_INFRA_KUBERNETES_USERNAME
+CHE_INFRA_KUBERNETES_PASSWORD
+CHE_INFRA_KUBERNETES_TOKEN
 ```
 If token is set, it is used by `oc` client to log in and Che server to create namespaces and objects, else default credentials are used (`developer/developer`) for MiniShift and OCP.
 
@@ -54,7 +54,7 @@ If workspaces are created in the same namespace with Che server, a service accou
 
 ## Volumes
 
-`CHE_INFRA_OPENSHIFT_PVC_STRATEGY="unique"`
+`CHE_INFRA_KUBERNETES_PVC_STRATEGY="unique"`
 
 There are two [Persistent Volume Claim](https://docs.openshift.com/container-platform/3.7/dev_guide/persistent_volumes.html) strategies:
 
