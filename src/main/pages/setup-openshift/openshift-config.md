@@ -58,8 +58,8 @@ If workspaces are created in the same namespace with Che server, a service accou
 
 There are two [Persistent Volume Claim](https://docs.openshift.com/container-platform/3.7/dev_guide/persistent_volumes.html) strategies:
 
-* **unique** - each workspace gets own PVC.  This is the default strategy. When a workspace is deleted, associated PVC is deleted as well. However, an associated PV may not be recycled and tghus cannot be re-used for a new claim. See [k8s docs](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#recycling). If you have started your cluster with `oc cluster up`, you need to create a service account for a special recycler pod: `oc create serviceaccount pv-recycler-controller -n openshift-infra` (requires admin login)
-* **common** - there is one PVC for all workaspaces. When a PVC is shared with all workspaces, there's a special service pod that starts before workspace is created to create a subpath in the PV for this particular ws. When a workspace is deleted an associated subpath is deleted as well.
+* **unique** - each workspace volume gets own PVC.  This is the default strategy. When a workspace is deleted, associated PVC is deleted as well. However, an associated PV may not be recycled and tghus cannot be re-used for a new claim. See [k8s docs](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#recycling). If you have started your cluster with `oc cluster up`, you need to create a service account for a special recycler pod: `oc create serviceaccount pv-recycler-controller -n openshift-infra` (requires admin login)
+* **common** - there is one PVC for all workspaces. When a PVC is shared with all workspaces, there's a special service pod that starts before workspace is created to create a subpath in the PV for this particular ws. When a workspace is deleted an associated subpath is deleted as well.
 
 If a common strategy is set, it is impossible to run multiple workspaces simultaneously because of a default `ReadWriteOnce` [access mode](https://docs.openshift.com/container-platform/3.7/architecture/additional_concepts/storage.html#pv-access-modes) for workspace PVCs.
 
