@@ -141,15 +141,20 @@ bash ./get-che.sh
 
 Instructions to deploy Che to OSD are identical to those for [OpenShift Container Platform](#openshift-container-platform)
 
-## Openshift.io
-
-Please note that deploying Che on [OpenShift.io](https://openshift.io) (OSIO) is only intended for Che developers and OSIO contributors. This is useful when a developer wants to test how changes will work on [OpenShift.io](https://openshift.io). If you are interested in using OpenShift.io you can [sign up](https://openshift.io/) for the service.
+## Openshift Online
 
 Use environment variables to set [deployment options][openshift-config]:
 
 ```shell
 export OPENSHIFT_TOKEN=<OSO_TOKEN> # Retrieve the OSO_TOKEN from https://console.starter-us-east-2.openshift.com/console/command-line
 export OPENSHIFT_FLAVOR=osio
+export CHE_INFRA_KUBERNETES_OAUTH__TOKEN=""
+export OPENSHIFT_ROUTING_SUFFIX=6923.rh-us-east-1.openshiftapps.com
+export OPENSHIFT_FLAVOR=ocp
+export IMAGE_PULL_POLICY=Always
+export CHE_OPENSHIFT_PROJECT=eclipse-che
+export CHE_INFRA_OPENSHIFT_PROJECT=eclipse-che
+export WAIT_FOR_CHE=true
 ```
 
 Download and run deployment script:
@@ -157,8 +162,12 @@ Download and run deployment script:
 ```shell
 DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/deploy_che.sh
 curl -fsSL ${DEPLOY_SCRIPT_URL} -o ./get-che.sh
-bash ./get-che.sh
+CONFIG_FILE=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/che-config
+curl -fsSL ${DEPLOY_SCRIPT_URL} -o che-config
+echo "CHE_INFRA_KUBERNETES_PVC_QUANTITY: \"1Gi\"" >> che-config
+bash get-che.sh
 ```
+Find more details about [deployment options](openshift-multi-user.html#openshift-online)
 
 ## Deployment Options and Configuration
 

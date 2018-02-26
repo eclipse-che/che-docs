@@ -8,7 +8,9 @@ folder: setup-openshift
 ---
 ## How It Works
 
-You can configure deployment of Che on OpenShift with env variables that are defined in `che-config` file. Either export env in your terminal, or edit this file directly. Once done, run the deployment script with `-c rollupdate` flag. Che deployment will be updated which automatically triggers a new deployment. You can also export envs in your environment, and the script will pick them up. It will only update Che server pod. This page focuses on some of the envs. You can either look at [Docker configuration page][docker-config] or [che.env](https://github.com/eclipse/che/blob/master/dockerfiles/init/manifests/che.env) file.
+You can configure deployment of Che on OpenShift with env variables that are defined in [`che-config`](https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/che-config) file. If you have downloaded only deployment script but need to configure your Che server, download config file that should be located in the same directory with the deployment script.
+
+Once done, run the deployment script with `-c rollupdate` flag. Che deployment will be updated which automatically triggers a new deployment. You can also export envs in your environment, and the script will pick them up. It will only update Che server pod. This page focuses on some of the envs. You can either look at [Docker configuration page][docker-config] or [che.env](https://github.com/eclipse/che/blob/master/dockerfiles/init/manifests/che.env) file.
 
 We use recreate strategy. When the initial Che pod is shut down, server forcefully stops all workspace pods. Users working in those workspace will see a notification that the workspace is not running anymore. It does not impact data persistence - all workspace project files mounted through PVCs.
 
@@ -72,7 +74,7 @@ To enable https for server and workspace routes, export the following environmen
 
 `ENABLE_SSL=true`
 
-When deploying to OSIO, HTTPS is enabled by default.
+When deploying to OCP, HTTPS is enabled by default.
 
 ## Scalability
 
