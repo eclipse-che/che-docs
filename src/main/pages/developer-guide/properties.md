@@ -73,6 +73,23 @@ A few gotchas:
 
 **IMPORTANT**: it is prohibited to use a different name for the same property on the same level. From the example above, you can use environment property `CHE_CURRENT_NAME` and `CHE_OLD_NAME`. However, you can use it on a different level, for instance, environment property and system property.
 
+## Properties and Environment Variables
+
+Naming conventions:
+
+* dots in properties separate components (in case of env vars it is a **single** underscore)
+* underscores in properties separate words in a single component item (in case of env vars it is a **double underscore**)
+
+Example:
+
+```
+che.component1.sub_component_2_mb -> CHE_COMPONENT1_SUB__COMPONENT__2__MB
+
+where MB is unit of measurement in case when property is a number
+```
+
+Environment variables have a **higher priority** over properties, so if both are set, value of an environment variable will be used.
+
 ## Workspace Extension Properties  
 
 Each workspace is a separate runtime, and has at least one development agent that runs as a miniaturized Che server within the workspace. That agent has its own properties that can be configured as well. If you are authoring custom workspace extensions that are deployed within Che's agent in the workspace, you can customize.
