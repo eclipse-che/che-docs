@@ -23,6 +23,11 @@ When Che is deployed on OpenShift or installed on Docker, either deployment scri
 * **Valid Redirect URIs** need to be the URL you use to access Che. For example, if your original `CHE_HOST` is `1.1.1.1` but you access Che at `myhost` which is an alias, you will see an error from Keycloak, saying that it's an invalid `redirectURI`. So, if this error occurs, go to Keycloak administration console and check valid Redirect URIs.
 * **Web Origins** - the same concerns Web Origins. An invalid web origin causes CORS error.
 
+## Keycloak Tokens
+
+By default, a user token gets expired after 30 mins. Keycloak admin can fine tune different realm settings related to Keycloak tokens:
+
+{% include image.html file="keycloak/keycloak_realm.png" %}
 
 ## User Federation
 
