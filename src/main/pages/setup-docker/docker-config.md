@@ -188,7 +188,7 @@ Che goes through a progression algorithm to establish the protocol, IP address a
 #    2. Else use the value of che.api
 #
 # Che Server --> Docker Daemon Progression:
-#    1. Use the value of docker.client.daemon_url
+#    1. Use the value of che.infra.docker.daemon_url
 #    2. Else, use the value of DOCKER_HOST system variable
 #    3. Else, use Unix socket over unix:///var/run/docker.sock
 #    4. Else default docker0 IP - 172.17.42.1
