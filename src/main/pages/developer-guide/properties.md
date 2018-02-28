@@ -88,7 +88,8 @@ che.component1.sub_component_2_mb -> CHE_COMPONENT1_SUB__COMPONENT__2__MB
 where MB is unit of measurement in case when property is a number
 ```
 
-Environment variables have a **higher priority** over properties, so if both are set, value of an environment variable will be used.
+Environment variables have a **higher priority** over properties, so if both are set, value of an environment variable will be used. 
+Property can only be overridden, if it starts with `che.`
 
 ## Workspace Extension Properties  
 
