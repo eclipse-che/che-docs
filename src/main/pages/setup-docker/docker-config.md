@@ -29,14 +29,6 @@ The version control sequence would be:
 4. Setup a new folder and copy `che.env` from version control into the folder you will mount to `:/data`.
 5. Run `che config` or `che start`.
 
-```shell
-# This environment variable:
-CHE_PROPERTY_machine_ws__agent_max__start__time__ms=1000
-
-# Is sent to the Che server as:
-machine.ws_agent.max_start_time_ms=1000
-```
-
 ## Single Port Policy
 
 By default, Che lets Docker publish exposed ports in a random manner - Docker chooses available ports from the ephemeral port range to expose workspace [servers][servers]. This, however, brings in certain network requirements, namely opening the ephemeral port range (and Keycloak port 5050 for multi user Che) to the world.
