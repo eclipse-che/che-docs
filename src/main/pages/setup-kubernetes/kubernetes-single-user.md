@@ -23,8 +23,8 @@ You may download yaml file and create Che Server Kubernetes objects. The file co
 
 ```shell
 CHE_KUBERNETES_YAML_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/kubernetes/files/che-kubernetes.yaml
-curl -fsSL ${CHE_KUBERNETES_YAML_URL} | sed "s/192.168.99.100/$(minikube ip)/" > che-kubernetes.yml
+curl -fsSL ${CHE_KUBERNETES_YAML_URL} | sed "s/192.168.99.100/$(minikube ip)/" > che-kubernetes.yaml
 kubectl create namespace che
 kubectl --namespace=che apply -f che-kubernetes.yaml
 ```
-Che deployment is started and wait Che pod will be running it should be available by the following URL `$(minishift ip).nip.io`
+Che deployment is started and when Che pod will be running it should be available by the following URL `$(minikube ip).nip.io`
