@@ -13,7 +13,9 @@ Tested only on minikube v0.25 with vm providers Virtualbox and kvm2.
 ## Pre-Reqs
 
 * `bash`
-* `Kubernetes` installation with enabled DNS discovery and configured ingress controller
+* `Kubernetes` installation with:
+  * enabled DNS discovery;
+  * configured ingress controller. Note: you can start it on minikube with `minikube addons enable ingress`.
 
 ## MiniKube
 
