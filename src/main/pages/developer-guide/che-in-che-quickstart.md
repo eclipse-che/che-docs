@@ -11,9 +11,8 @@ Before you dive into information on how you can [extend Che framework][framework
 
 ## Run Eclipse Che
 
-**[Install: Docker][docker]**
-
-**[Install: OpenShift][openshift]**
+* Installing it on Docker: [Single-user][docker-single-user] or [Multi-user][docker-multi-user]
+* Installing it on OpenShift: [Single-user][openshift-single-user] or [Multi-user][openshift-multi-user]
 
 ## Create Workspace and Sample Extension
 
