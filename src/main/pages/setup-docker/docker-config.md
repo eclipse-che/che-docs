@@ -37,10 +37,11 @@ To run Che in a single port mode add `-e CHE_SINGLE_PORT=true` to your run synta
 
 **Wildcard DNS**
 
-In a single port mode, Che builds URLs of workspace services using the following pattern - `serviceName.machineName.ws-ID.IP.wildcardDNSProvider`. So, if your external IP is `193.12.34.56`, URL of a workspace agent will look like `wsagent-http.dev-machine.workspace0bcgkgkvsqi31b4u.193.12.34.56.nip.io`
+In a single port mode, Che builds URLs of workspace services using the following pattern - `serviceName_machineName_ws-ID.IP.wildcardDNSProvider`. So, if your external IP is `193.12.34.56`, URL of a workspace agent will look like `wsagent-http_dev-machine_workspace0bcgkgkvsqi31b4u.193.12.34.56.nip.io`
 
 * by default [nip.io](http://nip.io/) is used. This is an external wildcard DNS provider, and if it is down for some reason, networking in single port Che is broken.
 * you can use a different wildcard DNS provider with `CHE_SINGLEPORT_WILDCARD__DOMAIN_HOST` env.
+* if you don't want the external IP to be part of the url (`serviceName_machineName_ws-ID.wildcardDNSProvider`, for example to use a wildcard SSL certificate), you can specify `CHE_SINGLEPORT_WILDCARD__DOMAIN_IPLESS=true` with a custom wildcard DNS (e.g. `CHE_SINGLEPORT_WILDCARD__DOMAIN_HOST=domain.tld`. Be aware that you need to have a matching DNS entry for `*.domain.tld`. If you are using the multi-user mode, Keycloak will be provided at `keycloak.domain.tld`.
 
 **Multi-User Mode**
 
