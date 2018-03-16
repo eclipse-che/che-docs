@@ -7,9 +7,13 @@ permalink: openshift-multi-user.html
 folder: setup-openshift
 ---
 
+## Supported OpenShift Flavors and Versions
+
+Multi-user Eclipse Che can be deployed to OpenShift OCP, OSD and OSO v3.6+.
+
 ## System Requirements
 
-Your OpenShift node should have at least 5GB RAM available - 3GB go to Che deployments and 2GB is reserved to run at least one workspace.
+Eclipse Che requires OpenShift 3.6 or higher. Your OpenShift node should have at least 5GB RAM available - 3GB go to Che deployments and 2GB is reserved to run at least one workspace.
 
 ## Deployment diagram
 

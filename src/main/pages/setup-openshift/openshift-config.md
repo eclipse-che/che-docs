@@ -8,7 +8,7 @@ folder: setup-openshift
 ---
 ## How It Works
 
-You can configure deployment of Che on OpenShift with env variables that are defined in [`che-config`](https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/che-config) file. If you have downloaded only deployment script but need to configure your Che server, download config file that should be located in the same directory with the deployment script.
+You can configure deployment of Che on OpenShift 3.6+ with env variables that are defined in [`che-config`](https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/che-config) file. If you have downloaded only deployment script but need to configure your Che server, download config file that should be located in the same directory with the deployment script.
 
 Once done, run the deployment script with `-c rollupdate` flag. Che deployment will be updated which automatically triggers a new deployment. You can also export envs in your environment, and the script will pick them up. It will only update Che server pod. This page focuses on some of the envs. You can either look at [Docker configuration page][docker-config] or [che.env](https://github.com/eclipse/che/blob/master/dockerfiles/init/manifests/che.env) file.
 
