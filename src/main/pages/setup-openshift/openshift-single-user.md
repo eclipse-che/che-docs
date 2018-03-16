@@ -8,7 +8,7 @@ folder: setup-openshift
 ---
 ## Supported OpenShift Flavors and Versions
 
-Che can be deployed to MiniShift, OCP, OSD and OSO v3.5+.
+Che can be deployed to MiniShift, OCP, OSD and OSO v3.6+.
 
 ## Pre-Reqs
 
