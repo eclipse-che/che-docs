@@ -159,9 +159,7 @@ Some limitations restrict the alternate OIDC providers that can be used with Ecl
     - `exp`: the expiration time (https://tools.ietf.org/html/rfc7519#section-4.1.4)
     - `sub`: the subject (https://tools.ietf.org/html/rfc7519#section-4.1.2)
 - allow redirect Urls with wildcards at the end
-- provide an endpoint that returns the [OpenID Provider Configuration information](http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig). According to the specification, this endpoint should end with the following sub-path:
-
-    /.well-known/openid-configuration
+- provide an endpoint that returns the [OpenID Provider Configuration information](http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig). According to the specification, this endpoint should end with sub-path `/.well-known/openid-configuration`.
 
 When using an alternate OIDC provider, the following Keycloak environment variables should be set to `NULL`:
 
