@@ -66,4 +66,15 @@ When Eclipse Che gets deployed to Kubernetes, a PVC `che-data-volume` is [create
 * `kubectl describe pvc che-data-claim`, find PV it is bound to, then `oc describe pv $pvName`, you will get a local path with logs directory. Be careful with permissions for that directory, since once changed, Che server wont be able to write to a file
 * in Kubernetes web console, eclipse-che namespace, **pods > che-pod > logs**.
 
+## Che Workspace Termination Grace Period
+
+Grace termination period of Kubernetes / OpenShift workspace's pods defaults '0', which allows to terminate
+pods almost instantly and significantly decrease the time required for stopping a workspace. For increasing grace termination period the following environment variable should be used:
+
+`CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC`
+
+<span style="color:red;">**IMPORTANT!**</span>
+
+If `terminationGracePeriodSeconds` have been explicitly set in Kubernetes / OpenShift recipe it will not be overridden by the environment variable.
+
 {% include links.html %}
