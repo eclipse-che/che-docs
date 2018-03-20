@@ -184,4 +184,8 @@ POSTGRES_PASSWORD=keycloak
 
 After you have built your [custom assembly][assemblies], execute `build.sh` [script](https://github.com/eclipse/che/tree/master/dockerfiles/che). You can then tag it, either push to MiniShift or a public Docker registry, and reference in your Che deployment as `CHE_IMAGE_REPO` and `CHE_IMAGE_TAG`.
 
+## Che Workspace Termination Grace Period
+
+Info about changing workspace termination grace period can be found in the following [section](kubernetes-config.html#che-workspace-termination-grace-period) of the Che Kubernetes config document.
+
 {% include links.html %}
