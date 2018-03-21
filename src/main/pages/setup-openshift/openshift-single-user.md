@@ -91,12 +91,7 @@ Variables can be specified by adding `--addon-env <key=value>` when the addon is
 To remove all created template and che project:
 
 ```bash
-minishift addons remove \
---addon-env OPENSHIFT_TOKEN="" \
---addon-env CHE_DOCKER_IMAGE="" \
---addon-env GITHUB_CLIENT_ID="" \
---addon-env GITHUB_CLIENT_SECRET="" \
---addon-env NAMESPACE=mini-che che
+minishift addons remove che
 ```
 
 **Uninstall add-on**
