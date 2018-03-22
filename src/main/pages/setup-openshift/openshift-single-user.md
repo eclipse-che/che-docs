@@ -110,7 +110,7 @@ To uninstall the addon from the addon list:
 Alternatively, you may download and run deployment scripts instead of using MiniShift addons:
 
 ```shell
-DEPLOY_ROOT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/
+DEPLOY_ROOT_URL=https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/scripts/
 curl -fsSL ${DEPLOY_ROOT_URL}/deploy_che.sh -o get-che.sh
 curl -fsSL ${DEPLOY_ROOT_URL}/che-openshift.yml -o che-openshift.yml
 curl -fsSL ${DEPLOY_ROOT_URL}/che-config -o che-config
@@ -134,7 +134,7 @@ If you use an authentication token, make sure you read how to deal with [token i
 * Download and run deployment script:
 
 ```shell
-DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/deploy_che.sh
+DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/deploy_che.sh
 curl -fsSL ${DEPLOY_SCRIPT_URL} -o ./get-che.sh
 bash ./get-che.sh
 ```
@@ -162,9 +162,9 @@ export WAIT_FOR_CHE=true
 Download and run deployment script:
 
 ```shell
-DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/deploy_che.sh
+DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/deploy_che.sh
 curl -fsSL ${DEPLOY_SCRIPT_URL} -o ./get-che.sh
-CONFIG_FILE=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/openshift/files/scripts/che-config
+CONFIG_FILE=https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/che-config
 curl -fsSL ${DEPLOY_SCRIPT_URL} -o che-config
 echo "CHE_INFRA_KUBERNETES_PVC_QUANTITY: \"1Gi\"" >> che-config
 bash get-che.sh
