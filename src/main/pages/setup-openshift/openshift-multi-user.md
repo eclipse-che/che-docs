@@ -13,7 +13,7 @@ Multi-user Eclipse Che can be deployed to OpenShift OCP, OSD and OSO v3.6+.
 
 ## System Requirements
 
-Eclipse Che requires OpenShift 3.6 or higher. Your OpenShift node should have at least 5GB RAM available - 3GB go to Che deployments and 2GB is reserved to run at least one workspace.
+Eclipse Che requires **OpenShift 3.6** or higher. Your OpenShift node should have at least 5GB RAM available - 3GB go to Che deployments and 2GB is reserved to run at least one workspace.
 
 ## Deployment diagram
 
@@ -33,17 +33,10 @@ If your Keycloak server has `http` endpoint and Che server is deployed with `htt
 
 ## How to Get Scripts
 
-There are two ways to get deployment scripts: either clone Che or run a Docker image:
 
 ```shell
 git clone https://github.com/eclipse/che
-cd che/dockerfiles/init/modules/openshift/files/scripts
-```
-or
-
-```shell
-docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v ${LOCAL_PATH}:/data eclipse/che init
-cd ${LOCAL_PATH}/instance/config/openshift/scripts
+cd che/deploy/openshift
 ```
 
 ## MiniShift
@@ -104,7 +97,7 @@ export CHE_OPENSHIFT_PROJECT=eclipse-che
 export CHE_INFRA_OPENSHIFT_PROJECT=eclipse-che
 export WAIT_FOR_CHE=true
 
-cd che/dockerfiles/init/modules/openshift/files/scripts
+cd che/deploy/openshift
 
 echo "CHE_INFRA_KUBERNETES_PVC_QUANTITY: \"1Gi\"" >> che-config
 
