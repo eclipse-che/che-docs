@@ -150,6 +150,37 @@ You can use your own Keycloak server. Create a new realm and a public client. A 
 * `webOrigins` should be  either`${CHE_SERVER_ROUTE}` or `*`. If no or incorrect `webOrigins` are provided, Keycloak script won't be injected into a page because of CORS error.
 
 
+***Using an alternate OIDC provider instead of Keycloak***
+
+Instead using a Keycloak server, Che now provides a limited support for alternate authentication servers compatible with the [OpenId Connect specification](http://openid.net/specs/openid-connect-core-1_0.html).
+
+Some limitations restrict the alternate OIDC providers that can be used with Eclipse Che. Supported providers should:
+- implement access tokens as JWT tokens including at least the following claims:
+    - `exp`: the expiration time (https://tools.ietf.org/html/rfc7519#section-4.1.4)
+    - `sub`: the subject (https://tools.ietf.org/html/rfc7519#section-4.1.2)
+- allow redirect Urls with wildcards at the end
+- provide an endpoint that returns the [OpenID Provider Configuration information](http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig). According to the specification, this endpoint should end with sub-path `/.well-known/openid-configuration`.
+
+When using an alternate OIDC provider, the following Keycloak environment variables should be set to `NULL`:
+
+```
+CHE_KEYCLOAK_AUTH__SERVER__URL=NULL
+CHE_KEYCLOAK_REALM=NULL
+```
+
+Instead, you should set the folowing environement variables:
+
+```
+CHE_KEYCLOAK_CLIENT__ID=<client id provided by the OIDC provider>
+CHE_KEYCLOAK_OIDC__PROVIDER=<base URL of the OIDC provider that provides a configuration endpoint at `/.well-known/openid-configuration` sub-path>
+```
+
+If the optional [`nonce` OpenId request parameter](http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest) is not supported, the following environment variable should be added:
+
+```
+CHE_KEYCLOAK.USE__NONCE=FALSE
+```
+
 ***Che Server and PostgreSQL***
 
 Che server uses the below defaults to connect to PostgreSQL to store info related to users, user preferences and workspaces:
