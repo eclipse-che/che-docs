@@ -9,11 +9,11 @@ folder: setup-openshift
 
 ## Supported OpenShift Flavors and Versions
 
-Multi-user Eclipse Che can be deployed to OpenShift OCP, OSD and OSO v3.6+.
+Multi-user Eclipse Che can be deployed to OpenShift Container Platform 3.6+, OpenShift Dedicated and OpenShift Online Pro.
 
 ## System Requirements
 
-Eclipse Che requires **OpenShift 3.6** or higher. Your OpenShift node should have at least 5GB RAM available - 3GB go to Che deployments and 2GB is reserved to run at least one workspace.
+Eclipse Che requires **OpenShift 3.6** or higher. Your OpenShift node should have at least 5GB RAM available - 3GB go to Che deployments and 2GB is reserved to run at least one workspace. The total RAM required for running workspaces will grow depending on the size of your workspace runtime(s) and the number of concurrent workspace pods you run.
 
 ## Deployment diagram
 
@@ -39,9 +39,9 @@ git clone https://github.com/eclipse/che
 cd che/deploy/openshift
 ```
 
-## MiniShift
+## Minishift
 
-Make sure you have started MiniShift with `--memory=4096` or more.
+Due to the size of a multi-user Eclipse Che install, Minishift is not recommended as a base for this configuration. However, if you have to use Minishift ensure you have started Minishift with `--memory=4096` or more and [update Minishift](https://docs.openshift.org/latest/minishift/getting-started/updating.html) to the latest version.
 
 ```bash
 export CHE_MULTIUSER=true
@@ -50,7 +50,7 @@ export WAIT_FOR_CHE=true
 ```
 
 
-## OpenShift Container platform
+## OpenShift Container Platform
 
 ```bash
 export CHE_MULTIUSER=true
@@ -81,9 +81,9 @@ oadm policy add-cluster-role-to-user self-provisioner system:serviceaccount:ecli
 
 Instructions to deploy Che to OSD are identical to those for [OpenShift Container Platform](#openshift-container-platform)
 
-## OpenShift Online
+## OpenShift Online Pro
 
-Below is a recommended way to deploy Eclipse Che multi-user flavor on OSO:
+Below is a recommended way to deploy Eclipse Che multi-user on OpenShift Online Pro (OpenShift Online Starter does not have sufficient resources to run multi-user Che):
 
 ```bash
 export CHE_MULTIUSER=true
