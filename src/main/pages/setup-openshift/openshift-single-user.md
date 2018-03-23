@@ -8,7 +8,7 @@ folder: setup-openshift
 ---
 ## Supported OpenShift Flavors and Versions
 
-Single User Eclipse Che can be deployed to MiniShift, OCP, OSD and OSO v3.6+.
+Single User Eclipse Che can be deployed to Minishift, OCP, OSD and OSO v3.6+.
 
 ## Pre-Reqs
 
@@ -25,11 +25,13 @@ There are a few essential Kubernetes and OpenShift objects that are created when
 
 This diagram depicts the default [PVC strategy](openshift-config.html#volumes) (PVC per workspace).
 
-## MiniShift
+## Minishift
 
-**MiniShift Addon**
+Before starting [install Minishift](https://docs.openshift.org/latest/minishift/getting-started/installing.html) or [update your Minishift](https://docs.openshift.org/latest/minishift/getting-started/updating.html) to ensure you're on the most up-to-date version.
 
-The best way of deploying Che to MiniShift is using an add-on via the [`minishift add-ons apply`](https://docs.openshift.org/latest/minishift/command-ref/minishift_addons_apply.html) command which is outlined in the following paragraphs.
+**Minishift Addon**
+
+The best way of deploying Che to Minishift is using an add-on via the [`minishift add-ons apply`](https://docs.openshift.org/latest/minishift/command-ref/minishift_addons_apply.html) command which is outlined in the following paragraphs.
 
 **Install add-On**
 
