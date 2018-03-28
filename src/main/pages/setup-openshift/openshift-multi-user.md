@@ -71,7 +71,7 @@ If you provide a **token** rather than username/password, Che will use this toke
 2. If you are a cluster admin, you may grant privileges to `che` service account so that it can create objects outside its namespace:
 
 ```bash
-oadm policy add-cluster-role-to-user self-provisioner system:serviceaccount:eclipse-che:che
+oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:eclipse-che:che
 
 # eclipse-che is the default namespace where Che server objects are created.
 # It can be overridden by `CHE_OPENSHIFT_PROJECT`
