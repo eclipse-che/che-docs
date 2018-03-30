@@ -60,13 +60,15 @@ Refer to [Kubernetes documentation](https://kubernetes.io/docs/tasks/configure-p
 
 ## Che Server Logs
 
-# TODO OUTDATED
-When Eclipse Che gets deployed to Kubernetes, a PVC `che-data-volume` is [created](https://github.com/eclipse/che/blob/master/dockerfiles/init/modules/kubernetes/files/che-kubernetes.yaml#L26) and bound to a PV. Logs are persisted in a PV and can be retrieved in the following ways:
+When Eclipse Che gets deployed to Kubernetes, a PVC `che-data-volume` is [created](https://github.com/eclipse/che/blob/master/deploy/kubernetes/kubectl/che-kubernetes.yaml#L26) and bound to a PV. Logs are persisted in a PV and can be retrieved in the following ways:
 
 * `kubectl get log dc/che`
 * `kubectl describe pvc che-data-claim`, find PV it is bound to, then `oc describe pv $pvName`, you will get a local path with logs directory. Be careful with permissions for that directory, since once changed, Che server wont be able to write to a file
 * in Kubernetes web console, eclipse-che namespace, **pods > che-pod > logs**.
-# TODO Describe how to set logs implementation
+
+It is also possible to configure Che master not to store logs, but produce JSON encoded logs to output instead. It may be used to collect logs by systems such as Logstash.
+To configure JSON logging instead of plain text environment variable `CHE_LOGS_APPENDERS_IMPL` should have value `json`.
+See more at [logging docs][logging].
 
 ## Che Workspace Termination Grace Period
 
