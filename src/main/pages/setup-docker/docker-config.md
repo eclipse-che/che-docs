@@ -58,6 +58,8 @@ Che's containers save their logs in the same location:
 /instance/logs/che/che-machine-logs     # Workspace logs
 ```
 
+Note there might be cases of logs encoding settings when Che master logs are not stored in the location above.  
+
 User data is stored in:
 
 ```shell
@@ -102,71 +104,19 @@ CHE_JDBC_MAX__TOTAL=20
 CHE_JDBC_MAX__IDLE=10
 CHE_JDBC_MAX__WAIT__MILLIS=-1
 ```
+# TODO move to a separate page
+**Logging configuration**
 
-**Logback configuration**
+By default ws-master and ws-agent are configured to use logback as default logging backend. Their configuration produces plaintext logs to output of Che assembly and stores it to files.
+There are several options on how to customize logs producing in Che.
+Che is bundled with 2 variants of logger format and location settings `json` and `plaintext`.  
+JSON setting produces logs in JSON stream format and doesn't store them in any files.  
+Plaintext setting produces logs in the format of plain text and stores it in directory Che logs dir.  
+To switch these encodings set environment variable `CHE_LOGS_APPENDERS_IMPL` to `json` or `plaintext`. Value `plaintext` is default setting.
 
-By default ws-master and ws-agent are configured to use logback as default logging backend. With has such configuration
-```
-<configuration>
-    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
-        <resetJUL>true</resetJUL>
-    </contextListener>
-    <contextListener class="org.eclipse.che.commons.logback.EnvironmentVariablesLogLevelPropagator"/>
-
-    <property name="max.retention.days" value="60" />
-
-    <jmxConfigurator/>
-
-    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%-41(%date[%.15thread]) %-45([%-5level] [%.30logger{30} %L]) - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <append>true</append>
-        <prudent>true</prudent>
-        <encoder>
-            <charset>utf-8</charset>
-            <pattern>%-41(%date[%.15thread]) %-45([%-5level] [%.30logger{30} %L]) - %msg%n</pattern>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${che.logs.dir}/archive/%d{yyyy/MM/dd}/catalina.log</fileNamePattern>
-            <maxHistory>${max.retention.days}</maxHistory>
-        </rollingPolicy>
-    </appender>
-
-
-    <include optional="true" file="${che.local.conf.dir}/logback/logback-additional-appenders.xml"/>
-    <include optional="true" file="${catalina.home}/conf/logback-additional-appenders.xml"/>
-
-    <logger name="org.apache.catalina.loader" level="OFF"/>
-    <logger name="org.apache.catalina.session.PersistentManagerBase" level="OFF"/>
-    <logger name="org.apache.jasper.servlet.TldScanner" level="OFF"/>
-
-    <root level="${che.logs.level:-INFO}">
-        <appender-ref ref="stdout"/>
-        <appender-ref ref="file"/>
-    </root>
-</configuration>
-```
-Usually, it stored in tomcat's conf folder as logback.xml file.
-There are two ways to exted this configuration.
-1. Put your configuration in ${che.local.conf.dir}/logback/logback-additional-appenders.xml or ${catalina.home}/conf/logback-additional-appenders.xml file
-2. Provide environment variable in such form 
-```
-CHE_LOGGER_CONFIG=logger1=logger1_level,logger2=logger2_level
-```
-for example
-```
-CHE_LOGGER_CONFIG=org.eclipse.che=DEBUG,org.eclipse.che.api.installer.server.impl.LocalInstallerRegistry=OFF 
-```
-In case if you are using docker cli you can put this variable to che.env for ws-master or workspace config in case of workspace agent.
-
-
-**Logstash JSON Encoder**
-
-Che-server comes with `logstash-json-encoder` which allows you to send logs in a JSON format for Logstash or any other log consumers. Adding a new appender can be done by adding a `logback-additional-appenders.xml` in `${CHE_LOCAL_CONF_DIR}/logback/` or `${CATALINA_HOME}/conf/` folder from your custom assembly or mounted volume:
+To add a custom implementation of logger producing create [custom assembly][assemblies], set environment variable `CHE_LOGS_APPENDERS_IMPL=myimpl` and add files `logback-file-myimpl-appenders.xml` and `tomcat-file-myimpl-appenders.xml` to `tomcat/conf` folder.  
+An example of these files which adds storing logs in JSON format in files:  
+logback-file-json-appenders.xml
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -180,7 +130,10 @@ Che-server comes with `logstash-json-encoder` which allows you to send logs in a
             <fileNamePattern>${che.logs.dir}/archive/%d{yyyy/MM/dd}/catalina.log.json</fileNamePattern>
             <maxHistory>${max.retention.days}</maxHistory>
         </rollingPolicy>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdcKeyName>identity_id</includeMdcKeyName>
+            <includeMdcKeyName>req_id</includeMdcKeyName>
+        </encoder>
     </appender>
 
     <root level="${che.logs.level:-INFO}">
@@ -188,10 +141,46 @@ Che-server comes with `logstash-json-encoder` which allows you to send logs in a
     </root>
 </included>
 ```
+tomcat-file-json-appenders.xml
 
-This appender will log in a JSON format to a rolling `/logs/logs/catalina.log.json` file.
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <appender name="file-json" class="org.apache.juli.logging.ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${che.logs.dir}/logs/catalina.log.json</file>
+        <filter class="org.apache.juli.logging.ch.qos.logback.classic.filter.ThresholdFilter">
+          <level>info</level>
+        </filter>
+        <rollingPolicy class="org.apache.juli.logging.ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${che.logs.dir}/archive/%d{yyyy/MM/dd}/catalina.log.json</fileNamePattern>
+            <maxHistory>${max.retention.days}</maxHistory>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdcKeyName>identity_id</includeMdcKeyName>
+            <includeMdcKeyName>req_id</includeMdcKeyName>
+        </encoder>
+    </appender>
 
-Other `logback-logstash-encoder` appenders can be added as well. See <https://github.com/logstash/logstash-logback-encoder#usage>.
+    <root level="${che.logs.level:-INFO}">
+        <appender-ref ref="file-json"/>
+    </root>
+</included>
+``` 
+Other `logback-logstash-encoder` appenders can be added as well. See <https://github.com/logstash/logstash-logback-encoder#usage>.    
+Note that to change logging settings for workspace environment variable should be set in workspaces and assembly of ws-agent should be extended in addition to the same actions for Che master.  
+On the other hand, customizing of ws-agent logs is uncommon practise, so it can be avoided.  
+
+Also, there are two ways to extend chosen configuration.
+1. Put your configuration in `${che.local.conf.dir}/logback/logback-additional-appenders.xml` or `${catalina.home}/conf/logback-additional-appenders.xml` file
+2. Provide environment variable in such form 
+```
+CHE_LOGGER_CONFIG=logger1=logger1_level,logger2=logger2_level
+```
+for example
+```
+CHE_LOGGER_CONFIG=org.eclipse.che=DEBUG,org.eclipse.che.api.installer.server.impl.LocalInstallerRegistry=OFF 
+```
+In case if you are using docker cli you can put this variable to che.env for ws-master or workspace config in case of workspace agent.
 
 ## oAuth
 

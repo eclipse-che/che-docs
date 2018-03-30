@@ -122,11 +122,13 @@ As said above, pods in OpenShift are started with an arbitrary user with a dynam
 
 ## Che Server Logs
 
+# TODO OUTDATED
 When Eclipse Che gets deployed to OpenShift, a PVC `che-data-volume` is [created](https://github.com/eclipse/che/blob/master/dockerfiles/init/modules/openshift/files/scripts/che-openshift.yml#L30) and bound to a PV. Logs are persisted in a PV and can be retrieved in the following ways:
 
 * `oc get log dc/che`
 * `oc describe pvc che-data-claim`, find PV it is bound to, then `oc describe pv $pvName`, you will get a local path with logs directory. Be careful with permissions for that directory, since once changed, Che server wont be able to write to a file
 * in OpenShift web console, eclipse-che project, **pods > che-pod > logs**.
+# TODO Describe how to set logs implementation
 
 ## Multi-User: Using Own Keycloak and PSQL
 
