@@ -39,7 +39,6 @@ Build artifact of this module contains all server side plugins components packag
 
 This module packages `ROOT.war` into Tomcat's `webapps` and adds configuration files. This tomcat is packaged as tar.gz archive that is then placed into main Tomcat produced by `assembly-main` build.
 
-
 ## assembly-wsmaster-war
 
 The core of Che platform as a workspace server that includes [workspace API][workspaces_rest-api], user profile and settings, [implementation of runtime infrastructure][spi-implementation]. Usually used as a dependency in custom assemblies, however, it is possible to extend it, for example, by providing support of a new infrastructure.
@@ -86,7 +85,7 @@ Client side:
     <artifactId>che-ide-full</artifactId>
     <type>gwt-lib</type>
 </dependency>
-
+```
 
 You may include a full IDE artifact and exclude a particular plugin:
 
@@ -123,7 +122,7 @@ You may include a full IDE artifact and exclude a particular plugin:
 
 Server side:
 
-...xml
+```xml
 
 <dependency>
     <groupId>org.eclipse.che</groupId>
