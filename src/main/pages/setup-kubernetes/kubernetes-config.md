@@ -8,7 +8,7 @@ folder: setup-kubernetes
 ---
 ## How It Works
 
-You can configure deployment of Che on Kubernetes by editing env variables that are defined in [che-kubernetes.yaml](https://github.com/eclipse/che/blob/master/dockerfiles/init/modules/kubernetes/files/che-kubernetes.yaml) file. Once done, execute `kubectl --namespace=che apply -f che-kubernetes.yaml `. Che deployment will be updated which automatically triggers a new deployment. This page focuses on some of the envs. You can either look at [Docker configuration page][docker-config] or [che.env](https://github.com/eclipse/che/blob/master/dockerfiles/init/manifests/che.env) file.
+You can configure deployment of Che on Kubernetes by editing env variables that are defined in [che-kubernetes.yaml](https://github.com/eclipse/che/blob/master/deploy/kubernetes/kubectl/che-kubernetes.yaml) file. Once done, execute `kubectl --namespace=che apply -f che-kubernetes.yaml `. Che deployment will be updated which automatically triggers a new deployment. This page focuses on some of the envs. You can either look at [Docker configuration page][docker-config] or [che.env](https://github.com/eclipse/che/blob/master/dockerfiles/init/manifests/che.env) file.
 
 We use recreate strategy. When the initial Che pod is shut down, server forcefully stops all workspace pods. Users working in those workspace will see a notification that the workspace is not running anymore. It does not impact data persistence - all workspace project files mounted through PVCs.
 
