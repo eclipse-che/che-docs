@@ -24,7 +24,7 @@ Tested only on minikube v0.25 with vm providers Virtualbox and kvm2.
 You may download yaml file and create Che Server Kubernetes objects. The file contains default settings and you should set at least actual minikube ip, other configuration parameters cab be default.
 
 ```shell
-CHE_KUBERNETES_YAML_URL=https://raw.githubusercontent.com/eclipse/che/master/dockerfiles/init/modules/kubernetes/files/che-kubernetes.yaml
+CHE_KUBERNETES_YAML_URL=https://raw.githubusercontent.com/eclipse/che/master/deploy/kubernetes/kubectl/che-kubernetes.yaml
 curl -fsSL ${CHE_KUBERNETES_YAML_URL} | sed "s/192.168.99.100/$(minikube ip)/" > che-kubernetes.yaml
 kubectl create namespace che
 kubectl --namespace=che apply -f che-kubernetes.yaml
