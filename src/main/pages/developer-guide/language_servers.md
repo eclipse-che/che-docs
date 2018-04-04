@@ -158,7 +158,7 @@ RUN sudo apt-get install socat -y && \
     sudo npm install -g typescript@2.5.3 typescript-language-server@0.1.4
 
 # run socat that listens on port 4417 with exec command that starts LS
-CMD socat TCP4-LISTEN:4417,reuseaddr,fork EXEC:"typescript-language-server --stdio
+CMD socat TCP4-LISTEN:4417,reuseaddr,fork EXEC:"typescript-language-server --stdio"
 ```
 
 * Create a stack with a [custom recipe][creating-starting-workspaces]: Create Workspace > Add Stack:
