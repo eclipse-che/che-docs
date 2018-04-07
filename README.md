@@ -1,6 +1,6 @@
 ## Eclipse Che Docs
 
-Che docs use Jekyll to convert `.md` files into html page. Docs are published at [https://www.eclipse.org/che/docs](https://www.eclipse.org/che/docs/). Updates are synced with a release cycle.
+Che docs use Jekyll to convert `.md` files into html page. Docs are published at [https://www.eclipse.org/che/docs/6/che/docs/](https://www.eclipse.org/che/docs/6/che/docs/) Updates are synced with a release cycle.
 
 ## Build and Preview
 
