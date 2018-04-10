@@ -78,7 +78,7 @@ Pre 1.6 Kubernetes created subpaths within a PV with invalid permissions, sot ha
 
 **Restrictions**
 
-When a common strategy is used, and a workspace PVC access mode is RWO, only one Kubernetes node can use the PVC at a time. You're fine if your Kubernetes/OpenShift cluster has just one node. If there are several nodes, a common strategy can still be used, but in this case, workspace PVC access mode should be RWM, ie multiple nodes should be able to use this PVC simultaneously. You can change access mode for workspace PVCs by passing environment variable `CHE_INFRA_KUBERNETES_PVC_ACCESS_MODE=ReadWriteMany` to che deployment either when initially deploying Che or through che deployment update.
+When a common strategy is used, and a workspace PVC access mode is RWO, only one Kubernetes node can simultaneously use PVC. You're fine if your Kubernetes/OpenShift cluster has just one node. If there are several nodes, a common strategy can still be used, but in this case, workspace PVC access mode should be RWM, ie multiple nodes should be able to use this PVC simultaneously (in fact, you may sometimes have some luck and all workspaces will be scheduled on the same node). You can change access mode for workspace PVCs by passing environment variable `CHE_INFRA_KUBERNETES_PVC_ACCESS_MODE=ReadWriteMany` to che deployment either when initially deploying Che or through che deployment update.
 
 ## Unique PVC strategy
 
