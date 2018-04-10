@@ -11,10 +11,6 @@ folder: setup-openshift
 
 Multi-user Eclipse Che can be deployed to OpenShift Container Platform 3.6+, OpenShift Dedicated and OpenShift Online Pro.
 
-## System Requirements
-
-Eclipse Che requires **OpenShift 3.6** or higher. Your OpenShift node should have at least 5GB RAM available - 3GB go to Che deployments and 2GB is reserved to run at least one workspace. The total RAM required for running workspaces will grow depending on the size of your workspace runtime(s) and the number of concurrent workspace pods you run.
-
 ## Deployment diagram
 
 The deployment script creates 3 DeploymentConfigs for Che, Postgres and Keycloak, as well as PVCs, services and routes (Che and Keycloak only). Once deployments are completed, a special service pod is started to configure Keycloak with realm, client and a default user. Client is provided with the right redirectUris and webOrigins. This pod gets deployed only in case an out-of-the-box Keycloak is used.
