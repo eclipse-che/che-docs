@@ -22,16 +22,47 @@ folder: user-management
 
 - **org.eclipse.che.multiuser.machine.authentication.server.MachineLoginFilter** - finds userId given token belongs to, than retrieves user instance and sets principal to the session.
 
-## Auth Filters on agents
+## Auth on agents
   Agents cannot be queried using Keycloak token, so there is only Machine Token option. Machine token can be passed in header or query param.
 
-- **org.eclipse.che.multiuser.machine.authentication.agent.MachineLoginFilter** - doing basically the same as the appropriate filter on master, except that user data queried from master's user REST api.
+- **org.eclipse.che.multiuser.machine.authentication.agent.MachineLoginFilter** - doing basically the same as the appropriate filter on a master, the only thing that is different it's a way how agent obtains the public signature part. The public key for the signature check is placed in a machine environment, with algorithm description.
+- **auth.auth.go** - the entry point for all request that is proceeding on go agents side, the logic of token verification is similar with MachineLoginFilter.
+
+The way how Che master interacts with agents with enabled authentication mechanism is the following:
+{% include image.html file="diagrams/machine_auth_flow.png" %}
 
 ## Keycloak vs Machine Token
 
 Machine tokens were introduced to avoid passing the Keycloak tokens to the machine side (which can be potentially insecure). Another reason is that Keycloak tokens may have relatively small lifetime and require periodical renewal/refresh which is hard to manage and keep in sync with same user session tokens on clients e.t.c.
 
-So from implementation side, it is the simple 3-side **User** <-> **Workspace** <-> **Machine Token** mapping, and token is injected into machine during its startup and remains valid until the workspace will be stopped. Unlike JWT, Machine token doesn't carry any information inside, it's just a randomly generated string. IDE as a general client, holds both of those tokens in multi-user mode, and uses them depending of where the request goes. Most of the job to obtain/refresh/invalidate of Keycloak tokens on IDE or Dashboard clients is outsourced to the native Keycloak js library.
+So from the implementation side, it is the simple 3-side **User** <-> **Workspace** <-> **Machine Token** mapping, and a token is injected into the machine during its startup and remains valid until the workspace will be stopped.
+Like the JWT machine token contains the header, payload and signature. The structure of token and the signature are different to Keycloak and have the following view:
+``` json
+# Header
+{
+  "alg": "RS512",
+  "kind": "machine_token"
+}
+# Payload
+{
+  "wsid": "workspacekrh99xjenek3h571",
+  "uid": "b07e3a58-ed50-4a6e-be17-fcf49ff8b242",
+  "uname": "john",
+  "jti": "06c73349-2242-45f8-a94c-722e081bb6fd"
+}
+# Signature
+{
+  "value": "RSASHA512(base64UrlEncode(header) + . +  base64UrlEncode(payload))"
+}
+
+```
+The algorithm that is used for signing machine tokens is `SHA-512` and it's not configurable for now. Also, there is no public service that distributes the public part of the key pair with which the token was signed. But in each machine, there must be environment variables that contains key value. Environment properties description:
+
+Contains information about the algorithm which the token was signed<br>
+`CHE_MACHINE_AUTH_SIGNATURE__ALGORITHM`<br>
+Contains public key value encoded in Base64<br>
+`CHE_MACHINE_AUTH_SIGNATURE__PUBLIC__KEY`
+
 
 ## Obtaining Keycloak endpoints
 
@@ -98,7 +129,7 @@ To use Swagger for a workspace agent, user must do following steps:
 * get machine token from `runtime.machineToken` field, and put it in the upper bar `token` field
 
 ```
-machineToken": "machinet9854958jdsdhakdh48hsdg",
+"machineToken": "eyJhbGciOiJSUzUxMiIsImtpbmQiOiJtYWNoaW5lX3Rva2VuIn0.eyJ3c2lkIjoid29ya3NwYWNlMzEiLCJ1aWQiOiJ1c2VyMTMiLCJ1bmFtZSI6InRlc3RVc2VyIiwianRpIjoiOTAwYTUwNWYtYWY4ZS00MWQxLWFhYzktMTFkOGI5OTA5Y2QxIn0.UwU7NDzqnHxTr4vu8UqjZ7-cjIfQBY4gP70Nqxkwfx8EsPfZMpoHGPt8bfqLWVWkpp3OacQVaswAOMOG9Uc9FtLnQWnup_6vvyMo6gchZ1lTZFJMVHIw9RnSJAGFl98adWe3NqE_DdM02PyHb23MoHqE_xd8z3eFhngyaMImhc4",
 ```
 
 * click Explore to load Swagger for WS Agent
