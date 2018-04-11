@@ -6,91 +6,42 @@ sidebar: user_sidebar
 permalink: openshift-config.html
 folder: setup-openshift
 ---
+
+## Admin Guide
+
+This page describes OpenShift specific configuration. Refer to [Kubernetes Admin Guide][kubernetes-admin-guide] to general information that works both for OS and K8S.
+
 ## How It Works
 
-You can configure deployment of Che on OpenShift 3.6+ with env variables that are defined in [`che-config`](https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/che-config) file. If you have downloaded only deployment script but need to configure your Che server, download config file that should be located in the same directory with the deployment script.
+Che server is configured via environment variables passed to Che deployment. You can do it when initially deploying Che (See: [Installation Single User][openshift-single-user], [Multi-User][openshift-multi-user]) or afterwards, by editing Che deployment.
 
-Once done, run the deployment script with `-c rollupdate` flag. Che deployment will be updated which automatically triggers a new deployment. You can also export envs in your environment, and the script will pick them up. It will only update Che server pod. This page focuses on some of the envs. You can either look at [Docker configuration page][docker-config] or [che.env](https://github.com/eclipse/che/blob/master/dockerfiles/init/manifests/che.env) file.
+There are multiple ways to edit Che deployment to add new or edit existing envs:
 
-We use recreate strategy. When the initial Che pod is shut down, server forcefully stops all workspace pods. Users working in those workspace will see a notification that the workspace is not running anymore. It does not impact data persistence - all workspace project files mounted through PVCs.
-
-## Update
-
-Export `CHE_IMAGE_TAG=${VERSION}` before executing `che_deploy.sh -c rollupdate`, where `${VERSION}` is a tag you want to update to. If you have your custom Che server image, you may export `CHE_IMAGE_REPO` too. You can get available tags on [Github](https://github.com/eclipse/che/tags) or [DockerHub](https://hub.docker.com/r/eclipse/che/tags/).
-
-If you want to always use the latest nightly builds, run `export IMAGE_PULL_POLICY=Always` and then re-run the deployment script. This way, OpenShift will always pull the image referenced in the deployment.
-
-Downgrades are possible, however, if database migrations have been previously performed, Che pod will fail to start.
+* `OC_EDITOR="nano" oc edit dc/che` opens Che deployment yaml in nano editor (VIM is used by default)
+* manually in OpenShift web console > deployments > Che > Environment
+* `oc set env dc/che KEY=VALUE KEY1=VALUE1` updates Che deployment with new envs or modifies values of existing ones
 
 
-## OpenShift Flavor
+## What Can Be Configured?
 
-`OPENSHIFT_FLAVOR` defaults to `minishift`. Allowed values: `ocp`, `osio`
+You can find deployment env or config map in yaml files. However, they do not reference a complete list of environment variables that Che server will respect.
 
-## Username, Password, Token
+Here is a [complete](https://github.com/eclipse/che/tree/master/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che) list of all properties that are configurable for Che server.
 
-Deployment script needs access to a running OpenShift instance either via username/password or a token:
-
-```
-CHE_INFRA_KUBERNETES_USERNAME
-CHE_INFRA_KUBERNETES_PASSWORD
-CHE_INFRA_KUBERNETES_TOKEN
-```
-If token is set, it is used by `oc` client to log in and Che server to create namespaces and objects, else default credentials are used (`developer/developer`) for MiniShift and OCP.
-
-All objects that Che server creates such as workspace pods, services, routes and PVCs are created on behalf of this user. As a result, other OpenShift users who create workspaces in a multi-user Che, have no access to these objects.
-
-This is going to be changed once [this issue](https://github.com/eclipse/che/issues/8178) is completed.
-
-## Namespace for Workspaces
-
-You can instruct Che server in what namespace(s) to create workspace pods. There are two scenarios. By default, every new workspace pod is created in a new namespace which is dictated by the following env:
-
-`CHE_INFRA_OPENSHIFT_PROJECT=""`
-
-You may have one common namespace for all workspace pods:
-
-`CHE_INFRA_OPENSHIFT_PROJECT="che-workspaces"`
-
-If workspaces are created in the same namespace with Che server, a service account may be used instead of a token or credentials.
-
-## Volumes
-
-`CHE_INFRA_KUBERNETES_PVC_STRATEGY="unique"`
-
-There are two [Persistent Volume Claim](https://docs.openshift.com/container-platform/3.7/dev_guide/persistent_volumes.html) strategies:
-
-* **unique** - each workspace volume gets own PVC.  This is the default strategy. When a workspace is deleted, associated PVC is deleted as well. However, an associated PV may not be recycled and tghus cannot be re-used for a new claim. See [k8s docs](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#recycling). If you have started your cluster with `oc cluster up`, you need to create a service account for a special recycler pod: `oc create serviceaccount pv-recycler-controller -n openshift-infra` (requires admin login)
-* **common** - there is one PVC for all workspaces. When a PVC is shared with all workspaces, there's a special service pod that starts before workspace is created to create a subpath in the PV for this particular ws. When a workspace is deleted an associated subpath is deleted as well.
-
-If a common strategy is set, it is impossible to run multiple workspaces simultaneously because of a default `ReadWriteOnce` [access mode](https://docs.openshift.com/container-platform/3.7/architecture/additional_concepts/storage.html#pv-access-modes) for workspace PVCs.
-
-OpenShift cluster admins may want to study docs on [distributed volumes](https://docs.openshift.com/container-platform/3.7/install_config/persistent_storage/index.html) and [applying resource limits](https://docs.openshift.com/container-platform/3.7/admin_guide/quota.html).
-
+You can manually convert properties into envs, just make sure to follow [instructions on properties page](properties.html#properties-and-environment-variables)
 
 ## HTTPS Mode
 
-To enable https for server and workspace routes, export the following environment variable:
+To enable https for server and workspace routes, follow instructions in [setup docs single user][openshift-single-user] and [multi-user][openshift-multi-user]. To migrate an existing Che deployment to https, do the following:
 
-`ENABLE_SSL=true`
+<span style="color:red;">IMPORTANT!</span> Self-signed certificates aren't acceptable.
 
-When deploying to OCP, HTTPS is enabled by default.
-
-## Scalability
-
-To be able to run more workspaces, [add more nodes to your OpenShift cluster](https://docs.openshift.com/container-platform/3.7/admin_guide/manage_nodes.html). If the system is out of resources, workspace start will fail with an error message returned from OpenShift (usually it's `no available nodes` kind of error).
-
-## Debug Mode
-
-If you want Che server to run in a debug mode export the following env before running the script (false by default):
-
-`CHE_DEBUG_SERVER=true`
-
-## Image Pull Policy
-
-If you want to always have the latest nightly image or use own latest tags when developing and testing Che
-
-`IMAGE_PULL_POLICY`
+1. Update Che deployment with `PROTOCOL=https, WS_PROTOCOL=wss, TLS=true`
+2. Manually edit or recreate routes for Che and Keycloak `oc apply -f https`
+3. Once done, go to `https://keycloak-${NAMESPACE}.${ROUTING_SUFFIX}`, log in to admin console.
+Default credentials are `admin:admin`.
+Go to Clients, `che-public` client and edit **Valid Redirect URIs** and **Web Origins** URLs so that they use **https** protocol.
+You do not need to do that if you initially deploy Che with https support.
 
 ## Private Docker Registries
 
@@ -120,27 +71,16 @@ Once Che server is able to create OpenShift objects on behalf of a current user,
 
 As said above, pods in OpenShift are started with an arbitrary user with a dynamic UID that is generated for each namespace individually. As a result, a user in an OpenShift pod does not have write permissions for files and directories unless root group (UID - `0`) has write permissions for those (an arbitrary user in OpenShift belongs to root group). All Che ready to go stacks are optimized to run well on OpenShift. See an example from a [base image](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/stack-base/centos/Dockerfile#L45-L48). What happens there is that a root group has write permissions for `/projects` (where workspace projects are located), a user home directory and some other dirs.
 
-## Che Server Logs
-
-# TODO OUTDATED
-When Eclipse Che gets deployed to OpenShift, a PVC `che-data-volume` is [created](https://github.com/eclipse/che/blob/master/deploy/openshift/che-openshift.yml#L7) and bound to a PV. Logs are persisted in a PV and can be retrieved in the following ways:
-
-* `oc get log dc/che`
-* `oc describe pvc che-data-claim`, find PV it is bound to, then `oc describe pv $pvName`, you will get a local path with logs directory. Be careful with permissions for that directory, since once changed, Che server wont be able to write to a file
-* in OpenShift web console, eclipse-che project, **pods > che-pod > logs**.
-
-It is also possible to configure Che master not to store logs, but produce JSON encoded logs to output instead. It may be used to collect logs by systems such as Logstash.
-To configure JSON logging instead of plain text environment variable `CHE_LOGS_APPENDERS_IMPL` should have value `json`.
-See more at [logging docs][logging].
 
 ## Multi-User: Using Own Keycloak and PSQL
 
 Out of the box Che is deployed together with Keycloak and Postgres pods, and all three services are properly configured to be able to communicate. However, it does not matter for Che what Keycloak server and Postgres DB to use, as long as those have compatible versions and meet certain requirements.
 
+Follow instructions on deploying multi-user [Che without Keycloak or Postgres or both][openshift-multi-user].
 
 ***Che Server and Keycloak***
 
-KeyCloak server URL is retrieved from the `CHE_KEYCLOAK_AUTH__SERVER__URL` environment variable. A new installation of Che will use its own Keycloak server running in a Docker container pre-configured to communicate with Che server. Realm and client are mandatory environment variables. By default Keycloak environment variables are:
+Keycloak server URL is retrieved from the `CHE_KEYCLOAK_AUTH__SERVER__URL` environment variable. A new installation of Che will use its own Keycloak server running in a Docker container pre-configured to communicate with Che server. Realm and client are mandatory environment variables. By default Keycloak environment variables are:
 
 ```
 CHE_KEYCLOAK_AUTH__SERVER__URL=http://${KC_ROUTE}:5050/auth
@@ -218,7 +158,7 @@ POSTGRES_PASSWORD=keycloak
 
 ## Development Mode
 
-After you have built your [custom assembly][assemblies], execute `build.sh` [script](https://github.com/eclipse/che/tree/master/dockerfiles/che). You can then tag it, either push to MiniShift or a public Docker registry, and reference in your Che deployment as `CHE_IMAGE_REPO` and `CHE_IMAGE_TAG`.
+After you have built your [custom assembly][assemblies], execute `build.sh` [script](https://github.com/eclipse/che/tree/master/dockerfiles/che). You can then tag it, either push to MiniShift or a public Docker registry, and reference in your Che deployment as `CHE_IMAGE_REPO` and `CHE_IMAGE_TAG`. Alternatively, you may make sure the image is available locally and change pull policy to `IfNotPresent` in che deployment.
 
 ## Che Workspace Termination Grace Period
 
