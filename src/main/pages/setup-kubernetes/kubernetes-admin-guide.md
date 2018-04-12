@@ -170,3 +170,33 @@ pods almost instantly and significantly decrease the time required for stopping 
 <span style="color:red;">**IMPORTANT!**</span>
 
 If `terminationGracePeriodSeconds` have been explicitly set in Kubernetes / OpenShift recipe it will not be overridden by the environment variable.
+
+## Delete deployments
+
+If you want to completely delete Che and its infrastructure components, deleting a project/namespace is the fastest way - all objects associated with this namespace will be deleted:
+
+`oc delete namespace che`
+
+If you need to delete particular deployments and associated objects, you can use selectors (use `oc` instead of `kubctl` for OpenShift):
+
+```bash
+# remove all Che server related objects
+kubectl delete all -l=app=che
+# remove all Keycloak related objects
+kubectl delete all -l=app=keycloak
+# remove all Postgres related objects
+kubectl delete all -l=app=postgres
+
+```
+PVCs, service accounts and role bindings should be deleted separately as `oc delete all` does not delete them:
+
+```bash
+# Delete Che server PVC, ServiceAccount and RoleBinding
+kubectl delete sa -l=app=che
+kubectl delete rolebinding -l=app=che
+
+# Delete Keycloak and Postgres PVCs
+
+kubectl delete pvc -l=app=keycloak
+kubectl delete pvc -l=app=postgres
+```

@@ -10,12 +10,13 @@ folder: setup-openshift
 
 Single User Eclipse Che can be deployed to Minishift, OCP, OSD and OSO v3.6+.
 
-## Pre-Reqs
+## Pre-Requisites
 
-* [jq](https://stedolan.github.io/jq/) utility
-* `bash`
+OpenShift oc client installed locally
 
-Scripts will use default settings for things like Che project name, http/https protocol, log level etc. See: [OpenShift config][openshift-config]
+## Admin Guide
+
+See: [Kubernetes Admin Guide][kubernetes-admin-guide]
 
 ## Deployment Diagram
 
@@ -25,7 +26,7 @@ There are a few essential Kubernetes and OpenShift objects that are created when
 
 This diagram depicts the default [PVC strategy](openshift-config.html#volumes) (PVC per workspace).
 
-## Minishift
+## Minishift Addon
 
 Before starting [install Minishift](https://docs.openshift.org/latest/minishift/getting-started/installing.html) or [update your Minishift](https://docs.openshift.org/latest/minishift/getting-started/updating.html) to ensure you're on the most up-to-date version.
 
@@ -84,7 +85,7 @@ To customize the deployment of the Che server, the following variables can be ap
 |`CHE_DOCKER_IMAGE`|The docker image to be used for che.|`eclipse/che-server:latest`|
 |`GITHUB_CLIENT_ID`|GitHub client ID to be used in Che workspaces|`changeme`|
 |`GITHUB_CLIENT_SECRET`|GitHub client secred to be used in Che workspaces|`changeme`|
-|`OPENSHIFT_TOKEN`|For Che v6 only. The token to create workspace resources (pods, services, routes, etc...)|`changeme`|
+|`OPENSHIFT_TOKEN`| Token to create workspace resources (pods, services, routes, etc...)|`changeme`|
 
 Variables can be specified by adding `--addon-env <key=value>` when the addon is being invoked (either by `minishift start` or `minishift addons apply`).
 
@@ -102,75 +103,60 @@ To uninstall the addon from the addon list:
 
 `minishift addons uninstall che`
 
-**Script-based method:**
 
-Alternatively, you may download and run deployment scripts instead of using MiniShift addons:
+## What is my routing suffix?
+
+Deployment methods below will require a valid routing suffix to be passed as a template parameter.
+
+By default `oc cluster up` command uses `nip.io` as wildcard DNS provider, so your routing suffix will be `$IP.nip.io`.
+A routing suffix can be provided when a cluster starts. If you have existing routes in your OpenShift installation, you can extract ROUTING_SUFFIX.
+A route has the following format: `${route}-${namespace}.${ROUTING_SUFFIX}`.
+On MiniShift your ROUTING_SUFFIX will be `$(minishift ip).nip.io`.
+
+Here's a few simple commands to get your routing suffix:
+
+```
+oc create service clusterip test --tcp=80:80
+oc expose service test
+oc get route test -o=jsonpath='{.spec.host}{"\n"}'
+```
+
+Everything that comes after namespace in a route URL is your routing suffix. Don't forget to delete test service and route.
+
+## MiniShift: Templates
+
+Alternatively, you may download templates and run deployment manually instead of using MiniShift addons:
 
 ```shell
-DEPLOY_ROOT_URL=https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/scripts/
-curl -fsSL ${DEPLOY_ROOT_URL}/deploy_che.sh -o get-che.sh
-curl -fsSL ${DEPLOY_ROOT_URL}/che-openshift.yml -o che-openshift.yml
-curl -fsSL ${DEPLOY_ROOT_URL}/che-config -o che-config
-bash ./get-che.sh
+# get yamls
+
+DEPLOY_ROOT_URL=https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/templates
+curl -fsSL ${DEPLOY_ROOT_URL}/che-server-template.yaml -o che-server-template.yaml
+curl -fsSL ${DEPLOY_ROOT_URL}/pvc/che-server-pvc.yaml -o che-server-pvc.yaml
+
+# create a project
+oc new-project che
+
+oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io
+oc apply -f che-server-pvc.yaml
+oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
 ```
 
 ## OpenShift Container Platform
 
-* Use environment variables to set [deployment options][openshift-config]:
-
-```shell
-export OPENSHIFT_ENDPOINT=<OCP_ENDPOINT_URL> # e.g. https://api.pro-us-east-1.openshift.com for OpenShift Online Pro
-export OPENSHIFT_TOKEN=<OCP_TOKEN> # it depends on authentication scheme for your OCP cluster - it can also be CHE_INFRA_KUBERNETES_USERNAME and CHE_INFRA_KUBERNETES_PASSWORD instead
-export OPENSHIFT_ROUTING_SUFFIX=<ROUTING-SUFFIX> # e.g. yourDomain.router.com or b9ad.pro-us-east-1.openshiftapps.com for OpenShift Online Pro East Region
-export ENABLE_SSL=false # true by default. Set to false if you have self signed certs
-export OPENSHIFT_FLAVOR=ocp
-```
-
-If you use an authentication token, make sure you read how to deal with [token invalidation issues](openshift-multi-user.html#openshift-container-platform).
-
-* Download and run deployment script:
-
-```shell
-DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/deploy_che.sh
-curl -fsSL ${DEPLOY_SCRIPT_URL} -o ./get-che.sh
-bash ./get-che.sh
-```
+Same instructions as in [MiniShift](#minishift-templates), however, you need to provide a valid [ROUTING_SUFFIX](#what-is-my-routing-suffix).
 
 ## OpenShift Dedicated
 
 Instructions to deploy Che to OSD are identical to those for [OpenShift Container Platform](#openshift-container-platform)
 
-## Openshift Online
+## OpenShift Online
 
-Use environment variables to set [deployment options][openshift-config]:
-
-```shell
-export OPENSHIFT_TOKEN=<OSO_TOKEN> # Retrieve the OSO_TOKEN from https://console.starter-us-east-2.openshift.com/console/command-line
-export OPENSHIFT_FLAVOR=osio
-export CHE_INFRA_KUBERNETES_OAUTH__TOKEN=""
-export OPENSHIFT_ROUTING_SUFFIX=6923.rh-us-east-1.openshiftapps.com
-export OPENSHIFT_FLAVOR=ocp
-export IMAGE_PULL_POLICY=Always
-export CHE_OPENSHIFT_PROJECT=eclipse-che
-export CHE_INFRA_OPENSHIFT_PROJECT=eclipse-che
-export WAIT_FOR_CHE=true
-```
-
-Download and run deployment script:
-
-```shell
-DEPLOY_SCRIPT_URL=https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/deploy_che.sh
-curl -fsSL ${DEPLOY_SCRIPT_URL} -o ./get-che.sh
-CONFIG_FILE=https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/che-config
-curl -fsSL ${DEPLOY_SCRIPT_URL} -o che-config
-echo "CHE_INFRA_KUBERNETES_PVC_QUANTITY: \"1Gi\"" >> che-config
-bash get-che.sh
-```
-Find more details about [deployment options](openshift-multi-user.html#openshift-online)
+Instructions to deploy Che to OSO Pro are identical to those for [OpenShift Container Platform](#openshift-container-platform)
 
 ## Deployment Options and Configuration
 
-See: [OpenShift Deployment Config][openshift-config]
+See: [OpenShift Deployment Config][openshift-config] and [Admin Guide][kubernetes-admin-guide]
 
 ## What's Next
 

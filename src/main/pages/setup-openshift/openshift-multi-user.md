@@ -1,6 +1,6 @@
 ---
 title: "Multi-User&#58 Deploy to OpenShift"
-keywords: openshift, installation, ocp, multi-user, multi user, keycloak, postgres, s2i, deployment
+keywords: openshift, installation, ocp, multi-user, multi user, keycloak, postgres, deployment
 tags: [installation, openshift]
 sidebar: user_sidebar
 permalink: openshift-multi-user.html
@@ -13,102 +13,107 @@ Multi-user Eclipse Che can be deployed to OpenShift Container Platform 3.6+, Ope
 
 ## Deployment diagram
 
-The deployment script creates 3 DeploymentConfigs for Che, Postgres and Keycloak, as well as PVCs, services and routes (Che and Keycloak only). Once deployments are completed, a special service pod is started to configure Keycloak with realm, client and a default user. Client is provided with the right redirectUris and webOrigins. This pod gets deployed only in case an out-of-the-box Keycloak is used.
+The deployment script creates 3 DeploymentConfigs for Che, Postgres and Keycloak, as well as PVCs, services and routes (Che and Keycloak only).
 
 {% include image.html file="diagrams/ocp_multi_user.png" %}
 
-## Using Existing Keycloak
 
-To prevent deployment script from creating a deployment for Keycloak, set the following env before running `deploy-che.sh`:
-
-`CHE_DEDICATED_KEYCLOAK=false`
-
-You will also need a few additional envs, as well as proper realm and client configuration for Keycloak. See: [OpenShift configuration](openshift-config.html#multi-user-using-own-keycloak-and-psql).
-
-If your Keycloak server has `http` endpoint and Che server is deployed with `https` route, Keycloak script won't be injected into Che page, since browsers will block loading insecure content into a secure page.
-
-## How to Get Scripts
-
+## How to Get Deployment YAMLs
 
 ```shell
 git clone https://github.com/eclipse/che
-cd che/deploy/openshift
+cd che/deploy/openshift/templates
 ```
+
+Context of all commands below is `che/deploy/openshift/templates`
+
+
+## Templates and Parameters
+
+Templates are provided with a set of predefined params which you can override with with `-p key=value`.
+You can list all params before applying a template: `oc process --parameters -f <filename>`.
+If you miss envs and parameters, you can add them to your template both as a parameters env variables.
+
+Examples below reference `oc-new app` and `oc apply` commands.
+`oc new-app` accepts parameters envs or env file which makes it possible to override default params and pass envs to chosen deployments (even if they are not in a template):
+
+```
+oc new-app -f example.yaml -p PARAM=VALUE -e ENV=VALUE --env-file=che.env
+```
+More info is available in [OpenShift documentation](https://docs.openshift.com/container-platform/3.7/dev_guide/application_lifecycle/new_app.html#specifying-a-template).
+
+Env file has a simple format: `KEY=VALUE` per line.
+
+You can also use `oc process` and then apply the resulted output `| oc apply -f -`, for example:
+
+```
+oc process -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io | oc apply -f -
+```
+In this case, however, it is not possible to pass envs, only params are available.
 
 ## Minishift
 
-Due to the size of a multi-user Eclipse Che install, Minishift is not recommended as a base for this configuration. However, if you have to use Minishift ensure you have started Minishift with `--memory=4096` or more and [update Minishift](https://docs.openshift.org/latest/minishift/getting-started/updating.html) to the latest version.
+Due to the size of a multi-user Eclipse Che install, MiniShift is not recommended as a base for this configuration. However, if you have to use Minishift ensure you have started MiniShift with `--memory=4096` or more and [update Minishift](https://docs.openshift.org/latest/minishift/getting-started/updating.html) to the latest version.
+
 
 ```bash
-export CHE_MULTIUSER=true
-export WAIT_FOR_CHE=true
-./deploy_che.sh
-```
+oc new-project che
 
+oc new-app -f multi/postgres-template.yaml
+oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io
+oc apply -f pvc/che-server-pvc.yaml
+oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io -p CHE_MULTIUSER=true
+oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
+```
 
 ## OpenShift Container Platform
 
-```bash
-export CHE_MULTIUSER=true
-export OPENSHIFT_ENDPOINT=<OCP_ENDPOINT_URL> # e.g. https://api.pro-us-east-1.openshift.com for OpenShift Online Pro
-export OPENSHIFT_TOKEN=<OCP_TOKEN> # it depends on authentication scheme for your OCP cluster - it can also be OPENSHIFT_USERNAME and OPENSHIFT_PASSWORD instead
-export OPENSHIFT_ROUTING_SUFFIX=<ROUTING-SUFFIX> # e.g. yourDomain.router.com or b9ad.pro-us-east-1.openshiftapps.com for OpenShift Online Pro East Region
-export ENABLE_SSL=false # true by default. Set to false if you have self signed certs
-export OPENSHIFT_FLAVOR=ocp
-export WAIT_FOR_CHE=true
-./deploy_che.sh
-```
-
-**IMPORTANT!**
-
-If you provide a **token** rather than username/password, Che will use this token in the deployment script to login in and create all [Che infrastructure objects](#deployment-diagram), as well as when creating workspace pods and associated objects. A token may expire due to expiration timeout policy or it can be invalidated when a new token is requested. In this case, Fabric8 client library that Che uses to communicate with OpenShift will fail to create an object with this bad token and fall back to using a service account instead. There are two options here:
-
-1. Set identical values for `CHE_OPENSHIFT_PROJECT` and `CHE_INFRA_OPENSHIFT_PROJECT`. In this case Che server pod and workspace pods will be created in the same namespace, thus, `che` service account will have permissions to create objects in this namespace's scope.
-2. If you are a cluster admin, you may grant privileges to `che` service account so that it can create objects outside its namespace:
+**HTTP Setup**
 
 ```bash
-oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:eclipse-che:che
+oc new-project che
 
-# eclipse-che is the default namespace where Che server objects are created.
-# It can be overridden by `CHE_OPENSHIFT_PROJECT`
+oc new-app -f multi/postgres-template.yaml
+oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX}
+oc apply -f pvc/che-server-pvc.yaml
+oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX} -p CHE_MULTIUSER=true
+oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
 ```
+
+More info about routing suffix [here](openshift-single-user.html#what-is-my-routing-suffix).
+
+**HTTPS Setup**
+
+<span style="color:red;">IMPORTANT!</span> Self-signed certificates aren't acceptable.
+
+```bash
+oc new-project che
+
+oc new-app -f multi/postgres-template.yaml
+oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX} -p PROTOCOL=https
+oc apply -f pvc/che-server-pvc.yaml
+oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX} \
+	-p CHE_MULTIUSER=true \
+ 	-p PROTOCOL=https \
+	-p WS_PROTOCOL=wss \
+	-p TLS=true
+oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
+oc apply -f https
+```
+
+More info about routing suffix [here](openshift-single-user.html#what-is-my-routing-suffix).
 
 ## OpenShift Dedicated
 
-Instructions to deploy Che to OSD are identical to those for [OpenShift Container Platform](#openshift-container-platform)
+Instructions to deploy Che to OSD are identical to those for [OpenShift Container Platform](openshift-container-platform).
 
 ## OpenShift Online Pro
 
-Below is a recommended way to deploy Eclipse Che multi-user on OpenShift Online Pro (OpenShift Online Starter does not have sufficient resources to run multi-user Che):
+Instructions to deploy Che to OSO PRO are identical to those for [OpenShift Container Platform](openshift-container-platform).
 
-```bash
-export CHE_MULTIUSER=true
-export OPENSHIFT_ENDPOINT=https://api.rh-us-east-1.openshift.com
-export OPENSHIFT_TOKEN=bLAa-4dWUaixiUieOeVdynAB1QDmaJzrazepHEF431c
-export CHE_INFRA_KUBERNETES_OAUTH__TOKEN=""
-export OPENSHIFT_ROUTING_SUFFIX=6923.rh-us-east-1.openshiftapps.com
-export OPENSHIFT_FLAVOR=ocp
-export IMAGE_PULL_POLICY=Always
-export CHE_OPENSHIFT_PROJECT=eclipse-che
-export CHE_INFRA_OPENSHIFT_PROJECT=eclipse-che
-export WAIT_FOR_CHE=true
+## Admin Guide
 
-cd che/deploy/openshift
-
-echo "CHE_INFRA_KUBERNETES_PVC_QUANTITY: \"1Gi\"" >> che-config
-
-./deploy_che.sh
-```
-
-A few gotchas:
-
-* `CHE_OPENSHIFT_PROJECT` may be already used by another namespace. In this case, set it to have some unique value
-* `CHE_INFRA_OPENSHIFT_PROJECT` should be the same as `CHE_OPENSHIFT_PROJECT` which means all workspace objects will be created in the same s=namespace with Che server.
-This is a prerequisite to use service account rather than a token that may get expired or invalidated
-* You need to obtain and export `OPENSHIFT_TOKEN`. Deployment script will use it to login to your OSO account and deploy Che
-* `CHE_INFRA_KUBERNETES_OAUTH__TOKEN` should have an empty value. This way, `che` service account will be used to create workspace objects
-* `CHE_INFRA_KUBERNETES_PVC_QUANTITY`: use reasonable minimal values for your OSO account in order not to exceed quotas
-
+See: Kubernetes [Admin Guide][kubernetes-admin-guide]
 
 ## What's Next?
 
