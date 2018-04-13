@@ -6,16 +6,16 @@ sidebar: user_sidebar
 permalink: kubernetes-single-user.html
 folder: setup-kubernetes
 ---
-## Supported Kuberentes installations Flavors and Versions
+## Supported Kuberentes Flavors and Versions
 
-Tested only on minikube v0.25 with vm providers Virtualbox and kvm2.
+Tested only on MiniKube v0.25 with vm providers VirtualBox and kvm2.
 
 ## Pre-Reqs
 
 * `bash`
 * `Kubernetes` installation with:
   * enabled DNS discovery;
-  * configured ingress controller. Note: you can start it on minikube with `minikube addons enable ingress`.
+  * configured ingress controller. Note: you can start it on MiniKube with `minikube addons enable ingress`.
 
 ## MiniKube
 

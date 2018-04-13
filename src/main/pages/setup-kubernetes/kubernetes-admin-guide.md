@@ -9,6 +9,10 @@ folder: setup-kubernetes
 
 {% include links.html %}
 
+## Examples
+
+All examples use `kubectl` command. OpenShift admins should use `oc`
+
 ## RAM
 
 **Single User**
