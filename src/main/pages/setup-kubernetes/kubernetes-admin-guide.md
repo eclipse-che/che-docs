@@ -132,7 +132,9 @@ You can get the list of available versions at [Che GitHub page](https://github.c
 
 Since `nightly` is the default tag used in Che deployment, and image pull policy is set to Always, triggering a new deployment, will pull a newer image, if available.
 
-You can use **IfNotPresent** pull policy (default is Always). Edit Che deployment to apply changes.
+You can use **IfNotPresent** pull policy (default is Always). Manually edit Che deployment after deployment or add `--set cheImagePullPolicy=IfNotPresent`.
+
+OpenShift admins can pass `-p PULL_POLICY=IfNotPresent` to [Che deployment][openshift-multi-user] or manually edit `dc/che` after deployment.
 
 ## Scalability
 
