@@ -23,7 +23,7 @@ Chedir is provided as a Docker container which you can run instead of using the 
 ```shell  
 # Mac / Linux
 docker run -v /var/run/docker.sock:/var/run/docker.sock \
-           -v "$PWD":"$PWD" --rm eclipse/che-file \
+           -v "$PWD":"$PWD" --rm eclipse/che \ # should this be che-dir? che-file doesn't exist
            $PWD <init|up>
 
 # Windows
@@ -38,7 +38,8 @@ You can build Chedir Docker Container by using the following commands:
 ```shell  
 git clone http://github.com/eclipse/che-dockerfiles
 cd che-dockerfiles
-./lib/typescript/compile.sh && ./che-dir/build.sh\
+# ./lib/typescript/compile.sh # what does this do, and where is the script? it's not in the repo...
+./che-dir/build.sh
 ```
 
 ## Uninstallation  
