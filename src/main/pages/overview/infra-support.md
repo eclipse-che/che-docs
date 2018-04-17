@@ -18,13 +18,13 @@ Each of the infrastructures is providing its own specificities which are detaile
 ### Comparison Table
 
 |  Feature                 | **Docker**   | **OpenShift**                                                                              | **Kubernetes** |
-| root access              | yes          | no (See: [Configuration](openshift-config.html#enable-ssh-and-sudo))                       | yes |
+| root access              | yes          | yes (See: [Configuration](openshift-config.html#enable-ssh-and-sudo))                       | yes |
 | https                    | no           | yes (See: [Configuration](openshift-config.html#https-mode))                               | yes |
 | scalability              | no           | yes (See: [Configuration](openshift-config.html#scalability))                              | yes |
-| priviliged containers    | yes          | no (configurable in [OpenShift](https://docs.openshift.com/container-platform/3.6/admin_guide/manage_scc.html#grant-access-to-the-privileged-scc))         | yes |
+| priviliged containers    | yes          | yes (configurable in [OpenShift](https://docs.openshift.com/container-platform/3.6/admin_guide/manage_scc.html#grant-access-to-the-privileged-scc))         | yes |
 | health checks            | no           | yes                                                                                        | yes |
 | persistent preview URLs  | no           | yes                                                                                        | yes |
-| installers               | yes          | some installers may require [sudo access](openshift-config.html#enable-ssh-and-sudo)       | yes |
+| installers               | yes          | yes (some installers may require [sudo access](openshift-config.html#enable-ssh-and-sudo))       | yes |
 | file system permissions  | not limited  | limited to directories owned by root [group](openshift-config.html#filesystem-permissions) | not limited |
 
 

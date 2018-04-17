@@ -4,7 +4,7 @@ keywords: kubernetes, configuration, admin guide
 tags: [installation, kubernetes]
 sidebar: user_sidebar
 permalink: kubernetes-admin-guide.html
-folder: setup-kubernetes
+folder: setup-openshift
 ---
 
 {% include links.html %}
@@ -17,7 +17,7 @@ All examples use `kubectl` command. OpenShift admins should use `oc`
 
 **Single User**
 
-Che server pod consumes up to 1GB RAM. The initial request is 256MB, and server pod rarely consumes more than 800MB. A typical workspace will require 2GB. So, **<span style="color:red;">3GB</span>** is a bare minimum to try single user Che on OpenShift/Kubernetes.
+Che server pod consumes up to 1GB RAM. The initial request is 256MB, and server pod rarely consumes more than 800MB. A typical workspace will require 2GB. So, **<span style="color:red;">3GB</span>** is a minimum to try single user Che on OpenShift/Kubernetes.
 
 **Multi-User**
 
@@ -44,7 +44,7 @@ All workspace objects for all Eclipse Che users are **created on behalf of one O
 
 * If there's `CHE_INFRA_KUBERNETES_OAUTH__TOKEN` fabric8 client will use it. If both are available, token has a priority over username/pass.
 
-* If none are available **che service account** is used to create workspace objects. This is default behavior. Since che SA cannot create objects outside a namespace it's bound to, all workspace objects are created in Che namespace. Admins can grant `che` [service account super user permissions](https://kubernetes.io/docs/admin/authorization/rbac/#service-account-permissions), and this way it will be possible to use this SA to create objects outside Che namespace. OpenShift cluster admins can do it this way using oc CLI:
+* If none are available **che service account** is used to create workspace objects. This is default behavior. Since che service account cannot create objects outside a namespace it's bound to, all workspace objects are created in Che namespace. Admins can grant `che` [service account super user permissions](https://kubernetes.io/docs/admin/authorization/rbac/#service-account-permissions), and this way it will be possible to use this SA to create objects outside Che namespace. OpenShift cluster admins can do it this way using oc CLI:
 
 ```bash
 oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:eclipse-che:che
@@ -77,7 +77,7 @@ As said above, che workspace PVC access type and claim size is configurable, and
 |**common**|One PVC for all workspaces, sub-paths pre-created| easy to manage and control storage. no need to recycle PVs when pod with pvc is deleted | ws pods should all be in one namespace
 |**unique**|PVC per workspace| Storage isolation | An  undefined number of PVs is required |
 
-## Common PVC strategy
+## Common PVC Strategy
 
 **How it Works**
 
