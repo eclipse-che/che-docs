@@ -11,6 +11,9 @@ folder: setup-kubernetes
 
 - A Kubernetes cluster with at least 4GB RAM and RBAC:
 
+* for MiniKube 0.26.0 and above `minikube start --cpus 2 --memory 4096 --extra-config=apiserver.authorization-mode=RBAC`
+* for MiniKube 0.25.2 and lower `minikube start --cpus 2 --memory 4096 --extra-config=apiserver.Authorization.Mode=RBAC`
+
 `kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default`
 - Install the [Helm](https://github.com/kubernetes/helm/blob/master/docs/install.md) CLI
 
