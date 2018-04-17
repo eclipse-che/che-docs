@@ -11,21 +11,21 @@ folder: overview
 Eclipse Che runs on different kind of infrastructure and container engine:
 - Docker
 - OpenShift: **[OpenShift Container Platform (OCP)](https://www.openshift.com/container-platform/index.html)**, **[OpenShift Online (OSO)](https://www.openshift.com/features/index.html)**, **[OpenShift Dedicated (OCD)](https://access.redhat.com/products/openshift-dedicated-red-hat/)**, **[MiniShift](https://www.openshift.org/minishift/)**
-- Kubernetes (soon)
+- Kubernetes
 
 Each of the infrastructures is providing its own specificities which are detailed in this page.
 
 ### Comparison Table
 
-|  Feature                 | **Docker**   | **OpenShift**                                                                              |
-| root access              | yes          | no (See: [Configuration](openshift-config.html#enable-ssh-and-sudo))                       |
-| https                    | no           | yes (See: [Configuration](openshift-config.html#https-mode))                               |
-| scalability              | no           | yes (See: [Configuration](openshift-config.html#scalability))                              |
-| priviliged containers    | yes          | no (configurable in [OpenShift](https://docs.openshift.com/container-platform/3.6/admin_guide/manage_scc.html#grant-access-to-the-privileged-scc))         |
-| health checks            | no           | yes                                                                                        |
-| persistent preview URLs  | no           | yes                                                                                        |
-| installers               | yes          | some installers may require [sudo access](openshift-config.html#enable-ssh-and-sudo)       |
-| file system permissions  | not limited  | limited to directories owned by root [group](openshift-config.html#filesystem-permissions) |
+|  Feature                 | **Docker**   | **OpenShift**                                                                              | **Kubernetes** |
+| root access              | yes          | yes (See: [Configuration](openshift-config.html#enable-ssh-and-sudo))                       | yes |
+| https                    | no           | yes (See: [Configuration](openshift-config.html#https-mode))                               | yes |
+| scalability              | no           | yes (See: [Configuration](openshift-config.html#scalability))                              | yes |
+| priviliged containers    | yes          | yes (configurable in [OpenShift](https://docs.openshift.com/container-platform/3.6/admin_guide/manage_scc.html#grant-access-to-the-privileged-scc))         | yes |
+| health checks            | no           | yes                                                                                        | yes |
+| persistent preview URLs  | no           | yes                                                                                        | yes |
+| installers               | yes          | yes (some installers may require [sudo access](openshift-config.html#enable-ssh-and-sudo))       | yes |
+| file system permissions  | not limited  | limited to directories owned by root [group](openshift-config.html#filesystem-permissions) | not limited |
 
 
 ## Running Che on Docker

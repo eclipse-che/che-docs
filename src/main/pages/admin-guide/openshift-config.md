@@ -9,7 +9,7 @@ folder: setup-openshift
 
 ## Admin Guide
 
-See: [OpenShift Admin Guide][openshift-admin-guide] to general information that works both for OS and K8S.
+This page describes OpenShift specific configuration. Refer to [OpenShift Admin Guide][openshift-admin-guide] to general information that works both for OS and K8S.
 
 ## How It Works
 
@@ -70,6 +70,7 @@ Once Che server is able to create OpenShift objects on behalf of a current user,
 ## Filesystem Permissions
 
 As said above, pods in OpenShift are started with an arbitrary user with a dynamic UID that is generated for each namespace individually. As a result, a user in an OpenShift pod does not have write permissions for files and directories unless root group (UID - `0`) has write permissions for those (an arbitrary user in OpenShift belongs to root group). All Che ready to go stacks are optimized to run well on OpenShift. See an example from a [base image](https://github.com/eclipse/che-dockerfiles/blob/master/recipes/stack-base/centos/Dockerfile#L45-L48). What happens there is that a root group has write permissions for `/projects` (where workspace projects are located), a user home directory and some other dirs.
+
 
 ## Multi-User: Using Own Keycloak and PSQL
 
