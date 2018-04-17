@@ -81,4 +81,11 @@ pods almost instantly and significantly decrease the time required for stopping 
 
 If `terminationGracePeriodSeconds` have been explicitly set in Kubernetes / OpenShift recipe it will not be overridden by the environment variable.
 
+## Che Workspace Unrecoverable Events
+
+By default, if one of the following Kubernetes / OpenShift events (`Failed Mount` / `Failed Scheduling` / `Failed`) occurs during a startup, workspace will be immediately terminated before timeout.
+For changing or disabling (via a blank value) default unrecoverable events the following environment variable should be used:
+
+`CHE_INFRA_KUBERNETES_WORKSPACE_UNRECOVERABLE_EVENTS`
+
 {% include links.html %}
