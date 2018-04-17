@@ -107,7 +107,7 @@ To uninstall the addon from the addon list:
 Alternatively, you may download and run deployment scripts instead of using MiniShift addons:
 
 ```shell
-DEPLOY_ROOT_URL=https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/scripts/
+DEPLOY_ROOT_URL=https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/
 curl -fsSL ${DEPLOY_ROOT_URL}/deploy_che.sh -o get-che.sh
 curl -fsSL ${DEPLOY_ROOT_URL}/che-openshift.yml -o che-openshift.yml
 curl -fsSL ${DEPLOY_ROOT_URL}/che-config -o che-config
