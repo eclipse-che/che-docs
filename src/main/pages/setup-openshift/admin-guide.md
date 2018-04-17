@@ -101,7 +101,7 @@ When a common strategy is used, and a workspace PVC access mode is RWO, only one
 
 Another restriction is that only pods in the same namespace can use the same PVC, thus, `CHE_INFRA_KUBERNETES_PROJECT` env variable should not be empty - it should be either Che server namespace (in this case objects can be created with che SA) or a dedicated namespace (token or username/password need to be used).
 
-## Unique PVC strategy
+## Unique PVC Strategy
 
 It is a default PVC strategy, i.e. `CHE_INFRA_KUBERNETES_PVC_STRATEGY` is set to `unique`. Every workspace gets its own PVC, which means a workspace PVC is created when a workspace starts for the first time. Workspace PVC is deleted when a corresponding workspace is deleted.
 
