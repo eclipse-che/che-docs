@@ -53,7 +53,7 @@ If Che is running in _Single Port_ and _Multi-User Mode_, a HTTPS certificate ca
 * enable _Single Port_ and _Multi-User Mode_ as described above
 * enable an IP-less wildard domain as above
 * copy `che.key` (private key) and `che.crt` (full chain) certificates for your `*.domain.tld` to `instance/config/traefik/` within your Che installation
-* set the following configuration either as ENV variables or in `che.env`: `CHE_HTTPS_CERTIFICATE_PROVIDER=file`  
+* set the following configuration either as ENV variable or in `che.env`: `CHE_HTTPS_CERTIFICATE_PROVIDER=file`  
 
 A complete configuration therefore needs to look like this:  
 ```shell
