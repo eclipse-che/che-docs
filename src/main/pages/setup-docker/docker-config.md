@@ -47,6 +47,26 @@ In a single port mode, Che builds URLs of workspace services using the following
 
 Make sure `webOrigins` and `redirectUris` in Keycloak client settings (`che-public` client) reference your `CHE_DOCKER_IP_EXTERNAL` value, i.e IP that external users will use to log in. Keycloak admin console in multi user Che is available at `http://keycloak.$IP.$wildcardDNSProvider:$chePort/auth/` where `$IP` is either your `docker0` IP or `CHE_DOCKER_IP_EXTERNAL` value.
 
+**HTTPS support**
+
+If Che is running in _Single Port_ and _Multi-User Mode_, a HTTPS certificate can be provided as a set of `che.key` and `che.crt` files. To enable HTTPS support, the following steps need to be taken:
+* enable _Single Port_ and _Multi-User Mode_ as described above
+* enable an IP-less wildard domain as above
+* copy `che.key` (private key) and `che.crt` (full chain) certificates for your `*.domain.tld` to `instance/config/traefik/` within your Che installation
+* set the following configuration either as ENV variables or in `che.env`: `CHE_HTTPS_CERTIFICATE_PROVIDER=file`  
+
+A complete configuration therefore needs to look like this:  
+```shell
+CHE_SINGLE_PORT=true
+CHE_SINGLEPORT_WILDCARD__DOMAIN_IPLESS=true
+CHE_SINGLEPORT_WILDCARD__DOMAIN_HOST=domain.tld
+CHE_HOST=ide.domain.tld
+CHE_HOST_PROTOCOL=https
+CHE_HTTPS_CERTIFICATE_PROVIDER=file
+CHE_MULTIUSER=true
+CHE_PORT=443
+```
+
 ## Logs and User Data
 
 When Che initializes itself, it stores logs, user data, database data, and instance-specific configuration in the folder mounted to `:/data/instance` or an `instance` subfolder of what you mounted to `:/data`.  
