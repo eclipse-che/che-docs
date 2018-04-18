@@ -19,9 +19,13 @@ wget -qO- https://get.docker.com/ | sh
 
 <span style="color:red; margin-left:41px;">**IMPORTANT!**</span>
 
-Mac-OS users need to create IP alias: `sudo ifconfig lo0 alias 192.168.65.2`.
+Mac-OS users need to create IP alias: `sudo ifconfig lo0 alias $IP` where `$IP` is IP returned by the following command:
 
-Note that IP `192.168.65.2` may differ on some Docker for Mac versions. You can get this IP in your Docer fro Mac app **Preferences > Advanced > Docker subnet**.
+```
+docker run --rm --net host eclipse/che-ip:nightly
+```
+
+You can also get this IP in your Docker for Mac app **Preferences > Advanced > Docker subnet**.
 
 * Min 1 CPU, 2GM RAM, 3GB disc space
 
