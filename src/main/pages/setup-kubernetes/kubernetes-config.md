@@ -31,7 +31,7 @@ Find more information on most critical configuration options at [Kubernetes admi
 
 ## Che Workspace Unrecoverable Events
 
-By default, if one of the following Kubernetes / OpenShift events (`Failed Mount` / `Failed Scheduling` / `Failed`) occurs during a startup, workspace will be immediately terminated before timeout.
+By default, if one of the following Kubernetes / OpenShift events (`Failed Mount` / `Failed Scheduling` / `Failed to pull image`) occurs during a startup, workspace will be immediately terminated before timeout.
 For changing or disabling (via a blank value) default unrecoverable events the following environment variable should be used:
 
 `CHE_INFRA_KUBERNETES_WORKSPACE_UNRECOVERABLE_EVENTS`
