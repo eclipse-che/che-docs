@@ -158,16 +158,16 @@ See more at [logging docs][logging].
 Workspace logs are stored in an PV bound to `che-claim-workspace` PVC. Workspace logs include logs from workspace agent, [boostrapper][boostrapper] and other agents if applicable.
 
 ## JGroups Configuration
-Currently, JGroups configuration XML is located in `WEB_INF/classes/jgroups/che-tcp.xml` file of api war.
-To add possibility to make some tweaks, it is planned to find wat to externalize it.
+Currently, JGroups configuration XML is located in `/WEB_INF/classes/jgroups/che-tcp.xml` file of api war.
+To add possibility to make some tweaks, it is planned to find way to externalize it.
 
 ## Che Master Termination and Suspend
 
 Some update strategies (like rolling update) may require master to be put in the state when no more workspaces are starting or stopping, and no new startups allowed.
 This mode is introduced for the hot-update feature and called suspend. Unlike the termination, suspend does not imply stop any of the running workspaces.
-Please note that suspend is possible only for the infrastructures that support workspaces recovery. For those are didn't support, automatic fallback to the full
+Please note that suspend is possible only for the infrastructures that support workspaces recovery. For those are didn't, automatic fallback to the full
 termination will be performed.
-Respectively, `/api/system/stop`  API contract changed slightly - now it tries to do the suspend by default. Full termination with workspaces stop
+Therefore, `/api/system/stop`  API contract changed slightly - now it tries to do the suspend by default. Full termination with workspaces stop
 can be requested with `shutdown=true` parameter.
 
 ## Che Workspace Termination Grace Period
@@ -180,6 +180,13 @@ pods almost instantly and significantly decrease the time required for stopping 
 <span style="color:red;">**IMPORTANT!**</span>
 
 If `terminationGracePeriodSeconds` have been explicitly set in Kubernetes / OpenShift recipe it will not be overridden by the environment variable.
+
+##  Hot Update
+The hot update mode implies Rolling update type, which can be set using `export UPDATE_STRATEGY=Rolling` property.
+The new version deploy flow is the following: at first, new deployment being started, when it's done and have passed availability checks,
+old version receives the SIGTERM signal and starts to suspend and waith all starting/stoping ws processes to finish.
+Both old and new versions sharing their JPA cache & workspace states via JGroups until the old deployment shutdowns completely.
+Workspaces which were running on old master, restores theirs state on new one via recovery mechanism.
 
 ## Delete deployments
 
