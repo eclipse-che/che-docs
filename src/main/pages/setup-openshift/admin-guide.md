@@ -157,6 +157,19 @@ See more at [logging docs][logging].
 
 Workspace logs are stored in an PV bound to `che-claim-workspace` PVC. Workspace logs include logs from workspace agent, [boostrapper][boostrapper] and other agents if applicable.
 
+## JGroups Configuration
+Currently, JGroups configuration XML is located in `WEB_INF/classes/jgroups/che-tcp.xml` file of api war.
+To add possibility to make some tweaks, it is planned to find wat to externalize it.
+
+## Che Master Termination and Suspend
+
+Some update strategies (like rolling update) may require master to be put in the state when no more workspaces are starting or stopping, and no new startups allowed.
+This mode is introduced for the hot-update feature and called suspend. Unlike the termination, suspend does not imply stop any of the running workspaces.
+Please note that suspend is possible only for the infrastructures that support workspaces recovery. For those are didn't support, automatic fallback to the full
+termination will be performed.
+Respectively, `/api/system/stop`  API contract changed slightly - now it tries to do the suspend by default. Full termination with workspaces stop
+can be requested with `shutdown=true` parameter.
+
 ## Che Workspace Termination Grace Period
 
 Grace termination period of Kubernetes / OpenShift workspace's pods defaults '0', which allows to terminate
