@@ -157,10 +157,6 @@ See more at [logging docs][logging].
 
 Workspace logs are stored in an PV bound to `che-claim-workspace` PVC. Workspace logs include logs from workspace agent, [boostrapper][boostrapper] and other agents if applicable.
 
-## JGroups Configuration
-Currently, JGroups configuration XML is located in `/WEB_INF/classes/jgroups/che-tcp.xml` file of api war.
-To add possibility to make some tweaks, it is planned to find way to externalize it.
-
 ## Che Master Termination and Suspend
 
 Update process may require master to be put in the state when no more workspaces are starting or stopping, and no new startups allowed.
