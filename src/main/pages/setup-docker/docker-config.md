@@ -184,6 +184,12 @@ The browser client initiates communication with the Che server by connecting to 
 
 When a user creates a workspace, the Che server connects to the Docker daemon at `docker-ip` and uses the daemon to launch a new set of containers that will power the workspace. These workspace containers will have a Docker-configured IP address, `workspace-container-ip`. The `workspace-container-ip` isn't usually reachable by your browser host, `docker-ip` will be used to establish the connections between the browser and workspace containers.
 
+Che server will provide workspace containers with following environment variables:
+
+- `CHE_API_INTERNAL`, points to the internal API endpoint, that is accessible across other machines within the workspace. Value is taken from Che server `CHE_INFRA_DOCKER_MASTER__API__ENDPOINT` variable, which can be initialized either by CLI or default value from `che.properties`.
+- `CHE_API_EXTERNAL`, points to the external API endpoint, that is used by browser clients. Value is taken from Che server `CHE_API` variable. It's default value is defined in `che.properties`.
+- `CHE_API` will point to the same value as `CHE_API_INTERNAL` for backward compatibility (will be removed in the future).
+
 Che goes through a progression algorithm to establish the protocol, IP address and port to establish communications when it is booting or starting a workspace. You can override certain parameters in Che's configuration to overcome issues with the Docker daemon, workspaces, or browsers being on different networks.
 
 ```
