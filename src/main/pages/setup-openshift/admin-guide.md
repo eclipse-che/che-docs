@@ -163,7 +163,7 @@ To add possibility to make some tweaks, it is planned to find way to externalize
 
 ## Che Master Termination and Suspend
 
-Some update strategies (like rolling update) may require master to be put in the state when no more workspaces are starting or stopping, and no new startups allowed.
+Update process may require master to be put in the state when no more workspaces are starting or stopping, and no new startups allowed.
 This mode is introduced for the hot-update feature and called suspend. Unlike the termination, suspend does not imply stop any of the running workspaces.
 Please note that suspend is possible only for the infrastructures that support workspaces recovery. For those are didn't, automatic fallback to the full
 termination will be performed.
@@ -181,12 +181,17 @@ pods almost instantly and significantly decrease the time required for stopping 
 
 If `terminationGracePeriodSeconds` have been explicitly set in Kubernetes / OpenShift recipe it will not be overridden by the environment variable.
 
-##  Hot Update
-The hot update mode implies Rolling update type, which can be set using `export UPDATE_STRATEGY=Rolling` property.
-The new version deploy flow is the following: at first, new deployment being started, when it's done and have passed availability checks,
-old version receives the SIGTERM signal and starts to suspend and waith all starting/stoping ws processes to finish.
-Both old and new versions sharing their JPA cache & workspace states via JGroups until the old deployment shutdowns completely.
-Workspaces which were running on old master, restores theirs state on new one via recovery mechanism.
+##  Recreate Update
+To perform Recreate type update without stopping active workspaces:
+
+- Make sure deployment update strategy set to Recreate
+- Make POST request to the /api/system/stop api to start WS master suspend
+(means that all new attempts to start workspaces will be refused, and all current starts/stops will be finished).
+Note that this method requires system admin credentials.
+
+- Make periodical GET requests to /api/system/state api, until it returns READY_TO_SHUTDOWN state.
+Also, it may be visually controlled by line "System is ready to shutdown" in the server logs
+- Perform new deploy.
 
 ## Delete deployments
 
