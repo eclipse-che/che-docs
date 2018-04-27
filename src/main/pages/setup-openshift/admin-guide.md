@@ -180,6 +180,7 @@ If `terminationGracePeriodSeconds` have been explicitly set in Kubernetes / Open
 ##  Recreate Update
 To perform Recreate type update without stopping active workspaces:
 
+- Make sure there is full compatibility between new master and old ws agent versions (API etc);
 - Make sure deployment update strategy set to Recreate
 - Make POST request to the /api/system/stop api to start WS master suspend
 (means that all new attempts to start workspaces will be refused, and all current starts/stops will be finished).
