@@ -157,13 +157,16 @@ See more at [logging docs][logging].
 
 Workspace logs are stored in an PV bound to `che-claim-workspace` PVC. Workspace logs include logs from workspace agent, [boostrapper][boostrapper] and other agents if applicable.
 
-## Che Master Termination and Suspend
+## Che Master States
 
-Update process may require master to be put in the state when no more workspaces are starting or stopping, and no new startups allowed.
-This mode is introduced for the hot-update feature and called suspend. Unlike the termination, suspend does not imply stop any of the running workspaces.
-Please note that suspend is possible only for the infrastructures that support workspaces recovery. For those are didn't, automatic fallback to the full
-termination will be performed.
-Therefore, `/api/system/stop`  API contract changed slightly - now it tries to do the suspend by default. Full termination with workspaces stop
+There is three possible states of the master - `RUNNING`, `PREPARING_TO_SHUTDOWN` and `READY_TO_SHUTDOWN`.
+`PREPARING_TO_SHUTDOWN` state may imply two different behaviors:
+ - When no new workspace startups allowed, and all running workspaces are forcibly stopped;
+ - When no new workspace startups allowed, any workspaces that are currently starting or stopping is allowed to finish that process,
+ and running workspaces doesn't stopped.
+This option is possible only for the infrastructures that support workspaces recovery. For those are didn't, automatic fallback to the shutdown with
+full workspaces stopping will be performed.
+Therefore, `/api/system/stop`  API contract changed slightly - now it tries to do the second behavior by default. Full shutdown with workspaces stop
 can be requested with `shutdown=true` parameter.
 
 ## Che Workspace Termination Grace Period
