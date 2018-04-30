@@ -9,7 +9,11 @@ folder: setup-docker
 
 ## Pre-Requisites
 
-* Docker 17+ recommended, ideally the [latest Docker version](http://docs.docker.com/engine/installation/). Even though Che may not have any issues with Docker 1.13+, all tests use Docker 17+.
+* Docker 17 recommended, ideally the [latest](https://www.docker.com/community-edition#/download) supported Docker version, [17.09](https://docs.docker.com/v17.09/). 
+
+Even though Che may not have any issues with newer versions or v1.13, all tests use Docker 17. 
+
+See also [Docker Install Guide](http://docs.docker.com/engine/installation/).
 
 ```bash
 wget -qO- https://get.docker.com/ | sh
