@@ -157,6 +157,19 @@ See more at [logging docs][logging].
 
 Workspace logs are stored in an PV bound to `che-claim-workspace` PVC. Workspace logs include logs from workspace agent, [boostrapper][boostrapper] and other agents if applicable.
 
+## Che Master States
+
+There is three possible states of the master - `RUNNING`, `PREPARING_TO_SHUTDOWN` and `READY_TO_SHUTDOWN`.
+`PREPARING_TO_SHUTDOWN` state may imply two different behaviors:
+ - When no new workspace startups allowed, and all running workspaces are forcibly stopped;
+ - When no new workspace startups allowed, any workspaces that are currently starting or stopping is allowed to finish that process,
+ and running workspaces doesn't stopped.
+This option is possible only for the infrastructures that support workspaces recovery. For those are didn't, automatic fallback to the shutdown with
+full workspaces stopping will be performed.
+Therefore, `/api/system/stop`  API contract changed slightly - now it tries to do the second behavior by default. Full shutdown with workspaces stop
+can be requested with `shutdown=true` parameter.
+When preparation process in finished, `READY_TO_SHUTDOWN` state will be set which allows to stop current Che master instance.
+
 ## Che Workspace Termination Grace Period
 
 Grace termination period of Kubernetes / OpenShift workspace's pods defaults '0', which allows to terminate
@@ -167,6 +180,19 @@ pods almost instantly and significantly decrease the time required for stopping 
 <span style="color:red;">**IMPORTANT!**</span>
 
 If `terminationGracePeriodSeconds` have been explicitly set in Kubernetes / OpenShift recipe it will not be overridden by the environment variable.
+
+##  Recreate Update
+To perform Recreate type update without stopping active workspaces:
+
+- Make sure there is full compatibility between new master and old ws agent versions (API etc);
+- Make sure deployment update strategy set to Recreate
+- Make POST request to the /api/system/stop api to start WS master suspend
+(means that all new attempts to start workspaces will be refused, and all current starts/stops will be finished).
+Note that this method requires system admin credentials.
+
+- Make periodical GET requests to /api/system/state api, until it returns READY_TO_SHUTDOWN state.
+Also, it may be visually controlled by line "System is ready to shutdown" in the server logs
+- Perform new deploy.
 
 ## Delete deployments
 
