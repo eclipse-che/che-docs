@@ -168,7 +168,7 @@ This option is possible only for the infrastructures that support workspaces rec
 full workspaces stopping will be performed.
 Therefore, `/api/system/stop`  API contract changed slightly - now it tries to do the second behavior by default. Full shutdown with workspaces stop
 can be requested with `shutdown=true` parameter.
-When preparation process in finished, `READY_TO_SHUTDOWN` state will be set.
+When preparation process in finished, `READY_TO_SHUTDOWN` state will be set which allows to stop current Che master instance.
 
 ## Che Workspace Termination Grace Period
 
