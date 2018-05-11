@@ -22,7 +22,7 @@ To enable this feature, the administrator should:
 - configure Che to use this Keycloak identity provider in order to retrieve the Openshift tokens of Che users.
 
 Once this is done, every interactive action done by a Che user on workspaces, such as start or stop, will create OpenShift resources under his personal OpenShift account.
-And the first time the user will try to do it, he will be asked to link his Keycloak account with his personal Openshift account,
+And the first time the user will try to do it, he will be asked to link his Keycloak account with his personal Openshift account:
 which he can do by simply following the provided link in the notification message.
 
 But for non-interactive workspace actions, such as workspace stop on idling or Che server shutdown, the account used for operations on OpenShift resources will 
@@ -33,7 +33,35 @@ and [this one for OCP](openshift-multi-user#creating-workspace-resources-in-pers
 
 #### OpenShift identity provider registration
 
-TBD
+The Keycloak Openshift identity provider is described in [this documentation](https://www.keycloak.org/docs/3.3/server_admin/topics/identity-broker/social/openshift.html).
+
+1. In the [Keycloak administration console](user-management#auth-and-user-management), when adding the OpenShift identity provider, you should use the following settings:
+
+{% include image.html file="keycloak/openshift_identity_provider.png" %}
+
+`Base URL` is the URL of the Openshift console
+
+2. Next thing is to add a default read-token role:
+
+{% include image.html file="git/kc_roles.png" %}
+
+3. Then this identity provider has to be declared as an OAuth client inside Openshift. This can be done with the corresponding command:
+
+```bash
+oc create -f <(echo '
+apiVersion: v1
+kind: OAuthClient
+metadata:
+  name: kc-client
+secret: "<value set for the 'Client Secret' field in step 1>"
+redirectURIs:
+  - "<value provided in the 'Redirect URI' field in step 1>"
+grantMethod: prompt
+')
+```
+
+__Note__: Adding a OAuth client requires cluster-wide admin rights. 
+ 
 
 #### Che configuration
 
