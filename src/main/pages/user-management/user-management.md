@@ -45,6 +45,10 @@ Next thing is to add a default read-token role:
 
 {% include image.html file="git/kc_roles.png" %}
 
+This is default `delegated` OAuth service mode for Multi-User Che, which is configured with property `che.oauth.service_mode`.
+
+Setting it to `embedded` will make it use Che's OAuth Authenticator, for which [Instructions for Single User mode](version-control.html#github-oauth) will apply.
+
 Read more about [SHH key management](ide_projects.html#project-import-and-ssh-connection).
 
 ## Protocol Based Providers
