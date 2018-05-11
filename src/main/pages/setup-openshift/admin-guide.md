@@ -50,7 +50,7 @@ Advantages and disadvantages of using token, username/pass, and service account:
 |**Username/Password** | Objects can be created outside Che namespace | If username/pass are changed, they need to be updated in Che deployment as well. Many authentication types like oAuth make it impossible to login with username/pass
 | **Service account**   | No expiration risks                          | Cannot create objects outside its namespace unless given admin privileges
 
-** OpenShift-specific feature: create workspace objects in a personal namespace **
+**OpenShift-specific feature: create workspace objects in a personal namespace**
 
 When Che is deployed on OpenShift in mullti-user mode, there is an additional option that allows creating workspace objects **on behalf of the currenlty logged-in user**, instead of using the configured user described above. Refer to the [OpenShift Admin Guide](openshift-admin-guide#create-workspace-objects-in-personal-namespaces) for more details about how it works.
 
