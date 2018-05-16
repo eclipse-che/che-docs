@@ -17,9 +17,9 @@ in order to allow creating workspace objects in the personal OpenShift namespace
 
 This feature is available only when Che is configured to create a new OpenShift namespace for every Che workspace.
 
-To enable this feature, the administrator should:
-- register, inside Keycloak, an OpenShift identity provider that will point to the OpenShift console of the cluster in which the workspace resources should be created,
-- configure Che to use this Keycloak identity provider in order to retrieve the OpenShift tokens of Che users.
+As detailed below, to enable this feature, the administrator should:
+- [register](#openshift-identity-provider-registration), inside Keycloak, an OpenShift identity provider that will point to the OpenShift console of the cluster in which the workspace resources should be created,
+- [configure](#che-configuration) Che to use this Keycloak identity provider in order to retrieve the OpenShift tokens of Che users.
 
 Once this is done, every interactive action done by a Che user on workspaces, such as start or stop, will create OpenShift resources under his personal OpenShift account.
 And the first time the user will try to do it, he will be asked to link his Keycloak account with his personal OpenShift account:
@@ -28,7 +28,7 @@ which he can do by simply following the provided link in the notification messag
 But for non-interactive workspace actions, such as workspace stop on idling or Che server shutdown, the account used for operations on OpenShift resources will 
 fall back to the dedicated OpenShift account configured for the Kubernetes infrastructure, as described in the [AdminGuide](admin-guide#who-creates-workspace-objects).
 
-To install Che on OpenShift with this feature enabled, see [this section for Minishift](openshift-multi-user#creating-workspace-resources-in-personal-openshift-accounts-on-minishift)
+To easily install Che on OpenShift with this feature enabled, see [this section for Minishift](openshift-multi-user#creating-workspace-resources-in-personal-openshift-accounts-on-minishift)
 and [this one for OCP](openshift-multi-user#creating-workspace-resources-in-personal-openshift-accounts)
 
 #### OpenShift identity provider registration
@@ -68,7 +68,7 @@ __Note__: Adding a OAuth client requires cluster-wide admin rights.
 On the Che deployment configuration:
 - the `CHE_INFRA_OPENSHIFT_PROJECT` environment variable should be set to `NULL` to ensure a new distinct OpenShift namespace is created for every started workspace.
 - the `CHE_INFRA_OPENSHIFT_OAUTH__IDENTITY__PROVIDER` environment variable should be set to the alias of the OpenShift identity provider
-registered in Keycloak. The default value is `openshift-v3`.
+specified in step 1 of its [registration in Keycloak](#openshift-identity-provider-registration). The default value is `openshift-v3`.
 
 #### Providing the OpenShift certificate to Keycloak
 
