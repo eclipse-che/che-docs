@@ -12,17 +12,17 @@ folder: setup-openshift
 
 ## Create workspace objects in personal namespaces
 
-When Che is installed on Openshift in multi-user mode, it is possible to register the Openshift server into the Keycloak server as an identity provider,
+When Che is installed on OpenShift in multi-user mode, it is possible to register the OpenShift server into the Keycloak server as an identity provider,
 in order to allow creating workspace objects in the personal OpenShift namespace of the user that is currenlty logged in Che through Keycloak.
 
-This feature is available only when Che is confirgured to create a new OpenShift namespace for every Che workspace.
+This feature is available only when Che is configured to create a new OpenShift namespace for every Che workspace.
 
 To enable this feature, the administrator should:
-- register, inside Keycloak, an Openshift identity provider that will point to the Openshift console of the cluster in which the workspace resources should be created,
-- configure Che to use this Keycloak identity provider in order to retrieve the Openshift tokens of Che users.
+- register, inside Keycloak, an OpenShift identity provider that will point to the OpenShift console of the cluster in which the workspace resources should be created,
+- configure Che to use this Keycloak identity provider in order to retrieve the OpenShift tokens of Che users.
 
 Once this is done, every interactive action done by a Che user on workspaces, such as start or stop, will create OpenShift resources under his personal OpenShift account.
-And the first time the user will try to do it, he will be asked to link his Keycloak account with his personal Openshift account:
+And the first time the user will try to do it, he will be asked to link his Keycloak account with his personal OpenShift account:
 which he can do by simply following the provided link in the notification message.
 
 But for non-interactive workspace actions, such as workspace stop on idling or Che server shutdown, the account used for operations on OpenShift resources will 
@@ -33,19 +33,19 @@ and [this one for OCP](openshift-multi-user#creating-workspace-resources-in-pers
 
 #### OpenShift identity provider registration
 
-The Keycloak Openshift identity provider is described in [this documentation](https://www.keycloak.org/docs/3.3/server_admin/topics/identity-broker/social/openshift.html).
+The Keycloak OpenShift identity provider is described in [this documentation](https://www.keycloak.org/docs/3.3/server_admin/topics/identity-broker/social/openshift.html).
 
 1. In the [Keycloak administration console](user-management#auth-and-user-management), when adding the OpenShift identity provider, you should use the following settings:
 
 {% include image.html file="keycloak/openshift_identity_provider.png" %}
 
-`Base URL` is the URL of the Openshift console
+`Base URL` is the URL of the OpenShift console
 
 2. Next thing is to add a default read-token role:
 
 {% include image.html file="git/kc_roles.png" %}
 
-3. Then this identity provider has to be declared as an OAuth client inside Openshift. This can be done with the corresponding command:
+3. Then this identity provider has to be declared as an OAuth client inside OpenShift. This can be done with the corresponding command:
 
 ```bash
 oc create -f <(echo '
@@ -70,10 +70,10 @@ On the Che deployment configuration:
 - the `CHE_INFRA_OPENSHIFT_OAUTH__IDENTITY__PROVIDER` environment variable should be set to the alias of the OpenShift identity provider
 registered in Keycloak. The default value is `openshift-v3`.
 
-#### Providing the Openshift certificate to Keycloak
+#### Providing the OpenShift certificate to Keycloak
 
-If the certificate used by the Openshift console is self-signed or is not trusted, then by default the Keycloak will not be able to
-contact the Openshift console to retrieve linked tokens.
+If the certificate used by the OpenShift console is self-signed or is not trusted, then by default the Keycloak will not be able to
+contact the OpenShift console to retrieve linked tokens.
 
 In this case the OpenShift console certificate should be passed to the Keycloak deployment as an additional environment property.
 This will enable the Keycloak server to add it to its list of trusted certificates, and will fix the problem.

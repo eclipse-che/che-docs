@@ -52,7 +52,7 @@ Advantages and disadvantages of using token, username/pass, and service account:
 
 **OpenShift-specific feature: create workspace objects in a personal namespace**
 
-When Che is deployed on OpenShift in mullti-user mode, there is an additional option that allows creating workspace objects **on behalf of the currenlty logged-in user**, instead of using the configured user described above. Refer to the [OpenShift Admin Guide](openshift-admin-guide#create-workspace-objects-in-personal-namespaces) for more details about how it works.
+When Che is deployed on OpenShift in multi-user mode, there is an additional option that allows creating workspace objects **on behalf of the currently logged-in user**, instead of using the configured user described above. Refer to the [OpenShift Admin Guide](openshift-admin-guide#create-workspace-objects-in-personal-namespaces) for more details about how it works.
 
 ## Storage Overview
 
