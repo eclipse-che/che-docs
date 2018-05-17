@@ -29,6 +29,33 @@ In this scenario, you need to author a custom [recipe][recipes], then a stack, a
 
 {% include image.html file="workspaces/custom_recipe_stack.gif" %}
 
+**Stack Sharing**
+
+Stacks that a user creates are available only for this user. Che users with system privileges can share created stacks with selected users or all users in the system. Currently, there are no UI controls for that, so a couple of REST calls need to be made:
+
+* Log in as admin
+* Find your stack ID: go to `/swagger/#!/stack/searchStacks` to get a list of all stacks (you may filter search by tags). Find your stack my name and get its ID.
+* The next API to use is: `/swagger/#!/permissions`
+* Find the below POST method:
+
+{% include image.html file="workspaces/stack_permissions.png" %}
+
+* use the following JSON (replace `${STACK_ID}` with an actual ID)
+
+```json
+{
+"userId": "*",
+  "domainId": "stack",
+  "instanceId": "${STACK_ID}",
+  "actions": [
+    "read",
+    "search"
+  ]
+}
+```
+
+If you get 204, all users in the system will be able to see this stack. If you want to share a stack with a particular user, get its ID and use it instead of `*` in JSON.
+
 ## Starting Workspaces
 
 A workspace can be started in one of the following ways:
