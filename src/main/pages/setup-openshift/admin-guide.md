@@ -184,8 +184,8 @@ If `terminationGracePeriodSeconds` have been explicitly set in Kubernetes / Open
 ##  Recreate Update
 To perform Recreate type update without stopping active workspaces:
 
-- Make sure there is full compatibility between new master and old ws agent versions (API etc)
-- Make sure deployment update strategy set to Recreate
+- Make sure there is full compatibility between new master and old ws agent versions (API etc);
+- Make sure deployment update strategy set to Recreate;
 - Make POST request to the /api/system/stop api to start WS master suspend
 (means that all new attempts to start workspaces will be refused, and all current starts/stops will be finished).
 Note that this method requires system admin credentials.
@@ -198,10 +198,10 @@ Also, it may be visually controlled by line "System is ready to shutdown" in the
 ##  Rolling Update
 To perform Rolling type update without stopping active workspaces, the following preconditions required:
 
-- Make sure deployment update strategy set to Rolling
+- Make sure deployment update strategy set to Rolling;
 - Make sure there is full API compatibility between new master and old ws agent versions, as well as database compatibility
-  (since it is impossible to use DB migrations on this update mode).
-- Make sure `terminationGracePeriodSeconds` deployment parameter has enough value (see details below)
+  (since it is impossible to use DB migrations on this update mode);
+- Make sure `terminationGracePeriodSeconds` deployment parameter has enough value (see details below).
 
 After that preconditions is done, press Deploy button or execute `oc rollout latest che` from cli client will start the process.
 
@@ -219,6 +219,10 @@ So the `terminationGracePeriodSeconds` parameter must define time enough to cove
 Typically, setting  `terminationGracePeriodSeconds` to 540 sec is enough to cover all timeouts.
 
 - Some users may experience problems with websocket reconnections or missed events published by WebSocket connection(when a workspace is STARTED but dashboard displays that it is STARTING); Need to reload page to restore connections and actual workspaces states.
+
+
+## Update with stopping all workspaces
+TODO Describe here a case when there are DB migration or API incompatible changes and update with stopping all workspaces and Che Server recreation is required
 
 ## Delete deployments
 
