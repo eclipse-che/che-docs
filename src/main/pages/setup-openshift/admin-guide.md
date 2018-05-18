@@ -203,7 +203,7 @@ To perform Rolling type update without stopping active workspaces, the following
   (since it is impossible to use DB migrations on this update mode).
 - Make sure `terminationGracePeriodSeconds` deployment parameter has enough value (see details below)
 
-After that preconditions is done,  Deploy button or `oc rollout latest che` from cli client will start the process.
+After that preconditions is done, press Deploy button or execute `oc rollout latest che` from cli client will start the process.
 
 Unlike the Recreate update, the Rolling update type does not imply any Che server downtime,
 since new deployment is starting in parallel and traffic is hot-switched.
@@ -213,12 +213,12 @@ since new deployment is starting in parallel and traffic is hot-switched.
 
 - Workspaces that are started shortly (5-30sec) before the network traffic is switched to the new pod, may fallback to the stopped state.
 That happens because bootstrappers uses Che server route URL for notifying Che Server when bootstrapping is done. Since traffic is already switched
-to the new Che server, old one is cannot get bootstrapper-s report, and failing the start after waiting timeout reached.
+to the new Che server, old one cannot get bootstrapper-s report, and fails the start after waiting timeout reached.
 If old Che server will be killed before this timeout, workspaces can stuck in the `STARTING` state.
-So the `terminationGracePeriodSeconds` param must define time enough to cover bootstrapper timeout (which is 5 min by def.) plus some additional timings.
-Typically, setting  `terminationGracePeriodSeconds` to 480 or 540 sec is enough to cover all timeouts.
+So the `terminationGracePeriodSeconds` parameter must define time enough to cover workspace start timeout timeout (which is 8 min by def.) plus some additional timings.
+Typically, setting  `terminationGracePeriodSeconds` to 540 sec is enough to cover all timeouts.
 
-- Some users may experience problems with websocket reconnections; Need to reload page to restore connections.
+- Some users may experience problems with websocket reconnections or missed events published by WebSocket connection(when a workspace is STARTED but dashboard displays that it is STARTING); Need to reload page to restore connections and actual workspaces states.
 
 ## Delete deployments
 
