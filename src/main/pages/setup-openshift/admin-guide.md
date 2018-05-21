@@ -221,8 +221,11 @@ Typically, setting  `terminationGracePeriodSeconds` to 540 sec is enough to cove
 - Some users may experience problems with websocket reconnections or missed events published by WebSocket connection(when a workspace is STARTED but dashboard displays that it is STARTING); Need to reload page to restore connections and actual workspaces states.
 
 
-## Update with stopping all workspaces
-TODO Describe here a case when there are DB migration or API incompatible changes and update with stopping all workspaces and Che Server recreation is required
+## Update with DB migrations or API incompatibility
+If new version of Che server contains some DB migrations, but there is still API compatibility between old and new version,
+recreate update type may be used, without stopping running workspaces.
+
+API incompatible versions should be updated with full workspaces stop. It is means that `/api/system/stop?shutdown=true` must be called prior to update.
 
 ## Delete deployments
 
