@@ -225,7 +225,7 @@ Typically, setting  `terminationGracePeriodSeconds` to 540 sec is enough to cove
 If new version of Che server contains some DB migrations, but there is still API compatibility between old and new version,
 recreate update type may be used, without stopping running workspaces.
 
-API incompatible versions should be updated with full workspaces stop. It is means that `/api/system/stop?shutdown=true` must be called prior to update.
+API incompatible versions should be updated with full workspaces stop. It means that `/api/system/stop?shutdown=true` must be called prior to update.
 
 ## Delete deployments
 
