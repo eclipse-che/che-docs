@@ -43,7 +43,8 @@ You do not need to do that if you initially deploy Che with https support.
 
 ## HTTPS Mode - Self-Signed Certs
 
-If you enable HTTPS mode for Che on an OpenShift installation that does not have certificates signed by a public authority, it won't be possible to start workspaces or even login, if it's a multi user Che deployment. There is a lot of communication between Che server and workspace agents, Che server and Keycloak. Therefore, self signed certs should be added to Java trust store of Che server and Keycloak (only for a multi user Che deployment) pods, as well as workspace images. While there is automation for Che server and Keycloak, certs should be manually added to workspace images, since adding a root certificate requires sudo privileges which an arbitrary OpenShift user may not have.
+If you enable HTTPS mode for multi-user Che on an OpenShift installation that does not have certificates signed by a public authority, it won't be possible to start workspaces or even login.
+There is a lot of communication between Che server and workspace agents, Che server and Keycloak. Therefore, self signed certs should be added to Java trust store of Che server and Keycloak (only for a multi user Che deployment) pods, as well as workspace images. While there is automation for Che server and Keycloak, certs should be manually added to workspace images, since adding a root certificate requires sudo privileges which an arbitrary OpenShift user may not have.
 
 * Create a secret with certificate:
 

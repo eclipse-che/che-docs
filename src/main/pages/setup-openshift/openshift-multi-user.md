@@ -84,8 +84,7 @@ More info about routing suffix [here](openshift-single-user.html#what-is-my-rout
 
 **HTTPS Setup**
 
-<span style="color:red;">IMPORTANT!</span> Self-signed certificates aren't acceptable.
-Find instructions on adding self signed certs at [OpenShift Configuration page](openshift-config.html#https-mode---self-signed-certs).
+<span style="color:red;">IMPORTANT!</span> Find instructions on adding self signed certs at [OpenShift Configuration page](openshift-config.html#https-mode---self-signed-certs).
 
 ```bash
 oc new-project che

@@ -144,8 +144,7 @@ oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data
 
 ## HTTPS Mode
 
-<span style="color:red;">IMPORTANT!</span> Self-signed certificates aren't acceptable.
-Find instructions on adding self signed certs at [OpenShift Configuration page](openshift-config.html#https-mode---self-signed-certs).
+<span style="color:red;">IMPORTANT!</span> Find instructions on adding self signed certs at [OpenShift Configuration page](openshift-config.html#https-mode---self-signed-certs).
 
 
 ```
