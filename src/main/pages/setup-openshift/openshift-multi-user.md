@@ -66,25 +66,6 @@ oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io 
 oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
 ```
 
-#### Creating workspace resources in personal OpenShift accounts on Minishift
-
-To allow [creating workspace OpenShift resources in personal OpenShift accounts](openshift-admin-guide#create-workspace-objects-in-personal-namespaces), you should:
-- configure the Openshift identity provider in Keycloak as described in the [OpenShift Admin Guide](openshift-admin-guide#openShift-identity-provider-registration)  
-- run the following commands:
-
-```bash
-oc new-project che
-
-oc process -f multi/openshift-certificate-secret.yaml -p CERTIFICATE="$(minishift ssh docker exec origin /bin/cat ./openshift.local.config/master/ca.crt)" | oc apply -f -; \
-oc new-app -f multi/postgres-template.yaml; \
-oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io; \
-oc apply -f pvc/che-server-pvc.yaml; \
-oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io -p CHE_MULTIUSER=true \
-    -p CHE_INFRA_OPENSHIFT_PROJECT=NULL \
-    -p CHE_INFRA_OPENSHIFT_OAUTH__IDENTITY__PROVIDER=openshift-v3; \
-oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
-```
-
 ## OpenShift Container Platform
 
 **HTTP Setup**
@@ -104,6 +85,7 @@ More info about routing suffix [here](openshift-single-user.html#what-is-my-rout
 **HTTPS Setup**
 
 <span style="color:red;">IMPORTANT!</span> Self-signed certificates aren't acceptable.
+Find instructions on adding self signed certs at [OpenShift Configuration page](openshift-config.html#https-mode---self-signed-certs).
 
 ```bash
 oc new-project che
@@ -121,25 +103,6 @@ oc apply -f https
 ```
 
 More info about routing suffix [here](openshift-single-user.html#what-is-my-routing-suffix).
-
-#### Creating workspace resources in personal OpenShift accounts
-
-To allow [creating workspace OpenShift resources in personal OpenShift accounts](openshift-admin-guide#create-workspace-objects-in-personal-namespaces), you should:
-- configure the Openshift identity provider in Keycloak as described in the [OpenShift Admin Guide](openshift-admin-guide#openShift-identity-provider-registration)  
-- install the Openshift console certificate in the Keycloak server (if it's self-signed) by:
-    - having the openshift console certificate available in the `~/openshift.crt` file
-    - running the following command before all other commands:
-
-```bash
-    oc process -f multi/openshift-certificate-secret.yaml -p CERTIFICATE="$(cat ~/openshift.crt)" | oc apply -f -
-```
-
-- add the following parameters to the `oc new-app -f che-server-template.yaml` command:
-
-```
--p CHE_INFRA_OPENSHIFT_PROJECT=NULL -p CHE_INFRA_OPENSHIFT_OAUTH__IDENTITY__PROVIDER=openshift-v3
-```
-
 
 ## OpenShift Dedicated
 
