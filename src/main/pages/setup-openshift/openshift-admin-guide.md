@@ -25,7 +25,7 @@ Once this is done, every interactive action done by a Che user on workspaces, su
 And the first time the user will try to do it, he will be asked to link his Keycloak account with his personal OpenShift account:
 which he can do by simply following the provided link in the notification message.
 
-But for non-interactive workspace actions, such as workspace stop on idling or Che server shutdown, the account used for operations on OpenShift resources will 
+But for non-interactive workspace actions, such as workspace stop on idling or Che server shutdown, the account used for operations on OpenShift resources will
 fall back to the dedicated OpenShift account configured for the Kubernetes infrastructure, as described in the [AdminGuide](admin-guide#who-creates-workspace-objects).
 
 To easily install Che on OpenShift with this feature enabled, see [this section for Minishift](openshift-multi-user#creating-workspace-resources-in-personal-openshift-accounts-on-minishift)
@@ -60,8 +60,8 @@ grantMethod: prompt
 ')
 ```
 
-__Note__: Adding a OAuth client requires cluster-wide admin rights. 
- 
+__Note__: Adding a OAuth client requires cluster-wide admin rights.
+
 
 #### Che configuration
 

@@ -34,14 +34,52 @@ You can manually convert properties into envs, just make sure to follow [instruc
 
 To enable https for server and workspace routes, follow instructions in [setup docs single user][openshift-single-user] and [multi-user][openshift-multi-user]. To migrate an existing Che deployment to https, do the following:
 
-<span style="color:red;">IMPORTANT!</span> Self-signed certificates aren't acceptable.
-
 1. Update Che deployment with `PROTOCOL=https, WS_PROTOCOL=wss, TLS=true`
 2. Manually edit or recreate routes for Che and Keycloak `oc apply -f https`
 3. Once done, go to `https://keycloak-${NAMESPACE}.${ROUTING_SUFFIX}`, log in to admin console.
 Default credentials are `admin:admin`.
 Go to Clients, `che-public` client and edit **Valid Redirect URIs** and **Web Origins** URLs so that they use **https** protocol.
 You do not need to do that if you initially deploy Che with https support.
+
+## HTTPS Mode - Self-Signed Certs
+
+If you enable HTTPS mode for multi-user Che on an OpenShift installation that does not have certificates signed by a public authority, it won't be possible to start workspaces or even login.
+There is a lot of communication between Che server and workspace agents, Che server and Keycloak. Therefore, self signed certs should be added to Java trust store of Che server and Keycloak (only for a multi user Che deployment) pods, as well as workspace images. While there is automation for Che server and Keycloak, certs should be manually added to workspace images, since adding a root certificate requires sudo privileges which an arbitrary OpenShift user may not have.
+
+* Create a secret with certificate:
+
+```
+CERTIFICATE=$(cat /path/to/openshift/ca.crt)
+oc new-app -f deploy/openshift/templates/multi/openshift-certificate-secret.yaml -p CERTIFICATE="${CERTIFICATE}"
+```
+Once created, `OPENSHIFT_IDENTITY_PROVIDER_CERTIFICATE` env takes cert file content as a value and is then used in entrypoints of Che server and Keycloak images.
+
+* Deploy Che in https mode: [single user](openshift-single-user.html#https-mode), [multi-user](openshift-multi-user.html#openshift-container-platform)
+
+* Build an image with your certificate and push it to a registry. Example of a Dockerfile:
+
+```
+FROM eclipse/ubuntu_jdk8
+ADD ca.crt /usr/local/share/ca-certificates/ca.crt
+RUN sudo update-ca-certificates
+RUN cd ${HOME} && \
+    echo yes | keytool -keystore minishift.jks -importcert -alias HOSTDOMAIN -file /usr/local/share/ca-certificates/ca.crt -storepass minishift
+```
+
+Then run `docker build -t yourOrg/yourImage:yourTag .` You need to have OpenShift self signed cert (`ca.crt` in this example) in the same directory with a Dockerfile.
+
+If you inherit from Fedora, CentOS or RHEL image, the Dockerfile will look a bit different:
+
+```
+ADD ca.crt /etc/pki/ca-trust/source/anchors/ca.crt
+RUN sudo update-ca-trust
+```
+
+* Add self signed cert to your browser. In Chrome, go to `chrome://settings/certificates > Authorities > Import`
+
+{% include image.html file="workspaces/chrome_certs.png" %}
+
+* Create a [custom stack](creating-starting-workspaces.html#creating workspaces) (or update existing one) with the newly built image.
 
 ## Private Docker Registries
 

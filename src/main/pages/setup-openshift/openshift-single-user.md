@@ -142,6 +142,23 @@ oc apply -f che-server-pvc.yaml
 oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
 ```
 
+## HTTPS Mode
+
+<span style="color:red;">IMPORTANT!</span> Find instructions on adding self signed certs at [OpenShift Configuration page](openshift-config.html#https-mode---self-signed-certs).
+
+
+```
+oc new-project che
+
+oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io \
+                                       -p PROTOCOL=https \
+                                       -p WS_PROTOCOL=wss \
+                                       -p TLS=true
+oc apply -f che-server-pvc.yaml
+oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
+oc apply -f https/che-route-tls.yaml
+```
+
 ## OpenShift Container Platform
 
 Same instructions as in [MiniShift](#minishift-templates), however, you need to provide a valid [ROUTING_SUFFIX](#what-is-my-routing-suffix).
