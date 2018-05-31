@@ -118,7 +118,8 @@ Use [regular expressions](https://www.gnu.org/software/sed/manual/html_node/Regu
 Factories can be configured with a dedicated pull request workflow. The PR workflow handles local & remote branching, forking, and issuing the pull request. Pull requests generated from within {{ site.product_mini_name }} have another Factory placed into the comments of the pull requests that a PR reviewer can use to quickly start the workspace.
 
 When enabled, the pull request workflow adds a contribution panel to the IDE.
-![pull-request-panel.png]({{base}}{{site.links["pull-request-panel.png"]}}){:style="width: 50%"}  
+
+{% include image.html file="git/pr_panel.png" %}
 
 ## Repository Badging  
 
