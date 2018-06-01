@@ -22,6 +22,8 @@ Private repositories will require a secure SSH connection and most developers wh
 
 SSH keys can be generated at `Profile > Preferences > SSH > VCS`. Use the `Generate Key` button and manually save the resulting key to your Git hosting provider account. When prompted to provide the hostname for your repo, make sure it is a bare hostname (no www or http/https) as in the example below. After the key has been generated, you can view and copy it, and save to your repository hosting account.
 
+<span style="color:red; margin-left:41px;">**IMPORTANT!**</span>. Hostname is an actual hostname of a VCS provider. Examples: `github.com`, `bitbucket.org`.
+
 **Use Existing SSH Keys**
 
 You can upload an existing public key instead of creating a new SSH key. When uploading a key add the hostname (using no **www or http/https** - as in the example below). Note that the `public key > view` button will not be available with this option as the public file should be generated already.
