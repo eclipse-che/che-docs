@@ -81,6 +81,33 @@ RUN sudo update-ca-trust
 
 * Create a [custom stack](creating-starting-workspaces.html#creating workspaces) (or update existing one) with the newly built image.
 
+## HTTPS Mode - Letsencrypt
+
+Letsencrypt can issue wildcard certificates. There's only one pre-requisite - your OpenShift installation should be under a **public DNS name**. The best way to solve TLS issue with Eclipse Che is to get Letsencrypt certs for `*.${OPENSHIFT_ROUTING_SUFFIX}` domain and then configure OpenShift router to use those certs. Once done, it will automatically make all secure routes that your OpenShift cluster generates trusted by all clients.
+
+To obtain a wildcard Letsencrypt certificate for your OpenShift router visit [Certbot](https://certbot.eff.org/) page and follow instructions for your OS. Once done and key are generated, there are a few things you should do (requires OpenShift admin privileges) in default OpenShift namespace where router is deployed:
+
+```
+# add the key to the cert
+cat fullchain.pem privkey.pem > both.pem
+
+#  Backup the old config
+oc export secret router-certs > ~/old-router-certs-secret.yaml
+
+# Replace the router certificate
+oc secrets new router-certs tls.crt=both.pem tls.key=privkey.pem -o json --type='kubernetes.io/tls' --confirm | oc replace -f -
+
+# Rollout the latest DC for the router
+oc rollout latest router
+```
+
+You may also find the following docs/blog posts helpful:
+
+* [OpenShift Docs](https://docs.openshift.org/latest/install_config/redeploying_certificates.html#redeploying-custom-registry-or-router-certificates)
+* [OpenShift Blog](https://blog.openshift.com/lets-encrypt-acme-v2-api/)
+
+After a router restarts, all secure routes in the cluster should be trusted, and you can deploy Che in https mode: [single user](openshift-single-user.html#https-mode) or [multi-user](openshift-multi-user.html#openshift-container-platform) or update your http Che installation.
+
 ## Private Docker Registries
 
 Refer to [OpenShift documentation](https://docs.openshift.com/container-platform/3.7/security/registries.html)
