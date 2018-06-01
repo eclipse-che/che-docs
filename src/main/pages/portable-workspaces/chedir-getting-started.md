@@ -9,6 +9,8 @@ folder: portable-workspaces
 
 {% include links.html %}
 
+**<span style="color:red;">Chedir is a Docker only feature and will not work on OpenShift/K8S!</span>**
+
 The Chedir getting started guide will walk you through your first Chedir project, and show the basic features Chedir has to offer.
 
 If you are curious what benefits Chedir has to offer, you should also read the [Why Chedir][why-chedir] page.
