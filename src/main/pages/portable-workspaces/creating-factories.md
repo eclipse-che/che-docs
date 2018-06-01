@@ -43,7 +43,10 @@ The Factory URL can include a branch or a subfolder. Here is an example of optio
 ### Customizing URL Factories
 There are 2 ways of customizing the runtime and configuration.
 
-**Customizing only the runtime**  
+**Customizing only the runtime**
+
+**<span style="color:red;">Dockerfile works on Docker infra only!</span>** 
+
 Providing a `.factory.dockerfile` inside the repository will signal to the {{ site.product_mini_name }} URL Factory to use this Dockerfile for the workspace agent runtime. By default imported projects are set to a `blank` project type, however project type can be set in the `.factory.json` or workspace definition that the Factory inherits from.
 
 **Customizing the project and runtime**  
