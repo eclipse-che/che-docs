@@ -106,6 +106,8 @@ The algorithm that is used for signing machine tokens is `SHA-512` and it's not 
 - `CHE_MACHINE_AUTH_SIGNATURE__ALGORITHM` - contains information about the algorithm which the token was signed
 - `CHE_MACHINE_AUTH_SIGNATURE__PUBLIC__KEY` - contains public key value encoded in Base64
 
+It's all that is needed for verifying machine token inside of machine. To make sure that specified token is related to current workspace, it is needed to fetch `wsid` from JWT token claims and compare it with `CHE_WORKSPACE_ID` environment variable.
+
 Also, if agents need to query Che Master they can use machine token provided in `CHE_MACHINE_TOKEN` environment, actually it is token of user who starts a workspace.
 
 ### Authentication schema
