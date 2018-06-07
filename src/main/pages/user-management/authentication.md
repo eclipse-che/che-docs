@@ -17,7 +17,7 @@ folder: user-management
 
  In case of Keycloak tokens, authentication filter chain contains of two filters:
 
-- **org.eclipse.che.multiuser.keycloak.server.KeycloakAuthenticationFilter** - validate's signature of the Keycloak JWT token;
+- **org.eclipse.che.multiuser.keycloak.server.KeycloakAuthenticationFilter** - validates signature of the Keycloak JWT token;
 - **org.eclipse.che.multiuser.keycloak.server.KeycloakEnvironmentInitalizationFilter** - extracts user data from JWT, finds or creates
      appropriate user in the Che DB, and set user principal to the session.
 
@@ -51,7 +51,7 @@ curl
      http://<keyckloak_host>:5050/auth/realms/<realm_name>/protocol/openid-connect/token
 ```
 
- Since the two main Che clients (IDE and Dashboard) utilizes native Keycloak js library, they're using a customized Keycloak login page and somewhat more complicated authentication mechanism using `grant_type=authorization_code`. It's like a two step authentication, when first step is login and obtaining authorization code, and second step is obtaining token using this code.
+ Since the two main Che clients (IDE and Dashboard) utilizes native Keycloak js library, they're using a customized Keycloak login page and somewhat more complicated authentication mechanism using `grant_type=authorization_code`. It's a two step authentication: first step is login and obtaining authorization code, and second step is obtaining token using this code.
 
  Example of correct token response:
 
@@ -71,7 +71,7 @@ curl
 
 Machines may contain services that must be protected with authentication, e.g. agents like workspace agent and terminal. For this purpose, machine authentication mechanism should be used. Machine tokens were introduced to avoid passing the Keycloak tokens to the machine side (which can be potentially insecure). Another reason is that Keycloak tokens may have relatively small lifetime and require periodical renewal/refresh which is hard to manage and keep in sync with same user session tokens on clients etc.
 
-So, agents cannot be queried using Keycloak token, so there is only Machine Token option. Machine token can be also passed in header or query parameter.
+As agents cannot be queried using Keycloak token, there is only Machine Token option. Machine token can be also passed in header or query parameter.
 
 ### Machine JWT Token
 
