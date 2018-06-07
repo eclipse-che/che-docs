@@ -1,6 +1,6 @@
 ---
-title: "Keycloak Authentication"
-keywords: organizations, user management, permissions, authentication
+title: "Che Authentication"
+keywords: user management, permissions, authentication
 tags: [keycloak]
 sidebar: user_sidebar
 permalink: authentication.html
@@ -8,13 +8,16 @@ folder: user-management
 ---
 {% include links.html %}
 
-## Auth Filters on master
+## Authentication on Che Master
+
+### Auth Filters on master
+
  Che master can handle both types of signed requests - using Keycloak token or Machine token.
- Authentication tokens can be send either in a `Authorization` header or `token` query param.
+ Authentication tokens can be send in a `Authorization` header. Also, in limited cases when it's not possible to use `Authorization` header, token can be send in `token` query parameter. An example of it is initialization iframe where authentication is needed, IDE shows java doc in this way.
 
  In case of Keycloak tokens, authentication filter chain contains of two filters:
 
-- **org.eclipse.che.multiuser.keycloak.server.KeycloakAuthenticationFilter** - validates signature of the Keycloak JWT token;
+- **org.eclipse.che.multiuser.keycloak.server.KeycloakAuthenticationFilter** - validate's signature of the Keycloak JWT token;
 - **org.eclipse.che.multiuser.keycloak.server.KeycloakEnvironmentInitalizationFilter** - extracts user data from JWT, finds or creates
      appropriate user in the Che DB, and set user principal to the session.
 
@@ -22,49 +25,7 @@ folder: user-management
 
 - **org.eclipse.che.multiuser.machine.authentication.server.MachineLoginFilter** - finds userId given token belongs to, than retrieves user instance and sets principal to the session.
 
-## Auth on agents
-  Agents cannot be queried using Keycloak token, so there is only Machine Token option. Machine token can be passed in header or query param.
-
-- **org.eclipse.che.multiuser.machine.authentication.agent.MachineLoginFilter** - doing basically the same as the appropriate filter on a master, the only thing that is different it's a way how agent obtains the public signature part. The public key for the signature check is placed in a machine environment, with algorithm description.
-- **auth.auth.go** - the entry point for all request that is proceeding on go agents side, the logic of token verification is similar with MachineLoginFilter.
-
-The way how Che master interacts with agents with enabled authentication mechanism is the following:
-{% include image.html file="diagrams/machine_auth_flow.png" %}
-
-## Keycloak vs Machine Token
-
-Machine tokens were introduced to avoid passing the Keycloak tokens to the machine side (which can be potentially insecure). Another reason is that Keycloak tokens may have relatively small lifetime and require periodical renewal/refresh which is hard to manage and keep in sync with same user session tokens on clients e.t.c.
-
-So from the implementation side, it is the simple 3-side **User** <-> **Workspace** <-> **Machine Token** mapping, and a token is injected into the machine during its startup and remains valid until the workspace will be stopped.
-Like the JWT machine token contains the header, payload and signature. The structure of token and the signature are different to Keycloak and have the following view:
-``` json
-# Header
-{
-  "alg": "RS512",
-  "kind": "machine_token"
-}
-# Payload
-{
-  "wsid": "workspacekrh99xjenek3h571",
-  "uid": "b07e3a58-ed50-4a6e-be17-fcf49ff8b242",
-  "uname": "john",
-  "jti": "06c73349-2242-45f8-a94c-722e081bb6fd"
-}
-# Signature
-{
-  "value": "RSASHA512(base64UrlEncode(header) + . +  base64UrlEncode(payload))"
-}
-
-```
-The algorithm that is used for signing machine tokens is `SHA-512` and it's not configurable for now. Also, there is no public service that distributes the public part of the key pair with which the token was signed. But in each machine, there must be environment variables that contains key value. Environment properties description:
-
-Contains information about the algorithm which the token was signed<br>
-`CHE_MACHINE_AUTH_SIGNATURE__ALGORITHM`<br>
-Contains public key value encoded in Base64<br>
-`CHE_MACHINE_AUTH_SIGNATURE__PUBLIC__KEY`
-
-
-## Obtaining Keycloak endpoints
+### Obtaining Keycloak endpoints
 
 There is separate REST service to obtain main Keycloak endpoints for the current installation. It helps to clients to find out URLs for basic operations like login/logout, profile reading, realm name etc. This service is not secured with any authentication and accessible for any client. Service URL is: `http://<wsmaster_host>:<port>/api/keycloak/settings`
 Example output:
@@ -80,7 +41,7 @@ Example output:
 }
 ```
 
-## Obtaining Token From Keycloak
+### Obtaining Token From Keycloak
 
 The simplest way to obtain Keycloak auth token, is to perform request to the token endpoint with username and password credentials. This request can be schematically described as following cURL request:
 
@@ -105,6 +66,61 @@ curl
    "session_state":"14de1b98-8065-43e1-9536-43e7472250c9"
  }
  ```
+
+## Authentication on Che Agents
+
+Machines may contain services that must be protected with authentication, e.g. agents like workspace agent and terminal. For this purpose, machine authentication mechanism should be used. Machine tokens were introduced to avoid passing the Keycloak tokens to the machine side (which can be potentially insecure). Another reason is that Keycloak tokens may have relatively small lifetime and require periodical renewal/refresh which is hard to manage and keep in sync with same user session tokens on clients etc.
+
+So, agents cannot be queried using Keycloak token, so there is only Machine Token option. Machine token can be also passed in header or query parameter.
+
+### Machine JWT Token
+
+Machine token is JWT that contains the following information in its claim:
+- **uid** - id of user who owns this token
+- **uname**	- name of user who owns this token
+- **wsid** - id of a workspace which can be queried with this token
+
+Each user is provided with unique personal token for each workspace.
+
+The structure of token and the signature are different to Keycloak and have the following view:
+``` json
+# Header
+{
+  "alg": "RS512",
+  "kind": "machine_token"
+}
+# Payload
+{
+  "wsid": "workspacekrh99xjenek3h571",
+  "uid": "b07e3a58-ed50-4a6e-be17-fcf49ff8b242",
+  "uname": "john",
+  "jti": "06c73349-2242-45f8-a94c-722e081bb6fd"
+}
+# Signature
+{
+  "value": "RSASHA512(base64UrlEncode(header) + . +  base64UrlEncode(payload))"
+}
+```
+
+The algorithm that is used for signing machine tokens is `SHA-512` and it's not configurable for now. Also, there is no public service that distributes the public part of the key pair with which the token was signed. But in each machine, there must be environment variables that contains key value. So, agents can verify JWT token using the following environment variables:
+- `CHE_MACHINE_AUTH_SIGNATURE__ALGORITHM` - contains information about the algorithm which the token was signed
+- `CHE_MACHINE_AUTH_SIGNATURE__PUBLIC__KEY` - contains public key value encoded in Base64
+
+Also, if agents need to query Che Master they can use machine token provided in `CHE_MACHINE_TOKEN` environment, actually it is token of user who starts a workspace.
+
+### Authentication schema
+
+The way how Che master interacts with agents with enabled authentication mechanism is the following:
+{% include image.html file="diagrams/machine_auth_flow.png" %}
+
+Machine token verification on agents is done by the following components:
+- **org.eclipse.che.multiuser.machine.authentication.agent.MachineLoginFilter** - doing basically the same as the appropriate filter on a master, the only thing that is different it's a way how agent obtains the public signature part. The public key for the signature check is placed in a machine environment, with algorithm description.
+- **auth.auth.go** - the entry point for all request that is proceeding on go agents side, the logic of token verification is similar with MachineLoginFilter.
+
+
+### Obtaining Machine Token
+
+A machine token is provided for users in runtime object. It can be fetched by using get workspace by key (id or namespace/name) method which path equals to `/api/workspace/<workspace_key>`. The machine token will be placed in `runtime.machineToken` field.
 
 ## Using Swagger or REST Clients
 
