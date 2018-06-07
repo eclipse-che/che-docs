@@ -44,7 +44,17 @@ You do not need to do that if you initially deploy Che with https support.
 ## HTTPS Mode - Self-Signed Certs
 
 If you enable HTTPS mode for multi-user Che on an OpenShift installation that does not have certificates signed by a public authority, it won't be possible to start workspaces or even login.
+
 There is a lot of communication between Che server and workspace agents, Che server and Keycloak. Therefore, self signed certs should be added to Java trust store of Che server and Keycloak (only for a multi user Che deployment) pods, as well as workspace images. While there is automation for Che server and Keycloak, certs should be manually added to workspace images, since adding a root certificate requires sudo privileges which an arbitrary OpenShift user may not have.
+
+* Export certificate:
+
+This has to be the certificate that your OpenShift **router** uses since OpenShift Web Console may use a different cert or even use a different (sub)domain. If you are not certain where to find the cert, you may export it:
+
+{% include image.html file="workspaces/chrome_cert.png" %}
+{% include image.html file="workspaces/chrome_cert_export.png" %}
+
+Choose the top certificate hierarchy and export a single certificate.
 
 * Create a secret with certificate:
 
@@ -53,6 +63,9 @@ CERTIFICATE=$(cat /path/to/openshift/ca.crt)
 oc new-app -f deploy/openshift/templates/multi/openshift-certificate-secret.yaml -p CERTIFICATE="${CERTIFICATE}"
 ```
 Once created, `OPENSHIFT_IDENTITY_PROVIDER_CERTIFICATE` env takes cert file content as a value and is then used in entrypoints of Che server and Keycloak images.
+
+{% include image.html file="workspaces/ca_secret.png" %}
+{% include image.html file="workspaces/cert_env.png" %}
 
 * Deploy Che in https mode: [single user](openshift-single-user.html#https-mode), [multi-user](openshift-multi-user.html#openshift-container-platform)
 
