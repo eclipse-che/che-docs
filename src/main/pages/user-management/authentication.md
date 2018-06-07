@@ -1,7 +1,7 @@
 ---
 title: "Keycloak Authentication"
 keywords: organizations, user management, permissions, authentication
-tags: [ldap, keycloak]
+tags: [keycloak]
 sidebar: user_sidebar
 permalink: authentication.html
 folder: user-management
