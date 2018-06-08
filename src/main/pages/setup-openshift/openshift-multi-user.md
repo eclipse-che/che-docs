@@ -105,11 +105,11 @@ More info about routing suffix [here](openshift-single-user.html#what-is-my-rout
 
 ## OpenShift Dedicated
 
-Instructions to deploy Che to OSD are identical to those for [OpenShift Container Platform](openshift-container-platform).
+Instructions to deploy Che to OSD are identical to those for [OpenShift Container Platform](#openshift-container-platform).
 
 ## OpenShift Online Pro
 
-Instructions to deploy Che to OSO PRO are identical to those for [OpenShift Container Platform](openshift-container-platform).
+Instructions to deploy Che to OSO PRO are identical to those for [OpenShift Container Platform](#openshift-container-platform).
 
 ## Admin Guide
 
