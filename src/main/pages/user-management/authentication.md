@@ -13,7 +13,7 @@ folder: user-management
 ### Auth Filters on master
 
  Che master can handle both types of signed requests - using Keycloak token or Machine token.
- Authentication tokens can be send in a `Authorization` header. Also, in limited cases when it's not possible to use `Authorization` header, token can be send in `token` query parameter. An example of it is initialization iframe where authentication is needed, IDE shows java doc in this way.
+ Authentication tokens can be send in a `Authorization` header. Also, in limited cases when it's not possible to use `Authorization` header, token can be send in `token` query parameter. An example of such exceptional case can be: OAuth authentification initialization, IDE shows javadoc in iframe where authentication must be initialized.
 
  In case of Keycloak tokens, authentication filter chain contains of two filters:
 
@@ -27,7 +27,7 @@ folder: user-management
 
 ### Obtaining Keycloak endpoints
 
-There is separate REST service to obtain main Keycloak endpoints for the current installation. It helps to clients to find out URLs for basic operations like login/logout, profile reading, realm name etc. This service is not secured with any authentication and accessible for any client. Service URL is: `http://<wsmaster_host>:<port>/api/keycloak/settings`
+There is separate REST service to obtain main Keycloak endpoints for the current installation. It helps clients to find out URLs for basic operations like login/logout, profile reading, realm name etc. This service is not secured with any authentication and accessible for any client. Service URL is: `http://<wsmaster_host>:<port>/api/keycloak/settings`
 Example output:
 ```
 {
@@ -75,7 +75,7 @@ As agents cannot be queried using Keycloak token, there is only Machine Token op
 
 ### Machine JWT Token
 
-Machine token is JWT that contains the following information in its claim:
+Machine token is [JWT](https://jwt.io/) that contains the following information in its claim:
 - **uid** - id of user who owns this token
 - **uname**	- name of user who owns this token
 - **wsid** - id of a workspace which can be queried with this token
@@ -102,7 +102,7 @@ The structure of token and the signature are different to Keycloak and have the 
 }
 ```
 
-The algorithm that is used for signing machine tokens is `SHA-512` and it's not configurable for now. Also, there is no public service that distributes the public part of the key pair with which the token was signed. But in each machine, there must be environment variables that contains key value. So, agents can verify JWT token using the following environment variables:
+The algorithm that is used for signing machine tokens is `SHA-512` and it's not configurable for now. Also, there is no public service that distributes the public part of the key pair with which the token was signed. But in each machine, there must be environment variables that contains key value. So, agents can verify machine JWT token using the following environment variables:
 - `CHE_MACHINE_AUTH_SIGNATURE__ALGORITHM` - contains information about the algorithm which the token was signed
 - `CHE_MACHINE_AUTH_SIGNATURE__PUBLIC__KEY` - contains public key value encoded in Base64
 
@@ -113,6 +113,7 @@ Also, if agents need to query Che Master they can use machine token provided in 
 ### Authentication schema
 
 The way how Che master interacts with agents with enabled authentication mechanism is the following:
+{% include image.html file="diagrams/machine_auth_flow_old.png" %}
 {% include image.html file="diagrams/machine_auth_flow.png" %}
 
 Machine token verification on agents is done by the following components:
