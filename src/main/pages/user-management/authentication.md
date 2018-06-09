@@ -14,13 +14,12 @@ folder: user-management
 
    OpenId authentication on Che master, implies presence of an external OpenId provider and has a 2 main goals:
    - Authenticate the user through the JWT token he brought or redirect him to login;
-    (Authentication tokens should be send in a `Authorization` header. 
-      Also, in limited cases when it's not possible to use `Authorization` header, token can be send in `token` query parameter. 
+  
+  (Authentication tokens should be send in a `Authorization` header. Also, in limited cases when it's not possible to use `Authorization` header, token can be send in `token` query parameter. 
       An example of such exceptional case can be: OAuth authentification initialization, IDE shows javadoc in iframe where authentication must be initialized.)
    - Compose internal “subject” object which represents the current user inside of the Che master code.
+  
   At the time of writing the only supported OpenId provider is Keycloak, so all examples/links will refer to this implementation. 
-
- 
 
  The flow starts from the settings service where clients can found all the necessary URL’s and properties of the OpenId provider such as `jwks.endpoint`, `token.endpoint`, `logout.endpoint`, `realm.name`, `client_id` e.t.c returned. in JSON format.
  
@@ -39,6 +38,7 @@ folder: user-management
  
  Also, this service allows to download JS client library to interact with provider.
  Service URL is ```<che.host>:<che.port>/api/keycloak/settings``` for retrieving settings JSON and ```<che.host>:<che.port>/api/keycloak/OIDCKeycloak.js``` for JS adapter library.
+ 
  Service class is **org.eclipse.che.multiuser.keycloak.server.KeycloakSettings**.
  
  
@@ -105,7 +105,7 @@ curl
 
 
 ### OAuth
-OAuth authentication part has 2 main flows  - internal  and using external broker.
+OAuth authentication part has 2 main flows  - internal or using external brokering mechanism.
 So, there is 2 main OAuth API implementations - 
 **org.eclipse.che.security.oauth.EmbeddedOAuthAPI** and **org.eclipse.che.multiuser.keycloak.server.oauth2.DelegatedOAuthAPI**. 
 
