@@ -21,7 +21,7 @@ folder: user-management
   
   At the time of writing the only supported OpenId provider is Keycloak, so all examples/links will refer to this implementation. 
 
- The flow starts from the settings service where clients can found all the necessary URL’s and properties of the OpenId provider such as `jwks.endpoint`, `token.endpoint`, `logout.endpoint`, `realm.name`, `client_id` e.t.c returned. in JSON format.
+ The flow starts from the settings service where clients can find all the necessary URL’s and properties of the OpenId provider such as `jwks.endpoint`, `token.endpoint`, `logout.endpoint`, `realm.name`, `client_id` e.t.c returned. in JSON format.
  
  Example output:
   ```
