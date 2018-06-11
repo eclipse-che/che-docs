@@ -12,16 +12,19 @@ folder: user-management
 
 ### OpenId
 
-   OpenId authentication on Che master, implies presence of an external OpenId provider and has 2 main goals:
-   - Authenticate the user through the JWT token he brought or redirect him to login;
+   OpenId authentication on Che master, implies presence of an external OpenId provider and has 2 main steps:
+   1. Authenticate the user through the JWT token he brought or redirect him to login;
   
-  (Authentication tokens should be send in a `Authorization` header. Also, in limited cases when it's not possible to use `Authorization` header, token can be send in `token` query parameter. 
-      An example of such exceptional case can be: OAuth authentification initialization, IDE shows javadoc in iframe where authentication must be initialized.)
-   - Compose internal “subject” object which represents the current user inside of the Che master code.
+        (Authentication tokens should be send in a `Authorization` header. Also, in limited cases when it's not possible to use `Authorization` header, 
+        token can be send in `token` query parameter. 
+        An example of such exceptional case can be: OAuth authentification initialization, IDE shows javadoc in iframe where authentication must be initialized.)
+   2. Compose internal “subject” object which represents the current user inside of the Che master code.
   
-  At the time of writing the only supported OpenId provider is Keycloak, so all examples/links will refer to this implementation. 
+  At the time of writing the only supported/tested OpenId provider is Keycloak, so all examples/links will refer to this implementation. 
 
  The flow starts from the settings service where clients can find all the necessary URLs and properties of the OpenId provider such as `jwks.endpoint`, `token.endpoint`, `logout.endpoint`, `realm.name`, `client_id` etc returned. in JSON format.
+ Service class is **org.eclipse.che.multiuser.keycloak.server.KeycloakSettings**, and it is bound only in multi-user version of Che,
+ so by its presence it is possible to detect is authentication enabled in current deployment or not. 
  
  Example output:
   ```json
@@ -38,19 +41,18 @@ folder: user-management
  
  Also, this service allows to download JS client library to interact with provider.
  Service URL is ```<che.host>:<che.port>/api/keycloak/settings``` for retrieving settings JSON and ```<che.host>:<che.port>/api/keycloak/OIDCKeycloak.js``` for JS adapter library.
- 
- Service class is **org.eclipse.che.multiuser.keycloak.server.KeycloakSettings**.
- 
+  
  
  Next step is redirection of user to the appropriate provider’s login page with all the necessary params like client_id, return redirection path etc. This can be basically done with any client library (JS or Java etc).
  
- After user logged in on provider’s side and returned back to the Che server with JWT token, the validation of it and creation of subject begins.
+ After user logged in on provider’s side and client side code obtained and passed the JWT token, validation of it and creation of subject begins.
  
  Verification of tokens signature occurs in the two main filters chain: 
  
    - **org.eclipse.che.multiuser.keycloak.server.KeycloakAuthenticationFilter** class. 
    Token is extracted from `Authorization` header or `token` query param and tried to being parsed using public key retrieved from provider. 
-   In case of expired/invalid/malformed token, 403 error is sent to user.
+   In case of expired/invalid/malformed token, 403 error is sent to user. As noted above, usage of query parameter should be minimised as much as possible, 
+   since that reduces security, and support of it may be limited/dropped at some point.   
 
   If validation was successful, token is passed to the  
 
@@ -70,6 +72,7 @@ folder: user-management
 
 #### Obtaining Token From Keycloak
 
+For the clients which are cannot run JS or other type clients (like CLI or selenium tests), auth token may be requested directly from Keycloak. 
 The simplest way to obtain Keycloak auth token, is to perform request to the token endpoint with username and password credentials. This request can be schematically described as following cURL request:
 
 ```bash
@@ -94,18 +97,19 @@ curl
  }
  ```
 
-### Other Openid implementations
+### Other authentication implementations
 
- If you want to adapt OpenId implementation other than Keycloak, the following steps must be done:
+ If you want to adapt authentication implementation other than Keycloak, the following steps must be done:
  
  - Write own or refactor existing info service which will provide list of configured provider endpoints to the clients;
  - Write single or chain of filters to validate tokens, create user in Che DB and compose the Subject object;
+ - If the new auth provider supports OpenId protocol, OIDC JS client available at settings endpoint can be used as well since it is maximally decoupled of specific implementations.
  - If the selected provider stores some additional data about user (first/last name, job title etc), it is a good idea to write an provider-specific ProfileDao 
-   implementation which will provide such kind of information; 
+   implementation which will provide such kind of information;    
 
 
 ### OAuth
-OAuth authentication part has 2 main flows  - internal or using external brokering mechanism.
+OAuth authentication part has 2 main flows  - internal and external based on Keycloak brokering mechanism.
 So, there are 2 main OAuth API implementations - 
 **org.eclipse.che.security.oauth.EmbeddedOAuthAPI** and **org.eclipse.che.multiuser.keycloak.server.oauth2.DelegatedOAuthAPI**. 
 
