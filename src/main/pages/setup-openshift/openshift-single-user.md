@@ -138,7 +138,7 @@ curl -fsSL ${DEPLOY_ROOT_URL}/pvc/che-server-pvc.yaml -o che-server-pvc.yaml
 oc new-project che
 
 oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io
-oc apply -f che-server-pvc.yaml
+oc apply -f pvc/che-server-pvc.yaml
 oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
 ```
 
@@ -154,7 +154,7 @@ oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io 
                                        -p PROTOCOL=https \
                                        -p WS_PROTOCOL=wss \
                                        -p TLS=true
-oc apply -f che-server-pvc.yaml
+oc apply -f pvc/che-server-pvc.yaml
 oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
 oc apply -f https/che-route-tls.yaml
 ```
