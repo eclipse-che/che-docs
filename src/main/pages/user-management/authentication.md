@@ -24,7 +24,7 @@ folder: user-management
 
  The flow starts from the settings service where clients can find all the necessary URLs and properties of the OpenId provider such as `jwks.endpoint`, `token.endpoint`, `logout.endpoint`, `realm.name`, `client_id` etc returned. in JSON format.
  Service class is **org.eclipse.che.multiuser.keycloak.server.KeycloakSettings**, and it is bound only in multi-user version of Che,
- so by its presence it is possible to detect is authentication enabled in current deployment or not. 
+ so by its presence it is possible to detect if authentication enabled in current deployment or not. 
  
  Example output:
   ```json
@@ -72,7 +72,7 @@ folder: user-management
 
 #### Obtaining Token From Keycloak
 
-For the clients which are cannot run JS or other type clients (like CLI or selenium tests), auth token may be requested directly from Keycloak. 
+For the clients which cannot run JS or other type clients (like CLI or selenium tests), auth token may be requested directly from Keycloak. 
 The simplest way to obtain Keycloak auth token, is to perform request to the token endpoint with username and password credentials. This request can be schematically described as following cURL request:
 
 ```bash
@@ -119,7 +119,7 @@ Also, there is support of OAuth1 protocol can be found at **org.eclipse.che.secu
 
 The main REST endpoint in tha OAuth API is **org.eclipse.che.security.oauth.OAuthAuthenticationService**,  which  contains `authenticate` method to start OAuth authentication flow, `callback` method to process callbacks from provider, `token` to retrieve current user’s oauth token, etc.
 
-Those methods refers to the currently activated embedded/delegated OAuthAPI which is doing all the undercover stuff (finds appropriate authenticator, initializes the login process, user forwarding etc).
+Those methods refer to the currently activated embedded/delegated OAuthAPI which is doing all the undercover stuff (finds appropriate authenticator, initializes the login process, user forwarding etc).
 
 
 ## Authentication on Che Agents
