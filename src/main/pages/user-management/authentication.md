@@ -42,7 +42,7 @@ folder: user-management
  Service class is **org.eclipse.che.multiuser.keycloak.server.KeycloakSettings**.
  
  
- Next step is redirection of user to the appropriate provider’s login page with all the necessary params like client_id, return redirection path e.t.c. This can be basically done with any client library (JS or Java etc).
+ Next step is redirection of user to the appropriate provider’s login page with all the necessary params like client_id, return redirection path etc. This can be basically done with any client library (JS or Java etc).
  
  After user logged in on provider’s side and returned back to the Che server with JWT token, the validation of it and creation of subject begins.
  
