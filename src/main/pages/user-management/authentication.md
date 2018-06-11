@@ -52,7 +52,7 @@ folder: user-management
    - **org.eclipse.che.multiuser.keycloak.server.KeycloakAuthenticationFilter** class. 
    Token is extracted from `Authorization` header or `token` query param and tried to being parsed using public key retrieved from provider. 
    In case of expired/invalid/malformed token, 403 error is sent to user. As noted above, usage of query parameter should be minimised as much as possible, 
-   since that reduces security, and support of it may be limited/dropped at some point.   
+   since support of it may be limited/dropped at some point.   
 
   If validation was successful, token is passed to the  
 
