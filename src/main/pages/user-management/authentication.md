@@ -12,7 +12,7 @@ folder: user-management
 
 ### OpenId
 
-   OpenId authentication on Che master, implies presence of an external OpenId provider and has a 2 main goals:
+   OpenId authentication on Che master, implies presence of an external OpenId provider and has 2 main goals:
    - Authenticate the user through the JWT token he brought or redirect him to login;
   
   (Authentication tokens should be send in a `Authorization` header. Also, in limited cases when it's not possible to use `Authorization` header, token can be send in `token` query parameter. 
@@ -21,10 +21,10 @@ folder: user-management
   
   At the time of writing the only supported OpenId provider is Keycloak, so all examples/links will refer to this implementation. 
 
- The flow starts from the settings service where clients can find all the necessary URL’s and properties of the OpenId provider such as `jwks.endpoint`, `token.endpoint`, `logout.endpoint`, `realm.name`, `client_id` e.t.c returned. in JSON format.
+ The flow starts from the settings service where clients can find all the necessary URLs and properties of the OpenId provider such as `jwks.endpoint`, `token.endpoint`, `logout.endpoint`, `realm.name`, `client_id` etc returned. in JSON format.
  
  Example output:
-  ```
+  ```json
   {
     "che.keycloak.token.endpoint": "http://172.19.20.9:5050/auth/realms/che/protocol/openid-connect/token",
     "che.keycloak.profile.endpoint": "http://172.19.20.9:5050/auth/realms/che/account",
@@ -54,7 +54,7 @@ folder: user-management
 
   If validation was successful, token is passed to the  
 
-   - **org.eclipse.che.multiuser.keycloak.server.KeycloakEnvironmentInitalizationFilter** filter  in the parsed form. This filter simply extracts data from JWT token claims, creates user in the local DB if it is not yet present, and constructs subject object and sets it into per-request `EnvironmentContext` object which is statically accessible everywhere.
+   - **org.eclipse.che.multiuser.keycloak.server.KeycloakEnvironmentInitalizationFilter** filter in the parsed form. This filter simply extracts data from JWT token claims, creates user in the local DB if it is not yet present, and constructs subject object and sets it into per-request `EnvironmentContext` object which is statically accessible everywhere.
 
 
   If the request was made using machine token only (e.g. from ws agent) then it is only one auth filter in the chain:
@@ -64,7 +64,7 @@ folder: user-management
  Master-to-master requests are performed using **org.eclipse.che.multiuser.keycloak.server.KeycloakHttpJsonRequestFactory** which signs every request with the current subject token obtained from EnvironmentContext.
 
 #### User Profile
-  Since keycloak may store user user specific information (first/last name, phone number, job title etc), there is special implementation of the ProfileDao which can provide this data
+  Since keycloak may store user specific information (first/last name, phone number, job title etc), there is special implementation of the ProfileDao which can provide this data
   to consumers inside Che. Implementation is read-only, so no create/update operations are possible.
   Class is **org.eclipse.che.multiuser.keycloak.server.dao.KeycloakProfileDao**. 
 
@@ -101,12 +101,12 @@ curl
  - Write own or refactor existing info service which will provide list of configured provider endpoints to the clients;
  - Write single or chain of filters to validate tokens, create user in Che DB and compose the Subject object;
  - If the selected provider stores some additional data about user (first/last name, job title etc), it is a good idea to write an provider-specific ProfileDao 
-   implementation  which will provide such kind of information; 
+   implementation which will provide such kind of information; 
 
 
 ### OAuth
 OAuth authentication part has 2 main flows  - internal or using external brokering mechanism.
-So, there is 2 main OAuth API implementations - 
+So, there are 2 main OAuth API implementations - 
 **org.eclipse.che.security.oauth.EmbeddedOAuthAPI** and **org.eclipse.che.multiuser.keycloak.server.oauth2.DelegatedOAuthAPI**. 
 
 They can be switched using `che.oauth.service_mode=<embedded|delegated>` configuration property.
