@@ -10,39 +10,69 @@ folder: user-management
 
 ## Authentication on Che Master
 
-### Auth Filters on master
+### OpenId
 
- Che master can handle both types of signed requests - using Keycloak token or Machine token.
- Authentication tokens can be send in a `Authorization` header. Also, in limited cases when it's not possible to use `Authorization` header, token can be send in `token` query parameter. An example of such exceptional case can be: OAuth authentification initialization, IDE shows javadoc in iframe where authentication must be initialized.
+   OpenId authentication on Che master, implies presence of an external OpenId provider and has 2 main steps:
+   1. Authenticate the user through the JWT token he brought or redirect him to login;
+  
+        (Authentication tokens should be send in a `Authorization` header. Also, in limited cases when it's not possible to use `Authorization` header, 
+        token can be send in `token` query parameter. 
+        An example of such exceptional case can be: OAuth authentification initialization, IDE shows javadoc in iframe where authentication must be initialized.)
+   2. Compose internal “subject” object which represents the current user inside of the Che master code.
+  
+  At the time of writing the only supported/tested OpenId provider is Keycloak, so all examples/links will refer to this implementation. 
 
- In case of Keycloak tokens, authentication filter chain contains of two filters:
+ The flow starts from the settings service where clients can find all the necessary URLs and properties of the OpenId provider such as `jwks.endpoint`, `token.endpoint`, `logout.endpoint`, `realm.name`, `client_id` etc returned. in JSON format.
+ Service class is **org.eclipse.che.multiuser.keycloak.server.KeycloakSettings**, and it is bound only in multi-user version of Che,
+ so by its presence it is possible to detect if authentication enabled in current deployment or not. 
+ 
+ Example output:
+  ```json
+  {
+    "che.keycloak.token.endpoint": "http://172.19.20.9:5050/auth/realms/che/protocol/openid-connect/token",
+    "che.keycloak.profile.endpoint": "http://172.19.20.9:5050/auth/realms/che/account",
+    "che.keycloak.client_id": "che-public",
+    "che.keycloak.auth_server_url": "http://172.19.20.9:5050/auth",
+    "che.keycloak.password.endpoint": "http://172.19.20.9:5050/auth/realms/che/account/password",
+    "che.keycloak.logout.endpoint": "http://172.19.20.9:5050/auth/realms/che/protocol/openid-connect/logout",
+    "che.keycloak.realm": "che"
+  }
+  ```
+ 
+ Also, this service allows to download JS client library to interact with provider.
+ Service URL is ```<che.host>:<che.port>/api/keycloak/settings``` for retrieving settings JSON and ```<che.host>:<che.port>/api/keycloak/OIDCKeycloak.js``` for JS adapter library.
+  
+ 
+ Next step is redirection of user to the appropriate provider’s login page with all the necessary params like client_id, return redirection path etc. This can be basically done with any client library (JS or Java etc).
+ 
+ After user logged in on provider’s side and client side code obtained and passed the JWT token, validation of it and creation of subject begins.
+ 
+ Verification of tokens signature occurs in the two main filters chain: 
+ 
+   - **org.eclipse.che.multiuser.keycloak.server.KeycloakAuthenticationFilter** class. 
+   Token is extracted from `Authorization` header or `token` query param and tried to being parsed using public key retrieved from provider. 
+   In case of expired/invalid/malformed token, 403 error is sent to user. As noted above, usage of query parameter should be minimised as much as possible, 
+   since support of it may be limited/dropped at some point.   
 
-- **org.eclipse.che.multiuser.keycloak.server.KeycloakAuthenticationFilter** - validates signature of the Keycloak JWT token;
-- **org.eclipse.che.multiuser.keycloak.server.KeycloakEnvironmentInitalizationFilter** - extracts user data from JWT, finds or creates
-     appropriate user in the Che DB, and set user principal to the session.
+  If validation was successful, token is passed to the  
+
+   - **org.eclipse.che.multiuser.keycloak.server.KeycloakEnvironmentInitalizationFilter** filter in the parsed form. This filter simply extracts data from JWT token claims, creates user in the local DB if it is not yet present, and constructs subject object and sets it into per-request `EnvironmentContext` object which is statically accessible everywhere.
+
 
   If the request was made using machine token only (e.g. from ws agent) then it is only one auth filter in the chain:
 
 - **org.eclipse.che.multiuser.machine.authentication.server.MachineLoginFilter** - finds userId given token belongs to, than retrieves user instance and sets principal to the session.
 
-### Obtaining Keycloak endpoints
+ Master-to-master requests are performed using **org.eclipse.che.multiuser.keycloak.server.KeycloakHttpJsonRequestFactory** which signs every request with the current subject token obtained from EnvironmentContext.
 
-There is separate REST service to obtain main Keycloak endpoints for the current installation. It helps clients to find out URLs for basic operations like login/logout, profile reading, realm name etc. This service is not secured with any authentication and accessible for any client. Service URL is: `http://<wsmaster_host>:<port>/api/keycloak/settings`
-Example output:
-```
-{
-  "che.keycloak.token.endpoint": "http://172.19.20.9:5050/auth/realms/che/protocol/openid-connect/token",
-  "che.keycloak.profile.endpoint": "http://172.19.20.9:5050/auth/realms/che/account",
-  "che.keycloak.client_id": "che-public",
-  "che.keycloak.auth_server_url": "http://172.19.20.9:5050/auth",
-  "che.keycloak.password.endpoint": "http://172.19.20.9:5050/auth/realms/che/account/password",
-  "che.keycloak.logout.endpoint": "http://172.19.20.9:5050/auth/realms/che/protocol/openid-connect/logout",
-  "che.keycloak.realm": "che"
-}
-```
+#### User Profile
+  Since keycloak may store user specific information (first/last name, phone number, job title etc), there is special implementation of the ProfileDao which can provide this data
+  to consumers inside Che. Implementation is read-only, so no create/update operations are possible.
+  Class is **org.eclipse.che.multiuser.keycloak.server.dao.KeycloakProfileDao**. 
 
-### Obtaining Token From Keycloak
+#### Obtaining Token From Keycloak
 
+For the clients which cannot run JS or other type clients (like CLI or selenium tests), auth token may be requested directly from Keycloak. 
 The simplest way to obtain Keycloak auth token, is to perform request to the token endpoint with username and password credentials. This request can be schematically described as following cURL request:
 
 ```bash
@@ -66,6 +96,31 @@ curl
    "session_state":"14de1b98-8065-43e1-9536-43e7472250c9"
  }
  ```
+
+### Other authentication implementations
+
+ If you want to adapt authentication implementation other than Keycloak, the following steps must be done:
+ 
+ - Write own or refactor existing info service which will provide list of configured provider endpoints to the clients;
+ - Write single or chain of filters to validate tokens, create user in Che DB and compose the Subject object;
+ - If the new auth provider supports OpenId protocol, OIDC JS client available at settings endpoint can be used as well since it is maximally decoupled of specific implementations.
+ - If the selected provider stores some additional data about user (first/last name, job title etc), it is a good idea to write an provider-specific ProfileDao 
+   implementation which will provide such kind of information;    
+
+
+### OAuth
+OAuth authentication part has 2 main flows  - internal and external based on Keycloak brokering mechanism.
+So, there are 2 main OAuth API implementations - 
+**org.eclipse.che.security.oauth.EmbeddedOAuthAPI** and **org.eclipse.che.multiuser.keycloak.server.oauth2.DelegatedOAuthAPI**. 
+
+They can be switched using `che.oauth.service_mode=<embedded|delegated>` configuration property.
+
+Also, there is support of OAuth1 protocol can be found at **org.eclipse.che.security.oauth1** package.
+
+The main REST endpoint in tha OAuth API is **org.eclipse.che.security.oauth.OAuthAuthenticationService**,  which  contains `authenticate` method to start OAuth authentication flow, `callback` method to process callbacks from provider, `token` to retrieve current user’s oauth token, etc.
+
+Those methods refer to the currently activated embedded/delegated OAuthAPI which is doing all the undercover stuff (finds appropriate authenticator, initializes the login process, user forwarding etc).
+
 
 ## Authentication on Che Agents
 
