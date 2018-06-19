@@ -42,6 +42,8 @@ If you must use IP address (e.g. your corporate policy prevents you from using n
 
 The context of the commands below is `che/deploy/kubernetes/helm/che`
 
+### To deploy with dedicated keycloak as authentication server:
+
 - Override default values by changing the values.yaml file and then typing:
 
   ```bash
@@ -56,6 +58,16 @@ The context of the commands below is `che/deploy/kubernetes/helm/che`
 * Master: `https://che-<che-namespace>.domain`
 * Keycloak:  `https://keycloak-<che-namespace>.domain`
 * Workspaces servers: `https://server-host.domain`
+
+### To deploy without keycloak in multi-user mode 
+In this case you have to supply custom OpenIdConnect provider (see [here](https://github.com/eclipse/che-docs/blob/b2310017b1a75901cbec3b9c665d7ffa1cb23177/src/main/pages/setup-openshift/openshift-config.md) for more details), using the following flags:
+```bash
+  helm upgrade --install <my-che-installation> --namespace <my-che-namespace> -f ./values/multi-user.yaml --set global.ingressDomain=<my-hostname>,cheImage=<my-image>,global.cheDedicatedKeycloak=false,customOidcProvider=<oidc-url>,cheKeycloakClientId=<oidc_clientId>,customOidcUsernameClaim=<user_name_claim> ./
+  ```
+  * cheKeycloakClientId - is your authentication server client ID
+  * customOidcUsernameClaim - is optional, and should be used if your authentication server does not support 'preferred_username' 
+  claim in the JWT token (This can be checked by accessing oidc-url/.well-known/openid-configuration response). This parameter defines,
+  which claim should be used to determine user name instead.
 
 ## Default Host
 All Ingress specs are created without a host attribute (defaults to `*`).
