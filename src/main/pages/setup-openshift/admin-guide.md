@@ -159,7 +159,7 @@ See more at [logging docs][logging].
 
 ## Workspace Logs
 
-Workspace logs are stored in an PV bound to `che-claim-workspace` PVC. Workspace logs include logs from workspace agent, [boostrapper][boostrapper] and other agents if applicable.
+Workspace logs are stored in an PV bound to `che-claim-workspace` PVC. Workspace logs include logs from workspace agent, [bootstrapper](what-are-workspaces.html#bootstrapper) and other agents if applicable.
 
 ## Che Master States
 

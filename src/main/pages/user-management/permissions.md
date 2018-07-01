@@ -73,7 +73,7 @@ It is possible to activate this option by configuring the `CHE_SYSTEM_SUPER_PRIV
 
 ## Stack Permissions
 
-A stack is a runtime configuration for a workspace, see [stack definition]({{base}}{{site.links["devops-runtime-stacks"]}}).
+A stack is a runtime configuration for a workspace, see [stack definition][stacks].
 
 The following permissions are applicable to a stack:
 
@@ -87,7 +87,7 @@ The following permissions are applicable to a stack:
 
 ## Recipe Permissions
 
-A recipe defines part of the runtime of a workspace, see [recipe definition]({{base}}{{site.links["devops-runtime-recipes"]}}).
+A recipe defines part of the runtime of a workspace, see [recipe definition][recipes].
 
 The following permissions are applicable to a recipe:
 
