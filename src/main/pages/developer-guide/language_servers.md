@@ -45,101 +45,20 @@ Examples of existed language server agents you can learn from:
 * [C#](https://github.com/eclipse/che/tree/master/agents/ls-csharp)
 * [TypeScript](https://github.com/eclipse/che/tree/master/agents/ls-typescript)
 
-## Adding a Language Server Launcher
+## Adding a Language Server Config
 
-Implement the [LanguageServerLauncher interface](https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver/src/main/java/org/eclipse/che/api/languageserver/launcher/LanguageServerLauncher.java).
+In order to start/initialize a language server for the desired language, you need to implement [LanguageServerConfig interface] (https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver/src/main/java/org/eclipse/che/api/languageserver/LanguageServerConfig.java) which pretty much defines what needs to be accomplished to start a 'local' language server.
 
-```java
-public interface LanguageServerLauncher {
+Here is how a typical LanguageServerConfig looks like: (Clangd)[https://github.com/eclipse/che/blob/master/plugins/plugin-clangd/che-plugin-clangd-lang-server/src/main/java/org/eclipse/plugin/clangd/languageserver/ClangDLanguageServerConfig.java].
 
-    //**
-     * Initializes and starts a language server.
-     *
-     * @param projectPath
-     *      absolute path to the project
-     * @param client
-     *      an interface implementing handlers for server->client communication
-     */
-    LanguageServer launch(String projectPath, LanguageClient client) throws LanguageServerException;
+Things to pay attention to:
 
-    /**
-     * Gets the language server description
-     */
-    LanguageServerDescription getDescription();
+* **REGEX** defines regexp for desired files. It can be a path, all fines with certain extension or particular file names etc.
+* **launchScript** is usually created by an installer script and contains command(s) to launch a language server in a stdio mode
+* **LANGUAGE_ID** is defined in a guice module. See: [ClangdModule](https://github.com/eclipse/che/blob/master/plugins/plugin-clangd/che-plugin-clangd-lang-server/src/main/java/org/eclipse/plugin/clangd/inject/ClangModule.java)
+* add binding in [guice module](https://github.com/eclipse/che/blob/master/plugins/plugin-clangd/che-plugin-clangd-lang-server/src/main/java/org/eclipse/plugin/clangd/inject/ClangModule.java#L37)
 
-    /**
-     * Indicates if language server is installed and is ready to be started.  
-     */
-    boolean isAbleToLaunch();
-}
-```
-
-[LanguageServerDescription](https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver/src/main/java/org/eclipse/che/api/languageserver/registry/LanguageServerDescription.java) and [LanguageDescription](https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver-shared/src/main/java/org/eclipse/che/api/languageserver/shared/model/LanguageDescription.java) are used to describe the types of file your language server will make contributions to.
-
-Follow our language server launchers and descriptions examples:
-
-* [Python](https://github.com/eclipse/che/blob/master/plugins/plugin-python/che-plugin-python-lang-server/src/main/java/org/eclipse/che/plugin/python/languageserver/PythonLanguageSeverLauncher.java)
-* [C#](https://github.com/eclipse/che/blob/master/plugins/plugin-csharp/che-plugin-csharp-lang-server/src/main/java/org/eclipse/che/plugin/csharp/languageserver/CSharpLanguageServerLauncher.java)
-* [JSON](https://github.com/eclipse/che/blob/master/plugins/plugin-json/che-plugin-json-server/src/main/java/org/eclipse/che/plugin/json/languageserver/JsonLanguageServerLauncher.java)
-
-## Bind Language Server Launcher and Language Description
-
-A language description tells the system that an LSP-based editor should be used for a particular file and associates a language identifier with
-those files. It can be configured in your plugin's module definition:
-
-```java
-@DynaModule
-public class MyLanguageServerModule extends AbstractModule {
-    @Override
-    protected void configure() {
-        Multibinder.newSetBinder(binder(), LanguageServerLauncher.class).addBinding().to(MyLanguageServerLauncher.class);
-        LanguageDescription description = new LanguageDescription();
-        description.setFileExtensions(asList("foo", "bar"));
-        description.setFileNames(asList("foobar.txt", "foobar.xml"));
-
-        description.setLanguageId("myLanguage");
-        description.setMimeType("text/foobar");
-        Multibinder.newSetBinder(binder(), LanguageDescription.class).addBinding().toInstance(description);
-    }
-}
-```
-Any time results from language servers are required, the system finds all contributing language servers by matching the their `LanguageServerDescription` against the file URI and the associated language identifier. A language server can register multiple `DocumentFilter` instances. The results of the operations are merged. When only a single language server can be used (like when formatting, for example), servers will be prioritized, with those matching ".*" at the end of the list. If multiple servers have the same priority, the first registered will be chosen. For example, here is the language server decription for the JSON server:
-
-```java
- description = new LanguageServerDescription(
-    "org.eclipse.che.plugin.json.languageserver",
-    null,
-    Arrays.asList(new DocumentFilter(JsonModule.LANGUAGE_ID, ".*\\.(json|bowerrc|jshintrc|jscsrc|eslintrc|babelrc)",
-    null)));
-```
-
-Once complete, compile and run Che. If everything has worked you will see your installer listed in the list of [installers][installers]:
-
-The agent can be added by default in a Stack, our [Stack documentation][stacks] explains how to create and edit stacks.
-
-## Implement Code Action Commands
-
-Through the LSP command "textDocument/codeAction", a language server can contribute items to the quick-assist menu in an editor. The language server returns a list of LSP `Command` objects. These command objects are mapped to Che actions by looking up an action by id in the `ActionManager` using the `command` field of the command object.
-The extra parameters from the command object are passed to the action by using an extended `ActionEvent`:
-
-```java
-
-public class QuickassistActionEvent extends ActionEvent {
-
-	private List<Object> arguments;
-
-	public QuickassistActionEvent(Presentation presentation, ActionManager actionManager, PerspectiveManager perspectiveManager, List<Object> arguments) {
-		super(presentation, actionManager, perspectiveManager);
-		this.arguments= arguments;
-	}
-
-	public List<Object> getArguments() {
-		return arguments;
-	}
-}
-```
-
-Language server launcher IDE plugins may contribute their own actions to be called. The language server plugin itself contributes two actions with the ids "lsp.applyTextEdit" and "lsp.applyWorkspaceEdit". The first will apply a list of LSP `TextEdit` objects in the currently active editor. The second one applies a an LSP `WorkspaceEdit` to files in the workspace, either in an editor if the file is open, or on disk if they are not.
+Installers are packaged into wsmaster, so you will need to add required dependencies there. LanguageServerConfigs are usually part of plugins packages with a workspace agent.
 
 ## LS-Sidecars
 
@@ -181,9 +100,10 @@ services:
 "servers": {
   "ls": {
     "attributes": {
+      "id": "go-ls",
       "internal": "true",
       "type": "ls",
-      "config": "{\"id\":\"tsls\", \"languageIds\":[typescript]}"
+      "languageRegexes": "[ {\"languageId\":\"golang\", \"regex\":\".*\\\\.go$\"}]",
     },
     "protocol": "tcp",
     "port": "4417"
@@ -191,13 +111,16 @@ services:
 }
 ```
 * **ls** - server name - can be any string
+* **attributes.id** - can be any unique identifier
 * **attributes.internal** - `true`. Mandatory! Used to get an internal link to server
 * **attributes.type** - `ls`. Mandatory. Used by the IDE client to identify a server as a language server
-* **attributes.config.id** - LS ID - any string. Used as LS identifier
-* **attributes.config.languageIds** - List of registered Language IDs. You can either [register own](#bind-language-server-launcher-and-language-description) (in this case you need own custom Che assembly) or use any ID from the [default list](https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver/src/main/java/org/eclipse/che/api/languageserver/registry/DefaultLanguages.java) that covers most popular languages. Each Language ID has associated file extensions.
+* **languageRegexes.languageId** - language identifier, either one of those supported in [LSP specification] (https://microsoft.github.io/language-server-protocol/specification#textdocumentitem) or own.
+* **languageRegexes.regex** - regexp expression to match either extension or file name + extension, or whatever match you need (for example, path, say, initialize language server only for config/config.xml files). Pay attention to regexp syntax since errors are not validated by server, and bad regexp will result in the client ignoring your files.
 
 * In User Dashboard, go to Workspaces > Your Workspace > Volumes, add a volume for **each machine**. The two volumes have to share the same name (for example, `projects`) and path `/projects` so that they actually share one volume. This way a language server container has access to workspace project types.
 
 {% include image.html file="extensibility/lang_servers/volumes_ls.png" %}
 
 * Start a workspace. Open a file with one of the extensions bound to a language ID. Che client will attempt to connect to language server over tcp socket. This data is retrieved from workspace runtime. Language server process should be available at the port declared in the server. You can either use Socat or launch a language server in tcp mode if it supports it. It is your Docker image's responsibility to launch the language server. Adding `ENTRYPOINT` or `CMD` instruction should work well.
+
+See: [Sample configuration](https://gist.githubusercontent.com/eivantsov/4e86b4d51cf23fbd8fd68410170f06e3/raw/e9c1edc600d0ff82e15d2d68d2ac5c6304a981b9/go-workspace.json) of a workspace featuring 2 machines, one of which is a language server machine.
