@@ -16,7 +16,7 @@ Failures to start a workspace may be caused by different factors:
 
 ## Bad Recipes
 
-When a workspace is being started, environment [recipe][recipe] is sent to Docker or OpenShift API. Che server then listens to events provided by a particular infrastructure. In simple words, Che server expects a running container (Docker) or pod (OpenShift). If the infrastructure was unable to create and start a container/pod from the provided recipe, Che server fails to start an environment, and consequently workspace start fails.
+When a workspace is being started, environment [recipe][recipes] is sent to Docker or OpenShift API. Che server then listens to events provided by a particular infrastructure. In simple words, Che server expects a running container (Docker) or pod (OpenShift). If the infrastructure was unable to create and start a container/pod from the provided recipe, Che server fails to start an environment, and consequently workspace start fails.
 
 A recipe can be **"bad"** due to the following reasons:
 

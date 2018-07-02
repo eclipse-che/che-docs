@@ -84,7 +84,7 @@ INFO: (che start): Use: http://172.19.20.180:8080
 INFO: (che start): API: http://172.19.20.180:8080/swagger
 ````
 
-The Che CLI - a Docker image - manages the other Docker images and supporting utilities that Che uses during its configuration or operations phases. Che installation with the CLI is a recommended installation method, however it is possible to run `che-server` image directly. See: [Run Che-Server directly][#run-without-cli].
+The Che CLI - a Docker image - manages the other Docker images and supporting utilities that Che uses during its configuration or operations phases. Che installation with the CLI is a recommended installation method, however it is possible to run `che-server` image directly. See: [Run Che-Server directly](#run-without-cli).
 
 
 ## Versions

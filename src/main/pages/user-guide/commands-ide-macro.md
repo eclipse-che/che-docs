@@ -112,7 +112,7 @@ To clean the list, remove the command's process from the list of processes.
 
 **Preview Button**
 
-If you have a command which start servers (for example, Tomcat) you can define the preview URL to access the running server. Learn more [here]({{base}}{{site.links["ide-previews"]}}).
+If you have a command which start servers (for example, Tomcat) you can define the preview URL to access the running server. Learn more at [server preview URLs](servers.html#preview-urls).
 
 The preview button provides quick access to all the servers that are running in workspace’s machines.
 
