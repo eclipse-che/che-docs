@@ -19,6 +19,30 @@ Stacks are displayed in User Dashboard on Create a workspace page. You can filte
 
 As stacks are workspace templates, they are used to create workspace when in User Dashboard. See: [User Guide: Creating and Starting Workspaces][creating-starting-workspaces].
 
+## Community Supported Stacks
+
+The list of stacks Che offers out of the box references tested stacks and sample applications with commands on how to build, run and debug them. There are also stacks contributed by the community which work fine with Che but do not go through daily tests. It is possible however that sample applications may be incompatible with certain stacks.
+
+Community supported stacks and sample apps (if any) are located in [Community stacks GitHub repo](https://github.com/che-samples/community-stacks).
+
+Each directory has `${technology}-stack.json` and `${technology}-samples.json`. If you want to import a chosen stack, follow the below instructions:
+
+1. Copy content of a chosen json
+2. Go to `${CHE_HOST}/swagger/#!/stack/createStack`, paste JSON content to request body field
+3. Hit **Try it out** button.
+
+If there's a conflict with stack ID or name, use a different name or ID (make sure it is unique).
+
+For a multi-user setup, you may want to make your stack available for a particular user or all users in the system. If this is the case, see [stack sharing](#stack-sharing-and-system-stacks).
+
+To import **sample applications**, move chosen `*-stacks.json` files to:
+
+* `${LOCAL_STORAGE}/instance/data/templates` for Docker infra
+* `${mount-path-of-che-data-volume}/templates` for OpenShift/K8S infra. You will need admin privileges to get PV details (host path) and access to host directory.
+Also, make sure the new jsons have the same permissions as the original `samples.json` that you will find there.
+
+You can find Dockerfiles for all stacks in [Che Dockerfiles repository](https://github.com/eclipse/che-dockerfiles).
+
 ## Stack Sharing and System Stacks
 
 Stacks that a user creates are available only for this user. Che users with system privileges can share created stacks with selected users or all users in the system. Currently, there are no UI controls for that, so a couple of REST calls need to be made:
