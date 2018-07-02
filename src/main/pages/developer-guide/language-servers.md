@@ -47,9 +47,9 @@ Examples of existed language server agents you can learn from:
 
 ## Adding a Language Server Config
 
-In order to start/initialize a language server for the desired language, you need to implement [LanguageServerConfig interface] (https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver/src/main/java/org/eclipse/che/api/languageserver/LanguageServerConfig.java) which pretty much defines what needs to be accomplished to start a 'local' language server.
+In order to start/initialize a language server for the desired language, you need to implement [LanguageServerConfig interface](https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver/src/main/java/org/eclipse/che/api/languageserver/LanguageServerConfig.java) which pretty much defines what needs to be accomplished to start a 'local' language server.
 
-Here is how a typical LanguageServerConfig looks like: (Clangd)[https://github.com/eclipse/che/blob/master/plugins/plugin-clangd/che-plugin-clangd-lang-server/src/main/java/org/eclipse/plugin/clangd/languageserver/ClangDLanguageServerConfig.java].
+Here is how a typical LanguageServerConfig looks like: [Clangd](https://github.com/eclipse/che/blob/master/plugins/plugin-clangd/che-plugin-clangd-lang-server/src/main/java/org/eclipse/plugin/clangd/languageserver/ClangDLanguageServerConfig.java).
 
 Things to pay attention to:
 
