@@ -11,20 +11,23 @@ folder: setup-openshift
 
 See: [OpenShift Admin Guide][openshift-admin-guide] to general information that works both for OS and K8S.
 
-## How It Works
+## Configure Che Server
 
-Che server is configured via environment variables passed to Che deployment. You can do it when initially deploying Che (See: [Installation Single User][openshift-single-user], [Multi-User][openshift-multi-user]) or afterwards, by editing Che deployment.
+Che server is configured by updating environment variables passed to Che deployment. You can configure Che Server when initially deploying Che (See: [Installation Single User][openshift-single-user], [Multi-User][openshift-multi-user]) or afterwards, by modifying Che deployment.
 
-There are multiple ways to edit Che deployment to add new or edit existing envs:
+There are multiple ways to modify Che deployment to add new or modify existing environment variables. You can either:
 
-* `OC_EDITOR="nano" oc edit dc/che` opens Che deployment yaml in nano editor (VIM is used by default)
-* manually in OpenShift web console > deployments > Che > Environment
-* `oc set env dc/che KEY=VALUE KEY1=VALUE1` updates Che deployment with new envs or modifies values of existing ones
+* **Option 1: Update Che deployment yaml.** To update Che deployment yaml and update in nano editor (VIM is used by default), run this command: 
+ `$ OC_EDITOR="nano" oc edit dc/che` 
+
+* **Option 2: Update manually in OpenShift web console.** To update manually in OpenShift web console > deployments > Che > Environment
+
+* **Option 3: Modify environment variables.** To update Che deployment with new environment variables or modify existing variables, run this command: `$ oc set env dc/che KEY=VALUE KEY1=VALUE1` 
 
 
 ## What Can Be Configured?
 
-You can find deployment env or config map in yaml files. However, they do not reference a complete list of environment variables that Che server will respect.
+You can find deployment env or config map in yaml files. 
 
 Here is a [complete](https://github.com/eclipse/che/tree/master/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che) list of all properties that are configurable for Che server.
 
@@ -32,7 +35,9 @@ You can manually convert properties into envs, just make sure to follow [instruc
 
 ## HTTPS Mode
 
-To enable https for server and workspace routes, follow instructions in [setup docs single user][openshift-single-user] and [multi-user][openshift-multi-user]. To migrate an existing Che deployment to https, do the following:
+To enable https for server and workspace routes, follow instructions in [setup docs single user][openshift-single-user] and [multi-user][openshift-multi-user]. 
+
+To migrate an existing Che deployment to https, do the following:
 
 1. Update Che deployment with `PROTOCOL=https, WS_PROTOCOL=wss, TLS=true`
 2. Manually edit or recreate routes for Che and Keycloak `oc apply -f https`
