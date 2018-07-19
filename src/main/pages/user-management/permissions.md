@@ -18,7 +18,6 @@ Permissions can be applied to:
 - Workspace
 - Organization
 - Stack
-- Recipe
 - System
 
 ## Workspace Permissions
@@ -85,21 +84,6 @@ The following permissions are applicable to a stack:
 | delete                        | Allows deleting of the stack.
 | setPermissions                | Allows managing permissions for the stack.
 
-## Recipe Permissions
-
-A recipe defines part of the runtime of a workspace, see [recipe definition][recipes].
-
-The following permissions are applicable to a recipe:
-
-| Permission                    | Description                                                           |
-| ----------------------------- | --------------------------------------------------------------------- |
-| search                        | Allows searching of the recipes.
-| read                          | Allows reading of the recipe's configuration.
-| update                        | Allows updating of the recipe's configuration.
-| delete                        | Allows deleting of the recipe.
-| setPermissions                | Allows managing permissions for the recipe.
-
-
 ## Permissions API
 
 All permissions can be managed by using the provided REST API. The APIs are documented using Swagger at `[{host}/swagger/#!/permissions]`.
@@ -117,7 +101,6 @@ Applicable `domain` values are the following:
 | organization               |
 | workspace                  |
 | stack                      |
-| recipe                     |
 
 Note: `domain` is optional, in this case the API will return all possible permissions for all domains.
 
@@ -134,7 +117,6 @@ Applicable `domain` values are the following:
 | organization               |
 | workspace                  |
 | stack                      |
-| recipe                     |
 
 `instance` parameter corresponds to the ID of the resource you want to get the applied permissions.
 
@@ -151,7 +133,6 @@ Applicable `domain` values are the following:
 | organization               |
 | workspace                  |
 | stack                      |
-| recipe                     |
 
 `instance` parameter corresponds to the ID of the resource you want to get the applied permissions for all users.
 
@@ -168,7 +149,6 @@ Applicable `domain` values are the following:
 | organization               |
 | workspace                  |
 | stack                      |
-| recipe                     |
 
 `instance` parameter corresponds to the ID of the resource you want to get the applied permissions for all users.
 
