@@ -17,7 +17,7 @@ If you plan using Che just on your local machine or just evaluate the platform, 
 **Single User Che Pros:**
 
 * The CLI will pull fewer Images
-* You will faster get to User Dashboard (no login)
+* You will get to the User Dashboard more quickly (no login)
 
 **Multi-User Che Pros**
 
