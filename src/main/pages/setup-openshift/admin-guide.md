@@ -29,30 +29,19 @@ Therefore, an account where Che pods are created (including workspace pods) shou
 
 ## Who Creates Workspace Objects?
 
-All workspace objects for all Eclipse Che users are **created on behalf of one OpenShift user**, typically the one who deployed Che or whose credentials or token is used in Che deployment environment. Eclipse Che uses fabric8 client to talk to Kubernetes/OpenShift API, and the client uses token, username/password or service account, if available.
+Eclipse Che currently supports two different configurations: in the single OpenShift project case, workspace objects are created using a service account that can be configured for Che server, whereas in the multi OpenShift project case, workspace objects are created on behalf of each OpenShift user as they use Eclipse Che. As Eclipse Che communicates with the Kubernetes/OpenShift API through the fabric8 client, an authorization token is required.
 
-* If you passed `CHE_INFRA_KUBERNETES_USERNAME` and `CHE_INFRA_KUBERNETES_PASSWORD` to Che deployment, those credentials will be used to create workspace objects.
+* In the single project case, the environment variable `CHE_OPENSHIFT_SERVICEACCOUNTNAME` governs which service account is used to create workspace objects. This service account must be visible to the Che server (i.e. in the same namespace) and have appropriate permissions to create and edit OpenShift resources. This means that if objects are to be created outside of the service accounts bound namespace the service account will require cluster-admin rights, which can be enabled by an admin via the `oc` CLI:
+  ```bash
+  oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:eclipse-che:che
 
-* If there's `CHE_INFRA_KUBERNETES_OAUTH__TOKEN` fabric8 client will use it. If both are available, token has a priority over username/pass.
+  # eclipse-che is Che namespace
+  ```
 
-* If none are available **che service account** is used to create workspace objects. This is default behavior. Since che service account cannot create objects outside a namespace it's bound to, all workspace objects are created in Che namespace. Admins can grant `che` [service account super user permissions](https://kubernetes.io/docs/admin/authorization/rbac/#service-account-permissions), and this way it will be possible to use this SA to create objects outside Che namespace. OpenShift cluster admins can do it this way using oc CLI:
+* In the multi project case, Eclipse Che will use individual user's OpenShift tokens to create resources **on behalf of the currently logged-in user**. Refer to the [OpenShift Admin Guide](openshift-admin-guide#create-workspace-objects-in-personal-namespaces) for more details about how it works.
 
-```bash
-oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:eclipse-che:che
+The environment variable `CHE_INFRA_OPENSHIFT_PROJECT` controls the namespace in which workspace objects are created. In the multi-project case, it should be set to `NULL` to create workspace objects in different namespaces for each user. In the single project case, if the che service accout does not have cluster-admin rights, it should be set to the same project that hosts the Che server. Refer to the [OpenShift Configuration Guide](openshift-config) for more details on how to configure Che.
 
-# eclipse-che is Che namespace
-```
-
-Advantages and disadvantages of using token, username/pass, and service account:
-
-|Auth type         | Pros                                         | Cons |
-|**Token**             | Objects can be created outside Che namespace | Tokens tend to expire
-|**Username/Password** | Objects can be created outside Che namespace | If username/pass are changed, they need to be updated in Che deployment as well. Many authentication types like oAuth make it impossible to login with username/pass
-| **Service account**   | No expiration risks                          | Cannot create objects outside its namespace unless given admin privileges
-
-**OpenShift-specific feature: create workspace objects in a personal namespace**
-
-When Che is deployed on OpenShift in multi-user mode, there is an additional option that allows creating workspace objects **on behalf of the currently logged-in user**, instead of using the configured user described above. Refer to the [OpenShift Admin Guide](openshift-admin-guide#create-workspace-objects-in-personal-namespaces) for more details about how it works.
 
 ## Storage Overview
 

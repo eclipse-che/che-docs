@@ -54,7 +54,6 @@ If Minishift is already started and Che addon is installed, it is possible to de
 ```bash
 $ minishift addons apply \
     --addon-env CHE_DOCKER_IMAGE=eclipse/che-server:nightly \
-    --addon-env OPENSHIFT_TOKEN=$(oc whoami -t) \
     che
 ```
 
@@ -71,7 +70,6 @@ If the local image is based on Che v6:
 ```bash
 $ minishift addons apply \
     --addon-env CHE_DOCKER_IMAGE=eclipse/che-server:local \
-    --addon-env OPENSHIFT_TOKEN=$(oc whoami -t) \
     che
 ```
 
@@ -85,7 +83,6 @@ To customize the deployment of the Che server, the following variables can be ap
 |`CHE_DOCKER_IMAGE`|The docker image to be used for che.|`eclipse/che-server:latest`|
 |`GITHUB_CLIENT_ID`|GitHub client ID to be used in Che workspaces|`changeme`|
 |`GITHUB_CLIENT_SECRET`|GitHub client secred to be used in Che workspaces|`changeme`|
-|`OPENSHIFT_TOKEN`| Token to create workspace resources (pods, services, routes, etc...)|`changeme`|
 
 Variables can be specified by adding `--addon-env <key=value>` when the addon is being invoked (either by `minishift start` or `minishift addons apply`).
 
