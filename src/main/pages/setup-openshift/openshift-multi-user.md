@@ -38,7 +38,7 @@ Examples below reference `oc-new app` and `oc apply` commands.
 `oc new-app` accepts parameters envs or env file which makes it possible to override default params and pass envs to chosen deployments (even if they are not in a template):
 
 ```
-oc new-app -f example.yaml -p PARAM=VALUE -e ENV=VALUE --env-file=che.env
+$ oc new-app -f example.yaml -p PARAM=VALUE -e ENV=VALUE --env-file=che.env
 ```
 More info is available in [OpenShift documentation](https://docs.openshift.com/container-platform/3.7/dev_guide/application_lifecycle/new_app.html#specifying-a-template).
 
@@ -47,23 +47,23 @@ Env file has a simple format: `KEY=VALUE` per line.
 You can also use `oc process` and then apply the resulted output `| oc apply -f -`, for example:
 
 ```
-oc process -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io | oc apply -f -
+$ oc process -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io | oc apply -f -
 ```
 In this case, however, it is not possible to pass envs, only params are available.
 
 ## Minishift
 
-Due to the size of a multi-user Eclipse Che install, MiniShift is not recommended as a base for this configuration. However, if you have to use Minishift ensure you have started MiniShift with `--memory=4096` or more and [update Minishift](https://docs.openshift.org/latest/minishift/getting-started/updating.html) to the latest version.
+Due to the size of a multi-user Eclipse Che install, Minishift is not recommended as a base for this configuration. However, if you have to use Minishift ensure you have started Minishift with `--memory=4096` or more and [update Minishift](https://docs.openshift.org/latest/minishift/getting-started/updating.html) to the latest version.
 
 
 ```bash
-oc new-project che
+$ oc new-project che
 
-oc new-app -f multi/postgres-template.yaml
-oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io
-oc apply -f pvc/che-server-pvc.yaml
-oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io -p CHE_MULTIUSER=true
-oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
+$ oc new-app -f multi/postgres-template.yaml
+$ oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io
+$ oc apply -f pvc/che-server-pvc.yaml
+$ oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io -p CHE_MULTIUSER=true
+$ oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
 ```
 
 ## OpenShift Container Platform
@@ -71,13 +71,13 @@ oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data
 **HTTP Setup**
 
 ```bash
-oc new-project che
+$ oc new-project che
 
-oc new-app -f multi/postgres-template.yaml
-oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX}
-oc apply -f pvc/che-server-pvc.yaml
-oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX} -p CHE_MULTIUSER=true
-oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
+$ oc new-app -f multi/postgres-template.yaml
+$ oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX}
+$ oc apply -f pvc/che-server-pvc.yaml
+$ oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX} -p CHE_MULTIUSER=true
+$ oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
 ```
 
 More info about routing suffix [here](openshift-single-user.html#what-is-my-routing-suffix).
@@ -87,18 +87,18 @@ More info about routing suffix [here](openshift-single-user.html#what-is-my-rout
 <span style="color:red;">IMPORTANT!</span> Find instructions on adding self signed certs at [OpenShift Configuration page](openshift-config.html#https-mode---self-signed-certs).
 
 ```bash
-oc new-project che
+$ oc new-project che
 
-oc new-app -f multi/postgres-template.yaml
-oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX} -p PROTOCOL=https
-oc apply -f pvc/che-server-pvc.yaml
-oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX} \
+$ oc new-app -f multi/postgres-template.yaml
+$ oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX} -p PROTOCOL=https
+$ oc apply -f pvc/che-server-pvc.yaml
+$ oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX} \
 	-p CHE_MULTIUSER=true \
  	-p PROTOCOL=https \
 	-p WS_PROTOCOL=wss \
 	-p TLS=true
-oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
-oc apply -f https
+$ oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
+$ oc apply -f https
 ```
 
 More info about routing suffix [here](openshift-single-user.html#what-is-my-routing-suffix).
