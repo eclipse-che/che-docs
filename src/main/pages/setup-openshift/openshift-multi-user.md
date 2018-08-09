@@ -7,58 +7,55 @@ permalink: openshift-multi-user.html
 folder: setup-openshift
 ---
 
-## Supported OpenShift Flavors and Versions
+## Deploying Che on supported OpenShift flavors and versions
 
-Multi-user Eclipse Che can be deployed to OpenShift Container Platform 3.6+, OpenShift Dedicated and OpenShift Online Pro.
+Multi-user Eclipse Che can be deployed to OpenShift Container Platform 3.6 and later, OpenShift Dedicated, and OpenShift Online Pro.
+
+The deployment script creates three DeploymentConfigs for Che, Postgres and Keycloak.  PVCs, services, and routes (Che and Keycloak only) are also created by the deployment script.
 
 ## Deployment diagram
-
-The deployment script creates 3 DeploymentConfigs for Che, Postgres and Keycloak, as well as PVCs, services and routes (Che and Keycloak only).
 
 {% include image.html file="diagrams/ocp_multi_user.png" %}
 
 
-## How to Get Deployment YAMLs
+## Getting deployment YAML files
 
 ```shell
-git clone https://github.com/eclipse/che
-cd che/deploy/openshift/templates
+$ git clone https://github.com/eclipse/che
+$ cd che/deploy/openshift/templates
 ```
 
-Context of all commands below is `che/deploy/openshift/templates`
+The context of all commands below is `che/deploy/openshift/templates`.
 
 
-## Templates and Parameters
+## Using templates and modifying their parameters
 
-Templates are provided with a set of predefined params which you can override with with `-p key=value`.
-You can list all params before applying a template: `oc process --parameters -f <filename>`.
-If you miss envs and parameters, you can add them to your template both as a parameters env variables.
+Templates are provided with a set of predefined parameters. You can add parameters and environment variables to your template. You can also override parameters by using this option: `-p key=value`. 
+The `oc new-app` command accepts parameters, environment variables, or environment files, which makes it possible to override default parameters and pass environment variables to chosen deployments (even if they are not in a template). You can view all parameters by using this command: `$ oc process --parameters -f <filename `
+ 
 
-Examples below reference `oc-new app` and `oc apply` commands.
-`oc new-app` accepts parameters envs or env file which makes it possible to override default params and pass envs to chosen deployments (even if they are not in a template):
+The examples below reference the `oc process`,  `oc-new app` and `oc apply` commands. 
 
 ```
 $ oc new-app -f example.yaml -p PARAM=VALUE -e ENV=VALUE --env-file=che.env
 ```
-More info is available in [OpenShift documentation](https://docs.openshift.com/container-platform/3.7/dev_guide/application_lifecycle/new_app.html#specifying-a-template).
 
-Env file has a simple format: `KEY=VALUE` per line.
+The environment file has a simple format: `KEY=VALUE` per line.
 
-You can also use `oc process` and then apply the resulted output `| oc apply -f -`, for example:
+In the following example, you can use the `oc process` command and then apply the resulting output by adding `| oc apply -f -`, for example:
 
 ```
 $ oc process -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io | oc apply -f -
 ```
-In this case, however, it is not possible to pass envs, only params are available.
+In this case, it is not possible to pass environment variables; only parameters are available.
 
-## Minishift
+## Using Minishift to deploy Che
 
-Due to the size of a multi-user Eclipse Che install, Minishift is not recommended as a base for this configuration. However, if you have to use Minishift ensure you have started Minishift with `--memory=4096` or more and [update Minishift](https://docs.openshift.org/latest/minishift/getting-started/updating.html) to the latest version.
+Due to the size of a multi-user Eclipse Che installation, Minishift is not recommended as the base for this configuration.  If you have to use Minishift, start it with at least 4GB of memory, include the `--memory=4096`parameter, and [update Minishift](https://docs.openshift.org/latest/minishift/getting-started/updating.html) to the latest version.
 
 
 ```bash
 $ oc new-project che
-
 $ oc new-app -f multi/postgres-template.yaml
 $ oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io
 $ oc apply -f pvc/che-server-pvc.yaml
@@ -66,13 +63,12 @@ $ oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.i
 $ oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
 ```
 
-## OpenShift Container Platform
+## Using OpenShift Container Platform to deploy Che 
 
 **HTTP Setup**
 
 ```bash
 $ oc new-project che
-
 $ oc new-app -f multi/postgres-template.yaml
 $ oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX}
 $ oc apply -f pvc/che-server-pvc.yaml
@@ -80,15 +76,14 @@ $ oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX} -p 
 $ oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
 ```
 
-More info about routing suffix [here](openshift-single-user.html#what-is-my-routing-suffix).
+See [here](openshift-single-user.html#what-is-my-routing-suffix) for more information on the routing suffix.
 
 **HTTPS Setup**
 
-<span style="color:red;">IMPORTANT!</span> Find instructions on adding self signed certs at [OpenShift Configuration page](openshift-config.html#https-mode---self-signed-certs).
+<span style="color:red;">IMPORTANT!</span> Find instructions on adding self-signed certificates at the [OpenShift Configuration page](openshift-config.html#https-mode---self-signed-certs).
 
 ```bash
 $ oc new-project che
-
 $ oc new-app -f multi/postgres-template.yaml
 $ oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX} -p PROTOCOL=https
 $ oc apply -f pvc/che-server-pvc.yaml
@@ -101,22 +96,24 @@ $ oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-da
 $ oc apply -f https
 ```
 
-More info about routing suffix [here](openshift-single-user.html#what-is-my-routing-suffix).
+More information about the routing suffix [here](openshift-single-user.html#what-is-my-routing-suffix).
 
-## OpenShift Dedicated
+## Using OpenShift Dedicated to deploy Che
 
-Instructions to deploy Che to OSD are identical to those for [OpenShift Container Platform](#openshift-container-platform).
+The instructions to deploy Che to OpenShift Dedicated are identical to those for [OpenShift Container Platform](#openshift-container-platform).
 
-## OpenShift Online Pro
+## Using OpenShift Online Pro to deploy Che
 
-Instructions to deploy Che to OSO PRO are identical to those for [OpenShift Container Platform](#openshift-container-platform).
+The instructions to deploy Che to OpenShift Online PRO are identical to those for [OpenShift Container Platform](#openshift-container-platform).
 
-## Admin Guide
+## What is next?
 
-See: Kubernetes [Admin Guide][kubernetes-admin-guide]
+Now that you have a running Che multi-user instance,  [create a user, setup GitHub oAuth and login][user-management].
 
-## What's Next?
+## Additional Resources
 
-Now that you have a running Che Multi-User instance, let's [create a user, setup GitHub oAuth and login][user-management].
+Kubernetes [Admin Guide][kubernetes-admin-guide]
+
+[OpenShift documentation](https://docs.openshift.com/container-platform/3.7/dev_guide/application_lifecycle/new_app.html#specifying-a-template) 
 
 {% include links.html %}
