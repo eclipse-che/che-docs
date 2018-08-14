@@ -1,0 +1,133 @@
+---
+title: "Language Support"
+keywords: framework, language servers, code assistant, language support, code completion, error marking
+tags: [extensions, assembly, dev-docs]
+sidebar: user_sidebar
+permalink: language-servers.html
+folder: developer-guide
+---
+
+
+[id="overview"]
+== Overview
+
+The Language Server Protocol is used between a tool (the client) and a language intelligence provider (the server) to integrate features like auto complete, goto definition, find references, etc.
+
+You can learn more about the language server specification on the https://github.com/Microsoft/language-server-protocol[LSP GitHub page].
+
+Currently Eclipse Che implements the https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md[3.x protocol version].
+
+Note that, Eclipse Che also implements the snippet syntax used in VSCode. It is not versioned in the LSP specification, but the supported syntax is described https://github.com/Microsoft/vscode/blob/0ebd01213a65231f0af8187acaf264243629e4dc/src/vs/editor/contrib/snippet/browser/snippet.md[here].
+
+[id="adding-support-for-new-languages"]
+== Adding Support for New Languages
+
+There are two approaches to add a new language server:
+
+* via installer and launcher: this way a language server runs in the machine where the respective installer has been enabled
+* adding link:#ls-sidecars[language server as a sidecar] in workspace configuration - multi-machine recipe + server with required attributes
+
+[id="general-concept"]
+== General Concept
+
+Language server integration is divided into 2 steps: an install followed by a separately triggered start. Language servers aren’t started when the agent starts. Instead they are started in a second step which can be triggered at any time. This is done to reduce resource consumption and reduce workspace startup time.
+
+1.  The language server agent is launched when the workspace starts - its job is to install all dependencies and prepare the `bash` launcher file that will be used to start the language server.
+2.  The https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver/src/main/java/org/eclipse/che/api/languageserver/launcher/LanguageServerLauncher.java[launcher] is triggered and starts the language server. We suggest triggering the launcher when the user begins interacting with file types related to the language server. Once launched, the language server is registered with specific file types (covered in more detail below).
+
+[id="adding-a-language-server-installer"]
+== Adding a Language Server Installer
+
+Follow the documentation on how to link:custom-installers[add new installer].
+
+Examples of existed language server agents you can learn from:
+
+* https://github.com/eclipse/che/tree/master/agents/ls-json[JSON]
+* https://github.com/eclipse/che/tree/master/agents/ls-php[PHP]
+* https://github.com/eclipse/che/tree/master/agents/ls-python[Python]
+* https://github.com/eclipse/che/tree/master/agents/ls-csharp[C#]
+* https://github.com/eclipse/che/tree/master/agents/ls-typescript[TypeScript]
+
+[id="adding-a-language-server-config"]
+== Adding a Language Server Config
+
+In order to start/initialize a language server for the desired language, you need to implement https://github.com/eclipse/che/blob/master/wsagent/che-core-api-languageserver/src/main/java/org/eclipse/che/api/languageserver/LanguageServerConfig.java[LanguageServerConfig interface] which pretty much defines what needs to be accomplished to start a 'local' language server.
+
+Here is how a typical LanguageServerConfig looks like: https://github.com/eclipse/che/blob/master/plugins/plugin-clangd/che-plugin-clangd-lang-server/src/main/java/org/eclipse/plugin/clangd/languageserver/ClangDLanguageServerConfig.java[Clangd].
+
+Things to pay attention to:
+
+* *REGEX* defines regexp for desired files. It can be a path, all fines with certain extension or particular file names etc.
+* *launchScript* is usually created by an installer script and contains command(s) to launch a language server in a stdio mode
+* *LANGUAGE_ID* is defined in a guice module. See: https://github.com/eclipse/che/blob/master/plugins/plugin-clangd/che-plugin-clangd-lang-server/src/main/java/org/eclipse/plugin/clangd/inject/ClangModule.java[ClangdModule]
+* add binding in https://github.com/eclipse/che/blob/master/plugins/plugin-clangd/che-plugin-clangd-lang-server/src/main/java/org/eclipse/plugin/clangd/inject/ClangModule.java#L37[guice module]
+
+Installers are packaged into wsmaster, so you will need to add required dependencies there. LanguageServerConfigs are usually part of plugins packages with a workspace agent.
+
+[id="ls-sidecars"]
+== LS-Sidecars
+
+While the above approach works well for custom assemblies, i.e. you actually need to rebuild Che with a custom plugin that registers a new installer and a language server launcher, there is a mechanism to launch Language Servers in parallel containers/sidecars. This is what you need to do to add a new language server to your workspace as a sidecar.
+
+* Build a Docker image in which language server is started in `ENTRYPOINT` or `CMD`. Note that some language servers support `tcp` arguments in their start syntax. Make sure that the language server acts like a server, rather than attempts to bind to a socket. The best way to check it is to run the image: `docker run -ti ${image}`. If the container starts, everything is fine, and if it exits immediately, you need to fix it.
+
+We recommend running language servers in `stdio` mode and use sockat as a proxy. Here’s an example of a Dockerfile that builds an image with TyperScript language server:
+
+----
+# inherit an image with node.js and npm - runtime requirements for TypeScript LS
+FROM eclipse/node
+
+# install socat
+RUN sudo apt-get install socat -y && \
+    sudo npm install -g typescript@2.5.3 typescript-language-server@0.1.4
+
+# run socat that listens on port 4417 with exec command that starts LS
+CMD socat TCP4-LISTEN:4417,reuseaddr,fork EXEC:"typescript-language-server --stdio"
+----
+
+* Create a stack with a link:creating-starting-workspaces[custom recipe]: Create Workspace > Add Stack:
+
+[source,yaml]
+----
+services:
+ typescript-ls-machine:
+  image: ls/image
+  mem_limit: 1073741824
+ dev-machine:
+  image: eclipse/ubuntu_jdk8
+  mem_limit: 2147483648
+  depends_on:
+   - typescript-ls-machine
+----
+
+* In User Dashboard, go to *Workspaces > Your Workspace > Config*, and add a server for typescript-ls-machine in `servers:[]`
+
+[source,json]
+----
+"servers": {
+  "ls": {
+    "attributes": {
+      "id": "go-ls",
+      "internal": "true",
+      "type": "ls",
+      "languageRegexes": "[ {\"languageId\":\"golang\", \"regex\":\".*\\\\.go$\"}]",
+    },
+    "protocol": "tcp",
+    "port": "4417"
+  }
+}
+----
+
+* *ls* - server name - can be any string
+* *attributes.id* - can be any unique identifier
+* *attributes.internal* - `true`. Mandatory! Used to get an internal link to server
+* *attributes.type* - `ls`. Mandatory. Used by the IDE client to identify a server as a language server
+* *languageRegexes.languageId* - language identifier, either one of those supported in [LSP specification] (https://microsoft.github.io/language-server-protocol/specification#textdocumentitem) or own.
+* *languageRegexes.regex* - regexp expression to match either extension or file name + extension, or whatever match you need (for example, path, say, initialize language server only for config/config.xml files). Pay attention to regexp syntax since errors are not validated by server, and bad regexp will result in the client ignoring your files.
+* In User Dashboard, go to Workspaces > Your Workspace > Volumes, add a volume for *each machine*. The two volumes have to share the same name (for example, `projects`) and path `/projects` so that they actually share one volume. This way a language server container has access to workspace project types.
+
+image::extensibility/lang_servers/volumes_ls.png[]
+
+* Start a workspace. Open a file with one of the extensions bound to a language ID. Che client will attempt to connect to language server over tcp socket. This data is retrieved from workspace runtime. Language server process should be available at the port declared in the server. You can either use Socat or launch a language server in tcp mode if it supports it. It is your Docker image’s responsibility to launch the language server. Adding `ENTRYPOINT` or `CMD` instruction should work well.
+
+See: https://gist.githubusercontent.com/eivantsov/4e86b4d51cf23fbd8fd68410170f06e3/raw/e9c1edc600d0ff82e15d2d68d2ac5c6304a981b9/go-workspace.json[Sample configuration] of a workspace featuring 2 machines, one of which is a language server machine.

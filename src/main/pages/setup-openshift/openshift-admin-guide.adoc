@@ -1,0 +1,338 @@
+---
+title: "Che on OpenShift: Admin Guide"
+keywords: openshift, configuration, admin guide
+tags: [installation, kubernetes]
+sidebar: user_sidebar
+permalink: openshift-admin-guide.html
+folder: setup-openshift
+---
+
+
+[id="examples"]
+== Examples
+
+All examples use `kubectl` command. OpenShift admins should use `oc`
+
+[id="ram"]
+== RAM
+
+*Single User*
+
+Che server pod consumes up to 1GB RAM. The initial request is 256MB, and server pod rarely consumes more than 800MB. A typical workspace will require 2GB. So, *3GB* is a minimum to try single user Che on OpenShift/Kubernetes.
+
+*Multi-User*
+
+Depending on whether or not you deploy Che bundled with Keycloak auth server and Postgres database, RAM requirements for a multi-user Che installation can vary.
+
+When deployed with Keycloak and Postgres, your Kubernetes cluster should have *at least 5GB RAM* available - 3GB go to Che deployments:
+
+* ~750MB for Che server
+* ~1GB for Keycloak
+* ~515MB for Postgres)
+* min 2GB should be reserved to run at least one workspace. The total RAM required for running workspaces will grow depending on the size of your workspace runtime(s) and the number of concurrent workspace pods you run.
+
+[id="resource-allocation-and-quotas"]
+== Resource Allocation and Quotas
+
+All workspace pods are created either in the same namespace with Che itself, a dedicated namespace, or a new namespace is created for every workspace. In both cases, pods are created in the account of a user who deployed Che (if che service account is used to create ws objects) or account of a user whose token/credentials are used in Che deployment env.
+
+Therefore, an account where Che pods are created (including workspace pods) should have reasonable quotas for RAM, CPU and storage, otherwise, workspace pods won’t be created.
+
+[id="who-creates-workspace-objects"]
+== Who Creates Workspace Objects?
+
+Eclipse Che currently supports two different configurations: in the single OpenShift project case, workspace objects are created using a service account that can be configured for Che server, whereas in the multi OpenShift project case, workspace objects are created on behalf of each OpenShift user as they use Eclipse Che. As Eclipse Che communicates with the Kubernetes/OpenShift API through the fabric8 client, an authorization token is required.
+
+* In the single project case, the environment variable `CHE_OPENSHIFT_SERVICEACCOUNTNAME` governs which service account is used to create workspace objects. This service account must be visible to the Che server (i.e. in the same namespace) and have appropriate permissions to create and edit OpenShift resources. This means that if objects are to be created outside of the service accounts bound namespace the service account will require cluster-admin rights, which can be enabled by an admin via the `oc` CLI:
++
+----
+oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:eclipse-che:che
+
+# eclipse-che is Che namespace
+----
+* In the multi project case, Eclipse Che will use individual user’s OpenShift tokens to create resources *on behalf of the currently logged-in user*. Refer to the link:openshift-admin-guide#create-workspace-objects-in-personal-namespaces[OpenShift Admin Guide] for more details about how it works.
+
+The environment variable `CHE_INFRA_OPENSHIFT_PROJECT` controls the namespace in which workspace objects are created. In the multi-project case, it should be set to `NULL` to create workspace objects in different namespaces for each user. In the single project case, if the che service accout does not have cluster-admin rights, it should be set to the same project that hosts the Che server. Refer to the link:openshift-config[OpenShift Configuration Guide] for more details on how to configure Che.
+
+[id="storage-overview"]
+== Storage Overview
+
+Che server, Keycloak and Postgres pods, as well as workspace pods use PVCs that are then bound to PVs with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode]. Che PVCs are defined in deployment yamls, while link:#che-workspaces-storage[workspace PVC] access mode and claim size is configurable through Che deployment environment variables.
+
+[id="che-infrastructure-storage"]
+== Che Infrastructure: Storage
+
+* Che server claims 1GB to store logs and initial workspace stacks. PVC mode is RWO
+* Keycloak needs 2 PVCs, 1Gb each to store logs and Keycloak data
+* Postgres needs one 1GB PVC to store db
+
+[id="che-workspaces-storage"]
+== Che Workspaces: Storage
+
+As said above, che workspace PVC access type and claim size is configurable, and so is a workspace PVC strategy:
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|===
+|strategy |details |pros |cons
+|*common* |One PVC for all workspaces, sub-paths pre-created |easy to manage and control storage. no need to recycle PVs when pod with pvc is deleted |ws pods should all be in one namespace
+|*unique* |PVC per workspace |Storage isolation |An undefined number of PVs is required
+|===
+
+[id="common-pvc-strategy"]
+== Common PVC Strategy
+
+*How it Works*
+
+When a common PVC strategy is used, *all workspaces use the same PVC* to store data declared in their volumes (projects and workspace-logs by default and whatever additional link:volumes[volumes] that a user can define.)
+
+In case of a common strategy, an PV that is bound to PVC `che-claim-workspace` will have the following structure:
+
+----
+pv0001
+  workspaceid1
+  workspaceid2
+  workspaceidn
+    che-logs projects <volume1> <volume2>
+----
+
+Directory names are self explaining. Other volumes can be anything that a user defines as volumes for workspace machines (volume name == directory name in `${PV}/${ws-id}`)
+
+When a workspace is deleted, a corresponding subdirectory (`${ws-id}`) is deleted in the PV directory.
+
+*How to enable common strategy*
+
+Set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `common` in dc/che if you have already deployed Che with unique strategy, or pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=common` to oc new-app command when applying `che-server-template.yaml`. See: link:openshift-multi-user[Deploy to OpenShift].
+
+**What’s CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS?**
+
+Pre 1.6 Kubernetes created subpaths within a PV with invalid permissions, sot hat a user in a running container was unable to write to mounted directories. When `CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS` is `true`, and a common strategy is used, a special pod is started before workspace pod is schedules, to pre-create subpaths in PV with the right permissions. You don’t need to set it to true if you have Kubernetes 1.6+.
+
+*Restrictions*
+
+When a common strategy is used, and a workspace PVC access mode is RWO, only one Kubernetes node can simultaneously use PVC. You’re fine if your Kubernetes/OpenShift cluster has just one node. If there are several nodes, a common strategy can still be used, but in this case, workspace PVC access mode should be RWM, ie multiple nodes should be able to use this PVC simultaneously (in fact, you may sometimes have some luck and all workspaces will be scheduled on the same node). You can change access mode for workspace PVCs by passing environment variable `CHE_INFRA_KUBERNETES_PVC_ACCESS_MODE=ReadWriteMany` to che deployment either when initially deploying Che or through che deployment update.
+
+Another restriction is that only pods in the same namespace can use the same PVC, thus, `CHE_INFRA_KUBERNETES_PROJECT` env variable should not be empty - it should be either Che server namespace (in this case objects can be created with che SA) or a dedicated namespace (token or username/password need to be used).
+
+[id="unique-pvc-strategy"]
+== Unique PVC Strategy
+
+It is a default PVC strategy, i.e. `CHE_INFRA_KUBERNETES_PVC_STRATEGY` is set to `unique`. Every workspace gets its own PVC, which means a workspace PVC is created when a workspace starts for the first time. Workspace PVC is deleted when a corresponding workspace is deleted.
+
+[id="update"]
+== Update
+
+An update implies updating Che deployment with new image tags. There are multiple ways to update a deployment:
+
+* `kubeclt edit dc/che` - and just manually change image tag used in the deployment
+* manually in OpenShift web console > deployments > edit yaml > image:tag
+* `kubectl set image dc/che che=eclipse/che-server:${VERSION} --source=docker`
+
+Config change will trigger a new deployment. In most cases, using older Keycloak and Postgres images is OK, since changes to those are very rare. However, you may update Keycloak and Postgres deployments:
+
+* eclipse/che-keycloak
+* eclipse/che-postgres
+
+You can get the list of available versions at https://github.com/eclipse/che/tags[Che GitHub page].
+
+Since `nightly` is the default tag used in Che deployment, and image pull policy is set to Always, triggering a new deployment, will pull a newer image, if available.
+
+You can use *IfNotPresent* pull policy (default is Always). Manually edit Che deployment after deployment or add `--set cheImagePullPolicy=IfNotPresent`.
+
+OpenShift admins can pass `-p PULL_POLICY=IfNotPresent` to link:openshift-multi-user[Che deployment] or manually edit `dc/che` after deployment.
+
+[id="scalability"]
+== Scalability
+
+To be able to run more workspaces, https://kubernetes.io/docs/concepts/architecture/nodes/#management[add more nodes to your Kubernetes cluster]. If the system is out of resources, workspace start will fail with an error message returned from Kubernetes (usually it’s `no available nodes` kind of error).
+
+[id="gdpr"]
+== GDPR
+
+In case the user wants to delete their data or requested the admininistrator to do that, there is an API method for that purpose:
+
+----
+curl -X DELETE http://che-server/api/user/{id}
+----
+
+Use the above command with the user or administrator token.
+
+[id="debug-mode"]
+== Debug Mode
+
+If you want Che server to run in a debug mode set the following env in Che deployment to true (false by default):
+
+`CHE_DEBUG_SERVER=true`
+
+[id="private-docker-registries"]
+== Private Docker Registries
+
+Refer to https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/[Kubernetes documentation]
+
+[id="che-server-logs"]
+== Che Server Logs
+
+When Eclipse Che gets deployed to Kubernetes, a PVC `che-data-volume` is https://github.com/eclipse/che/blob/master/deploy/kubernetes/kubectl/che-kubernetes.yaml#L26[created] and bound to a PV. Logs are persisted in a PV and can be retrieved in the following ways:
+
+* `kubectl get log dc/che`
+* `kubectl describe pvc che-data-claim`, find PV it is bound to, then `oc describe pv $pvName`, you will get a local path with logs directory. Be careful with permissions for that directory, since once changed, Che server wont be able to write to a file
+* in Kubernetes web console, eclipse-che namespace, *pods > che-pod > logs*.
+
+It is also possible to configure Che master not to store logs, but produce JSON encoded logs to output instead. It may be used to collect logs by systems such as Logstash. To configure JSON logging instead of plain text environment variable `CHE_LOGS_APPENDERS_IMPL` should have value `json`. See more at link:logging[logging docs].
+
+[id="workspace-logs"]
+== Workspace Logs
+
+Workspace logs are stored in an PV bound to `che-claim-workspace` PVC. Workspace logs include logs from workspace agent, link:what-are-workspaces.html#bootstrapper[bootstrapper] and other agents if applicable.
+
+[id="che-master-states"]
+== Che Master States
+
+There is three possible states of the master - `RUNNING`, `PREPARING_TO_SHUTDOWN` and `READY_TO_SHUTDOWN`. `PREPARING_TO_SHUTDOWN` state may imply two different behaviors: - When no new workspace startups allowed, and all running workspaces are forcibly stopped; - When no new workspace startups allowed, any workspaces that are currently starting or stopping is allowed to finish that process, and running workspaces doesn’t stopped. This option is possible only for the infrastructures that support workspaces recovery. For those are didn’t, automatic fallback to the shutdown with full workspaces stopping will be performed. Therefore, `/api/system/stop` API contract changed slightly - now it tries to do the second behavior by default. Full shutdown with workspaces stop can be requested with `shutdown=true` parameter. When preparation process in finished, `READY_TO_SHUTDOWN` state will be set which allows to stop current Che master instance.
+
+[id="che-workspace-termination-grace-period"]
+== Che Workspace Termination Grace Period
+
+Grace termination period of Kubernetes / OpenShift workspace’s pods defaults '0', which allows to terminate pods almost instantly and significantly decrease the time required for stopping a workspace. For increasing grace termination period the following environment variable should be used:
+
+`CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC`
+
+*IMPORTANT!*
+
+If `terminationGracePeriodSeconds` have been explicitly set in Kubernetes / OpenShift recipe it will not be overridden by the environment variable.
+
+[id="recreate-update"]
+== Recreate Update
+
+To perform Recreate type update without stopping active workspaces:
+
+* Make sure there is full compatibility between new master and old ws agent versions (API etc);
+* Make sure deployment update strategy set to Recreate;
+* Make POST request to the /api/system/stop api to start WS master suspend (means that all new attempts to start workspaces will be refused, and all current starts/stops will be finished). Note that this method requires system admin credentials.
+* Make periodical GET requests to /api/system/state api, until it returns READY_TO_SHUTDOWN state. Also, it may be visually controlled by line "System is ready to shutdown" in the server logs
+* Perform new deploy.
+
+[id="rolling-update"]
+== Rolling Update
+
+To perform Rolling type update without stopping active workspaces, the following preconditions required:
+
+* Make sure deployment update strategy set to Rolling;
+* Make sure there is full API compatibility between new master and old ws agent versions, as well as database compatibility (since it is impossible to use DB migrations on this update mode);
+* Make sure `terminationGracePeriodSeconds` deployment parameter has enough value (see details below).
+
+After that preconditions is done, press Deploy button or execute `oc rollout latest che` from cli client will start the process.
+
+Unlike the Recreate update, the Rolling update type does not imply any Che server downtime, since new deployment is starting in parallel and traffic is hot-switched. (Typically there is 5-6 sec period of Che server API unavailability due to routes switching).
+
+[id="known-issues"]
+==== Known issues
+
+* Workspaces that are started shortly (5-30sec) before the network traffic is switched to the new pod, may fallback to the stopped state. That happens because bootstrappers uses Che server route URL for notifying Che Server when bootstrapping is done. Since traffic is already switched to the new Che server, old one cannot get bootstrapper-s report, and fails the start after waiting timeout reached. If old Che server will be killed before this timeout, workspaces can stuck in the `STARTING` state. So the `terminationGracePeriodSeconds` parameter must define time enough to cover workspace start timeout timeout (which is 8 min by def.) plus some additional timings. Typically, setting `terminationGracePeriodSeconds` to 540 sec is enough to cover all timeouts.
+* Some users may experience problems with websocket reconnections or missed events published by WebSocket connection(when a workspace is STARTED but dashboard displays that it is STARTING); Need to reload page to restore connections and actual workspaces states.
+
+[id="update-with-db-migrations-or-api-incompatibility"]
+== Update with DB migrations or API incompatibility
+
+If new version of Che server contains some DB migrations, but there is still API compatibility between old and new version, recreate update type may be used, without stopping running workspaces.
+
+API incompatible versions should be updated with full workspaces stop. It means that `/api/system/stop?shutdown=true` must be called prior to update.
+
+[id="delete-deployments"]
+== Delete deployments
+
+If you want to completely delete Che and its infrastructure components, deleting a project/namespace is the fastest way - all objects associated with this namespace will be deleted:
+
+`oc delete namespace che`
+
+If you need to delete particular deployments and associated objects, you can use selectors (use `oc` instead of `kubctl` for OpenShift):
+
+----
+# remove all Che server related objects
+kubectl delete all -l=app=che
+# remove all Keycloak related objects
+kubectl delete all -l=app=keycloak
+# remove all Postgres related objects
+kubectl delete all -l=app=postgres
+----
+
+PVCs, service accounts and role bindings should be deleted separately as `oc delete all` does not delete them:
+
+----
+# Delete Che server PVC, ServiceAccount and RoleBinding
+kubectl delete sa -l=app=che
+kubectl delete rolebinding -l=app=che
+
+# Delete Keycloak and Postgres PVCs
+
+kubectl delete pvc -l=app=keycloak
+kubectl delete pvc -l=app=postgres
+----
+
+[id="create-workspace-objects-in-personal-namespaces"]
+== Create workspace objects in personal namespaces
+
+When Che is installed on OpenShift in multi-user mode, it is possible to register the OpenShift server into the Keycloak server as an identity provider, in order to allow creating workspace objects in the personal OpenShift namespace of the user that is currenlty logged in Che through Keycloak.
+
+This feature is available only when Che is configured to create a new OpenShift namespace for every Che workspace.
+
+As detailed below, to enable this feature, the administrator should:
+
+* link:#openshift-identity-provider-registration[register], inside Keycloak, an OpenShift identity provider that will point to the OpenShift console of the cluster in which the workspace resources should be created,
+* link:#che-configuration[configure] Che to use this Keycloak identity provider in order to retrieve the OpenShift tokens of Che users.
+
+Once this is done, every interactive action done by a Che user on workspaces, such as start or stop, will create OpenShift resources under his personal OpenShift account. And the first time the user will try to do it, he will be asked to link his Keycloak account with his personal OpenShift account: which he can do by simply following the provided link in the notification message.
+
+But for non-interactive workspace actions, such as workspace stop on idling or Che server shutdown, the account used for operations on OpenShift resources will fall back to the dedicated OpenShift account configured for the Kubernetes infrastructure, as described in the link:admin-guide#who-creates-workspace-objects[AdminGuide].
+
+To easily install Che on OpenShift with this feature enabled, see link:openshift-multi-user#creating-workspace-resources-in-personal-openshift-accounts-on-minishift[this section for Minishift] and link:openshift-multi-user#creating-workspace-resources-in-personal-openshift-accounts[this one for OCP]
+
+[id="openshift-identity-provider-registration"]
+==== OpenShift identity provider registration
+
+The Keycloak OpenShift identity provider is described in https://www.keycloak.org/docs/3.3/server_admin/topics/identity-broker/social/openshift.html[this documentation].
+
+1.  In the link:user-management#auth-and-user-management[Keycloak administration console], when adding the OpenShift identity provider, you should use the following settings:
+
+image::keycloak/openshift_identity_provider.png[]
+
+`Base URL` is the URL of the OpenShift console
+
+1.  Next thing is to add a default read-token role:
+
+image::git/kc_roles.png[]
+
+1.  Then this identity provider has to be declared as an OAuth client inside OpenShift. This can be done with the corresponding command:
+
+----
+oc create -f <(echo '
+apiVersion: v1
+kind: OAuthClient
+metadata:
+  name: kc-client
+secret: "<value set for the 'Client Secret' field in step 1>"
+redirectURIs:
+  - "<value provided in the 'Redirect URI' field in step 1>"
+grantMethod: prompt
+')
+----
+
+*Note*: Adding a OAuth client requires cluster-wide admin rights.
+
+[id="che-configuration"]
+==== Che configuration
+
+On the Che deployment configuration:
+
+* the `CHE_INFRA_OPENSHIFT_PROJECT` environment variable should be set to `NULL` to ensure a new distinct OpenShift namespace is created for every started workspace.
+* the `CHE_INFRA_OPENSHIFT_OAUTH__IDENTITY__PROVIDER` environment variable should be set to the alias of the OpenShift identity provider specified in step 1 of its link:#openshift-identity-provider-registration[registration in Keycloak]. The default value is `openshift-v3`.
+
+[id="providing-the-openshift-certificate-to-keycloak"]
+==== Providing the OpenShift certificate to Keycloak
+
+If the certificate used by the OpenShift console is self-signed or is not trusted, then by default the Keycloak will not be able to contact the OpenShift console to retrieve linked tokens.
+
+In this case the OpenShift console certificate should be passed to the Keycloak deployment as an additional environment property. This will enable the Keycloak server to add it to its list of trusted certificates, and will fix the problem.
+
+The environment variable is named `OPENSHIFT_IDENTITY_PROVIDER_CERTIFICATE`.
+
+Since adding a multi-line certificate content in a deployment configuration environment variable is not that easy, the best way is to use a secret that contains the certificate, and refer to it in the environment variable.
