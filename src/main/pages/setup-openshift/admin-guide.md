@@ -124,6 +124,15 @@ OpenShift admins can pass `-p PULL_POLICY=IfNotPresent` to [Che deployment][open
 
 To be able to run more workspaces, [add more nodes to your Kubernetes cluster](https://kubernetes.io/docs/concepts/architecture/nodes/#management). If the system is out of resources, workspace start will fail with an error message returned from Kubernetes (usually it's `no available nodes` kind of error).
 
+
+## GDPR
+
+In case if a user wants to delete his data or requested admin to do that. There is an API method to do that:
+```
+curl -X DELETE http://che-server/api/user/{id}
+```
+with user or admin token
+
 ## Debug Mode
 
 If you want Che server to run in a debug mode set the following env in Che deployment to true (false by default):
