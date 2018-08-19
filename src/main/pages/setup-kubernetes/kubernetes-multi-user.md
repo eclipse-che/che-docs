@@ -91,9 +91,9 @@ Cert-Manager is used to issue LetsEncrypt certificates. To avoid rate-limit issu
   helm upgrade --install <che-release-name> --namespace <che-namespace> -f ./values/tls.yaml --set global.ingressDomain=<domain> ./
   ```
 
-* Master: `https://che-<che-namespace>.domain/`
-* Keycloak:  `https://che-<che-namespace>.domain/auth/`
-* Workspaces servers: `https://che-<che-namespace>.domain/<path-to-server>`
+* Master: `https://<domain>/`
+* Keycloak:  `https://<domain>/auth/`
+* Workspaces servers: `https://<domain>/<path-to-server>`
 
 ## Delete Che Deployment
 
