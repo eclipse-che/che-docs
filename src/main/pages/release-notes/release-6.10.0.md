@@ -39,7 +39,7 @@ Example:
 }
 ```
 TODO link to docs
-The demo can be seen at https://www.youtube.com/watch?v=or0CWHAVR4Q
+For an example, take a look at the [demo](https://www.youtube.com/watch?v=or0CWHAVR4Q).
 
 
 ### Feature2 (#ISSUE)
