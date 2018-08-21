@@ -22,7 +22,7 @@ Instruction how to upgrade
 
 ## Release Details
 
-### Secure Servers (#ISSUE)
+### Secure Workspace Tooling Communication (#ISSUE)
 Eclipse Che extension developers might be interested in a new feature - "Secure Servers"
 It can be useful if you want to protect your web-based tool, that running as part of a workspace with Che authentification.
 
