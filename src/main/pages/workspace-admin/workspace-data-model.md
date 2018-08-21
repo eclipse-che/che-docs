@@ -51,7 +51,7 @@ A mixin adds additional behaviors the project, IDE panels and menus etc. Mixins 
 
 The `pullrequest` mixin requires additional configuration from the `attributes` object of the project.  
 
-Project also can include `source.parameters`, which is a map that can contain additional parameters e.g. related to project importer
+The `project`object can also include `source.parameters`, which is a map that can contain additional parameters e.g. related to project importer
 
 | Parameter name  | Description   
 | --- | ---
