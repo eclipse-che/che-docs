@@ -22,13 +22,24 @@ Instruction how to upgrade
 
 ## Release Details
 
-### Feature1 (#ISSUE)
+### Secure Workspace Tooling Communication (#ISSUE)
+Eclipse Che extension developers might be interested in a new feature - "Secure Servers"
+It can be useful if you want to protect your web-based tool, that running as part of a workspace with Che authentification.
 
-{image / animated gif}
+Example:
+```json
+"tooling": {
+    "port": "4921",
+    "protocol": "http",
+    "attributes": {
+        "secure": "true",
+        "unsecuredPaths": "/liveness",
+        "cookiesAuthEnabled": "true"
+    }
+}
+```
+For an example, take a look at the [demo](https://www.youtube.com/watch?v=or0CWHAVR4Q).
 
-Feature description focusing on value to the user or contributor.
-
-Learn more in the documentation: {Link to the documentation}
 
 ### Feature2 (#ISSUE)
 
