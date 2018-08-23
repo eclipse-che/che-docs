@@ -11,65 +11,79 @@ folder: overview
 
 Eclipse Che is a developer workspace server and cloud IDE. You install, run, and manage Eclipse Che with with different container orchestration engine such as Docker or OpenShift.
 
-Eclipse Che is available in two different modes:
-- **Single-user**: perfectly suited for personal desktop environment.
-- **Multi-user**: best for organization and developer teams.
+Eclipse Che is available in two modes:
+- **Single-user**: This is suited for personal desktop environments.
+- **Multi-user**: This is an advanced setup for Che and is for organizations and developer teams.
 
-Considering the `multi-user` mode as an advanced setup of Eclipe Che, the quick starts are covering only the `single-user` mode. If you are interested by the `multi-user`, please read the following pages:
-- [Multi-user configuration on Docker][docker-multi-user]
-- [Multi-user configuration on OpenShift][openshift-multi-user]
-
-If you want to learn more about the differences between single-user and multi-user, please [read this page][single-multi-user]
-
+See [Single and Multi-User][single-multi-user] to learn more. The quick starts are for 'single-user' mode. 
 
 ## Docker
 
-On any computer with Docker 17+ installed:
+**Prerequisites**
+- Ensure that the lastest Docker version is installed (Docker 17+)
+- Ensure that you create an IP alias if macOS.
+  In a terminal, run the `sudo ifconfig la0 alias $IP` command. `$IP`is found either in **Preferences> Advanced > Docker subnet** or run the `docker run --rm --net host eclipse/che-ip:nightly`.
+
+**Procedure**
+
+To run Che in single mode, enter this command:
 
 ```bash
-docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v /local/path:/data eclipse/che start
+$ docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v /local/path:/data eclipse/che start
 ```
 
 Note that `/local/path` can be any path on your local machine where you want to store Che data and projects.
 
-MacOS users will also need to setup [IP alias](docker.html#pre-requisites).
+**Next Steps**
 
+Create and [start your first workspace][creating-starting-workspaces], import a [project][ide-projects], [build and run][commands-ide-macro] your project.
 
-Installation and configuration docs:
+**Additional Resources**
+
 - [Single-user on Docker][docker-single-user]
 - [Multi-user on Docker][docker-multi-user]
 - [Configuration on Docker][docker-config]
 - [Che CLI for Docker][docker-cli]
 
-Create and [start your first workspace][creating-starting-workspaces], import a [project][ide-projects], [build and run][commands-ide-macro] your project.
-
 
 ## OpenShift
 
-Che supports different flavors of OpenShift:
-- **[OpenShift Container Platform (OCP)](https://www.openshift.com/container-platform/index.html)**: OpenShift on-premise, that you can install in your Data Center. 
-- **[OpenShift Online (OSO)](https://www.openshift.com/features/index.html)**: On-Demand OpenShift hosted on public cloud and managed by Red Hat.
-- **[OpenShift Dedicated (OCD)]([)https://access.redhat.com/products/openshift-dedicated-red-hat/)**: Enterprise public cloud with your own OpenShift cluster managed by Red Hat.
-- **[MiniShift](https://www.openshift.org/minishift/)**: OpenShift running on your local environment. 
+**Prerequisities**
+- Ensure that you are using the latest version of [MiniShift](https://docs.openshift.org/latest/minishift/getting-started/index.html). See [MiniShift add-on for Che](https://github.com/minishift/minishift-addons/tree/master/add-ons/che).
 
-If you want to try Che on OpenShift, we recommand to you to do it with MiniShift and use the [MiniShift add-on for Che](https://github.com/minishift/minishift-addons/tree/master/add-ons/che). 
 
-On any computer with [MiniShift](https://docs.openshift.org/latest/minishift/getting-started/index.html) running:
+**Procedure**
+
+To run Che in single mode, take these steps:
 
 ```bash
-git clone https://github.com/minishift/minishift-addons
-minishift addons install <path_to_minishift-addons-clone>/add-ons/che
-minishift addons enable che
-minishift addons apply \
+$ git clone https://github.com/minishift/minishift-addons
+$ minishift addons install <path_to_minishift-addons-clone>/add-ons/che
+$ minishift addons enable che
+$ minishift addons apply \
     --addon-env CHE_DOCKER_IMAGE=eclipse/che-server:nightly \
     --addon-env OPENSHIFT_TOKEN=$(oc whoami -t) \
     che
 ```
 
-Installation and configuration docs:
+**Next Steps**
+
+Create and [start your first workspace][creating-starting-workspaces], import a [project][ide-projects], [build and run][commands-ide-macro] your project.
+
+**Additional Resources**
+
 - [Single-user on OpenShift][openshift-single-user]
 - [Multi-user on OpenShift][openshift-multi-user]
 - [Configuration on OpenShift][openshift-config]
+
+You can see more information on the Openshift flavors supported by Che:
+- [OpenShift Container Platform (OCP)](https://www.openshift.com/container-platform/index.html): OpenShift on-premise, that you can install in your Data Center.
+- [OpenShift Online (OSO)](https://www.openshift.com/features/index.html): On-Demand OpenShift hosted on public cloud and managed by Red Hat.
+- [OpenShift Dedicated (OCD)](https://access.redhat.com/products/openshift-dedicated-red-hat/): Enterprise public cloud with your own OpenShift cluster managed by Red Hat.
+- [MiniShift](https://www.openshift.org/minishift/): OpenShift running on your local environment.
+
+
+
 
 
 
