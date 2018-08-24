@@ -9,24 +9,24 @@ folder: overview
 
 {% include links.html %}
 
-Eclipse Che is a developer workspace server and cloud IDE. You install, run, and manage Eclipse Che with with different container orchestration engine such as Docker or OpenShift.
+Eclipse Che is a developer workspace server and cloud IDE. You install, run, and manage Eclipse Che with with different container orchestration engines such as Docker or OpenShift.
 
 Eclipse Che is available in two modes:
 - **Single-user**: This is suited for personal desktop environments.
 - **Multi-user**: This is an advanced setup for Che and is for organizations and developer teams.
 
-See [Single and Multi-User][single-multi-user] to learn more. The quick starts are for 'single-user' mode. 
+See [Single and Multi-User Che][single-multi-user] to learn more. The quick starts are for single-user mode. 
 
 ## Docker
 
 **Prerequisites**
-- Ensure that the lastest Docker version is installed (Docker 17+)
+- Ensure that the lastest Docker version is installed (Docker 17+).
 - Ensure that you create an IP alias if macOS.
   In a terminal, run the `sudo ifconfig la0 alias $IP` command. `$IP`is found either in **Preferences> Advanced > Docker subnet** or run the `docker run --rm --net host eclipse/che-ip:nightly`.
 
 **Procedure**
 
-To run Che in single mode, enter this command:
+To run Che in the single-user mode, enter this command:
 
 ```bash
 $ docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v /local/path:/data eclipse/che start
@@ -36,7 +36,7 @@ Note that `/local/path` can be any path on your local machine where you want to 
 
 **Next Steps**
 
-Create and [start your first workspace][creating-starting-workspaces], import a [project][ide-projects], [build and run][commands-ide-macro] your project.
+[Create and start your first workspace][creating-starting-workspaces], import a [project][ide-projects], [build and run][commands-ide-macro] your project.
 
 **Additional Resources**
 
@@ -54,13 +54,13 @@ Create and [start your first workspace][creating-starting-workspaces], import a 
 
 **Procedure**
 
-To run Che in single mode, take these steps:
+To run Che in single-user mode, take these steps:
 
 ```bash
-$ git clone https://github.com/minishift/minishift-addons
-$ minishift addons install <path_to_minishift-addons-clone>/add-ons/che
-$ minishift addons enable che
-$ minishift addons apply \
+1. $ git clone https://github.com/minishift/minishift-addons
+2. $ minishift addons install <path_to_minishift-addons-clone>/add-ons/che
+3. $ minishift addons enable che
+4. $ minishift addons apply \
     --addon-env CHE_DOCKER_IMAGE=eclipse/che-server:nightly \
     --addon-env OPENSHIFT_TOKEN=$(oc whoami -t) \
     che
@@ -68,7 +68,7 @@ $ minishift addons apply \
 
 **Next Steps**
 
-Create and [start your first workspace][creating-starting-workspaces], import a [project][ide-projects], [build and run][commands-ide-macro] your project.
+[Create and start your first workspace][creating-starting-workspaces], import a [project][ide-projects], [build and run][commands-ide-macro] your project.
 
 **Additional Resources**
 
