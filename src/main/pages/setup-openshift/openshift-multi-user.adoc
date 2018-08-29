@@ -1,0 +1,124 @@
+---
+title: "Multi-User&#58 Deploy to OpenShift"
+keywords: openshift, installation, ocp, multi-user, multi user, keycloak, postgres, deployment
+tags: [installation, openshift]
+sidebar: user_sidebar
+permalink: openshift-multi-user.html
+folder: setup-openshift
+---
+
+[id="deploying-che-on-supported-openshift-flavors-and-versions"]
+== Deploying Che on supported OpenShift flavors and versions
+
+Multi-user Eclipse Che can be deployed to OpenShift Container Platform 3.6 and later, OpenShift Dedicated, and OpenShift Online Pro.
+
+The deployment script creates three DeploymentConfigs for Che, Postgres, and Keycloak. PVCs, services, and routes (Che and Keycloak only) are also created by the deployment script.
+
+[id="deployment-diagram"]
+== Deployment diagram
+
+image::diagrams/ocp_multi_user.png[]
+
+[id="getting-deployment-yaml-files"]
+== Getting deployment YAML files
+
+----
+$ git clone https://github.com/eclipse/che
+$ cd che/deploy/openshift/templates
+----
+
+The context of all commands below is `che/deploy/openshift/templates`.
+
+[id="using-templates-and-modifying-their-parameters"]
+== Using templates and modifying their parameters
+
+Templates are provided with a set of predefined parameters. You can add parameters and environment variables to your template. You can also override parameters by using this option: `-p key=value`. The `oc new-app` command accepts parameters, environment variables, or environment files, which makes it possible to override default parameters and pass environment variables to chosen deployments (even if they are not in a template). You can view all parameters by using this command: `$ oc process --parameters -f <filename>`.
+
+The examples below reference the `oc process`, `oc-new app`, and `oc apply` commands.
+
+----
+$ oc new-app -f example.yaml -p PARAM=VALUE -e ENV=VALUE --env-file=che.env
+----
+
+The environment file has a simple format: `KEY=VALUE` per line.
+
+In the following example, you can use the `oc process` command and then apply the resulting output by adding `| oc apply -f -`, for example:
+
+----
+$ oc process -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io | oc apply -f -
+----
+
+In this case, it is not possible to pass environment variables; only parameters are available.
+
+[id="using-minishift-to-deploy-che"]
+== Using Minishift to deploy Che
+
+Due to the size of a multi-user Eclipse Che installation, Minishift is not recommended as the base for this configuration. If you have to use Minishift, start it with at least 4GB of memory by including the `--memory=4096` parameter, and https://docs.openshift.org/latest/minishift/getting-started/updating.html[update Minishift] to the latest version.
+
+----
+$ oc new-project che
+$ oc new-app -f multi/postgres-template.yaml
+$ oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io
+$ oc apply -f pvc/che-server-pvc.yaml
+$ oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io -p CHE_MULTIUSER=true
+$ oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
+----
+
+[id="using-openshift-container-platform-to-deploy-che"]
+== Using OpenShift Container Platform to deploy Che
+
+*HTTP Setup*
+
+----
+$ oc new-project che
+$ oc new-app -f multi/postgres-template.yaml
+$ oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX}
+$ oc apply -f pvc/che-server-pvc.yaml
+$ oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX} -p CHE_MULTIUSER=true
+$ oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
+----
+
+More information about the link:openshift-single-user.html#what-is-my-routing-suffix[routing suffix].
+
+*HTTPS Setup*
+
+IMPORTANT! Find instructions on adding self-signed certificates at the link:openshift-config.html#https-mode---self-signed-certs[OpenShift Configuration page].
+
+----
+$ oc new-project che
+$ oc new-app -f multi/postgres-template.yaml
+$ oc new-app -f multi/keycloak-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX} -p PROTOCOL=https
+$ oc apply -f pvc/che-server-pvc.yaml
+$ oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=${ROUTING_SUFFIX} \
+    -p CHE_MULTIUSER=true \
+    -p PROTOCOL=https \
+    -p WS_PROTOCOL=wss \
+    -p TLS=true
+$ oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
+$ oc apply -f https
+----
+
+More information about the link:openshift-single-user.html#what-is-my-routing-suffix[routing suffix].
+
+[id="using-openshift-dedicated-to-deploy-che"]
+== Using OpenShift Dedicated to deploy Che
+
+The instructions to deploy Che to OpenShift Dedicated are identical to those for link:#openshift-container-platform[OpenShift Container Platform].
+
+[id="using-openshift-online-pro-to-deploy-che"]
+== Using OpenShift Online Pro to deploy Che
+
+The instructions to deploy Che to OpenShift Online PRO are identical to those for link:#openshift-container-platform[OpenShift Container Platform].
+
+[id="what-is-next"]
+== What is next?
+
+Now that you have a running Che multi-user instance, link:user-management[create a user, set up GitHub oAuth, and log in].
+
+[id="additional-resources"]
+== Additional Resources
+
+Kubernetes link:kubernetes-admin-guide[Admin Guide]
+
+https://docs.openshift.com/container-platform/3.7/dev_guide/application_lifecycle/new_app.html#specifying-a-template[OpenShift documentation]
+
