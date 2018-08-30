@@ -1,0 +1,131 @@
+---
+title: "Databases"
+keywords: database,
+tags: [dev-docs]
+sidebar: user_sidebar
+permalink: database.html
+folder: developer-guide
+---
+
+As of version 6.10, Eclipse Che currently supports following databases:
+- H2 (version 1.4.196)
+- PostgreSQL (version 9.4.1201-jdbc41)
+
+
+ 
+
+
+[id="datasource-components"]
+ Datasource components
+*DataSource factory*
+To Configuring Che to use custom DataSource, a new implementation of `JNDIDataSourceFactory` must be defined.
+It will configure JDBC Pool properties such as
+- DB username
+- DB password
+- DB URL
+- Driver class name
+- Max Total
+- Max Idle
+- Max Wait milliseconds
+
+(More about JDBC configuration properties at https://tomcat.apache.org/tomcat-8.5-doc/jndi-datasource-examples-howto.html)
+
+
+*ExceptionHandler*
+Database may sometimes produce different SQL exception, depending on the vendor.
+As in Java code, and TCK it is expected, a custom ExceptionHandler implementaion may be created, that will allow to rethrow more common exception.
+For example, in H2 and PostgreSQL, an exception may occur, when data couldn't be updated/stored due to unique constrain violation.
+But as it will a vendor specific exception with different code, there are Custom `H2ExceptionHandler`/`PostgreSqlExceptionHandler` that will catch it, and throw instead a `DuplicateKeyException`, which is used across the codebase.
+
+
+[id="test-compatibility-kit"]
+== Test Compatibility Kit (TCK)
+//TODO
+Test Compatibility kit is a set of integration tests that covers uses of essential DAO components
+
+*Creating own TCK module*
+
+To run Test Compatibility Kit against a new database, a new module must be created  
+
+- A module during which integration test will be executed
+module must provide all test dependencies 
+- A database provided in an Image and prepared to be used for TCK
+
+[id="cascade-removal-tests"]
+== JPA Cascade Removal Tests
+//TODO
+JPA Cascade removal tests are designed to test cases related to cascade operations
+An object, that can be depended on another object, for example `Workpace`, that belongs to another `User`
+
+[id="flyway-migration"]
+== Flyway migration
+
+Flyway framework is used to facilitate database schema initialization, as well as perform migrations.
+It is configured to pick up scripts and apply them in order, according to versioning.
+Some key configuration values are defined in che.properties:
+
+
+----
+db.schema.flyway.baseline.enabled=true                      #
+db.schema.flyway.baseline.version=5.0.0.8.1                 #
+db.schema.flyway.scripts.prefix=                            #
+db.schema.flyway.scripts.suffix=.sql                        #
+db.schema.flyway.scripts.version_separator=__               #
+db.schema.flyway.scripts.locations=classpath:che-schema     #
+----
+Also ability to place
+
+Taking a look at the sample structure:
+
+----
+che-schema/
+    5.0.0-M1/
+        1__init.sql
+    5.0.0-M2
+        1__rename_tables.sql
+        2__insert_predefined_data.sql
+        postgresql/
+            2__insert_predefined_data.sql
+subproject-schema/
+    5.0.0-M1/
+        1.1__init_subproject.sql
+    5.0.0-M2
+        2.1__create_additional_tables.sql
+----
+
+Location directory
+The main root directory for scripts (in this example, `che-schema` and `subproject-schema` is used as location names for Flyway.
+There can be multiple locations (artifacts) with scripts, and Flyway can be configured with property to search for such locations in classpath
+
+db.schema.flyway.scripts.locations=classpath:che-schema,classpath:subproject-schema
+
+
+* Version directory*
+There are version directories under the `che-schema` like 5.0.0 or 5.0.0-M1 these directories contain
+scripts for specific versions
+SQL scripts will be placeunder project version directories line 1.init.sql or 1.rename_fields.sql
+The naming of scripts is pretty simple: the first digit in the name is a script version in a project versions (it's `1` in `1__init.sql`)
+then description of changes (if necessary) init in 1__init.sql and then the file extension .sql in 1__init.sql
+
+*Vendor specific script*
+
+There is a directory in 5.0.0-M2 called `postresql` if current database provider is posgresql then
+the script from 5.0.0-M1/posgresql/2.add_workspace_constraint.sql will be used instead of 5.0.0-M1/2.add_workspace_constraint.sql, so basically if the same script name is provided in provider-specific directory then this script will be used instead
+
+So, the order of applyting scripts be as following
+[width="100%",cols="50%,50%",options="header",]
+|===
+|db version |script name	|location	|picked vendor specific
+|5.0.0.1.1 |1__init.sql	|che-schema	|no
+|5.0.0.1.1.1	|1.1__init_subproject.sql	|subproject-schema	|no
+|5.0.0.2.1	|1__rename_tables.sql	|che-schema	|no
+|5.0.0.2.2	|2__insert_predefined_data.sql	|che-schema	|yes
+|5.0.0.2.2.1	|2.1__create_new_tables.sql	|subproject-schema	|no
+|===
+
+[id="pg-trgm"]
+== pg_trgm
+//TODO
+
+Postgres Trigram extension is used for more optimised search of similar string, that is used for example, when searching for user name and email.
+It is enabled with a vendor specific migration script.
