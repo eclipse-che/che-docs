@@ -6,17 +6,19 @@ sidebar: user_sidebar
 permalink: database.html
 folder: developer-guide
 ---
-
+[id="currently-supported-dbs"]
+== Currently Supported Databases
 As of version 6.10, Eclipse Che currently supports following databases:
 - H2 (version 1.4.196)
 - PostgreSQL (version 9.4.1201-jdbc41)
 
+H2 database is used by default in Single-User Che, whereas postgresql is used for Multi-user installation.
+Both of these have been tested with Selenium Integration tests, as well as TCK integration tests.
 
- 
-
+It is possible to connect own DB to datasource, and have TCK tests run on it, to ensure that DB can be used with Che's JPA code.
 
 [id="datasource-components"]
- Datasource components
+== Datasource components
 *DataSource factory*
 To Configuring Che to use custom DataSource, a new implementation of `JNDIDataSourceFactory` must be defined.
 It will configure JDBC Pool properties such as
@@ -40,12 +42,11 @@ But as it will a vendor specific exception with different code, there are Custom
 
 [id="test-compatibility-kit"]
 == Test Compatibility Kit (TCK)
-//TODO
 Test Compatibility kit is a set of integration tests that covers uses of essential DAO components
+//TODO list with all TCK tests?
 
 *Creating own TCK module*
-
-To run Test Compatibility Kit against a new database, a new module must be created  
+//TODO describe creation and execution of TCK tests with DB in image (MySQL?)
 
 - A module during which integration test will be executed
 module must provide all test dependencies 
@@ -53,9 +54,11 @@ module must provide all test dependencies
 
 [id="cascade-removal-tests"]
 == JPA Cascade Removal Tests
-//TODO
+
 JPA Cascade removal tests are designed to test cases related to cascade operations
 An object, that can be depended on another object, for example `Workpace`, that belongs to another `User`
+
+//TODO Descibe JPA tests structure
 
 [id="flyway-migration"]
 == Flyway migration
@@ -129,3 +132,7 @@ So, the order of applyting scripts be as following
 
 Postgres Trigram extension is used for more optimised search of similar string, that is used for example, when searching for user name and email.
 It is enabled with a vendor specific migration script.
+
+[id="datasource-components"]
+== Contributor guidelines
+//TODO
