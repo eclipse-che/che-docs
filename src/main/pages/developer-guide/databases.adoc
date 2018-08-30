@@ -41,18 +41,25 @@ As in Java code, and TCK it is expected, a custom ExceptionHandler implementaion
 For example, in H2 and PostgreSQL, an exception may occur, when data couldn't be updated/stored due to unique constrain violation.
 But as it will a vendor specific exception with different code, there are Custom `H2ExceptionHandler`/`PostgreSqlExceptionHandler` that will catch it, and throw instead a `DuplicateKeyException`, which is used across the codebase.
 
+*persistence.xml*
+//TODO add notes about persistence.xml and how properties can be dynamicaly added to it in WsMasterModule (depending on DB)
 
 [id="test-compatibility-kit"]
 == Test Compatibility Kit (TCK)
-Test Compatibility kit is a set of integration tests that covers uses of essential DAO components
+Test Compatibility kit is a set of integration tests that covers uses of essential DAO components, that are being run against real database.
 //TODO list with all TCK tests?
 
-*Creating own TCK module*
-//TODO describe creation and execution of TCK tests with DB in image (MySQL?)
+*Running TCK on a custom DB*
 
-- A module during which integration test will be executed
-module must provide all test dependencies 
-- A database provided in an Image and prepared to be used for TCK
+In order to run TCK for a custom database, a maven module should be created with following components:
+
+- a Guice module that extends `TckModule` which will be responsible for establishing connection with DataSource, binding all required implementations of JPA entities and repositories.
+- a file in src/test/resources/META-INF/services named `org.eclipse.che.commons.test.tck.TckModule`. In it, there must be defined a name of the mentioned TckModule implementaion.
+- include all dependency artifacts with TCK tests
+- include artifact with DB Driver
+- add persistence.xml file or use PersistTestModuleBuilder helper class to create one programmatically in `TckModule` implementation
+
+Use `maven-docker-plugin` to run database as a docker container with preconfigured database settings like DB username, password, port, etc.
 
 [id="cascade-removal-tests"]
 == JPA Cascade Removal Tests
