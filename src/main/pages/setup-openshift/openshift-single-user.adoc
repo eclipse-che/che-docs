@@ -42,24 +42,10 @@ The best way of deploying Che to Minishift is using an add-on via the https://do
 
 *Install add-On*
 
-Clone addons repository onto your local machine and then install the add-on via:
+Starting with minishift v1.23.0 Che addon is pre-installed. To start Che we need to `enable` the addon and `apply` it:
 
 ----
-git clone https://github.com/minishift/minishift-addons
-minishift addons install <path_to_minishift-addons>/add-ons/che
-minishift addons enable che
-----
-
-`enable` will setup Eclipse Che when you start Minishift the next time.
-
-*Apply add-on*
-
-If Minishift is already started and Che addon is installed, it is possible to deploy Che without restarting Minishift:
-
-----
-$ minishift addons apply \
-    --addon-env CHE_DOCKER_IMAGE=eclipse/che-server:nightly \
-    che
+$ minishift addons enable che && minishift addons apply che
 ----
 
 *Deploy a local Che server image*
