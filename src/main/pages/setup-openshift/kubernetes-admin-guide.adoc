@@ -31,9 +31,14 @@ When deployed with Keycloak and Postgres, your Kubernetes cluster should have *a
 * ~515MB for Postgres)
 * min 2GB should be reserved to run at least one workspace. The total RAM required for running workspaces will grow depending on the size of your workspace runtime(s) and the number of concurrent workspace pods you run.
 
-Default workspace RAM limit, and RAM allocation request, can be configured with `CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB` and `CHE_WORKSPACE_DEFAULT__MEMORY__REQUEST__MB`  parameters appropriately passed to Che deployment.
+The default workspace RAM limit and the RAM allocation request can be configured by passing the `CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB` and `CHE_WORKSPACE_DEFAULT__MEMORY__REQUEST__MB` parameters to a Che deployment.
 
-Note, that those default values can be overriden when creating workspace, if specified by the user.
+For example, use the following configuration to limit the amount of RAM used by workspaces to 2048MB and to request the allocation of 1024MB of RAM:
+* `kubectl set env dc/che CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB=2048 CHE_WORKSPACE_DEFAULT__MEMORY__REQUEST__MB=1024`
+Notes:
+* The user can override the default values when creating a workspace.
+* If given RAM request is greater than the RAM limit, RAM request will be ignored
+
 
 [id="resource-allocation-and-quotas"]
 == Resource Allocation and Quotas
