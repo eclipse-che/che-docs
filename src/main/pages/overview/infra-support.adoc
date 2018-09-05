@@ -10,23 +10,23 @@ folder: overview
 [id="introduction"]
 == Introduction
 
-Eclipse Che runs on different kind of infrastructure and container engine:
+Eclipse Che runs on several infrastructures and container engines:
+
 
 * Docker
 * OpenShift: *https://www.openshift.com/container-platform/index.html[OpenShift Container Platform (OCP)]*, *https://www.openshift.com/features/index.html[OpenShift Online (OSO)]*, *https://access.redhat.com/products/openshift-dedicated-red-hat/[OpenShift Dedicated (OCD)]*, *https://www.openshift.org/minishift/[MiniShift]*
 * Kubernetes
 
-Each of the infrastructures is providing its own specificities which are detailed in this page.
 
 [id="comparison-table"]
-=== Comparison Table
+=== Available features for different infrastructures
 
 |===
-| Feature | *Docker* | *OpenShift* | *Kubernetes* |
+| Feature | *Available on Docker* | *Available on OpenShift* | *Available on Kubernetes* |
 |root access | yes | yes (See: link:openshift-config.html#enable-ssh-and-sudo[Configuration]) | yes |
 |https | no | yes (See: link:openshift-config.html#https-mode[Configuration]) | yes |
 |scalability | no | yes (See: link:openshift-config.html#scalability[Configuration]) | yes |
-|priviliged containers | yes | yes (configurable in https://docs.openshift.com/container-platform/3.6/admin_guide/manage_scc.html#grant-access-to-the-privileged-scc[OpenShift]) | yes |
+|privileged containers | yes | yes (configurable in https://docs.openshift.com/container-platform/3.6/admin_guide/manage_scc.html#grant-access-to-the-privileged-scc[OpenShift]) | yes |
 |health checks | no | yes | yes |
 |persistent preview URLs | no | yes | yes |
 |installers | yes | yes (some installers may require link:openshift-config.html#enable-ssh-and-sudo[sudo access]) | yes |
@@ -34,48 +34,51 @@ Each of the infrastructures is providing its own specificities which are detaile
 |===
 
 [id="running-che-on-docker"]
-== Running Che on Docker
-
-Che on Docker isn’t scalable, i.e. one cannot add more nodes to run workspaces. Of course, it is possible to use a fairly large instance with 8+ CPUs and 32+ RAM, however at some point a great number of running containers (with heavy processes running in them) can make the node unresponsive. This will both affect workspace master and all running workspaces. At the same time, Che on Docker is flexible and easily configurable for an ordinary user.
+== Features for Che on Docker
 
 *Root Access*
 
-With Che on Docker, users can have root access in workspace containers. This means you can run system services and install software in runtime.
+You can have root access in workspace containers, which allows you to run system services and to install software at runtime.
 
 *SSH Access*
 
-By default, `sshd` starts in all ready-to-go stack images. You can connect to a remote workspace using ssh keys or username/password (available in custom stacks only) or sync workspace project files to a local machine.
+You can connect to a remote workspace using ssh keys or by using a username and password. This is available in custom stacks only.  You can also connect to a remote workspace by synching the workspace project files to a local machine. 'sshd' is available by default in pre-configured stack images.
 
 *Privileged Containers*
 
-Che on Docker allows workspace containers to be running in a link:docker-config.html#privileged-mode[privileged mode].
+You can run workspace containers in a link:docker-config.html#privileged-mode[privileged mode].
 
-Though deploying administering Che on Docker may seem a little bit easier than doing it in OpenShift, it’s OpenShift that unleashes the power of Eclipse Che as a workspace server and cloud IDE.
+*Not Scalable*
+
+Che on Docker is not scalable because you can not add more nodes to run workspaces. You can use a large instance with 8 CPUs or more and 32+ RAM.  A potential problem is that the instance can be unresponsive when it has a large number of running containers with heavy processes running in them. This affects the workspace master and all running workspaces.
+
+
+*Additional Resources*
 
 *link:docker-single-user[Install Single-User Che on Docker]*
 
 *link:docker-multi-user[Install Multi-User Che on Docker]*
 
 [id="deploying-to-openshift"]
-== Deploying to OpenShift
-
-When deployed to OpenShift, Che provides the following features that are not available in Che on Docker:
+== Features for Che on OpenShift
 
 *Scalability*
 
-Che talks to OpenShift API to create workspace pods, and it is OpenShift that schedules them to available nodes. OpenShift cluster admin can add and remove nodes (or label them as those that are not ready to run pods) depending on demand for running Che workspaces.
+You can add nodes depending on the demand to run workspaces. OpenShift schedules workspaces to available nodes.
 
 *HTTPS support*
 
-HAProxy that runs in an OpenShift cluster takes care of creating secure routes, thus HTTPS support is provided by OpenShift itself.
+HAProxy runs in an OpenShift cluster and creates secure routes. 
 
 *Persistent Preview URLs*
 
-To access running applications and processes in Che workspaces, Che creates services and routes that are persistent URLs.
+You can access applications and processes in Che workspaces.  Che creates services and routes that are persistent URLs.
 
 *Health Checks*
 
 OpenShift restarts failed deployments and offers health checks for pods. This can significantly minimize the effect of infrastructure outages.
+
+*Additional Resources*
 
 *link:openshift-single-user[Deploy Single User Che to OpenShift]*
 
