@@ -43,34 +43,20 @@ Notes:
 [id="resource-allocation-and-quotas"]
 == Resource Allocation and Quotas
 
-All workspace pods are created either in the same namespace with Che itself, a dedicated namespace, or a new namespace is created for every workspace. In both cases, pods are are created in the account of a user who deployed Che (if che service account is used to create ws objects) or account of a user whose token/credentials are used in Che deployment env.
+All workspace pods are created either in the same namespace with Che itself, a dedicated namespace, or a new namespace is created for every workspace.
 
 Therefore, an account where Che pods are created (including workspace pods) should have reasonable quotas for RAM, CPU and storage, otherwise, workspace pods won’t be created.
 
 [id="who-creates-workspace-objects"]
 == Who Creates Workspace Objects?
 
-All workspace objects for all Eclipse Che users are *created on behalf of one OpenShift user*, typically the one who deployed Che or whose credentials or token is used in Che deployment environment. Eclipse Che uses fabric8 client to talk to Kubernetes/OpenShift API, and the client uses token, username/password or service account, if available.
-
-* If you passed `CHE_INFRA_KUBERNETES_USERNAME` and `CHE_INFRA_KUBERNETES_PASSWORD` to Che deployment, those credentials will be used to create workspace objects.
-* If there’s `CHE_INFRA_KUBERNETES_OAUTH__TOKEN` fabric8 client will use it. If both are available, token has a priority over username/pass.
-* If none are available *che service account* is used to create workspace objects. This is default behavior. Since che service account cannot create objects outside a namespace it’s bound to, all workspace objects are created in Che namespace. Admins can grant `che` https://kubernetes.io/docs/admin/authorization/rbac/#service-account-permissions[service account super user permissions], and this way it will be possible to use this SA to create objects outside Che namespace. OpenShift cluster admins can do it this way using oc CLI:
+All workspace objects for all Eclipse Che users are *created on behalf of oChe service account*. Eclipse Che uses fabric8 client to talk to Kubernetes/OpenShift API, and the client uses this service account. Since che service account cannot create objects outside a namespace it’s bound to, all workspace objects are created in Che namespace. Admins can grant `che` https://kubernetes.io/docs/admin/authorization/rbac/#service-account-permissions[service account super user permissions], and this way it will be possible to use this SA to create objects outside Che namespace. OpenShift cluster admins can do it this way using oc CLI:
 
 ----
 oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:eclipse-che:che
 
 # eclipse-che is Che namespace
 ----
-
-Advantages and disadvantages of using token, username/pass, and service account:
-
-[width="100%",cols="34%,33%,33%",options="header",]
-|===
-|Auth type |Pros |Cons
-|*Token* |Objects can be created outside Che namespace |Tokens tend to expire
-|*Username/Password* |Objects can be created outside Che namespace |If username/pass are changed, they need to be updated in Che deployment as well. Many authentication types like oAuth make it impossible to login with username/pass
-|*Service account* |No expiration risks |Cannot create objects outside its namespace unless given admin privileges
-|===
 
 [id="storage-overview"]
 == Storage Overview
