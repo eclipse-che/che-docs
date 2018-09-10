@@ -11,46 +11,57 @@ folder: setup-openshift
 [id="examples"]
 == Examples
 
-All examples use `kubectl` command. OpenShift admins should use `oc`
+All examples use `kubectl` command. OpenShift adminisrators should use `oc`
 
 [id="ram"]
 == RAM
 
 *Single User*
 
-Che server pod consumes up to 1GB RAM. The initial request is 256MB, and server pod rarely consumes more than 800MB. A typical workspace will require 2GB. So, *3GB* is a minimum to try single user Che on OpenShift/Kubernetes.
+3 GB of RAM is required for single-user Che on OpenShift.
+
+Che server pod consumes up to 1 GB RAM. The initial request for RAM is 256 MB. The Che server pod rarely uses  more than 800 MB RAM. A typical workspace will require 2 GB. 
 
 *Multi-User*
 
-Depending on whether or not you deploy Che bundled with Keycloak auth server and Postgres database, RAM requirements for a multi-user Che installation can vary.
+5 GB of RAM is required for multi-user Che when bundled with Keycloak authorization server and Postgres database. Depending on whether or not you deploy Che bundled with Keycloak authorization server and Postgres database, RAM requirements for multi-user Che installation can vary.
 
-When deployed with Keycloak and Postgres, your Kubernetes cluster should have *at least 5GB RAM* available - 3GB go to Che deployments:
+The RAM requirements for Che deployments: 
 
-* ~750MB for Che server
-* ~1GB for Keycloak
-* ~515MB for Postgres)
-* min 2GB should be reserved to run at least one workspace. The total RAM required for running workspaces will grow depending on the size of your workspace runtime(s) and the number of concurrent workspace pods you run.
+* approximately 750 MB for Che server
+* approximately 1 GB for Keycloak
+* approxinately 515 MB for Postgres
+* approximately 2 GB of RAM for one workspace. The total RAM required for running workspaces grows depending on the size of your workspace runtime(s) and the number of concurrent workspace pods. 
 
 [id="resource-allocation-and-quotas"]
 == Resource Allocation and Quotas
 
-All workspace pods are created either in the same namespace with Che itself, a dedicated namespace, or a new namespace is created for every workspace.
+Workspace pods are created either in the same namespace with Che, a dedicated namespace, or a new namespace. In both cases, pods are created in the account of a user who deployed Che (if che service account is used to create ws objects) or account of a user whose token/credentials are used in Che deployment environment.
 
-Therefore, an account where Che pods are created (including workspace pods) should have reasonable quotas for RAM, CPU and storage, otherwise, workspace pods won’t be created.
+The user account, where Che and workspace pods are created, have enough quotas for RAM, CPU and storage to create a workspace pod.  
 
 [id="who-creates-workspace-objects"]
 == Who Creates Workspace Objects?
 
-Eclipse Che currently supports two different configurations: in the single OpenShift project case, workspace objects are created using a service account that can be configured for Che server, whereas in the multi OpenShift project case, workspace objects are created on behalf of each OpenShift user as they use Eclipse Che. As Eclipse Che communicates with the Kubernetes/OpenShift API through the fabric8 client, an authorization token is required.
+Workspace objects are created differently depending on the configuration. Eclipse Che currently supports two different configurations: 
 
-* In the single project case, the environment variable `CHE_OPENSHIFT_SERVICEACCOUNTNAME` governs which service account is used to create workspace objects. This service account must be visible to the Che server (i.e. in the same namespace) and have appropriate permissions to create and edit OpenShift resources. This means that if objects are to be created outside of the service accounts bound namespace the service account will require cluster-admin rights, which can be enabled by an admin via the `oc` CLI:
+* Single OpenShift project   
+
+* Multi OpenShift project   
+
+*Single Project*
+
+Workspace objects are created by a service account that can be configured for Che server. The environment variable `CHE_OPENSHIFT_SERVICEACCOUNTNAME` defines which service account is used to create workspace objects. The service account must be visible to the Che server (i.e. in the same namespace) and have appropriate permissions to create and edit OpenShift resources. This means that if objects are to be created outside of the service accounts bound namespace the service account will require cluster-admin rights, which can be enabled by an admin via the `oc` CLI:
 +
 ----
 oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:eclipse-che:che
 
 # eclipse-che is Che namespace
 ----
-* In the multi project case, Eclipse Che will use individual user’s OpenShift tokens to create resources *on behalf of the currently logged-in user*. Refer to the link:openshift-admin-guide.html#create-workspace-objects-in-personal-namespaces[OpenShift Admin Guide] for more details about how it works.
+
+*Multi Project*
+
+Workspace objects are created on behalf of each OpenShift user. In the multi project case, Eclipse Che will use individual user’s OpenShift tokens to create resources *on behalf of the currently logged-in user*. Refer to the link:openshift-admin-guide#create-workspace-objects-in-personal-namespaces[OpenShift Admin Guide] for more details about how it works.
 
 The environment variable `CHE_INFRA_OPENSHIFT_PROJECT` controls the namespace in which workspace objects are created. In the multi-project case, it should be set to `NULL` to create workspace objects in different namespaces for each user. In the single project case, if the che service accout does not have cluster-admin rights, it should be set to the same project that hosts the Che server. Refer to the link:openshift-config.html[OpenShift Configuration Guide] for more details on how to configure Che.
 
