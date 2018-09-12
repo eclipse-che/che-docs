@@ -6,7 +6,7 @@ permalink: spi-implementation.html
 folder: spi
 ---
 
-Now that you have made yourself familiar with link:spi_overview[SPI motivation and concept], let’s take a closer look at its components and implementation notes.
+Now that you have made yourself familiar with link:spi_overview.html[SPI motivation and concept], let’s take a closer look at its components and implementation notes.
 
 [id="components"]
 == Components
@@ -44,7 +44,7 @@ There are three types of exceptions which can be thrown by Infrastructure compon
 [id="events"]
 == Events
 
-Infrastructure should inform Workspace API about progress of starting/stopping a workspace with publishing of events. Events are link:dto[DTOs objects] and can be created with `DtoFactory`. Server implementations are provided by https://github.com/eclipse/che/tree/master/wsmaster/che-core-api-workspace[workspace-api] module. Infrastructure should publish them by `EventService`. Information about particular events and when they should be thrown are listed below.
+Infrastructure should inform Workspace API about progress of starting/stopping a workspace with publishing of events. Events are link:dto.html[DTOs objects] and can be created with `DtoFactory`. Server implementations are provided by https://github.com/eclipse/che/tree/master/wsmaster/che-core-api-workspace[workspace-api] module. Infrastructure should publish them by `EventService`. Information about particular events and when they should be thrown are listed below.
 
 [id="internalenvironmentfactory"]
 == InternalEnvironmentFactory
@@ -71,7 +71,7 @@ So, `RuntimeInfrastructure` should create `RuntimeContext` according to the spec
 
 * `#getOutputChannel` method that returns an output channel for a particular runtime. The output channel is a WebSocket endpoint where runtime output can be received by clients. Infrastructure can set up own endpoint or use an existing one.
 +
-Existing master websocket endpoint is configured with `che.websocket.endpoint` property. Out of the box, there is `installer/log` request handler that will publish received event via EventService and two link:json-rpc[JSON RPC] messengers which transmit https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-workspace-shared/src/main/java/org/eclipse/che/api/workspace/shared/dto/event/InstallerLogEvent.java[InstallerLogEvent] and https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-workspace-shared/src/main/java/org/eclipse/che/api/workspace/shared/dto/event/MachineLogEvent.java[MachineLogEvent] via WebSocket to `machine/log` and `installer/log` methods. So, received installers logs will be automatically propagated to subscribed clients. If an infrastructure wants to propagate machine logs it’s enough to propagate `MachineLogEvent` via `EventService`.
+Existing master websocket endpoint is configured with `che.websocket.endpoint` property. Out of the box, there is `installer/log` request handler that will publish received event via EventService and two link:json-rpc.html[JSON RPC] messengers which transmit https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-workspace-shared/src/main/java/org/eclipse/che/api/workspace/shared/dto/event/InstallerLogEvent.java[InstallerLogEvent] and https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-workspace-shared/src/main/java/org/eclipse/che/api/workspace/shared/dto/event/MachineLogEvent.java[MachineLogEvent] via WebSocket to `machine/log` and `installer/log` methods. So, received installers logs will be automatically propagated to subscribed clients. If an infrastructure wants to propagate machine logs it’s enough to propagate `MachineLogEvent` via `EventService`.
 +
 Setting up a new endpoint can be useful to remove load from master since there can be a lot of output produced by runtime.
 * `#getRuntime` method that returns a runtime.

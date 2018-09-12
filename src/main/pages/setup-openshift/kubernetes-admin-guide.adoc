@@ -81,7 +81,7 @@ As said above, che workspace PVC access type and claim size is configurable, and
 
 *How it Works*
 
-When a common PVC strategy is used, *all workspaces use the same PVC* to store data declared in their volumes (projects and workspace-logs by default and whatever additional link:volumes[volumes] that a user can define.)
+When a common PVC strategy is used, *all workspaces use the same PVC* to store data declared in their volumes (projects and workspace-logs by default and whatever additional link:volumes.html[volumes] that a user can define.)
 
 In case of a common strategy, an PV that is bound to PVC `che-claim-workspace` will have the following structure:
 
@@ -99,7 +99,7 @@ When a workspace is deleted, a corresponding subdirectory (`${ws-id}`) is delete
 
 *How to enable common strategy*
 
-Set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `common` in dc/che if you have already deployed Che with unique strategy, or pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=common` to oc new-app command when applying `che-server-template.yaml`. See: link:openshift-multi-user[Deploy to OpenShift].
+Set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `common` in dc/che if you have already deployed Che with unique strategy, or pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=common` to oc new-app command when applying `che-server-template.yaml`. See: link:openshift-multi-user.html[Deploy to OpenShift].
 
 **What’s CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS?**
 
@@ -136,7 +136,7 @@ Since `nightly` is the default tag used in Che deployment, and image pull policy
 
 You can use *IfNotPresent* pull policy (default is Always). Manually edit Che deployment after deployment or add `--set cheImagePullPolicy=IfNotPresent`.
 
-OpenShift admins can pass `-p PULL_POLICY=IfNotPresent` to link:openshift-multi-user[Che deployment] or manually edit `dc/che` after deployment.
+OpenShift admins can pass `-p PULL_POLICY=IfNotPresent` to link:openshift-multi-user.html[Che deployment] or manually edit `dc/che` after deployment.
 
 [id="scalability"]
 == Scalability
@@ -164,7 +164,7 @@ When Eclipse Che gets deployed to Kubernetes, a PVC `che-data-volume` is https:/
 * `kubectl describe pvc che-data-claim`, find PV it is bound to, then `oc describe pv $pvName`, you will get a local path with logs directory. Be careful with permissions for that directory, since once changed, Che server wont be able to write to a file
 * in Kubernetes web console, eclipse-che namespace, *pods > che-pod > logs*.
 
-It is also possible to configure Che master not to store logs, but produce JSON encoded logs to output instead. It may be used to collect logs by systems such as Logstash. To configure JSON logging instead of plain text environment variable `CHE_LOGS_APPENDERS_IMPL` should have value `json`. See more at link:logging[logging docs].
+It is also possible to configure Che master not to store logs, but produce JSON encoded logs to output instead. It may be used to collect logs by systems such as Logstash. To configure JSON logging instead of plain text environment variable `CHE_LOGS_APPENDERS_IMPL` should have value `json`. See more at link:logging.html[logging docs].
 
 [id="workspace-logs"]
 == Workspace Logs

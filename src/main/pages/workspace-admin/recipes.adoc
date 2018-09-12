@@ -26,7 +26,7 @@ Depending on the infrastructure, Che supports the following recipes out of the b
 DockerImage recipe type implies that Che will pull an image from a Docker registry or use the one that is local and run it (in case of Docker) or create a pod that references this image in container spec. There are certain requirements and limitations for a Docker image to be a workspace machine:
 
 1.  Non-terminating `CMD` or `ENTRYPOINT`. If you use your custom image, make sure it has something like `tail -f /dev/null` as one of its main processes.
-2.  No processes and operations with `sudo` in `CMD` (OpenShift only, see link:openshift-cnfig#enable-ssh-and-sudo[Enable sudo])
+2.  No processes and operations with `sudo` in `CMD` (OpenShift only, see link:openshift-config.html#enable-ssh-and-sudo[Enable sudo])
 3.  OpenShift only - it is recommended to use https://github.com/eclipse/che-dockerfiles/tree/master/recipes/stack-base[Che base stacks] that are certified to run OK on OpenShift. You can also build your own image, but inherit from one of base stacks.
 
 [id="dockerfile"]
@@ -108,7 +108,7 @@ Hostname is not supported and the machine’s name will be used for the hostname
 
 *Ports*
 
-Binding ports to the host system is not supported. This is done to ensure that each container does not used already assigned host ports because many developers could be running the same compose file on the same Che server host at the same time. Users can add link:servers[servers] to machines though.
+Binding ports to the host system is not supported. This is done to ensure that each container does not used already assigned host ports because many developers could be running the same compose file on the same Che server host at the same time. Users can add link:servers.html[servers] to machines though.
 
 *Privileged*
 
@@ -116,7 +116,7 @@ To secure the underlying host system `privileged` compose command is not support
 
 The Che server can be configured to give all containers privileged access by setting the environment variable `CHE_PROPERTY_machine_docker_privilege__mode=true`. However, this makes the host system vulnerable and gives all containers access to the host system.
 
-*Environment File* The `env_file` compose command is not supported. Environment variables can be manually entered in compose file or machine configuration. See: link:env-variables[Environment variables].
+*Environment File* The `env_file` compose command is not supported. Environment variables can be manually entered in compose file or machine configuration. See: link:env-variables.html[Environment variables].
 
 [id="kubernetes-yaml"]
 == Kubernetes YAML
@@ -125,7 +125,7 @@ When a workspace is being started, Che creates a https://kubernetes.io/docs/conc
 
 1.  Che allows user to create pods and services only
 2.  Other object kinds will be ignored (PVC and route) or a workspace fails to start with an exception from Kubernetes.
-3.  Volumes are not supported both in container and pod definition. See: link:volumes[Volumes] for info about persisting ans sharing data between pods.
+3.  Volumes are not supported both in container and pod definition. See: link:volumes.html[Volumes] for info about persisting ans sharing data between pods.
 
 Below is an example of a custom recipe with two containers and one pod, and a service that is bound to port 8081:
 
