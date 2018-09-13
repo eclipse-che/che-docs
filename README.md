@@ -16,7 +16,7 @@ title: "Single-User&#58 Install on Docker"
 keywords: docker, installation
 tags: [installation, docker]
 sidebar: user_sidebar
-permalink: docker.html
+permalink: docker-single-user.html
 folder: setup
 ---
 ```
@@ -38,10 +38,10 @@ If you need to add a tag, take a look at available tags in `src/main/pages/tags`
 To post a link to an internal page, use the following syntax:
 
 ```
-This is a link:file_name[link text]
+This is a link:file_name.html[link text]
 ```
 
-Do not use `.adoc` or `.html` in the file name. Also, this file should be referenced in at least one sidebar in the `src/main/_data/sidebars` file.
+Do not use `.adoc` in the file name. Also, this file should be referenced in at least one sidebar in the `src/main/_data/sidebars` file.
 
 Links to anchors in internal pages:
 
@@ -57,7 +57,7 @@ This is a link:https://github.com[link text]
 
 ## Images
 
-Images are located in the `src/main/images` directory. To publish an image, use the following syntax:
+Images are located in the `src/main/che/docs/images` directory. To publish an image, use the following syntax:
 
 ```
 image::directory/img.png[]
@@ -69,7 +69,7 @@ Images are sized automatically. You can provide a URL to a full-size image, as w
 
 ```
 .Click to view a larger image
-[link=images/devel/js_flow.png
+[link=che/docs/images/devel/js_flow.png
 image::devel/js_flow.png[Alt text]
 ```
 
