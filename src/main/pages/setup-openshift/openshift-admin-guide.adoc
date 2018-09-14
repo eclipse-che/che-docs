@@ -11,7 +11,7 @@ folder: setup-openshift
 [id="examples"]
 == Examples
 
-All examples use `kubectl` command. OpenShift adminisrators should use `oc`
+All examples use `kubectl` command. OpenShift administrators should use `oc`
 
 [id="ram"]
 == RAM Prerequisites
@@ -21,12 +21,13 @@ All examples use `kubectl` command. OpenShift adminisrators should use `oc`
 3 GB of RAM is required for single-user Che on OpenShift.
 
 Single-user Che uses RAM in this distribution:
+
 * Che server pod uses up to 1 GB RAM. The initial request for RAM is 256 MB. The Che server pod rarely uses more than 800 MB RAM.
 * Workspaces: 2 GB of RAM per workspace. 
 
 *Multi-User*
 
-You must have 5 GB of RAM to run multi-user Che. The Keycloak authorization server and Postgres database require the extra RAM. Multi-user Che uses RAM in this distribution:
+You must have at least 5 GB of RAM to run multi-user Che. The Keycloak authorization server and Postgres database require the extra RAM. Multi-user Che uses RAM in this distribution:
 
 * Che server: approximately 750 MB 
 * Keycloak: approximately 1 GB 
@@ -34,7 +35,7 @@ You must have 5 GB of RAM to run multi-user Che. The Keycloak authorization serv
 * Workspaces: 2 GB of RAM per workspace. The total workspace RAM depends on the size of the workspace runtime(s) and the number of concurrent workspace pods. 
 
 [id="resource-allocation-and-quotas"]
-== Resource Allocation and Quotas
+== Requirements for Resource Allocation and Quotas
 
 Workspace pods are created in the account of the user who deploys Che.  The user needs enough quota for RAM, CPU, and storage to create that pod. 
 
@@ -47,9 +48,15 @@ Workspace objects are created differently depending on the configuration. Eclips
 
 * Multi OpenShift project   
 
-*Single Project*
+*Setting Up A Single OpenShift Project*
 
-Workspace objects are created by a service account that can be configured for Che server. The environment variable `CHE_OPENSHIFT_SERVICEACCOUNTNAME` defines which service account is used to create workspace objects. The service account must be visible to the Che server (i.e. in the same namespace) and have appropriate permissions to create and edit OpenShift resources. This means that if objects are to be created outside of the service accounts bound namespace the service account will require cluster-admin rights, which can be enabled by an admin via the `oc` CLI:
+Procedure
+
+. Define the service account used to create workspace objects with the environment variable
+`CHE_OPENSHIFT_SERVICEACCOUNTNAME`.
+. To ensure this service account is visible to the Che server, put the service and the Che server in the same namespace.
+. Give the service account permissions to create and edit OpenShift resources.
+. If the developer needs to create an object outside of the service accounts bound namespace, give the service account cluster-admin rights by running this command:
 +
 ----
 oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:eclipse-che:che
@@ -57,44 +64,64 @@ oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:ec
 # eclipse-che is Che namespace
 ----
 
-*Multi Project*
+*Setting up a Multi OpenShift Project*
 
-Workspace objects are created on behalf of each OpenShift user. In the multi project case, Eclipse Che will use individual user’s OpenShift tokens to create resources *on behalf of the currently logged-in user*. Refer to the link:openshift-admin-guide#create-workspace-objects-in-personal-namespaces[OpenShift Admin Guide] for more details about how it works.
+Procedure
 
-The environment variable `CHE_INFRA_OPENSHIFT_PROJECT` controls the namespace in which workspace objects are created. In the multi-project case, it should be set to `NULL` to create workspace objects in different namespaces for each user. In the single project case, if the che service accout does not have cluster-admin rights, it should be set to the same project that hosts the Che server. Refer to the link:openshift-config[OpenShift Configuration Guide] for more details on how to configure Che.
+. To create workspace objects in different namespaces for each user, set NULL_CHE_INFRA_OPENSHIFT_PROJECT to NULL
+
+. To create resources on behalf of the currently logged-in user, use user’s OpenShift tokens to create resources.
 
 [id="storage-overview"]
-== Storage Overview
+== How the Che Server Uses PVCs and PVs for Storage 
 
-Che server, Keycloak and Postgres pods, as well as workspace pods use PVCs that are then bound to PVs with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode]. Che PVCs are defined in deployment yamls, while link:#che-workspaces-storage[workspace PVC] access mode and claim size is configurable through Che deployment environment variables.
+Che server, Keycloak, Postgres, and workspace pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode]. When the deployment yamls run, they define the Che PVCs. You can configure link:#che-workspaces-storage[workspace PVC] access mode and claim size with Che deployment environment variables.
 
 [id="che-infrastructure-storage"]
-== Che Infrastructure: Storage
+== Storage Requirements for Che Infrastructure
 
-* Che server claims 1GB to store logs and initial workspace stacks. PVC mode is RWO
-* Keycloak needs 2 PVCs, 1Gb each to store logs and Keycloak data
-* Postgres needs one 1GB PVC to store db
+The storage requirements for Che infrastructure:
+
+* Che server: 1 GB to store logs and initial workspace stacks. PVC mode is ReadWriteOnce access mode.
+* Keycloak: 2 PVCs, 1 GB each to store logs and Keycloak data
+* Postgres needs one 1 GB PVC to store database
 
 [id="che-workspaces-storage"]
-== Che Workspaces: Storage
+== Storage Strategies for Che Workspaces
 
-As said above, che workspace PVC access type and claim size is configurable, and so is a workspace PVC strategy:
+Like the Che workspace PVC access type and claim size, the workspace PVC strategy is configurable:
 
 [width="100%",cols="25%,25%,25%,25%",options="header",]
 |===
 |strategy |details |pros |cons
-|*common* |One PVC for all workspaces, sub-paths pre-created |easy to manage and control storage. no need to recycle PVs when pod with pvc is deleted |ws pods should all be in one namespace
-|*unique* |PVC per workspace |Storage isolation |An undefined number of PVs is required
+|*unique (default)* |PVC per workspace |Storage isolation |An undefined number of PVs is required
+|*common* |
+
+One PVC for all workspaces
+
+Sub-paths pre-created
+ 
+|easy to manage and control storage
+
+no need to recycle PVs when pod with pvc is deleted |ws pods should all be in one namespace
 |===
+
+== Unique PVC Strategy
+
+To define the unique strategy:
+
+* `CHE_INFRA_KUBERNETES_PVC_STRATEGY` is set to `unique`.
+
+Every workspace gets its own PVC, which means a workspace PVC is created when a workspace starts for the first time. Workspace PVC is deleted when a corresponding workspace is deleted.
 
 [id="common-pvc-strategy"]
 == Common PVC Strategy
 
-*How it Works*
+*How the Common PVC Strategy Works*
 
-When a common PVC strategy is used, *all workspaces use the same PVC* to store data declared in their volumes (projects and workspace-logs by default and whatever additional link:volumes[volumes] that a user can define.)
+All workspaces use the same PVC to store data declared in their volumes (projects and workspace-logs by default and whatever additional link:volumes[volumes] that a user can define.)
 
-In case of a common strategy, an PV that is bound to PVC `che-claim-workspace` will have the following structure:
+A PV that is bound to PVC, `che-claim-workspace`, will have the following structure:
 
 ----
 pv0001
@@ -104,28 +131,31 @@ pv0001
     che-logs projects <volume1> <volume2>
 ----
 
-Directory names are self explaining. Other volumes can be anything that a user defines as volumes for workspace machines (volume name == directory name in `${PV}/${ws-id}`)
+Volumes can be anything that a user defines as volumes for workspace machines (volume name == directory name in `${PV}/${ws-id}`).
 
 When a workspace is deleted, a corresponding subdirectory (`${ws-id}`) is deleted in the PV directory.
 
-*How to enable common strategy*
+*Enabling a Common Strategy*
 
-Set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `common` in dc/che if you have already deployed Che with unique strategy, or pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=common` to oc new-app command when applying `che-server-template.yaml`. See: link:openshift-multi-user[Deploy to OpenShift].
+If you have already deployed Che with unique strategy
 
-**What’s CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS?**
+* Set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `common` in dc/che
 
-Pre 1.6 Kubernetes created subpaths within a PV with invalid permissions, sot hat a user in a running container was unable to write to mounted directories. When `CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS` is `true`, and a common strategy is used, a special pod is started before workspace pod is schedules, to pre-create subpaths in PV with the right permissions. You don’t need to set it to true if you have Kubernetes 1.6+.
+If applying che-server-template.yaml
 
-*Restrictions*
+* Pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=common` to oc new-app command. 
 
-When a common strategy is used, and a workspace PVC access mode is RWO, only one Kubernetes node can simultaneously use PVC. You’re fine if your Kubernetes/OpenShift cluster has just one node. If there are several nodes, a common strategy can still be used, but in this case, workspace PVC access mode should be RWM, ie multiple nodes should be able to use this PVC simultaneously (in fact, you may sometimes have some luck and all workspaces will be scheduled on the same node). You can change access mode for workspace PVCs by passing environment variable `CHE_INFRA_KUBERNETES_PVC_ACCESS_MODE=ReadWriteMany` to che deployment either when initially deploying Che or through che deployment update.
+Note:
+
+. Pre 1.6 Kubernetes, you need to set `CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS` to `true`.
+
+. In Kubernetes 1.6 and higher, setting this variable to true is not a requirement.  
+
+*Restrictions on using Common PVC Strategy*
+
+When a common strategy is used, and a workspace PVC access mode is RWO, only one Kubernetes node can simultaneously use PVC.  If there are several nodes, a common strategy can still be used, but in this case, workspace PVC access mode should be RWM, ie multiple nodes should be able to use this PVC simultaneously (in fact, you may sometimes have some luck and all workspaces will be scheduled on the same node). You can change access mode for workspace PVCs by passing environment variable `CHE_INFRA_KUBERNETES_PVC_ACCESS_MODE=ReadWriteMany` to che deployment either when initially deploying Che or through che deployment update.
 
 Another restriction is that only pods in the same namespace can use the same PVC, thus, `CHE_INFRA_KUBERNETES_PROJECT` env variable should not be empty - it should be either Che server namespace (in this case objects can be created with che SA) or a dedicated namespace (token or username/password need to be used).
-
-[id="unique-pvc-strategy"]
-== Unique PVC Strategy
-
-It is a default PVC strategy, i.e. `CHE_INFRA_KUBERNETES_PVC_STRATEGY` is set to `unique`. Every workspace gets its own PVC, which means a workspace PVC is created when a workspace starts for the first time. Workspace PVC is deleted when a corresponding workspace is deleted.
 
 [id="update"]
 == Update
