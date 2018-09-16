@@ -40,8 +40,8 @@ To run Che in a single port mode add `-e CHE_SINGLE_PORT=true` to your run synta
 In a single port mode, Che builds URLs of workspace services using the following pattern - `serviceName-machineName-ws-ID.IP.wildcardDNSProvider`. So, if your external IP is `193.12.34.56`, URL of a workspace agent will look like `wsagent-http-dev-machine-workspace0bcgkgkvsqi31b4u.193.12.34.56.nip.io`
 
 * by default http://nip.io/[nip.io] is used. This is an external wildcard DNS provider, and if it is down for some reason, networking in single port Che is broken.
-* you can use a different wildcard DNS provider with `CHE_SINGLEPORT_WILDCARD__DOMAIN_HOST` env.
-* if you don’t want the external IP to be part of the url (`serviceName-machineName-ws-ID.wildcardDNSProvider`, for example to use a wildcard SSL certificate), you can specify `CHE_SINGLEPORT_WILDCARD__DOMAIN_IPLESS=true` with a custom wildcard DNS (e.g. `CHE_SINGLEPORT_WILDCARD__DOMAIN_HOST=domain.tld`. Be aware that you need to have a matching DNS entry for `*.domain.tld`. If you are using the multi-user mode, Keycloak will be provided at `keycloak.domain.tld`.
+* you can use a different wildcard DNS provider with `pass:[CHE_SINGLEPORT_WILDCARD__DOMAIN_HOST]` env.
+* if you don’t want the external IP to be part of the url (`serviceName-machineName-ws-ID.wildcardDNSProvider`, for example to use a wildcard SSL certificate), you can specify `pass:[CHE_SINGLEPORT_WILDCARD__DOMAIN_IPLESS=true]` with a custom wildcard DNS (e.g. `pass:[CHE_SINGLEPORT_WILDCARD__DOMAIN_HOST=domain.tld]`. Be aware that you need to have a matching DNS entry for `*.domain.tld`. If you are using the multi-user mode, Keycloak will be provided at `keycloak.domain.tld`.
 
 *Multi-User Mode*
 
@@ -117,7 +117,7 @@ You can configure Google, GitHub, Microsoft or BitBucket oAuth for use when user
 
 link:stacks.html[Stacks] define the recipes used to create workspace runtimes. They appear in the stack library of the dashboard. You can create your own.
 
-`CHE_PREDEFINED_STACKS_RELOAD__ON__START` (false by default) defines stack loading policy. When set to false, stacks are loaded from a json file only once - when database is initialized. When set to true, json is sourced every time Che server starts.
+`pass:[CHE_PREDEFINED_STACKS_RELOAD__ON__START]` (false by default) defines stack loading policy. When set to false, stacks are loaded from a json file only once - when database is initialized. When set to true, json is sourced every time Che server starts.
 
 Code samples allow you to define sample projects that are cloned into a workspace if the user chooses it when creating a new project. You can add your own. In your `${LOCAL_DATA_DIR}/instance/data/templates` create a json file with your custom samples - it will be sourced each time Che server starts. Here’s how default https://github.com/eclipse/che/blob/master/ide/che-core-ide-templates/src/main/resources/samples.json[Che samples.json] look like.
 
@@ -193,7 +193,7 @@ When a user creates a workspace, the Che server connects to the Docker daemon at
 
 Che server will provide workspace containers with following environment variables:
 
-* `CHE_API_INTERNAL`, points to the internal API endpoint, that is accessible across other machines within the workspace. Value is taken from Che server `CHE_INFRA_DOCKER_MASTER__API__ENDPOINT` variable, which can be initialized either by CLI or default value from `che.properties`.
+* `CHE_API_INTERNAL`, points to the internal API endpoint, that is accessible across other machines within the workspace. Value is taken from Che server `pass:[CHE_INFRA_DOCKER_MASTER__API__ENDPOINT]` variable, which can be initialized either by CLI or default value from `che.properties`.
 * `CHE_API_EXTERNAL`, points to the external API endpoint, that is used by browser clients. Value is taken from Che server `CHE_API` variable. It’s default value is defined in `che.properties`.
 * `CHE_API` will point to the same value as `CHE_API_INTERNAL` for backward compatibility (will be removed in the future).
 
