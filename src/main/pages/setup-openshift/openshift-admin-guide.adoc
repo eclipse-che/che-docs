@@ -158,47 +158,54 @@ When a common strategy is used, and a workspace PVC access mode is RWO, only one
 Another restriction is that only pods in the same namespace can use the same PVC, thus, `CHE_INFRA_KUBERNETES_PROJECT` env variable should not be empty - it should be either Che server namespace (in this case objects can be created with che SA) or a dedicated namespace (token or username/password need to be used).
 
 [id="update"]
-== Update
+== Updating Your Che Deployment
 
-An update implies updating Che deployment with new image tags. There are multiple ways to update a deployment:
+To update  Che deployment:
 
-* `kubeclt edit dc/che` - and just manually change image tag used in the deployment
-* manually in OpenShift web console > deployments > edit yaml > image:tag
-* `kubectl set image dc/che che=eclipse/che-server:${VERSION} --source=docker`
+. Change the image tag: 
++
+You can change the image tag either
 
-Config change will trigger a new deployment. In most cases, using older Keycloak and Postgres images is OK, since changes to those are very rare. However, you may update Keycloak and Postgres deployments:
+* Manually: `kubeclt edit dc/che`
+* Change in OpenShift web console: > deployments > edit yaml > image:tag
+* Define the image tags with docker: `kubectl set image dc/che che=eclipse/che-server:${VERSION} --source=docker`
+
+. Update Keycloak and Postgres deployments (optional):
 
 * eclipse/che-keycloak
 * eclipse/che-postgres
-
++
 You can get the list of available versions at https://github.com/eclipse/che/tags[Che GitHub page].
 
-Since `nightly` is the default tag used in Che deployment, and image pull policy is set to Always, triggering a new deployment, will pull a newer image, if available.
+. Change the pull policy (optional):
++
+To change the pull policy, either 
 
-You can use *IfNotPresent* pull policy (default is Always). Manually edit Che deployment after deployment or add `--set cheImagePullPolicy=IfNotPresent`.
+* add  `--set cheImagePullPolicy=IfNotPresent` to link:openshift-multi-user[Che deployment].
+* manually edit `dc/che` after deployment 
 
-OpenShift admins can pass `-p PULL_POLICY=IfNotPresent` to link:openshift-multi-user[Che deployment] or manually edit `dc/che` after deployment.
+The default pull policy is Always. The default tag is `nightly`. This tag sets the image pull policy to Always and triggers a new deployment with a newer image, if available.
+
 
 [id="scalability"]
 == Scalability
 
-To be able to run more workspaces, https://kubernetes.io/docs/concepts/architecture/nodes/#management[add more nodes to your Kubernetes cluster]. If the system is out of resources, workspace start will fail with an error message returned from Kubernetes (usually it’s `no available nodes` kind of error).
+To run more workspaces, https://kubernetes.io/docs/concepts/architecture/nodes/#management[add more nodes to your Kubernetes cluster].  An error message is returned when the system is out of resources.
 
 [id="gdpr"]
 == GDPR
 
-In case the user wants to delete their data or requested the admininistrator to do that, there is an API method for that purpose:
+To delete data or request the admininistrator to delete data, do this command with the user or adminstrator token:
 
 ----
 curl -X DELETE http://che-server/api/user/{id}
 ----
 
-Use the above command with the user or administrator token.
 
 [id="debug-mode"]
 == Debug Mode
 
-If you want Che server to run in a debug mode set the following env in Che deployment to true (false by default):
+To run Che Server in debug mode, set the following environment variable in Che deployment to true (default is false):
 
 `CHE_DEBUG_SERVER=true`
 
