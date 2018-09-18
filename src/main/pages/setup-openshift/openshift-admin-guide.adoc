@@ -141,19 +141,11 @@ When a workspace is deleted, a corresponding subdirectory (`${ws-id}`) is delete
 
 *Enabling a Common Strategy*
 
-<<<<<<< HEAD
-Set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `common` in dc/che if you have already deployed Che with unique strategy, or pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=common` to oc new-app command when applying `che-server-template.yaml`. See: link:openshift-multi-user.html[Deploy to OpenShift].
-=======
 If you have already deployed Che with unique strategy
->>>>>>> This updates the style for the Openshift Admin Guide
 
 * Set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `common` in dc/che
 
-<<<<<<< HEAD
-Pre 1.6 Kubernetes created subpaths within a PV with invalid permissions, sot hat a user in a running container was unable to write to mounted directories. When `pass:[CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS]` is `true`, and a common strategy is used, a special pod is started before workspace pod is schedules, to pre-create subpaths in PV with the right permissions. You don’t need to set it to true if you have Kubernetes 1.6+.
-=======
 If applying che-server-template.yaml
->>>>>>> This updates the style for the Openshift Admin Guide
 
 * Pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=common` to oc new-app command. 
 
@@ -226,7 +218,9 @@ Refer to https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-pri
 [id="che-server-logs"]
 == Che Server Logs
 
-When Eclipse Che gets deployed to Kubernetes, a PVC `che-data-volume` is https://github.com/eclipse/che/blob/master/deploy/kubernetes/kubectl/che-kubernetes.yaml#L26[created] and bound to a PV. Logs are persisted in a PV and can be retrieved in the following ways:
+The PVC `che-data-volume` is https://github.com/eclipse/che/blob/master/deploy/kubernetes/kubectl/che-kubernetes.yaml#L26[created] and bound to a PV after Eclipse Che deploys to Kubernetes. Logs are persisted in a PV.
+
+To retrieve logs, do one of the following:
 
 * `kubectl get log dc/che`
 * `kubectl describe pvc che-data-claim`, find PV it is bound to, then `oc describe pv $pvName`, you will get a local path with logs directory. Be careful with permissions for that directory, since once changed, Che server wont be able to write to a file
@@ -242,42 +236,74 @@ Workspace logs are stored in an PV bound to `che-claim-workspace` PVC. Workspace
 [id="che-master-states"]
 == Che Master States
 
-There is three possible states of the master - `RUNNING`, `PREPARING_TO_SHUTDOWN` and `READY_TO_SHUTDOWN`. `PREPARING_TO_SHUTDOWN` state may imply two different behaviors: - When no new workspace startups allowed, and all running workspaces are forcibly stopped; - When no new workspace startups allowed, any workspaces that are currently starting or stopping is allowed to finish that process, and running workspaces doesn’t stopped. This option is possible only for the infrastructures that support workspaces recovery. For those are didn’t, automatic fallback to the shutdown with full workspaces stopping will be performed. Therefore, `/api/system/stop` API contract changed slightly - now it tries to do the second behavior by default. Full shutdown with workspaces stop can be requested with `shutdown=true` parameter. When preparation process in finished, `READY_TO_SHUTDOWN` state will be set which allows to stop current Che master instance.
+The Che Master has three possible states:
+
+* `RUNNING`
+* `PREPARING_TO_SHUTDOWN`
+* `READY_TO_SHUTDOWN`
+
+The `PREPARING_TO_SHUTDOWN` state means that no new workspace startups are allowed. This situation can cause two different results: 
+
+* If your infrastructure does not support workspace recovery, all running workspaces are forcibly stopped; 
+
+* If your infrastructure does support workspace recovery, any workspaces that are currently starting or stopping is allowed to finish that process. Running workspaces do not stop.
+
+For those that did not stop, automatic fallback to the shutdown with full workspaces stopping will be performed. 
+
+If you want a full shutdown with workspaces stopped, you can request this by using the `shutdown=true` parameter. When preparation process is finished, the `READY_TO_SHUTDOWN` state is set which allows to stop current Che master instance.
 
 [id="che-workspace-termination-grace-period"]
 == Che Workspace Termination Grace Period
 
-Grace termination period of Kubernetes / OpenShift workspace’s pods defaults '0', which allows to terminate pods almost instantly and significantly decrease the time required for stopping a workspace. For increasing grace termination period the following environment variable should be used:
+The default grace termination period of Kubernetes/OpenShift workspace’s pods is '0'.  This setting terminates pods almost instantly and significantly decreases the time required for stopping a workspace. 
 
-`pass:[CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC]`
+To increase the grace termination period:
+
+* Update `CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC`
 
 *IMPORTANT!*
 
-If `terminationGracePeriodSeconds` have been explicitly set in Kubernetes / OpenShift recipe it will not be overridden by the environment variable.
+If the `terminationGracePeriodSeconds` have been explicitly set in the Kubernetes/OpenShift recipe, this environment variable does not override the recipe.
 
 [id="recreate-update"]
-== Recreate Update
+== Updating Che without stopping active workspaces
 
-To perform Recreate type update without stopping active workspaces:
+The differences between a Recreate update and a Rolling update:
 
-* Make sure there is full compatibility between new master and old ws agent versions (API etc);
-* Make sure deployment update strategy set to Recreate;
+Recreate update
+
+* Che downtime
+
+Rolling update
+
+* No Che downtime
+* New deployment starts in parallel and traffic is hot-switched
+
+=== Performing a Recreate update
+
+Prerequisites
+
+* Ensure that the new master version is fully API compatible with the old ws agent version.
+
+Procedure
+
+* Set the deployment update strategy to Recreate
 * Make POST request to the /api/system/stop api to start WS master suspend (means that all new attempts to start workspaces will be refused, and all current starts/stops will be finished). Note that this method requires system admin credentials.
-* Make periodical GET requests to /api/system/state api, until it returns READY_TO_SHUTDOWN state. Also, it may be visually controlled by line "System is ready to shutdown" in the server logs
+* Make periodical GET requests to /api/system/state api, until it returns READY_TO_SHUTDOWN state. Also, you can check for "System is ready to shutdown" in the server logs.
 * Perform new deploy.
 
 [id="rolling-update"]
-== Rolling Update
+=== Performing a Rolling Update
 
-To perform Rolling type update without stopping active workspaces, the following preconditions required:
+Prerequisites
 
-* Make sure deployment update strategy set to Rolling;
-* Make sure there is full API compatibility between new master and old ws agent versions, as well as database compatibility (since it is impossible to use DB migrations on this update mode);
-* Make sure `terminationGracePeriodSeconds` deployment parameter has enough value (see details below).
+* Ensure there is full API compatibility between new master and old ws agent versions, as well as database compatibility (since it is impossible to use DB migrations on this update mode);
 
-After that preconditions is done, press Deploy button or execute `oc rollout latest che` from cli client will start the process.
+Procedure
 
-Unlike the Recreate update, the Rolling update type does not imply any Che server downtime, since new deployment is starting in parallel and traffic is hot-switched. (Typically there is 5-6 sec period of Che server API unavailability due to routes switching).
+* Set the deployment update strategy set to Rolling;
+* Ensure `terminationGracePeriodSeconds` deployment parameter has enough value (see details below).
+* Press Deploy button or execute `oc rollout latest che` from cli client.
 
 [id="known-issues"]
 ==== Known issues
@@ -286,53 +312,60 @@ Unlike the Recreate update, the Rolling update type does not imply any Che serve
 * Some users may experience problems with websocket reconnections or missed events published by WebSocket connection(when a workspace is STARTED but dashboard displays that it is STARTING); Need to reload page to restore connections and actual workspaces states.
 
 [id="update-with-db-migrations-or-api-incompatibility"]
-== Update with DB migrations or API incompatibility
+=== Updating with database migrations or API incompatibility
 
 If new version of Che server contains some DB migrations, but there is still API compatibility between old and new version, recreate update type may be used, without stopping running workspaces.
 
 API incompatible versions should be updated with full workspaces stop. It means that `/api/system/stop?shutdown=true` must be called prior to update.
 
 [id="delete-deployments"]
-== Delete deployments
+== Deleting deployments
 
-If you want to completely delete Che and its infrastructure components, deleting a project/namespace is the fastest way - all objects associated with this namespace will be deleted:
+The fastest way to completely delete Che and its infrastructure components is to delete the project and namespace.
+
+To delete Che and components:
 
 `oc delete namespace che`
 
-If you need to delete particular deployments and associated objects, you can use selectors (use `oc` instead of `kubctl` for OpenShift):
+You can use selectors to delete particular deployments and associated objects.
 
+To remove all Che server related objects:
 ----
-# remove all Che server related objects
-kubectl delete all -l=app=che
-# remove all Keycloak related objects
-kubectl delete all -l=app=keycloak
-# remove all Postgres related objects
-kubectl delete all -l=app=postgres
+oc delete all -l=app=che
 ----
 
-PVCs, service accounts and role bindings should be deleted separately as `oc delete all` does not delete them:
-
+To remove all Keycloak related objects
 ----
-# Delete Che server PVC, ServiceAccount and RoleBinding
-kubectl delete sa -l=app=che
-kubectl delete rolebinding -l=app=che
+oc delete all -l=app=keycloak
+----
 
-# Delete Keycloak and Postgres PVCs
+To remove all Postgres related objects
+----
+oc delete all -l=app=postgres
+----
 
-kubectl delete pvc -l=app=keycloak
-kubectl delete pvc -l=app=postgres
+PVCs, service accounts and role bindings should be deleted separately because `oc delete all` does not delete them.
+
+To delete Che server PVC, ServiceAccount and RoleBinding:
+----
+oc delete sa -l=app=che
+oc delete rolebinding -l=app=che
+----
+
+To delete Keycloak and Postgres PVCs
+----
+oc delete pvc -l=app=keycloak
+oc delete pvc -l=app=postgres
 ----
 
 [id="create-workspace-objects-in-personal-namespaces"]
 == Create workspace objects in personal namespaces
 
-When Che is installed on OpenShift in multi-user mode, it is possible to register the OpenShift server into the Keycloak server as an identity provider, in order to allow creating workspace objects in the personal OpenShift namespace of the user that is currenlty logged in Che through Keycloak.
+You can register the OpenShift server as an identity provider when Che is installed in multi-user mode. This allows you to create workspace objects in the OpenShift namespace of the user that is logged in Che through Keycloak.
 
-This feature is available only when Che is configured to create a new OpenShift namespace for every Che workspace.
+To create a workspace object in the namespace of the user that is logged into Che:
 
-As detailed below, to enable this feature, the administrator should:
-
-* link:#openshift-identity-provider-registration[register], inside Keycloak, an OpenShift identity provider that will point to the OpenShift console of the cluster in which the workspace resources should be created,
+* link:#openshift-identity-provider-registration[Register], inside Keycloak, an OpenShift identity provider that points to the OpenShift console of the cluster
 * link:#che-configuration[configure] Che to use this Keycloak identity provider in order to retrieve the OpenShift tokens of Che users.
 
 Once this is done, every interactive action done by a Che user on workspaces, such as start or stop, will create OpenShift resources under his personal OpenShift account. And the first time the user will try to do it, he will be asked to link his Keycloak account with his personal OpenShift account: which he can do by simply following the provided link in the notification message.
