@@ -52,27 +52,6 @@
                 </configuration>
             </plugin>
             <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-                <execution>
-                    <id>generate-site</id>
-                    <phase>generate-sources</phase>
-                    <goals>
-                        <goal>run</goal>
-                    </goals>
-                    <configuration>
-                        <target>
-                            <!-- build Jekyll docs with docker -->
-                            <exec executable="bash">
-                                <arg value="-c" />
-                                <arg value="docker run -v $(pwd):/che-docs robkratky/che-docs sh -c 'cd /che-docs/src/main; mkdir -p _site; chown jekyll:jekyll _site; jekyll build --config _config.yml,_config-war.yml'" />
-                            </exec>
-                        </target>
-                    </configuration>
-                </execution>
-            </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
@@ -86,4 +65,80 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <!-- Docker build used by default. To use native build, use -Pnative -->
+            <id>docker</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>generate-site</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <!-- build Jekyll docs with docker -->
+                                        <exec executable="bash">
+                                            <arg value="-c" />
+                                            <arg value="docker run -v $(pwd):/che-docs robkratky/che-docs sh -c 'cd /che-docs/src/main; mkdir -p _site; chown jekyll:jekyll _site; jekyll build --config _config.yml,_config-war.yml'" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>generate-site</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <!-- prereqs: 
+                                            sudo yum install ruby ruby-devel @development-tools
+                                        -->
+                                        <exec executable="bash" dir="${basedir}/src/main" failonerror="true">
+                                            <arg value="-c" />
+                                            <arg value="gem install bundler" />
+                                        </exec>
+                                        <exec executable="bash" dir="${basedir}/src/main" failonerror="true">
+                                            <arg value="-c" />
+                                            <arg value="bundle install" />
+                                        </exec>
+                                        <exec executable="bash" dir="${basedir}/src/main" failonerror="true">
+                                            <arg value="-c" />
+                                            <arg value="gem install jekyll-asciidoc" />
+                                        </exec>
+                                        <exec executable="bash" dir="${basedir}/src/main" failonerror="true">
+                                            <arg value="-c" />
+                                            <arg value="jekyll build --config _config.yml,_config-war.yml" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
