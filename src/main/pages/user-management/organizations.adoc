@@ -11,49 +11,61 @@ folder: user-management
 [id="organizations-in-eclipse-che"]
 == Organizations in Eclipse Che
 
-Organizations allow admins to group Eclipse Che users and allocate resources. Resources and permissions are controlled and allocated within the admin dashboard by a system administrator.
+Organizations allow administrators to group Eclipse Che users and allocate resources. The system adminstrator controls and allocates resources and permissions within the administrator dashboard.
 
 [id="roles"]
 == Roles
 
 There are two different roles in an organization:
 
-* *Admin*: Organization admins are able to manage the organization. Admins can edit settings, manage members, resources and sub-organization. +
-* *Members*: Organization members are able create workspaces, manage their own workspaces and use any workspaces they have permissions for.
-
-There is also a *System Admin* role which sits above the organization construct. System Admins are able to create root organizations, as well as manage all resources, members and sub-organizations.
+* *Admin*: Organizational administrators manage the organization, members, resources and sub-organization and edit settings. +
+* *Members*: Organizational members are able to use, create, and manage workspaces.
+* *System Admin*: System administrators have more permissions than the administrator and member role. System admininstrators create root organizations, manages all resources, members and sub-organizations.
 
 [id="organization-structure"]
 == Organization Structure
 
-Top level organizations are called "root organizations." Any organization can 0..n sub-organizations. Multiple root organizations are allowed and can be created only be the System Admin. Management of root organizations’ resources can only be done by the System Admin.
+The top level organizations are called root organizations.  Any organization can have zero to a set number of sub-organizations. Only the system admistrator can create root organizations and manage the resources of the root organization. 
 
 [id="creating-an-organization"]
 == Creating an Organization
 
-Only the System Admin is able to create root organizations. Organization Admins can create sub-organizations. To create an organization, use the menu in the left sidebar, which leads to the list of organizations. A new page is displayed with all organizations in your system. Click on the top-left button to create a new organization.
+Only the system administrator is able to create root organizations. The organizational administrator creates sub-organizations. 
+
+To create an organization:
+
+.  Use the menu in the left sidebar, which leads to the list of organizations. A new page is displayed with all organizations in your system.
+
+.  Click on the top-left button to create a new organization.
 
 [id="organization-list"]
 == Organization List
 
-The list of all organizations are displayed on organizations page. The list contains the general information for each organization: number of members, total and available RAM and number of sub-organizations.
+The list of all organizations are displayed on the organization page. The list contains the following general information for each organization: number of members, total RAM, available RAM and number of sub-organizations.
 
 [id="adding-organization-members"]
-== Adding Organization Members
+== Adding members to organizations
 
-Adding organization members by clicking the "Add" button will display a new popup. You can change an organization member’s role or remove them from the organization at any time.
+To add members to organization:
 
-Note: Users with the green checkmark beside their name already have an account on your Eclipse Chesystem and will be added to the organization. Users without a checkmark do not have an account and will not be added into the organization.
+. Click "Add" button.  A new popup displays. You can add, change the role of the member or remove the member from the organization.
+
+[NOTE]
+====
+Users with the green checkmark beside their name already have an Eclipse Che account and can be added to the organization. Users without a checkmark do not have an account and can not be added into the organization.
+====
 
 [id="workspaces-in-organization"]
 == Workspaces in Organization
 
-Workspace is created inside of an organization and uses the resources of this very organization. Workspace creator has to choose the organization on workspace creation page.
+You can choose the organizaton of the workspace.  The resources of the organization are used by the workspace. 
 
 [id="email-notifications"]
-== Email Notifications
+== Setting email notifications
 
-When a user joins or leaves an organization, Che server can send a notification in case SMTP is properly configured in `che.env` (or by adding envs to deployment in case fo OpenShift). By default, Che does not offer any built-in SMTP server. You may use any mail server you want. Below is an example on how to use own Gmail to send notification emails:
+When a user joins or leaves an organization, Che server sends a notification. You either configure SMTP in `che.env` or for Openshift you add environment varibles to the deployment to send a notification.  Che does not have any built-in SMTP server by default. You may use any mail server.
+
+To send notification email, set the following enviroment variables:
 
 ----
 CHE_MAIL_PORT=465
@@ -64,53 +76,76 @@ CHE_MAIL_SMTP_AUTH_USERNAME=no-reply@gmail.com
 CHE_MAIL_SMTP_AUTH_PASSWORD=password
 ----
 
+[NOTE]
+====
+This example is for gmail.
+====
+
 [id="create-sub-organization"]
-== Create Sub-Organization
+== Creating sub-organizations
 
-The creation of sub-organization can be done from organization details page by selecting Sub-Organizations tab and clicking "Add Sub-Organization" button.
+To create the sub-organization:
 
-The flow of sub-organization creation is the same as for organization.
+*  Select Sub-Organizations tab.
+
+*  Click "Add Sub-Organization" button.
+
+You use the same steps to create the sub-organization as organization.
 
 [id="add-members-to-sub-organization"]
-== Add members to Sub-Organization
+== Adding members to Sub-Organization
 
-The sub-organization members can be added only from the list of parent organization’s members:
+To add sub-organization member from the list of parent organization’s members:
 
 [id="organization-and-sub-organization-administration"]
 == Organization and Sub-Organization Administration
 
-Organization settings are visible to all members of the organization, but only the Eclipse Che system administrator is able to modify the settings.
+The organization settings are visible to all members of the organization.  Only the Eclipse Che system administrator modifies the settings.
 
 [id="rename-an-organization-or-sub-organization"]
-== Rename an Organization or Sub-Organization
+== Rename an organization or sub-organization
 
-*Action restricted to*: Eclipse Che system administrator and admins of the organization.
+To rename an organization:
 
-To rename an Organization, click in the "Name" textfield and start editing the name of the organization. Once edited, the save mode will appear - click on "Save" button to update the name.
+. Click in the "Name" field.
+
+. Edit the name of the organization. The save mode appears after typing.
+
+. Click on "Save" button to update the name.
 
 The name of the organization is restricted to the following rules: +
-- Only alphanumeric characters or a single "-" can be used +
-- Spaces cannot be used in organization names +
-- Each organization name must be unique within the Eclipse Che install - Each sub-organization name must be unique within an organization
+* Only alphanumeric characters or a single "-" can be used. +
+* Spaces can not be used in the name of the organization. +
+* Each organization name must be unique within the Eclipse Che install. +
+* Each sub-organization name must be unique within an organization.
+
+[NOTE]
+====
+Renaming an organization or sub-organization is restricted to the Eclipse Che system administrator and administrator of the organization.
+====
 
 [id="leave-an-organization-or-sub-organization"]
-== Leave an Organization or Sub-Organization
+== Leaving an organization or sub-organization
 
-This action is not possible for members of an organization. Users have to contact organization’s admin or Eclipse Che system admin.
+Members of an organization can not request to leave an organization or sub-organization. You contact the administrator of the organization or the system administrator to request that a member leaves an organization or sub-organization.  
 
 [id="delete-an-organization-or-sub-organization"]
-== Delete an Organization or Sub-Organization
+== Deleting an organization or sub-organization
 
-*Action restricted to*: Eclipse Che system administrator and admins of the organization.
+To delete an organization or a sub-organization:
 
-To delete an organization or a sub-organization, click on "Delete" button. This action can’t be reverted and all workspaces created under the organization will be deleted.
+* Click on "Delete" button.
 
-All members of the organization will receive an email notification to inform about organization deletion.
+[IMPORTANT]
+====
+This action can’t be reverted and all workspaces created under the organization will be deleted.
+All members of the organization will receive an email notification to inform about organization deletion. Only system adminstrators or administrators of the organization delete an organization or sub-organization. 
+====
 
 [id="organization-resources"]
 == Organization Resources
 
-Workspaces created in an organization use the resources allocated by the system administrator to that organization. Resources for sub-organizations are taken from the parent organization. Admins can control whether all, or a portion of the parent’s resources are available to the sub-organization.
+The workspace use the resources allocated by the system administrator of the organization that it belongs to. The resources for sub-organizations are taken from the parent organization. Administrators control which resources of the parent organization are available to the sub-organization.
 
 [id="managing-limits"]
 == Managing Limits
