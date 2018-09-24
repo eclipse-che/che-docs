@@ -10,12 +10,10 @@ folder: developer-guide
 == Currently Supported Databases
 As of version 6.10, Eclipse Che currently supports following databases:
 - H2 (version 1.4.196)
-- PostgreSQL (version 9.4.1201-jdbc41)
+- PostgreSQL (version 9.6)
 
 H2 database is used by default in Single-User Che, whereas postgresql is used for Multi-user installation.
 Both of these have been tested with Selenium Integration tests, as well as TCK integration tests.
-
-MySQL is currently not officially supported because of Driver's GPL License.
 
 It is possible to connect own DB to datasource, and have TCK tests run on it, to ensure that DB can be used with Che's JPA code.
 
@@ -42,12 +40,12 @@ For example, in H2 and PostgreSQL, an exception may occur, when data couldn't be
 But as it will a vendor specific exception with different code, there are Custom `H2ExceptionHandler`/`PostgreSqlExceptionHandler` that will catch it, and throw instead a `DuplicateKeyException`, which is used across the codebase.
 
 *persistence.xml*
-//TODO add notes about persistence.xml and how properties can be dynamicaly added to it in WsMasterModule (depending on DB)
+Persistence XML
 
 [id="test-compatibility-kit"]
 == Test Compatibility Kit (TCK)
 Test Compatibility kit is a set of integration tests that covers uses of essential DAO components, that are being run against real database.
-//TODO list with all TCK tests?
+
 
 *Running TCK on a custom DB*
 
@@ -61,6 +59,7 @@ In order to run TCK for a custom database, a maven module should be created with
 
 Use `maven-docker-plugin` to run database as a docker container with preconfigured database settings like DB username, password, port, etc.
 
+Use `wsmaster/integration-tests/postgresql-tck`module in Che, as an example of TCK execution
 [id="cascade-removal-tests"]
 == JPA Cascade Removal Tests
 
