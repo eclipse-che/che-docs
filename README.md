@@ -6,6 +6,20 @@ Che docs use Jekyll to convert `.adoc` files into HTML pages. Docs are published
 
 There is a `run.sh` script in the root of the repo that runs a Docker image, mounts sources, and starts Jekyll. When running locally, docs are available at `localhost:4000`. Jekyll watches for changes in `.adoc` files and re-generates resources, so you can preview changes live.
 
+### Building natively
+
+If you prefer to not use a Docker image, or you're already in a container and can't nest, you instead need to [install these jekyll dependencies](https://jekyllrb.com/docs/installation/):
+
+```
+sudo yum install maven ruby ruby-devel @development-tools
+```
+
+Then, instead of the `run.sh` script, run Maven directly:
+
+```
+mvn clean install -Pnative
+```
+
 ## Adding a New Page
 
 In order to add a new page, create an `.adoc` file in `src/main/pages/${subdir}`. If there is no sub-directory that fits a new page, create one. Take a look at headers in pages to make sure the generated HTML page has the expected name, title, and keywords.
