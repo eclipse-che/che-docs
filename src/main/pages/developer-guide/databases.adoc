@@ -22,16 +22,16 @@ It is possible to connect own DB to datasource, and have TCK tests run on it, to
 *DataSource factory*
 To Configuring Che to use custom DataSource, a new implementation of `JNDIDataSourceFactory` must be defined.
 It will configure JDBC Pool properties such as
-- DB username
-- DB password
-- DB URL
-- Driver class name
-- Max Total
-- Max Idle
-- Max Wait milliseconds
+
+* DB username
+* DB password
+* DB URL
+* Driver class name
+* Max Total
+* Max Idle
+* Max Wait milliseconds
 
 (More about JDBC configuration properties at https://tomcat.apache.org/tomcat-8.5-doc/jndi-datasource-examples-howto.html)
-
 
 *ExceptionHandler*
 Database may sometimes produce different SQL exception, depending on the vendor.
@@ -39,34 +39,35 @@ As in Java code, and TCK it is expected, a custom ExceptionHandler implementaion
 For example, in H2 and PostgreSQL, an exception may occur, when data couldn't be updated/stored due to unique constrain violation.
 But as it will a vendor specific exception with different code, there are Custom `H2ExceptionHandler`/`PostgreSqlExceptionHandler` that will catch it, and throw instead a `DuplicateKeyException`, which is used across the codebase.
 
-*persistence.xml*
-Persistence XML
+Exception handler has to be defined in persistence XML.
 
 [id="test-compatibility-kit"]
 == Test Compatibility Kit (TCK)
 Test Compatibility kit is a set of integration tests that covers uses of essential DAO components, that are being run against real database.
 
+List of Che modules that have TCK tests:
 
-*Running TCK on a custom DB*
+* che-core-api-user
+* che-multiuser-machine-authentication
+* che-core-api-account
+* che-core-api-installer
+* che-core-api-ssh
+* che-core-api-workspace
+* che-core-api-workspace-activity
 
-In order to run TCK for a custom database, a maven module should be created with following components:
+Tests in these modules are executed on H2 Database during build. But also, tests themselves are packaged into separate artifact with `tests` classifier, which are meant to be used for their re-usage against other DBs.
 
-- a Guice module that extends `TckModule` which will be responsible for establishing connection with DataSource, binding all required implementations of JPA entities and repositories.
-- a file in src/test/resources/META-INF/services named `org.eclipse.che.commons.test.tck.TckModule`. In it, there must be defined a name of the mentioned TckModule implementaion.
-- include all dependency artifacts with TCK tests
-- include artifact with DB Driver
-- add persistence.xml file or use PersistTestModuleBuilder helper class to create one programmatically in `TckModule` implementation
+As an example of that, there are `postgresql-tck` and `che-multiuser-postgresql-tck` modules for running TCK tests on Postgres DB.
 
-Use `maven-docker-plugin` to run database as a docker container with preconfigured database settings like DB username, password, port, etc.
-
-Use `wsmaster/integration-tests/postgresql-tck`module in Che, as an example of TCK execution
 [id="cascade-removal-tests"]
 == JPA Cascade Removal Tests
 
-JPA Cascade removal tests are designed to test cases related to cascade operations
-An object, that can be depended on another object, for example `Workpace`, that belongs to another `User`
+JPA Cascade removal tests are designed to test cases related to cascaded removal of objects with it's depended objects. object, that can be depended on another object, for example `Profile`, that belongs to another `User`.
+For example, if object `User` has a dependent object `Profile`. Removal of `User` should invoke a removal of it's `Profile` as well.
+However, if exception occurs during `User` removal, then transaction would get rolled back and all entities should remain in place.
+Cascade removal tests cover these usecases.
 
-//TODO Descibe JPA tests structure
+JPA tests are being run against H2 database, in modules `cascade-removal` and `che-multiuser-cascade-removal` tests
 
 [id="flyway-migration"]
 == Flyway migration
@@ -124,7 +125,7 @@ There is a directory in 5.0.0-M2 called `postresql` if current database provider
 the script from 5.0.0-M1/posgresql/2.add_workspace_constraint.sql will be used instead of 5.0.0-M1/2.add_workspace_constraint.sql, so basically if the same script name is provided in provider-specific directory then this script will be used instead
 
 So, the order of applyting scripts be as following
-[width="100%",cols="50%,50%",options="header",]
+[width="100%",options="header",]
 |===
 |db version |script name	|location	|picked vendor specific
 |5.0.0.1.1 |1__init.sql	|che-schema	|no
@@ -136,11 +137,24 @@ So, the order of applyting scripts be as following
 
 [id="pg-trgm"]
 == pg_trgm
-//TODO
+Postgres Trigram extension is used for more optimised search of similar string https://www.postgresql.org/docs/9.6/static/pgtrgm.html
 
-Postgres Trigram extension is used for more optimised search of similar string, that is used for example, when searching for user name and email.
-It is enabled with a vendor specific migration script.
+in Che it is used for a faster search for similar email and names, and enabled with a vendor specific migration script:
+```
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX index_user_lower_email ON usr USING GIN (LOWER(email) gin_trgm_ops);
+CREATE INDEX index_user_lower_name ON usr USING GIN (LOWER(name) gin_trgm_ops);
+```
 
-[id="datasource-components"]
+[id="contributor-guidelines"]
 == Contributor guidelines
-//TODO
+*Creating a module to run TCK on a custom DB*
+
+In order to run TCK for a custom database, a maven module should be created with following components:
+
+- a Guice module that extends `TckModule` which will be responsible for establishing connection with DataSource, binding all required implementations of JPA entities and repositories.
+- a file in src/test/resources/META-INF/services named `org.eclipse.che.commons.test.tck.TckModule`. In it, there must be defined a name of the mentioned TckModule implementaion.
+- include all dependency artifacts with TCK tests (see list of Che modules above)
+- include artifact with DB Driver
+- include artifact with Che SQL schema. Note, that your database may not be fully compatible with existing Che SQL schema, so you might gonna have to add additional vendor specific scripts ( See "Flyway Migration" for the information on how to add such scripts).
+- add persistence.xml file or use PersistTestModuleBuilder helper class to create one programmatically in `TckModule` implementation
