@@ -9,8 +9,9 @@ folder: developer-guide
 [id="currently-supported-dbs"]
 == Currently Supported Databases
 As of version 6.10, Eclipse Che currently supports following databases:
-- H2 (version 1.4.196)
-- PostgreSQL (version 9.6)
+
+* H2 (version 1.4.196)
+* PostgreSQL (version 9.6)
 
 H2 database is used by default in Single-User Che, whereas postgresql is used for Multi-user installation.
 Both of these have been tested with Selenium Integration tests, as well as TCK integration tests.
@@ -152,6 +153,7 @@ CREATE INDEX index_user_lower_name ON usr USING GIN (LOWER(name) gin_trgm_ops);
 
 In order to run TCK for a custom database, a maven module should be created with following components:
 
+- configure `docker-maven-plugin` to run an image with database
 - a Guice module that extends `TckModule` which will be responsible for establishing connection with DataSource, binding all required implementations of JPA entities and repositories.
 - a file in src/test/resources/META-INF/services named `org.eclipse.che.commons.test.tck.TckModule`. In it, there must be defined a name of the mentioned TckModule implementaion.
 - include all dependency artifacts with TCK tests (see list of Che modules above)
