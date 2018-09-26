@@ -91,7 +91,8 @@ db.schema.flyway.scripts.suffix=.sql                        #
 db.schema.flyway.scripts.version_separator=__               #
 db.schema.flyway.scripts.locations=classpath:che-schema     #
 ----
-Also ability to place
+
+Che DB Schema artifacts have
 
 Taking a look at the sample structure:
 
@@ -121,7 +122,7 @@ db.schema.flyway.scripts.locations=classpath:che-schema,classpath:subproject-sch
 * Version directory*
 There are version directories under the `che-schema` like 5.0.0 or 5.0.0-M1 these directories contain
 scripts for specific versions
-SQL scripts will be placeunder project version directories line 1.init.sql or 1.rename_fields.sql
+SQL scripts will be placed under project version directories line 1.init.sql or 1.rename_fields.sql
 The naming of scripts is pretty simple: the first digit in the name is a script version in a project versions (it's `1` in `1__init.sql`)
 then description of changes (if necessary) init in 1__init.sql and then the file extension .sql in 1__init.sql
 
@@ -130,7 +131,7 @@ then description of changes (if necessary) init in 1__init.sql and then the file
 There is a directory in 5.0.0-M2 called `postresql` if current database provider is posgresql then
 the script from 5.0.0-M1/posgresql/2.add_workspace_constraint.sql will be used instead of 5.0.0-M1/2.add_workspace_constraint.sql, so basically if the same script name is provided in provider-specific directory then this script will be used instead
 
-So, the order of applyting scripts be as following
+So, the order of applying scripts be as following
 [width="100%",options="header",]
 |===
 |db version |script name	|location	|picked vendor specific
@@ -166,3 +167,5 @@ In order to run TCK for a custom database, a maven module should be created with
 - include artifact with Che SQL schema. Note, that your database may not be fully compatible with existing Che SQL schema, so you might gonna have to create a separate maven module to add additional vendor specific scripts ( See "Flyway Migration" for the information on how to add such scripts).
 - add persistence.xml file or use PersistTestModuleBuilder helper class to create one programmatically in `TckModule` implementation
 
+Note, that to contribute the module to Eclipse repository, one must create an Eclipse CQ for Database, it's drivers and other possible dependencies.
+As these artifacts are used only for building and testing purposes, the type of CQ will be "works with". See https://www.eclipse.org/projects/handbook/#ip-third-party-workswith
