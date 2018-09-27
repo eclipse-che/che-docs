@@ -20,17 +20,21 @@ It is possible to connect own DB to datasource, and have TCK tests run on it, to
 
 [id="datasource-components"]
 == Datasource components
-*DataSource factory*
-To Configuring Che to use custom DataSource, a new implementation of `JNDIDataSourceFactory` must be defined.
-It will configure JDBC Pool properties such as
+*JDBC Pool configuration*
+Depending on Database used by Che, `JNDIDataSourceFactory` implementation will provide all the required JDBC pool connection configuration.
+These properties can be overriden with Che configuration Environment Variables:
 
-* DB username
-* DB password
-* DB URL
-* Driver class name
-* Max Total
-* Max Idle
-* Max Wait milliseconds
+[width="100%",options="header",]
+|===
+|Che Environment Variable name |JDBC property name
+|CHE_JDBC_USERNAME |username
+|CHE_JDBC_PASSWORD	|password
+|CHE_JDBC_URL	|url
+|CHE_JDBC_DRIVER__CLASS__NAME	|driverClassName
+|CHE_JDBC_MAX__TOTAL	|maxTotal
+|CHE_JDBC_MAX__IDLE	|maxIdle
+|CHE_JDBC_MAX__WAIT__MILLIS
+|===
 
 (More about JDBC configuration properties at https://tomcat.apache.org/tomcat-8.5-doc/jndi-datasource-examples-howto.html)
 
@@ -69,10 +73,11 @@ As an example of that, there are `postgresql-tck` and `che-multiuser-postgresql-
 [id="cascade-removal-tests"]
 == JPA Cascade Removal Tests
 
-Objects in Database, upon removal, sometimes may need to be removed with other related objects.
-E.g. when Account is removed from DB, all associated Workspaces must be removed as well.
-This is achieved by Account DAO throwing a custom type of `CascadeEvent`, and Workspace DAO have a `CascadeEventSubscriber` that would listen to that event.
-Should removal of Account perform unsuccessfully, the whole transaction would be rolled back and none of the Workspaces would be deleted.
+In Eclipse Che database schema, some objects have foreign keys reference on other objects.
+Example: Account and workspaces, Permissions and Workspaces. To be able to correctly
+remove such objects and avoid referential integrity problems Eclipse Che are using events mechanism.
+For example, when Account DAO wants to remove account it sends CascadeEvent, and Workspace DAO has a CascadeEventSubscriber that would listen to that event
+and remove workspace at that time. In case if removal of workspace failed the whole transaction would be rolled back.
 
 All that functionality is covered by "Cascade Removal Tests", that are located in `cascade-removal` and `che-multiuser-cascade-removal` modules.
 
