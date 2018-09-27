@@ -49,12 +49,13 @@ Test Compatibility kit is a set of integration tests that covers uses of essenti
 List of Che modules that have TCK tests:
 
 * che-core-api-user
-* che-multiuser-machine-authentication
 * che-core-api-account
 * che-core-api-installer
 * che-core-api-ssh
 * che-core-api-workspace
 * che-core-api-workspace-activity
+* infrastructure-kubernetes
+* che-multiuser-machine-authentication (Multi User Che
 * che-multiuser-api-organization (Multi User Che)
 * che-multiuser-api-permission (Multi User Che)
 * che-multiuser-api-resource (Multi User Che)
@@ -68,12 +69,11 @@ As an example of that, there are `postgresql-tck` and `che-multiuser-postgresql-
 [id="cascade-removal-tests"]
 == JPA Cascade Removal Tests
 
-JPA Cascade removal tests are designed to test cases related to cascaded removal of objects with it's depended objects. object, that can be depended on another object, for example `Profile`, that belongs to another `User`.
-For example, if object `User` has a dependent object `Profile`. Removal of `User` should invoke a removal of it's `Profile` as well.
-However, if exception occurs during `User` removal, then transaction would get rolled back and all entities should remain in place.
-Cascade removal tests cover these usecases.
-
-JPA tests are being run against H2 database, in modules `cascade-removal` and `che-multiuser-cascade-removal` tests
+Objects in Database, upon removal, sometimes may need to be removed with other related objects.
+E.g. when Account is removed from DB, all associated Workspaces must be removed as well.
+This is achieved by Account DAO throwing a custom type of `CascadeEvent`, and Workspace DAO have a `CascadeEventSubscriber` that would listen to that event.
+Should removal of Account perform unsuccessfully, the whole transaction would be rolled back and none of the Workspaces would be deleted.
+All that functionality is covered by "Cascade Removal Tests", that are located in `cascade-removal` and `che-multiuser-cascade-removal` modules.
 
 [id="flyway-migration"]
 == Flyway migration
