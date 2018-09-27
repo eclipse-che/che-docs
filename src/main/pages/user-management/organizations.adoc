@@ -26,9 +26,9 @@ The following are roles in an organization:
     Creates root organizations, manages resources, members and sub-organizations. System administrators have more permissions than the administrator and member. 
 
 [id="organization-structure"]
-== Root and sub-organizations 
+== Root organizations and sub-organizations 
 
-The top level organizations are called root organizations.  Any organization can have zero to a set number of sub-organizations. Only the system admistrator can create root organizations and manage the resources of the root organization. 
+The top-level organizations are called root organizations.  Any organization can have zero to a set number of sub-organizations. Only the system admistrator can create root organizations and manage the resources of the root organization. 
 
 [id="creating-an-organization"]
 == Creating an organization
@@ -44,7 +44,7 @@ To create an organization:
 [id="organization-list"]
 == List of organizations
 
-The list of all the organizations displays on the organization page. The list contains the following general information for each organization: number of members, total RAM, available RAM and number of sub-organizations.
+A list of all the organizations displays on the organization page. The list contains the following general information for each organization: number of members, total RAM, available RAM, and number of sub-organizations.
 
 [id="adding-organization-members"]
 == Adding members to organizations
@@ -57,7 +57,7 @@ To add members to organization:
 
 [NOTE]
 ====
-Users with the green checkmark beside their name already have an Eclipse Che account and can be added to the organization. Users without a checkmark do not have an account and can not be added into the organization.
+Users with the green checkmark beside their name already have an Eclipse Che account and can be added to the organization. Users without a checkmark do not have an account and cannot be added into the organization.
 ====
 
 [id="workspaces-in-organization"]
@@ -68,9 +68,9 @@ You can choose the organizaton of the workspace.  The resources of the organizat
 [id="email-notifications"]
 == Setting email notifications
 
-When a user joins or leaves an organization, Che server sends a notification. You either configure SMTP in `che.env` or for Openshift you add environment varibles to the deployment to send a notification.  Che does not have any built-in SMTP server by default. You may use any mail server.
+When a user joins or leaves an organization, Che server sends a notification. You either configure SMTP in `che.env` or for OpenShift you add environment varibles to the deployment to send a notification.  Che does not have any built-in SMTP server by default. You may use any mail server.
 
-To send notification email, set the following enviroment variables:
+For example, to send notification email to your Gmail account, set the following environment variables:
 
 ----
 CHE_MAIL_PORT=465
@@ -81,26 +81,21 @@ CHE_MAIL_SMTP_AUTH_USERNAME=no-reply@gmail.com
 CHE_MAIL_SMTP_AUTH_PASSWORD=password
 ----
 
-[NOTE]
-====
-This example is for gmail.
-====
-
 [id="create-sub-organization"]
 == Creating sub-organizations
 
-To create the sub-organization:
+To create a sub-organization:
 
 *  Select Sub-Organizations tab.
 
 *  Click *Add Sub-Organization* button.
 
-You use the same steps to create the organization.
+The steps to create a sub-organization are the same as that of creating an organization, use them to create the organization.
 
 [id="add-members-to-sub-organization"]
 == Adding members to sub-organizations
 
-To add sub-organization member from the list of parent organization’s members:
+You can only add members of the parent organization as members of the sub-organization.
 
 [id="organization-and-sub-organization-administration"]
 == Organization and sub-organization administration
@@ -110,9 +105,14 @@ The settings of the organization are visible to all members of the organization.
 [id="rename-an-organization-or-sub-organization"]
 == Renaming an organization or sub-organization
 
+[NOTE]
+====
+Only the  Eclipse Che system administrator and administrator of the organization can rename an organization or sub-organization.
+====
+
 To rename an organization:
 
-. Click *Name* field to edit the name of the organization.  The save mode appears after typing.
+. Click *Name* field to edit the name of the organization.  The save mode displays after typing.
 
 . Click *Save* button to update the name.
 
@@ -122,15 +122,10 @@ The name of the organization is restricted to the following rules: +
 * Each organization name must be unique within the Eclipse Che install. +
 * Each sub-organization name must be unique within an organization.
 
-[NOTE]
-====
-Renaming an organization or sub-organization is restricted to the Eclipse Che system administrator and administrator of the organization.
-====
-
 [id="leave-an-organization-or-sub-organization"]
 == Leaving an organization or sub-organization
 
-Members of an organization can not request to leave an organization or sub-organization. You contact the administrator of the organization or the system administrator to request that a member leaves an organization or sub-organization.  
+Members of an organization can not leave an organization or sub-organization. To leave the organization, contact the administrator of the organization or the system administrator of Eclipse Che.  
 
 [id="delete-an-organization-or-sub-organization"]
 == Deleting an organization or sub-organization
@@ -153,45 +148,44 @@ The workspace use the resources of the organization that is allocated by the sys
 [id="managing-limits"]
 == Managing Limits
 
-The system configuration defines the default limits. The administrator of the organization manages only the limits of its sub-organizations. No resource limits applies to the organization by default.  The following are the limits defined by the system adminstrator:
-
-* *Workspace Cap*: The maximum number of workspaces that exists in the organization. +
-* *Running Workspace Cap*: The maximum number of workspaces that run simultaneously in the organization. +
-* *Workspace RAM Cap*: The maximum amount of RAM that a workspace uses in GB.
-
 [NOTE]
 ====
 Managing limits is restricted to the Eclipse Che system administrator and administrator of the organization.
 ====
 
+The system configuration defines the default limits. The administrator of the organization manages only the limits of its sub-organizations. No resource limits apply to the organization by default.  The following are the limits defined by the system adminstrator:
+
+* *Workspace Cap*: The maximum number of workspaces that exists in the organization. +
+* *Running Workspace Cap*: The maximum number of workspaces that run simultaneously in the organization. +
+* *Workspace RAM Cap*: The maximum amount of RAM that a workspace uses in GB.
+
 
 [id="update-organization-and-sub-organization-member-roles"]
 == Updating organization and sub-organization member roles
-
-To edit the member role:
-
-. Click *Edit* button in the "Actions" column. You update the role of the selected member in the pop-up window. 
-
-. Click *Save* to confirm the update.
 
 [NOTE]
 ====
 Updating the members of an organization or sub-organization is restricted to the Eclipse Che system administrator and administrator of the organization.
 ====
 
+To edit the member role:
+
+. Click *Edit* button in the *Actions* column. You update the role of the selected member in the pop-up window. 
+
+. Click *Save* to confirm the update.
 
 [id="remove-organization-and-sub-organization-members"]
 == Removing members from an organization and sub-organization
 
 To remove a member:
 
-. Click *Delete* button in the "Actions" column. You confirm or cancel in the confirmation pop-up window.
+. Click *Delete* button in the *Actions* column. You confirm or cancel in the confirmation pop-up window.
 
 To remove multiple members:
 
 . Click the checkbox to select multiple members from the organization. 
 
-. Click *Delete* button will appear in the header of the table. The members that are removed from the organization will receive an email notification.
+. Click *Delete* button that appears in the header of the table. The members that are removed from the organization will receive an email notification.
 
 [NOTE]
 ====
