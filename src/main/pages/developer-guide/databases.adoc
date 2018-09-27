@@ -73,6 +73,7 @@ Objects in Database, upon removal, sometimes may need to be removed with other r
 E.g. when Account is removed from DB, all associated Workspaces must be removed as well.
 This is achieved by Account DAO throwing a custom type of `CascadeEvent`, and Workspace DAO have a `CascadeEventSubscriber` that would listen to that event.
 Should removal of Account perform unsuccessfully, the whole transaction would be rolled back and none of the Workspaces would be deleted.
+
 All that functionality is covered by "Cascade Removal Tests", that are located in `cascade-removal` and `che-multiuser-cascade-removal` modules.
 
 [id="flyway-migration"]
