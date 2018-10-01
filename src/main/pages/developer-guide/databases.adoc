@@ -8,12 +8,12 @@ folder: developer-guide
 ---
 [id="currently-supported-dbs"]
 == Currently Supported Databases
-As of version 6.10, Eclipse Che currently supports following databases:
+As of version 6.11, Eclipse Che currently supports following databases:
 
 * H2 (version 1.4.196)
 * PostgreSQL (version 9.6)
 
-H2 database is used by default in Single-User Che, whereas postgresql is used for Multi-user installation.
+H2 database is used by default in Single-User Che, whereas postgresql is used for Multi-User installation.
 Both of these have been tested with Selenium Integration tests, as well as TCK integration tests.
 
 It is possible to connect own DB to datasource, and have TCK tests run on it, to ensure that DB can be used with Che's JPA code.
@@ -59,11 +59,11 @@ List of Che modules that have TCK tests:
 * che-core-api-workspace
 * che-core-api-workspace-activity
 * infrastructure-kubernetes
-* che-multiuser-machine-authentication (Multi User Che)
-* che-multiuser-api-organization (Multi User Che)
-* che-multiuser-api-permission (Multi User Che)
-* che-multiuser-api-resource (Multi User Che)
-* che-multiuser-permission-workspace (Multi User Che)
+* che-multiuser-machine-authentication (Multi-User Che)
+* che-multiuser-api-organization (Multi-User Che)
+* che-multiuser-api-permission (Multi-User Che)
+* che-multiuser-api-resource (Multi-User Che)
+* che-multiuser-permission-workspace (Multi-User Che)
 
 Tests in these modules are executed on H2 Database during the build.
 Also, tests themselves are packaged into separate artifact with `tests` classifier, which are meant to be used for their re-usage against other DBs.
@@ -76,8 +76,8 @@ As an example of that, there are `postgresql-tck` and `che-multiuser-postgresql-
 In Eclipse Che database schema, some objects have foreign keys reference on other objects.
 Example: Account and workspaces, Permissions and Workspaces. To be able to correctly
 remove such objects and avoid referential integrity problems Eclipse Che are using events mechanism.
-For example, when Account DAO wants to remove account it sends CascadeEvent, and Workspace DAO has a CascadeEventSubscriber that would listen to that event
-and remove workspace at that time. In case if removal of workspace failed the whole transaction would be rolled back.
+For example, method in AccountManager that removes account sends a CascadeEvent, and Workspace DAO has a CascadeEventSubscriber that would listen to that event
+and remove workspace at that time. In case if removal of workspace failed the whole transaction would be rolled back, because AccountManager method had a `@Transactional` annotation.
 
 All that functionality is covered by "Cascade Removal Tests", that are located in `cascade-removal` and `che-multiuser-cascade-removal` modules.
 
@@ -165,13 +165,13 @@ CREATE INDEX index_user_lower_name ON usr USING GIN (LOWER(name) gin_trgm_ops);
 
 In order to run TCK for a custom database, a maven module should be created with following components:
 
-- configure `docker-maven-plugin` to run an image with database
-- a Guice module that extends `TckModule` which will be responsible for establishing connection with DataSource, binding all required implementations of JPA entities and repositories.
-- a file in src/test/resources/META-INF/services named `org.eclipse.che.commons.test.tck.TckModule`. In it, there must be defined a name of the mentioned TckModule implementaion.
-- include all dependency artifacts with TCK tests (see list of Che modules above)
-- include artifact with DB Driver
-- include artifact with Che SQL schema. Note, that your database may not be fully compatible with existing Che SQL schema, so you might gonna have to create a separate maven module to add additional vendor specific scripts ( See "Flyway Migration" for the information on how to add such scripts).
-- add persistence.xml file or use PersistTestModuleBuilder helper class to create one programmatically in `TckModule` implementation
+- configured `docker-maven-plugin` to run an image with database;
+- a Guice module that extends `TckModule` which will be responsible for establishing connection with DataSource, binding all required implementations of JPA entities and repositories;
+- a file in src/test/resources/META-INF/services named `org.eclipse.che.commons.test.tck.TckModule`. In it, there must be defined a name of the mentioned TckModule implementaion;
+- include all dependency artifacts with TCK tests (see list of Che modules above);
+- include artifact with DB Driver;
+- include artifact with Che SQL schema. Note, that your database may not be fully compatible with existing Che SQL schema, so you might gonna have to create a separate maven module to add additional vendor specific scripts ( See "Flyway Migration" for the information on how to add such scripts);
+- add persistence.xml file or use PersistTestModuleBuilder helper class to create one programmatically in `TckModule` implementation;
 
-Note, that to contribute the module to Eclipse repository, one must create an Eclipse CQ for Database, it's drivers and other possible dependencies.
+Note, that to contribute the module to Eclipse repository, one must create an Eclipse CQ for Database, its drivers and other possible dependencies.
 As these artifacts are used only for building and testing purposes, the type of CQ will be "works with". See https://www.eclipse.org/projects/handbook/#ip-third-party-workswith
