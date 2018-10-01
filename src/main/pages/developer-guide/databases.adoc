@@ -1,0 +1,182 @@
+---
+title: "Databases"
+keywords: database,
+tags: [dev-docs]
+sidebar: user_sidebar
+permalink: database.html
+folder: developer-guide
+---
+[id="currently-supported-dbs"]
+== Currently Supported Databases
+As of version 6.11, Eclipse Che currently supports following databases:
+
+* H2 (version 1.4.196)
+* PostgreSQL (version 9.6)
+
+H2 database is used by default in Single-User Che, whereas postgresql is used for Multi-User installation.
+Both of these have been tested with Selenium Integration tests, as well as TCK integration tests.
+
+It is possible to connect own DB to datasource, and have TCK tests run on it, to ensure that DB can be used with Che's JPA code.
+
+[id="datasource-components"]
+== Datasource components
+*JDBC Pool configuration*
+Depending on Database used by Che, `JNDIDataSourceFactory` implementation will provide all the required JDBC pool connection configuration.
+These properties can be overriden with Che configuration Environment Variables:
+
+[width="100%",options="header",]
+|===
+|Che Environment Variable |JDBC Pool configuration property
+|CHE_JDBC_USERNAME |username
+|CHE_JDBC_PASSWORD	|password
+|CHE_JDBC_URL	|url
+|CHE_JDBC_DRIVER\__CLASS__NAME	|driverClassName
+|CHE_JDBC_MAX__TOTAL	|maxTotal
+|CHE_JDBC_MAX__IDLE	|maxIdle
+|CHE_JDBC_MAX\__WAIT__MILLIS| maxWaitMillis
+|===
+
+(More about JDBC configuration properties at https://tomcat.apache.org/tomcat-8.5-doc/jndi-datasource-examples-howto.html)
+
+*ExceptionHandler*
+Database may sometimes produce different SQL exception, depending on the vendor.
+As in Java code, and TCK it is expected, a custom ExceptionHandler implementaion may be created, that will allow to rethrow more common exception.
+For example, in H2 and PostgreSQL, an exception may occur, when data couldn't be updated/stored due to unique constrain violation.
+But as it will a vendor specific exception with different code, there are Custom `H2ExceptionHandler`/`PostgreSqlExceptionHandler` that will catch it, and throw instead a `DuplicateKeyException`, which is used across the codebase.
+
+Exception handler has to be defined in persistence XML.
+
+[id="test-compatibility-kit"]
+== Test Compatibility Kit (TCK)
+Test Compatibility kit is a set of integration tests that covers uses of essential DAO components, that are being run against real database.
+
+List of Che modules that have TCK tests:
+
+* che-core-api-user
+* che-core-api-account
+* che-core-api-installer
+* che-core-api-ssh
+* che-core-api-workspace
+* che-core-api-workspace-activity
+* infrastructure-kubernetes
+* che-multiuser-machine-authentication (Multi-User Che)
+* che-multiuser-api-organization (Multi-User Che)
+* che-multiuser-api-permission (Multi-User Che)
+* che-multiuser-api-resource (Multi-User Che)
+* che-multiuser-permission-workspace (Multi-User Che)
+
+Tests in these modules are executed on H2 Database during the build.
+Also, each module packages tests into separate artifacts with `tests` classifier, which are meant to be used for their re-usage in other TCK tests running modules.
+
+As an example of that, there are `postgresql-tck` and `che-multiuser-postgresql-tck` modules for running TCK tests on Postgres DB.
+
+[id="cascade-removal-tests"]
+== JPA Cascade Removal Tests
+
+In Eclipse Che database schema, some objects have foreign keys reference on other objects.
+Example: Account and workspaces, Permissions and Workspaces. To be able to correctly
+remove such objects and avoid referential integrity problems Eclipse Che are using events mechanism.
+For example, method in AccountManager that removes account sends a CascadeEvent, and Workspace DAO has a CascadeEventSubscriber that would listen to that event
+and remove workspace at that time. In case if removal of workspace failed the whole transaction would be rolled back, because AccountManager method had a `@Transactional` annotation.
+
+All that functionality is covered by "Cascade Removal Tests", that are located in `cascade-removal` and `che-multiuser-cascade-removal` modules.
+
+[id="flyway-migration"]
+== Flyway migration
+
+Flyway framework is used to facilitate database schema initialization, as well as perform migrations.
+It is configured to pick up scripts and apply them in order, according to versioning.
+Some key configuration values are defined in che.properties:
+
+
+----
+db.schema.flyway.baseline.enabled=true                      #
+db.schema.flyway.baseline.version=5.0.0.8.1                 #
+db.schema.flyway.scripts.prefix=                            #
+db.schema.flyway.scripts.suffix=.sql                        #
+db.schema.flyway.scripts.version_separator=__               #
+db.schema.flyway.scripts.locations=classpath:che-schema     #
+----
+
+Che DB Schema artifacts have
+
+Taking a look at the sample structure:
+
+----
+che-schema/
+    5.0.0-M1/
+        1__init.sql
+    5.0.0-M2
+        1__rename_tables.sql
+        2__insert_predefined_data.sql
+        postgresql/
+            2__insert_predefined_data.sql
+subproject-schema/
+    5.0.0-M1/
+        0.1__before_init_main.sql
+        1.1__init_subproject.sql
+    5.0.0-M2
+        2.1__create_additional_tables.sql
+----
+
+Location directory
+The main root directory for scripts (in this example, `che-schema` and `subproject-schema` is used as location names for Flyway.
+There can be multiple locations (artifacts) with scripts, and Flyway can be configured with property to search for such locations in classpath
+
+db.schema.flyway.scripts.locations=classpath:che-schema,classpath:subproject-schema
+
+* Version directory*
+
+There are version directories under the `che-schema` like 5.0.0 or 5.0.0-M1 these directories contain
+scripts for specific versions
+SQL scripts will be placed under project version directories line 1.init.sql or 1.rename_fields.sql
+The naming of scripts is pretty simple: the first digit in the name is a script version in a project versions (it's `1` in `1__init.sql`)
+then description of changes (if necessary) init in 1__init.sql and then the file extension .sql in 1__init.sql
+
+Note, that in this example, as well as in current Che schema, scripts numbers start from 1, but it is possible to use 0.
+This can be useful when script has to be run before the first script in superschema.
+
+*Vendor specific script*
+
+There is a directory in 5.0.0-M2 called `postresql` if current database provider is posgresql then
+the script from 5.0.0-M1/posgresql/2.add_workspace_constraint.sql will be used instead of 5.0.0-M1/2.add_workspace_constraint.sql, so basically if the same script name is provided in provider-specific directory then this script will be used instead
+
+So, the order of applying scripts be as following
+[width="100%",options="header",]
+|===
+|db version |script name	|location	|picked vendor specific
+|5.0.0.1.0.1	|0.1__before_init_main.sql	|subproject-schema	|no
+|5.0.0.1.1 |1__init.sql	|che-schema	|no
+|5.0.0.1.1.1	|1.1__init_subproject.sql	|subproject-schema	|no
+|5.0.0.2.1	|1__rename_tables.sql	|che-schema	|no
+|5.0.0.2.2	|2__insert_predefined_data.sql	|che-schema	|yes
+|5.0.0.2.2.1	|2.1__create_new_tables.sql	|subproject-schema	|no
+|===
+
+[id="pg-trgm"]
+== pg_trgm
+Postgres Trigram extension is used for more optimised search of similar string https://www.postgresql.org/docs/9.6/static/pgtrgm.html
+
+in Che it is used for a faster search for similar email and names, and enabled with a vendor specific migration script:
+```
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX index_user_lower_email ON usr USING GIN (LOWER(email) gin_trgm_ops);
+CREATE INDEX index_user_lower_name ON usr USING GIN (LOWER(name) gin_trgm_ops);
+```
+
+[id="contributor-guidelines"]
+== Contributor guidelines
+*Creating a module to run TCK on a custom DB*
+
+In order to run TCK for a custom database, a maven module should be created with following components:
+
+- configured `docker-maven-plugin` to run an image with database;
+- a Guice module that extends `TckModule` which will be responsible for establishing connection with DataSource, binding all required implementations of JPA entities and repositories;
+- a file in src/test/resources/META-INF/services named `org.eclipse.che.commons.test.tck.TckModule`. In it, there must be defined a name of the mentioned TckModule implementaion;
+- include all dependency artifacts with TCK tests (see list of Che modules above);
+- include artifact with DB Driver;
+- include artifact with Che SQL schema. Note, that your database may not be fully compatible with existing Che SQL schema, so you might gonna have to create a separate maven module to add additional vendor specific scripts ( See "Flyway Migration" for the information on how to add such scripts);
+- add persistence.xml file or use PersistTestModuleBuilder helper class to create one programmatically in `TckModule` implementation;
+
+Note, that to contribute the module to Eclipse repository, one must create an Eclipse CQ for Database, its drivers and other possible dependencies.
+As these artifacts are used only for building and testing purposes, the type of CQ will be "works with". See https://www.eclipse.org/projects/handbook/#ip-third-party-workswith
