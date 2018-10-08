@@ -11,7 +11,7 @@ folder: workspace-admin
 [id="supported-recipe-formats"]
 == Supported Recipe Formats
 
-Depending on the infrastructure, Che supports the following recipes out of the box (default Che build):
+Depending on the infrastructure, Che supports the following default recipe formats:
 
 [cols=",,,,",options="header",]
 |===
@@ -23,30 +23,28 @@ Depending on the infrastructure, Che supports the following recipes out of the b
 [id="docker-image"]
 == Docker Image
 
-DockerImage recipe type implies that Che will pull an image from a Docker registry or use the one that is local and run it (in case of Docker) or create a pod that references this image in container spec. There are certain requirements and limitations for a Docker image to be a workspace machine:
+The Docker image recipe pulls an image from a Docker registry or uses the local image.  The Docker image recipe runs the image and creates a pod that references this image in the container specification. The following are Docker image requirements and limitations for a workspace machine:
 
-1.  Non-terminating `CMD` or `ENTRYPOINT`. If you use your custom image, make sure it has something like `tail -f /dev/null` as one of its main processes.
-2.  No processes and operations with `sudo` in `CMD` (OpenShift only, see link:openshift-config.html#enable-ssh-and-sudo[Enable sudo])
-3.  OpenShift only - it is recommended to use https://github.com/eclipse/che-dockerfiles/tree/master/recipes/stack-base[Che base stacks] that are certified to run OK on OpenShift. You can also build your own image, but inherit from one of base stacks.
+1.  Use a non-terminating `CMD` or `ENTRYPOINT`. If you use a custom image, ensure that `tail -f /dev/null` is one of the main processes.
+2.  For OpenShift only, do not use any processes and operations with `sudo` in `CMD`. See link:openshift-config.html#enable-ssh-and-sudo[Enable sudo].
+3.  For OpenShift only, use https://github.com/eclipse/che-dockerfiles/tree/master/recipes/stack-base[Che base stacks]. You can also build your own image, but inherit from one of the base stacks.
 
 [id="dockerfile"]
 == Dockerfile
 
-A Dockerfile is a set of instructions that Docker performs to build an image. After you provide a Dockerfile for your workspace machine, Che will initiate Docker build, and once successful, run the resulting image. There are certain limitations here as well:
+A Dockerfile is a set of instructions that Docker performs to build an image. After you provide a Dockerfile for your workspace machine, Che initiates a Docker build and runs the resulting image. The following are the limitations:
 
-1.  There’s no context in docker build in Che. It means that commands like `COPY` and `ADD` will fail.
-2.  Build of huge images may take much time, so, if you have a long Dockerfile, it’s better to build an image locally, push it to DockerHub and then use it as DockerImage recipe type (see above). Che has a reasonable timeout for a workspace to start which is 5 mins.
+1.  `COPY` and `ADD` fail because there is no context in docker build.
+2.  The build of large images take a huge amount of time.  If you have a long Dockerfile, build an image locally, push it to DockerHub and then use it as a DockerImage recipe type. The start timeout for a workspace is 5 mins.
 
 [id="composefile"]
 == Composefile
 
-When on Docker, you can run multi-container workspaces using Composefiles. However, there is some unsupported syntax:
+You can run multi-container workspaces using Compose files on Docker.  The unsupported syntax: *Local "build.context" and "build.dockerfile"*
 
-*Local "build.context" and "build.dockerfile"*
+You cannot build locally. A git repository can act as a build context.
 
-Since Che workspaces can be distributed, you cannot have host-local build and Dockerfile contexts. You can, however, place these aspects so that they are remotely hosted in a git repository. Che will source the file from the remote system and then use it as its build context.
-
-If the Dockerfile or build context requires other files to be `ADD` or `COPY` into the image that is created, then you could run into a failure, as the local Che workspace generator will not have access to those other remote files. To address this issue, you can pre-package the build context or Dockerfile into an image, push into a registry, and then reference the already-built image in your compose file. This is what we do for internal development at Codenvy.
+If the Dockerfile or build context requires other files to be `ADD` or `COPY` into the image,  you could run into a failure.  as the local Che workspace generator will not have access to those other remote files. To address this issue, you can pre-package the build context or Dockerfile into an image, push into a registry, and then reference the already-built image in your compose file. This is what we do for internal development at Codenvy.
 
 [source,yaml]
 ----
