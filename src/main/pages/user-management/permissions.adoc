@@ -11,9 +11,9 @@ folder: user-management
 [id="overview"]
 == Overview
 
-Permissions are used to control the actions of users and establish a security model. You can define _who_ is allowed to do _what_. You can control resources managed by Che and allow certain actions by assigning permissions to users.  
+Permissions are used to control the actions of users and establish a security model. You can define _who_ is allowed to do _what_. You can control resources managed by Che and allow certain actions by assigning permissions to users.
 
-Permissions are applied to the following:
+Permissions can be applied to the following:
 
 * Workspace
 * Organization
@@ -21,7 +21,7 @@ Permissions are applied to the following:
 * System
 
 [id="workspace-permissions"]
-== Workspace Permissions
+== Workspace permissions
 
 The user who creates a workspace is the workspace owner. The workspace owner has the following permissions by default:  read, use, run, configure, setPermissions, and delete. Workspace owners invite users into the workspace and control workspace permissions for each user.
 
@@ -41,7 +41,7 @@ The following permissions are associated with workspaces:
 [id="organization-permissions"]
 == Organization permissions
 
-An organization is a named set of users. 
+An organization is a named set of users.
 
 The following permissions are applicable to organizations:
 
@@ -57,7 +57,7 @@ The following permissions are applicable to organizations:
 |===
 
 [id="system-permissions"]
-== System Permissions
+== System permissions
 
 System permissions control aspects of the whole Che installation.
 
@@ -74,12 +74,12 @@ The following permissions are applicable to the organization:
 [id="super-privileged-mode"]
 == Super-privileged mode
 
-The permission "manageSystem" can be extended to provide a super-privileged mode. This allows the user to perform advanced actions on any resources managed by the system. You can read and stop any workspaces with the  "manageSystem" permission and assign permissions to users as needed. 
+The permission "manageSystem" can be extended to provide a super-privileged mode. This allows the user to perform advanced actions on any resources managed by the system. You can read and stop any workspaces with the  "manageSystem" permission and assign permissions to users as needed.
 
 The super-privilege mode is disabled by default. You can change to super-privilege mode by configuring the `CHE_SYSTEM_SUPER_PRIVILEGED_MODE` variable in the `che.env` file.
 
 [id="stack-permissions"]
-== Stack Permissions
+== Stack permissions
 
 A stack is a runtime configuration for a workspace.  See link:stacks.html[stack definition] for more information on stacks.
 
@@ -88,17 +88,17 @@ The following permissions are applicable to stacks:
 [cols=",",options="header",]
 |===
 |Permission |Description
-|search |You can search the stack.
-|read |You can read the stack’s configuration.
-|update |You can update the stack’s configuration.
-|delete |You can delete the stack.
-|setPermissions |You can manage permissions for the stack.
+|search |Allows searching of the stacks.
+|read |Allows reading of the stack configuration.
+|update |Allows updating of the stack configuration.
+|delete |Allows deleting of the stack.
+|setPermissions |Allows managing permissions for the stack.
 |===
 
 [id="permissions-api"]
 == Permissions API
 
-All permissions can be managed using the provided REST API. You document APIs with Swagger at `[{host}/swagger/#!/permissions]`.
+All permissions can be managed using the provided REST API. The APIs are documented using Swagger at `[{host}/swagger/#!/permissions]`.
 
 [id="list-permissions"]
 == Listing permissions
@@ -119,13 +119,13 @@ The `domain` values are:
 
 [NOTE]
 ====
-`domain` is optional, in this case the API will return all possible permissions for all domains.
+`domain` is optional.  In this case, the API returns all possible permissions for all domains.
 ====
 
 [id="list-permissions-for-specific-user"]
 == Listing permissions for a user
 
-To list the permissions that apply to a user, run this command: 
+To list the permissions that apply to a user, run this command:
 `$ GET /permissions/{domain}`
 
 The `domain` values are:
@@ -148,13 +148,13 @@ The `domain` values are:
 You must have sufficient permission to see this information.
 ====
 
-To list the permissions that apply to all users, run this command:  
+To list the permissions that apply to all users, run this command:
 
 `GET /permissions/{domain}/all`
 
 The `domain` values are:
 
-[cols="",options="header",]
+[cols="", options="header",]
 |===
 |Domain
 |system
@@ -167,7 +167,7 @@ The `domain` values are:
 [id="assign-permissions"]
 == Assigning permissions
 
-To assign permissions to a resource, run this command: 
+To assign permissions to a resource, run this command:
 
 `POST /permissions`
 
@@ -200,13 +200,14 @@ The following is a message `body` that requests permissions for a user with a `u
 }
 ----
 
-The `instanceId` parameter corresponds to the ID of the resource that retrieves the permission for all users. The `userId` parameter corresponds to the ID of the user who wants to grant certain permissions.
+The `instanceId` parameter corresponds to the ID of the resource that retrieves the permission for all users. The `userId` parameter corresponds to the ID of the user that has been granted certain permissions.
 
 [id="sharing-permissions"]
-== Sharing Permissions
+== Sharing permissions
 
-A user with `setPermissions` privileges can share a workspace and grant `read, use, run, configure or setPermissions` privileges to users.
+A user with `setPermissions` privileges can share a workspace and grant `read`, `use`, `run`, `configure`, or `setPermissions` privileges to other users.
 
 To share workspace permissions:
 
-* Select a workspace in the user dashboard, navigate to *Share* tab and enter emails of users. Use commas or space as separator if there are multiple emails).
+* Select a workspace in the user dashboard, navigate to the *Share* tab and enter emails of users. Use commas or space as separators:w
+ if there are multiple emails).
