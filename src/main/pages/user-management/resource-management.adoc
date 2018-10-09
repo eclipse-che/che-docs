@@ -11,11 +11,11 @@ folder: user-management
 [id="overview"]
 == Overview
 
-The Resource API manages the resources that are utilized by Che users. Che administrators set limits on the amount of resources available for each user acount. 
+The Resource API manages the resources that are utilized by Che users. Che administrators set limits on the amount of resources available for each user acount.
 
 There are two kinds of accounts used in Che:
 
-* _personal_ - This account belongs to a user. Only one user per account. 
+* _personal_ - This account belongs to a user. Only one user per account.
 * _organizational_ - This account belongs to an link:organizations.html[organization]. This type of account allows each member of the organization to use resources. Resources are distributed between organizations and sub-organizations.
 
 The amount and usage refers to the amount and usage of resources for workspaces and runtimes.
@@ -40,7 +40,7 @@ Multi-user Che supports the following types of resources:
 
 *Available resources*
 
-`GET resource/${accountId}/available:` Gets the resources that are available and not used by an account. If no resources are used, the available resources equal the total resources.  If resources are used, the available resources equals total resources minus used resources. 
+`GET resource/${accountId}/available:` Gets the resources that are available and not used by an account. If no resources are used, the available resources equal total resources.  If resources are used, the available resources equals total resources minus used resources.
 
 *Resource details*
 
@@ -49,20 +49,20 @@ Multi-user Che supports the following types of resources:
 For more information about the response objects and required parameters, see the Swagger page at `${che-host}/swagger/#/resource`.
 
 [id="resource-distribution"]
-== Resource distribution
+== Distributing resources
 
-The following are ways to distribute resources to the account:
+The following are ways to distribute resources to an account:
 
-* The Che administrator distributes the resources defined by the configuration to each account.
+* Che administrator specifies default free resources limit for account by configuration.
 
-* The Che administrator overrides the free resources for the account by using the Resource-free API.
+* Che administrator overrides the default free resources limit for account by resource-free API.
 
 [id="configuration"]
-== Configuration
+== Configuring workspaces and resources
 
-The Che admininstrator creates a limited number of workspaces and resources. Detailed information about each property can be found in https://github.com/eclipse/che/blob/master/dockerfiles/init/manifests/che.env#L538[che.env] file.
+The Che admininstrator can limit how workspaces are created and the resources that these workspaces consume. Detailed information about each property can be found in the https://github.com/eclipse/che/blob/master/dockerfiles/init/manifests/che.env#L538[che.env] file.
 
-See: link:docker-config.html[Docker] and link:openshift-config.html[OpenShift] configuration docs, for more information.
+See link:docker-config.html[Docker] and link:openshift-config.html[OpenShift] configuration documentation for more information.
 
 [width="100%",cols="33%,8%,6%,53%",options="header",]
 |===
@@ -84,7 +84,7 @@ The unit has the following formats:
 
 * `-1`: Unlimited value. Any operation, aggregation, and deduction of resources will return `-1`.
 
-* `memory`:  A plain or fixed-point integer and measured in bytes.
+* `memory`:  A plain or fixed-point integer measured in bytes.
 
  Memory uses one of the following suffixes:
 
@@ -98,8 +98,8 @@ The unit has the following formats:
 |`p` / `pb` / `pib` |peta bytes `1p` = `1024t`
 |===
 
-* `item` - Integer.
-* `minutes` - Integer.
+* `item` - Integer describing the number of objects.
+* `minutes` - Integer describing the time frame in minutes.
 
 [id="resource-free-api"]
 == Resource-free API
@@ -114,11 +114,11 @@ The Resource-free API manages the free resources that are provided by the system
 
 *Set Free Resources*
 
-`POST resource/free:` Sets the maximum number of resources available for the user account. This number overrides the Сhe configuration. It will be used in all further operations with resources.
+`POST resource/free:` Sets the maximum amount of resources available for the user account. This number overrides the Сhe configuration. It will be used in all further operations with resources.
 
 *Remove Free Resources*
 
-`DELETE resource/free/{accountId}:` Deletes the number of resources available for the user and organization account. The system configuration defines the number of resources available.
+`DELETE resource/free/{accountId}:` Deletes the number of resources available for the user and organization account. The system configuration defines the amount of resources available.
 
 For more information on response objects and required parameters, see the Swagger page at `{che-host}/swagger/#/resource-free`.
 
@@ -131,10 +131,10 @@ For more information on response objects and required parameters, see the Swagge
 
 *Sub-Organization Resources Cap*
 
-`GET organization/resource/{suborganizationId}/cap:` Gets the maximum number of resources that are available for a sub-organization; By default, sub-organizations use all the resources of the parent organization.
+`GET organization/resource/{suborganizationId}/cap:` Gets the maximum amount of resources that are available for a sub-organization; By default, sub-organizations use all the resources of the parent organization.
 
 *Set Sub-Organization Resources Cap*
 
-`POST organization/resource/{suborganizationId}/cap:` Sets the maximum number of resources for a sub-organization. This limits the usage of shared resources by the sub-organization.
+`POST organization/resource/{suborganizationId}/cap:` Sets the maximum amount of resources for a sub-organization. This limits the usage of shared resources by the sub-organization.
 
-See Swagger page at `{che-host}/swagger/#/organization-resource`, for more detailed specification of response objects and required parameters.
+See the Swagger page at `{che-host}/swagger/#/organization-resource` for more detailed specification of response objects and required parameters.
