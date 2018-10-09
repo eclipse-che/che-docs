@@ -186,7 +186,6 @@ Some limitations restrict the alternate OIDC providers that can be used with Ecl
 * implement access tokens as JWT tokens including at least the following claims:
 ** `exp`: the expiration time (https://tools.ietf.org/html/rfc7519#section-4.1.4)
 ** `sub`: the subject (https://tools.ietf.org/html/rfc7519#section-4.1.2)
-* allow redirect Urls with wildcards at the end
 * provide an endpoint that returns the http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig[OpenID Provider Configuration information]. According to the specification, this endpoint should end with sub-path `/.well-known/openid-configuration`.
 
 When using an alternate OIDC provider, the following Keycloak environment variables should be set to `NULL`:
@@ -206,7 +205,19 @@ CHE_KEYCLOAK_OIDC__PROVIDER=<base URL of the OIDC provider that provides a confi
 If the optional http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest[`nonce` OpenId request parameter] is not supported, the following environment variable should be added:
 
 ----
-CHE_KEYCLOAK.USE__NONCE=FALSE
+CHE_KEYCLOAK_USE__NONCE=FALSE
+----
+
+By default the OIDC authentication in Che requires using redirect URLs with wildcards. However, if the alternate OIDC provider only supports a list of fixed redirect URLs, then you should use the following environment variable to switch to fixed redirect URL mode:
+
+----
+CHE_KEYCLOAK_USE__FIXED__REDIRECT__URLS=TRUE
+----
+
+In this case the 2 redirect URLs that should be registered in the OIDC provider configuration are:
+----
+${CHE_SERVER_ROUTE}/api/keycloak/oidcCallbackIde.html
+${CHE_SERVER_ROUTE}/api/keycloak/oidcCallbackDashboard.html
 ----
 
 *_Che Server and PostgreSQL_*
