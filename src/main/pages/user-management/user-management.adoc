@@ -8,39 +8,39 @@ folder: user-management
 ---
 
 
-[id="auth-and-user-management"]
+[id="authorization-and-user-management"]
 == Authorization and user management
 
-Eclipse Che uses http://www.Keycloak.org[Keycloak] to create, import, manage, delete and authenticate users.  Keycloak uses built in authentication mechanisms and user storage.  It can use a third party identity management systems to create and authenticate users. Eclipse Che requires a Keycloak token when you request access to Che resources.
+Eclipse Che uses http://www.Keycloak.org[Keycloak] to create, import, manage, delete, and authenticate users.  Keycloak uses built-in authentication mechanisms and user storage.  It can use a third-party identity management systems to create and authenticate users. Eclipse Che requires a Keycloak token when you request access to Che resources.
 
 Local users and imported federation users must have an email address in their profile.
 
-The default Keycloak credentials are `admin:admin`. You can use `admin:admin` credentials when logging into Che for the first time. It has system privileges. 
+The default Keycloak credentials are `admin:admin`. You can use the `admin:admin` credentials when logging into Che for the first time. It has system privileges. 
 
-If Che is deployed on Openshift, to find your Keycloak URL:
+If Che is deployed on Openshift, go to your Keycloak URL to find:
 
 * OpenShift web console > keycloak namespace 
 
-If Che is running on Docker, to find your Keycloak URL:
+If Che is running on Docker, go to your Keycloak URL to find:
  
 * Go to `$CHE_HOST:5050/auth`   
 
-[id="che-and-keycloak"]
-== Che and Keycloak
+[id="configuring-che-to-work-with-keycloak"]
+== Configuring Che to work with Keycloak
 
 The deployment script ensures that Keycloak is properly configured when Che is deployed on OpenShift or installed on Docker. The `che-public` client is created after deployment and the following fields are populated:
 
 * *Valid Redirect URIs*: You use this URL to access Che. 
 * *Web Origins*:
 
-Some common errors: 
+Common errors: 
 
-*Invalid `redirectURI` error*:  occurs when you access Che at `myhost` which is an alias and your 
-original `CHE_HOST` is `1.1.1.1`.  If this error occurs, go to Keycloak administration console and check valid Redirect URIs.
+*Invalid `redirectURI` error*:  occurs when you access Che at `myhost`, which is an alias, and your 
+original `CHE_HOST` is `1.1.1.1`.  If this error occurs, go to the Keycloak administration console and the valid redirect URIs are configured.
 
 *CORS error*: occurs when you have an invalid web origin
 
-[id="keycloak-tokens"]
+[id="configuring-keycloak-tokens"]
 == Configuring Keycloak tokens
 
 A user token expires after 30 minutes by default. 
@@ -49,24 +49,21 @@ You can change the following Keycloak token settings:
 
 image::keycloak/keycloak_realm.png[]
 
-[id="user-federation"]
-== User federation
+[id="setting-up-user-federation"]
+== Setting up user federation
 
 Keycloak federates external user databases and supports LDAP and Active Directory. You can test the connection and authenticate users before choosing a storage provider.
 
+See http://www.keycloak.org/docs/3.2/server_admin/topics/user-federation.html[user storage federation] to learn how to add a provider.
 
-Additional Resources:
+See http://www.keycloak.org/docs/3.2/server_admin/topics/user-federation/ldap.html[LDAP and Active Directory] to specify multiple LDAP servers.
 
-* To learn how to add a provider, see http://www.keycloak.org/docs/3.2/server_admin/topics/user-federation.html[user storage federation].
-
-* To specify multiple LDAP servers, see http://www.keycloak.org/docs/3.2/server_admin/topics/user-federation/ldap.html[LDAP and Active Directory].
-
-[id="social-login-and-brokering"]
-== Social login and brokering
+[id="enabling-authentication-with-social-accounts-and-brokering"]
+== Enabling authentication with social accounts and brokering
 
 Keycloak provides built-in support for most common social networks such as GitHub, Facebook, Twitter, OpenShift. See Instructions to http://www.keycloak.org/docs/3.2/server_admin/topics/identity-broker/social/github.html[enable Login with GitHub].
 
-You can also enable ssh key upload to Che users’ GitHub accounts. 
+You can also enable SSH key upload to Che users’ GitHub accounts. 
 
 To enable this feature when you register a GitHub identity provider: 
 
@@ -84,10 +81,10 @@ This is default `delegated` OAuth service mode for Multi-User Che, which is conf
 
 Setting it to `embedded` will make it use Che’s OAuth Authenticator, for which link:version-control.html#github-oauth[Instructions for Single User mode] will apply.
 
-Read more about link:ide_projects.html#project-import-and-ssh-connection[SHH key management].
+Read more about link:ide_projects.html#project-import-and-ssh-connection[SSH key management].
 
-[id="protocol-based-providers"]
-== Protocol based providers
+[id="using-protocol-based-providers"]
+== Using protocol-based providers
 
 Keycloak supports http://www.Keycloak.org/docs/3.2/server_admin/topics/identity-broker/saml.html[SAML v2.0] and http://www.Keycloak.org/docs/3.2/server_admin/topics/identity-broker/oidc.html[OpenID Connect v1.0] protocols. You can connect your identity provider systems if they support these protocols.
 
