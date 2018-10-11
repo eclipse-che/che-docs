@@ -13,10 +13,10 @@ folder: setup-openshift
 
 All examples use the `kubectl` command. OpenShift administrators should use the `oc` command.
 
-[id="ram"]
+[id="ram-prerequisites"]
 == RAM prerequisites
 
-=== Single User
+=== Single user prerequisites
 
 3 GB of RAM is required for single-user Che on OpenShift.
 
@@ -25,7 +25,7 @@ Single-user Che uses RAM in this distribution:
 * Che server pod uses up to 1 GB of RAM. The initial request for RAM is 256 MB. The Che server pod rarely uses more than 800 MB RAM.
 * Workspaces use 2 GB of RAM.
 
-=== Multi-User
+=== Multi-user prerequisites
 
 You must have at least 5 GB of RAM to run multi-user Che. The Keycloak authorization server and PostgreSQL database require the extra RAM. Multi-user Che uses RAM in this distribution:
 
@@ -90,8 +90,8 @@ The workspace PVC strategy is configurable:
 [width="100%",cols="25%,25%,25%,25%",options="header",]
 |===
 |strategy |details |pros |cons
-|*unique (default)* |PVC per workspace |Storage isolation |An undefined number of PVs is required
-|*common* | One PVC for all workspaces, Sub-paths pre-created |Easy to manage and control storage |No need to recyle PVs when pod with pvc is deleted |Workspace pods should all be in one namespace
+|*unique (default)* |one PVC per workspace |Storage isolation |An undefined number of PVs is required
+|*common* | One PVC for all workspaces, Sub-paths pre-created |Easy to manage and control storage |No need to recyle PVs when pod with PVC is deleted |Workspace pods should all be in one namespace
 |===
 
 == Unique PVC strategy
@@ -129,7 +129,7 @@ If you have already deployed Che with unique strategy:
 
 * Set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `common` in dc/che.
 
-If applying che-server-template.yaml:
+If applying the `che-server-template.yaml`:
 
 * Pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=common` to the `oc new-app` command.
 
@@ -142,9 +142,9 @@ If applying che-server-template.yaml:
 
 === Restrictions on using common PVC strategy
 
-When a common strategy is used, and a workspace PVC access mode is RWO, only one Kubernetes node can simultaneously use PVC.  If there are several nodes, a common strategy can still be used, but in this case, workspace PVC access mode should be RWM, ie multiple nodes should be able to use this PVC simultaneously (in fact, you may sometimes have some luck and all workspaces will be scheduled on the same node). You can change access mode for workspace PVCs by passing environment variable `CHE_INFRA_KUBERNETES_PVC_ACCESS_MODE=ReadWriteMany` to che deployment either when initially deploying Che or through che deployment update.
+When a common strategy is used and a workspace PVC access mode is RWO, only one Kubernetes node can simultaneously use PVC.  If there are several nodes, you can use a common strategy, but in this case, the workspace PVC access mode should be RWM. Multiple nodes should be able to use this PVC simultaneously.  You can change the access mode for workspace PVCs by passing the environment variable `CHE_INFRA_KUBERNETES_PVC_ACCESS_MODE=ReadWriteMany` to Che deployment either when initially deploying Che or through the Che deployment update.
 
-Another restriction is that only pods in the same namespace can use the same PVC, thus, `CHE_INFRA_KUBERNETES_PROJECT` environment variable should not be empty - it should be either Che server namespace (in this case objects can be created with che SA) or a dedicated namespace (token or username/password need to be used).
+Another restriction is that only pods in the same namespace can use the same PVC.  The `CHE_INFRA_KUBERNETES_PROJECT` environment variable should not be empty.  It should be either the Che server namespace where objects can be created with Che SA or a dedicated namespace where a token or a username and password need to be used.
 
 [id="update"]
 == Updating your Che deployment
@@ -155,23 +155,25 @@ To update Che deployment:
 +
 You can change the image tag in one of the following ways:
 
-* Execute `kubeclt edit dc/che`.
-* In the OpenShift web console: *deployments > edit yaml > image:tag*.
-* Using the Docker service: `kubectl set image dc/che che=eclipse/che-server:${VERSION} --source=docker`.
+* Run the `kubeclt edit dc/che`.
+* In the OpenShift web console, select: *deployments > edit yaml > image:tag*.
+* Using the Docker service, run this command: `kubectl set image dc/che che=eclipse/che-server:${VERSION} --source=docker`.
 
 . Update Keycloak and PostgreSQL deployments (optional):
 
-* eclipse/che-keycloak
-* eclipse/che-postgres
+* Run the `eclipse/che-keycloak` command.
+* Run the `eclipse/che-postgres` command.
++
+You can get the list of available versions at https://github.com/eclipse/che/tags[Che GitHub page].
 
 . Change the pull policy (optional):
 +
 To change the pull policy, do one of the following:
 
-* add  `--set cheImagePullPolicy=IfNotPresent` to link:openshift-multi-user[Che deployment].
-* manually edit `dc/che` after deployment.
+* Add  `--set cheImagePullPolicy=IfNotPresent` to the link:openshift-multi-user[Che deployment].
+* Manually edit `dc/che` after deployment.
 
-You can use *IfNotPresent* pull policy (default is Always). Manually edit Che deployment after deployment or add `--set cheImagePullPolicy=IfNotPresent`.
+The default pull policy is `Always`. The default tag is `nightly`. This tag sets the image pull policy to `Always` and triggers a new deployment with a newer image, if available.
 
 OpenShift admins can pass `-p PULL_POLICY=IfNotPresent` to link:openshift-multi-user.html[Che deployment] or manually edit `dc/che` after deployment.
 
@@ -199,32 +201,32 @@ To run Che Server in debug mode, set the following environment variable in the C
 `CHE_DEBUG_SERVER=true`
 
 [id="private-docker-registries"]
-== Private Docker Registries
+== Private Docker registries
 
 Refer to https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/[Kubernetes documentation]
 
 [id="che-server-logs"]
-== Che Server Logs
+== Che server logs
 
 The PVC `che-data-volume` is https://github.com/eclipse/che/blob/master/deploy/kubernetes/kubectl/che-kubernetes.yaml#L26[created] and bound to a PV after Eclipse Che deploys to Kubernetes. Logs are persisted in a PV.
 
 To retrieve logs, do one of the following:
 
-* `kubectl get log dc/che`
-* `kubectl describe pvc che-data-claim`, find PV it is bound to, then `oc describe pv $pvName`, you will get a local path with logs directory. Be careful with permissions for that directory, since once changed, Che server wont be able to write to a file
-* in Kubernetes web console, eclipse-che namespace, *pods > che-pod > logs*.
+* Run the `kubectl get log dc/che` command.
+* Run the `kubectl describe pvc che-data-claim` command to find the PV. Next, run the `oc describe pv $pvName` command with the PV to get a local path with the logs directory. Be careful with permissions for that directory, since once changed, Che server wont be able to write to a file
+* In the Kubernetes web console, select *pods > che-pod > logs*.
 
 It is also possible to configure Che master not to store logs, but produce JSON encoded logs to output instead. It may be used to collect logs by systems such as Logstash. To configure JSON logging instead of plain text environment variable `CHE_LOGS_APPENDERS_IMPL` should have value `json`. See more at link:logging.html[logging docs].
 
 [id="workspace-logs"]
-== Workspace Logs
+== Workspace logs
 
 Workspace logs are stored in an PV bound to `che-claim-workspace` PVC. Workspace logs include logs from workspace agent, link:what-are-workspaces.html#bootstrapper[bootstrapper] and other agents if applicable.
 
 [id="che-master-states"]
-== Che Master States
+== Che master states
 
-The Che Master has three possible states:
+The Che master has three possible states:
 
 * `RUNNING`
 * `PREPARING_TO_SHUTDOWN`
@@ -268,7 +270,7 @@ Rolling update
 * No Che downtime
 * New deployment starts in parallel and traffic is hot-switched
 
-=== Performing a Recreate update
+=== Performing a recreate update
 
 Prerequisites
 
@@ -282,7 +284,7 @@ To perform a recreate update:
 * Perform new deploy.
 
 [id="rolling-update"]
-=== Performing a Rolling Update
+=== Performing a rolling update
 
 Prerequisites
 
@@ -359,11 +361,7 @@ To create a workspace object in the namespace of the user that is logged into Ch
 
 Every workspace action such as start or stop creates an OpenShift resource in the OpenShift user account.  A notification message displays which allows you to link the Keycloak account to your OpenShift user account.
 
-<<<<<<< HEAD
-But for non-interactive workspace actions, such as workspace stop on idling or Che server shutdown, the account used for operations on OpenShift resources will fall back to the dedicated OpenShift account configured for the Kubernetes infrastructure, as described in the link:admin-guide.html#who-creates-workspace-objects[AdminGuide].
-=======
 But for non-interactive workspace actions, such as workspace stop on idling or Che server shutdown, the dedicated OpenShift account configured for the Kubernetes infrastructure is used. See link:admin-guide#who-creates-workspace-objects[AdminGuide] for more information.
->>>>>>> This adds some comments from the review - still WIP
 
 To easily install Che on OpenShift with this feature enabled, see link:openshift-multi-user.html#creating-workspace-resources-in-personal-openshift-accounts-on-minishift[this section for Minishift] and link:openshift-multi-user.html#creating-workspace-resources-in-personal-openshift-accounts[this one for OCP]
 
