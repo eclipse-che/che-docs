@@ -8,6 +8,22 @@ There is a `run.sh` script in the root of the repo that runs a Docker image, mou
 
 ## Adding a new page
 
+### Building natively
+
+To build without using Docker, [install required Jekyll dependencies](https://jekyllrb.com/docs/installation/):
+
+```
+sudo yum install maven ruby ruby-devel @development-tools
+```
+
+Then, instead of the `run.sh` script, run Maven directly:
+
+```
+mvn clean install -Pnative
+```
+
+## Adding a New Page
+
 In order to add a new page, create an `.adoc` file in `src/main/pages/${subdir}`. If there is no sub-directory that fits a new page, create one. Take a look at headers in pages to make sure the generated HTML page has the expected name, title, and keywords.
 
 ```yaml
