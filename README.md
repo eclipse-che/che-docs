@@ -6,6 +6,20 @@ Che docs use Jekyll to convert `.adoc` files into HTML pages. Docs are published
 
 There is a `run.sh` script in the root of the repo that runs a Docker image, mounts sources, and starts Jekyll. When running locally, docs are available at `localhost:4000`. Jekyll watches for changes in `.adoc` files and re-generates resources, so you can preview changes live.
 
+### Building natively
+
+If you prefer to not use a Docker image, or you're already in a container and can't nest, you instead need to [install these jekyll dependencies](https://jekyllrb.com/docs/installation/):
+
+```
+sudo yum install maven ruby ruby-devel @development-tools
+```
+
+Then, instead of the `run.sh` script, run Maven directly:
+
+```
+mvn clean install -Pnative
+```
+
 ## Adding a New Page
 
 In order to add a new page, create an `.adoc` file in `src/main/pages/${subdir}`. If there is no sub-directory that fits a new page, create one. Take a look at headers in pages to make sure the generated HTML page has the expected name, title, and keywords.
@@ -16,7 +30,7 @@ title: "Single-User&#58 Install on Docker"
 keywords: docker, installation
 tags: [installation, docker]
 sidebar: user_sidebar
-permalink: docker.html
+permalink: docker-single-user.html
 folder: setup
 ---
 ```
@@ -38,10 +52,10 @@ If you need to add a tag, take a look at available tags in `src/main/pages/tags`
 To post a link to an internal page, use the following syntax:
 
 ```
-This is a link:file_name[link text]
+This is a link:file_name.html[link text]
 ```
 
-Do not use `.adoc` or `.html` in the file name. Also, this file should be referenced in at least one sidebar in the `src/main/_data/sidebars` file.
+Do not use `.adoc` in the file name. Also, this file should be referenced in at least one sidebar in the `src/main/_data/sidebars` file.
 
 Links to anchors in internal pages:
 
@@ -57,7 +71,7 @@ This is a link:https://github.com[link text]
 
 ## Images
 
-Images are located in the `src/main/images` directory. To publish an image, use the following syntax:
+Images are located in the `src/main/che/docs/images` directory. To publish an image, use the following syntax:
 
 ```
 image::directory/img.png[]
@@ -69,7 +83,7 @@ Images are sized automatically. You can provide a URL to a full-size image, as w
 
 ```
 .Click to view a larger image
-[link=images/devel/js_flow.png
+[link=che/docs/images/devel/js_flow.png
 image::devel/js_flow.png[Alt text]
 ```
 

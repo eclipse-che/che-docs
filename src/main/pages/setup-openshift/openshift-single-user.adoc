@@ -20,7 +20,7 @@ OpenShift oc client installed locally
 [id="admin-guide"]
 == Admin Guide
 
-See: link:kubernetes-admin-guide[Kubernetes Admin Guide]
+See: link:kubernetes-admin-guide.html[Kubernetes Admin Guide]
 
 [id="deployment-diagram"]
 == Deployment Diagram
@@ -93,42 +93,20 @@ To uninstall the addon from the addon list:
 
 `minishift addons uninstall che`
 
-[id="what-is-my-routing-suffix"]
-== What is my routing suffix?
 
-Deployment methods below will require a valid routing suffix to be passed as a template parameter.
+[id="minishift-script"]
+== MiniShift: Deployment Script
 
-By default `oc cluster up` command uses `nip.io` as wildcard DNS provider, so your routing suffix will be `$IP.nip.io`. A routing suffix can be provided when a cluster starts. If you have existing routes in your OpenShift installation, you can extract ROUTING_SUFFIX. A route has the following format: `${route}-${namespace}.${ROUTING_SUFFIX}`. On MiniShift your ROUTING_SUFFIX will be `$(minishift ip).nip.io`.
-
-Here’s a few simple commands to get your routing suffix:
+Alternatively, you may download deployment script and run deployment manually instead of using MiniShift addons:
 
 ----
-oc create service clusterip test --tcp=80:80
-oc expose service test
-oc get route test -o=jsonpath='{.spec.host}{"\n"}'
+curl -fsSL https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/deploy_che.sh -o deploy_che.sh
+./deploy_che.sh
 ----
 
-Everything that comes after namespace in a route URL is your routing suffix. Don’t forget to delete test service and route.
+The script will download deployment templates, check your current oc session and context. Run `./deploy_che.sh --help` to get a list of all deployment options.
 
-[id="minishift-templates"]
-== MiniShift: Templates
-
-Alternatively, you may download templates and run deployment manually instead of using MiniShift addons:
-
-----
-# get yamls
-
-DEPLOY_ROOT_URL=https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/templates
-curl -fsSL ${DEPLOY_ROOT_URL}/che-server-template.yaml -o che-server-template.yaml
-curl -fsSL ${DEPLOY_ROOT_URL}/pvc/che-server-pvc.yaml -o che-server-pvc.yaml
-
-# create a project
-oc new-project che
-
-oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io
-oc apply -f pvc/che-server-pvc.yaml
-oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
-----
+You can use the same script to deploy to a local Origin/OKD cluster (oc cluster up)
 
 [id="https-mode"]
 == HTTPS Mode
@@ -136,21 +114,13 @@ oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data
 IMPORTANT! Find instructions on adding self signed certs at link:openshift-config.html#https-mode---self-signed-certs[OpenShift Configuration page].
 
 ----
-oc new-project che
-
-oc new-app -f che-server-template.yaml -p ROUTING_SUFFIX=$(minishift ip).nip.io \
-                                       -p PROTOCOL=https \
-                                       -p WS_PROTOCOL=wss \
-                                       -p TLS=true
-oc apply -f pvc/che-server-pvc.yaml
-oc set volume dc/che --add -m /data --name=che-data-volume --claim-name=che-data-volume
-oc apply -f https/che-route-tls.yaml
+./deploy_che.sh -s
 ----
 
 [id="openshift-container-platform"]
 == OpenShift Container Platform
 
-Same instructions as in link:#minishift-templates[MiniShift], however, you need to provide a valid link:#what-is-my-routing-suffix[ROUTING_SUFFIX].
+Same instructions as in link:#minishift-script[MiniShift].
 
 [id="openshift-dedicated"]
 == OpenShift Dedicated
@@ -165,10 +135,9 @@ Instructions to deploy Che to OSO Pro are identical to those for link:#openshift
 [id="deployment-options-and-configuration"]
 == Deployment Options and Configuration
 
-See: link:openshift-config[OpenShift Deployment Config] and link:kubernetes-admin-guide[Admin Guide]
+See: link:openshift-config.html[OpenShift Deployment Config] and link:kubernetes-admin-guide.html[Admin Guide]
 
 [id="whats-next"]
 == What’s Next
 
-Create and link:creating-starting-workspaces[start your first workspace], link:version-control[import a project].
-
+Create and link:creating-starting-workspaces.html[start your first workspace], link:version-control.html[import a project].

@@ -31,37 +31,26 @@ When deployed with Keycloak and Postgres, your Kubernetes cluster should have *a
 * ~515MB for Postgres)
 * min 2GB should be reserved to run at least one workspace. The total RAM required for running workspaces will grow depending on the size of your workspace runtime(s) and the number of concurrent workspace pods you run.
 
+The default workspace RAM limit and the RAM allocation request can be configured by passing the `CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB` and `CHE_WORKSPACE_DEFAULT__MEMORY__REQUEST__MB` parameters to a Che deployment.
+
+For example, use the following configuration to limit the amount of RAM used by workspaces to 2048MB and to request the allocation of 1024MB of RAM:
+* `kubectl set env dc/che CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB=2048 CHE_WORKSPACE_DEFAULT__MEMORY__REQUEST__MB=1024`
+Notes:
+* The user can override the default values when creating a workspace.
+* A RAM request greater than the RAM limit is ignored.
+
+
 [id="resource-allocation-and-quotas"]
 == Resource Allocation and Quotas
 
-All workspace pods are created either in the same namespace with Che itself, a dedicated namespace, or a new namespace is created for every workspace. In both cases, pods are are created in the account of a user who deployed Che (if che service account is used to create ws objects) or account of a user whose token/credentials are used in Che deployment env.
+All workspace pods are created either in the same namespace with Che itself, a dedicated namespace, or a new namespace is created for every workspace.
 
 Therefore, an account where Che pods are created (including workspace pods) should have reasonable quotas for RAM, CPU and storage, otherwise, workspace pods won’t be created.
 
 [id="who-creates-workspace-objects"]
 == Who Creates Workspace Objects?
 
-All workspace objects for all Eclipse Che users are *created on behalf of one OpenShift user*, typically the one who deployed Che or whose credentials or token is used in Che deployment environment. Eclipse Che uses fabric8 client to talk to Kubernetes/OpenShift API, and the client uses token, username/password or service account, if available.
-
-* If you passed `CHE_INFRA_KUBERNETES_USERNAME` and `CHE_INFRA_KUBERNETES_PASSWORD` to Che deployment, those credentials will be used to create workspace objects.
-* If there’s `CHE_INFRA_KUBERNETES_OAUTH__TOKEN` fabric8 client will use it. If both are available, token has a priority over username/pass.
-* If none are available *che service account* is used to create workspace objects. This is default behavior. Since che service account cannot create objects outside a namespace it’s bound to, all workspace objects are created in Che namespace. Admins can grant `che` https://kubernetes.io/docs/admin/authorization/rbac/#service-account-permissions[service account super user permissions], and this way it will be possible to use this SA to create objects outside Che namespace. OpenShift cluster admins can do it this way using oc CLI:
-
-----
-oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:eclipse-che:che
-
-# eclipse-che is Che namespace
-----
-
-Advantages and disadvantages of using token, username/pass, and service account:
-
-[width="100%",cols="34%,33%,33%",options="header",]
-|===
-|Auth type |Pros |Cons
-|*Token* |Objects can be created outside Che namespace |Tokens tend to expire
-|*Username/Password* |Objects can be created outside Che namespace |If username/pass are changed, they need to be updated in Che deployment as well. Many authentication types like oAuth make it impossible to login with username/pass
-|*Service account* |No expiration risks |Cannot create objects outside its namespace unless given admin privileges
-|===
+All workspace objects for all Eclipse Che users are *created on behalf of Che service account*. Eclipse Che uses fabric8 client to talk to Kubernetes/OpenShift API, and the client uses this service account. Since che service account cannot create objects outside a namespace it’s bound to, all workspace objects are created in Che namespace. Admins can grant `che` https://kubernetes.io/docs/admin/authorization/rbac/#service-account-permissions[service account super user permissions], and this way it will be possible to use this SA to create objects outside Che namespace (it is automatically done when [deploying with Helm](https://github.com/eclipse/che/blob/master/deploy/kubernetes/helm/che/templates/cluster-role-binding.yaml))
 
 [id="storage-overview"]
 == Storage Overview
@@ -92,7 +81,7 @@ As said above, che workspace PVC access type and claim size is configurable, and
 
 *How it Works*
 
-When a common PVC strategy is used, *all workspaces use the same PVC* to store data declared in their volumes (projects and workspace-logs by default and whatever additional link:volumes[volumes] that a user can define.)
+When a common PVC strategy is used, *all workspaces use the same PVC* to store data declared in their volumes (projects and workspace-logs by default and whatever additional link:volumes.html[volumes] that a user can define.)
 
 In case of a common strategy, an PV that is bound to PVC `che-claim-workspace` will have the following structure:
 
@@ -110,7 +99,7 @@ When a workspace is deleted, a corresponding subdirectory (`${ws-id}`) is delete
 
 *How to enable common strategy*
 
-Set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `common` in dc/che if you have already deployed Che with unique strategy, or pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=common` to oc new-app command when applying `che-server-template.yaml`. See: link:openshift-multi-user[Deploy to OpenShift].
+Set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `common` in dc/che if you have already deployed Che with unique strategy, or pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=common` to oc new-app command when applying `che-server-template.yaml`. See: link:openshift-multi-user.html[Deploy to OpenShift].
 
 **What’s CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS?**
 
@@ -147,7 +136,7 @@ Since `nightly` is the default tag used in Che deployment, and image pull policy
 
 You can use *IfNotPresent* pull policy (default is Always). Manually edit Che deployment after deployment or add `--set cheImagePullPolicy=IfNotPresent`.
 
-OpenShift admins can pass `-p PULL_POLICY=IfNotPresent` to link:openshift-multi-user[Che deployment] or manually edit `dc/che` after deployment.
+OpenShift admins can pass `-p PULL_POLICY=IfNotPresent` to link:openshift-multi-user.html[Che deployment] or manually edit `dc/che` after deployment.
 
 [id="scalability"]
 == Scalability
@@ -175,7 +164,7 @@ When Eclipse Che gets deployed to Kubernetes, a PVC `che-data-volume` is https:/
 * `kubectl describe pvc che-data-claim`, find PV it is bound to, then `oc describe pv $pvName`, you will get a local path with logs directory. Be careful with permissions for that directory, since once changed, Che server wont be able to write to a file
 * in Kubernetes web console, eclipse-che namespace, *pods > che-pod > logs*.
 
-It is also possible to configure Che master not to store logs, but produce JSON encoded logs to output instead. It may be used to collect logs by systems such as Logstash. To configure JSON logging instead of plain text environment variable `CHE_LOGS_APPENDERS_IMPL` should have value `json`. See more at link:logging[logging docs].
+It is also possible to configure Che master not to store logs, but produce JSON encoded logs to output instead. It may be used to collect logs by systems such as Logstash. To configure JSON logging instead of plain text environment variable `CHE_LOGS_APPENDERS_IMPL` should have value `json`. See more at link:logging.html[logging docs].
 
 [id="workspace-logs"]
 == Workspace Logs

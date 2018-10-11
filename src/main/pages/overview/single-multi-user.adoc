@@ -8,26 +8,37 @@ folder: overview
 
 ---
 
-Che is shipped as two different flavors - single and multi user. A single user Che *has no components that provide multi tenancy and permissions*. Thus, Che server and workspaces are not secured. This makes a single user Che a good choice for developers working locally.
+Eclipse Che is available in two different modes: single-user and multi-user.
 
-A multi user Che provides multi-tenancy i.e. *users accounts and workspaces are isolated and secured* with Keycloak tokens. Che uses http://www.keycloak.org/[Keycloak] as a mechanism to register, manage and authenticate users. Permissions API regulates access to different entities in Che, such as workspaces, stacks, recipes, organizations etc. User information is stored in a persistent DB that supports migrations (PostgreSQL).
+**Single-user Che**
 
-If you plan using Che just on your local machine or just evaluate the platform, it is reasonable to start with a *single-user Che*.
+To use Che on your local machine or to evaluate the platform, start with single-user Che. The advantages of using single-user Che are:
 
-*Single User Che Pros:*
+* The command line interface pulls fewer images.
+* The user dashboard is quickly available because no login is required.
 
-* The CLI will pull fewer Images
-* You will get to the User Dashboard more quickly (no login)
+Single-user Che does not provide multi-tenancy nor permissions for entities such as workspaces. Che server and workspaces are not secure with single-user Che.
 
-*Multi-User Che Pros*
+.Additional Resources
 
-* A Fully functional web IDE with fine grained access controls
-* A standalone Keycloak server that supports users federation and identity providers
+* To run Che in single-user mode using Docker, see link:docker-single-user.html[Single-user on Docker].
 
-By default *Che gets deployed as a single user* assembly both on Docker and OpenShift. Special flags must be provided to enable multi-user functionality.
+* To run Che in single-user mode using OpenShift, see link:openshift-single-user.html[Single-user on OpenShift].
 
-Proceed to installation:
+**Multi-user Che**
 
-* Installing it on Docker: link:docker-single-user[Single-user] or link:docker-multi-user[Multi-user]
-* Installing it on OpenShift: link:openshift-single-user[Single-user] or link:openshift-multi-user[Multi-user]
+Multi-user Che provides multi-tenancy. Che uses http://www.keycloak.org[Keycloak] to register, manage, and authenticate users. Keycloak tokens provide security for user accounts and workspaces. The Permissions API regulates access to different entities such as workspaces, stacks, recipes, and organizations. User information is stored in a persistent PostgreSQL database, which supports migrations.
+
+The advantages of using multi-user Che are:
+
+* The fully functional web IDE supports precise access controls.
+* The standalone Keycloak server supports user federation and identity providers.
+
+By default, Che deploys in single-user mode for Docker and OpenShift. You can use special flags to enable multi-user functionality.
+
+.Additional Resources
+
+* To run Che in multi-user mode using Docker, see link:docker-multi-user.html[Multi-user on Docker].
+
+* To run Che in multi-user mode using OpenShift, see link:openshift-multi-user.html[Multi-user on OpenShift].
 

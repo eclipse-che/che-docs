@@ -35,3 +35,18 @@ When adding a volume in User Dashboard using UI or config window, volume name an
 * name and path contains special characters, including `-` and `_`
 
 If you want your workspace machines to share volumes, just create volumes for each machine with an identical name. This way, machines will share the same volume.
+
+
+[id="empty-dir-volumes"]
+== 'emptyDir' volumes support OpenShift/Kubernetes infrastructure
+
+On OpenShift/Kubernetes infrastructure it is possible to configure workspaces to be  ephemeral (with no PVC attached) via `persistVolumes` attribute set to 'false' in the workspace config:
+
+[source,json]
+----
+"attributes": {
+  "persistVolumes": "false"
+}
+----
+
+In this case, regardless of the link:openshift-admin-guide.html#che-workspaces-storage[PVC strategy], all volumes would be created as https://kubernetes.io/docs/concepts/storage/volumes/#emptydir[`emptyDir`] for the given workspace. When a workspace Pod is removed for any reason, the data in the `emptyDir` volume is deleted forever.

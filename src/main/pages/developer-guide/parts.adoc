@@ -17,7 +17,7 @@ Sample plugins: https://github.com/che-samples/che-plugin-menu[IDE] and https://
 
 Creating a part in Che consists of two four components, which are marked in grey in the diagram below. In this section, we provide a general overview, in the following sections, we describe the concrete implementation more in detail.
 
-The central component is the implementation of the view itself (`MyViewImpl`). It will create all the UI widgets, which are shown within a part. `MyViewImpl` inherits from `BaseView`, a base implementation of common functionality for all views provided by Che. If the view needs to be accessed by other components, e.g. to set a selection, public methods should be extracted to an interface (`MyView`). To allow other components to get an instance of `MyView`, the interface is bound to the implementation within `MyGinModule`. See the section link:guice[Dependency Injection Basics] for more details about this. As mentioned before, the view implementation is responsible for the content of a view. The integration into the Che IDE, including configuring the tab (title, icon, etc.) is done by a part presenter (`MyPartPresenter`), which inherits from `BasePresenter`. Part presenter are called by Che or a custom action to interact with a part, e.g. to open it or to fill it with content. The part presenter forwards relevant calls to the implementation of a view (encapsulated by the interface).
+The central component is the implementation of the view itself (`MyViewImpl`). It will create all the UI widgets, which are shown within a part. `MyViewImpl` inherits from `BaseView`, a base implementation of common functionality for all views provided by Che. If the view needs to be accessed by other components, e.g. to set a selection, public methods should be extracted to an interface (`MyView`). To allow other components to get an instance of `MyView`, the interface is bound to the implementation within `MyGinModule`. See the section link:guice.html[Dependency Injection Basics] for more details about this. As mentioned before, the view implementation is responsible for the content of a view. The integration into the Che IDE, including configuring the tab (title, icon, etc.) is done by a part presenter (`MyPartPresenter`), which inherits from `BasePresenter`. Part presenter are called by Che or a custom action to interact with a part, e.g. to open it or to fill it with content. The part presenter forwards relevant calls to the implementation of a view (encapsulated by the interface).
 
 image::devel/parts.png[]
 
@@ -74,7 +74,7 @@ public interface HelloWorldView extends View<HelloWorldView.ActionDelegate> {
 }
 ----
 
-Finally, we have to make our view available for other components, using dependency injection. This is done in `MyGinModule`, which can contain other bindings, too. Please see the section link:guice[Dependency Injection Basics] for more details about this binding.
+Finally, we have to make our view available for other components, using dependency injection. This is done in `MyGinModule`, which can contain other bindings, too. Please see the section link:guice.html[Dependency Injection Basics] for more details about this binding.
 
 [source,java]
 ----
@@ -220,7 +220,7 @@ The following locations are supported by Che:
 * `TOOLING`: area to the right of the editor
 * `INFORMATION`: area under the editor, 'console' area
 
-After a pat has been opened, it must be activated to ensure that it gets visible and receives the focus. This is done using `WorkspaceAgent#setActivePart`. The following code example shows an action, which opens the "Hello World" part defined before. Please see the section link:actions[Actions] for more details about the implementation of actions.
+After a pat has been opened, it must be activated to ensure that it gets visible and receives the focus. This is done using `WorkspaceAgent#setActivePart`. The following code example shows an action, which opens the "Hello World" part defined before. Please see the section link:actions.html[Actions] for more details about the implementation of actions.
 
 [source,java]
 ----

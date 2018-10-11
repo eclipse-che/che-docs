@@ -34,7 +34,7 @@ When deployed with Keycloak and Postgres, your Kubernetes cluster should have *a
 [id="resource-allocation-and-quotas"]
 == Resource Allocation and Quotas
 
-All workspace pods are created either in the same namespace with Che itself, a dedicated namespace, or a new namespace is created for every workspace. In both cases, pods are created in the account of a user who deployed Che (if che service account is used to create ws objects) or account of a user whose token/credentials are used in Che deployment env.
+All workspace pods are created either in the same namespace with Che itself, a dedicated namespace, or a new namespace is created for every workspace.
 
 Therefore, an account where Che pods are created (including workspace pods) should have reasonable quotas for RAM, CPU and storage, otherwise, workspace pods won’t be created.
 
@@ -50,9 +50,9 @@ oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:ec
 
 # eclipse-che is Che namespace
 ----
-* In the multi project case, Eclipse Che will use individual user’s OpenShift tokens to create resources *on behalf of the currently logged-in user*. Refer to the link:openshift-admin-guide#create-workspace-objects-in-personal-namespaces[OpenShift Admin Guide] for more details about how it works.
+* In the multi project case, Eclipse Che will use individual user’s OpenShift tokens to create resources *on behalf of the currently logged-in user*. Refer to the link:openshift-admin-guide.html#create-workspace-objects-in-personal-namespaces[OpenShift Admin Guide] for more details about how it works.
 
-The environment variable `CHE_INFRA_OPENSHIFT_PROJECT` controls the namespace in which workspace objects are created. In the multi-project case, it should be set to `NULL` to create workspace objects in different namespaces for each user. In the single project case, if the che service accout does not have cluster-admin rights, it should be set to the same project that hosts the Che server. Refer to the link:openshift-config[OpenShift Configuration Guide] for more details on how to configure Che.
+The environment variable `CHE_INFRA_OPENSHIFT_PROJECT` controls the namespace in which workspace objects are created. In the multi-project case, it should be set to `NULL` to create workspace objects in different namespaces for each user. In the single project case, if the che service accout does not have cluster-admin rights, it should be set to the same project that hosts the Che server. Refer to the link:openshift-config.html[OpenShift Configuration Guide] for more details on how to configure Che.
 
 [id="storage-overview"]
 == Storage Overview
@@ -83,7 +83,7 @@ As said above, che workspace PVC access type and claim size is configurable, and
 
 *How it Works*
 
-When a common PVC strategy is used, *all workspaces use the same PVC* to store data declared in their volumes (projects and workspace-logs by default and whatever additional link:volumes[volumes] that a user can define.)
+When a common PVC strategy is used, *all workspaces use the same PVC* to store data declared in their volumes (projects and workspace-logs by default and whatever additional link:volumes.html[volumes] that a user can define.)
 
 In case of a common strategy, an PV that is bound to PVC `che-claim-workspace` will have the following structure:
 
@@ -101,7 +101,7 @@ When a workspace is deleted, a corresponding subdirectory (`${ws-id}`) is delete
 
 *How to enable common strategy*
 
-Set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `common` in dc/che if you have already deployed Che with unique strategy, or pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=common` to oc new-app command when applying `che-server-template.yaml`. See: link:openshift-multi-user[Deploy to OpenShift].
+Set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `common` in dc/che if you have already deployed Che with unique strategy, or pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=common` to oc new-app command when applying `che-server-template.yaml`. See: link:openshift-multi-user.html[Deploy to OpenShift].
 
 **What’s CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS?**
 
@@ -117,6 +117,10 @@ Another restriction is that only pods in the same namespace can use the same PVC
 == Unique PVC Strategy
 
 It is a default PVC strategy, i.e. `CHE_INFRA_KUBERNETES_PVC_STRATEGY` is set to `unique`. Every workspace gets its own PVC, which means a workspace PVC is created when a workspace starts for the first time. Workspace PVC is deleted when a corresponding workspace is deleted.
+
+[id="ephemeral workspaces"]
+== Ephemeral Workspaces
+On OpenShift/Kubernetes infrastructure it is possible to configure workspaces to be ephemeral (with no PVC attached). Instructions can be found in the link:volumes.html#empty-dir-volumes['emptyDir' volumes support OpenShift/Kubernetes infrastructure] section.
 
 [id="update"]
 == Update
@@ -138,7 +142,7 @@ Since `nightly` is the default tag used in Che deployment, and image pull policy
 
 You can use *IfNotPresent* pull policy (default is Always). Manually edit Che deployment after deployment or add `--set cheImagePullPolicy=IfNotPresent`.
 
-OpenShift admins can pass `-p PULL_POLICY=IfNotPresent` to link:openshift-multi-user[Che deployment] or manually edit `dc/che` after deployment.
+OpenShift admins can pass `-p PULL_POLICY=IfNotPresent` to link:openshift-multi-user.html[Che deployment] or manually edit `dc/che` after deployment.
 
 [id="scalability"]
 == Scalability
@@ -177,7 +181,7 @@ When Eclipse Che gets deployed to Kubernetes, a PVC `che-data-volume` is https:/
 * `kubectl describe pvc che-data-claim`, find PV it is bound to, then `oc describe pv $pvName`, you will get a local path with logs directory. Be careful with permissions for that directory, since once changed, Che server wont be able to write to a file
 * in Kubernetes web console, eclipse-che namespace, *pods > che-pod > logs*.
 
-It is also possible to configure Che master not to store logs, but produce JSON encoded logs to output instead. It may be used to collect logs by systems such as Logstash. To configure JSON logging instead of plain text environment variable `CHE_LOGS_APPENDERS_IMPL` should have value `json`. See more at link:logging[logging docs].
+It is also possible to configure Che master not to store logs, but produce JSON encoded logs to output instead. It may be used to collect logs by systems such as Logstash. To configure JSON logging instead of plain text environment variable `CHE_LOGS_APPENDERS_IMPL` should have value `json`. See more at link:logging.html[logging docs].
 
 [id="workspace-logs"]
 == Workspace Logs
@@ -282,16 +286,16 @@ As detailed below, to enable this feature, the administrator should:
 
 Once this is done, every interactive action done by a Che user on workspaces, such as start or stop, will create OpenShift resources under his personal OpenShift account. And the first time the user will try to do it, he will be asked to link his Keycloak account with his personal OpenShift account: which he can do by simply following the provided link in the notification message.
 
-But for non-interactive workspace actions, such as workspace stop on idling or Che server shutdown, the account used for operations on OpenShift resources will fall back to the dedicated OpenShift account configured for the Kubernetes infrastructure, as described in the link:admin-guide#who-creates-workspace-objects[AdminGuide].
+But for non-interactive workspace actions, such as workspace stop on idling or Che server shutdown, the account used for operations on OpenShift resources will fall back to the dedicated OpenShift account configured for the Kubernetes infrastructure, as described in the link:admin-guide.html#who-creates-workspace-objects[AdminGuide].
 
-To easily install Che on OpenShift with this feature enabled, see link:openshift-multi-user#creating-workspace-resources-in-personal-openshift-accounts-on-minishift[this section for Minishift] and link:openshift-multi-user#creating-workspace-resources-in-personal-openshift-accounts[this one for OCP]
+To easily install Che on OpenShift with this feature enabled, see link:openshift-multi-user.html#creating-workspace-resources-in-personal-openshift-accounts-on-minishift[this section for Minishift] and link:openshift-multi-user.html#creating-workspace-resources-in-personal-openshift-accounts[this one for OCP]
 
 [id="openshift-identity-provider-registration"]
 ==== OpenShift identity provider registration
 
 The Keycloak OpenShift identity provider is described in https://www.keycloak.org/docs/3.3/server_admin/topics/identity-broker/social/openshift.html[this documentation].
 
-1.  In the link:user-management#auth-and-user-management[Keycloak administration console], when adding the OpenShift identity provider, you should use the following settings:
+1.  In the link:user-management.html#auth-and-user-management[Keycloak administration console], when adding the OpenShift identity provider, you should use the following settings:
 
 image::keycloak/openshift_identity_provider.png[]
 
