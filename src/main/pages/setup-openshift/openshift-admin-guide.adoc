@@ -107,7 +107,7 @@ Every workspace gets its own PVC, which means a workspace PVC is created when a 
 
 === How the common PVC strategy works
 
-All workspaces use the same PVC to store data declared in their volumes (projects and workspace-logs by default and whatever additional link:volumes[volumes] that a user can define.)
+All workspaces use the same PVC to store data declared in their volumes (projects and workspace logs by default and whatever additional link:volumes[volumes] that a user can define.)
 
 A PV that is bound to PVC `che-claim-workspace` will have the following structure:
 
@@ -175,12 +175,10 @@ To change the pull policy, do one of the following:
 
 The default pull policy is `Always`. The default tag is `nightly`. This tag sets the image pull policy to `Always` and triggers a new deployment with a newer image, if available.
 
-OpenShift admins can pass `-p PULL_POLICY=IfNotPresent` to link:openshift-multi-user.html[Che deployment] or manually edit `dc/che` after deployment.
-
 [id="scalability"]
 == Scalability
 
-To be able to run more workspaces, https://kubernetes.io/docs/concepts/architecture/nodes/#management[add more nodes to your Kubernetes cluster]. If the system is out of resources, workspace start will fail with an error message returned from Kubernetes (usually it’s `no available nodes` kind of error).
+To run more workspaces, https://kubernetes.io/docs/concepts/architecture/nodes/#management[add more nodes to your Kubernetes cluster].  An error message is returned when the system is out of resources.
 
 [id="gdpr"]
 == GDPR
@@ -191,7 +189,6 @@ To delete data or request the admininistrator to delete data, run this command w
 $ curl -X DELETE http://che-server/api/user/{id}
 ----
 
-Use the above command with the user or administrator token.
 
 [id="debug-mode"]
 == Debug mode
