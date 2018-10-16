@@ -10,45 +10,49 @@ folder: workspace-admin
 [id="workspace"]
 == Workspace
 
-Eclipse Che reinvents the definition of a workspace which is usually termed as a local directory with projects and some meta-information that IDE uses to properly configure them. In Eclipse Che, a workspace is the developer environment itself represented by Docker containers, k8s pods or something else (for example, a VM, localhost etc), coupled with data persistence mechanism, provision of environment variables, projects and commands which are associated with them, as well as resources allocation attributes.
+A workspace is usually termed as a local directory with projects and meta-information that the integrated development environment (IDE) uses to configure the projects. In Eclipse Che, a workspace is the developer environment. The developer environment contains Docker containers, Kubernetes pods, and a virtual machine or local host.  Environment variables and storage volumes are part of the workspace. The developer environment also contains projects, project commands and resource allocation attributes.
 
 [id="environment"]
 == Environment
 
-Workspace runtime environment is a set of machines where each machine is defined by a recipe. Environment is considered to be healthy when all machines have successfully started and associated installers executed their jobs. Environment is defined by a recipe that can have different types. It is up to environment (and underlying infra) to validate a recipe.
+The workspace runtime environment is a set of machines where each machine is defined by a recipe. The environment is healthy when all the machines successfully start up and the installers execute jobs. The environment is defined by a recipe that can have different types.  The environment and infrastructure validates a recipe. 
 
 [id="machine"]
 == Machine
 
-Runtime environment has minimum one machine that can be (at this moment) a Docker container or a Kubernetes pod. You can create multi machine environments with as many machines as your project infrastructure requires. Though each machine has its own configuration and start policy, it is an integral part of environment, and start failures/crashes of one machine may signal about an entire environment being unhealthy. Machines can freely communicate in a common environment using internal network (e.g. by `service:port`).
+The runtime environment has a minimum of one machine that can be a Docker container or a Kubernetes pod. You can create multi-machine environments with as many machines as your project infrastructure requires. Each machine has a configuration and start policy.  Machine crashes and start failures are signs of an unhealthy environment.  Machines communicate by using the internal network, `service:port`.
 
 [id="recipe"]
 == Recipe
 
-Workspace environment is defined by a recipe that can be a single Docker image, a Dockerfile, a Docker Compose file, or a Kubernetes list of objects with multiple pods and services.
+A workspace environment is defined by a recipe.  The recipe can be one of the following:
+
+* single Docker image
+* Docker file
+* Docker Compose file
+* Kubernetes list of objects with multiple pods and services
 
 [id="bootstrapper"]
 == Bootstrapper
 
-Inside every machine, a bootstrapper is started. Its role is to start installer scripts that will install chosen software/components into a machine. Bootstrapper is a tiny binary compiled from go code. It starts with a set of parameters and a config file with the list of installer scripts to be executed (see below). Launch of a bootstrapper is the first process executed in a machine after `CMD` or `ENTRYPOINT`.
+The bootstrapper starts the installer script after the first process is executed in the machine following the `CMD` or `ENTRYPOINT`.   The role of the bootstrapper is to start the installer scripts with a set of parameters and a configuration file. The bootstrapper is a tiny binary compiled from Go code.
 
 [id="installer"]
 == Installer
 
-The purpose of an installer is quite straightforward. An installer installs software and services, starts servers, activates agents etc. Some of the servers are crucial to the IDE and workspace in general, such as workspace agent, exec agent and terminal. Others just bring new functionality to a workspace - language servers, SSH installer etc. Bootstrapper executes installer scripts that prepare environment, check for dependencies and install components defined by an installer. You may want to take a look at an https://github.com/eclipse/che/blob/che6/agents/ls-csharp/src/main/resources/installers/1.0.1/org.eclipse.che.ls.csharp.script.sh[example of an installer script] that prepares environment and installs C# language server.
+The purpose of the installer is to install software and services, start servers, and activate agents. The workspace agent, executive agent, and terminal servers are important to the IDE and workspace. The language servers, SSH installer and other servers bring new functionality to a workspace. The bootstrapper executes installer scripts that prepare the environment and checks for dependencies.  See an  https://github.com/eclipse/che/blob/che6/agents/ls-csharp/src/main/resources/installers/1.0.1/org.eclipse.che.ls.csharp.script.sh[example of an installer script] that prepares the environment and installs the C# language server.
 
 [id="volume"]
 == Volume
 
-A volume is a mechanism that Eclipse Che uses to persist workspace data. By default, workspace projects are automatically mounted into a host file system, however, a user can define extra volumes for each individual machine in the environment. Implementation of volumes differ depending on the infrastructure (Docker volumes vs Kubernetes PVs and PVCs).
+A volume is a fixed amount of storage that is used to persist workspace data.  Workspace projects are automatically mounted into a host file system by default.   A user can define extra volumes for each machine in the environment. Docker volumes, Kubernetes persistent volumes (PVs) and persistent volumes claims (PVCs) are examples of volumes.
 
 [id="environment-variables"]
-== Environment Variables
+== Environment variables
 
-An individual set of environment variables is propagated into each individual machine. Depending on the infrastructure, envs are propagated to Docker containers or k8s pods.
+The environment variables are propagated into each individual machine. Depending on the infrastructure, environment variables are propagated to Docker containers or Kubernetes pods.
 
 [id="whats-next"]
 == What’s Next?
 
-link:creating-starting-workspaces.html[Create and start your first workspace], learn how to define link:volumes.html[volumes] and link:env-variables.html[env variables].
-
+link:creating-starting-workspaces.html[Create and start your first workspace], learn how to define link:volumes.html[volumes] and link:env-variables.html[environment variables].
