@@ -16,6 +16,7 @@ All examples use the `kubectl` command. OpenShift administrators should use the 
 [id="ram-prerequisites"]
 == RAM prerequisites
 
+[id="single-user-prerequisites"]
 === Single user prerequisites
 
 3 GB of RAM is required for single-user Che on OpenShift.
@@ -25,6 +26,7 @@ Single-user Che uses RAM in this distribution:
 * Che server pod uses up to 1 GB of RAM. The initial request for RAM is 256 MB. The Che server pod rarely uses more than 800 MB RAM.
 * Workspaces use 2 GB of RAM.
 
+[id="multi-user-prerequisites"]
 === Multi-user prerequisites
 
 You must have at least 5 GB of RAM to run multi-user Che. The Keycloak authorization server and PostgreSQL database require the extra RAM. Multi-user Che uses RAM in this distribution:
@@ -34,12 +36,12 @@ You must have at least 5 GB of RAM to run multi-user Che. The Keycloak authoriza
 * PostgreSQL: approximately 515 MB
 * Workspaces: 2 GB of RAM per workspace. The total workspace RAM depends on the size of the workspace runtime(s) and the number of concurrent workspace pods.
 
-[id="resource-allocation-and-quotas"]
+[id="requirements-for-resource-allocation-and-quotas"]
 == Requirements for resource allocation and quotas
 
 Workspace pods are created in the account of the user who deploys Che.  The user needs enough quota for RAM, CPU, and storage to create that pod.
 
-[id="who-creates-workspace-objects"]
+[id="setting-up-the-project-workspace"]
 == Setting up the project workspace
 
 Workspace objects are created differently depending on the configuration. Eclipse Che currently supports two different configurations:
@@ -48,6 +50,7 @@ Workspace objects are created differently depending on the configuration. Eclips
 
 * Multi OpenShift project
 
+[id="setting-up-a-single-openshift-project"]
 === Setting up a single OpenShift project
 
 To setup a single OpenShift project:
@@ -64,25 +67,26 @@ oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:ec
 
 In the command above, `eclipse-che` is the Che namespace.
 
+[id="setting-up-a-multi-openshift-project"]
 === Setting up a multi OpenShift project
 
 . To create workspace objects in different namespaces for each user, set `NULL_CHE_INFRA_OPENSHIFT_PROJECT` to NULL.
 
 . To create resources on behalf of the currently logged-in user, use the user’s OpenShift tokens.
 
-[id="storage-overview"]
+[id="how-the-che-server-uses-PVCs-and-PVs-for-storage"]
 == How the Che server uses PVCs and PVs for storage
 
 Che server, Keycloak, PostgreSQL, and workspace pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode]. When the deployment YAML files run, they define the Che PVCs. You can configure link:#che-workspaces-storage[workspace PVC] access mode and claim size with Che deployment environment variables.
 
-[id="che-infrastructure-storage"]
+[id="storage-requirements-for-che-infrastructure"]
 == Storage requirements for Che infrastructure
 
 * Che server: 1 GB to store logs and initial workspace stacks.
 * Keycloak: 2 PVCs, 1 GB each to store logs and Keycloak data.
 * PostgreSQL: 1 GB PVC to store database.
 
-[id="che-workspaces-storage"]
+[id="storage-strategies-for-che-workspaces"]
 == Storage strategies for Che workspaces
 
 The workspace PVC strategy is configurable:
@@ -94,6 +98,7 @@ The workspace PVC strategy is configurable:
 |*common* | One PVC for all workspaces, Sub-paths pre-created |Easy to manage and control storage |No need to recyle PVs when pod with PVC is deleted |Workspace pods should all be in one namespace
 |===
 
+[id="unique-pvc-strategy"]
 == Unique PVC strategy
 
 To define the unique strategy:
@@ -105,6 +110,7 @@ Every workspace gets its own PVC, which means a workspace PVC is created when a 
 [id="common-pvc-strategy"]
 == Common PVC Strategy
 
+[id="how-the-common-pvc-strategy-works"]
 === How the common PVC strategy works
 
 All workspaces use the same PVC to store data declared in their volumes (projects and workspace logs by default and whatever additional link:volumes[volumes] that a user can define.)
@@ -123,6 +129,7 @@ Volumes can be anything that a user defines as volumes for workspace machines (v
 
 When a workspace is deleted, a corresponding subdirectory (`${ws-id}`) is deleted in the PV directory.
 
+[id="enabling-a-common-strategy"]
 === Enabling a common strategy
 
 If you have already deployed Che with unique strategy:
@@ -140,13 +147,14 @@ If applying the `che-server-template.yaml`:
 . For Kubernetes older than 1.6, setting this variable to `true` is not a requirement.
 ====
 
+[id="restrictions-on-using-common-pvc-strategy"]
 === Restrictions on using common PVC strategy
 
 When a common strategy is used and a workspace PVC access mode is RWO, only one Kubernetes node can simultaneously use PVC.  If there are several nodes, you can use a common strategy, but in this case, the workspace PVC access mode should be RWM. Multiple nodes should be able to use this PVC simultaneously.  You can change the access mode for workspace PVCs by passing the environment variable `CHE_INFRA_KUBERNETES_PVC_ACCESS_MODE=ReadWriteMany` to Che deployment either when initially deploying Che or through the Che deployment update.
 
 Another restriction is that only pods in the same namespace can use the same PVC.  The `CHE_INFRA_KUBERNETES_PROJECT` environment variable should not be empty.  It should be either the Che server namespace where objects can be created with Che SA or a dedicated namespace where a token or a username and password need to be used.
 
-[id="update"]
+[id="updating-your-che-deployment"]
 == Updating your Che deployment
 
 To update Che deployment:
@@ -155,7 +163,7 @@ To update Che deployment:
 +
 You can change the image tag in one of the following ways:
 
-* Run the `kubeclt edit dc/che`.
+* Run the `kubeclt edit dc/che` command.
 * In the OpenShift web console, select: *deployments > edit yaml > image:tag*.
 * Using the Docker service, run this command: `kubectl set image dc/che che=eclipse/che-server:${VERSION} --source=docker`.
 
@@ -200,7 +208,7 @@ To run Che Server in debug mode, set the following environment variable in the C
 [id="private-docker-registries"]
 == Private Docker registries
 
-Refer to https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/[Kubernetes documentation]
+Refer to https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/[Kubernetes documentation].
 
 [id="che-server-logs"]
 == Che server logs
@@ -210,7 +218,7 @@ The PVC `che-data-volume` is https://github.com/eclipse/che/blob/master/deploy/k
 To retrieve logs, do one of the following:
 
 * Run the `kubectl get log dc/che` command.
-* Run the `kubectl describe pvc che-data-claim` command to find the PV. Next, run the `oc describe pv $pvName` command with the PV to get a local path with the logs directory. Be careful with permissions for that directory, since once changed, Che server wont be able to write to a file
+* Run the `kubectl describe pvc che-data-claim` command to find the PV. Next, run the `oc describe pv $pvName` command with the PV to get a local path with the logs directory. Be careful with permissions for that directory, since once changed, Che server will not be able to write to a file.
 * In the Kubernetes web console, select *pods > che-pod > logs*.
 
 It is also possible to configure Che master not to store logs, but produce JSON encoded logs to output instead. It may be used to collect logs by systems such as Logstash. To configure JSON logging instead of plain text environment variable `CHE_LOGS_APPENDERS_IMPL` should have value `json`. See more at link:logging.html[logging docs].
@@ -253,7 +261,7 @@ To increase the grace termination period:
 
 * Update `CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC`
 
-[id="recreate-update"]
+[id="updating-che-without-stopping-active-workspaces"]
 == Updating Che without stopping active workspaces
 
 The differences between a Recreate update and a Rolling update:
@@ -267,6 +275,7 @@ Rolling update
 * No Che downtime
 * New deployment starts in parallel and traffic is hot-switched
 
+[id="performing-a-recreate-update"]
 === Performing a recreate update
 
 Prerequisites
@@ -280,7 +289,7 @@ To perform a recreate update:
 * Make periodical GET requests to /api/system/state api, until it returns READY_TO_SHUTDOWN state. Also, you can check for "System is ready to shutdown" in the server logs.
 * Perform new deploy.
 
-[id="rolling-update"]
+[id="performing-a-rolling-update"]
 === Performing a rolling update
 
 Prerequisites
@@ -296,8 +305,8 @@ To perform a rolling update:
 [id="known-issues"]
 ==== Known issues
 
-* Workspaces that are started shortly (5-30sec) before the network traffic is switched to the new pod, may fallback to the stopped state. That happens because bootstrappers uses Che server route URL for notifying Che Server when bootstrapping is done. Since traffic is already switched to the new Che server, old one cannot get bootstrapper-s report, and fails the start after waiting timeout reached. If old Che server will be killed before this timeout, workspaces can stuck in the `STARTING` state. So the `terminationGracePeriodSeconds` parameter must define time enough to cover workspace start timeout timeout (which is 8 min by def.) plus some additional timings. Typically, setting `terminationGracePeriodSeconds` to 540 sec is enough to cover all timeouts.
-* Some users may experience problems with websocket reconnections or missed events published by WebSocket connection(when a workspace is STARTED but dashboard displays that it is STARTING); Need to reload page to restore connections and actual workspaces states.
+* Workspaces that are started five to thirty seconds before the network traffic are switched to the new pod and may fallback to the stopped state. This happens because the bootstrappers use the Che server route URL for notifying the Che Server when bootstrapping is done. Since traffic is already switched to the new Che server, the old Che server cannot get the bootstrapper's report, and fails to start after the waiting timeout is reached. If the old Che server is killed before this timeout, the workspaces can be stuck in the `STARTING` state. The `terminationGracePeriodSeconds` parameter must define enough time to cover the workspace start timeout timeout, which is eight minutes plus some additional time. Typically, setting `terminationGracePeriodSeconds` to 540 sec is enough to cover all timeouts.
+* Users may experience problems with websocket reconnections or missed events published by WebSocket connection when a workspace is `STARTED` but dashboard displays that it is `STARTING`. In this case, you need to reload the page to restore connections and the actual workspace states.
 
 [id="update-with-db-migrations-or-api-incompatibility"]
 === Updating with database migrations or API incompatibility
@@ -306,7 +315,7 @@ If new version of Che server contains some DB migrations, but there is still API
 
 API incompatible versions should be updated with full workspaces stop. It means that `/api/system/stop?shutdown=true` must be called prior to update.
 
-[id="delete-deployments"]
+[id="deleting-deployments"]
 == Deleting deployments
 
 The fastest way to completely delete Che and its infrastructure components is to delete the project and namespace.
