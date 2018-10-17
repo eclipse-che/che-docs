@@ -55,14 +55,13 @@ Workspace objects are created differently depending on the configuration. Eclips
 
 To setup a single OpenShift project:
 
-. Define the service account used to create workspace objects with the environment variable
-`CHE_OPENSHIFT_SERVICEACCOUNTNAME`.
+. Define the service account used to create workspace objects with the `CHE_OPENSHIFT_SERVICEACCOUNTNAME` variable.
 . To ensure this service account is visible to the Che server, put the service and the Che server in the same namespace.
 . Give the service account permissions to create and edit OpenShift resources.
 . If the developer needs to create an object outside of the service accounts bound namespace, give the service account cluster-admin rights by running this command:
 +
 ----
-oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:eclipse-che:che
+$ oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:eclipse-che:che
 ----
 
 In the command above, `eclipse-che` is the Che namespace.
@@ -70,7 +69,7 @@ In the command above, `eclipse-che` is the Che namespace.
 [id="setting-up-a-multi-openshift-project"]
 === Setting up a multi OpenShift project
 
-. To create workspace objects in different namespaces for each user, set `NULL_CHE_INFRA_OPENSHIFT_PROJECT` to NULL.
+. To create workspace objects in different namespaces for each user, set the `NULL_CHE_INFRA_OPENSHIFT_PROJECT` variable to NULL.
 
 . To create resources on behalf of the currently logged-in user, use the user’s OpenShift tokens.
 
@@ -134,7 +133,7 @@ When a workspace is deleted, a corresponding subdirectory (`${ws-id}`) is delete
 
 If you have already deployed Che with unique strategy:
 
-* Set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `common` in dc/che.
+* Set the `CHE_INFRA_KUBERNETES_PVC_STRATEGY` variable to `common` in dc/che.
 
 If applying the `che-server-template.yaml`:
 
@@ -142,7 +141,7 @@ If applying the `che-server-template.yaml`:
 
 [NOTE]
 ====
-. For pre 1.6 Kubernetes, you need to set the `CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS` variable to `true`.
+. For pre 1.6 Kubernetes, you need to set the `pass:[CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS]` variable to `true`.
 
 . For Kubernetes older than 1.6, setting this variable to `true` is not a requirement.
 ====
@@ -152,7 +151,7 @@ If applying the `che-server-template.yaml`:
 
 When a common strategy is used and a workspace PVC access mode is ReadWriteOnce (RWO), only one Kubernetes node can simultaneously use PVC.  If there are several nodes, you can use a common strategy, but the workspace PVC access mode is ReadWriteMany (RWM). Multiple nodes can use this PVC simultaneously.
 
-To change the access mode for workspace PVCs, pass the environment variable `CHE_INFRA_KUBERNETES_PVC_ACCESS_MODE=ReadWriteMany` to Che deployment either when initially deploying Che or through the Che deployment update.
+To change the access mode for workspace PVCs, pass the `CHE_INFRA_KUBERNETES_PVC_ACCESS_MODE=ReadWriteMany` environment variable to Che deployment either when initially deploying Che or through the Che deployment update.
 
 Another restriction is that only pods in the same namespace can use the same PVC.  The `CHE_INFRA_KUBERNETES_PROJECT` environment variable should not be empty.  It should be either the Che server namespace where objects can be created with the Che service account (SA) or a dedicated namespace where a token or a username and password need to be used.
 
@@ -288,7 +287,7 @@ To perform a recreate update:
 
 * Set the deployment update strategy to Recreate
 * Make POST request to the `/api/system/stop` api to start WS master suspend. This means that all new attempts to start workspaces will be refused, and all current starts and stops will be finished. Note that this method requires system admin credentials.
-* Make periodical GET requests to `/api/system/state` api, until it returns `READY_TO_SHUTDOWN` state. Also, you can check for "System is ready to shutdown" in the server logs.
+* Make periodical `GET` requests to the `/api/system/state` API, until it returns the `READY_TO_SHUTDOWN` state. Also, you can check for "System is ready to shutdown" in the server logs.
 * Perform new deploy.
 
 [id="performing-a-rolling-update"]
@@ -383,7 +382,7 @@ Cluster-wide administrator rights are required to add an OAuth client.
 
 To add the OpenShift identity provider:
 
-. Use the following settings in the link:user-management#auth-and-user-management[Keycloak administration console]:
+. Use the following settings in the link:user-management.html#auth-and-user-management[Keycloak administration console]:
 +
 image::keycloak/openshift_identity_provider.png[]
 The `Base URL` is the URL of the OpenShift console.
@@ -422,7 +421,7 @@ To configure Che deployment:
 
 If the certificate used by the OpenShift console is self-signed or is not trusted, then by default the Keycloak will not be able to contact the OpenShift console to retrieve linked tokens.
 
-Keycloak can not contact the OpenShift console to retrieve linked tokens when the certificate used by the OpenShift console is self-signed or is not trusted.
+Keycloak cannot contact the OpenShift console to retrieve linked tokens when the certificate used by the OpenShift console is self-signed or is not trusted.
 
 When the certificate is self-signed or is not trusted, use the enivronment variable `OPENSHIFT_IDENTITY_PROVIDER_CERTIFICATE` to pass the OpenShift console certificate to the Keycloak deployment. This will enable the Keycloak server to add the certificate to the list of trusted certificates.
 The environment variable refers to a secret that contains the certificate.
