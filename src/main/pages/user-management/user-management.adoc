@@ -8,47 +8,72 @@ folder: user-management
 ---
 
 
-[id="auth-and-user-management"]
-== Auth and User Management
+[id="authorization-and-user-management"]
+== Authorization and user management
 
-Eclipse Che relies on http://www.Keycloak.org[Keycloak] to create, import, manage, delete and authenticate users. Keycloak uses its own authentication mechanisms and user storage. Eclipse Che requires a Keycloak token when access to Che resources is requested.
+Eclipse Che uses http://www.Keycloak.org[Keycloak] to create, import, manage, delete, and authenticate users.  Keycloak uses built-in authentication mechanisms and user storage.  It can use a third-party identity management systems to create and authenticate users. Eclipse Che requires a Keycloak token when you request access to Che resources.
 
-Keycloak can create and authenticate users by itself or rely on 3rd party identity management systems and providers.
+Local users and imported federation users must have an email address in their profile.
 
-Note that it is required for all types of users (local or imported from federation) to have the email address field set. Che cannot work with users that have no email in their profile.
+The default Keycloak credentials are `admin:admin`. You can use the `admin:admin` credentials when logging into Che for the first time. It has system privileges. 
 
-Default Keycloak credentials are `admin:admin`. You can find your Keycloak URL either in OpenShift web console > keycloak namespace (if you deployed to OpenShift) of go to `$CHE_HOST:5050/auth` if Che is running on Docker. Admin user is also a pre-defined Che user with privileges on the system scope. So, you may use `admin:admin` credentials when loggin in to Che for the first time.
+If Che is deployed on Openshift, go to your Keycloak URL to find:
 
-[id="che-and-keycloak"]
-== Che and Keycloak
+* OpenShift web console > keycloak namespace 
 
-When Che is deployed on OpenShift or installed on Docker, either deployment script or CLI makes sure that Keycloak is properly configured. When a `che-public` client is created, there are two important fields to be populated:
+If Che is running on Docker:
+ 
+* Go to `$CHE_HOST:5050/auth`   
 
-* *Valid Redirect URIs* need to be the URL you use to access Che. For example, if your original `CHE_HOST` is `1.1.1.1` but you access Che at `myhost` which is an alias, you will see an error from Keycloak, saying that it’s an invalid `redirectURI`. So, if this error occurs, go to Keycloak administration console and check valid Redirect URIs.
-* *Web Origins* - the same concerns Web Origins. An invalid web origin causes CORS error.
+[id="configuring-che-to-work-with-keycloak"]
+== Configuring Che to work with Keycloak
 
-[id="keycloak-tokens"]
-== Keycloak Tokens
+The deployment script ensures that Keycloak is properly configured when Che is deployed on OpenShift or installed on Docker. When the `che-public` client is created, the following fields are populated:
 
-By default, a user token gets expired after 30 mins. Keycloak admin can fine tune different realm settings related to Keycloak tokens:
+* *Valid Redirect URIs*: Use this URL to access Che. 
+* *Web Origins*
+
+Common errors: 
+
+*Invalid `redirectURI` error*:  occurs when you access Che at `myhost`, which is an alias, and your 
+original `CHE_HOST` is `1.1.1.1`.  If this error occurs, go to the Keycloak administration console and the valid redirect URIs are configured.
+
+*CORS error*: occurs when you have an invalid web origin
+
+[id="configuring-keycloak-tokens"]
+== Configuring Keycloak tokens
+
+A user token expires after 30 minutes by default. 
+
+You can change the following Keycloak token settings:
 
 image::keycloak/keycloak_realm.png[]
 
-[id="user-federation"]
-== User Federation
+[id="setting-up-user-federation"]
+== Setting up user federation
 
-Keycloak provides a user friendly page to http://www.keycloak.org/docs/3.2/server_admin/topics/user-federation.html[connect LDAP/Active Directory]. There are a number of http://www.keycloak.org/docs/3,2/server_admin/topics/user-federation/ldap.html[fields to be populated] on the config page, and those are specific to your particular LDAP instance, user filters, preferable mode etc. It is possible to test connection and authentication even before saving any particular storage provider.
+Keycloak federates external user databases and supports LDAP and Active Directory. You can test the connection and authenticate users before choosing a storage provider.
 
-[id="social-login-and-brokering"]
-== Social Login and Brokering
+See http://www.keycloak.org/docs/3.2/server_admin/topics/user-federation.html[user storage federation] to learn how to add a provider.
 
-Keycloak offers social login buttons such as GitHub, Facebook, Twitter, OpenShift etc. See: Instructions to http://www.keycloak.org/docs/3.2/server_admin/topics/identity-broker/social/github.html[enable Login with GitHub].
+See http://www.keycloak.org/docs/3.2/server_admin/topics/user-federation/ldap.html[LDAP and Active Directory] to specify multiple LDAP servers.
 
-If you add GitHub login, you can also enable ssh key upload to Che users’ GitHub accounts. To enable this feature, make sure scopes are `repo,user,write:public_key`, and Store Tokens, Stored Tokens Readable are *ON* when you register a GitHub identity provider.
+[id="enabling-authentication-with-social-accounts-and-brokering"]
+== Enabling authentication with social accounts and brokering
+
+Keycloak provides built-in support for most common social networks such as GitHub, Facebook, Twitter, OpenShift. See Instructions to http://www.keycloak.org/docs/3.2/server_admin/topics/identity-broker/social/github.html[enable Login with GitHub].
+
+You can also enable SSH key upload to Che users’ GitHub accounts. 
+
+To enable this feature when you register a GitHub identity provider: 
+
+. Set scope to `repo,user,write:public_key`.
+
+. Set store tokens and stored tokens readable to *ON*.
 
 image::git/kc_provider.png[]
 
-Next thing is to add a default read-token role:
+. Add a default read-token role
 
 image::git/kc_roles.png[]
 
@@ -56,19 +81,19 @@ This is default `delegated` OAuth service mode for Multi-User Che, which is conf
 
 Setting it to `embedded` will make it use Che’s OAuth Authenticator, for which link:version-control.html#github-oauth[Instructions for Single User mode] will apply.
 
-Read more about link:ide_projects.html#project-import-and-ssh-connection[SHH key management].
+Read more about link:ide_projects.html#project-import-and-ssh-connection[SSH key management].
 
-[id="protocol-based-providers"]
-== Protocol Based Providers
+[id="using-protocol-based-providers"]
+== Using protocol-based providers
 
-Keycloak provides support for http://www.Keycloak.org/docs/3.2/server_admin/topics/identity-broker/saml.html[SAML v2.0] and http://www.Keycloak.org/docs/3.2/server_admin/topics/identity-broker/oidc.html[OpenID Connect v1.0] protocols so you can connect your identity provider systems if they support these protocols.
+Keycloak supports http://www.Keycloak.org/docs/3.2/server_admin/topics/identity-broker/saml.html[SAML v2.0] and http://www.Keycloak.org/docs/3.2/server_admin/topics/identity-broker/oidc.html[OpenID Connect v1.0] protocols. You can connect your identity provider systems if they support these protocols.
 
 [id="managing-users"]
-== Managing Users
+== Managing users 
 
-There’s UI to add, delete and edit users. See: http://www.Keycloak.org/docs/3.2/server_admin/topics/users.html[Keycloak User Management].
+You can add, delete, and edit users in the user interface. See: http://www.Keycloak.org/docs/3.2/server_admin/topics/users.html[Keycloak User Management] for more information.
 
 [id="smtp-configurationemail-notifications"]
-== SMTP Configuration/Email Notifications
+== Configuring SMTP and email notifications
 
-Eclipse Che does not provide any out-of-the-box SMTP servers. This functionality is enabled in Keycloak itself, `che realm settings > Email`. You will need to provide host, port, username and password, if necessary. Eclipse Che is shipped with the default theme that is used for email templates (registration, email confirmation, password recovery, failed login etc).
+Eclipse Che does not provide any pre-configured MTP servers. You enable SMTP servers in Keycloak. `che realm settings > Email`. You specify the host, port, username, and password. Eclipse Che uses the default theme for email templates for registration, email confirmation, password recovery, and failed login.
