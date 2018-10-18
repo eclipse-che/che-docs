@@ -17,9 +17,11 @@ Local users and imported federation users must have an email address in their pr
 
 The default Keycloak credentials are `admin:admin`. You can use the `admin:admin` credentials when logging into Che for the first time. It has system privileges. 
 
-If Che is deployed on Openshift, go to your Keycloak URL to find:
+To find your Keycloak URL:
 
-* OpenShift web console > keycloak namespace 
+If Che is deployed on Openshift:
+
+* Go to OpenShift web console > keycloak namespace 
 
 If Che is running on Docker:
  
@@ -33,7 +35,7 @@ The deployment script ensures that Keycloak is properly configured when Che is d
 * *Valid Redirect URIs*: Use this URL to access Che. 
 * *Web Origins*
 
-Common errors: 
+The following are common errors when configuring Che to work with Keycloak: 
 
 *Invalid `redirectURI` error*:  occurs when you access Che at `myhost`, which is an alias, and your 
 original `CHE_HOST` is `1.1.1.1`.  If this error occurs, go to the Keycloak administration console and the valid redirect URIs are configured.
@@ -63,7 +65,7 @@ See http://www.keycloak.org/docs/3.2/server_admin/topics/user-federation/ldap.ht
 
 Keycloak provides built-in support for most common social networks such as GitHub, Facebook, Twitter, OpenShift. See Instructions to http://www.keycloak.org/docs/3.2/server_admin/topics/identity-broker/social/github.html[enable Login with GitHub].
 
-You can also enable SSH key upload to Che users’ GitHub accounts. 
+You can also enable the SSH key and upload it to the Che users’ GitHub accounts. 
 
 To enable this feature when you register a GitHub identity provider: 
 
@@ -77,7 +79,7 @@ image::git/kc_provider.png[]
 
 image::git/kc_roles.png[]
 
-This is default `delegated` OAuth service mode for Multi-User Che, which is configured with property `che.oauth.service_mode`.
+This is the default `delegated` OAuth service mode for multi-user Che, which is configured with property `che.oauth.service_mode`.
 
 Setting it to `embedded` will make it use Che’s OAuth Authenticator, for which link:version-control.html#github-oauth[Instructions for Single User mode] will apply.
 
