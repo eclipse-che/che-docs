@@ -56,7 +56,7 @@ To share stacks with users:
 
 image::workspaces/stack_permissions.png[]
 
-* Use the following JSON and replace `${STACK_ID}` with an actual ID.
+* Use the following JSON and replace `${STACK_ID}` with an actual ID:
 
 [source,json]
 ----
@@ -71,16 +71,16 @@ image::workspaces/stack_permissions.png[]
 }
 ----
 
-If you get 204, all the users in the system see the stack. If you want to share a stack with a particular user, use the stack ID instead of `*` in the JSON.
+If you get 204, all the users in the system see the stack. If you want to share a stack with a particular user, get the user's ID and use it instead of `*` in the JSON.
 
 The administrator can remove pre-configured stacks and replace them with custom stacks. The adminstrator can also remove permissions from stacks.  You can create stacks either in the user dashboard or by using any REST client. You can use Swagger (`$CHE_HOST:$CHE_PORT/swagger`) to bundle with Che.
 
 [id="loading-stacks"]
 == Loading stacks
 
-Stacks are loaded from JSON files. You cannot modify the JSON file that is packaged with the workspace master.  You can perform stack management using REST APIs in the `User Dashboard`.
-You can change the default policy in the JSON file when the user first starts Che and the database is initialized.   To get stack updates, set `CHE_PREDEFINED_STACKS_RELOADONSTART=true` in `che.env`. When set to `true`, stacks.json is used to update Che database each time the Che server starts. This means Che gets all the stacks in `stacks.json` and uploads the stacks to a database.
- You can keep existing custom stacks and get stack updates from new Che releases. New and edited stacks are merged. 
+Stacks are loaded from a JSON file that is packaged into resources of a special component that is deployed with the workspace master. This JSON is not exposed to users.   You can perform stack management using REST APIs in the `User Dashboard`.
+
+Stacks are loaded from a JSON file only when the database is initialized when a user first starts Che. This is the default policy that can be changed.   To keep getting stack updates with the new Che stacks, set `CHE_PREDEFINED_STACKS_RELOADONSTART=true` in `che.env`. When set to `true`, stacks.json is used to update Che database each time the Che server starts. This means Che gets all the stacks in `stacks.json` and uploads the stacks to a database.You can keep existing custom stacks and get stack updates from new Che releases. New and edited stacks are merged. 
 
 Name conflicts are possible. For example, a name conflicts happens  if a new Che version provides a new stack with the name, My Cool Stack, and a stack with this name already exists in the database.  The stack name, My Cook Stack, is not saved to a database.
 
