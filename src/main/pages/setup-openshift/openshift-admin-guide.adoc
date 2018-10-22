@@ -274,7 +274,7 @@ The differences between a Recreate update and a Rolling update:
 
 |Che downtime |No Che downtime
 
-|No Che downtime |New deployment starts in parallel and traffic is hot-switched
+|  |New deployment starts in parallel and traffic is hot-switched
 
 |===
 
@@ -302,7 +302,7 @@ To perform a rolling update:
 [id="known-issues"]
 ==== Known issues
 
-* Workspaces that are started five to thirty seconds before the network traffic are switched to the new pod and may fallback to the stopped state. This happens because the bootstrappers use the Che server route URL for notifying the Che Server when bootstrapping is done. Since traffic is already switched to the new Che server, the old Che server cannot get the bootstrapper's report, and fails to start after the waiting timeout is reached. If the old Che server is killed before this timeout, the workspaces can be stuck in the `STARTING` state. The `terminationGracePeriodSeconds` parameter must define enough time to cover the workspace start timeout timeout, which is eight minutes plus some additional time. Typically, setting `terminationGracePeriodSeconds` to 540 sec is enough to cover all timeouts.
+* Workspaces may fallback to the stopped state when they are started five to thirty seconds before the network traffic are switched to the new pod. This happens when the bootstrappers use the Che server route URL for notifying the Che Server that bootstrapping is done. Since traffic is already switched to the new Che server, the old Che server cannot get the bootstrapper's report and fails to start after the waiting timeout is reached. If the old Che server is killed before this timeout, the workspaces can be stuck in the `STARTING` state. The `terminationGracePeriodSeconds` parameter must define enough time to cover the workspace start timeout, which is eight minutes plus some additional time. Typically, setting `terminationGracePeriodSeconds` to 540 sec is enough to cover all timeouts.
 * Users may experience problems with websocket reconnections or missed events published by WebSocket connection when a workspace is `STARTED` but dashboard displays that it is `STARTING`. In this case, you need to reload the page to restore connections and the actual workspace states.
 
 [id="update-with-db-migrations-or-api-incompatibility"]
