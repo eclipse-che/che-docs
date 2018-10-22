@@ -11,42 +11,42 @@ folder: workspace-admin
 [id="supported-recipe-formats"]
 == Supported Recipe Formats
 
-Depending on the infrastructure, Che supports the following recipes out of the box (default Che build):
+Depending on the infrastructure, Che supports the following default recipe formats:
 
 [cols=",,,,",options="header",]
 |===
-|*Infrastructure* |*Docker Image* |*Dockerfile* |*Composefile* |*Kubernetes yaml*
+|*Infrastructure* |*Docker-formatted container image* |*Dockerfile* |*Composefile* |*Kubernetes yaml*
 |*Docker* |Supported |Supported |Supported |Not supported
 |*OpenShift* |Supported |Not supported |Not supported |Supported
 |===
 
-[id="docker-image"]
-== Docker Image
+[id="docker-formatted-container"]
+== Docker-formatted container image requirements and limitations
 
-DockerImage recipe type implies that Che will pull an image from a Docker registry or use the one that is local and run it (in case of Docker) or create a pod that references this image in container spec. There are certain requirements and limitations for a Docker image to be a workspace machine:
+The Docker-formatted container image recipe pulls an image from a Docker registry or uses the local image.  The Docker-formatted container image recipe runs the image and creates a pod that references this image in the container specification. The following are Docker-formatted container image requirements and limitations for a workspace machine:
 
-1.  Non-terminating `CMD` or `ENTRYPOINT`. If you use your custom image, make sure it has something like `tail -f /dev/null` as one of its main processes.
-2.  No processes and operations with `sudo` in `CMD` (OpenShift only, see link:openshift-config.html#enable-ssh-and-sudo[Enable sudo])
-3.  OpenShift only - it is recommended to use https://github.com/eclipse/che-dockerfiles/tree/master/recipes/stack-base[Che base stacks] that are certified to run OK on OpenShift. You can also build your own image, but inherit from one of base stacks.
+1.  Use a non-terminating `CMD` or `ENTRYPOINT`. If you use a custom image, ensure that `tail -f /dev/null` is one of the main processes.
+2.  For OpenShift only, do not use any processes and operations with `sudo` in `CMD`. See link:openshift-config.html#enable-ssh-and-sudo[enable sudo].
+3.  For OpenShift only, use https://github.com/eclipse/che-dockerfiles/tree/master/recipes/stack-base[Che base stacks]. You can also build your own image, but inherit from one of the base stacks.
 
 [id="dockerfile"]
 == Dockerfile
 
-A Dockerfile is a set of instructions that Docker performs to build an image. After you provide a Dockerfile for your workspace machine, Che will initiate Docker build, and once successful, run the resulting image. There are certain limitations here as well:
+A Dockerfile is a set of instructions that Docker performs to build an image. After you provide a Dockerfile for your workspace machine, Che initiates a Docker build and runs the resulting image. The following are the limitations:
 
-1.  There’s no context in docker build in Che. It means that commands like `COPY` and `ADD` will fail.
-2.  Build of huge images may take much time, so, if you have a long Dockerfile, it’s better to build an image locally, push it to DockerHub and then use it as DockerImage recipe type (see above). Che has a reasonable timeout for a workspace to start which is 5 mins.
+1.  `COPY` and `ADD` fail because there is no context in docker build.
+2.  The build of large images take a huge amount of time.  If you have a long Dockerfile, build an image locally, push it to DockerHub and then use it as a DockerImage recipe type. The start timeout for a workspace is 5 mins.
 
 [id="composefile"]
 == Composefile
 
-When on Docker, you can run multi-container workspaces using Composefiles. However, there is some unsupported syntax:
+You can run multi-container workspaces using Compose files on Docker.  The unsupported syntax is: *Local "build.context" and "build.dockerfile"*.
 
-*Local "build.context" and "build.dockerfile"*
+Since Che workspaces can be distributed, you cannot have host-local build and Dockerfile contexts.  You can place these aspects so that they are remotely hosted in a git repository. Che will source the file from the remote system and then use it as its build context.
 
-Since Che workspaces can be distributed, you cannot have host-local build and Dockerfile contexts. You can, however, place these aspects so that they are remotely hosted in a git repository. Che will source the file from the remote system and then use it as its build context.
+You can run into a failure when the Dockerfile or build context requires you to `ADD` or `COPY` other files into the image.  The local Che workspace generator will not have access to those other remote files. To address this issue, you can pre-package the build context or Dockerfile into an image, push into a registry, and reference the already-built image in your compose file. 
 
-If the Dockerfile or build context requires other files to be `ADD` or `COPY` into the image that is created, then you could run into a failure, as the local Che workspace generator will not have access to those other remote files. To address this issue, you can pre-package the build context or Dockerfile into an image, push into a registry, and then reference the already-built image in your compose file. This is what we do for internal development at Codenvy.
+The following is an example of a context the will work and one that will not work:
 
 [source,yaml]
 ----
@@ -58,9 +58,9 @@ build:
   context: ./my/local/filesystem
 ----
 
-Using Private Repositories:
+=== Using private repositories
 
-To use private repositories in a remote build context, you need to setup ssh keys on your host machine and add remote repository hostname/IP to the list of known hosts.
+To use private repositories in a remote build context, you need to setup ssh keys on your host machine and add the remote repository hostname or IP to the list of known hosts.
 
 [source,yaml]
 ----
@@ -69,20 +69,20 @@ build:
   context: git@github.com:eclipse/che-dockerfiles.git#master:recipes/stack-base/ubuntu
 ----
 
-*Build Image*
+=== Using build images
 
-In the event that a Compose file includes both build instructions and a build image the build instructions are seen as overriding, so the build image is skipped if it exists.
+In the event that a Compose file includes both build instructions and a build image, the build instructions are seen as overriding and the build image is skipped if it exists.
 
-*Container Name*
+=== Using container names
+
+The `container_name` is skipped during execution. Instead, Che generates container names based on its own internal patterns. Naming conflicts need to be avoided because many developers could be running the same Compose file on the same Che workspace node at the same time.
 
 [source,yaml]
 ----
 container_name: my_container
 ----
 
-`container_name` is skipped during execution. Instead, Che generates container names based on its own internal patterns. Because many developers could be running the same Compose file on the same Che workspace node at the same time naming conflicts need to be avoided.
-
-*Volumes*
+=== Defining volumes
 
 To define volumes for workspace machines, see Volumes[volumes]. Volume instructions in a Composefile are not supported.
 
@@ -102,32 +102,32 @@ networks:
 
 Che does not yet currently support compose networks. We do, however, support the use of aliases through `links` command.
 
-*Hostname*
+=== Hostname
 
 Hostname is not supported and the machine’s name will be used for the hostname. User can use `links` aliases syntax to add additional hostname(s) to a machine.
 
-*Ports*
+=== Binding ports
 
 Binding ports to the host system is not supported. This is done to ensure that each container does not used already assigned host ports because many developers could be running the same compose file on the same Che server host at the same time. Users can add link:servers.html[servers] to machines though.
 
-*Privileged*
+=== Privileged
 
 To secure the underlying host system `privileged` compose command is not supported.
 
-The Che server can be configured to give all containers privileged access by setting the environment variable `pass:[CHE_PROPERTY_machine_docker_privilege__mode=true]`. However, this makes the host system vulnerable and gives all containers access to the host system.
+The Che server can be configured to give all containers privileged access by setting the environment variable `CHE_PROPERTY_machine_docker_privilege__mode=true`. However, this makes the host system vulnerable and gives all containers access to the host system.
 
 *Environment File* The `env_file` compose command is not supported. Environment variables can be manually entered in compose file or machine configuration. See: link:env-variables.html[Environment variables].
 
 [id="kubernetes-yaml"]
 == Kubernetes YAML
 
-When a workspace is being started, Che creates a https://kubernetes.io/docs/concepts/workloads/pods/pod/[Kubernetes pod]. A few gotchas:
+When a workspace is starting, Che creates a https://kubernetes.io/docs/concepts/workloads/pods/pod/[Kubernetes pod]. The following are limitatons and restrictions:
 
 1.  Che allows user to create pods and services only
 2.  Other object kinds will be ignored (PVC and route) or a workspace fails to start with an exception from Kubernetes.
 3.  Volumes are not supported both in container and pod definition. See: link:volumes.html[Volumes] for info about persisting ans sharing data between pods.
 
-Below is an example of a custom recipe with two containers and one pod, and a service that is bound to port 8081:
+The following is an example of a custom recipe with two containers and one pod, and a service that is bound to port 8081:
 
 [source,yaml]
 ----
