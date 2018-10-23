@@ -34,8 +34,8 @@ The Docker-formatted container image recipe pulls an image from a Docker registr
 
 A Dockerfile is a set of instructions that Docker performs to build an image. After you provide a Dockerfile for your workspace machine, Che initiates a Docker build and runs the resulting image. The following are the limitations:
 
-1.  `COPY` and `ADD` fail because there is no context in docker build.
-2.  The build of large images take a huge amount of time.  If you have a long Dockerfile, build an image locally, push it to DockerHub and then use it as a Docker-formatted container image recipe type. The start timeout for a workspace is 5 mins.
+1.  The `COPY` and `ADD` instructions fail because there is no context in docker build.
+2.  The build of large images takes a huge amount of time.  If you have a long Dockerfile, build an image locally, push it to DockerHub and then use it as a Docker-formatted container image recipe type. The start timeout for a workspace is five minutes.
 
 [id="composefile"]
 == Compose file
@@ -46,7 +46,7 @@ Since Che workspaces can be distributed, you cannot have host-local build and Do
 
 You can run into a failure when the Dockerfile or build context requires you to `ADD` or `COPY` other files into the image.  The local Che workspace generator will not have access to those other remote files. To address this issue, you can pre-package the build context or Dockerfile into an image, push into a registry, and reference the already-built image in your compose file. 
 
-The following is an example of a context the will work and one that will not work:
+The following is an example of a remote context that works:
 
 [source,yaml]
 ----
@@ -73,7 +73,7 @@ build:
 
 === Using build images
 
-In the event that a Compose file includes both build instructions and a build image, the build instructions are seen as overriding and the build image is skipped if it exists.
+When a Compose file includes both build instructions and a build image, the build instructions are seen as overriding and the build image is skipped if it exists.
 
 === Using container names
 
@@ -94,6 +94,8 @@ To define volumes for workspace machines, see Volumes[volumes]. Volume instructi
 
 Che does not support compose networks. The use of aliases is supported by the `links` command.
 
+The following is an example of networks:
+
 [source,yaml]
 ----
 ## Not supported
@@ -112,26 +114,26 @@ The hostname is not supported.  The machine’s name is used for the hostname. Y
 
 === Binding ports
 
-Binding ports to the host system is not supported. This is done to ensure that each container does not used already assigned host ports because many developers could be running the same compose file on the same Che server host at the same time. Users can add link:servers.html[servers] to machines though.
+Binding ports to the host system is not supported in order to ensure that each container does not use already assigned host ports.  Many developers could be running the same compose file on the same Che server host at the same time. You can add link:servers.html[servers] to the machines.
 
 === Using the privileged command
 
-The `privileged` compose command is not supported to secure the underlying host system.
+The `privileged` compose command does not support securing the underlying host system.
 
 The Che server can be configured to give all containers privileged access by setting the `CHE_PROPERTY_machine_docker_privilege__mode` variable to `true`. However, this makes the host system vulnerable and gives all containers access to the host system.
 
 === Using the environment file command
 
-The `env_file` compose command is not supported. Environment variables can be manually entered in compose file or machine configuration. See link:env-variables.html[Environment variables].
+The `env_file` compose command is not supported. Environment variables can be manually entered in compose file or machine configuration. See link:env-variables.html[environment variables] for more information.
 
 [id="kubernetes-yaml"]
 == Kubernetes YAML
 
 When a workspace is starting, Che creates a https://kubernetes.io/docs/concepts/workloads/pods/pod/[Kubernetes pod]. The following are limitatons and restrictions:
 
-1.  Che allows user to create pods and services only
-2.  Other object kinds will be ignored (PVC and route) or a workspace fails to start with an exception from Kubernetes.
-3.  Volumes are not supported both in container and pod definition. See: link:volumes.html[Volumes] for info about persisting ans sharing data between pods.
+1.  Che allows user to create pods and services only.
+2.  Other object kinds such as PVCs and routes will be ignored or a workspace fails to start with an exception from Kubernetes.
+3.  Volumes are not supported in container and pod definition. See link:volumes.html[Volumes] for information about persisting and sharing data between pods.
 
 The following is an example of a custom recipe with two containers and one pod, and a service that is bound to port 8081:
 
@@ -170,7 +172,9 @@ items:
         name: main1
 ----
 
-You can also have one pod and several containers in it. Che will treat those containers as workspace machines. You can also define machine names in annotations. `PodName/Container Name` is the default naming pattern for a machine. You can use annotations though:
+You can also have one pod and several containers in it. Che will treat those containers as workspace machines. You can also define machine names in annotations. `PodName/Container Name` is the default naming pattern for a machine.
+
+The following is an example of using annotations:
 
 [source,yaml]
 ----
