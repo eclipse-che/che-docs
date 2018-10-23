@@ -35,14 +35,14 @@ The Docker-formatted container image recipe pulls an image from a Docker registr
 A Dockerfile is a set of instructions that Docker performs to build an image. After you provide a Dockerfile for your workspace machine, Che initiates a Docker build and runs the resulting image. The following are the limitations:
 
 1.  `COPY` and `ADD` fail because there is no context in docker build.
-2.  The build of large images take a huge amount of time.  If you have a long Dockerfile, build an image locally, push it to DockerHub and then use it as a DockerImage recipe type. The start timeout for a workspace is 5 mins.
+2.  The build of large images take a huge amount of time.  If you have a long Dockerfile, build an image locally, push it to DockerHub and then use it as a Docker-formatted container image recipe type. The start timeout for a workspace is 5 mins.
 
 [id="composefile"]
-== Composefile
+== Compose file
 
 You can run multi-container workspaces using Compose files on Docker.  The unsupported syntax is: *Local "build.context" and "build.dockerfile"*.
 
-Since Che workspaces can be distributed, you cannot have host-local build and Dockerfile contexts.  You can place these aspects so that they are remotely hosted in a git repository. Che will source the file from the remote system and then use it as its build context.
+Since Che workspaces can be distributed, you cannot have host-local build and Dockerfile contexts.  You can place these aspects in a git repository where they are remotely hosted. Che can source the compose file from the remote system and use it as the build context.
 
 You can run into a failure when the Dockerfile or build context requires you to `ADD` or `COPY` other files into the image.  The local Che workspace generator will not have access to those other remote files. To address this issue, you can pre-package the build context or Dockerfile into an image, push into a registry, and reference the already-built image in your compose file. 
 
@@ -60,7 +60,9 @@ build:
 
 === Using private repositories
 
-To use private repositories in a remote build context, you need to setup ssh keys on your host machine and add the remote repository hostname or IP to the list of known hosts.
+To use private repositories in a remote build context, you need to setup the ssh keys on your host machine and add the remote repository hostname or IP to the list of known hosts.
+
+The following is an example of a yaml file using a private repository:
 
 [source,yaml]
 ----
@@ -77,6 +79,8 @@ In the event that a Compose file includes both build instructions and a build im
 
 The `container_name` is skipped during execution. Instead, Che generates container names based on its own internal patterns. Naming conflicts need to be avoided because many developers could be running the same Compose file on the same Che workspace node at the same time.
 
+The following is an example of a yaml file using a container name:
+
 [source,yaml]
 ----
 container_name: my_container
@@ -86,7 +90,9 @@ container_name: my_container
 
 To define volumes for workspace machines, see Volumes[volumes]. Volume instructions in a Composefile are not supported.
 
-*Networks*
+=== Using networks
+
+Che does not support compose networks. The use of aliases is supported by the `links` command.
 
 [source,yaml]
 ----
@@ -100,23 +106,23 @@ networks:
   driver: bridge
 ----
 
-Che does not yet currently support compose networks. We do, however, support the use of aliases through `links` command.
+=== Using hostname
 
-=== Hostname
-
-Hostname is not supported and the machine’s name will be used for the hostname. User can use `links` aliases syntax to add additional hostname(s) to a machine.
+The hostname is not supported.  The machine’s name is used for the hostname. You can use `links` aliases syntax to add additional hostname(s) to a machine.
 
 === Binding ports
 
 Binding ports to the host system is not supported. This is done to ensure that each container does not used already assigned host ports because many developers could be running the same compose file on the same Che server host at the same time. Users can add link:servers.html[servers] to machines though.
 
-=== Privileged
+=== Using the privileged command
 
-To secure the underlying host system `privileged` compose command is not supported.
+The `privileged` compose command is not supported to secure the underlying host system.
 
-The Che server can be configured to give all containers privileged access by setting the environment variable `CHE_PROPERTY_machine_docker_privilege__mode=true`. However, this makes the host system vulnerable and gives all containers access to the host system.
+The Che server can be configured to give all containers privileged access by setting the `CHE_PROPERTY_machine_docker_privilege__mode` variable to `true`. However, this makes the host system vulnerable and gives all containers access to the host system.
 
-*Environment File* The `env_file` compose command is not supported. Environment variables can be manually entered in compose file or machine configuration. See: link:env-variables.html[Environment variables].
+=== Using the environment file command
+
+The `env_file` compose command is not supported. Environment variables can be manually entered in compose file or machine configuration. See link:env-variables.html[Environment variables].
 
 [id="kubernetes-yaml"]
 == Kubernetes YAML
