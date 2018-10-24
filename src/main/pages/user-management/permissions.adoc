@@ -11,11 +11,9 @@ folder: user-management
 [id="overview"]
 == Overview
 
-Permissions are used to control user actions. Rather than providing a fixed set of roles we use a broader set of permissions that can be applied in any combination of objects to establish the security model you need.
+Permissions are used to control the actions of users and establish a security model. You can define _who_ is allowed to do _what_. You can control resources managed by Che and allow certain actions by assigning permissions to users.
 
-Che also provides a mechanisms and layers which allow to define "who" is allowed to do "what". Any user and administrator can control resources managed by Che and allow certain actions or behaviors for other users or groups. For example as workspace owner you can grant other users permission to see and/or use your workspace.
-
-Permissions can be applied to:
+Permissions can be applied to the following:
 
 * Workspace
 * Organization
@@ -23,25 +21,25 @@ Permissions can be applied to:
 * System
 
 [id="workspace-permissions"]
-== Workspace Permissions
+== Workspace permissions
 
-The user who creates a workspace is the _workspace owner_ and has all permissions by default. Workspace owners can invite other users into the workspace and control their permissions for the workspace.
+The user who creates a workspace is the workspace owner. The workspace owner has the following permissions by default:  read, use, run, configure, setPermissions, and delete. Workspace owners invite users into the workspace and control workspace permissions for each user.
 
-The following permissions are applicable to workspaces:
+The following permissions are associated with workspaces:
 
 [cols=",",options="header",]
 |===
 |Permission |Description
-|read |Allows reading workspace configuration.
+|read |Allows reading the workspace configuration.
 |use |Allows using a workspace and interacting with it.
 |run |Allows starting and stopping a workspace.
-|configure |Allows defining and changing workspace configuration.
-|setPermissions |Allows updating workspace permissions for other users.
+|configure |Allows defining and changing the workspace configuration.
+|setPermissions |Allows updating the workspace permissions for other users.
 |delete |Allows deleting the workspace.
 |===
 
 [id="organization-permissions"]
-== Organization Permissions
+== Organization permissions
 
 An organization is a named set of users.
 
@@ -50,51 +48,49 @@ The following permissions are applicable to organizations:
 [width="100%",cols="30%,70%",options="header",]
 |===
 |Permission |Description
-|update |Allows editing of organization settings and information.
+|update |Allows editing of the organization settings and information.
 |delete |Allows deleting an organization.
 |manageSuborganizations |Allows creating and managing sub-organizations.
-|manageResources |Allows redistribution of an organization’s resources and defining resource limits.
+|manageResources |Allows redistribution of an organization’s resources and defining the resource limits.
 |manageWorkspaces |Allows creating and managing all the organization’s workspaces.
-|setPermissions |Allows adding and removing users as well as updating their permissions.
+|setPermissions |Allows adding and removing users and updating their permissions.
 |===
 
 [id="system-permissions"]
-== System Permissions
+== System permissions
 
-System permissions control aspects that affect the whole Che installation.
+System permissions control aspects of the whole Che installation.
 
-The following permissions are applicable to organizations:
+The following permissions are applicable to the organization:
 
 [cols=",",options="header",]
 |===
 |Permission |Description
-|manageSystem |Allows control of the system, workspaces and organizations.
-|setPermissions |Allows updating of permissions for users on the system.
+|manageSystem |Allows control of the system, workspaces, and organizations.
+|setPermissions |Allows updating the permissions for users on the system.
 |manageUsers |Allows creating and managing users.
 |===
 
-[id="super-priviliged-mode"]
-== Super Priviliged Mode
+[id="super-privileged-mode"]
+== Super-privileged mode
 
-The permission "manageSystem" can be extended to provide a super privileged mode that allows advanced actions to be performed on any resources managed by the system. A user with "manageSystem" permission is able read and stop any workspaces. To perform other actions on workspaces and organizations, the user will need to assign himself the permissions needed.
+The permission "manageSystem" can be extended to provide a super-privileged mode. This allows the user to perform advanced actions on any resources managed by the system. You can read and stop any workspaces with the  "manageSystem" permission and assign permissions to users as needed.
 
-By default, this mode is disabled.
-
-It is possible to activate this option by configuring the `CHE_SYSTEM_SUPER_PRIVILEGED_MODE` in the `che.env` file.
+The super-privilege mode is disabled by default. You can change to super-privilege mode by configuring the `CHE_SYSTEM_SUPER_PRIVILEGED_MODE` variable in the `che.env` file.
 
 [id="stack-permissions"]
-== Stack Permissions
+== Stack permissions
 
-A stack is a runtime configuration for a workspace, see link:stacks.html[stack definition].
+A stack is a runtime configuration for a workspace.  See link:stacks.html[stack definition] for more information on stacks.
 
-The following permissions are applicable to a stack:
+The following permissions are applicable to stacks:
 
 [cols=",",options="header",]
 |===
 |Permission |Description
 |search |Allows searching of the stacks.
-|read |Allows reading of the stack’s configuration.
-|update |Allows updating of the stack’s configuration.
+|read |Allows reading of the stack configuration.
+|update |Allows updating of the stack configuration.
 |delete |Allows deleting of the stack.
 |setPermissions |Allows managing permissions for the stack.
 |===
@@ -102,83 +98,91 @@ The following permissions are applicable to a stack:
 [id="permissions-api"]
 == Permissions API
 
-All permissions can be managed by using the provided REST API. The APIs are documented using Swagger at `[{host}/swagger/#!/permissions]`.
+All permissions can be managed using the provided REST API. The APIs are documented using Swagger at `[{host}/swagger/#!/permissions]`.
 
 [id="list-permissions"]
-== List Permissions
+== Listing permissions
 
-List the permissions which can be applied to a specific resources: `GET /permissions`
+To list the permissions that apply to a specific resources, run this command:
+ `$ GET /permissions`
 
-Applicable `domain` values are the following:
+The `domain` values are:
 
 [cols="",options="header",]
 |===
 |Domain
-|system
-|organization
-|workspace
-|stack
+|`system`
+|`organization`
+|`workspace`
+|`stack`
 |===
 
-Note: `domain` is optional, in this case the API will return all possible permissions for all domains.
+[NOTE]
+====
+`domain` is optional.  In this case, the API returns all possible permissions for all domains.
+====
 
 [id="list-permissions-for-specific-user"]
-== List Permissions for Specific User
+== Listing permissions for a user
 
-List the permissions which are applied to a specific user: `GET /permissions/{domain}`
+To list the permissions that apply to a user, run this command:
+`$ GET /permissions/{domain}`
 
-Applicable `domain` values are the following:
+The `domain` values are:
 
 [cols="",options="header",]
 |===
 |Domain
-|system
-|organization
-|workspace
-|stack
+|`system`
+|`organization`
+|`workspace`
+|`stack`
 |===
 
-`instance` parameter corresponds to the ID of the resource you want to get the applied permissions.
 
 [id="list-permissions-for-all-users"]
-== List Permissions for All Users
+== Listing permissions for all users
 
-List the permissions which are applied to a specific user (you must have sufficient permissions to allow you to see this information): `GET /permissions/{domain}/all`
+[NOTE]
+====
+You must have sufficient permission to see this information.
+====
 
-Applicable `domain` values are the following:
+To list the permissions that apply to all users, run this command:
 
-[cols="",options="header",]
+`GET /permissions/{domain}/all`
+
+The `domain` values are:
+
+[cols="", options="header",]
 |===
 |Domain
-|system
-|organization
-|workspace
-|stack
+|`system`
+|`organization`
+|`workspace`
+|`stack`
 |===
 
-`instance` parameter corresponds to the ID of the resource you want to get the applied permissions for all users.
 
 [id="assign-permissions"]
-== Assign Permissions
+== Assigning permissions
 
-Assign permissions to a resource: `POST /permissions`
+To assign permissions to a resource, run this command:
 
-Applicable `domain` values are the following:
+`POST /permissions`
+
+The `domain` values are:
 
 [cols="",options="header",]
 |===
 |Domain
-|system
-|organization
-|workspace
-|stack
+|`system`
+|`organization`
+|`workspace`
+|`stack`
 |===
 
-`instance` parameter corresponds to the ID of the resource you want to get the applied permissions for all users.
-
-`userId` parameter corresponds to the ID of the user who want to grant certain permissions.
-
-Sample `body` to grant user `userID` permissions to a workspace `workspaceID`:
+The following is a message `body` that requests permissions for a user with a `userID` to a workspace with a `workspaceID`:
 
 [source,json]
 ----
@@ -196,9 +200,14 @@ Sample `body` to grant user `userID` permissions to a workspace `workspaceID`:
 }
 ----
 
+The `instanceId` parameter corresponds to the ID of the resource that retrieves the permission for all users. The `userId` parameter corresponds to the ID of the user that has been granted certain permissions.
+
 [id="sharing-permissions"]
-== Sharing Permissions
+== Sharing permissions
 
-A user with `setPermissions` privileges can share a workspace, i.e. grant other users `read, use, run, configure or setPermissions` privileges.
+A user with `setPermissions` privileges can share a workspace and grant `read`, `use`, `run`, `configure`, or `setPermissions` privileges to other users.
 
-Select a workspace in User Dashboard, navigate to `Share` tab and enter emails of users to share this workspace with (use comma or space as separator if there are multiple emails).
+To share workspace permissions:
+
+* Select a workspace in the user dashboard, navigate to the *Share* tab and enter emails of users. Use commas or space as separators:w
+ if there are multiple emails).
