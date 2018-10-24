@@ -15,12 +15,12 @@ Depending on the infrastructure, Che supports the following default recipe forma
 
 [cols=",,,,",options="header",]
 |===
-|*Infrastructure* |*Docker-formatted container image* |*Dockerfile* |*Composefile* |*Kubernetes yaml*
+|*Infrastructure* |*Docker-formatted container image* |*Dockerfile* |*Composefile* |*Kubernetes YAML*
 |*Docker* |Supported |Supported |Supported |Not supported
 |*OpenShift* |Supported |Not supported |Not supported |Supported
 |===
 
-[id="docker-formatted-container"]
+[id="docker-formatted-container-image-requirements-and-limitations"]
 == Docker-formatted container image requirements and limitations
 
 The Docker-formatted container image recipe pulls an image from a Docker registry or uses the local image.  The Docker-formatted container image recipe runs the image and creates a pod that references this image in the container specification. The following are Docker-formatted container image requirements and limitations for a workspace machine:
@@ -32,7 +32,7 @@ The Docker-formatted container image recipe pulls an image from a Docker registr
 
 * Use https://github.com/eclipse/che-dockerfiles/tree/master/recipes/stack-base[Che base stacks]. You can also build your own image, but inherit from one of the base stacks.
 
-[id="dockerfile"]
+[id="dockerfile-definition-and-limitations"]
 == Dockerfile definition and limitations
 
 A Dockerfile is a set of instructions that Docker performs to build an image. After you provide a Dockerfile for your workspace machine, Che initiates a Docker build and runs the resulting image. The following are the limitations:
@@ -40,7 +40,7 @@ A Dockerfile is a set of instructions that Docker performs to build an image. Af
 1.  The `COPY` and `ADD` instructions fail because there is no context in docker build.
 2.  The build of large images takes a huge amount of time.  If you have a long Dockerfile, build an image locally, push it to DockerHub and then use it as a Docker-formatted container image recipe type. The start timeout for a workspace is five minutes.
 
-[id="compose-file"]
+[id="running-multi-container-workspaces-using-compose-files"]
 == Running multi-container workspaces using Compose files
 
 You can run multi-container workspaces using Compose files on Docker.  The unsupported syntax is: *Local "build.context" and "build.dockerfile"*.
@@ -69,6 +69,7 @@ build:
   context: ./my/local/filesystem
 ----
 
+[id="using-private-repositories"]
 === Using private repositories
 
 To use private repositories in a remote build context:
@@ -77,7 +78,7 @@ To use private repositories in a remote build context:
 
 . Add the remote repository hostname or IP to the list of known hosts.
 
-The following is an example of a yaml file using a private repository:
+The following is an example of a YAML file using a private repository:
 
 [source,yaml]
 ----
@@ -94,7 +95,7 @@ When a Compose file includes both build instructions and a build image, the buil
 
 The `container_name` is skipped during execution. Instead, Che generates container names based on its own internal patterns. Naming conflicts need to be avoided because many developers could be running the same Compose file on the same Che workspace node at the same time.
 
-The following is an example of a yaml file using a container name:
+The following is an example of a YAML file using a container name:
 
 [source,yaml]
 ----
@@ -109,7 +110,7 @@ To define volumes for workspace machines, see links:volumes.html[volumes]. Volum
 
 Che does not support compose networks. The use of aliases is supported by the `links` command.
 
-The following is an example of a yaml file using networks:
+The following is an example of a YAML file using networks:
 
 [source,yaml]
 ----
@@ -131,7 +132,7 @@ The hostname is not supported.  The machine’s name is used for the hostname. Y
 
 Binding ports to the host system is not supported in order to ensure that each container does not use already assigned host ports.  Many developers could be running the same compose file on the same Che server host at the same time. You can add link:servers.html[servers] to the machines.
 
-*Privileged*
+*Configuring privileged access*
 
 The `privileged` compose command does not support securing the underlying host system.
 
@@ -139,7 +140,10 @@ To configure the Che server to give all containers privileged access:
 
 .  Set the `CHE_PROPERTY_machine_docker_privilege__mode` variable to `true`.
 
-This makes the host system vulnerable and gives all containers access to the host system.
+[IMPORTANT]
+====
+Setting the `CHE_PROPERTY_machine_docker_privilege_mode` variable to `true` makes the host system vulnerable and gives all containers access to the host system.
+====
 
 *Environment file*
 
