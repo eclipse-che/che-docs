@@ -1,5 +1,5 @@
 ---
-title: "Single-User&#58 Deploy to Kubernetes"
+title: "Single-User&#58 Deployment to Kubernetes"
 keywords: kubernetes, installation, pvc, deployment
 tags: [installation, kubernetes]
 sidebar: user_sidebar
@@ -8,24 +8,21 @@ folder: setup-kubernetes
 ---
 
 [id="supported-kuberentes-flavors-and-versions"]
-== Supported Kuberentes Flavors and Versions
+== Supported Kuberentes flavors and versions
 
-Tested only on MiniKube v0.25 with vm providers VirtualBox and kvm2.
+The single-user deployment to Kubernetes is tested only on MiniKube v0.25 with the *VirtualBox* and *kvm2* VM providers.
 
-[id="pre-reqs"]
-== Pre-Reqs
+*Prerequisites*
 
 * `bash`
 * `Kubernetes` installation with:
-** enabled DNS discovery;
-** configured ingress controller. Note: you can start it on MiniKube with `minikube addons enable ingress`.
+** Enabled DNS discovery.
+** Configured Ingress controller. You can start the Ingress controller on MiniKube using the `minikube addons enable ingress` command.
 
 [id="minikube"]
-== MiniKube
+== Deploying MiniKube with YAML file
 
-*Deploying with yaml file:*
-
-You may download yaml file and create Che Server Kubernetes objects. The file contains default settings and you should set at least actual minikube ip, other configuration parameters cab be default.
+You can download the YAML file that contains the default settings and create the Che Server Kubernetes objects. In the YAML file, you must set the actual MiniKube IP; you can leave the other configuration parameters as is.
 
 ----
 CHE_KUBERNETES_YAML_URL=https://raw.githubusercontent.com/eclipse/che/master/deploy/kubernetes/kubectl/che-kubernetes.yaml
@@ -34,4 +31,4 @@ kubectl create namespace che
 kubectl --namespace=che apply -f che-kubernetes.yaml
 ----
 
-Che deployment is started and when Che pod will be running it should be available by the following URL `$(minikube ip).nip.io`
+The Che deployment starts and the running Che pod is available at the following URL: `$(minikube ip).nip.io`.
