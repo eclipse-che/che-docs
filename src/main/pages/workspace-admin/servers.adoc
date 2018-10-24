@@ -11,7 +11,9 @@ folder: workspace-admin
 [id="what-are-servers"]
 == What Are Servers
 
-A server defines protocol port of a process that runs in a machine. It also has a name, path, attributes. Path defines base path of service that is exposed via server. Attributes are optional and may be used to tune server or identify it if this is a special purpose server, for example a link:TODO: language-servers[Language Server]. In simple words, if you need to access a process in your workspace machine, you need to add a server. You can do it in User Dashboard or by editing workspace machine config:
+A server defines the protocol part of a process that runs in a machine. It has a name, path, and attributes. The path defines the base path of the service that is exposed by the server. Attributes are optional and can be used to tune the server or for identification.  You can add a server when you need to access a process in your workspace machine. You add a server in the `User Dashboard` or by editing the workspace machine configuration YAML file.
+
+The following is an example of a YAML file:
 
 [source,json]
 ----
@@ -30,18 +32,18 @@ If your workspace is running, saving a new server will restart a workspace.
 [id="preview-urls"]
 == Preview URLs
 
-Just adding a server with port 3000 does not mean you can use this port to access a server. Each server is assigned with a URL in the runtime, i.e. when a workspace is running. In case of Docker, port 3000 will be published to a random port from the ephemeral port range (32768-65535). In case of OpenShift, a route bound to a service is created. Routes are *persistent URLS*, while server URLS provided in a Docker implementation of Che *change* every time your start a workspace.
+Adding a server with port 3000, does not mean you can use this port to access a server. Each server is assigned a URL when a workspace is running. In the case of Docker, port 3000 is published to a random port from the ephemeral port range (32768-65535). In the case of OpenShift, a route bound to a service is created. Routes are *persistent URLS*, while server URLS provided in the Docker implementation of Che change every time you start a workspace.
 
 [id="what-is-my-preview"]
 == What Is My Preview?
 
-Say, you have added a server with port 3000 and started a workspace. There are multiple ways to get its preview URL:
+In this example, you added a server with port 3000 and started a workspace. The following are ways to get the server's preview URL:
 
 * Using a link:commands-ide-macro.html[macro] in a command
 * In the IDE, `+` icon in the bottom panel under the editor
 
 image::workspaces/servers.png[]
-* In User Dashboard, *Workspaces > YourWorkspace > Servers* tab
+* In the `User Dashboard`, *Workspaces > YourWorkspace > Servers* tab
 
 You will also see URLS of some of the internal servers - agents that server launches when the workspace container/pod is up.
 
