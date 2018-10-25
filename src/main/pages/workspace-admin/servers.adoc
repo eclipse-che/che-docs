@@ -41,8 +41,8 @@ If your workspace is running, saving a new server restarts the workspace.
 
 Adding the server with port 3000, does not mean you can use this port to access a server. Each server is assigned a URL when a workspace is running. In the case of Docker, port 3000 is published to a random port from the ephemeral port range from 32768 to 65535. In the case of OpenShift, a route bound to a service is created. Routes are persistent URLS, while the server URLS provided in the Docker implementation of Che change every time you start a workspace.
 
-[id="what-is-my-preview"]
-== What is my preview?
+[id="getting-preview-urls"]
+== Getting preview URLs
 
 In this example, you added a server with port 3000 and started a workspace. The following are ways to get the server's preview URL:
 
@@ -52,10 +52,10 @@ In this example, you added a server with port 3000 and started a workspace. The 
 image::workspaces/servers.png[]
 * In the `User Dashboard`, Click *Workspaces > YourWorkspace > Servers* 
 
-You also see URLS of some of the internal servers - agents that server launches when the workspace container/pod is up.
+You can also see internal servers URLs.  Internal servers launch when the workspace container or pod is available.
 
-[id="internal-servers"]
-== Internal servers
+[id="exposing-internal-servers"]
+== Exposing internal servers
 
 If the port must be accessed internally within the workspace, expose it internally, but do not make it publicly accessible. For example, a database server is exposed only for the web application and because of security concerns it should not be accessible publicly. The database server is exposed as internal.
 
@@ -74,12 +74,12 @@ To expose a server as internal, add the corresponding attribute into the server 
 
 The application is able to fetch the database URL from the workspace runtime and access the database.  The database URL is not accessible publicly from the browser.
 
-[id="secure-servers"]
-== Secure servers
+[id="exposing-secure-servers"]
+== Exposing secure servers
 
 Secure servers are exposed publicly but access is restricted only for users who have permissions to the workspace. The authentication proxy is set up as the exposed server and the machine token is required to request it. 
 
-To expose a server as secure, add the corresponding attributes into the server configuration YAML file. :
+To expose a server as secure, add the corresponding attributes into the server configuration YAML file:
 
 [source,json]
 ----
@@ -94,11 +94,11 @@ To expose a server as secure, add the corresponding attributes into the server c
 }
 ----
 
-Where:
+The following describes the attributes:
 
-* secure - is an attribute that indicates whether server should be exposed as secure one. `False` is the default value.
-* unsecuredPaths - is an attribute for configuring secure servers and it contains an comma-separated list of URI-s which are considered as non-secure on the given server and can be accessible without token. It may be needed when server provide any public APIs, like API endpoint for health checks;
-* cookiesAuthEnabled - is an attribute that indicates whether token should be searched in cookies. By default it is disabled. And server developer may enable it if he is sure that his servers can’t be attacked by CSRF or has special protection from it.
+* `secure` - indicates whether the server is exposed as secure. The default value is `False`.
+* `unsecuredPaths` - configures the secure servers. It contains a comma-separated list of URLs which are considered non-secure on the given server and can be accessible without the token. It may be needed when the server provides any public APIs. The API endpoint for health checks is an example.
+* `cookiesAuthEnabled` - indicates whether the token is searched in the cookies. By default it is disabled. You can enable this attribute if you are sure that servers cannot be attacked by Cross-Site Request Forgery (CSRF) or has special protection from it.
 
 [NOTE]
 ====
