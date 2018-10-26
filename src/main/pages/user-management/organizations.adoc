@@ -13,15 +13,15 @@ folder: user-management
 
 Organizations allow administrators to group Eclipse Che users and allocate resources. The system administrator controls and allocates resources and permissions within the administrator dashboard.
 
-[id="roles"]
-== Roles
+[id="roles-in-an-organization"]
+== Roles in an organization
 
-The following are roles in an organization:
+A user can have the following roles in an organization:
 
-* *Administrator*
-    Edits the settings and manages the organization, sub-organization, members, and resources.  
-* *Member*
+* *Member*:
     Uses, creates, and manages workspaces.
+* *Administrator*:
+    Manages the organization, members, resources, and sub-organization, and can edit settings.
 * *System Administrator*: 
     Creates root organizations, manages resources, members and sub-organizations. System administrators have more permissions than the administrator and member. 
 
@@ -68,7 +68,7 @@ A workspace is created inside of an organization and uses the resources of the o
 [id="setting-email-notifications"]
 == Setting email notifications
 
-When a user joins or leaves an organization, Che server sends a notification. You either configure SMTP in `che.env` or for OpenShift you add environment variables to the deployment to send a notification.  Che does not have any built-in SMTP server by default. You may use any mail server.
+The Che server sends a notification when a user joins or leaves an organization. To send a notification, you can configure the SMTP server in the `che.env` file.  For OpenShift, you can add environment variables to the deployment to send a notification.  Che does not have a built-in SMTP server by default. You may use any mail server.
 
 For example, to send a notification email to your Gmail account, set the following environment variables:
 
@@ -136,9 +136,9 @@ Members of an organization cannot leave an organization or sub-organization. To 
 
 [IMPORTANT]
 ====
+* Only system administrators or administrators of the organization can delete an organization or sub-organization.
 * This action cannot be reverted, and all workspaces created under the organization will be deleted.
 * All members of the organization will receive an email notification to inform them about the deletion of the organization.
-* Only system administrators or administrators of the organization can delete an organization or sub-organization.
 ====
 
 To delete an organization or a sub-organization:
@@ -148,7 +148,7 @@ To delete an organization or a sub-organization:
 [id="allocating-resources-for-organizations"]
 == Allocating resources for organizations
 
-Workspaces use the resources of the organization that is allocated by the system administrator. The resources for sub-organizations are taken from the parent organization. Administrators control which resources of the parent organization are available to the sub-organization.
+Workspaces use the resources of the organization that are allocated by the system administrator. The resources for sub-organizations are taken from the parent organization. Administrators control which resources of the parent organization are available to the sub-organization.
 
 [id="managing-limits"]
 == Managing limits
