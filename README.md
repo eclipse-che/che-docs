@@ -1,14 +1,16 @@
-## Eclipse Che Docs
+## Eclipse Che docs
 
-Che docs use Jekyll to convert `.adoc` files into HTML pages. Docs are published at [https://www.eclipse.org/che/docs](https://www.eclipse.org/che/docs/). Updates are synced with a release cycle.
+Che docs use Jekyll to convert `.adoc` (AsciiDoc) files into HTML pages. Docs are published at [https://www.eclipse.org/che/docs](https://www.eclipse.org/che/docs/). Updates are synced with a release cycle.
 
-## Build and Preview
+## Build and preview
 
 There is a `run.sh` script in the root of the repo that runs a Docker image, mounts sources, and starts Jekyll. When running locally, docs are available at `localhost:4000`. Jekyll watches for changes in `.adoc` files and re-generates resources, so you can preview changes live.
 
+## Adding a new page
+
 ### Building natively
 
-If you prefer to not use a Docker image, or you're already in a container and can't nest, you instead need to [install these jekyll dependencies](https://jekyllrb.com/docs/installation/):
+To build without using Docker, [install required Jekyll dependencies](https://jekyllrb.com/docs/installation/):
 
 ```
 sudo yum install maven ruby ruby-devel @development-tools
@@ -47,7 +49,11 @@ The search script uses page titles, summary, and keywords to search for relevant
 
 If you need to add a tag, take a look at available tags in `src/main/pages/tags` folder. Tags should be also registered in `src/main/_data/tags.yml` - so both a tag in `tags.yml` and a respective tag page should be created.
 
-## Links
+## Formatting and AsciiDoc syntax
+
+See [AsciiDoc Writer's Guide](https://asciidoctor.org/docs/asciidoc-writers-guide/) for syntax and general help with AsciiDoc.
+
+### Links
 
 To post a link to an internal page, use the following syntax:
 
@@ -69,7 +75,7 @@ Links to external pages:
 This is a link:https://github.com[link text]
 ```
 
-## Images
+### Images
 
 Images are located in the `src/main/che/docs/images` directory. To publish an image, use the following syntax:
 
@@ -89,11 +95,19 @@ image::devel/js_flow.png[Alt text]
 
 Please, do not post too many images unless it is absolutely necessary. Animated `.gif` images are preferred, especially when explaining how to use complex UI features.
 
-## How to Get Support
+### Special characters
+
+To prevent special characters from being interpreted as formatting mark-up, use pass-through macros. For example, to escape underscores, asterisks, or backticks, use:
+
+```
+pass:[VARIABLE_NAME__WITH__UNDERSCORES]
+```
+
+## How to get support
 
 * **GitHub issue:** open an issue in this repository
 * **Public Chat:** Join the public [eclipse-che](https://mattermost.eclipse.org/eclipse/channels/eclipse-che) Mattermost channel to discuss with community and contributors
 
-## How to Contribute
+## How to contribute
 
 We love pull requests and appreciate contributions that make docs more helpful for users. See: [Contribution guide](https://github.com/eclipse/che#contributing).
