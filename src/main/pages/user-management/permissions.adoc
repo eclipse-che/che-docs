@@ -74,13 +74,41 @@ The following permissions are applicable to organizations:
 |===
 
 [id="super-priviliged-mode"]
-== Super Priviliged Mode
+== manageSystem permission
 
-The permission "manageSystem" can be extended to provide a super privileged mode that allows advanced actions to be performed on any resources managed by the system. A user with "manageSystem" permission is able read and stop any workspaces. To perform other actions on workspaces and organizations, the user will need to assign himself the permissions needed.
+User with `manageSystem` are able to perform various admin operations.
+On Start, Che will grant this permission to the admin user, with default name `admin`.
+This can be reconfigured with defining `CHE_SYSTEM_ADMIN__NAME` property, that will point to the desired name of admin user.
+Permission will be added to user as soon as he is persisted in Che Database (during his first login).
 
-By default, this mode is disabled.
+Users with `manageSystem` persmission will have access to the following services:
 
-It is possible to activate this option by configuring the `CHE_SYSTEM_SUPER_PRIVILEGED_MODE` in the `che.env` file.
+[cols=",,",options="header",]
+|===
+|Path | HTTP Method | Description
+|/resource/free/{accountId} |DELETE | Remove free resource limit for given account
+|/installer |PUT |Stop workspace
+|/logger/{name}|POST | Add new logger
+|/resource/{accountId}/details |GET | Get detailed information about resources for given account
+|/system/stop |POST | Shutdown all system services, prepare Che to stop
+|/stacks |All methods | All Stack service methods
+|===
+
+A Super Privileged mode can be enabled to extend with additional services.
+To enable it, configure environment variable `CHE_SYSTEM_SUPER_PRIVILEGED_MODE=true` in the `che.env` file.
+
+List of services that will be enabled for users with `manageSystems` permissions and Super Priviliged Mode on:
+[cols=",,",options="header",]
+|===
+|Path | HTTP Method | Description
+|/workspace/namespace/{namespace:.*} |GET |Retrieve all workspaces by given namespace.
+|/workspace/{id} |DELETE |Stop workspace
+|/workspace/{key:.*} |GET | Get workspace ky key
+|/organization/resource/{suborganizationId}/cap |GET |Get resource cap for given organization
+|/organization/resource/{suborganizationId}/cap |POST |Set resource cap for given organization
+|/organization/{parent}/organizations |GET | Get
+|/organization |GET | Get user's organizations
+|===
 
 [id="stack-permissions"]
 == Stack Permissions
