@@ -12,7 +12,7 @@ folder: workspace-admin
 [id="stack-overview"]
 == Stack overview
 
-A stack is a link:workspace-data-model.html[workspace configuration] template. Stacks are used to create workspaces in the `User Dashboard`. The stack includes meta-information such as scope, tags, components, description, name, and identification.  You can filter stacks by machine type and scope. The type is either single machine or multi machine.  You can also search for a stack by keyword. Stacks are displayed in the `User Dashboard` on the "Create a workspace" page.
+A stack is a link:workspace-data-model.html[workspace configuration] template. Stacks are used to create workspaces in the *User Dashboard*. The stack includes meta-information such as scope, tags, components, description, name, and identification.  You can filter stacks by machine type and scope. The type is either single machine or multi machine.  You can also search for a stack by keyword. Stacks are displayed in the *User Dashboard* on the *Create a workspace* page.
 
 See the link:creating-starting-workspaces.html[Creating and starting workspaces user guide] for more information.
 
@@ -25,9 +25,9 @@ Each directory has `${technology}-stack.json` and `${technology}-samples.json`.
 
 To import a stack, follow these steps:
 
-.  Copy the content of the JSON.
+.  Copy the content of the JSON files.
 .  Go to `${CHE_HOST}/swagger/#!/stack/createStack`.
-.  Paste the JSON content to request body field.
+.  Paste the content of the JSON file to the *body* field.
 .  Click the *Try it out* button.
 
 You can choose a different name or ID when there is a conflict with the stack ID or name.
@@ -39,7 +39,7 @@ To import sample applications, move `*-stacks.json` files to:
 * `${LOCAL_STORAGE}/instance/data/templates` for Docker infrastructure.
 * `${mount-path-of-che-data-volume}/templates` for OpenShift and Kubernetes infrastructure. You need administrator privileges to get the host path and to access the host directory. Also, the new JSON files have the same permissions as the original `samples.json` file.
 
-You can find Docker files for all stacks in the https://github.com/eclipse/che-dockerfiles[Che Dockerfiles repository].
+You can find Dockerfiles for all stacks in the https://github.com/eclipse/che-dockerfiles[Che Dockerfiles repository].
 
 [id="sharing-stacks-and-system-stacks"]
 == Sharing stacks and system stacks
@@ -56,7 +56,7 @@ To share stacks with users:
 
 image::workspaces/stack_permissions.png[]
 
-* Use the following JSON and replace `${STACK_ID}` with an actual ID:
+* Use the following JSON file and replace `${STACK_ID}` with an actual ID:
 
 [source,json]
 ----
@@ -71,16 +71,16 @@ image::workspaces/stack_permissions.png[]
 }
 ----
 
-If you get 204, all the users in the system see the stack. If you want to share a stack with a particular user, get the user's ID and use it instead of `*` in the JSON.
+If you get 204, all the users in the system see the stack. To share a stack with a particular user, get the user's ID and use it instead of `*` in the JSON file.
 
 The administrator can remove pre-configured stacks and replace them with custom stacks. The administrator can also remove permissions from stacks.  You can create stacks either in the user dashboard or by using any REST client. You can use Swagger (`$CHE_HOST:$CHE_PORT/swagger`) to bundle with Che.
 
 [id="loading-stacks"]
 == Loading stacks
 
-Stacks are loaded from a JSON file that is packaged into resources of a special component that is deployed with the workspace master. This JSON is not exposed to users.   You can perform stack management using REST APIs in the `User Dashboard`.
+Stacks are loaded from a JSON file that is packaged into resources of a special component that is deployed with the workspace master. This JSON file is not exposed to users.   You can perform stack management using REST APIs in the *User Dashboard*.
 
 When a user first starts Che, stacks are loaded from a JSON file only when the database is initialized. This is the default policy that can be changed.   To keep getting stack updates with the new Che stacks, set `CHE_PREDEFINED_STACKS_RELOADONSTART=true` in `che.env`. When set to `true`, `stacks.json` is used to update Che database each time the Che server starts. This means Che gets all the stacks in `stacks.json` and uploads the stacks to a database. This allows you to keep existing custom stacks and get stack updates from new Che releases. New and edited stacks that have fixes in the stack definition are merged in with the other stacks. 
 
-Name conflicts are possible. For example, a name conflicts happens if a new Che version provides a new stack with the name "My Cool Stack" and a stack with this name already exists in the database.  The new stack with the name "My Cool Stack" is not saved to the database because of the name conflict.
+Name conflicts are possible. A name conflict happens when a new Che version provides a stack with a name that already exists in the database. 
 
