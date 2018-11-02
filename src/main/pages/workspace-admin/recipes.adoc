@@ -25,7 +25,7 @@ Depending on the infrastructure, Che supports the following default recipe forma
 
 The Docker-formatted container image recipe pulls an image from a Docker registry or uses the local image.  The recipe then runs the image and creates a pod that references this image in the container specification. The following are Docker-formatted container image requirements and limitations for a workspace machine:
 
-1.  Use a non-terminating `CMD` or `ENTRYPOINT`. If you use a custom image, ensure that `tail -f /dev/null` is one of the main processes.
+1.  Use a non-terminating `CMD` or `ENTRYPOINT`.  You can use `tail -f /dev/null` as one of the main processes if you are using a custom image.
 2.  For OpenShift only: 
  
 * Do not use any processes and operations with `sudo` in `CMD`. See link:openshift-config.html#enable-ssh-and-sudo[Enable SSH and `sudo`] for more information.
@@ -93,7 +93,7 @@ build:
 [id="Configuring privileged access"]
 === Configuring privileged access
 
-The `privileged` compose command does not support securing the underlying host system.
+The `privileged` Compose option does not support securing the underlying host system.
 
 To configure the Che server to give all containers privileged access, take these steps:
 
@@ -153,7 +153,7 @@ Binding ports to the host system is not supported.  You must ensure that each co
 
 *Environment file*
 
-The `env_file` compose command is not supported. Environment variables can be manually entered in the Compose file or machine configuration. See link:env-variables.html[Environment variables] for more information.
+The `env_file` Compose option is not supported. Environment variables can be manually entered in the Compose file or machine configuration. See link:env-variables.html[Environment variables] for more information.
 
 [id="kubernetes-yaml-limitations-and-restrictions"]
 == Kubernetes YAML limitations and restrictions
