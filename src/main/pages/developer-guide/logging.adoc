@@ -87,3 +87,24 @@ for example
 ----
 CHE_LOGGER_CONFIG=org.eclipse.che=DEBUG,org.eclipse.che.api.installer.server.impl.LocalInstallerRegistry=OFF 
 ----
+
+Che Server also has an option to view and edit logger configuration during runtime through following REST services:
+
+[cols=",,",options="header",]
+|===
+|GET | logger/ - | get list of all loggers
+|GET | logger/{name} | get info about particular logger
+|POST | logger/{name} | update logger configuration
+|PUT | logger/{name} | create logger configuration
+|===
+
+E.g., sending PUT request with following configuration
+
+```
+{
+  "name" : "org.eclipse.che.api.workspace.activity"
+  "level" : "DEBUG"
+}
+```
+
+will add logger level configuration that will set DEBUG level for loggers in `org.eclipse.che.api.workspace.activity` package

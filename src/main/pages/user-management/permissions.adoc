@@ -84,9 +84,17 @@ Users with `manageSystem` persmission will have access to the following services
 [cols=",,",options="header",]
 |===
 |Path | HTTP Method | Description
+|/resource/free/ |GET | Get free resource limits
+|/resource/free/{accountId} |GET | Get free resource limits for given account
+|/resource/free/{accountId} |POST | Edit free resource limit for given account
 |/resource/free/{accountId} |DELETE | Remove free resource limit for given account
-|/installer |PUT | Update installer
-|/logger/{name}|POST | Add logger configuration for Che Server
+|/installer/ |POST | Add installer to the registry
+|/installer/{key} |PUT | Update installer in the registry
+|/installer/{key} |DELETE | Remove installer from the registry
+|/logger/ |GET | Get logging configurations in Che Server
+|/logger/{name}|GET | Get configurations of logger by it's name in Che Server
+|/logger/{name}|PUT | Create Logging in Che Server
+|/logger/{name}|POST | Edit Logging in Che Server
 |/resource/{accountId}/details |GET | Get detailed information about resources for given account
 |/system/stop |POST | Shutdown all system services, prepare Che to stop
 |/stacks |All methods | All Stack service methods
@@ -99,11 +107,11 @@ List of services that will be enabled for users with `manageSystems` permissions
 [cols=",,",options="header",]
 |===
 |Path | HTTP Method | Description
-|/workspace/namespace/{namespace:.*} |GET |Retrieve all workspaces by given namespace.
+|/workspace/namespace/{namespace:.*} |GET |Get all workspaces for given namespace.
 |/workspace/{id} |DELETE |Stop workspace
-|/workspace/{key:.*} |GET | Get workspace ky key
-|/organization/resource/{suborganizationId}/cap |GET |Get resource cap for given organization
-|/organization/resource/{suborganizationId}/cap |POST |Set resource cap for given organization
+|/workspace/{key:.*} |GET | Get workspace by key
+|/organization/resource/{suborganizationId}/cap |GET |Get resource cap for given organization !!
+|/organization/resource/{suborganizationId}/cap |POST |Set resource cap for given organization !!
 |/organization/{parent}/organizations |GET | Get child organizations
 |/organization |GET | Get user's organizations
 |===
