@@ -9,8 +9,30 @@ folder: developer-guide
 
 == Enabling debugging on Workspace Agent
 
-To enable debugging on Che Workspace Agent, edit its Workspace environment settings:
-
+. Configure your Workspace Agent Tomcat JPDA launching parameters with following Workspace environment variables:
++
 `WSAGENT_DEBUG`:: Set to `true` to enable JPDA mode for Workspace Agent Tomcat. Default is `false`.
 `WSAGENT_DEBUG_PORT`:: Configure the JPDA port. Default is `4403`.
 `WSAGENT_DEBUG_SUSPEND`:: Set to `y` to enable JPDA suspend mode. Default if `n`.
++
+image::wsagent/wsagent-debug-env.png[]
+
+. Define a Workspace link:servers.html[Server] for your JPDA port.
++
+image::wsagent/wsagent-debug-server.png[]
+
+. Get host and port for connecting to Workspace Agent Tomcat. This depends on the infrastructure:
++
+** *Docker:* Use a port of your host that is mapped to a container port. It can be found in Workspace Servers of running workspace:
++
+image::wsagent/wsagent-debug-docker.png[]
++
+** *Local OKD:* Use the following command to retrieve a cluster IP to use as a host (replace `wsId` with the ID of your workspace):
++
+----
+$ oc get service -l=che.workspace_id=wsId -o=jsonpath='{.items[0].spec.clusterIP}'`
+----
++
+Use the same port as was defined in Workspace Server for JPDA.
++
+** *Remote OKD:* This option is currently not supported.
