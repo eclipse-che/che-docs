@@ -38,12 +38,12 @@ The Docker-formatted container image recipe pulls an image from a Docker registr
 A Dockerfile is a set of instructions that Docker performs to build an image. After you provide a Dockerfile for your workspace machine, Che initiates a Docker build and runs the resulting image. The following are the limitations:
 
 1.  The `COPY` and `ADD` instructions fail because there is no context in `docker build`.
-2.  The build of large images takes a huge amount of time.  If you have a long Dockerfile, build an image locally, push it to DockerHub and then use it as a Docker-formatted container image recipe type. The start timeout for a workspace is five minutes.
+2.  Large images can take a long time to build.  If you have a long Dockerfile, it is recommended to build that image locally, push it to DockerHub and then use the pushed image as a Docker-formatted container image recipe type. The start timeout for a workspace is five minutes.
 
 [id="running-multi-container-workspaces-using-compose-files"]
 == Running multi-container workspaces using Compose files
 
-You can run multi-container workspaces using Compose files on Docker.  The unsupported syntax is: *Local "build.context" and "build.dockerfile"*.
+You can run multi-container workspaces using Compose files on Docker.  There is some unsupported syntax: `Local "build.context" and "build.dockerfile"`.
 
 Because Che workspaces can be distributed, you cannot have host-local build and Dockerfile contexts.  You can remotely host these aspects in a Git repository. Che sources the Compose file from the remote system and uses it as the build context.
 
@@ -149,7 +149,7 @@ The hostname is not supported.  The machine’s name is used for the hostname. Y
 
 *Binding ports*
 
-Binding ports to the host system is not supported.  You must ensure that each container does not use already assigned host ports.  Many developers can be running the same Compose file on the same Che server host at the same time. You can add link:servers.html[servers] to the machines.
+Binding ports to the host system is not supported to ensure that each container does not use already assigned host ports. You can add link:servers.html[servers] to the machines.
 
 *Environment file*
 
@@ -160,8 +160,8 @@ The `env_file` Compose option is not supported. Environment variables can be man
 
 When a workspace is starting, Che creates a https://kubernetes.io/docs/concepts/workloads/pods/pod/[Kubernetes pod]. The following are limitatons and restrictions:
 
-1.  Che allows user to create only pods and services.
-2.  If you have an exception from Kubernetes, other object kinds such as PVCs and routes are ignored or a workspace fails to starts.
+1.  Che allows users to create only pods and services.
+2.  Other object kinds will be ignored (PVC and route) or a workspace fails to start with an exception from Kubernetes.
 3.  You cannot use volumes in the container and pod definition. See link:volumes.html[Volumes] for information about persisting and sharing data between pods.
 
 The following is an example of a custom recipe with two containers and one pod, and a service that is bound to port 8081:
