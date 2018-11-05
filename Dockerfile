@@ -8,7 +8,7 @@
 #
 FROM ruby:2.5-alpine
 COPY src/main/Gemfile* /tmp/
-RUN apk add --no-cache --virtual build-dependencies build-base \
+RUN apk add --no-cache --virtual build-dependencies build-base libstdc++ \
     && cd /tmp && bundle install \
     && apk del build-dependencies build-base \
     && mkdir /projects \
