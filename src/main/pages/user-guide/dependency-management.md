@@ -2,7 +2,7 @@
 title: "Dependency Management"
 keywords: workspace, runtime, project, projects, dependency management, maven, gradle
 tags: [workspace, runtime]
-sidebar: user_sidebar
+sidebar: che_6_docs
 permalink: dependency-management.html
 folder: user-guide
 ---

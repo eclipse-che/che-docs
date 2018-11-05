@@ -31,7 +31,7 @@ In order to add a new page, create an `.adoc` file in `src/main/pages/${subdir}`
 title: "Single-User&#58 Install on Docker"
 keywords: docker, installation
 tags: [installation, docker]
-sidebar: user_sidebar
+sidebar: che_6_docs
 permalink: docker-single-user.html
 folder: setup
 ---
