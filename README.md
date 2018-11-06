@@ -6,6 +6,9 @@ Che docs use Jekyll to convert `.adoc` (AsciiDoc) files into HTML pages. Docs ar
 
 There is a `run.sh` script in the root of the repo that runs a Docker image, mounts sources, and starts Jekyll. When running locally, docs are available at `localhost:4000`. Jekyll watches for changes in `.adoc` files and re-generates resources, so you can preview changes live.
 
+### Building online
+[![Contribute](https://che.openshift.io/factory/resources/factory-contribute.svg)](https://che.openshift.io/f?id=factorycgpdptc6cjetbhr5)
+
 ### Building natively
 
 To build without using Docker, [install required Jekyll dependencies](https://jekyllrb.com/docs/installation/):
