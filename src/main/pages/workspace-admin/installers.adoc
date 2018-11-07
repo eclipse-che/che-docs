@@ -11,11 +11,11 @@ folder: workspace-admin
 [id="what-are-installers"]
 == What are installers?
 
-Installers are scripts that are injected into machines in a runtime and get executed there to:
+Installers are scripts that are added into machines in a runtime. Once running, installers:
 
 1.  Prepare the environment and download dependencies for a particular software or tool
 2.  Install chosen software and dependencies
-3.  Launch software and tools in a certain way (arguments, mode etc) that provide extra functionality for a workspace
+3.  Launch software and tools with particular arguments and modes that provide extra functionality for a workspace
 
 Installers are typically language servers and tools that provide features such as SSH access to a workspace machine. You can find a complete list of available installers in the *Workspace details > Installers* tab.
 
@@ -31,29 +31,33 @@ The following is an example of installers:
 ----
 
 [id="how-installers-work"]
-== How installers work?
+== How installers work
 
-Installers are saved in a configuration file that a link:what-are-workspaces.html#bootstrapper[bootstrapper] uses to execute jobs. An installer script is a shell script that works exactly the same way it works in your local Linux environment. Che server checks if the process that an installer has launched is alive.
+Installers are saved in a configuration file that a link:what-are-workspaces.html#bootstrapper[bootstrapper] uses to execute jobs. An installer script works exactly the same way as other shell scripts in Linux. The Che server checks if the launched process is running.
 
-There are installers that activate special agents such as the workspace agent, terminal, and exec agent. For example, if a workspace agent fails to start, the workspace will be considered as started but the IDE will not be usable. Exec agent failure will result in unavailability of commands widget.
+Some installers activate special agents, such as the workspace, terminal, and exec agents.  If a workspace agent fails to start, the workspace is treated as if it has been started but the IDE is not usable. If the exec agent fails, the commands widget is unavailable.
 
-[id="enable-and-disable-installers"]
-== Enabling and disabling installers
+[id="what-happens-when-enabling-and-disabling-installers"]
+== What happens when enabling and disabling installers 
 
-Installers can be enabled or disabled in the *User Dashboard* per machine, or directly in the workspace machine configuration. When an installer is enabled, bootstrapper executes an installer script after the workspace has started.
+You can enable or disable installers per machine by using the *User Dsahboard* or by updating the workspace machine configutation. When an installer is enabled, the bootstrapper executes an installer script after the workspace has started.
+
+The following shows installers that are enabled and disabled:
 
 image::workspaces/installers.png[]
 
-[id="installers-failures"]
-== Installers failures
+[id="troubleshooting-installer-failures"]
+== Troubleshooting installer failures
 
-Installers expect that a user that is listed in the `sudoers` file can have privileges. Installers can fail due to the `permission denied` error even when a user is listed in the `sudoers` file. 
-On OpenShift, where a pod is run by an arbitrary user with no permissions to use sudo, and/or access/modify resources on the file system. 
+Installers run as if a user in the container has `sudoers` privileges. If the user does not have privileges, the installer fails with `permission denied` issues.
 
-In most cases, though, this problem can be solved by rebuilding the base image so that it already has all of the dependencies for a particular agents that an installer activates. 
+This problem can occur with OpenShift, when a pod is run by an arbitrary user with no permissions to use sudo, or to access or modify resources on the file system. 
 
-Another possible issue might be with permissions to files and folders. For example, an installer may need to write to https://github.com/eclipse/che-dockerfiles/blob/master/recipes/stack-base/centos/Dockerfile#L45-L57[user home directory].
+In most cases, this problem can be solved by rebuilding the base image so that it already has all of the dependencies for particular agents that an installer activates. 
 
+Another possible issue can be with permissions to files and folders. For example, an installer may need to write to the https://github.com/eclipse/che-dockerfiles/blob/master/recipes/stack-base/centos/Dockerfile#L45-L57[user home directory].
+
+[id="installer-registry-and-rest-api"]
 == Installer registry and REST API
 
 Che installers are stored at Installer Registry. They can be viewed and edited through the Installer Registry REST API:
