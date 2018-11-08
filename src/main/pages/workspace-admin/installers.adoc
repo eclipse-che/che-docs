@@ -40,7 +40,7 @@ Some installers activate special agents, such as the workspace, terminal, and ex
 [id="what-happens-when-enabling-and-disabling-installers"]
 == What happens when enabling and disabling installers 
 
-You can enable or disable installers per machine by using the *User Dsahboard* or by updating the workspace machine configutation. When an installer is enabled, the bootstrapper executes an installer script after the workspace has started.
+You can enable or disable installers per machine by using the *User Dashboard* or by updating the workspace machine configuration. When an installer is enabled, the bootstrapper executes an installer script after the workspace has started.
 
 The following shows installers that are enabled and disabled:
 
@@ -49,18 +49,18 @@ image::workspaces/installers.png[]
 [id="troubleshooting-installer-failures"]
 == Troubleshooting installer failures
 
-Installers run as if a user in the container has `sudoers` privileges. If the user does not have privileges, the installer fails with `permission denied` issues.
+Installers run as if a user in the container may have `sudoers` privileges. If the user does not have privileges, the installer fails with `permission denied` issues.
 
-This problem can occur with OpenShift, when a pod is run by an arbitrary user with no permissions to use sudo, or to access or modify resources on the file system. 
+This problem can occur with OpenShift when a pod is run by a user with no permissions to use `sudo` or to access or modify resources on the file system. 
 
 In most cases, this problem can be solved by rebuilding the base image so that it already has all of the dependencies for particular agents that an installer activates. 
 
-Another possible issue can be with permissions to files and folders. For example, an installer may need to write to the https://github.com/eclipse/che-dockerfiles/blob/master/recipes/stack-base/centos/Dockerfile#L45-L57[user home directory].
+Another possible issue can be with permissions to files and directories. For example, an installer may need to write to the https://github.com/eclipse/che-dockerfiles/blob/master/recipes/stack-base/centos/Dockerfile#L45-L57[user home directory].
 
 [id="installer-registry-and-rest-api"]
 == Installer registry and REST API
 
-Che installers are stored at the Installer Registry. They can be viewed and edited through the Installer Registry REST API:
+Che installers are stored in the Installer Registry. They can be viewed and edited through the Installer Registry REST API:
 
 [cols=",,",options="header",]
 |===
