@@ -37,6 +37,8 @@ image::wsagent/wsagent-debug-docker.png[]
 
 To connect with debugger from outside of the cluster, use Port Forwarding to forward port from your workspace Pod to the port on your localhost.
 
+For Kubernetes:
+
 Get list of pods and find the name of your workspace pod.
 ```
 kubectl get pods --all-namespaces
@@ -47,13 +49,11 @@ Use this to get the namespace of your <POD_NAME> pod.
 kubectl describe pod <POD_NAME> #
 ```
 
-For Kubernetes:
-
 ```
 # replace <JPDA_PORT> with port of your configured JPDA Tomcat
-# replace LOCAL_PORT with the port on your host, that you will connect to with your debugger
-# replace POD_NAME with the name of the workspace pod
-# replace NAMESPACE with the namespace of the workspace pod
+# replace <LOCAL_PORT> with the port on your host, that you will connect to with your debugger
+# replace <POD_NAME> with the name of the workspace pod
+# replace <NAMESPACE> with the namespace of the workspace pod
 kubectl port-forward <POD_NAME> <LOCAL_PORT>:<JPDA_PORT>--namespace=<NAMESPACE>
 ```
 
@@ -68,10 +68,10 @@ oc get pods #
 If the pod belongs to the different namespace (if Che is configured to create OpenShift Project per Workspace), use `oc use WORKSPACE_ID` to switch to that project and run `oc get pods` again
 
 ```
-# replace JPDA_PORT with port of your configured JPDA Tomcat
-# replace LOCAL_PORT with the port on your host, that you will connect to with your debugger
-# replace POD name with the name of the workspace pod
-oc port-forward POD_NAME LOCAL_PORT:JPDA_PORT
+# replace <JPDA_PORT> with port of your configured JPDA Tomcat
+# replace <LOCAL_PORT> with the port on your host, that you will connect to with your debugger
+# replace <POD_NAME> name with the name of the workspace pod
+oc port-forward <POD_NAME> <LOCAL_PORT>:<JPDA_PORT>
 ```
 
 Connect to your debugger using `localhost` as host, and your local port, which is forwarded to workspace pod.
