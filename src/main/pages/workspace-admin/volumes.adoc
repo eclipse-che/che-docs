@@ -9,16 +9,16 @@ folder: workspace-admin
 
 
 [id="default-volumes"]
-== Default Volumes
+== Default volumes
 
-By default workspace containers/pods start with one default volume/PVC that persists `/projects` where workspace projects are physically located. When a workspace is stopped its machines are destroyed, however, volumes stay there.
+Workspace containers start with a default volume and has a minimum of one PVC that is located in the following directory: `/projects`. Workspace projects are physically located in the `/projects` directory. When a workspace stops, the machines are destroyed and the volumes persists.
 
 [id="user-provided-volumes"]
-== User-Provided Volumes
+== User-provided volumes
 
-Your workspace may need additional volumes though, say, to persist a local Maven repo, node_modules, ruby jems, authorized_keys for ssh connections etc. You can add additional volumes for your workspace machines - each machine can get as many volumes as an underlying infrastructure can afford, or depending on imposed limits (that’s mostly true for OpenShift).
+Your workspace may need additional volumes to persist a local Maven repository, node_modules folder, ruby jems, or authorized_keys file for SSH connections. You can add as many additional volumes for your workspace machines as the machine's infrastructure can support or limit.
 
-Volumes can be added either in User Dashboard or directly in machine configuration:
+You can add volumes either by using the  *User Dashboard* or by updating the machine configuration.  The following is an example of the YAML configuration file: 
 
 [source,json]
 ----
@@ -29,18 +29,18 @@ Volumes can be added either in User Dashboard or directly in machine configurati
 }
 ----
 
-When adding a volume in User Dashboard using UI or config window, volume name and path are validated to avoid potential failures to create data volumes in Docker and PVCs in OpenShift. If you somehow update workspace configuration using REST API, there can be failures to attach volumes if:
+When adding a volume in the *User Dashboard*, the volume name and path are validated to avoid potential failures.  If you update the workspace configuration using REST API, the volume name and path are validated :
 
-* path containers `~` - an absolute path should be used
-* name and path contains special characters, including `-` and `_`
+* the path contains `~` - an absolute path should be used
+* the name and path contains special characters, including `-` and `_`
 
-If you want your workspace machines to share volumes, just create volumes for each machine with an identical name. This way, machines will share the same volume.
+If you want your workspace machines to share volumes, create volumes for each machine with an identical name. This will allow machines to share the same volume.
 
 
 [id="empty-dir-volumes"]
-== 'emptyDir' volumes support OpenShift/Kubernetes infrastructure
+== Configuring workspaces
 
-On OpenShift/Kubernetes infrastructure it is possible to configure workspaces to be  ephemeral (with no PVC attached) via `persistVolumes` attribute set to 'false' in the workspace config:
+To configure workspaces on the OpenShift and Kubernetes infrastructure as ephemeral, set the `persistVolumes` attribute to `false` in the workspace configuration.
 
 [source,json]
 ----
