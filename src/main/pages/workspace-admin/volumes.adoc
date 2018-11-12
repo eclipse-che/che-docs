@@ -9,14 +9,16 @@ folder: workspace-admin
 
 
 [id="default-volumes"]
-== Default volumes
+== Default volumes for workspace containers
 
-Workspace containers start with a default volume and has a minimum of one PVC that is located in the following directory: `/projects`. Workspace projects are physically located in the `/projects` directory. When a workspace stops, the machines are destroyed and the volumes persists.
+By default, workspace containers start with a default volume and have a minimum of one PVC that is located in `/projects` directory. 
 
-[id="user-provided-volumes"]
-== User-provided volumes
+Workspace projects are physically located in the `/projects` directory. When a workspace stops, the machines are destroyed, but the volumes persist.
 
-Your workspace may need additional volumes to persist a local Maven repository, node_modules folder, ruby jems, or authorized_keys file for SSH connections. You can add as many additional volumes for your workspace machines as the machine's infrastructure can support or limit.
+[id="Adding-volumes"]
+== Adding volumes
+
+Your workspace may need additional volumes if your data must persist for a local Maven repository, node_modules folder, ruby jems, or authorized_keys file for SSH connections. You can add additional volumes for your workspace machines. Each machine can add as many volumes as the underlying infrastructure can support. OpenShift may impose a limit on the number of volumes.
 
 You can add volumes either by using the  *User Dashboard* or by updating the machine configuration.  The following is an example of the YAML configuration file: 
 
@@ -29,13 +31,16 @@ You can add volumes either by using the  *User Dashboard* or by updating the mac
 }
 ----
 
-When adding a volume in the *User Dashboard*, the volume name and path are validated to avoid potential failures.  If you update the workspace configuration using REST API, the volume name and path are validated :
 
-* the path contains `~` - an absolute path should be used
-* the name and path contains special characters, including `-` and `_`
+To avoid failures when updating the workspace configuration using REST APIs: 
 
-If you want your workspace machines to share volumes, create volumes for each machine with an identical name. This will allow machines to share the same volume.
+* Be sure to use an absolute path. 
+* The name and path cannot contains special characters, including `-` and `_`.
 
+[NOTE]
+====
+If you want your workspace machines to share volumes, create volumes for each machine that has an identical name. This will allow machines to share the same volume.
+====
 
 [id="empty-dir-volumes"]
 == Configuring workspaces
