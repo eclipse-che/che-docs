@@ -8,7 +8,7 @@ folder: workspace-admin
 ---
 
 
-[id="default-volumes"]
+[id="default-volumes_for_workspace_containers"]
 == Default volumes for workspace containers
 
 By default, workspace containers start with a default volume and have a minimum of one PVC that is located in `/projects` directory. 
@@ -20,7 +20,7 @@ Workspace projects are physically located in the `/projects` directory. When a w
 
 Your workspace may need additional volumes if your data must persist for a local Maven repository, node_modules folder, ruby jems, or authorized_keys file for SSH connections. You can add additional volumes for your workspace machines. Each machine can add as many volumes as the underlying infrastructure can support. OpenShift may impose a limit on the number of volumes.
 
-You can add volumes either by using the  *User Dashboard* or by updating the machine configuration.  The following is an example of the YAML configuration file: 
+You can add volumes either by using the  *User Dashboard* or by updating the machine configuration.  The following is an example of the configuration file: 
 
 [source,json]
 ----
@@ -42,10 +42,12 @@ To avoid failures when updating the workspace configuration using REST APIs:
 If you want your workspace machines to share volumes, create volumes for each machine that has an identical name. This will allow machines to share the same volume.
 ====
 
-[id="empty-dir-volumes"]
+[id="configuring-workspaces"]
 == Configuring workspaces
 
 To configure workspaces on the OpenShift and Kubernetes infrastructure as ephemeral, set the `persistVolumes` attribute to `false` in the workspace configuration.
+
+The following is an example of the configuration file:
 
 [source,json]
 ----
@@ -54,4 +56,4 @@ To configure workspaces on the OpenShift and Kubernetes infrastructure as epheme
 }
 ----
 
-In this case, regardless of the link:openshift-admin-guide.html#che-workspaces-storage[PVC strategy], all volumes would be created as https://kubernetes.io/docs/concepts/storage/volumes/#emptydir[`emptyDir`] for the given workspace. When a workspace Pod is removed for any reason, the data in the `emptyDir` volume is deleted forever.
+In this case, regardless of the link:openshift-admin-guide.html#che-workspaces-storage[PVC strategy], all volumes would be created as https://kubernetes.io/docs/concepts/storage/volumes/#emptydir[`emptyDir`] for the given workspace. When a workspace pod is removed for any reason, the data in the `emptyDir` volume is deleted forever.
