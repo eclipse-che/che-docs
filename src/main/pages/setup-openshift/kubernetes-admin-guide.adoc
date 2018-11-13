@@ -2,7 +2,7 @@
 title: "Che on Kuberentes: Admin Guide"
 keywords: kubernetes, configuration, admin guide
 tags: [installation, kubernetes]
-sidebar: user_sidebar
+sidebar: che_6_docs
 permalink: kubernetes-admin-guide.html
 folder: setup-openshift
 ---
@@ -31,10 +31,10 @@ When deployed with Keycloak and Postgres, your Kubernetes cluster should have *a
 * ~515MB for Postgres)
 * min 2GB should be reserved to run at least one workspace. The total RAM required for running workspaces will grow depending on the size of your workspace runtime(s) and the number of concurrent workspace pods you run.
 
-The default workspace RAM limit and the RAM allocation request can be configured by passing the `CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB` and `CHE_WORKSPACE_DEFAULT__MEMORY__REQUEST__MB` parameters to a Che deployment.
+The default workspace RAM limit and the RAM allocation request can be configured by passing the `pass:[CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB]` and `pass:[CHE_WORKSPACE_DEFAULT__MEMORY__REQUEST__MB]` parameters to a Che deployment.
 
 For example, use the following configuration to limit the amount of RAM used by workspaces to 2048MB and to request the allocation of 1024MB of RAM:
-* `kubectl set env dc/che CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB=2048 CHE_WORKSPACE_DEFAULT__MEMORY__REQUEST__MB=1024`
+* `pass:[kubectl set env dc/che CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB=2048 CHE_WORKSPACE_DEFAULT__MEMORY__REQUEST__MB=1024]`
 Notes:
 * The user can override the default values when creating a workspace.
 * A RAM request greater than the RAM limit is ignored.
@@ -103,7 +103,7 @@ Set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `common` in dc/che if you have alread
 
 **What’s CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS?**
 
-Pre 1.6 Kubernetes created subpaths within a PV with invalid permissions, sot hat a user in a running container was unable to write to mounted directories. When `CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS` is `true`, and a common strategy is used, a special pod is started before workspace pod is schedules, to pre-create subpaths in PV with the right permissions. You don’t need to set it to true if you have Kubernetes 1.6+.
+Pre 1.6 Kubernetes created subpaths within a PV with invalid permissions, sot hat a user in a running container was unable to write to mounted directories. When `pass:[CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS]` is `true`, and a common strategy is used, a special pod is started before workspace pod is schedules, to pre-create subpaths in PV with the right permissions. You don’t need to set it to true if you have Kubernetes 1.6+.
 
 *Restrictions*
 
@@ -176,7 +176,7 @@ Workspace logs are stored in an PV bound to `che-claim-workspace` PVC. Workspace
 
 Grace termination period of Kubernetes / OpenShift workspace’s pods defaults '0', which allows to terminate pods almost instantly and significantly decrease the time required for stopping a workspace. For increasing grace termination period the following environment variable should be used:
 
-`CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC`
+`pass:[CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC]`
 
 *IMPORTANT!*
 

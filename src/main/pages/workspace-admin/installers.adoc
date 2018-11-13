@@ -2,7 +2,7 @@
 title: "Installers"
 keywords: workspace, runtime, recipe, docker, stack, installers, agents
 tags: [workspace, runtime, docker, kubernetes]
-sidebar: user_sidebar
+sidebar: che_6_docs
 permalink: installers.html
 folder: workspace-admin
 ---
@@ -46,3 +46,18 @@ image::workspaces/installers.png[]
 == Installers Failures
 
 As installer scripts may expect that a user in the container/pod is in `sudoers` .e. have privileges, some of them may fail due to `permission denied` issues. This is the case with OpenShift, where a pod is run by an arbitrary user with no permissions to use sudo, and/or access/modify resources on the file system. In most cases, though, this problem can be solved by rebuilding the base image so that it already has all of the dependencies for a particular agents that an installer activates. Another possible issue might be with permissions to files and folders. For example, an installer may need to write to https://github.com/eclipse/che-dockerfiles/blob/master/recipes/stack-base/centos/Dockerfile#L45-L57[user home directory].
+
+== Installer Registry and REST API
+
+Che installers are stored at Installer Registry. They can be viewed and edited through the Installer Registry REST API:
+
+[cols=",,",options="header",]
+|===
+|Path | HTTP Method | Description
+|/installer |GET | Get installers
+|/installer/{id}/version |GET | Get versions of installers by given id
+|/installer/orders |GET | Get installers, ordered by their dependencies
+|/installer/ |POST | Add installer to the registry
+|/installer/{key} |PUT | Update installer in the registry
+|`/installer/{key}` |DELETE | Remove installer from the registry
+|===

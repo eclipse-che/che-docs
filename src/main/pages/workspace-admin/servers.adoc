@@ -2,16 +2,20 @@
 title: "Servers"
 keywords: workspace, runtime, recipe, docker, stack, servers, server, port, preview, preview url
 tags: [workspace, runtime, docker, kubernetes]
-sidebar: user_sidebar
+sidebar: che_6_docs
 permalink: servers.html
 folder: workspace-admin
 ---
 
 
 [id="what-are-servers"]
-== What Are Servers
+== What are servers?
 
-A server defines protocol port of a process that runs in a machine. It also has a name, path, attributes. Path defines base path of service that is exposed via server. Attributes are optional and may be used to tune server or identify it if this is a special purpose server, for example a link:TODO: language-servers[Language Server]. In simple words, if you need to access a process in your workspace machine, you need to add a server. You can do it in User Dashboard or by editing workspace machine config:
+A server defines the protocol port of a process that runs in a machine. It has a name, path, and attributes. The path defines the base path of the service that is used by the server. Attributes are optional and can be used to tune the server or for identification.  You can add a server when you need to access a process in your workspace machine. 
+
+To add a server, use the *User Dashboard* or edit the workspace machine configuration YAML file.
+
+The following is an example of the YAML file:
 
 [source,json]
 ----
@@ -23,34 +27,42 @@ A server defines protocol port of a process that runs in a machine. It also has 
 }
 ----
 
+The following is an example of the *User Dashboard*:
+
 image::workspaces/servers_dashboard.png[]
 
-If your workspace is running, saving a new server will restart a workspace.
+[NOTE]
+====
+If your workspace is running, saving a new server restarts the workspace.
+====
 
 [id="preview-urls"]
 == Preview URLs
 
-Just adding a server with port 3000 does not mean you can use this port to access a server. Each server is assigned with a URL in the runtime, i.e. when a workspace is running. In case of Docker, port 3000 will be published to a random port from the ephemeral port range (32768-65535). In case of OpenShift, a route bound to a service is created. Routes are *persistent URLS*, while server URLS provided in a Docker implementation of Che *change* every time your start a workspace.
+Adding the server with port 3000 does not mean you can use this port to access a server. Each server is assigned a URL when a workspace is running.
 
-[id="what-is-my-preview"]
-== What Is My Preview?
+* On Docker, port 3000 is published to a random port from the ephemeral port range from 32768 to 65535. The server URLs change every time you start a workspace.
+* On OpenShift, a route bound to a service is created. Routes are persistent URLs.
 
-Say, you have added a server with port 3000 and started a workspace. There are multiple ways to get its preview URL:
+[id="getting-preview-urls"]
+== Getting preview URLs
 
-* Using a link:commands-ide-macro.html[macro] in a command
-* In the IDE, `+` icon in the bottom panel under the editor
+In this example, you added a server with port 3000 and started a workspace. The following are ways to get the server's preview URL:
+
+* Use a link:commands-ide-macro.html[macro] command.
+* In the IDE, Click the `+` icon in the bottom panel under the editor.
 
 image::workspaces/servers.png[]
-* In User Dashboard, *Workspaces > YourWorkspace > Servers* tab
+* In the *User Dashboard*, click *Workspaces > YourWorkspace > Servers*.
 
-You will also see URLS of some of the internal servers - agents that server launches when the workspace container/pod is up.
+You can also see internal server URLs. Internal servers launch when the workspace container or pod is available.
 
-[id="internal-servers"]
-== Internal Servers
+[id="exposing-internal-servers"]
+== Exposing internal servers
 
-Sometimes it is needed to expose port for accessing to process internally withing workspace, but public access should be forbidden. An example of such server may be a database which should be exposed only for web application and because of security concerns it should not be accessible publicly. Then server may be exposed as internal.
+To access a port internally within a workspace, expose it internally, but do not make it publicly accessible. For example, a database server is exposed only for the web application and because of security concerns, it should not be accessible publicly. The database server is exposed as internal.
 
-To expose server as internal it is needed to add the corresponding attribute into server config:
+To expose a server as internal, add the corresponding attribute into the server configuration YAML file:
 
 [source,json]
 ----
@@ -63,12 +75,14 @@ To expose server as internal it is needed to add the corresponding attribute int
 }
 ----
 
-Now, an application should be able to fetch db URL from workspace runtime and access to database using it while this URL won’t be accessible publicly from browser.
+The application is able to fetch the database URL from the workspace runtime and access the database.  The database URL is not accessible publicly from the browser.
 
-[id="secure-servers"]
-== Secure Servers
+[id="exposing-secure-servers"]
+== Exposing secure servers
 
-Server may require to be exposed publicly but access should be restricted only for users which have permissions to workspace. For such cases Che has secure servers concept. Authentication proxy will be set up in from of exposed server and machine token will be required to request it. There are the corresponding attributes for exposing server as secure one:
+Secure servers are exposed publicly but access is restricted only for users who have permissions to the workspace. The authentication proxy is set up as the exposed server and the machine token is required to request it. 
+
+To expose a server as secure, add the corresponding attributes into the server configuration YAML file:
 
 [source,json]
 ----
@@ -83,10 +97,13 @@ Server may require to be exposed publicly but access should be restricted only f
 }
 ----
 
-Where:
+The following describes the attributes:
 
-* secure - is an attribute that indicates whether server should be exposed as secure one. False value is a default one;
-* unsecuredPaths - is an attribute for configuring secure servers and it contains an comma-separated list of URI-s which are considered as non-secure on the given server and can be accessible without token. It may be needed when server provide any public APIs, like API endpoint for health checks;
-* cookiesAuthEnabled - is an attribute that indicates whether token should be searched in cookies. By default it is disabled. And server developer may enable it if he is sure that his servers can’t be attacked by CSRF or has special protection from it.
+`secure`:: Indicates whether the server is exposed as secure. The default value is `false`.
+`unsecuredPaths`:: Configures the secure servers. It contains a comma-separated list of URLs that are considered non-secure on the given server and can be accessible without a token. It may be needed when the server provides any public APIs. The API endpoint for health checks is an example.
+`cookiesAuthEnabled`:: Indicates whether cookies should be searched for a token. By default, it is disabled. You can enable this attribute if you are sure that servers cannot be attacked by Cross-Site Request Forgery (CSRF) or have special protection from it.
 
-Note that this functionality is in beta phase now and it is disabled by default. The instructions how it can be enabled by in the corresponding section of the link:secure-servers.html#how-to-make-secure-servers-working[Secure Servers] article.
+[NOTE]
+====
+This is in the beta phase and disabled by default.  See link:secure-servers.html#how-to-make-secure-servers-working[Secure servers] for information on how to enable secure servers.
+====
