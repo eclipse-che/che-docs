@@ -1,5 +1,5 @@
 ---
-title: "Troubleshooting Workspace Start Failures"
+title: "Troubleshooting workspace start failures"
 keywords: workspace, runtime, recipe, docker, yaml, Dockerfile, docker, kubernetes, container, pod
 tags: [workspace, runtime, docker, kubernetes, troubleshooting]
 sidebar: che_6_docs
@@ -16,34 +16,37 @@ Failures to start a workspace may be caused by different factors:
 [id="bad-recipes"]
 == Bad Recipes
 
-When a workspace is being started, environment link:recipes.html[recipe] is sent to Docker or OpenShift API. Che server then listens to events provided by a particular infrastructure. In simple words, Che server expects a running container (Docker) or pod (OpenShift). If the infrastructure was unable to create and start a container/pod from the provided recipe, Che server fails to start an environment, and consequently workspace start fails.
+When a workspace is starting, the environment link:recipes.html[recipe] is sent to Docker or to the OpenShift API. The Che server then listens to events provided by a particular infrastructure. In simple words, the Che server expects a running container (Docker) or pod (OpenShift). If the infrastructure was unable to create and start a container or a pod from the provided recipe, the Che server fails to start an environment and consequently the starting of the workspace fails.
 
-A recipe can be *"bad"* due to the following reasons:
+A recipe can be bad due to the following reasons:
 
-1.  Docker build fails with the provided Dockerfile. Maybe it is just a broken Dockerfile or it can partially be Che fault. Docker build in Che link:recipes.html#dockerfile[does not support context]. If this is the case, consider playing with a Docker recipe locally to make sure it’s a valid Dockerfile. If you need to ADD or COPY resources into an image, do it on your local machine, push the image to a registry (say, DockerHub), and use the resulting images in the recipe.
-2.  Che does not support certain link:recipes.html#composefile[Docker Compose syntax]. Make sure your composefile is "Che friendly".
-3.  Timeouts. If you install packages in your Dockerfile instructions it can take time. Moreover, in this case you depend on network conditions
+* The Docker build fails with the provided `Dockerfile`. This can be because of a broken `Dockerfile` or because of Che. If the Docker build in Che link:recipes.html#dockerfile[does not support context], consider editing the Docker recipe locally to ensure that it is a valid `Dockerfile`. Add or copy resources into an image locally on your machine, push the image to a registry (say, DockerHub), and use the resulting images in the recipe.
 
-If a workspace start fails because the container/pod was never launched, you will not see logs from link:installers.html[installers]. Usually, you will find logs from infrastructure, image pull, build etc. Make sure you analyze those logs to find the problem. Che server in its turn will also produce logs that can be very helpful in debugging the problem.
+* Che does not support certain link:recipes.html#composefile[Docker Compose syntax]. Ensure your `Composefile` is supported by Che.
+
+* Timeouts: Installing packages in your Dockerfile instructions can take time. Moreover, in this case you depend on network conditions.
+
+If a workspace start fails because the container or the pod was not launched, you will not see logs from link:installers.html[installers]. Usually, you will find logs from infrastructure, image pull, build,  etc. Analyze these logs to find the problem. The Che server also produces logs that are helpful in debugging the problem.
 
 [id="network-conditions"]
 == Network Conditions
 
-There’s a lot of communication between Che server, agents running in a workspace container/pod and user’s browser. Firewall, filtered ports and other network restrictions may cause troubles when starting a workspace.
+The Che server, agents running in a workspace container or pod, and the user’s browser communicate with each other. Firewall, filtered ports, and other network restrictions may cause troubles when starting a workspace.
 
-A workspace is considered to be in a `RUNNING` state after Che server was able to verify that the workspace agent is up. Workspace agent, in its turn, also tries to reach Che server. It all happens in separate containers/pods, and user’s browser is not yet involved (you may start a workspace using REST API for example). So, if Che server logs say that `workspace started by user $userName` it means that the workspace container/pod is up, the workspace agent has successfully started and Che server is able to reach it.
+A workspace is considered to be in a `RUNNING` state after the Che server verifies that the workspace agent is up. The workspace agent also tries to reach the Che server. All this happens in separate containers or pods, and the user’s browser is not yet involved (you may start a workspace using REST API, for example). The *workspace started by user $userName* message from the Che server logs indicates that the workspace container or pod is up, the workspace agent has successfully started, and the Che server is able to reach it.
 
-However, it may happen that your browser (the client) cannot connect to a workspace agent. Che server may use an internal IP to reach workspace agent, while you may access a workspace from a machine that is located in a different network. If you see a message saying that IDE cannot be initialized, open browser dev console and take a look at failed requests (there should be a few to /project and project-type API). Odds are that the ephemeral port range is filtered in your network.
+It is possible that your browser (the client) cannot connect to a workspace agent. The Che server may use an internal IP to reach the workspace agent, while you may access a workspace from a machine that is located in a different network. If you see a message saying that the IDE cannot be initialized, open the browser dev console and check the failed requests. There should be a few requests to project and project-type API. The reason for this is that the ephemeral port range is filtered in your network.
 
 [id="bootstrapping-failures"]
-== Bootstrapping Failures
+== Failures in bootstrapping
 
-When a workspace starts, Che server creates and starts a container/pod or a set of containers/pods as per environment recipe. Once the container/pod is running, a bootstrapping process begins - bootstrapper binary is downloaded and launched. If you see something about bootstrapping failures in server logs, and/or don’t see any output in machine tab in a workspace view, odds are that bootstrapper has been never downloaded. There can be several reasons for that:
+When a workspace starts, the Che server creates and starts a container or a pod or a set of containers and pods as per the environment recipe. After the container or pod is running, a bootstrapping process begins - bootstrapper binary is downloaded and launched. If the server logs show bootstrapping failures, or you do not see any output in the *Machine* tab of the *Workspaces* view, the reason is that bootstrapper is not downloaded. Following are the reasons for the bootstrapper not being downloaded:
 
-* network conditions (for example, running firewalld).
-* bad bootstrapper binary URL that Che server uses (often reproduced when deploying to OpenShift and missing must have envs)
+* Network conditions (for example, running firewalld).
 
-You may try to manually download bootstrapper binary. When on OpenShift, get a shell into the pod (rsh or terminal in web console) and run:
+* Bad bootstrapper binary URL that the Che server uses (often reproduced when deploying to OpenShift and missing necessary environment variables).
+
+Manually download the bootstrapper binary. On OpenShift, access the pod on the command line (rsh or terminal in web console) and run the following command:
 
 ----
 cd /tmp/bootstrapper
@@ -51,4 +54,4 @@ ls -la  # to check if there's a bootstrapper binary
 curl ${CHE_URL}/agent-binaries/linux_amd64/bootstrapper/bootstrapper
 ----
 
-If this curl fails, something in your network blocks port 80, or 443 (if you use https routes on OpenShift).
+If this curl fails, something in your network blocks port `80`, or `443` (if you use https routes on OpenShift).
