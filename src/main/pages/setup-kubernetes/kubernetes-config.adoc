@@ -11,11 +11,20 @@ You can configure the behavior of the Che server by passing environment variable
 
 There are multiple ways to edit the Che deployment to add new or edit existing environment variables:
 
-* To open the Che deployment YAML file in the nano editor, use the `kubectl edit dc/che` command. The Vim editor is used by default.
+* To open the Che deployment YAML file, run the following command:
++
+----
+kubectl edit dc/che
+----
++
 
 * To manually edit the Che deployment, in the Kubernetes web console, click *Deployments* > *Che* > *Edit*.
 
-* To update the Che deployment with new environment variables or to modify the values of existing ones, use the `kubectl set env dc/che KEY=VALUE KEY1=VALUE1` command.
+* To update the Che deployment with new environment variables or to modify the values of existing ones, run the following command:
++
+----
+kubectl set env dc/che KEY=VALUE KEY1=VALUE1
+----
 
 [id="configurable-che-properties"]
 == Configurable Che properties
@@ -27,7 +36,7 @@ To manually convert properties into environment variables, follow the instructio
 For more information about critical configuration options, see the link:kubernetes-admin-guide.html[Kubernetes Administration guide].
 
 [id="changing-the-unrecoverable-events"]
-== Changing the unrecoverable events
+== Specifying default unrecoverable events
 
 By default, if the `Failed Mount`, `Failed Scheduling`, or `Failed to pull image` Kubernetes or OpenShift events occur during a startup, the workspace is immediately terminated before timeout. To change or disable (via a blank value) the default unrecoverable events, use the following environment variable:
 
