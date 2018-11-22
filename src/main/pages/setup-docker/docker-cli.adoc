@@ -10,18 +10,18 @@ folder: setup-docker
 [id="cli-syntax-and-commands"]
 == CLI syntax and commands
 
-The CLI is a Docker-formatted container image that comes with a collection of commands to configure, interact, and start Che. The CLI also contains commands, such as `sync` and `ssh`, for end users to interact with workspaces.
+The CLI is a Docker-formatted container image that comes with a collection of commands to configure, interact with, and start Che. The CLI also contains commands, such as `sync` and `ssh`, for end users to interact with workspaces.
 
 Command:
 ----
-docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> [COMMAND]
+$ docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> [COMMAND]
 ----
 
-Following is the mandatory Docker parameter for the Docker CLI image:
+Following is the mandatory `docker` command parameter for the CLI image:
 
 * `-v <LOCAL_PATH>:/data`: The user, instance, and log data are saved here.
 
-The following tables lists the optional Docker parameters that you can use with the Docker CLI image.
+The following tables lists the optional `docker` command parameters that you can use with the CLI image.
 
 [cols="2*", options="header"]
 |===
@@ -72,12 +72,12 @@ The following table lists the commands that you can use with the Docker CLI imag
 |Backs up Che configuration and data to the `/data/backup` volume mount
 
 |`config`                              
-|Generates a Che configuration from variables; run on any `start/restart` command
+|Generates a Che configuration from variables; run on any `start` or `restart` command
 
 |`destroy`                              
 |Stops services, and deletes che instance data
 
-|`dir <_command_>`                        
+|`dir <command>`                        
 |Use `Chedir` and `Chefile` in the directory mounted to `:/chedir`
   
 |`download`                           
@@ -93,7 +93,7 @@ The following table lists the commands that you can use with the Docker CLI imag
 |Initializes a directory with a Che install
 
 |`offline`                            
-|Saves Che Docker images into the `TAR` files for offline installation
+|Saves Che container images into TAR files for offline installation
 
 |`restart`                           
 |Restarts the Che services
@@ -102,10 +102,10 @@ The following table lists the commands that you can use with the Docker CLI imag
 |Restores Che configuration and data from the `/data/backup` mount
 
 |`rmi`                                  
-|Removes the Docker images for <version>, forcing a repull
+|Removes the container images for `<version>`, forcing a re-pull
 
 |`ssh <_workspace-name_> [_machine-name_]`       
-|SSH to a workspace if SSH agent enabled
+|SSH to a workspace if SSH agent is enabled
 
 |`start`                                
 |Starts the Che services
@@ -147,11 +147,11 @@ The following table lists the global command options that you can use with the D
 
 The CLI has the following three primary phases:
 
-* The initialization phase is executed by the `init` command. It installs version-specific files into the directory mounted to `/data`. This includes the universal configuration file named `che.env`, a version identifier, and a location where configuration files are saved. The configuration is executed by the `config` command. The `config` command takes the `che.env` configuration file and the OS of your host system as input and generates an OS-specific set of configuration files in the `data/instance` directory."
+* The initialization phase is executed by the `init` command. It installs version-specific files into the directory mounted to `/data/`. This includes the universal configuration file named `che.env`, a version identifier, and a location where configuration files are saved. The configuration is executed by the `config` command. The `config` command takes the `che.env` configuration file and the OS of your host system as input and generates an OS-specific set of configuration files in the `data/instance` directory."
 
-* The configuration phase runs an initialization if a directory is not found. Every execution of the `config` command overwrites the files in the `/data/instance` directory with the latest configuration. This ensures that if an administrator modifies any configuration file, the instance’s configuration files are updated consistently. The CLI generates a large number of configuration files specific to running Che. The configuration files are sourced from the Puppet templates that are stored in the GitHub repository under `/dockerfiles/init`. 
+* The configuration phase runs an initialization if a directory is not found. Every execution of the `config` command overwrites the files in the `/data/instance/` directory with the latest configuration. This ensures that if an administrator modifies any configuration file, the instance’s configuration files are updated consistently. The CLI generates a large number of configuration files specific to running Che. The configuration files are sourced from the Puppet templates that are stored in the GitHub repository under `/dockerfiles/init/`. 
 
-* The start phase is executed by the `start` command. It uses a configuration-generated `docker-compose-container.yml` file to launch Eclipse Che. The start phase always executes a `config` command, so any files that were edited in the `/data/instance` directory are overwritten with the generated configuration from the CLI.
+* The start phase is executed by the `start` command. It uses a configuration-generated `docker-compose-container.yml` file to launch Eclipse Che. The start phase always executes a `config` command, so any files that were edited in the `/data/instance/` directory are overwritten with the generated configuration from the CLI.
 
 The CLI hides most error conditions from the standard output. Internal stack traces and error output are redirected to the `cli.log` file, which is saved in the host directory where `:/data` is mounted.
 
@@ -159,27 +159,27 @@ You can override any value in the `che.env` file for a single execution by passi
 
 Following are some selected commands and their uses.
 
-_action_::
-The `action` command executes some actions on the Eclipse Che instance or on a workspace running inside Che. To list all workspaces on Che, use the `action list-workspaces` command. To execute a command on a workspace, use the  `action execute-command <workspace-name> <action>` command; here, the `action` command is interpreted by Bash.
+`action`::
+The `action` command executes some actions on the Eclipse Che instance or on a workspace running inside Che. To list all workspaces on Che, use the `action list-workspaces` command. To execute a command on a workspace, use the  `action execute-command <workspace-name> <action>` command; here, the `<action>` parameter is interpreted by the shell.
 
 
-_backup_::
-The `backup` command creates `TAR` files from the `/instance` directory and places them in the `/backup` directory. These files are restoration-ready.
+`backup`::
+The `backup` command creates TAR files from the `/instance/` directory and places them in the `/backup/` directory. These files are restoration-ready.
 
-_config_::
-The `config` command generates a Che instance configuration that is placed in the `/instance` directory. It uses Puppet to generate Docker Compose configuration files to run Che and its associated server. Che’s server configuration is generated as a `che.properties` file that is mounted in the Che server when it boots. This command is executed on every `start` or `restart`.
+`config`::
+The `config` command generates a Che instance configuration that is placed in the `/instance/` directory. It uses Puppet to generate Docker Compose configuration files to run Che and its associated server. Che server configuration is generated as a `che.properties` file that is mounted in the Che server when it boots. This command is executed on every `start` or `restart`.
 +	
 If you are using a `eclipse/che:<version>` image and it does not match the version in the `/instance/che.ver` file, the configuration aborts to prevent you from running a configuration for a different version.
 +	
 It respects the `--no-force`, `--pull`, `--force`, and `--offline` command options.
 
-_destroy_::
-The `destroy` command deletes the `/docs`, `che.env` and `/instance` directories, including user workspaces, projects, data, and user database. To skip the confirmation warning message, pass the `--quiet` argument in the command. To delete the `cli.log` file, pass the `--cli` argument. By default, the `cli-log` file is retained for traceability.
+`destroy`::
+The `destroy` command deletes the `che.env` file and the `/docs/` and `/instance/` directories, including user workspaces, projects, data, and user database. To skip the confirmation warning message, pass the `--quiet` argument in the command. To delete the `cli.log` file, pass the `--cli` argument. By default, the `cli-log` file is retained for traceability.
 
-_dir_::
+`dir`::
 The `dir` command boots a new Eclipse Che instance with a workspace for the `:/chedir` directory defined as volume mount in the parameter.
 +
-For example, if you give `$HOME/my-project` as a parameter, a new Che instance is created using `$HOME/my-project` as a project in the IDE. Inside the IDE, the `/projects` directory contains a `my-project` directory with your host directory. Any changes inside the IDE are reflected in your host directory. And, updating a file on your local computer updates the content of the file inside the IDE.
+For example, if you give `$HOME/my-project` as a parameter, a new Che instance is created using `$HOME/my-project` as a project in the IDE. Inside the IDE, the `/projects/` directory contains a `my-project/` directory with your host directory. Any changes inside the IDE are reflected in your host directory. Updating a file on your local computer updates the content of the file inside the IDE.
 +
 * `init`: Initializes the directory specified and adds a default `Chefile` if there is none.
 * `up`: Boots Eclipse Che with workspace on directory.
@@ -187,8 +187,8 @@ For example, if you give `$HOME/my-project` as a parameter, a new Che instance i
 * `ssh`: Connects to the running workspace by using the `ssh` command.
 * `status`: Displays if an instance of Eclipse Che is running or not for the specified directory.
 
-_download_::
-The `download` command is used to download Docker images stored in your Docker images repository. This command downloads images that are used by the CLI as utilities, for Che to do initialization and configuration, and for the runtime images that Che needs when it starts. This command respects the `--offline`, `--pull`, `--force`, and `--no-force` (default) command options. It is invoked by the `che init`, `che config`, or `che start` commands.
+`download`::
+The `download` command is used to download container images stored in your image repository. This command downloads images that are used by the CLI as utilities, for Che to do initialization and configuration, and for the runtime images that Che needs when it starts. This command respects the `--offline`, `--pull`, `--force`, and `--no-force` (default) command options. It is invoked by the `che init`, `che config`, or `che start` commands.
 +
 The `download` command is invoked by the `che init` command before initialization to download images for the version specified by `eclipse/che:<version>`.
 +
@@ -203,11 +203,15 @@ For example, if you want to use a given tag in your own Docker account for both 
 -e IMAGE_INIT=myDockerAccount/che-init:givenTag -e IMAGE_CHE=myDockerAccount/che-server:givenTag
 ----
 
-_info_::
-The `info` command displays system state and debugging information. The `--network` command option runs a test to take the `CHE_HOST` variable value to test network connectivity by simulating the *browser > Che* and *Che > workspace* connectivity. The `--bundle` command option generates a support diagnostic bundle in a `TAR` file, which includes the output of certain commands and the execution logs.
+`info`::
+The `info` command displays system state and debugging information. The `--network` command option runs a test to take the `CHE_HOST` variable value to test network connectivity by simulating the *browser > Che* and *Che > workspace* connectivity. The `--bundle` command option generates a support diagnostic bundle in a TAR file, which includes the output of certain commands and the execution logs.
 
-_init_::
-The `init` command initializes an empty directory with a Che configuration and instance directory. The user data and runtime configuration are stored in the empty directory. You must provide a `<path>:/data` volume mount for Che to create the `instance` and `backup` sub-directories of `<path>`. Optionally, override the location of the `/instance` directory by mounting an additional local directory to the `/data/instance` directory. Optionally, override the location of where backups are stored by mounting an additional local directory to the `/data/backup` directory. After initialization, a `che.env` file is placed in the root directory of the path that you mounted to `/data`.
+`init`::
+The `init` command initializes an empty directory with a Che configuration and instance directory. The user data and runtime configuration are stored in the empty directory. You must provide a `<path>:/data` volume mount for Che to create the `instance/` and `backup/` sub-directories of `<path>`. After initialization, a `che.env` file is placed in the root directory of the path that you mounted to `/data/`.
++
+Overriding the location of the `/instance/` directory:: Mount an additional local directory to the `/data/instance/` directory.
+
+Overriding the location of where backups are stored:: Mount an additional local directory to the `/data/backup/` directory.
 +
 The following variables can be set in your local environment shell before running. These variables are respected during initialization:
 +
@@ -218,106 +222,119 @@ The following variables can be set in your local environment shell before runnin
 |`CHE_PORT` |The port the Che server will run on and expose in its container for your clients to connect to.
 |===
 +
-Che depends on Docker images. Docker images are used to:
+Che depends on container images. The images are used to:
 +
-* Provide cross-platform utilities within the CLI. For example, to perform a `curl` operation, you use a small Docker image to perform this function. This is done as a precautionary measure because many operating systems do not have `curl` installed.
+* Provide cross-platform utilities within the CLI. For example, to perform a `curl` operation, you use a small container image to perform this function. This is done as a precautionary measure because many operating systems do not have `curl` installed.
 +
-* Look up the master version and upgrade manifest, which is saved within the CLI docker image in the `/version` sub-directory.
+* Find the master version and upgrade manifest, which is saved within the CLI container image in the `/version/` sub-directory.
 +
 * Perform initialization and configuration of Che as done with the `eclipse/che-init` command. This image contains templates to be installed on your computer used by the CLI to configure Che for your specific OS.
 +
-You can control how Che downloads these images with command line options. All image downloads are performed using the `docker pull` command.
+You can control how Che downloads these images with command-line options. All image downloads are performed using the `docker pull` command.
 +
 [width="100%",cols="32%,68%",options="header",]
 |===
 |Mode |Description
-|`--no-force` |Default behavior. Downloads an image if not found locally. A local check of the image inspects if an image of a matching name is present in your local registry and then skips pulling the image if it is found. This mode does not check Docker Hub for a newer version of the same image.
-|`--pull` |Always perform a `docker pull` command when an image is requested. If there is a newer version of the same tagged image at Docker Hub, it pulls it, or uses the one in the local cache. This slows the execution, but keeps your images up-to-date.
-|`--force` |Performs a forced removal of the local image using the `docker rmi` command and then pulls it again from Docker Hub. Use this to clean your local cache and to ensure that all images are new.
-|`--offline` |Loads `tar-archived` Docker images from the `backup` directory during the pre-boot mode of the CLI. Used if you are performing an installation or start while disconnected from the Internet.
+|`--no-force` |The default behavior. Downloads an image if not found locally. A local check of the image inspects if an image of a matching name is present in your local registry and then skips pulling the image if it is found. This mode does not check DockerHub for a newer version of the same image.
+|`--pull` |Always perform a `docker pull` command when an image is requested. If there is a newer version of the same tagged image at DockerHub, it pulls it, or uses the one in the local cache. This slows the execution but keeps your images up-to-date.
+|`--force` |Performs a forced removal of the local image using the `docker rmi` command and then pulls it again from DockerHub. Use this to clean your local cache and to ensure that all images are new.
+|`--offline` |Loads tar-archived container images from the `backup/` directory during the pre-boot mode of the CLI. Used if you are performing an installation or start while disconnected from the Internet.
 |===
 +
 You can reinstall Che on a directory that is already initialized and preserve your `che.env` values by passing the `--reinit` flag.
 
-_offline_::
-The `offline` command saves all the Docker images that Che requires in the `/backup/*.tar` files. Each image is saved as its own file. If the `backup` directory is available on a machine that is disconnected from the Internet and you start Che with the `--offline` command option, the CLI pre-boot sequence loads all the Docker images in the `/backup/` directory.
+`offline`::
+The `offline` command saves all the container images that Che requires in `/backup/*.tar` files. Each image is saved as its own file. If the `backup/` directory is available on a machine that is disconnected from the Internet and you start Che with the `--offline` command option, the CLI pre-boot sequence loads all the container images in the `backup/` directory.
 +
-The `--list` option lists all the core images and optional stack images that can be downloaded. The core system images and the CLI are always saved if an existing `TAR` file is not found. The `--image:<image-name>` command option downloads a single-stack image and can be used multiple times on the command line. You can use the `--all-stacks` option or the `--no-stacks` option to download all or none of the optional stack images.
+The `--list` option lists all the core images and optional stack images that can be downloaded. The core system images and the CLI are always saved if an existing TAR file is not found. The `--image:<image-name>` command option downloads a single-stack image and can be used multiple times on the command line. You can use the `--all-stacks` option or the `--no-stacks` option to download all or none of the optional stack images.
 
-_restart_::
+`restart`::
 The `restart` command performs a `stop` action followed by a `start` action, respecting the `--pull`, `--force`, `--offline`, `--skip:config`, `--skip:preflight`, and `--skip:postflight` command options.
 
-_restore_::
+`restore`::
 The `restore` command restores the `/instance` directory to its previous state. The start-stop-restart cycle ensures that the proper Docker images are available or downloaded if not found.
 +
 [IMPORTANT]
 ====
-Use this command with caution because it deletes the existing `/instance` directory. As a precautionary measure, set these values to different directories when performing a restore action.
+Use this command with caution because it deletes the existing `/instance/` directory. As a precautionary measure, set these values to different directories when performing a restore action.
 ====
 
-_rmi_::
-The `rmi` command deletes the Docker images from the local registry that Che has downloaded for this version.
+`rmi`::
+The `rmi` command deletes the container images that Che has downloaded for this version from the local registry.
 
-_ssh_::
-The `ssh` command connects the current terminal where the command is started to the terminal of a machine of the workspace. If no machine is specified in the command, it connects to the default development machine. The syntax is `ssh <workspace-name> [machine-name]`. The SSH connection works only if there is a workspace SSH key set up. A default SSH key is automatically generated when a workspace is created.
+`ssh`::
+The `ssh` command connects the current terminal where the command is started to the terminal of a machine of the workspace. If no machine is specified in the command, it connects to the default development machine. The syntax is:
++
+----
+ ssh <workspace-name> [machine-name]
+----
++
+The SSH connection only works with a configured workspace SSH key. A default SSH key is automatically generated when a workspace is created.
 
-_sync_::
-The `sync` command synchronizes contents of a workspace with a local directory mounted to `:/sync`. The syntax is `-v <path-on-your-machine>:/sync eclipse/che sync <workspace-name>`.
+`sync`::
+The `sync` command synchronizes contents of a workspace with a local directory mounted to `:/sync`. The syntax is:
++
+----
+-v <path-on-your-machine>:/sync eclipse/che sync <workspace-name>
+----
 +
 To display a log of the underlying unison tool, use the `--unison-verbose` flag.
 
-_start_::
-The `start` command starts Che and its services using the `docker-compose` command. If the system cannot find a valid configuration, it performs an `init` command. Every `start` command and `restart` command runs a `config` command to generate a new configuration set using the latest configuration. The starting sequence tests if any ports required by Che are currently being used by other services and to verify access to key APIs.
-+
-To skip these checks, use the `--skip:preflight` and `--skip:postflight` command options. The typical Che start sequence includes an invocation of the `config` method, which regenerates configuration files placed into the `/instance` directory. To skip this generation, use the `--skip:config` command option. To automatically print out the server logs to the console during the booting of the server, append the  `--follow` argument to the command. To interrupt the output, press `CTRL-C`. Or, use the shell commands to interrupt the output.
+`start`::
+The `start` command starts Che and its services using the `docker-compose` command. In the absence of valid configuration, it performs an `init` command. Every `start` and `restart` command runs the `config` command to generate a new configuration set using the latest configuration files placed into the `/instance/` directory. The starting sequence also tests if any ports required by Che are currently being used by other services and to verify access to key APIs.
 
-_stop_::
+Skipping the generation of configuration:: Use the `--skip:config` option.
+Skipping checks:: Use the `--skip:preflight` and `--skip:postflight` options.
+Automatically printing server logs during the boot:: Use the `--follow` option. To interrupt the output, press *Ctrl+c*, or use the shell commands to interrupt the output.
++
+
+`stop`::
 The default stop is a graceful stop where each workspace is stopped and confirmed shut down before stopping system services. If workspaces are configured to snap on stop, all snaps are completed before the system service shutdown begins. You can ignore workspace stop behavior and shut down only system services using the `–force` flag.
 
-_test_::
-The `test` command performs tests on your local instance of Che. For example, to check the ability to create a workspace, start the workspace by using a custom workspace runtime and then use it. For a list of all the tests available, use the `test` command.
+`test`::
+The `test` command performs tests on your local instance of Che. For example, to check the ability to create a workspace, start the workspace by using a custom workspace runtime, and then use it. For a list of all tests available, use the `test` command.
 
-_upgrade_::
+`upgrade`::
 The `upgrade` command manages the sequence of upgrading Che from one version to another. For a list of available versions that you can upgrade to, run the `che version` command.
 +
-The Che upgrade is done by using a `eclipse/che:<version>` image that is newer than the version you currently have installed. For example, if you have 5.0.0-M2 installed and you want to upgrade to 5.0.0-M7:
+The Che upgrade is done by using a `eclipse/che:<version>` image that is newer than the version you currently have installed. For example, if you have `<version>` installed and you want to upgrade to `<version+1>`:
 +
 . To get the new version of Che:
 +
 ----
-docker pull eclipse/che:5.0.0-M7
+$ docker pull eclipse/che:<version+1>
 ----
 +
-You now have two eclipse/che images (one for each version).
+You now have two `eclipse/che` images (one for each version).
 +
 . Use the new image to upgrade the old installation:
 +
 ----
-docker run <volume-mounts> eclipse/che:5.0.0-M7 upgrade
+$ docker run <volume-mounts> eclipse/che:<version+1> upgrade
 ----
 +
-The upgrade command has numerous checks to prevent you from upgrading Che if the new image and the old version are not compatible. For the upgrade procedure to proceed, the CLI image must be newer than the value of '/instance/che.ver'.
+The `upgrade` command has numerous checks to prevent you from upgrading Che if the new image and the old version are not compatible. For the upgrade procedure to proceed, the CLI image must be newer than the value of `/instance/che.ver`.
 +
 Following is a list of actions that the upgrade process performs in the background:
 
-a. Performs a version compatibility check.
+.. Performs a version compatibility check.
 
-b. Downloads new Docker images that are needed to run the new version of Che.
+.. Downloads new Docker images that are needed to run the new version of Che.
 
-c. Stops Che if it is currently running and triggers a maintenance window.
+.. Stops Che if it is currently running and triggers a maintenance window.
 
-d. Backs up your installation.
+.. Backs up your installation.
 
-e. Initializes the new version.
+.. Initializes the new version.
 
-f. Starts Che.
+.. Starts Che.
 
 For a list of available versions that you can upgrade to, run the `che version` command.
 
 The `--skip-backup` option allows you to skip the https://github.com/codenvy/che-docs/blob/master/src/main/_docs/setup/setup-cli.md#backup[backup] operation during the update. Skipping the backup operation speeds up the upgrade because the https://github.com/codenvy/che-docs/blob/master/src/main/_docs/setup/setup-cli.md#backup[backup operation] can be time consuming if the `/instance` directory contains many user worksapces and projects making it a large directory.
 
-_version_::
-The `version` command provides information on the current version and the available versions that are hosted in Che’s repositories. The `che upgrade` command enforces upgrade sequences and prevents you from upgrading one version to another version where data migrations cannot be guaranteed.
+`version`::
+The `version` command provides information on the current version and the available versions that are hosted in Che repositories. The `che upgrade` command enforces upgrade sequences and prevents you from upgrading one version to another version where data migrations cannot be guaranteed.
 
 
 [id="cli-development"]
@@ -331,14 +348,18 @@ You can customize the CLI using a variety of techniques. This section discusses 
 The Che CLI is constructed of multiple Docker images within the Che source repository.
 
 ----
-/dockerfiles/base  # Common functions and commands
-/dockerfiles/cli   # CLI entrypoint, overrides, and version information
-/dockerfiles/init  # Manifests used to configure Che on a host installation
+/dockerfiles/base	<1>
+/dockerfiles/cli	<2>
+/dockerfiles/init	<3>
 ----
 
-The Che CLI is written in Bash. The `cli` image depends upon both the `base` image and the `init` image. In the source repository, the `build.sh` command builds these Docker images either one at a time or collectively as a group.
+<1> Common functions and commands
+<2> CLI entrypoint, overrides, and version information
+<3> Manifests used to configure Che on a host installation
 
-Rebuilding images every time you want to test a small change to Bash script can be tedious. To avoid rebuilding the images every time and for every change to a Bash script, mount the contents during the image execution. You cannot mount the `entrypoint.sh` file. But, you can mount the following:
+The Che CLI is written in Bash. The `cli` image depends upon both the `base` image and the `init` image. In the source repository, the `build.sh` script builds these Docker images either one at a time or collectively as a group.
+
+Rebuilding images every time you want to test a small change to Bash script can be tedious. To avoid rebuilding the images every time and for every change to a Bash script, mount the contents during the image execution. You cannot mount the `entrypoint.sh` file, but you can mount the following:
 
 * To mount the contents of the `base` image:
 ----
@@ -355,30 +376,45 @@ If you run the Che CLI in this configuration, any changes made to the Bash files
 [id="custom-cli"]
 == Customizing the Che CLI
 
-The Che CLI was designed to be overridden to allow different CLIs to be created from the same base structure. This is how Codenvy and ARTIK has identical CLIs to Che. The CLI is created with the following minimal assets:
+The Che CLI was designed to be overridden to allow different CLIs to be created from the same base structure. The CLI is created with the following minimal assets:
 
 ----
-/dockerfiles/cli/build.sh               # Local file to build the image
-/dockerfiles/cli/Dockerfile             # Image definition, must FROM `eclipse/che-base:nightly`
-/dockerfiles/cli/scripts                # Contains additional commands in the form of `cmd_<name>.sh`
-/dockerfiles/cli/scripts/entrypoint.sh  # The entrypoint of the CLI container, with usage() method
-/dockerfiles/cli/scripts/cli.sh         # Defines CLI-specific product names & variables
-/dockerfiles/cli/version                # Contains version-specific data that the CLI requires
+/dockerfiles/cli/build.sh		<1>
+/dockerfiles/cli/Dockerfile		<2>
+/dockerfiles/cli/scripts		<3>
+/dockerfiles/cli/scripts/entrypoint.sh	<4>
+/dockerfiles/cli/scripts/cli.sh		<5>
+/dockerfiles/cli/version		<6>
 ----
 
-You can add additional commands to the Che CLI beyond the base set of commands that are provided by adding a file of the name `cmd_<name>.sh` into the `scripts` directory. Codenvy is an example that adds https://github.com/codenvy/codenvy/tree/master/dockerfiles/cli/scripts[additional commands].
+<1> Local file to build the image
+<2> Image definition, must FROM `eclipse/che-base:nightly`
+<3> Contains additional commands in the form of `cmd_<name>.sh`
+<4> The entrypoint of the CLI container, with usage() method
+<5> Defines CLI-specific product names & variables
+<6> Contains version-specific data that the CLI requires
 
-The `version` directory has information about the latest version and a sub-directory for each version that is available for installation. Each version sub-directory has version-specific data that the CLI depends upon to create a manifest of Docker images that must be downloaded to support the product that is going to be run. When a release of the Che CLI is generated, the CI systems automatically update the `/version` directory with the version-specific information contained in the release.
+You can add additional commands to the Che CLI beyond the base set of commands that are provided by adding a file of the name `cmd_<name>.sh` into the `scripts/` directory.
+
+The `version/` directory contains information about the latest version and a sub-directory for each version that is available for installation. Each version sub-directory has version-specific data that the CLI depends on to create a manifest of container images that must be downloaded to support the product that is going to be run. When a release of the Che CLI is generated, the CI systems automatically update the `version/` directory with the version-specific information contained in the release.
 
 [id="puppet-templates"]
 == Puppet templates
 
-The Che CLI uses Puppet to generate OS-specific configuration files based on environment variables set by the user either with the `-e <VALUE>` option on the command line, or by modifying their `che.env` file. We pass all of these values into Puppet and then run a Puppet configuration utility across the files contained in the `/dockerfiles/init/modules` and `/dockerfiles/init/manifests` directories to take the templates contained within the `/init` module, marry them with user-specific variables, and then generate an instance-specific configuration in the `/instance` directory. Puppet has logic constructs that allow us to generate different kinds of constructs with logic based upon the values provided by the end users.
+The Che CLI uses Puppet to generate OS-specific configuration files based on environment variables set by the user either with the `-e <VALUE>` option on the command line, or by modifying their `che.env` file. 
 
-This Puppet-based approach allows us to simplify the outputs for end users and limit the locations where end users need to configure various parts of the system. One powerful example of this is that we generate two `docker-compose.yml` files from a single Puppet template. The `docker-compose.yml` and `docker-compose-container.yml` files are located in the user’s `/instance` directory. The first one is a configuration file that allows a user to run Docker Compose for Che on their host. They can run the `docker-compose up` command in that directory. The second file is for running Docker Compose from within a container, which is what the CLI does. The syntax of Docker Compose changes in each of these scenarios as the files being referenced from within the compose syntax are different. There is a single template for Docker Compose in the `init` image. It is then applied in two configurations using Puppet.
+A Puppet configuration utility parses files contained in the `/dockerfiles/init/modules/` and `/dockerfiles/init/manifests/` directories to take the templates contained in the `/init/` directory, matches them with user-specific variables, and generates an instance-specific configuration in the `/instance/` directory. Puppet has logic constructs that allow us to generate different kinds of constructs with logic based on the values provided by the end users.
+
+This Puppet-based approach allows to simplify the outputs for end users and limit the locations where end users need to configure various parts of the system. An example of this is that we generate two `docker-compose.yml` files from a single Puppet template. The `docker-compose.yml` and `docker-compose-container.yml` files are located in the user’s `/instance/` directory.
+
+`docker-compose.yml`:: A configuration file that allows a user to run Docker Compose for Che on their host. They can run the `docker-compose up` command in that directory.
+
+`docker-compose-container.yml`:: A configuration file for running Docker Compose from within a container, which is what the CLI does.
+
+The syntax of Docker Compose changes in each of these scenarios as the files being referenced from within the compose syntax are different. There is a single template for Docker Compose in the `init` image. It is then applied in two configurations using Puppet.
 
 [id="cli-tests"]
 == CLI tests
 
-There are existing https://github.com/sstephenson/bats[bats] tests for the Che CLI, which run automatically with each execution of a `build.sh` script located in the `dockerfiles/cli` directory. To skip them, pass the `--skip-tests` argument when running the build script. To only run the tests, execute the `test.sh` script located in the same directory. The tests utilize the `eclipse/che-bats` docker image, which is built from the `Dockerfile` placed in the `dockerfiles/bats` directory.
+There are existing https://github.com/sstephenson/bats[bats] tests for the Che CLI, which run automatically with each execution of the `build.sh` script located in the `dockerfiles/cli/` directory. To skip them, pass the `--skip-tests` argument when running the build script. To only run the tests, execute the `test.sh` script located in the same directory. The tests utilize the `eclipse/che-bats` docker image, which is built from the `Dockerfile` placed in the `dockerfiles/bats/` directory.
 
