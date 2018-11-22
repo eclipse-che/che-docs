@@ -41,7 +41,11 @@ A workspace is considered to be in a `RUNNING` state after the Che server verifi
 * The workspace agent has successfully started.
 * The Che server can reach it.
 
-It is possible that your browser (the client) cannot connect to a workspace agent. The Che server may use an internal IP to reach the workspace agent, while you may be accessing a workspace from a machine that is located in a different network. If you see a message saying that the IDE cannot be initialized, open the browser dev console and check the failed requests. The failed requests have requests to project and project-type API. The reason for this is that the ephemeral port range is filtered in your network.
+=== Troubleshooting network setting when workspace agent cannot be reached
+
+An error message saying that the IDE cannot be initialized indicates that the client (browser) cannot reach the workspace agent. This is caused by the Che server using an internal IP address to reach the workspace agent, while you are accessing the workspace from a machine that is located on a different network. To confirm this, open the browser developer console and check failed requests. The failed requests are to `project` and `project-type` API.
+
+To access a workspace from a different network than the one on which the Che server is running, enable access to the ephemeral port range on the Che server network.
 
 [id="bootstrapping-failures"]
 == Failure in bootstrapping
