@@ -19,7 +19,11 @@ $ docker run -it --rm <DOCKER_PARAMETERS> eclipse/che-cli:<version> [COMMAND]
 
 Following is the mandatory `docker` command parameter for the CLI image:
 
-* `-v <LOCAL_PATH>:/data`: The user, instance, and log data are saved here.
+----
+-v <LOCAL_PATH>:/data
+----
+
+The user, instance, and log data are saved here.
 
 The following tables lists the optional `docker` command parameters that you can use with the CLI image.
 
@@ -27,34 +31,34 @@ The following tables lists the optional `docker` command parameters that you can
 |===
 |Optional Docker parameter
 |Description
-|`-e CHE_HOST=<YOUR_HOST>`              
+|`-e CHE_HOST=<YOUR_HOST>`
 |IP address or hostname where Che serves its users
 
-|`-e CHE_PORT=<YOUR_PORT>`            
+|`-e CHE_PORT=<YOUR_PORT>`
 |Port on which Che binds itself
 
-|`-e CHE_CONTAINER=<YOUR_NAME>`         
+|`-e CHE_CONTAINER=<YOUR_NAME>`
 |Prefix name for the Che container
 
-|`-v <LOCAL_PATH>:/data/instance`     
+|`-v <LOCAL_PATH>:/data/instance`
 |The instance, user, log data is saved here
 
-|`-v <LOCAL_PATH>:/data/backup`         
+|`-v <LOCAL_PATH>:/data/backup`
 |Backup files are saved here
 
-|`-v <LOCAL_PATH>:/repo`               
+|`-v <LOCAL_PATH>:/repo`
 |Che git repository - uses local binaries and manifests
 
-|`-v <LOCAL_PATH>:/assembly`            
+|`-v <LOCAL_PATH>:/assembly`
 |Che assembly - uses local binaries
 
-|`-v <LOCAL_PATH>:/sync`               
+|`-v <LOCAL_PATH>:/sync`
 |Where `remote ws` files are copied with the `sync` command
 
-|`-v <LOCAL_PATH>:/unison`              
+|`-v <LOCAL_PATH>:/unison`
 |Where unison profile for optimizing the `sync` command resides
- 
-|`-v <LOCAL_PATH>:/chedir`              
+
+|`-v <LOCAL_PATH>:/chedir`
 |Source repository to convert into workspace with the `Chedir` utility
 |===
 
@@ -65,64 +69,64 @@ The following table lists the commands that you can use with the Docker CLI imag
 |===
 |Command
 |Description
-|`action <action-name>`      
+|`action <action-name>`
 |Start action on Che instance
 
-|`backup`                          
+|`backup`
 |Backs up Che configuration and data to the `/data/backup` volume mount
 
-|`config`                              
+|`config`
 |Generates a Che configuration from variables; run on any `start` or `restart` command
 
-|`destroy`                              
+|`destroy`
 |Stops services, and deletes che instance data
 
-|`dir <command>`                        
+|`dir <command>`
 |Use `Chedir` and `Chefile` in the directory mounted to `:/chedir`
-  
-|`download`                           
+
+|`download`
 |Pulls Docker images for the current Che version
 
-|`help`                                 
+|`help`
 |Displays information about Che and the CLI
 
 |`info`
 |Displays system state and debugging information
 
-|`init`                                
+|`init`
 |Initializes a directory with a Che install
 
-|`offline`                            
+|`offline`
 |Saves Che container images into TAR files for offline installation
 
-|`restart`                           
+|`restart`
 |Restarts the Che services
 
-|`restore`                              
+|`restore`
 |Restores Che configuration and data from the `/data/backup` mount
 
-|`rmi`                                  
+|`rmi`
 |Removes the container images for `<version>`, forcing a re-pull
 
-|`ssh <_workspace-name_> [_machine-name_]`       
+|`ssh <__workspace-name__> [_machine-name_]`
 |SSH to a workspace if SSH agent is enabled
 
-|`start`                                
+|`start`
 |Starts the Che services
 
-|`stop`                                 
+|`stop`
 |Stops the Che services
-  
-|`sync <_workspace-name_>`                     
+
+|`sync <__workspace-name__>`
 |Synchronizes workspace with local directory mounted to `:/sync`
- 
-|`test <_test-name_>`                     
+
+|`test <__test-name__>`
 |Starts test on the Che instance
 
-|`upgrade`                             
+|`upgrade`
 |Upgrades Che from one version to another with migrations and backups
 
-|`version`                             
+|`version`
 |Installed version and upgrade paths
 |===
 
@@ -132,16 +136,16 @@ The following table lists the global command options that you can use with the D
 |===
 |Command option
 |Description
-|`--fast`                               
+|`--fast`
 |Skips networking, version, nightly, and preflight checks
 
-|`--offline`                            
+|`--offline`
 |Runs CLI in offline mode, loading images from the disk
 
-|`--debug`                              
+|`--debug`
 |Enable debugging of the Che server
 
-|`--trace`                              
+|`--trace`
 |Activates trace output for debugging the CLI
 |===
 
@@ -149,7 +153,7 @@ The CLI has the following three primary phases:
 
 * The initialization phase is executed by the `init` command. It installs version-specific files into the directory mounted to `/data/`. This includes the universal configuration file named `che.env`, a version identifier, and a location where configuration files are saved. The configuration is executed by the `config` command. The `config` command takes the `che.env` configuration file and the OS of your host system as input and generates an OS-specific set of configuration files in the `data/instance` directory."
 
-* The configuration phase runs an initialization if a directory is not found. Every execution of the `config` command overwrites the files in the `/data/instance/` directory with the latest configuration. This ensures that if an administrator modifies any configuration file, the instance’s configuration files are updated consistently. The CLI generates a large number of configuration files specific to running Che. The configuration files are sourced from the Puppet templates that are stored in the GitHub repository under `/dockerfiles/init/`. 
+* The configuration phase runs an initialization if a directory is not found. Every execution of the `config` command overwrites the files in the `/data/instance/` directory with the latest configuration. This ensures that if an administrator modifies any configuration file, the instance’s configuration files are updated consistently. The CLI generates a large number of configuration files specific to running Che. The configuration files are sourced from the Puppet templates that are stored in the GitHub repository under `/dockerfiles/init/`.
 
 * The start phase is executed by the `start` command. It uses a configuration-generated `docker-compose-container.yml` file to launch Eclipse Che. The start phase always executes a `config` command, so any files that were edited in the `/data/instance/` directory are overwritten with the generated configuration from the CLI.
 
@@ -164,28 +168,31 @@ The `action` command executes some actions on the Eclipse Che instance or on a w
 
 
 `backup`::
-The `backup` command creates TAR files from the `/instance/` directory and places them in the `/backup/` directory. These files are restoration-ready.
+The `backup` command creates TAR files from the `instance/` directory and places them in the `/backup/` directory. These files are restoration-ready.
 
 `config`::
-The `config` command generates a Che instance configuration that is placed in the `/instance/` directory. It uses Puppet to generate Docker Compose configuration files to run Che and its associated server. Che server configuration is generated as a `che.properties` file that is mounted in the Che server when it boots. This command is executed on every `start` or `restart`.
+The `config` command generates a Che instance configuration that is placed in the `instance/` directory. It uses Puppet to generate Docker Compose configuration files to run Che and its associated server. Che server configuration is generated as a `che.properties` file that is mounted in the Che server when it boots. This command is executed on every `start` or `restart`.
 +	
-If you are using a `eclipse/che:<version>` image and it does not match the version in the `/instance/che.ver` file, the configuration aborts to prevent you from running a configuration for a different version.
+If you are using a `eclipse/che:<version>` image and it does not match the version in the `instance/che.ver` file, the configuration aborts to prevent you from running a configuration for a different version.
 +	
 It respects the `--no-force`, `--pull`, `--force`, and `--offline` command options.
 
 `destroy`::
-The `destroy` command deletes the `che.env` file and the `/docs/` and `/instance/` directories, including user workspaces, projects, data, and user database. To skip the confirmation warning message, pass the `--quiet` argument in the command. To delete the `cli.log` file, pass the `--cli` argument. By default, the `cli-log` file is retained for traceability.
+The `destroy` command deletes the `che.env` file and the `/docs/` and `instance/` directories, including user workspaces, projects, data, and user database. To skip the confirmation warning message, pass the `--quiet` argument in the command. To delete the `cli.log` file, pass the `--cli` argument. By default, the `cli-log` file is retained for traceability.
 
 `dir`::
 The `dir` command boots a new Eclipse Che instance with a workspace for the `:/chedir` directory defined as volume mount in the parameter.
 +
 For example, if you give `$HOME/my-project` as a parameter, a new Che instance is created using `$HOME/my-project` as a project in the IDE. Inside the IDE, the `/projects/` directory contains a `my-project/` directory with your host directory. Any changes inside the IDE are reflected in your host directory. Updating a file on your local computer updates the content of the file inside the IDE.
 +
-* `init`: Initializes the directory specified and adds a default `Chefile` if there is none.
-* `up`: Boots Eclipse Che with workspace on directory.
-* `down`: Stops Eclipse Che and any workspaces.
-* `ssh`: Connects to the running workspace by using the `ssh` command.
-* `status`: Displays if an instance of Eclipse Che is running or not for the specified directory.
+--
+[horizontal]
+`init`:: Initializes the directory specified and adds a default `Chefile` if there is none.
+`up`:: Boots Eclipse Che with workspace on directory.
+`down`:: Stops Eclipse Che and any workspaces.
+`ssh`:: Connects to the running workspace by using the `ssh` command.
+`status`:: Displays if an instance of Eclipse Che is running or not for the specified directory.
+--
 
 `download`::
 The `download` command is used to download container images stored in your image repository. This command downloads images that are used by the CLI as utilities, for Che to do initialization and configuration, and for the runtime images that Che needs when it starts. This command respects the `--offline`, `--pull`, `--force`, and `--no-force` (default) command options. It is invoked by the `che init`, `che config`, or `che start` commands.
@@ -209,9 +216,10 @@ The `info` command displays system state and debugging information. The `--netwo
 `init`::
 The `init` command initializes an empty directory with a Che configuration and instance directory. The user data and runtime configuration are stored in the empty directory. You must provide a `<path>:/data` volume mount for Che to create the `instance/` and `backup/` sub-directories of `<path>`. After initialization, a `che.env` file is placed in the root directory of the path that you mounted to `/data/`.
 +
-Overriding the location of the `/instance/` directory:: Mount an additional local directory to the `/data/instance/` directory.
-
+--
+Overriding the location of the `instance/` directory:: Mount an additional local directory to the `/data/instance/` directory.
 Overriding the location of where backups are stored:: Mount an additional local directory to the `/data/backup/` directory.
+--
 +
 The following variables can be set in your local environment shell before running. These variables are respected during initialization:
 +
@@ -256,7 +264,7 @@ The `restore` command restores the `/instance` directory to its previous state. 
 +
 [IMPORTANT]
 ====
-Use this command with caution because it deletes the existing `/instance/` directory. As a precautionary measure, set these values to different directories when performing a restore action.
+Use this command with caution because it deletes the existing `instance/` directory. As a precautionary measure, set these values to different directories when performing a restore action.
 ====
 
 `rmi`::
@@ -281,12 +289,13 @@ The `sync` command synchronizes contents of a workspace with a local directory m
 To display a log of the underlying unison tool, use the `--unison-verbose` flag.
 
 `start`::
-The `start` command starts Che and its services using the `docker-compose` command. In the absence of valid configuration, it performs an `init` command. Every `start` and `restart` command runs the `config` command to generate a new configuration set using the latest configuration files placed into the `/instance/` directory. The starting sequence also tests if any ports required by Che are currently being used by other services and to verify access to key APIs.
-
+The `start` command starts Che and its services using the `docker-compose` command. In the absence of valid configuration, it performs an `init` command. Every `start` and `restart` command runs the `config` command to generate a new configuration set using the latest configuration files placed into the `instance/` directory. The starting sequence also tests if any ports required by Che are currently being used by other services and to verify access to key APIs.
++
+--
 Skipping the generation of configuration:: Use the `--skip:config` option.
 Skipping checks:: Use the `--skip:preflight` and `--skip:postflight` options.
 Automatically printing server logs during the boot:: Use the `--follow` option. To interrupt the output, press *Ctrl+c*, or use the shell commands to interrupt the output.
-+
+--
 
 `stop`::
 The default stop is a graceful stop where each workspace is stopped and confirmed shut down before stopping system services. If workspaces are configured to snap on stop, all snaps are completed before the system service shutdown begins. You can ignore workspace stop behavior and shut down only system services using the `–force` flag.
@@ -313,7 +322,7 @@ You now have two `eclipse/che` images (one for each version).
 $ docker run <volume-mounts> eclipse/che:<version+1> upgrade
 ----
 +
-The `upgrade` command has numerous checks to prevent you from upgrading Che if the new image and the old version are not compatible. For the upgrade procedure to proceed, the CLI image must be newer than the value of `/instance/che.ver`.
+The `upgrade` command has numerous checks to prevent you from upgrading Che if the new image and the old version are not compatible. For the upgrade procedure to proceed, the CLI image must be newer than the value of `instance/che.ver`.
 +
 Following is a list of actions that the upgrade process performs in the background:
 
@@ -352,7 +361,6 @@ The Che CLI is constructed of multiple Docker images within the Che source repos
 /dockerfiles/cli	<2>
 /dockerfiles/init	<3>
 ----
-
 <1> Common functions and commands
 <2> CLI entrypoint, overrides, and version information
 <3> Manifests used to configure Che on a host installation
@@ -362,11 +370,13 @@ The Che CLI is written in Bash. The `cli` image depends upon both the `base` ima
 Rebuilding images every time you want to test a small change to Bash script can be tedious. To avoid rebuilding the images every time and for every change to a Bash script, mount the contents during the image execution. You cannot mount the `entrypoint.sh` file, but you can mount the following:
 
 * To mount the contents of the `base` image:
++
 ----
 -v <path-to-che-repo>/dockerfiles/scripts/base/scripts:/base/scripts
 ----
 
 * To mount the contents of the `init` image:
++
 ----
 -v <path-to-che-repo>:/repo
 ----
@@ -386,12 +396,11 @@ The Che CLI was designed to be overridden to allow different CLIs to be created 
 /dockerfiles/cli/scripts/cli.sh		<5>
 /dockerfiles/cli/version		<6>
 ----
-
 <1> Local file to build the image
 <2> Image definition, must FROM `eclipse/che-base:nightly`
 <3> Contains additional commands in the form of `cmd_<name>.sh`
-<4> The entrypoint of the CLI container, with usage() method
-<5> Defines CLI-specific product names & variables
+<4> The entrypoint of the CLI container, with the `usage()` method
+<5> Defines CLI-specific product names and variables
 <6> Contains version-specific data that the CLI requires
 
 You can add additional commands to the Che CLI beyond the base set of commands that are provided by adding a file of the name `cmd_<name>.sh` into the `scripts/` directory.
@@ -401,11 +410,11 @@ The `version/` directory contains information about the latest version and a sub
 [id="puppet-templates"]
 == Puppet templates
 
-The Che CLI uses Puppet to generate OS-specific configuration files based on environment variables set by the user either with the `-e <VALUE>` option on the command line, or by modifying their `che.env` file. 
+The Che CLI uses Puppet to generate OS-specific configuration files based on environment variables set by the user either with the `-e <VALUE>` option on the command line, or by modifying their `che.env` file.
 
-A Puppet configuration utility parses files contained in the `/dockerfiles/init/modules/` and `/dockerfiles/init/manifests/` directories to take the templates contained in the `/init/` directory, matches them with user-specific variables, and generates an instance-specific configuration in the `/instance/` directory. Puppet has logic constructs that allow us to generate different kinds of constructs with logic based on the values provided by the end users.
+A Puppet configuration utility parses files contained in the `/dockerfiles/init/modules/` and `/dockerfiles/init/manifests/` directories to take the templates contained in the `/init/` directory, matches them with user-specific variables, and generates an instance-specific configuration in the `instance/` directory. Puppet has logic constructs that allow us to generate different kinds of constructs with logic based on the values provided by the end users.
 
-This Puppet-based approach allows to simplify the outputs for end users and limit the locations where end users need to configure various parts of the system. An example of this is that we generate two `docker-compose.yml` files from a single Puppet template. The `docker-compose.yml` and `docker-compose-container.yml` files are located in the user’s `/instance/` directory.
+This Puppet-based approach allows to simplify the outputs for end users and limit the locations where end users need to configure various parts of the system. An example of this is that we generate two `docker-compose.yml` files from a single Puppet template. The `docker-compose.yml` and `docker-compose-container.yml` files are located in the user’s `instance/` directory.
 
 `docker-compose.yml`:: A configuration file that allows a user to run Docker Compose for Che on their host. They can run the `docker-compose up` command in that directory.
 
