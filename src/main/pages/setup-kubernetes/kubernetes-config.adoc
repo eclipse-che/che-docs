@@ -1,5 +1,5 @@
 ---
-title: "Configuration: Kuberentes"
+title: "Configuring Kuberentes"
 keywords: kubernetes, configuration
 tags: [installation, kubernetes]
 sidebar: che_6_docs
@@ -7,35 +7,31 @@ permalink: kubernetes-config.html
 folder: setup-kubernetes
 ---
 
-[id="how-it-works"]
-== How It Works
+You can configure the behavior of the Che server by passing environment variables to the Che deployment.
 
-Che server behavior can be configured by passing environment variables to Che deployment.
+There are multiple ways to edit the Che deployment to add new or edit existing environment variables:
 
-There are multiple ways to edit Che deployment to add new or edit existing envs:
+* To open the Che deployment YAML file in text editor, use the `kubectl edit dc/che` command.
+* To manually edit the Che deployment, in the Kubernetes web console, click *Deployments* -> *Che* -> *Edit*.
+* To update the Che deployment with new environment variables or to modify the values of existing ones, use:
 
-* `kubectl edit dc/che` opens Che deployment yaml in nano editor (VIM is used by default)
-* manually in Kubernetes web console > deployments > Che > Edit
-* `kubectl set env dc/che KEY=VALUE KEY1=VALUE1` updates Che deployment with new envs or modifies values of existing ones
+----
+$ kubectl set env dc/che <key>=<value> <key1>=<value1>
+----
 
 [id="what-can-be-configured"]
-== What Can Be Configured?
+== Configurable Che properties
 
-You can find deployment env or config map in yaml files. However, they do not reference a complete list of environment variables that Che server will respect.
+You can find the deployment environment variables or configuration map in the YAML files. For a complete list of all the properties that are configurable for the Che server, see https://github.com/eclipse/che/tree/master/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che[Che properties].
 
-Here is a https://github.com/eclipse/che/tree/master/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che[complete] list of all properties that are configurable for Che server.
+To manually convert properties into environment variables, follow the instructions on the link:properties.html#properties-and-environment-variables[properties page].
 
-You can manually convert properties into envs, just make sure to follow link:properties.html#properties-and-environment-variables[instructions on properties page]
-
-[id="admin-guide"]
-== Admin Guide
-
-Find more information on most critical configuration options at link:kubernetes-admin-guide.html[Kubernetes admin guide]
+For more information about critical configuration options, see the link:kubernetes-admin-guide.html[Kubernetes Administration guide].
 
 [id="che-workspace-unrecoverable-events"]
-== Che Workspace Unrecoverable Events
+== Specifying unrecoverable events
 
-By default, if one of the following Kubernetes / OpenShift events (`Failed Mount` / `Failed Scheduling` / `Failed to pull image`) occurs during a startup, workspace will be immediately terminated before timeout. For changing or disabling (via a blank value) default unrecoverable events the following environment variable should be used:
+By default, if the `Failed Mount`, `Failed Scheduling`, or `Failed to pull image` Kubernetes or OpenShift events occur during a startup, the workspace is immediately terminated before timeout. To change or disable (via a blank value) the default unrecoverable events, use the following environment variable:
 
 `CHE_INFRA_KUBERNETES_WORKSPACE_UNRECOVERABLE_EVENTS`
 
