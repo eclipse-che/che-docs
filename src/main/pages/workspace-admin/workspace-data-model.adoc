@@ -8,21 +8,36 @@ folder: workspace-admin
 ---
 
 
-----
-environments: Map<String, getEnvironments>  // Workspace envs. A workspace can have multiple envs
-defaultEnv: STRING                          // A workspace should have a default environment
-projects: []                                // Projects associated with a workspace
-commands: []                                // Commands associated with a workspace
-name: STRING                                // Workspace name that has to be unique in a namespace
-links: []                                   //
-----
+The following table lists the data types and their description.
+
+[width="100%",cols="50%,50%",options="header",]
+|===
+|Data Types |Description
+|environments: Map<String, getEnvironments> 
+|Workspace environment variables. A workspace can have multiple environment variables.
+
+|defaultEnv: STRING
+|A workspace must have a default environment.
+
+|projects: []
+|Projects associated with a workspace.
+
+|commands: []
+|Commands associated with a workspace.
+
+|name: STRING
+|Workspace name that has to be unique in a namespace.
+
+|links: []
+|-
+|===
 
 [id="environment"]
-== Environment
+== Environment recipes
 
 image::workspaces/ws_data_model.png[]
 
-Environment recipe can also have content instead of location, if link:recipes.html[recipe] type is `dockerfile`, `compose` or `openshift`:
+For link:recipes.html[recipe] types of `dockerfile`, `compose`, or `openshift`, content, not location, is specified.
 
 [source,json]
 ----
@@ -38,22 +53,22 @@ Environment recipe can also have content instead of location, if link:recipes.ht
 
 image::workspaces/ws_projects.png[]
 
-Project object structure is quite simple, `source.location` and `source.type` being the most important parameters. There are 2 importer types: `git` and `zip`. New location types can be provided by custom plugins, such as `svn`.
+The project object structure has the `source.location` and `source.type` parameters. There are two importer types: `git` and `zip`. New location types can be provided by custom plugins, such as `svn`.
 
-In the example above, a project does not have problems and mixins. If a project is misconfigured or missing sources, it will be marked with a problem (error code and a message explaining the problem).
+Incorrectly configured projects or projects missing sources are marked with error codes and messages explaining the error. In the example above, the project does not have errors and mixins.
 
-A mixin adds additional behaviors the project, IDE panels and menus etc. Mixins are reusable across any project type. You define the mixins to add to a project by specifying an array of strings, with each string containing the identifier for the mixin.
+A mixin adds additional behaviors to the project, the IDE panels, and menus. Mixins are reusable across any project type. To define the mixins to add to a project, specify an array of strings, with each string containing the identifier for the mixin.
 
 [width="100%",cols="50%,50%",options="header",]
 |===
 |Mixin ID |Description
-|`git` |Initiates the project with a git repository. Adds git menu functionality to the IDE. If a user in the IDE creates a new project and then initializes a git repository, then this mixin is added to that project.
-|`pullrequest` |Enables pull request workflow where server handles local & remote branching, forking, and pull request issuance. Pull requests generated from within server have another Factory placed into the comments of pull requests that a PR reviewer can consume. Adds contribution panel to the IDE. If this mixin is set, then it uses attribute values for `project.attributes.local_branch` and `project.attributes.contribute_to_branch`.
+|`git` |Initiates the project with a Git repository. Adds Git-menu functionality to the IDE. To add a mixin to the project, create a new project and then initialize a Git repository.
+|`pullrequest` |Enables pull-request workflow where a server handles the local and remote branching, forking, and pull-request issuance. Pull requests generated from within the server have another Factory placed into the comments of pull requests that a PR reviewer can consume. Adds contribution panel to the IDE. Set this mixin to use attribute values for `project.attributes.local_branch` and `project.attributes.contribute_to_branch`.
 |===
 
 The `pullrequest` mixin requires additional configuration from the `attributes` object of the project.
 
-The `project` object can also include `source.parameters`, which is a map that can contain additional parameters e.g. related to project importer
+The `project` object can include `source.parameters`, which is a map that can contain additional parameters. Example: related to project importer.
 
 [width="100%",cols="50%,50%",options="header",]
 |===
@@ -64,17 +79,17 @@ The `project` object can also include `source.parameters`, which is a map that c
 [id="commands"]
 == Commands
 
-Commands can be both tied to a workspace and an individual project. In the example below, a command is saved to workspace configuration:
+Commands can be both tied to a workspace and an individual project. In the example below, a command is saved to workspace configuration.
 
 image::workspaces/ws_commands.png[]
 
-Here’s how commands can be saved in project configuration:
+The followling image shows ways to save commands in the project configuration.
 
 image::workspaces/project_commands.png[]
 
 [id="runtime"]
 == Runtime
 
-Runtime object is created when a workspace is in a running state. Runtime returns servers URLs (internal or external, depending on server config). Interested clients, like User Dashboard and IDE use these URLs.
+A runtime object is created when a workspace is in a running state. Runtime returns server URLs, internal or external, depending on the server configuration. Interested clients, like the *User Dashboard* and the IDE, use these URLs.
 
 image::workspaces/runtime.png[]
