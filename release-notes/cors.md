@@ -1,6 +1,6 @@
 
 
-## Adding properties to toggle on/off CORS authentication
+## New Tomcat and CORS security issue 
 
 Tomcat 8.5.32 introduced changes to CORS filter that will disallow it's usage with following configuration:
 ```
