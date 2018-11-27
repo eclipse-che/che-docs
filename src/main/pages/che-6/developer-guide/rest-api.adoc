@@ -1,0 +1,18 @@
+---
+title: "REST API"
+keywords: framework, overview, master, server, REST API
+tags: [extensions, dev-docs, assembly]
+sidebar: che_6_docs
+permalink: che-6/rest-api.html
+redirect_from: rest-api.html
+folder: che-6/developer-guide
+---
+
+
+Eclipse Che server side components - both for master and workspace agents - are exposed as REST services which makes it easy to integrate Che in other platforms or use custom clients to create and run workspaces, import and update projects, update/delete workspaces and associated objects etc.
+
+You can make yourself familiar with available APIs in Swagger UI page - all methods have swagger annotations. Che master APIs are available at at `${CHE_HOST}/swagger/`. If you use multi-user Che flavor, you will need link:authentication.html[authentication token].
+
+Probably, https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-workspace/src/main/java/org/eclipse/che/api/workspace/server/WorkspaceService.java[workspace API] is the most interesting one to take a closer look. Workspace API lets you remotely interact with Che master to create developer environments - create, update and delete workspaces, start workspaces by creating and deleting runtime, add, update and delete workspace environments, associate commands with a workspace.
+
+Workspace agent APIs focus on link:project-types.html[project types], link:projects.html[projects] and things related to projects, like link:version-control.html[Git]. To see the list of available workspace REST APIs, follow instructions in link:authentication.html[authentication docs]. With https://github.com/eclipse/che/blob/master/wsagent/che-core-api-project/src/main/java/org/eclipse/che/api/project/server/ProjectService.java[Project API] you can programmatically create/import projects in a workspace, update configuration, get file content using custom plugins or 3rd-party clients.

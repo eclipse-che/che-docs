@@ -1,0 +1,81 @@
+---
+title: "Workspace Agent"
+keywords: framework, agent, workspace
+tags: [extensions, assembly, dev-docs]
+sidebar: che_6_docs
+permalink: che-6/workspace-agent.html
+redirect_from: workspace-agent.html
+folder: che-6/developer-guide
+---
+
+== Enabling debugging on Workspace Agent
+
+. Configure your WS Agent Tomcat JPDA launching parameters with the following Workspace environment variables:
++
+`WSAGENT_DEBUG`:: Set to `true` to enable JPDA mode for Workspace Agent Tomcat. The default is `false`.
+`WSAGENT_DEBUG_PORT`:: Configure the JPDA port. The default is `4403`.
+`WSAGENT_DEBUG_SUSPEND`:: Set to `y` to enable JPDA suspend mode. The default is `n`.
++
+image::wsagent/wsagent-debug-env.png[]
+
+. Get a host and a port for connecting to Workspace Agent Tomcat.
+
+=== Connecting to Workspace Agent Tomcat with a debugger
+
+You will need a host and port for the debugger. The process of acquiring it differs depending on the Che infrastructure:
+
+==== Connecting a debugger on Docker
+
+* Before starting a workspace, define a link:servers.html[Server] for your JPDA port.
++
+image::wsagent/wsagent-debug-server.png[]
+
+* You will need to use a port on your host that is mapped to a port in the container. It can be found in *Workspace Servers* of a running workspace:
++
+image::wsagent/wsagent-debug-docker.png[]
+
+==== Connecting a debugger on Kubernetes or OpenShift
+
+To connect with a debugger from outside of the cluster, use _port forwarding_ to forward a port from your workspace pod to the port on your localhost.
+
+*For Kubernetes:*
+
+Use the following command to find the name and namespace of your workspace pod:
+
+----
+$ kubectl get pods --all-namespaces
+----
+
+----
+$ kubectl port-forward <POD_NAME> <LOCAL_PORT>:<JPDA_PORT>--namespace=<NAMESPACE>
+----
+
+In the command above, replace:
+
+* `<JPDA_PORT>` with the port of your configured JPDA Tomcat
+* `<LOCAL_PORT>` with the port on your host that you will connect to with your debugger
+* `<POD_NAME>` with the name of the workspace pod
+* `<NAMESPACE>` with the namespace of the workspace pod
+
+*For Openshift:*
+
+Use the following commands to get name of your pod:
+
+----
+$ oc login
+$ oc get pods
+----
+
+For a pod that belongs to a different namespace (if Che is configured to create an OpenShift project per workspace), use `oc use <WORKSPACE_ID>` to switch to that project and run `oc get pods` again.
+
+----
+$ oc port-forward <POD_NAME> <LOCAL_PORT>:<JPDA_PORT>
+----
+
+In the command above, replace:
+
+* `<JPDA_PORT>` with the port of your configured JPDA Tomcat
+* `<LOCAL_PORT>` with the port on your host that you will connect to with your debugger
+* `<POD_NAME>` with the name of the workspace pod
+
+Connect to your debugger using `localhost` as the host and your local port, which is forwarded to the workspace pod.

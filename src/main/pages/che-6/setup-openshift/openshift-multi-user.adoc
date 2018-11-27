@@ -1,0 +1,72 @@
+---
+title: "Multi-User&#58 Deploy to OpenShift"
+keywords: openshift, installation, ocp, multi-user, multi user, keycloak, postgres, deployment
+tags: [installation, openshift]
+sidebar: che_6_docs
+permalink: che-6/openshift-multi-user.html
+redirect_from: openshift-multi-user.html
+folder: che-6/setup-openshift
+---
+
+[id="deploying-che-on-supported-openshift-flavors-and-versions"]
+== Deploying Che on supported OpenShift flavors and versions
+
+Multi-user Eclipse Che can be deployed to OpenShift Container Platform 3.6 and later, OpenShift Dedicated, and OpenShift Online Pro.
+
+The deployment script creates three DeploymentConfigs for Che, Postgres, and Keycloak. PVCs, services, and routes (Che and Keycloak only) are also created by the deployment script.
+
+[id="deployment-diagram"]
+== Deployment diagram
+
+image::diagrams/ocp_multi_user.png[]
+
+
+[id="using-minishift-to-deploy-che"]
+== Using Minishift to Deploy Che
+
+Due to the size of a multi-user Eclipse Che installation, Minishift is not recommended as the base for this configuration. If you have to use Minishift, start it with at least 4GB of memory by including the `--memory=4096` parameter, and https://docs.openshift.org/latest/minishift/getting-started/updating.html[update Minishift] to the latest version.
+
+----
+$ curl -fsSL https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/deploy_che.sh -o deploy_che.sh
+$ ./deploy_che.sh --multiuser
+----
+The script will download deployment templates, check your current oc session and context. Run `./deploy_che.sh --help` to get a list of all deployment options.
+
+[id="using-openshift-container-platform-to-deploy-che"]
+== Using OpenShift Container Platform to Deploy Che
+
+*HTTP Setup*
+
+----
+$ curl -fsSL https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/deploy_che.sh -o deploy_che.sh
+$ ./deploy_che.sh --multiuser
+----
+
+*HTTPS Setup*
+
+IMPORTANT! Find instructions on adding self-signed certificates at the link:openshift-config.html#https-mode---self-signed-certs[OpenShift Configuration page].
+
+----
+$ curl -fsSL https://raw.githubusercontent.com/eclipse/che/master/deploy/openshift/deploy_che.sh -o deploy_che.sh
+$ ./deploy_che.sh --multiuser -s
+----
+
+[id="using-openshift-dedicated-to-deploy-che"]
+== Using OpenShift Dedicated to Deploy Che
+
+The instructions to deploy Che to OpenShift Dedicated are identical to those for link:#openshift-container-platform[OpenShift Container Platform].
+
+[id="using-openshift-online-pro-to-deploy-che"]
+== Using OpenShift Online Pro to deploy Che
+
+The instructions to deploy Che to OpenShift Online PRO are identical to those for link:#openshift-container-platform[OpenShift Container Platform].
+
+[id="what-is-next"]
+== What is next?
+
+Now that you have a running Che multi-user instance, link:user-management.html[create a user, set up GitHub oAuth, and log in].
+
+[id="additional-resources"]
+== Additional Resources
+
+Kubernetes link:kubernetes-admin-guide.html[Admin Guide]

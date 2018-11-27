@@ -5,13 +5,13 @@
 {% for folder in entry.folders %}
 {% for folderitem in folder.folderitems %}
 {% if folderitem.url contains "html#" %}
-[{{folderitem.url | remove: "/" }}]: {{folderitem.url | remove: "/"}}
+[{{folderitem.url | prepend: site.baseurl }}]: {{folderitem.url | prepend: site.baseurl}}
 {% else %}
-[{{folderitem.url | remove: "/"  | remove: ".html"}}]: {{folderitem.url | remove: "/"}}
+[{{folderitem.url | prepend: site.baseurl  | remove: ".html"}}]: {{folderitem.url | prepend: site.baseurl}}
 {% endif %}
 {% for subfolders in folderitem.subfolders %}
 {% for subfolderitem in subfolders.subfolderitems %}
-[{{subfolderitem.url | remove: "/"  | remove: ".html"}}]: {{subfolderitem.url | remove: "/"}}
+[{{subfolderitem.url | prepend: site.baseurl  | remove: ".html"}}]: {{subfolderitem.url | prepend: site.baseurl}}
 {% endfor %}
 {% endfor %}
 {% endfor %}
@@ -25,7 +25,7 @@
 {% for entry in site.data.topnav.topnav %}
 {% for item in entry.items %}
 {% if item.external_url == null %}
-[{{item.url | remove: "/" | remove: ".html"}}]: {{item.url | remove: "/"}}
+[{{item.url | prepend: site.baseurl | remove: ".html"}}]: {{item.url | prepend: site.baseurl}}
 {% endif %}
 {% endfor %}
 {% endfor %}
@@ -36,7 +36,7 @@
 {% for folder in entry.folders %}
 {% for folderitem in folder.folderitems %}
 {% if folderitem.external_url == null %}
-[{{folderitem.url | remove: "/"  | remove: ".html"}}]: {{folderitem.url | remove: "/"}}
+[{{folderitem.url | prepend: site.baseurl  | remove: ".html"}}]: {{folderitem.url | prepend: site.baseurl}}
 {% endif %}
 {% endfor %}
 {% endfor %}
