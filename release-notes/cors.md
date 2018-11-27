@@ -37,6 +37,6 @@ So we will have to define an allowed origin of WS Master's Domain, which we can 
 
 ```
 cors.support.credentials=true
-cors.allowed.origins will be configured in runtime, infered from CHE_API (WS Master domain)
+cors.allowed.origins will be infered from CHE_API (WS Master domain) at runtime
 ```
 
