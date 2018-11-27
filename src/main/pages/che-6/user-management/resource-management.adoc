@@ -1,0 +1,142 @@
+---
+title: "Resource Management"
+keywords: organizations, user management, permissions, resource management, RAM allocation
+tags: [ldap, keycloak]
+sidebar: che_6_docs
+permalink: che-6/resource-management.html
+redirect_from: resource-management.html
+folder: che-6/user-management
+---
+
+
+[id="overview"]
+== Overview
+
+The Resource API manages the resources that are utilized by Che users. The Che administrators set the limits on the amount of resources available for each resource type and each user.
+
+There are two kinds of accounts used in Che:
+
+* _personal_ - This account belongs to a user. Only one user can utilize resources provided to the account.
+* _organizational_ - This account belongs to an link:organizations.html[organization]. This type of account allows each member of the organization to use resources. Resources are distributed between an organization and sub-organizations.
+
+Resource usage mostly refers to resources used by workspaces and runtimes in the development flow.
+
+Multi-user Che supports the following types of resources:
+
+* *RAM* -  Amount of RAM which can be used by running workspaces at the same time.
+* *Timeout* - Period of time that is used to control idling of user workspaces.
+* *Runtime* - Number of workspaces that users can run at the same time.
+* *Workspace* - Number of workspaces that users can have at the same time.
+
+[id="resource-api"]
+== Resource API
+
+*Total resources*
+
+`GET resource/${accountId}:` Gets the list of total resources an account can use;
+
+*Used resources*
+
+`GET resource/{accountId}/used:` Gets the resources used by an account;
+
+*Available resources*
+
+`GET resource/${accountId}/available:` Gets the resources that are available and not used by an account. If no resources are used, the available resources equal total resources.  If resources are used, the available resources equals total resources minus used resources.
+
+*Resource details*
+
+`GET resource/{accountId}/details:` Gets detailed information about the resources available for an account. The detailed information includes:  resource providers, resource-usage start time, and resource-usage end time.
+
+For more information about the response objects and required parameters, see the Swagger page at `${che-host}/swagger/#/resource`.
+
+[id="distributing-resources"]
+== Distributing resources
+
+The following are ways to distribute resources to an account:
+
+* Che administrator specifies default free resources limit for account by configuration.
+
+* Che administrator overrides the default free resources limit for account by resource-free API.
+
+[id="configuring-workspaces-and-resources"]
+== Configuring workspaces and resources
+
+The Che administrator can limit how workspaces are created and the resources that these workspaces consume. Detailed information about each property can be found in the https://github.com/eclipse/che/blob/master/dockerfiles/init/manifests/che.env#L538[`che.env`] file.
+
+See link:docker-config.html[Docker] and link:openshift-config.html[OpenShift] configuration documentation for more information.
+
+[width="100%",cols="33%,8%,6%,53%",options="header",]
+|===
+|Property name |Default Value |Unit |Description
+|`CHE_LIMITS_USER_WORKSPACES_COUNT` |-1 |item |maximum number of workspaces that the Che user can create
+|`CHE_LIMITS_USER_WORKSPACES_RUN_COUNT` |-1 |item |maximum number of simultaneously running workspaces for a Che user
+|`CHE_LIMITS_USER_WORKSPACES_RAM` |-1 |memory |maximum amount of RAM that workspaces use
+|`CHE_LIMITS_ORGANIZATION_WORKSPACES_COUNT` |-1 |item |maximum number of workspaces that members of an organization can create
+|`CHE_LIMITS_ORGANIZATION_WORKSPACES_RUN_COUNT` |-1 |item |maximum number of workspaces that members of an organization can simultaneously run
+|`CHE_LIMITS_ORGANIZATION_WORKSPACES_RAM` |-1 |memory |maximum amount of RAM that workspaces from all organizations can simultaneously use 
+|`CHE_LIMITS_WORKSPACE_IDLE_TIMEOUT` |-1 |millisecond |maxium number of workspaces that can stay inactive before they are idled 
+|`CHE_LIMITS_WORKSPACE_ENV_RAM` |16gb |memory |maximum amount of RAM that workspace environment can use simultaneously
+|===
+
+[id="unit-formats"]
+== Unit formats
+
+The unit has the following formats:
+
+* `-1`: An unlimited value. Any operation, aggregation, and deduction of resources will return `-1`.
+
+* `memory`:  A plain or fixed-point integer measured in bytes.
+
++
+Memory uses one of the following suffixes:
++
+[cols=",",options="header",]
+|===
+|Suffix name |Description
+|`k` / `kb` / `kib` |kilo bytes `1k` = `1024b`
+|`m` / `mb` / `mib` |mega bytes `1m` = `1024k`
+|`g` / `gb` / `gib` |giga bytes `1g` = `1024m`
+|`t` / `tb` / `tib` |terra bytes `1t` = `1024g`
+|`p` / `pb` / `pib` |peta bytes `1p` = `1024t`
+|===
+
+* `item` - An integer describing the number of objects.
+* `millisecond` - An integer describing the time frame in milliseconds.
+
+[id="resource-free-api"]
+== Resource-free API
+
+The Resource-free API manages the free resources that are provided by the system configuration.  You can override resources for an account.
+
+*Free Resources*
+
+`GET resource/free:` Gets the resources that are available.
+
+`GET resource/free/{accountId}:` Gets the resources that are available for this account.
+
+*Set Free Resources*
+
+`POST resource/free:` Sets the maximum amount of resources available for the user organization account. This number overrides the Сhe configuration. It will be used in all further operations with resources.
+
+*Remove Free Resources*
+
+`DELETE resource/free/{accountId}:` Deletes the number of resources available for the user and organization account. The system configuration defines the amount of resources available.
+
+For more information on response objects and required parameters, see the Swagger page at `{che-host}/swagger/#/resource-free`.
+
+[id="organization-resource-api"]
+== Organization Resource API
+
+*Distributed Organization Resources*
+
+`GET organization/resource/{organizationId}:` Gets the resources that the parent organization provides to the sub-organization.
+
+*Sub-Organization Resources Cap*
+
+`GET organization/resource/{suborganizationId}/cap:` Gets the maximum amount of resources that are available for a sub-organization; By default, sub-organizations can use all the resources of the parent organization.
+
+*Set Sub-Organization Resources Cap*
+
+`POST organization/resource/{suborganizationId}/cap:` Sets the maximum amount of resources for a sub-organization. This limits the usage of shared resources by the sub-organization.
+
+See the Swagger page at `{che-host}/swagger/#/organization-resource` for more detailed specification of response objects and required parameters.

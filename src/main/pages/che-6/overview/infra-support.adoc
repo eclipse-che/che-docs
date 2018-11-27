@@ -1,0 +1,75 @@
+---
+title: "Infrastructures supported in Eclipse Che"
+keywords: docker, oepsnhift
+tags: [infrastructure, installation, docker, openshift]
+sidebar: che_6_docs
+permalink: che-6/infra-support.html
+redirect_from: infra-support.html
+folder: che-6/overview
+---
+
+[id="introduction"]
+== Introduction
+
+Eclipse Che runs on several infrastructures and container engines:
+
+* Docker
+* OpenShift: *https://www.openshift.com/container-platform/index.html[OpenShift Container Platform (OCP)]*, *https://www.openshift.com/features/index.html[OpenShift Online (OSO)]*, *https://access.redhat.com/products/openshift-dedicated-red-hat/[OpenShift Dedicated (OCD)]*, *https://www.openshift.org/minishift/[MiniShift]*
+* Kubernetes
+
+[id="available-features-for-different-infrastructures"]
+=== Available features for different infrastructures
+
+[%autowidth]
+|===
+| Feature | *Docker* | *OpenShift* | *Kubernetes* 
+|root access | yes | yes (See: link:openshift-config.html#enable-ssh-and-sudo[Configuration]) | yes 
+|https | no | yes (See: link:openshift-config.html#https-mode[Configuration]) | yes 
+|scalability | no | yes (See: link:openshift-config.html#scalability[Configuration]) | yes 
+|privileged containers | yes | yes (configurable in https://docs.openshift.com/container-platform/3.6/admin_guide/manage_scc.html#grant-access-to-the-privileged-scc[OpenShift]) | yes 
+|health checks | no | yes | yes 
+|persistent preview URLs | no | yes | yes 
+|installers | yes | yes (some installers may require link:openshift-config.html#enable-ssh-and-sudo[sudo access]) | yes 
+|file system permissions | not limited | limited to directories owned by root link:openshift-config.html#filesystem-permissions[group] | not limited 
+|===
+
+[id="docker-versus-openshift-for-running-che"]
+== Docker versus OpenShift for running Che
+
+Che on Docker is not scalable because you cannot add more nodes to run workspaces.Even if you have a node with lots of resources, you can face problems with many containers residing on one node.  A potential problem is that the instance can be unresponsive when it has a large number of running containers with heavy processes running in them. This affects the workspace master and all running workspaces.
+
+The follow features are available on both Docker and OpenShift:
+
+*Root Access:* You can have root access in workspace containers, which allows you to run system services and to install software at runtime.
+
+*Privileged Containers:* You can run workspace containers in a link:docker-config.html#privileged-mode[privileged mode].
+
+
+The following features are only available on OpenShift:
+
+*HTTPS support:*
+
+HAProxy runs in an OpenShift cluster and creates secure routes.
+
+*Scalability:*
+
+You can add nodes depending on the demand to run workspaces. OpenShift schedules workspaces to available nodes.
+
+*Health Checks:*
+
+OpenShift restarts failed deployments and offers health checks for pods. This can significantly minimize the effect of infrastructure outages.
+
+*Persistent Preview URLs:*
+
+You can access applications and processes in Che workspaces.  Che creates services and routes that are persistent URLs.
+
+*Additional Resources*
+
+link:docker-single-user[Install Single-User Che on Docker]
+
+link:docker-multi-user[Install Multi-User Che on Docker]
+
+link:openshift-single-user[Deploy Single User Che to OpenShift]
+
+link:openshift-single-user.html[Deploy Multi-User Che to OpenShift]
+

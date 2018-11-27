@@ -1,0 +1,69 @@
+---
+title: "Troubleshooting failures in starting the workspace"
+keywords: workspace, runtime, recipe, docker, yaml, Dockerfile, docker, kubernetes, container, pod
+tags: [workspace, runtime, docker, kubernetes, troubleshooting]
+sidebar: che_6_docs
+permalink: che-6/workspaces-troubleshooting.html
+redirect_from: workspaces-troubleshooting.html
+folder: che-6/workspace-admin
+---
+
+
+Failures to start a workspace may be caused by the following factors:
+
+* Incorrect environment recipe
+* Restrictive network settings
+
+[id="bad-recipes"]
+== Incorrect environment recipes
+
+When a workspace is starting, an environment link:recipes.html[recipe] is sent to Docker or to the OpenShift API. The Che server then listens to events provided by the given infrastructure. The Che server expects a running Docker container or an OpenShift pod. The server fails to start an environment and consequently the starting of the workspace fails if the infrastructure is unable to create and start a container or a pod from the provided recipe.
+
+A recipe can be incorrect due to the following reasons:
+
+* The Docker build fails with the provided `Dockerfile`. This can be because of a broken `Dockerfile` or because of Che. If the Docker build in Che link:recipes.html#dockerfile[does not support context], consider editing the Docker recipe locally to ensure that it is a valid `Dockerfile`. Add or copy resources into an image locally on your machine, push the image to a registry, such as DockerHub, and use the resulting images in the recipe.
+
+* Che does not support certain link:recipes.html#composefile[Docker Compose syntax]. Ensure that the `Composefile` is supported by Che.
+
+* Installing packages in your `Dockerfile` instructions can take time. This may be influenced by network settings.
+
+=== Viewing logs from a failed workspace start
+
+No link:installers.html[installer] logs are shown when a workspace fails to start because its container or pod are not launched. In most cases, only logs from infrastructure and image pull and build are shown. Analyse these logs to find the problem. The Che server also produces logs that are helpful in debugging the problem.
+
+[id="network-conditions"]
+== Restrictive network settings
+
+The Che server and agents, which run in a workspace container or pod, and the user’s browser communicate with each other. Firewall, filtered ports, and other network restrictions may cause trouble when starting a workspace.
+
+A workspace is considered to be in a `RUNNING` state after the Che server verifies that the workspace agent is up. The workspace agent also tries to reach the Che server. All this happens in separate containers or pods, and the user’s browser is not yet involved. The `workspace started by user $userName` message in the Che server logs indicates the following:
+
+* The workspace container or pod is up.
+* The workspace agent has successfully started.
+* The Che server can reach it.
+
+=== Troubleshooting network setting when workspace agent cannot be reached
+
+An error message saying that the IDE cannot be initialized indicates that the client (browser) cannot reach the workspace agent. This is caused by the Che server using an internal IP address to reach the workspace agent, while you are accessing the workspace from a machine that is located on a different network. To confirm this, open the browser developer console and check failed requests. The failed requests are to `project` and `project-type` API.
+
+To access a workspace from a different network than the one on which the Che server is running, enable access to the ephemeral port range on the Che server network.
+
+[id="bootstrapping-failures"]
+== Failure in bootstrapping
+
+When a workspace starts, the Che server creates and starts a container or a pod or a set of containers and pods as per the environment recipe. After the container or pod is running, a bootstrapping process begins - the bootstrapper binary is downloaded and launched. If the server logs show bootstrapping failures, or you do not see any output in the *Machine* tab of the *Workspaces* view, the reason is that bootstrapper is not downloaded. The following are possible the reasons for the bootstrapper download failure:
+
+* Network conditions (for example, firewall restrictions).
+
+* Incorrect bootstrapper binary URL that the Che server uses (often reproduced when deploying to OpenShift and missing necessary environment variables).
+
+To work around the problem, download the bootstrapper binary manually. On OpenShift, access the pod on the command line (shell or the terminal in the web console) and run the following commands:
+
+----
+$ cd /tmp/bootstrapper
+$ ls -la  <1>
+$ curl ${CHE_URL}/agent-binaries/linux_amd64/bootstrapper/bootstrapper
+----
+<1> to check for the existence of the bootstrapper binary
+
+To prevent the `curl` command from failing, unblock port `80` on your network. On OpenShift with `https` routes, unblock port `443`.

@@ -1,0 +1,34 @@
+---
+title: "Projects and Project Import"
+keywords: workspace, runtime, project, projects
+tags: [workspace, runtime]
+sidebar: che_6_docs
+permalink: che-6/ide-projects.html
+redirect_from: ide-projects.html
+folder: che-6/user-guide
+---
+
+
+[id="default-location-of-projects"]
+== Default Location of Projects
+
+When a workspace machine with a workspace agent starts, the IDE makes calls to Project API to get workspace projects. By default, they are located in `projects` in a machine container/pod. This location isn’t configurable as many other IDE components depend on it.
+
+Projects are displayed in the Project Tree on the left. You can also see them in the terminal - `ls -la /projects`. When a workspace is stopped, its machines are terminated, however, `/projects` gets mounted onto the host file System (either data volume or PVC), so when a new container/pod is started, your workspace projects are always there.
+
+image::ide/project_tree.png[]
+
+[id="file-watchers"]
+== File Watchers
+
+Since changes to project source files may not be originated from IDE editor only, there are file watchers listening to changes on the file system. Thus, if you create, edit or delete resources on your file system using terminal or REST API, changes will be propagated to project tree and editor. File watchers are disabled in certain situations, like project import, to avoid flooding events.
+
+[id="project-import-and-ssh-connection"]
+== Project Import and SSH Connection
+
+There are multiple ways to import a project:
+
+1.  Add a project to link:projects.html[workspace configuration] in User Dashboard. Once workspace configuration is saved, and the workspace is being opened, the IDE will grab workspace config, and if there are projects associated with it, they will be automatically imported. If these projects can be found on a file system, the IDE skips this step.
+2.  Import a project into a running workspace. This can be done in the IDE, Workspace > Import project menu. If you need to import a private project, link:version-control.html[setup SSH keys].
+
+image::ide/import_project.png[]
