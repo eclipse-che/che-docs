@@ -16,20 +16,20 @@ Attempting to use a CORS filter with such configuration will result in exception
 ## Adding properties to change CORS authentication 
 
 in Che 6.15, a possibility will be added to override certain parameters of CORS filter https://github.com/eclipse/che/issues/12058
-so tha values for `cors.credential.support` and `cors.allowed.origin` via corresponding env.variables (che properties)
+so tha values for `cors.credential.support` and `cors.allowed.origin` via corresponding env.variables (CHE_CORS_ALLOW__CREDENTIALS, CHE_CORS_ALLOWED__ORIGINS)
 
 while this ability will be added, CORS settings and Tomcat version will remain the same.
 
 ## Upgrading Tomcat & CORS configuration
 
-In version 6.16, we intend to test the following configuration:
+In version 6.16, we intend to test the following configuration - all origins allowed, requests with credentials are not allowed:
 
 ```
 cors.support.credentials=false
 cors.allowed.origins=*
 ```
 
-This configuration can be set through environment variables `CHE_CORS_ALLOWED__ORIGINS` `CHE_CORS_SUPPORT__CREDENTIALS` for Openshift/Kubernetes deployments of Che
+To enable this, add environment variable`CHE_CORS_ALLOW__CREDENTIALS=false` for Openshift/Kubernetes deployments of Che
 
-In 6.17 Tomcat is planned to be upgraded, and this configuration will be applied as well
+In 6.17 Tomcat is planned to be upgraded to 8.5.35, and this configuration would be applied as well
 
