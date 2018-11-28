@@ -22,21 +22,14 @@ while this ability will be added, CORS settings and Tomcat version will remain t
 
 ## Upgrading Tomcat & CORS configuration
 
-In future versions of Che, whenever Tomcat will be upgraded, the CORS configuration should change as well
-
-for WS Master we want to test the following configuration:
+In version 6.16, we intend to test the following configuration:
 
 ```
 cors.support.credentials=false
 cors.allowed.origins=*
 ```
 
-For WS Agent, we make use of requests with credentials, so CORS has to support that.
-So we will have to define an allowed origin of WS Master's Domain, which we can do at runtime, by infering it from CHE_API property
+This configuration can be set through environment variables `CHE_CORS_ALLOWED__ORIGINS` `CHE_CORS_SUPPORT__CREDENTIALS` for Openshift/Kubernetes deployments of Che
 
-
-```
-cors.support.credentials=true
-cors.allowed.origins will be infered from CHE_API (WS Master domain) at runtime
-```
+In 6.17 Tomcat is planned to be upgraded, and this configuration will be applied as well
 
