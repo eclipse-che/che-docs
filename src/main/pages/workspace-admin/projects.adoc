@@ -13,7 +13,7 @@ folder: workspace-admin
 
 Projects are always associated with a workspace and saved in a workspace configuration.
 
-The following is an example of the YAML file: 
+The following is an example of the project YAML file: 
 
 [source,json]
 ----
@@ -40,12 +40,12 @@ Once a project is saved into a workspace configuration, the IDE will check if th
 
 You can add the following projects:
 
-. Git projects 
-. remotely hosted archives
-. GitHub projects 
-. example projects provided by Eclipse Che 
+* Git projects 
+* remotely hosted archives
+* GitHub projects 
+* example projects provided by Eclipse Che 
 
-Project import tools can be found both on the *User Dashboard* when you are creating a new workspace or editing an existing one on the IDE or on the *Workspace* menu.
+Project import tools can be found on the *User Dashboard* when you are creating a new workspace or editing an existing workspace on the IDE. Project import tools can also be found on the *Workspace* menu.
 
 The following shows example projects:
 
@@ -57,19 +57,19 @@ image::workspaces/projects.png[]
 
 Plug-in developers can define their own project types. Since project types trigger certain behaviors within the IDE, the construction of the projects is important to understand.
 
-1.  A project has a type.  The project type is defined as one primary type and zero or more mixin types. A primary project type is one where the project is editable, buildable, and runnable. A mixin project type defines additional restrictions and behaviors of the project, but by itself cannot be a primary project type. The collection of primary and mixin types for a single project define the aggregate set of attributes that will be stored as meta data within the project.
-2.  Project types describe different aspects of a project such as types of source files inside, the structure of the explorer tree, the way in which a command will be executed, associated workflows, and which plug-ins must be installed.
-3.  A project defines a set of attributes. The attributes of a project can be mandatory or optional. Attributes that are optional can be dynamically set at runtime or during configuration.
-4.  Sub-projects may have different project types than their parents. Modules may physically exist within the tree structure of the parent. For example, subfolders exists within the tree structure of the parent.   Also, modules may exist outside such as when the parent is a soft link to the module project.
+.  A project has a type.  The project type is defined as one primary type and zero or more mixin types. A primary project type is one where the project is editable, buildable, and runnable. A mixin project type defines additional restrictions and behaviors of the project, but by itself cannot be a primary project type. The collection of primary and mixin types for a single project define the aggregate set of attributes that will be stored as meta data within the project.
+.  Project types describe different aspects of a project such as types of source files inside, the structure of the explorer tree, the way in which a command will be executed, associated workflows, and which plug-ins must be installed.
+.  A project defines a set of attributes. The attributes of a project can be mandatory or optional. Attributes that are optional can be dynamically set at runtime or during configuration.
+.  Sub-projects may have different project types than their parents. Modules may physically exist within the tree structure of the parent. For example, subdirectories exists within the tree structure of the parent.  Also, modules may physically exist outside the tree structure of the parent such as when the parent is a soft link to the module project.
 
 [id="creating-a-sub-projects"]
 == Creating a sub-project
 
 A sub-project is a portion of a project that can have sets of commands run against it where the sub-directory is treated as the root working directory. Sub-projects make it possible to organize a single repository into multiple, independently buildable, and runnable units.
 
- To create a module, right click on a directory in the IDE explorer tree and select *Convert to Project*. You can then execute commands directly against this sub-projects.
+To create a module, right click on a directory in the IDE explorer tree and select *Convert to Project*. You can then execute commands directly against this sub-projects.
 
 [id="navigating-the-project-tree"]
 == Navigating the project tree
 
-You can step into or out of the project tree. If you step into a directory, that directory will be set as the project tree root and the explorer will redraw itself. All commands are then executed against this directory root.
+You can step into or out of the project tree. When you step into a directory, that directory will be set as the project tree root and the explorer will redraw itself. All commands are then executed against this directory root.
