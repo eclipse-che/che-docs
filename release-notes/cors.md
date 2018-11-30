@@ -13,23 +13,29 @@ More info at https://bz.apache.org/bugzilla/show_bug.cgi?id=62343
 Currently we use CORS filters with such configuration on Che for WS Master and WS Agent Tomcats. 
 Attempting to use a CORS filter with such configuration will result in exception.
 
-## Adding properties to change CORS authentication 
+## Adding ability to change CORS authentication 
 
 in Che 6.15, a possibility will be added to override certain parameters of CORS filter https://github.com/eclipse/che/issues/12058
-so tha values for `cors.credential.support` and `cors.allowed.origin` via corresponding env.variables (CHE_CORS_ALLOW__CREDENTIALS, CHE_CORS_ALLOWED__ORIGINS)
+- `CHE_CORS_ENABLED` - if true, enables CORS filter for WS Master (default "true").
+- `CHE_CORS_ALLOW__CREDENTIALS` - "cors.support.credentials" property for CORS filter (default "true")
+- `CHE_CORS_ALLOWED__ORIGINS` - "cors.allowed.origins" property for CORS filter, to define allowed origins for requests (default "*")
 
-while this ability will be added, CORS settings and Tomcat version will remain the same.
+So, defaults CORS settings and Tomcat version will remain the same in 6.15.
 
-## Upgrading Tomcat & CORS configuration
+## Testing new Configuration before upgrading Tomcat
 
-In version 6.16, we intend to test the following configuration - all origins allowed, requests with credentials are not allowed:
+We want to test in all following configuration for Che WS Master and WS Agent:
 
-```
-cors.support.credentials=false
-cors.allowed.origins=*
-```
+- WS Master - CORS Filter disabled
+- WS Agent - CORS Filter enabled, allowing requests with credentials, providing Domain of WS Master as an allowed origin
 
-To enable this, add environment variable`CHE_CORS_ALLOW__CREDENTIALS=false` for Openshift/Kubernetes deployments of Che
+Steps to apply the given configuration:
 
-In 6.17 Tomcat is planned to be upgraded to 8.5.35, and this configuration would be applied as well
+1) use `CHE_CORS_ENABLED=false` environment variable for Che deployment
+2) For Che Workspaces, add an environment variable for workspace configuration to configure allowed origin of your WS Master domain: `CHE_CORS_ALLOWED__ORIGINS=<http://che-eclipse-che.127.0.0.1.nip.io>` 
+Setting origin for WS Agent would be later done automatically in PR for Upgrading Tomcat.
 
+If there is a need to try other configuration (for example, you may still need CORS filter for WS Master)
+You can try using other variants, either with disabled support for request with credentials, or providing a "non-wildcard" allowed origin(s) for CORS Filter.
+
+We plan to change CORS configuration and upgrade Tomcat to 8.5.35 for Che 6.16 release.
