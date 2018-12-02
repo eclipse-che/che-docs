@@ -8,62 +8,69 @@ folder: portable-workspaces
 ---
 
 
-A Factory is a template containing configuration to automate generating new Workspace with factory identifier added to IDE URL. Factories can be used to create replicas of existing workspaces or to automate the provisioning of statically or dynamically defined workspaces.
+A factory is a template containing configuration to automate generating new Workspace with factory identifier added to the IDE URL. Factories can be used to create replicas of existing workspaces or to automate the provisioning of statically or dynamically defined workspaces.
 
 [id="try-a-factory"]
-== Try a Factory
+== Trying a factory
 
-Clone a public workspace on `che.openshift.io` by clicking the button below. https://che.openshift.io/f?id=factorymtyoro1y0qt8tq2j[image:https://che.openshift.io/factory/resources/factory-contribute.svg[Try a Factory]]
+To clone a public workspace on `che.openshift.io`, click the button: https://che.openshift.io/f?id=factorymtyoro1y0qt8tq2j[image:https://che.openshift.io/factory/resources/factory-contribute.svg[Try a Factory]].
 
 [id="using-factories"]
-== Using Factories
+== Using factories
 
-Factories can be invoked from a Factory URL built in multiple ways. You can replace the {% if site.product_mini_cli=="codenvy" %}`che.openshift.io` domain with the hostname of any Codenvy on-premises installation.{% else %}`localhost:8080` domain with the hostname of any Che installation.{% endif %}
+Factories can be invoked from a factory URL built in multiple ways. You can replace the {% if site.product_mini_cli=="codenvy" %}`che.openshift.io` domain with the hostname of any Codenvy on-premises installation.{% else %}`localhost:8080` domain with the hostname of any Che installation.{% endif %}
 
-{% if site.product_mini_cli=="codenvy" %}Using Factories on `che.openshift.io` require the user to be authenticated. Users who are not authenticated will be presented a login screen after they click on the Factory URL. Users without an account can create one using the same dialog.{% else %}{% endif %}
+{% if site.product_mini_cli=="codenvy" %}To use factories on `che.openshift.io`, you must be an authenticated user. Users who are not authenticated will be presented with a login screen after they click on the factory URL. Users without an account can create one using the same dialog.{% else %}{% endif %}.
 
 [id="invoke-factory-using-its-unique-hashcode"]
-== Invoke Factory using its unique hashcode
+== Invoking a factory using its unique hashcode
 
-[cols="1,5"]
-|===
-|Format | `/f?id={hashcode}` +
- `/factory?id={hashcode}`
-|Sample | {% if site.product_mini_cli=="codenvy" %} https://che.openshift.io/f?id=factorymtyoro1y0qt8tq2j{% else %}https://localhost:8080/f?id=factorymtyoro1y0qt8tq2j{% endif %}
-|===
+To invoke a factory, use the following format:
+----
+/f?id={hashcode} + 
+/factory?id={hashcode}
+----
+Example: {% if site.product_mini_cli=="codenvy" %} https://che.openshift.io/f?id=factorymtyoro1y0qt8tq2j{% else %}https://localhost:8080/f?id=factorymtyoro1y0qt8tq2j{% endif %}
+
 
 [id="invoke-a-named-factory"]
-== Invoke a named Factory
+== Invoking a named factory
 
-[cols="1,5"]
-|===
-|Format | `/f?user={username}&name={factoryname}` +
- `/factory?user={username}&name={factoryname}`
-|Sample | {% if site.product_mini_cli=="codenvy" %} https://che.openshift.io/f?user=tylerjewell&name=starwars +
+To invoke a named factory, use the following format:
+
+----
+/f?user={username}&name={factoryname} +
+ /factory?user={username}&name={factoryname}
+----
+
+Example: {% if site.product_mini_cli=="codenvy" %} https://che.openshift.io/f?user=tylerjewell&name=starwars +
  https://che.openshift.io/factory?user=tylerjewell&name=starwars{% else %}https://localhost:8080/f?user=che&name=starwars +
  https://localhost:8080/factory?user=che&name=starwars{% endif %}
-|===
 
 
-[id="invoke-factory-for-a-specific-git-repo"]
-== Invoke Factory for a specific git repo
+[id="invoke-factory-for-a-git-repo"]
+== Invoking a factory for a Git repository
 
-[cols="1,5"]
-|===
-|Format | `/f?url={git URL}`
-|Sample | {% if site.product_mini_cli=="codenvy" %} http://che.openshift.io/f?url=https://github.com/eclipse/che +
+To invoke a factory for a specific Git repository, use the following format:
+
+----
+/f?url={git URL}
+----
+
+Example: 
+
+{% if site.product_mini_cli=="codenvy" %} http://che.openshift.io/f?url=https://github.com/eclipse/che +
  http://che.openshift.io/f?url=https://github.com/eclipse/che/tree/language-server +
  http://che.openshift.io/f?url=https://gitlab.com/benoitf/simple-project{% else %}http://localhost:8080/f?url=https://github.com/eclipse/che +
  http://localhost:8080/f?url=https://github.com/eclipse/che/tree/language-server +
  http://localhost:8080/f?url=https://gitlab.com/benoitf/simple-project{% endif %}
-|===
 
-Once the Factory is executed, it either loads an existing workspace or generates a new one, depending upon the Factory configuration. The name of the workspace is determined within the Factory configuration and its name becomes part of the URL access with the format `{hostname}/{username}/{workspace}`.
+After the factory is executed, it either loads an existing workspace or generates a new one, depending upon the factory configuration. The name of the workspace is determined within the factory configuration and its name becomes part of the URL access with the format: `{hostname}/{username}/{workspace}`.
 
 [id="next-steps"]
-== Next Steps
+== Next steps
 
-You have just created your first developer workspace using Factories. Read on to learn more about:
+To learn more about factories, see the following:
 
 * How to link:creating-factories.html[create factories].
 * Customizing factories with the link:factories_json_reference.html[Factory JSON reference].
