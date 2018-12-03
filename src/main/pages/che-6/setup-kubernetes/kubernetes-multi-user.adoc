@@ -1,0 +1,153 @@
+---
+title: "Deploying multi-user Che to Kubernetes"
+keywords: kubernetes, installation, pvc, deployment
+tags: [installation, kubernetes]
+sidebar: che_6_docs
+permalink: che-6/kubernetes-multi-user.html
+redirect_from: kubernetes-multi-user.html
+folder: setup-kubernetes
+---
+
+This section walks you through multi-user deployment of Che on Kubernetes.
+
+*Prerequisites*
+
+* A Kubernetes cluster with at least 4 GB RAM and RBAC:
+** For Minikube 0.26.0 and higher, use the following command:
++
+----
+minikube start --cpus 2 --memory 4096 --extra-config=apiserver.authorization-mode=RBAC
+----
++
+** For Minikube 0.25.2 and lower, use the following command:
++
+----
+minikube start --cpus 2 --memory 4096 --extra-config=apiserver.Authorization.Mode=RBAC
+----
++
+* To deploy role binding, use the following command:
++
+----
+kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
+----
++
+* Install the https://github.com/kubernetes/helm/blob/master/docs/install.md[Helm] CLI. HELM is the package manager for Kubernetes.
+* Set your default Kubernetes context (this is required to use Helm). In Minikube, this is set automatically. Otherwise, modify the `KUBECONFIG` environment variable and run the following coammnd:
++
+----
+kubectl config use-context <my-context>
+----
++
+* Install tiller, the Helm server, on your cluster.
+.. Create a https://github.com/kubernetes/helm/blob/master/docs/rbac.md[tiller serviceAccount].
++
+----
+kubectl create serviceaccount tiller --namespace kube-system
+----
++
+.. Bind it to the `cluster-admin` role.
++
+----
+kubectl apply -f ./tiller-rbac.yaml
+----
++
+.. Install `tiller`.
++
+----
+helm init --service-account tiller --wait
+----
++
+* Ensure that you have an NGINX-based Ingress controller. This is the default Ingress controller on Minikube. To start it, use the `minikube addons enable ingress` command.
+* DNS discovery should be enabled. It is enabled by default in Minikube.
+
+[id="cluster-ip"]
+== Obtaining the cluster IP
+
+To obtain the cluster IP:
+
+* To run your cluster on Minikube, type `minikube ip` on the command line.
+* If your cluster is in the cloud, obtain the hostname or IP address from your cloud provider.
+
+In production, you must specify a hostname. For details, see the issue details at https://github.com/eclipse/che/issues/8694[Add an ability to use host-based routing instead of path-based for k8s infras]. To use a host-based configuration when you do not have a hostname, use services such as nip.io or xip.io.
+
+To specify a hostname, pass it as the value of the `ingressDomain` parameter in the deployment syntax in the following section.
+
+To use the IP address, for example, when your corporate policy prevents you from using nip.io, set `isHostBased` to `false`.
+
+[id="deploy-syntax"]
+== Deployment syntax
+
+The context of the commands below is `che/deploy/kubernetes/helm/che`.
+
+[id="to-deploy-with-dedicated-keycloak-as-authentication-server"]
+=== Deploying with dedicated Keycloak as authentication server
+
+To deploy multi-user with dedicated Keycloak as authentication server:
+
+. Use one of the following two methods to override the default values:
+
+** Change the `values.yaml` file. On the command line, run the following command:
++
+----
+helm upgrade --install <my-che-installation> --namespace <my-che-namespace> -f ./values/multi-user.yaml ./
+----
++
+** Or, override default values during installation, using the `--set` flag:
++
+----
+helm upgrade --install <my-che-installation> --namespace <my-che-namespace> -f ./values/multi-user.yaml --set global.ingressDomain=<my-hostname> --set cheImage=<my-image> ./
+----
+
+* Master: `https://che-<che-namespace>.domain`
+* Keycloak: `https://keycloak-<che-namespace>.domain`
+* Workspaces servers: `https://server-host.domain`
+
+[id="to-deploy-without-keycloak-in-multi-user-mode"]
+=== Deploying without Keycloak in multi-user mode
+
+Supply the custom OpenID Connect provider using the following flags (for details, see https://github.com/eclipse/che-docs/blob/b2310017b1a75901cbec3b9c665d7ffa1cb23177/src/main/pages/setup-openshift/openshift-config.md[openshift-config.md]):
+
+----
+helm upgrade --install <my-che-installation> --namespace <my-che-namespace> -f ./values/multi-user.yaml --set global.ingressDomain=<my-hostname>,cheImage=<my-image>,global.cheDedicatedKeycloak=false,customOidcProvider=<oidc-url>,cheKeycloakClientId=<oidc_clientId>,customOidcUsernameClaim=<user_name_claim> ./
+----
+
+Here:
+
+* `cheKeycloakClientId` is your authentication server client ID.
+* `customOidcUsernameClaim` is optional. Use if your authentication server does not support `preferred_username` claim in the JWT token (check this by accessing the `oidc-url/.well-known/openid-configuration` response). This parameter defines that the claim should be used to determine user name instead.
+
+[id="default-host"]
+== Default Host
+
+All Ingress specifications are created without a host attribute (defaults to `*`) and with path-based routing to all components. The multi-user configuration is enabled.
+
+----
+helm upgrade --install <che-release-name> --namespace <che-namespace> -f ./values/default-host.yaml --set global.ingressDomain=<domain> ./
+----
+
+* Master: `+https://<domain>/+`
+* Keycloak: `+https://<domain>/auth/+`
+* Workspaces servers: `+https://<domain>/<path-to-server>+`
+
+[id="tls"]
+== TLS certification
+
+Cert-manager, the Kubernetes certificate management controller, is used to issue *LetsEncrypt* certificates. To avoid rate-limit issues, use a single hostname for all Ingress controllers and path-based routing for all components. Multi-user configuration is enabled.
+
+----
+helm install --name <cert-manager-release-name> stable/cert-manager
+helm upgrade --install <che-release-name> --namespace <che-namespace> -f ./values/tls.yaml --set global.ingressDomain=<domain> ./
+----
+
+* Master: `+https://<domain>/+`
+* Keycloak: `+https://<domain>/auth/+`
+* Workspaces servers: `+https://<domain>/<path-to-server>+`
+
+[id="delete-che-deployment"]
+== Deleting Che deployment
+
+To delete a deployment, run the following command:
+
+----
+helm delete <che-release-name>
+----

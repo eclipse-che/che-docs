@@ -1,0 +1,79 @@
+---
+title: "Chedir Installation"
+keywords: chedir, factories
+tags: [chedir, factories]
+sidebar: che_6_docs
+permalink: che-6/chedir-installation.html
+redirect_from: chedir-installation.html
+folder: che-6/portable-workspaces
+---
+
+
+Installing Chedir is extremely easy. Just link:docker-cli.html[get the Che CLI] and you have everything you need to run Chedir on any operating system. Docker and Git Bash (installed by Docker) are required for the Che CLI.
+
+[id="backwards-compatibility"]
+== Backwards Compatibility
+
+Chedir requires Eclipse Che 4.7+. Chefiles are not supported to run on older versions of Che.
+
+[id="upgrading"]
+== Upgrading
+
+You will automatically get newer versions of Chedir when you upgrade Eclipse Che. You can upgrade Eclipse Che with the CLI by `docker run -it --rm <DOCKER_PARAMETERS> eclipse/che:<version> upgrade`. If you want to use a particular version of Chedir you can set `CHE_VERSION` as an environment variable and Chedir will use that particular version. You can run multiple versions of Chedir at the same time.
+
+[id="from-source"]
+== From Source
+
+Chedir is provided as a Docker container which you can run instead of using the CLI. The CLI captures your environmental information and invokes the container with the appropriate syntax.
+
+----
+# Mac / Linux
+docker run -v /var/run/docker.sock:/var/run/docker.sock \
+           -v "$PWD":"$PWD" --rm eclipse/che-dir \
+           $PWD <init|up>
+
+# Windows
+# Replace $PWD to be the absolute path to the current directory.
+# Use case-sensitive format with forward slashes: /c/Users/some_path/
+----
+
+[id="build-chedir-docker-container"]
+== Build Chedir Docker Container
+
+You can build Chedir Docker Container by using the following commands:
+
+----
+git clone http://github.com/eclipse/che
+cd che/dockerfiles/dir
+./build.sh
+----
+
+[id="uninstallation"]
+== Uninstallation
+
+You can remove Chedir by deleting the Chedir docker image from your system.
+
+----
+docker rmi -f eclipse/che-dir
+----
+
+*_Remove Che_*
+
+If you’d also like to remove the Che CLI and Che:
+
+----
+# Remove the Che container
+docker rmi -f eclipse/che-server
+
+# Remove your workspaces and the CLI
+
+# Linux / Mac
+rm -rf $CHE_DATA_FOLDER
+rm -rf /usr/local/bin/che
+
+
+# Windows
+rmdir /s %CHE_DATA_FOLDER%
+del che.bat
+del che.sh\
+----

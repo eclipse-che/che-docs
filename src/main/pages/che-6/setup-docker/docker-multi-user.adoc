@@ -1,0 +1,72 @@
+---
+title: "Multi-user&#58 Installation on Docker"
+keywords: openshift, installation
+tags: [installation, docker]
+sidebar: che_6_docs
+permalink: che-6/docker-multi-user.html
+redirect_from: docker-multi-user.html
+folder: che-6/setup-docker
+---
+
+[id="system-requirements"]
+== System requirements
+
+* Minimum 4GB of RAM (for the three Che containers and one 2GB workspace)
+* 2 CPUs
+* Ports `8080`, `5050`, and the https://en.wikipedia.org/wiki/Ephemeral_port[ephemeral port] range publicly available for inbound connections (`32768-65535`)
+
+[id="known-issues"]
+== Known issues
+
+Currently, when running Che multi-user on Windows, PostgreSQL has issues with file permissions that prevents the database from starting. As a workaround, mount a local storage path that is not a Windows file system mount point:
+
+`-v /chedata/:/data`
+
+It is not recommended to run Che multi-user on Windows for production use.
+
+[id="run-syntax"]
+== Running Che multi-user 
+
+Following is the command to run Che multi-user:
+----
+docker run -it -e CHE_MULTIUSER=true -e CHE_HOST=${EXTERNAL_IP} -v /var/run/docker.sock:/var/run/docker.sock -v ~/.che-multiuser:/data eclipse/che start
+----
+
+Here:
+
+* `~/.che-multiuser` is any local path. Che data and configuration is stored at this location.
+
+* `${EXTERNAL_IP}` should be a public IP accessible to all users who will access the Che instance. If you are running Che locally and will access it from within the same network, you may omit the `CHE_HOST` environment variable from the command. In this case, Che CLI will attempt to auto-detect your server IP. 
+
+[NOTE]
+====
+Auto-detection may produce erroneous results, especially in case of a complex network setup. If you run Che as a cloud server that is accessible by external users, we recommend explicitly providing an external IP for the `CHE_HOST` variable.
+====
+
+You must access Che multi-user using the hostname/IP specified in the `CHE_HOST` variable or manually add redirect URIs and Web Origins to the link:user-management.html#che-and-keycloak[Keycloak client].
+
+[id="the-che-multiuser-variable"]
+== The CHE_MULTIUSER variable
+
+The `CHE_MULTIUSER` variable when set to `true`, instructs the Che CLI to generate a special `Docker Compose` file that will be executed to produce the configuration and run the following:
+
+* Keycloak container with pre-configured realm and clients
+* PostgreSQL container that will store Keycloak and Che data
+* Che server container with a special build of multi-user Che assembly
+
+[id="deployment-diagram"]
+== Deployment diagram
+
+Che multi-user on Docker does not differ much from a link:openshift-multi-user.html#deployment-diagram[multi-user deployment on OpenShift] in terms of architecture and communication between services. Following are some of the differences between Che multi-user on Docker and multi-user deployment on OpenShift:
+
+* Containers instead of pods.
+* Volume mounts instead of PVCs.
+* To pre-build Keycloak and Postgres images, configuration is mounted into containers.
+* Port `5050` must be publicly available (OpenShift uses routes and services).
+* Che CLI pre-configures and populates values for environment variables like `CHE_HOST`, that is then used in Keycloak configuration files.
+
+[id="whats-next"]
+== What is next?
+
+When you have a running Che multi-user instance, the next step is to link:user-management.html[create a user, setup GitHub oAuth, and log in].
+

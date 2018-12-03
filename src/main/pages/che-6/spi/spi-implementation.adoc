@@ -1,0 +1,366 @@
+---
+title: SPI&#58 Implementation
+sidebar: che_6_docs
+keywords: dev docs
+permalink: che-6/spi-implementation.html
+redirect_from: spi-implementation.html
+folder: che-6/spi
+---
+
+Now that you have made yourself familiar with link:spi_overview.html[SPI motivation and concept], let’s take a closer look at its components and implementation notes.
+
+[id="components"]
+== Components
+
+[id="environment"]
+=== Environment
+
+* https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-workspace/src/main/java/org/eclipse/che/api/workspace/server/spi/environment/InternalEnvironment.java#L32[InternalEnvironment] holds internal representations of environment configuration.
+* https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-workspace/src/main/java/org/eclipse/che/api/workspace/server/spi/environment/InternalEnvironmentFactory.java#L45[InternalEnvironmentFactory] creates a valid `InternalEnvironment` based on the specified workspace configuration and recipe. This component is independent of Infrastructure
+
+[id="infrastructure"]
+=== Infrastructure
+
+* https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-workspace/src/main/java/org/eclipse/che/api/workspace/server/spi/RuntimeInfrastructure.java[RuntimeInfrastructure] is a starting point that has two obligations:
+** provides meta information about infrastructure like name and types of supported recipes;
+** provides an interface for creation of `RuntimeContext`.
+* https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-workspace/src/main/java/org/eclipse/che/api/workspace/server/spi/RuntimeContext.java[RuntimeContext] holds information that can be used by `InternalRuntime`.
+* https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-workspace/src/main/java/org/eclipse/che/api/workspace/server/spi/InternalRuntime.java[InternalRuntime] describes particular runtime and provides an interface for interacting with it like starting, stopping.
+
+Environment components are decoupled from Infrastructure components to make it easier to support the same environments type by different infrastructures.
+
+The following diagram shows the components interaction while a workspace start.
+
+image::spi/start-sequence-diagram.png[]
+
+[id="exceptions"]
+== Exceptions
+
+There are three types of exceptions which can be thrown by Infrastructure components:
+
+* `ValidationException` should be thrown when an error occurs because of wrong data provided by user (e.g. recipe);
+* `InternalInfrastructureException` should be thrown when an unexpected error occurs and a user has no ways of fixing it, so Che Server administrator should take a look at it;
+* `InfrastructureException` should be thrown in all other cases.
+
+[id="events"]
+== Events
+
+Infrastructure should inform Workspace API about progress of starting/stopping a workspace with publishing of events. Events are link:dto.html[DTOs objects] and can be created with `DtoFactory`. Server implementations are provided by https://github.com/eclipse/che/tree/master/wsmaster/che-core-api-workspace[workspace-api] module. Infrastructure should publish them by `EventService`. Information about particular events and when they should be thrown are listed below.
+
+[id="internalenvironmentfactory"]
+== InternalEnvironmentFactory
+
+The first thing that should be decided is which environments will be supported by a new infrastructure, and which recipes this environment supports. Che has four recipes out of the box which can be used: `dockerfile`, `dockerimage`, `compose`, `openshift`. If a developer wants to support own recipe type the corresponding `InternalEnvironmentFactory` should be bound with a `MapBinder` with unique String key that contains recipe type, like:
+
+[source,java]
+----
+   MapBinder.newMapBinder(binder(), String.class, InternalEnvironmentFactory.class);
+                    .addBinding("myRecipe").to(SubclassOfInternalEnvironmentFactory.class);
+----
+
+Once supported environments are taken care of, the next step is implementing own `RuntimeInfrastructure, RuntimeContext, InternalRuntime` which are strongly connected.
+
+[id="runtimeinfrastructure"]
+== RuntimeInfrastructure
+
+So, `RuntimeInfrastructure` should create `RuntimeContext` according to the specified `InternalEnvironment`. Before context creation, `RuntimeInfrastructure` may somehow need to customize `InternalEnvironment`, like modifying original recipes objects according to machines configuration (e.g. exposing ports required for configured servers, or setting memory limit according to machine configuration). This step is called *Runtime Context preparing*.
+
+[id="runtimecontext"]
+== RuntimeContext
+
+*Implementation of RuntimeContext* should provide two methods:
+
+* `#getOutputChannel` method that returns an output channel for a particular runtime. The output channel is a WebSocket endpoint where runtime output can be received by clients. Infrastructure can set up own endpoint or use an existing one.
++
+Existing master websocket endpoint is configured with `che.websocket.endpoint` property. Out of the box, there is `installer/log` request handler that will publish received event via EventService and two link:json-rpc.html[JSON RPC] messengers which transmit https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-workspace-shared/src/main/java/org/eclipse/che/api/workspace/shared/dto/event/InstallerLogEvent.java[InstallerLogEvent] and https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-workspace-shared/src/main/java/org/eclipse/che/api/workspace/shared/dto/event/MachineLogEvent.java[MachineLogEvent] via WebSocket to `machine/log` and `installer/log` methods. So, received installers logs will be automatically propagated to subscribed clients. If an infrastructure wants to propagate machine logs it’s enough to propagate `MachineLogEvent` via `EventService`.
++
+Setting up a new endpoint can be useful to remove load from master since there can be a lot of output produced by runtime.
+* `#getRuntime` method that returns a runtime.
+
+[id="internalruntime"]
+== InternalRuntime
+
+The main piece of work should be done while implementing of start and stop of `InternalRuntime` (`#internalStart` and `#internalStop` methods). After runtime start, it should be fully ready to be used by clients. Start of runtime includes two major actions: *machines start* and *launching agents*.
+
+Starting of machines is an exceptionally infrastructure specific process. There is only one declared thing that is related to machine life cycle: Infrastructure may publish https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-workspace-shared/src/main/java/org/eclipse/che/api/workspace/shared/dto/event/MachineStatusEvent.java#L25[machine statuses events]. There are four possible values for machine status:
+
+* *_STARTING_* - machine is starting;
+* *_RUNNING_* - machine is running, note that it says nothing about servers statuses and machine can be not ready for using by clients;
+* *_STOPPED_* - machine is not running;
+* *_FAILED_* - machine failed to start or crashed while running.
+
+[id="installers"]
+== Installers
+
+As to launching of agents, Che offers an out-of-the-box feature that automates this process. So, it can be done with installers which in fact are shell scripts that should be executed to install some software and dependencies, and launch it if needed. A *bootstrapper* can be used to execute installers scripts.
+
+*Bootstrapper* is a binary file which can execute installers scripts and wait until the corresponding servers are accessible. To launch machine with agents via a bootstrapper, extend `AbstractBootstrapper` and implement `#doBootstrapAsync` method with the following steps:
+
+* Provide binary file of bootstrapper into a machine. Bootstrapper binaries are hosted by Che Server and can be downloaded by the following link `http://${CHE_HOST}:${CHE_PORT}/agent-binaries/linux_amd64/bootstrapper/bootstrapper`. Or it can be provided in any another way if infrastructure is able put something into machine (exec, mount etc).
+* The second step is providing a config file for a bootstrapper (inject it into machine in a way that an infrastructure allows). It must contain an ordered list of https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-installer-shared/src/main/java/org/eclipse/che/api/installer/shared/model/Installer.java[installers] configs in a json format. Installers will be launched in the specified order and it is needed for resolving dependencies between installers. Note that https://github.com/eclipse/che/blob/master/wsmaster/che-core-api-workspace/src/main/java/org/eclipse/che/api/workspace/server/spi/environment/InternalMachineConfig.java#L76[InternalMachineConfig#getInstallers] methods returns already ordered installers list.
+* Finally, launching bootstrapper with the corresponding parameters. Bootstrapper requires the following parameters to be specified as start arguments:
+** *_machine-name_* - machine name where this particular bootstrapper is running.
+** *_runtime-id_* - runtime identifier in format 'workspace:environment:owner'.
+** *_push-endpoint_* - a WebSocket endpoint where to push statuses.
+** *_push-logs-endpoint_* - a WebSocket endpoint where to push logs.
++
+The following parameters are optional and there is default behavior when they are missing:
+** *_-installer-timeout_* - time(in seconds) given for one installer to complete its installation. If installation is not finished in time it will be interrupted. Default value 120 seconds (3 minutes);
+** *_server-check-period_* - time(in seconds) between servers availability checks. Once servers for an installer are available, checks are stopped. The default value is 3 seconds;
+** *_file_* - configuration file path. Default value - `config.json`;
+** *_logs-endpoint-reconnect-period_* - time(in seconds) between attempts to reconnect to push-logs-endpoint. Bootstrapper tries to reconnect to push-logs-endpoint when previously established connection lost. Default value - 10 seconds.
+
+Skeletal implementation of `AbstractBootstrapper` should look like the following sample:
+
+[source,java]
+----
+package org.eclipse.che.workspace.infrastructure.dummy.bootstrapper;
+
+import ...;
+
+public class MyBootstrapper extends AbstractBootstrapper {
+  private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
+
+  private final String machineName;
+  private final RuntimeIdentity runtimeIdentity;
+  private final List<Installer> installers;
+  private final int serverCheckPeriodSeconds;
+  private final int installerTimeoutSeconds;
+  private final String installerWebsocketEndpoint;
+  private final String outputWebsocketEndpoint;
+
+  public MyBootstrapper(
+      @Assisted String machineName,
+      @Assisted RuntimeIdentity runtimeIdentity,
+      @Assisted List<Installer> installers,
+      EventService eventService,
+      @Named("che.websocket.endpoint") String cheWebsocketEndpoint,
+      @Named("che.infra.dummy.output_endpoint") String myOutputEndpoint,
+      @Named("che.infra.dummy.bootstrapper.timeout_min") int bootstrappingTimeoutMinutes,
+      @Named("che.infra.dummy.bootstrapper.installer_timeout_sec") int installerTimeoutSeconds,
+      @Named("che.infra.dummy.bootstrapper.server_check_period_sec") int serverCheckPeriodSeconds) {
+    super(machineName, runtimeIdentity, bootstrappingTimeoutMinutes, myOutputEndpoint,
+        cheWebsocketEndpoint, eventService);
+    this.machineName = machineName;
+    this.runtimeIdentity = runtimeIdentity;
+    this.installers = installers;
+    this.serverCheckPeriodSeconds = serverCheckPeriodSeconds;
+    this.installerTimeoutSeconds = installerTimeoutSeconds;
+    this.installerWebsocketEndpoint = cheWebsocketEndpoint;
+    this.outputWebsocketEndpoint = myOutputEndpoint;
+  }
+
+  @Override
+  protected void doBootstrapAsync(String installerWebsocketEndpoint, String outputWebsocketEndpoint)
+      throws InfrastructureException {
+    // inject bootstrapper binaries
+
+    // make it executable
+
+    String configJson = GSON.toJson(installers);
+    // inject config.json file
+
+    // launch bootstrapper with the corresponding
+    // configuration parameters
+    //
+    // ./bootstrapper -machine-name $machineName
+    //                -runtime-id + String.format("%s:%s:%s",
+    //                                            runtimeIdentity.getWorkspaceId(),
+    //                                            runtimeIdentity.getEnvName(),
+    //                                            runtimeIdentity.getOwner()
+    //                -push-endpoint $installerWebsocketEndpoint
+    //                -push-logs-endpoint $outputWebsocketEndpoint
+    //                -server-check-period $serverCheckPeriodSeconds
+    //                -installer-timeout $installerTimeoutSeconds
+    //                -file $pathToConfigFileHere
+  }
+}
+----
+
+When it is implemented `InternalRuntime` can easily use it in the following way:
+
+[source,java]
+----
+public class MyInternalRuntime extends InternalRuntime<MyRuntimeContext> {
+
+    private void doBootstrap(String machineName, InternalMachineConfig machineConfig)
+        throws InfrastructureException, InterruptedException {
+      MyBootstrapper myBootstrapper =
+          myBootstrapperFactory.create(
+              machineName, getContext().getIdentity(), machineConfig.getInstallers());
+
+      myBootstrapper.bootstrap();
+    }
+}
+----
+
+[id="servers"]
+== Servers
+
+See: link:#servers[Servers]
+
+Machine configuration contains servers configuration that will be launched inside it. Servers can be embedded into a machine or launched by installers. If an application has more than one endpoint (like http and websocket, or the same protocol by different paths) it can declare different servers. There are two kinds of servers:
+
+* Internal servers which are available only for other machines of a workspace;
+* Public server which are available for all clients.
+
+Public servers should be protected with authentication since they are publicly accessible. Internal servers don’t require any authentication since they must be accessible only for other machines. So, servers configs have the following format:
+
+[source,java]
+----
+/** Configuration of server that can be started inside of machine. */
+public interface ServerConfig {
+  /**
+   * Port used by server. It may contain protocol(tcp or udp) after '/' symbol. If protocol is
+   * missing tcp will be used by default.
+   * Example: '8080/tcp', '8080/udp', '8080'.
+   */
+  String getPort();
+
+  /**
+   * Protocol for configuring preview url of this server.
+   * Example: 'http', 'https', 'tcp', 'udp', 'ws', 'wss'.
+   */
+  String getProtocol();
+
+  /** Path used by server. */
+  @Nullable
+  String getPath();
+
+  /** Attributes of the server */
+  Map<String, String> getAttributes();
+}
+----
+
+There is an attribute of which has name `internal` and boolean value which indicates whether server should be internal or public. If the attribute is missing or its value differs from "true" than server is treated as public. Infrastructure is responsible for propagated ports of servers in different ways depending on whether or not the server is internal. Port is a machine port which will be used by a server and should be propagated by infrastructure for the clients. The way of propagating of machine port is infrastructure specific. To interact with servers Che clients use servers provided by an Infrastructure. So, the server object has the following format:
+
+[source,java]
+----
+public interface Server {
+  /** Returns URL exposing the server */
+  String getUrl();
+
+  /** Returns the status */
+  ServerStatus getStatus();
+
+  /** Returns attributes of the server with some metadata */
+  Map<String, String> getAttributes();
+}
+----
+
+Attributes from server configs should be propagated to servers.
+
+The server URL should be evaluated by Infrastructure with `protocol` and `path` from server config, while `host name` and `port` values depending on the way in which machines ports are propagated by an infrastructure. Note that server URL can be rewritten with `URLRewriter` by abstract `InternalRuntime`, so clients will get modified URL. It is used when Che machines supposed to be accessible via reverse Proxy.
+
+As to server statuses they are provided by Infrastructure. There are three possible values for them:
+
+* RUNNING is returned when server is up and running;
+* STOPPED is returned when server is not running;
+* UNKNOWN there is no information about server status.
+
+Checking of servers statuses can be performed in infrastructure specific way. Or Workspace API provides out of box server checkers which can be used by Infrastructure. Now there are servers checks only for most critical servers for Che clients: wsagent, terminal, exec. It can be used by Runtime while starting and waiting until servers are available in the following way:
+
+[source,java]
+----
+import org.eclipse.che.api.workspace.server.hc.ServersChecker;
+import org.eclipse.che.api.workspace.server.hc.ServersCheckerFactory;
+
+private class MyInternalRuntime {
+  ...
+
+  private void doWaitServersRunning(String machineName, InternalMachineConfiug machineConfig)
+      throws InfrastructureException, InterruptedException {
+    ServersChecker readinessChecker = serverCheckerFactory.create(getContext().getIdentity(),
+                                                      machineName, machine.getServers());
+    readinessChecker.startAsync((serverRef) -> {
+      // update server state to RUNNING
+      sendRunningServerEvent(machineName, serverRef);
+    });
+    readinessChecker.await();
+  }
+}
+----
+
+In addition there are server probes which may be scheduled to continuously checks server liveness. Here is an example of how to do this:
+
+[source,java]
+----
+import org.eclipse.che.api.workspace.server.hc.probe.ProbeResult;
+import org.eclipse.che.api.workspace.server.hc.probe.ProbeResult.ProbeStatus;
+import org.eclipse.che.api.workspace.server.hc.probe.ProbeScheduler;
+import org.eclipse.che.api.workspace.server.hc.probe.WorkspaceProbesFactory;
+
+private class MyInternalRuntime {
+  private final ProbeScheduler probeScheduler;
+  private final WorkspaceProbesFactory probesFactory;
+  ...
+  private void doScheduleServersLivenessProbes(String machineName) throws InfrastructureException {
+    RuntimeIdentity identity = getContext().getIdentity();
+    probeScheduler.schedule(
+      probesFactory.getProbes(identity.getWorkspaceId(), machineName, /*resolved machine servers should be here instead of empty map*/ emptyMap()),
+      new ServerLivenessHandler());
+  }
+
+  private class ServerLivenessHandler implements Consumer<ProbeResult> {
+    @Override
+    public void accept(ProbeResult probeResult) {
+      String machineName = probeResult.getMachineName();
+      String serverName = probeResult.getServerName();
+      ProbeStatus probeStatus = probeResult.getStatus();
+      Server server = /*assign server which has name serverName to which probe is related instead of null*/ null;
+      ServerStatus oldServerStatus = server.getStatus();
+      ServerStatus serverStatus;
+
+      if (probeStatus == ProbeStatus.FAILED && oldServerStatus == ServerStatus.RUNNING) {
+        serverStatus = ServerStatus.STOPPED;
+      } else if (probeStatus == ProbeStatus.PASSED && (oldServerStatus != ServerStatus.RUNNING)) {
+        serverStatus = ServerStatus.RUNNING;
+      } else {
+        return;
+      }
+
+      // set new status serverStatus into machine with name machineName
+
+      // send event about changing server status
+    }
+}
+----
+
+[id="volumes"]
+== Volumes
+
+A link:#volumes[volume] is a persistent storage that can be used for sharing data between machines of a workspace or for saving data persistently. Volumes field in a machine configuration is a map where key is volume name and value is volume itself. For now, volume object has only one field `path`. It’s an absolute path where volume should be mounted in the machine.
+
+[source,json]
+----
+{
+  "myMachine": {
+     ...
+     "volumes": {
+       "maven_repo": {
+         "path": "/home/user/.m2/repository"
+       }
+     }
+  }
+}
+----
+
+Note that if a volume with the same name is used in different machines then the same volume should be shared between machines.
+
+Infrastructure must implement supporting of volumes in its own way.
+
+[id="workspace-start-interruption"]
+== Workspace Start Interruption
+
+Workspace API allows users to stop workspaces that are *_STARTING_*, but whether they will interrupt the launch of the workspace or not, depends on the implementation of the infrastructure. So `InternalRuntime` should expect that `internalStop` method may be called when `internalStart` hasn’t finished its work yet. Then `InternalRuntime` may interrupt runtime start or throw an exception if stopping of a workspace with a *_STARTING_* status is not supported by an infrastructure.
+
+[id="runtimes-recovering"]
+== Runtimes Recovering
+
+Workspace API allows Infrastructure to pick up running runtime while getting it from context. It allows recovering running runtime when workspace master crashed, or restart/reconfigure/update workspace master without workspaces stopping.
+
+[id="skeletal-implementation"]
+== Skeletal Implementation
+
+The full skeletal implementation is located in the following https://github.com/codenvy/che-infra-sample[repository].
+

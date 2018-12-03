@@ -1,0 +1,96 @@
+---
+title: "Workspace Data Model"
+keywords: workspace, runtime, recipe, docker, yaml, Dockerfile, docker, kubernetes, container, pod
+tags: [workspace, runtime, docker, kubernetes, dev-docs]
+sidebar: che_6_docs
+permalink: che-6/workspace-data-model.html
+redirect_from: workspace-data-model.html
+folder: che-6/workspace-admin
+---
+
+
+The following table lists the data types and their description.
+
+[width="100%",cols="50%,50%",options="header",]
+|===
+|Data Types |Description
+|environments: Map<String, getEnvironments> 
+|Workspace environment variables. A workspace can have multiple environment variables.
+
+|defaultEnv: STRING
+|A workspace must have a default environment.
+
+|projects: []
+|Projects associated with a workspace.
+
+|commands: []
+|Commands associated with a workspace.
+
+|name: STRING
+|Workspace name that has to be unique in a namespace.
+
+|links: []
+|-
+|===
+
+[id="workspace-data-modelenvironment"]
+== Environment recipes
+
+image::workspaces/ws_data_model.png[]
+
+For link:recipes.html[recipe] types of `dockerfile`, `compose`, or `openshift`, content, not location, is specified.
+
+[source,json]
+----
+"recipe": {
+  "type": "compose",
+  "content": "services:\n db:\n  image: eclipse/mysql\n  environment:\n   MYSQL_ROOT_PASSWORD: password\n   MYSQL_DATABASE: petclinic\n   MYSQL_USER: petclinic\n   MYSQL_PASSWORD: password\n  mem_limit: 1073741824\n dev-machine:\n  image: eclipse/ubuntu_jdk8\n  mem_limit: 2147483648\n  depends_on:\n    - db",
+  "contentType": "application/x-yaml"
+}
+----
+
+[id="workspace-data-model-projects"]
+== Projects
+
+image::workspaces/ws_projects.png[]
+
+The project object structure has the `source.location` and `source.type` parameters. There are two importer types: `git` and `zip`. New location types can be provided by custom plugins, such as `svn`.
+
+Incorrectly configured projects or projects missing sources are marked with error codes and messages explaining the error. In the example above, the project does not have errors and mixins.
+
+A mixin adds additional behaviors to the project, the IDE panels, and menus. Mixins are reusable across any project type. To define the mixins to add to a project, specify an array of strings, with each string containing the identifier for the mixin.
+
+[width="100%",cols="50%,50%",options="header",]
+|===
+|Mixin ID |Description
+|`git` |Initiates the project with a Git repository. Adds Git-menu functionality to the IDE. To add a mixin to the project, create a new project and then initialize a Git repository.
+|`pullrequest` |Enables pull-request workflow where a server handles the local and remote branching, forking, and pull-request issuance. Pull requests generated from within the server have another Factory placed into the comments of pull requests that a PR reviewer can consume. Adds contribution panel to the IDE. Set this mixin to use attribute values for `project.attributes.local_branch` and `project.attributes.contribute_to_branch`.
+|===
+
+The `pullrequest` mixin requires additional configuration from the `attributes` object of the project.
+
+The `project` object can include `source.parameters`, which is a map that can contain additional parameters. Example: related to project importer.
+
+[width="100%",cols="50%,50%",options="header",]
+|===
+|Parameter name |Description
+|`skipFirstLevel` |Used for projects with type `zip`. When value is 'true', the first directory inside ZIP will be omitted.
+|===
+
+[id="commands"]
+== Commands
+
+Commands can be both tied to a workspace and an individual project. In the example below, a command is saved to workspace configuration.
+
+image::workspaces/ws_commands.png[]
+
+The followling image shows ways to save commands in the project configuration.
+
+image::workspaces/project_commands.png[]
+
+[id="runtime"]
+== Runtime
+
+A runtime object is created when a workspace is in a running state. Runtime returns server URLs, internal or external, depending on the server configuration. Interested clients, like the *User Dashboard* and the IDE, use these URLs.
+
+image::workspaces/runtime.png[]
