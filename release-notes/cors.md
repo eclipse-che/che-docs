@@ -28,14 +28,15 @@ We want you to try this configuration.
 
 Steps to apply the given configuration for WS Master and WS Agent:
 
-1) use `CHE_CORS_ENABLED=false` environment variable for Che deployment to disable CORS on WS Master
-2) For Che Workspaces, add an environment variable for workspace configuration to configure allowed origin of your WS Master domain: `CHE_CORS_ALLOWED__ORIGINS=<http://che-eclipse-che.127.0.0.1.nip.io>` 
+1) use `CHE_CORS_ENABLED=false` environment variable for Che deployment to disable CORS on WS Master.
+2) use `CHE_WSAGENT_CORS_ALLOWED__ORIGINS=<wsmaster-domain>` to set the default allowed origin of WS Agent CORS pointing to Domain of WS Master (replace `<wsmaster-domain>` with actual Domain value)
 Setting origin for WS Agent would be later done automatically in PR for Upgrading Tomcat.
 
 **If you discover an regression related to this configuration (e.g. errors related to not suitable CORS configuration).
 Please reach out to us describing the issues you have.**
 
-Additionally, here is the full list of environment vairables, that are introduced in 6.15 for onfiguring CORS filter (https://github.com/eclipse/che/issues/12058), should you want to try other configurations:
+Additionally, here is the full list of environment vairables, that are introduced in 6.15 for configuring CORS filter (https://github.com/eclipse/che/issues/12058), should you want to try other configurations:
+You can use them, to tryo your own CORS configuration for WS Master (by applying following variables to Che deployemt), or WS Agent (by applying them to Che Workspace configuration)
 
 - `CHE_CORS_ENABLED` - if true, enables CORS filter (default "true"). Works only for WS Master.
 - `CHE_CORS_ALLOW__CREDENTIALS` - "cors.support.credentials" property for CORS filter (default "true")
