@@ -30,6 +30,13 @@ Setting origin for WS Agent would be later done automatically in PR for Upgradin
 **If you discover an regression related to this configuration (for example, certain cross origin requests are not working in your Che installation).
 Please reach out to us describing the issues you have, so we may address them before Che 6.16 release.**
 
+Additionally, here is the full list of environment vairables, that are introduced in 6.15 for configuring CORS filter (https://github.com/eclipse/che/issues/12058), should you want to try other configurations:
+You can use them, to tryo your own CORS configuration for WS Master (by applying following variables to Che deployemt), or WS Agent (by applying them to Che Workspace configuration)
+
+- `CHE_CORS_ENABLED` - if true, enables CORS filter (default "true"). Works only for WS Master.
+- `CHE_CORS_ALLOW__CREDENTIALS` - "cors.support.credentials" property for CORS filter (default "true")
+- `CHE_CORS_ALLOWED__ORIGINS` - "cors.allowed.origins" property for CORS filter, to define allowed origins for requests (default "*")
+
 ### Feature 2 (#ISSUE)
 
 Feature description focusing on value to the user or contributor.
