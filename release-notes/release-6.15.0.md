@@ -3,6 +3,8 @@
 Eclipse Che 6.15 includes:
 
 * **New CORS configuration parameters**: Allowing to test new CORS configuration before Che 6.16 release
+* **More detailed tracing of Workspace operations**: Allowing for more detailed performance monitoring
+* **Jaeger deployed in the Helm chart**: Allowing to collect tracing data in Kubernetes environment
 
 ## Upgrading
 
@@ -37,11 +39,32 @@ You can use them, to try your own CORS configuration for WS Master (by applying 
 - `CHE_CORS_ALLOW__CREDENTIALS` - "cors.support.credentials" property for CORS filter (default "true")
 - `CHE_CORS_ALLOWED__ORIGINS` - "cors.allowed.origins" property for CORS filter, to define allowed origins for requests (default "*")
 
-### Feature 2 (#ISSUE)
+### More detailed tracing of Workspace operations (https://github.com/eclipse/che/pull/12049)
 
-Feature description focusing on value to the user or contributor.
+Since 6.14.0 Che exposes tracing data about REST requests made to workspace master server.
+This capability has been greatly enhanced in 6.15.0 which reports detailed information about
+the progress of workspace operations, including detailed timings of asynchronous jobs. This enables
+the server operators to gain more insight into the performance characteristics of the Che server and
+allows for better troubleshooting.
+ 
+The tracing information is **not** emitted by default. You need to specifically enable it by setting
+the `CHE_TRACING_ENABLED` environment variable to `true`.
 
-Learn more in the documentation: [Link to the documentation](<URL>).
+The connection to the Jaeger server and the behavior of the trace collection can be configured
+through a number of environment variables:
+
+* `JAEGER_ENDPOINT`: The endpoint to which send the tracing data, e.g. `"http://jaeger-collector:14268/api/traces"`
+* `JAEGER_SERVICE_NAME`: The name of the service under which Jaeger will categorize the incoming
+data, e.g. `"che-server"`
+* `JAEGER_SAMPLER_MANAGER_HOST_PORT`: The connection to Jaeger's sampler manager, e.g. `"jaeger:5778"`
+* `JAEGER_SAMPLER_TYPE`: The sampling type `"const"`
+* `JAEGER_SAMPLER_PARAM`: The parameter supplied to the sampler, e.g. `"1"`
+* `JAEGER_REPORTER_MAX_QUEUE_SIZE`: The maximum size of the queue of the sampled data, e.g. `"10000"`
+
+### Jaeger as part of the Che Helm chart
+
+Che 6.15 adds the support for tracing data collection also to its Helm chart for Kubernetes by 
+introducing Jaeger deployment to it.
 
 ## Other notable enhancements
 
