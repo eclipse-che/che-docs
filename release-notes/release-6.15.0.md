@@ -3,7 +3,7 @@
 Eclipse Che 6.15 includes:
 
 * **New CORS configuration parameters**: Allowing to test new CORS configuration before Che 6.16 release
-* **Prometheus metrics endpont**: Allowing to expose http endpoint with different metrics in prometheus format
+* **Prometheus metrics endpoint**: Allowing to expose http endpoint with different metrics in prometheus format
 
 ## Upgrading
 
@@ -39,7 +39,7 @@ You can use them, to try your own CORS configuration for WS Master (by applying 
 - `CHE_CORS_ALLOWED__ORIGINS` - "cors.allowed.origins" property for CORS filter, to define allowed origins for requests (default "*")
 
 
-### Prometheus metrics endpont (https://github.com/eclipse/che/pull/11990)
+### Prometheus metrics endpoint (https://github.com/eclipse/che/pull/11990)
 Starting from this release we introduced the ability to expose different metrics in [Prometheus](https://prometheus.io/) format.
 This feature is disabled by default. To enable it you can set `CHE_METRICS_ENABLED=true` environment variable for Che deployment.
 After that, metrics HTTP server will be exposed on port `8087`. List of awailable in this release metrics
