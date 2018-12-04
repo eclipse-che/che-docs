@@ -54,16 +54,16 @@ _Mixin ID_::pullrequest +
 
 Project attributes alter the behavior of the IDE or workspace.
 
-Different Eclipse Che and Codenvy plug-ins can add their own attributes to affect the behavior for the system. Attribute configuration is always optional and if not provided within a factory definition, the system will set it.
+Different Eclipse Che and Codenvy plug-ins can add their own attributes to affect the behavior of the IDE or workspace. Attribute configuration is always optional and if not provided within a factory definition, the IDE or workspace will set it.
 
 [width="100%",cols="50%,50%",options="header",]
 |===
 |Attribute |Description
-|`local_branch` |Used in conjunction with the `pullrequest` mixin. If provided, the local branch for the project is set with this value. If not provided, the local branch is set with the value of `project.source.parameters.branch` (the name of the branch from the remote). If `local_branch` and `project.source.parameters.branch` are both not provided, the local branch is set to the name of the checked out branch.
+|`local_branch` |Used in conjunction with the `pullrequest` mixin. If provided, the local branch for the project is set with this value. If not provided, the local branch is set with the value of `project.source.parameters.branch` (the name of the branch from the remote). If both `local_branch` and `project.source.parameters.branch` are not provided, the local branch is set to the name of the checked out branch.
 |`contribute_to_branch` |Name of the branch that a pull request will be contributed to. The value of `project.source.parameters.branch` is default. It is the name of the branch that this project was cloned from.
 |===
 
-Following is a snippet that demonstrates full configuration of the contribution mixin.
+Following is a snippet that demonstrates full configuration of the `contribution` mixin.
 
 [source,json]
 ----
@@ -130,7 +130,7 @@ factory.ide.{event}.actions : [{
 ----
 <1> event = `onAppLoaded`, `onProjectsLoaded`, `onAppClosed`.
 <2> List of IDE actions to be executed when the event is triggered.
-<3> Action for the IDE to be performed when the event is triggered.
+<3> Action for the IDE to perform when the event is triggered.
 <4> Properties to customize action behavior.
 
 You can instruct the factory to invoke a series of IDE actions based on events in the lifecycle of the workspace.
@@ -219,7 +219,7 @@ Each event type has a set of actions that can be triggered. There is no ordering
 [id="action-open-file"]
 == Action: Open File
 
-This action opens a file as a tab in the editor. You can provide this action multiple times to have multiple files open. The file property is a relative reference to a file in the project source tree. The `file` parameter is the relative path within the workspace to the file that should be opened by the editor. The `line` parameter is optional and can be used to move the editor cursor to a specific line when the file is opened. Note that projects are located in the workspaces `/projects` directory.
+This action opens a file as a tab in the editor. You can provide this action multiple times to have multiple files open. The file property is a relative reference to a file in the project source tree. The `file` parameter is the relative path within the workspace to the file that should be opened by the editor. The `line` parameter is optional and can be used to move the editor cursor to a specific line when the file is opened. Projects are located in the `/projects` directory of a workspace.
 
 [source,json]
 ----
@@ -251,9 +251,9 @@ To define a command for your workspace in `factory.workspace.workspaceConfig.com
 }
 ----
 
-In the preceding example, a named command `replace` is created. The command replaces `***` with a string in project `README.md` file.
+In the preceding example, a named command `replace` is created. The command replaces each occurrence of `***` with the string `userId984hfy6` in the `README.md` file of the project.
 
-Then register this command to the execution list linked to the `onProjectsLoaded` event. In this example, `replace` command is executed after the project is imported into a workspace.
+Then register this command to the execution list linked to the `onProjectsLoaded` event. In this example, the `replace` command is executed after the project is imported into a workspace.
 
 ----
 "ide": {
