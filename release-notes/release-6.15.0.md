@@ -3,6 +3,7 @@
 Eclipse Che 6.15 includes:
 
 * **New CORS configuration parameters**: Allowing to test new CORS configuration before Che 6.16 release
+* **Prometheus metrics endpont**: Allowing to expose http endpoint with different metrics in prometheus format
 
 ## Upgrading
 
@@ -36,6 +37,23 @@ You can use them, to try your own CORS configuration for WS Master (by applying 
 - `CHE_CORS_ENABLED` - if true, enables CORS filter (default "true"). Works only for WS Master.
 - `CHE_CORS_ALLOW__CREDENTIALS` - "cors.support.credentials" property for CORS filter (default "true")
 - `CHE_CORS_ALLOWED__ORIGINS` - "cors.allowed.origins" property for CORS filter, to define allowed origins for requests (default "*")
+
+
+### Prometheus metrics endpont (https://github.com/eclipse/che/pull/11990)
+Starting from this release we introduced the ability to expose different metrics in [Prometheus](https://prometheus.io/) format.
+This feature is disabled by default. To enable it you can set `CHE_METRICS_ENABLED=true` environment variable for Che deployment.
+After that, metrics HTTP server will be exposed on port `8087`. List of awailable in this release metrics
+
+- ClassLoaderMetrics
+- JvmMemoryMetrics Record metrics that report utilization of various memory and buffer pools.
+- JvmGcMetrics Record metrics that report a number of statistics related to garbage collection emanating from the MXBean and also adds information about GC causes.
+- JvmThreadMetrics
+- LogbackMetrics
+- FileDescriptorMetrics File descriptor metrics gathered by the JVM.
+- ProcessorMetrics Record metrics related to the CPU, gathered by the JVM..
+- UptimeMetrics
+- FileStoresMeterBinder disk usage metrics
+- TomcatMetrics
 
 ### Feature 2 (#ISSUE)
 
