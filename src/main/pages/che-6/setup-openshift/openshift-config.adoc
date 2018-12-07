@@ -66,10 +66,10 @@ CERTIFICATE=$(cat /path/to/openshift/ca.crt)
 oc new-app -f deploy/openshift/templates/multi/openshift-certificate-secret.yaml -p CERTIFICATE="${CERTIFICATE}"
 ----
 
-You can create a secret with certificate in a different way, for example using oc/kubectl client:
-  ----
+You can create a secret with certificate in a different way, for example using oc/kubectl client
+----
     oc create secret generic self-signed-certificate --from-file=/path/to/certificate
-  ----
+----
 
 Once `self-signed-certificate` is created, `CHE_SELF__SIGNED__CERT` env takes cert file content as a value and is then used in entrypoints of Che server and Keycloak images.
 The secret is also propagated to workspace pods, and agents like exec, terminal and workspace agent use it when connecting to a workspace master.
