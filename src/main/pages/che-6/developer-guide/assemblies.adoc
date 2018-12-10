@@ -9,8 +9,8 @@ folder: che-6/developer-guide
 ---
 
 
-[id="what-is-a-che-assembly"]
-== What Is a Che Assembly?
+[id="understanding-che-assemblies"]
+== Understanding Che Assemblies?
 
 An assembly is a Maven module that produces a build artifact. In case of https://github.com/eclipse/che/tree/master/assembly[Eclipse Che], this is either a `.war` with `jars` in it, or a Tomcat assembly, which is a Tomcat web server with custom configuration and artifacts, copied to `webapps`. The following are Eclipse Che assemblies:
 
@@ -27,7 +27,7 @@ An assembly is a Maven module that produces a build artifact. In case of https:/
 [id="assembly-ide-war"]
 == assembly-ide-war
 
-Successful build of this module produces `ide.war` that is then deployed with Tomcat (produced by `assembly-main`) as `ROOT.war` that contains a handful or jars as dependencies and what’s more important - `_app` directory with JavaScript, CSS and other resources that are loaded into `IDE.html` when IDE is initialized.
+A successful build of this module produces an `ide.war` file, which is then deployed with Tomcat (produced by `assembly-main`) as a `ROOT.war` that contains dependencies packages as JAR files. It also contains the `_app` directory with JavaScript, CSS, and other resources that are loaded into the `IDE.html` file when the IDE is initialized.
 
 This module inherits https://github.com/eclipse/che/blob/da18cd1867210f87a6071ed65930fb47fb8bb775/ide/che-ide-gwt-app/pom.xml[`che-ide-gwt-app`] that it its turn has https://github.com/eclipse/che/blob/5a6d3910b268feb3c4e67c2ff9aa5640410bf777/ide/che-ide-full/pom.xml[`che-ide-full`] in dependencies. So, `che-ide-full` is where all of the client side plugin dependencies are declared.
 
@@ -38,12 +38,12 @@ This is the module that is most often extended with custom plugins.
 [id="assembly-wsagent-war"]
 == assembly-wsagent-war
 
-Build artifact of this module contains all server side plugins components packaged as jars. Root `pom.xml` contains dependencies to all plugins that get deployed with the workspace agent, and this is where dependencies to custom plugins should be added. Once built, `assembly-wsagent-war` is copied to `webapps` of ws-agent Tomcat as `ROOT.war`. This is the module that is most often extended with custom plugins.
+The build artifact of this module contains all server-side plugins components packaged as JAR files. Root `pom.xml` contains dependencies to all plugins that get deployed with the workspace agent, and this is where dependencies to custom plugins should be added. Once built, `assembly-wsagent-war` is copied to `webapps` of ws-agent Tomcat as `ROOT.war`. This is the module that is most often extended with custom plugins.
 
 [id="assembly-wsagent-server"]
 == assembly-wsagent-server
 
-This module packages `ROOT.war` into Tomcat’s `webapps` and adds configuration files. This tomcat is packaged as tar.gz archive that is then placed into main Tomcat produced by `assembly-main` build.
+This module packages `ROOT.war` into Tomcat’s `webapps` and adds configuration files. This Tomcat is packaged as a `tar.gz` archive that is then placed into main Tomcat produced by the `assembly-main` build.
 
 [id="assembly-wsmaster-war"]
 == assembly-wsmaster-war
@@ -53,14 +53,14 @@ The core of Che platform as a workspace server that includes link:rest-api.html[
 [id="assembly-main"]
 == assembly-main
 
-This module’s name speaks for itself - this is the main assembly that packages all Che components into a Tomcat server. These components include wsmaster as `api.war`, User Dashboard as `dashboard.war`, documentation - `docs.war` and Swagger UI - `swagger.war`, agents like terminal and ws-agent (those are packaged into `lib` directory in the root of the resulting archive where Che master picks them up and serves, thus making them downloadable for link:installers.html[installers]).
+This is the main assembly that packages all Che components into a Tomcat server. These components include wsmaster as `api.war`, User Dashboard as `dashboard.war`, documentation - `docs.war` and Swagger UI - `swagger.war`, agents like terminal and ws-agent (those are packaged into `lib` directory in the root of the resulting archive where Che master picks them up and serves, thus making them downloadable for link:installers.html[installers]).
 
 [id="custom-assemblies"]
 == Custom Assemblies
 
-You may build own custom assembly of Che. To do so, there’s no need to clone/copy the entire Che source code. All artifacts can be used as dependencies. Moreover, unlike assemblies in Che source code, custom assemblies can use minimal artifacts for server and client side.
+You may build your own custom assembly of Che. To do so, there is no need to clone or copy the entire Che source code. All artifacts can be used as dependencies. Also, unlike assemblies in Che source code, custom assemblies can use minimal artifacts for server and client side.
 
-Here’s an https://github.com/che-samples/che-ide-server-extension[example] of a custom Che assembly that brings in two plugins - server- and client-side. You may clone this repository and use it as a basis for your custom Che assembly.
+See an https://github.com/che-samples/che-ide-server-extension[example] of a custom Che assembly that brings in two plug-ins - server- and client-side. You may clone this repository and use it as a basis for your custom Che assembly.
 
 Note that this example uses core artifacts as dependencies both for https://github.com/che-samples/che-ide-server-extension/blob/master/assembly/assembly-ide-war/pom.xml#L31-L35[client]:
 
@@ -73,7 +73,7 @@ Note that this example uses core artifacts as dependencies both for https://gith
 </dependency>
 ----
 
-and https://github.com/che-samples/che-ide-server-extension/blob/master/assembly/assembly-wsagent-war/pom.xml#L22-L26[server side]
+and https://github.com/che-samples/che-ide-server-extension/blob/master/assembly/assembly-wsagent-war/pom.xml#L22-L26[server side]:
 
 [source,xml]
 ----
@@ -145,10 +145,10 @@ Server side:
 </dependency>
 ----
 
-These two `pom.xml` files are entrypoints to adding custom plugins. This assembly includes two plugins that are declared in:
+These two `pom.xml` files are entrypoints to adding custom plugins. This assembly includes two plugins, which are declared in:
 
-* https://github.com/che-samples/che-ide-server-extension/blob/master/pom.xml#L54-L64[root pom.xml] - artifact version defaults to project version. These dependencies need to be declared to follow dependency convergence rules in Che (i.e. all dependencies have to be declared either in Che `maven-depmgt-pom` or in a root pom of an assembly). What `maven-depmgt-pom` parent brings is a set of enforcer plugins, like formatting, dependency management, source validation etc.
-
+* https://github.com/che-samples/che-ide-server-extension/blob/master/pom.xml#L54-L64[root `pom.xml`] - artifact version defaults to project version. These dependencies need to be declared to follow dependency convergence rules in Che (i.e. all dependencies have to be declared either in Che `maven-depmgt-pom` or in a root pom of an assembly). `maven-depmgt-pom` parent brings a set of enforcer plug-ins, such as formatting, dependency management, source validation, and others.
++
 [source,xml]
 ----
 <dependency>
@@ -159,7 +159,7 @@ These two `pom.xml` files are entrypoints to adding custom plugins. This assembl
 ----
 
 * https://github.com/che-samples/che-ide-server-extension/blob/master/assembly/assembly-ide-war/pom.xml#L36-L40[assembly-ide-war pom]:
-
++
 [source,xml]
 ----
 <dependency>
@@ -168,11 +168,11 @@ These two `pom.xml` files are entrypoints to adding custom plugins. This assembl
     <type>gwt-lib</type>
 </dependency>
 ----
-
-This way, your client side plugin is included into `ide.war`. We use https://maven.apache.org/plugins/maven-war-plugin/overlays.html[Maven’s overlays feature] to package custom plugins into the resulting artifact.
++
+This way, your client-side plug-in is included in `ide.war`. We use https://maven.apache.org/plugins/maven-war-plugin/overlays.html[Maven’s overlays feature] to package custom plug-ins into the resulting artifact.
 
 * https://github.com/che-samples/che-ide-server-extension/blob/master/assembly/assembly-wsagent-war/pom.xml#L27-L30[assembly-wsmaster-war pom]:
-
++
 [source,xml]
 ----
 <dependency>
@@ -181,12 +181,12 @@ This way, your client side plugin is included into `ide.war`. We use https://mav
 </dependency>
 ----
 
-Your custom plugin packaged as jar is automatically added to inherited `wsagent` artifact if both are declared as dependencies in `pom.xml`. As a result, the final `.war` artifact will contain a custom jar.
+Your custom plug-in packaged as a JAR file is automatically added to the inherited `wsagent` artifact if both are declared as dependencies in `pom.xml`. As a result, the final `.war` artifact will contain a custom JAR file.
 
-[id="update-assembly"]
-== Update Assembly
+[id="updating-assemblies"]
+== Updating assemblies
 
-In a `pom.xml` update both:
+In the `pom.xml` file, update both:
 
 [source,xml]
 ----
@@ -206,9 +206,9 @@ and
 </properties>
 ----
 
-It is important to keep those versions consistent to avoid build failures and incompatibilities. It is also recommended to keep versions of own artifacts aligned with a parent version.
+Keep the versions consistent to avoid build failures and incompatibilities. It is also recommended to keep versions of own artifacts aligned with a parent version.
 
 [id="next-steps"]
-== Next Steps
+== Next steps
 
-Now that you have got some knowledge about Che assemblies and own cloned a sample assembly, let’s take a closer look at Eclipse Che link:ide-extensions-gwt.html[client] and link:server-side-extensions.html[server-side] plugins.
+Now that you have got some knowledge about Che assemblies and own cloned a sample assembly, take a closer look at Eclipse Che link:ide-extensions-gwt.html[client] and link:server-side-extensions.html[server-side] plug-ins.
