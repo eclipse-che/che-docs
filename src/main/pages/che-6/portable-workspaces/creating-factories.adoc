@@ -10,10 +10,9 @@ folder: che-6/portable-workspaces
 
 
 [id="create-a-factory-in-the-dashboard"]
-== Creating a factory on the dashboard
+== Creating a factory in the dashboard
 
 You can create a factory based on an existing workspace. You can also create factories based on a template or by pasting in a `.factory.json` file and then generating a factory URL using the Che CLI or API. To learn more about the JSON structure and options, see link:factories_json_reference.html[Factory JSON reference].
-
 
 A factory created from the dashboard is persisted on Che and retained when upgrading to a newer version.
 
@@ -23,18 +22,20 @@ To create a factory on the dashboard:
 
 Sample factory: https://che.openshift.io/f?id=factorymtyoro1y0qt8tq2j[https://che.openshift.io/f?id=factorymtyoro1y0qt8tq2j].
 
+
 [id="create-a-factory-in-the-ide"]
 == Creating a factory in the IDE
 
 Creating a factory in the IDE in a running workspace generates a factory to replicate that workspace including the runtime and project settings.
 
-A factory created from the dashboard is persisted on {{ site.product_mini_name }} and retained when upgrading to a newer version.
+A factory created from the dashboard is persisted on Che and retained when upgrading to a newer version.
 
 To create a factory in the IDE:
 
 . In the IDE, click *Workspace* > *Create Factory*.
 
 Sample factory: https://che.openshift.io/f?id=factorymtyoro1y0qt8tq2j[https://che.openshift.io/f?id=factorymtyoro1y0qt8tq2j].
+
 
 [id="create-a-factory-based-on-a-repo"]
 == Creating a factory based on a repository
@@ -61,50 +62,48 @@ The factory URL can include a branch or a subdirectory. Following are examples o
 
 * `?url=https://github.com/eclipse/che/tree/5.0.0/dashboard` subdirectory `dashboard/` is imported by using the `5.0.0` branch.
 
+
 [id="customizing-url-factories"]
 === Customizing URL factories
 
 The following are two ways to customize the runtime and configuration:
 
-* Customizing only the runtime
+Customizing only the runtime:: Providing a `.factory.json` file inside the repository signals to Che URL factory to configure the project and runtime according to this configuration file. When a `.factory.json` file is stored inside the repository, any `Dockerfile` content is ignored because the workspace runtime configuration is defined inside the JSON file.
 
-* Dockerfile works on Docker infrastructure only
+Customizing the `Dockerfile`:: (This only works on Docker infrastructure.) Providing a `.factory.dockerfile` inside the repository signals to the URL factory to use this `Dockerfile` for the workspace agent runtime. By default, imported projects are set to a `blank` project type. You can also set the project type in the `.factory.json` file or in the workspace definition that the factory inherits from.
 
-Providing a `.factory.dockerfile` inside the repository signals to the URL factory to use this Dockerfile for the workspace agent runtime. By default, imported projects are set to a `blank` project type. You can also set the project type in the `.factory.json` file or in the workspace definition that the factory inherits from.
-
-==== Customizing the project and runtime*
-
-Providing a `.factory.json` file inside the repository signals to Che URL factory to configure the project and runtime according to this configuration file. When a `.factory.json` file is stored inside the repository, any `Dockerfile` content is ignored because the workspace runtime configuration is defined inside the JSON file.
 
 [id="configuring-factory-policies"]
 == Configuring factory policies
 
 Policies are a way to send instructions to the automation engine about the number of workspaces to create and their meta data such as lifespan and resource allocation.
 
+
 [id="setting-factories-limitations"]
 === Setting factory limitations
 
-*Referer*::
-Checks the hostname of the acceptor and only allows the factory to execute if there is a match.
-*Since* & *Until*::
-Defines the time window in which the factory can be activated. For example, instructors who want to create an exercise that can only be accessed for two hours should set these properties.
+Referer:: Checks the hostname of the acceptor and only allows the factory to execute if there is a match.
+
+Since and Until:: Defines the time window in which the factory can be activated. For example, instructors who want to create an exercise that can only be accessed for two hours should set these properties.
+
 
 [id="setting-factories-multiplicity"]
-== Setting factory multiplicity
+=== Setting factory multiplicity
 
 Multiplicity defines the number of workspaces that can be created from the factory.
 
-*Multiple Workspaces: perClick*::
-Every click of the factory URL generates a different workspace, each with its own identifier, name, and resources.
-*Single Workspace: perUser*::
-Exactly one workspace is generated for each unique user that clicks on the factory URL. If the workspace has previously been generated, the existing workspace is reopened.
+Multiple workspaces (`perClick`):: Every click of the factory URL generates a different workspace, each with its own identifier, name, and resources.
 
-To learn how to configure factory policies, see link:factories_json_reference.html[JSON reference].
+Single workspace (`perUser`):: Exactly one workspace is generated for each unique user that clicks on the factory URL. Existing workspaces are reopened.
+
+To learn how to configure factory policies, see the link:factories_json_reference.html[JSON reference].
+
 
 [id="customizing-the-ide"]
 == Customizing the IDE
 
 You can instruct the factory to invoke a series of IDE actions based on events in the lifecycle of the workspace.
+
 
 [id="lifecycle-events"]
 == Lifecycle Events
@@ -123,20 +122,24 @@ Each event type has a set of actions that can be triggered. There is no ordering
 
 The following is a list of all possible actions that can be configured with your factory.
 
-*Run Command*::
-_Description:_ Specify the name of the command to invoke after the IDE is loaded. +
-_Associated Event_::: `onProjectsLoaded`
-*Open File*::
-_Description_::: Open project files in the editor. Optionally, define the line to be highlighted. +
-_Associated Event:_ `onProjectsLoaded`
-*Open a Welcome Page*::
-_Description_::: Customize content of a welcome panel displayed when the workspace is loaded. +
-_Associated Event_::: `onAppLoaded`
-*Warm on Uncommitted Changes*::
-_Description_::: Opens a warning pop-up window when the user closes the browser tab with a project that has uncommitted changes. +
-_Associated Event_::: `onAppClosed`
+Run Command::
+Specify the name of the command to invoke after the IDE is loaded. +
+_Associated Event_: `onProjectsLoaded`
 
-To learn how to configure factory actions, see link:factories_json_reference.html#ide-customization[Factory JSON reference].
+Open File::
+Open project files in the editor. Optionally, define the line to be highlighted. +
+_Associated Event_: `onProjectsLoaded`
+
+Open a Welcome Page::
+Customize content of a welcome panel displayed when the workspace is loaded. +
+_Associated Event_: `onAppLoaded`
+
+Warn on Uncommitted Changes::
+Opens a warning pop-up window when the user closes the browser tab with a project that has uncommitted changes. +
+_Associated Event_: `onAppClosed`
+
+To learn how to configure factory actions, see the link:factories_json_reference.html#ide-customization[Factory JSON reference].
+
 
 [id="find-and-replace"]
 == Finding and replacing variables
@@ -147,6 +150,7 @@ For a sample of how to configure finding and replacing a value, see the link:fac
 
 Use https://www.gnu.org/software/sed/manual/html_node/Regular-Expressions.html[regular expressions] in `sed`, both in find-replace and file-file type patterns.
 
+
 [id="pull-request-workflow"]
 == Pull request workflow
 
@@ -155,6 +159,7 @@ Factories can be configured with a dedicated pull request workflow. The PR workf
 When enabled, the pull request workflow adds a contribution panel to the IDE.
 
 image::git/pr_panel.png[]
+
 
 [id="repository-badging"]
 == Repository badging
@@ -165,6 +170,7 @@ If you have projects in GitHub or GitLab, you can help your contributors to get 
 ----
 [![Developer Workspace](https://che.openshift.io/factory/resources/factory-contribute.svg)](your-factory-url)
 ----
+
 
 [id="creating-factories-next-steps"]
 == Next steps
