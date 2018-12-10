@@ -32,14 +32,14 @@ As an example, we will describe in the following how to add a simple project typ
 
 As a first step, we implement a custom subclass of `ProjectTypeDef` (see code example below). Its constructor calls the default super constructor to define the ID and the name for the custom project type.
 
-Further, it specifies with the remaining three boolean parameters:
+Further, it uses the remaining three boolean parameters to specify:
 
-* **primary**=true: That the project can be a top-level project, meaning that it can be created on the root level of a workspace
-* **mixin**=false: That the project cannot be embedded into other projects (as sub-projects)
+`primary=true`:: The project can be a top-level project, meaning that it can be created on the root level of a workspace.
+`mixin=false`:: The project cannot be embedded into other projects (as sub-projects).
 
-After specifying the project, we add a constant and a variable definition to the project type. Constants can not be changed, once they are defined and therefore contain static information about the project type. In our example, we add the information, which the project’s language is "json". The first parameter specifies a key, the second a description of the Constant, and the third the corresponding value.
+After specifying the project, we add a constant and a variable definition to the project type. Constants can not be changed once they are defined and therefore contain static information about the project type. In our example, we add the information that the project language is JSON. The first parameter specifies a key, the second a description of the constant, and the third the corresponding value.
 
-https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-server/src/main/java/it/pkg/projecttype/JsonExampleProjectType.java[JsonExampleProjectType.java]
+https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-server/src/main/java/it/pkg/projecttype/JsonExampleProjectType.java[JsonExampleProjectType.java]:
 
 [source,java]
 ----
@@ -56,7 +56,7 @@ public class JsonExampleProjectType extends ProjectTypeDef {
 
 Variables can be changed, e.g. to store values that the user enters on project creation. In the example, we define a custom variable to store a reference to a JSON schema. We will allow the user to set this variable in a custom project wizard in the corresponding part of this tutorial. You can define your own variables to store project specific properties. All String constants of the following code example are defined in a shared constant class, which is listed below.
 
-https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-shared/src/main/java/it/pkg/shared/Constants.java[Constants.java]
+https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-shared/src/main/java/it/pkg/shared/Constants.java[Constants.java]:
 
 [source,java]
 ----
@@ -118,7 +118,7 @@ Typical project types often need to be initialized with some default content, e.
 
 In the following example, we will create the following files: a "person.json" file with some default content that will be stored in a folder named "myJsonFiles" as well as a "package.json" file, which we’ll need later on. The method `#getProjectType` needs to provide the project type ID to allow Che to map the `ProjectHandler` to the correct type.
 
-https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-server/src/main/java/it/pkg/inject/JsonExampleGuiceModule.java[JsonExampleGuiceModule.java]
+https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-server/src/main/java/it/pkg/inject/JsonExampleGuiceModule.java[JsonExampleGuiceModule.java]:
 
 [source,java]
 ----
@@ -156,7 +156,7 @@ public class JsonExampleCreateProjectHandler implements CreateProjectHandler {
 
 Finally, the ProjectHandler needs to be bound using Guice just as the project type was bound before:
 
-https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-server/src/main/java/it/pkg/inject/JsonExampleGuiceModule.java[JsonExampleGuiceModule.java]
+https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-server/src/main/java/it/pkg/inject/JsonExampleGuiceModule.java[JsonExampleGuiceModule.java]:
 
 [source,java]
 ----
@@ -192,7 +192,7 @@ Now all required classes are set up and the actual runtime behavior can be perfo
 
 Finally, to wire everything up with Gin, all we need to do is to define a module to register our class `JsonExampleProjectWizardRegistrar` as an implementation of `ProjectWizardRegistrar`:
 
-https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-ide/src/main/java/it/pkg/ide/inject/JsonExampleModule.java[JsonExampleModule.java]
+https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-ide/src/main/java/it/pkg/ide/inject/JsonExampleModule.java[JsonExampleModule.java]:
 
 [source,java]
 ----
@@ -216,7 +216,7 @@ The `JsonExampleProjectWizardRegistrar` is responsible for setting up the `Schem
 
 In addition to setting up the wizard page we need to declare the project type and category for which the project wizard is responsible for.
 
-https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-ide/src/main/java/it/pkg/ide/project/JsonExampleProjectWizardRegistrar.java[JsonExampleProjectWizardRegistrar.java]
+https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-ide/src/main/java/it/pkg/ide/project/JsonExampleProjectWizardRegistrar.java[JsonExampleProjectWizardRegistrar.java]:
 
 [source,java]
 ----
@@ -249,7 +249,7 @@ public class JsonExampleProjectWizardRegistrar implements ProjectWizardRegistrar
 
 The `SchemaUrlWizardPage` class defines the actual wizard page for entering a schema URL. In the constructor it requires the injection of a view for displaying the UI of the page called `SchemaUrlPageViewImpl`. In the method `#go`, which is called when the page is about to be displayed, it will set this view as the only widget on the page and pass a new `SchemaUrlChangedDelegate` to the view. The view will later use this delegate to trigger changes on the page’s `ProjectConfigDto` whenever something is entered into the schema URL text box on the view.
 
-https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-ide/src/main/java/it/pkg/ide/project/SchemaUrlWizardPage.java[SchemaUrlWizardPage.java]
+https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-ide/src/main/java/it/pkg/ide/project/SchemaUrlWizardPage.java[SchemaUrlWizardPage.java]:
 
 [source,java]
 ----
@@ -273,7 +273,7 @@ public class SchemaUrlWizardPage extends AbstractWizardPage<ProjectConfigDto> {
 
 The `SchemaUrlChangedDelegate` receives a `ProjectConfigDto` in its constructor which holds all the values that are defined during project creation including the schema URL. Whenever its `#schemaUrlChanged` method is fired, it will write the new value into the `ProjectConfigDto`.
 
-https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-ide/src/main/java/it/pkg/ide/project/SchemaUrlChangedDelegate.java[SchemaUrlChangedDelegate.java]
+https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-ide/src/main/java/it/pkg/ide/project/SchemaUrlChangedDelegate.java[SchemaUrlChangedDelegate.java]:
 
 [source,java]
 ----
@@ -294,7 +294,7 @@ public class SchemaUrlChangedDelegate {
 
 `SchemaUrlPageView` is just a marker interface required by the framework to declare that our `SchemaUrlPageViewImpl` is an implementation of a view with a `SchemaUrlChangedDelegate`.
 
-https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-ide/src/main/java/it/pkg/ide/project/SchemaUrlPageView.java[SchemaUrlPageView.java]
+https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-ide/src/main/java/it/pkg/ide/project/SchemaUrlPageView.java[SchemaUrlPageView.java]:
 
 [source,java]
 ----
@@ -305,7 +305,7 @@ public interface SchemaUrlPageView extends View<SchemaUrlChangedDelegate> {}
 
 More about declarative UIs with GWT UI binder can be found on the http://www.gwtproject.org/doc/latest/DevGuideUiBinder.html[GWT homepage].
 
-https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-ide/src/main/java/it/pkg/ide/project/SchemaUrlPageViewImpl.java[SchemaUrlPageViewImpl.java]
+https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-ide/src/main/java/it/pkg/ide/project/SchemaUrlPageViewImpl.java[SchemaUrlPageViewImpl.java]:
 
 [source,java]
 ----
@@ -337,7 +337,7 @@ class SchemaUrlPageViewImpl extends Composite implements SchemaUrlPageView {
 }
 ----
 
-https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-ide/src/main/java/it/pkg/ide/project/SchemaUrlPageViewImpl.java[SchemaUrlPageViewImpl.ui.xml]
+https://github.com/che-samples/che-plugin-json/blob/master/plugins/plugin-myjson/plugin-myjson-ide/src/main/java/it/pkg/ide/project/SchemaUrlPageViewImpl.java[SchemaUrlPageViewImpl.ui.xml]:
 
 [source,xml]
 ----
@@ -361,7 +361,7 @@ SchemaUrlPageViewImpl.ui.xml
 </ui:UiBinder>
 ----
 
-By adapting the `SchemaUrlPageViewImpl.ui.xml` you can customize the layout of the final wizard page.
+By adapting the `SchemaUrlPageViewImpl.ui.xml`, you can customize the layout of the final wizard page.
 
 [id="project-specific-actions"]
 == Project-specific Actions
