@@ -8,65 +8,67 @@ redirect_from: factories_json_reference.html
 folder: che-6/portable-workspaces
 ---
 
-
-[id="factories_json_reference-overview"]
-== Overview
-
-A Factory configuration is a JSON snippet either stored within {{ site.product_mini_name }} or as a `.factory.json` file. You can create Factories within the IDE using our URL syntax, within the dashboard, or on the command line with the API and CLI.
+A factory configuration is a JSON snippet either stored within Che or as a `.factory.json` file. You can create factories within the IDE using the Che URL syntax, within the dashboard, or on the command line with the API and CLI.
 
 [source,json]
 ----
 factory : {
-  "v"         : 4.0,   // Version of configuration format
-  "workspace" : {},    // Identical to workspace:{} object for Eclipse Che
-  "policies"  : {},    // (Optional) Restrictions that limit behaviors
-  "ide"       : {},    // (Optional) Trigger IDE UI actions tied to workspace events
-  "creator"   : {},    // (Optional) Identifying information of author
+  "v"         : 4.0,            <1>
+  "workspace" : {},             <2>
+  "policies"  : {},             <3>
+  "ide"       : {},             <4>
+  "creator"   : {},             <5>
 }
 ----
+<1> Version of the configuration format.
+<2> Identical to `workspace:{}` object for Eclipse Che.
+<3> (Optional) Restrictions that limit behaviors.
+<4> (Optional) Trigger IDE UI actions tied to workspace events.
+<5> (Optional) Identifying information of author.
 
-The `factory.workspace` is identical to the `workspace:{}` object for Eclipse Che and contains the structure of the workspace. Learn more about link:workspace-data-model.html[the workspace JSON object].
+The `factory.workspace` is identical to the `workspace:{}` object for Eclipse Che and contains the structure of the workspace. To learn more about the workspace JSON object, see link:workspace-data-model.html[Workspace Data Model].
 
-You can export {{ site.product_mini_name }} workspaces and then reuse the workspace definition within a Factory. {{ site.product_mini_name }} workspaces are composed of:
+You can export Che workspaces and then reuse the workspace definition within a factory. Che workspaces are composed of the following:
 
 * 0..n projects
-* 0..n environments which contain machines to run the code
+* 0..n environments that contain machines to run the code
 * 0..n commands to execute against the code and machines
 * a type
 
-The `factory.policies`, `factory.ide` and `factory.creator` objects are unique to Factories. They provide meta information to the automation engine that alter the presentation of the Factory URL or the behavior of the provisioning.
+The `factory.policies`, `factory.ide`, and `factory.creator` objects are unique to factories. They provide meta information to the automation engine that alter the presentation of the factory URL or the behavior of the provisioning.
 
 [id="mixins"]
 == Mixins
 
-A mixin adds additional behaviors to a project as a set of new project type attributes. Mixins are reusable across any project type. You define the mixins to add to a project by specifying an array of strings, with each string containing the identifier for the mixin. For example, `"mixins" : [ "pullrequest" ]`.
+A mixin adds additional behaviors to a project as a set of new project type attributes. Mixins are reusable across any project type. To define the mixins to add to a project, specify an array of strings, with each string containing the identifier for the mixin. For example, `"mixins" : [ "pullrequest" ]`.
 
 [width="100%",cols="50%,50%",options="header",]
 |===
 |Mixin ID |Description
-|`pullrequest` |Enables pull request workflow where {{ site.product_mini_name }} handles local & remote branching, forking, and pull request issuance. Pull requests generated from within {{ site.product_mini_name }} have another Factory placed into the comments of pull requests that a PR reviewer can consume. Adds contribution panel to the IDE. If this mixin is set, then it uses attribute values for `project.attributes.local_branch` and `project.attributes.contribute_to_branch`. +
+|`pullrequest`
+|Enables pull request workflow where Che handles local and remote branching, forking, and pull request issuance. Pull requests generated from within Che have another factory placed into the comments of pull requests that a PR reviewer can consume. Adds contribution panel to the IDE. If this mixin is set, it uses attribute values for `project.attributes.local_branch` and `project.attributes.contribute_to_branch`
 |===
 
-* The `pullrequest` mixin requires additional configuration from the `attributes` object of the project. If present, {{ site.product_mini_name }} will use the project attributes as defined in the Factory. If not provided, {{ site.product_mini_name }} will set defaults for the attributes. +
+* The `pullrequest` mixin requires additional configuration from the `attributes` object of the project. If present, {{ site.product_mini_name }} will use the project attributes as defined in the factory. If not provided, {{ site.product_mini_name }} will set defaults for the attributes.
+
 * Learn more about other link:TODO: link to project API docs[mixins]
 
 [id="pull-request-mixin-attributes"]
-== Pull Request Mixin Attributes
+== Pull Request mixin attributes
 
 Project attributes alter the behavior of the IDE or workspace.
 
-Different Eclipse Che and Codenvy plug-ins can add their own attributes to affect the behavior for the system. Attribute configuration is always optional and if not provided within a Factory definition, the system will set itself.
+Different Eclipse Che plug-ins can add their own attributes to affect the behavior of the IDE or workspace. Attribute configuration is always optional and if not provided within a factory definition, the IDE or workspace sets it.
+
 
 [width="100%",cols="50%,50%",options="header",]
 |===
 |Attribute |Description
-|`local_branch` |Used in conjunction with the `pullrequest` mixin. If provided, the local branch for the project is set with this value. If not provided, then the local branch is set with the value of `project.source.parameters.branch` (the name of the branch from the remote). If `local_branch` and `project.source.parameters.branch` are both not provided, then the local branch is set to the name of the checked out branch.
-|`contribute_to_branch` |Name of the branch that a pull request will be contributed to. Default is the value of `project.source.parameters.branch`, which is the name of the branch this project was cloned from.
+|`local_branch` |Used in conjunction with the `pullrequest` mixin. If provided, the local branch for the project is set with this value. If not provided, the local branch is set with the value of `project.source.parameters.branch` (the name of the branch from the remote). If both `local_branch` and `project.source.parameters.branch` are not provided, the local branch is set to the name of the checked out branch.
+|`contribute_to_branch` |Name of the branch that a pull request will be contributed to. The value of `project.source.parameters.branch` is default. It is the name of the branch that this project was cloned from.
 |===
 
-* 
-
-Here is a snippet that demonstrates full configuration of the contribution mixin.
+Following is a snippet that demonstrates full configuration of the `contribution` mixin.
 
 [source,json]
 ----
@@ -91,66 +93,76 @@ factory.workspace.project : {
 [id="policies"]
 == Policies
 
+Following is an example of a factory policy.
+
 [source,json]
 ----
 factory.policies : {
-  "referer"   : STRING,               // Works only for clients from referer
-  "since"     : EPOCHTIME,            // Factory works only after this date
-  "until"     : EPOCHTIME,            // Factory works only before this date
-  "create"    : [perClick | perUser]  // Create one workpace per click, user or account
+  "referer"   : STRING,                 <1>
+  "since"     : EPOCHTIME,              <2>
+  "until"     : EPOCHTIME,              <3>
+  "create"    : [perClick | perUser]    <4>
 }
 ----
+<1> Works only for clients from a referrer.
+<2> Factory works only after this date.
+<3> Factory works only before this date.
+<4> Create one workpace per click, user, or account.
 
 [id="factories_json_reference-limitations"]
 == Limitations
 
-You can use `since : EPOCHTIME`, `until : EPOCHTIME` and `referer` as a way to prevent the Factory from executing under certain conditions. `since` and `until` represent a valid time window that will allow the Factory to activate. The `referer` will check the hostname of the acceptor and only allow the Factory to execute if there is a match.
+You can use `since : EPOCHTIME`, `until : EPOCHTIME`, and `referer` as a way to prevent the factory from executing under certain conditions. `since` and `until` represent a valid time window that allows the factory to activate. The `referrer` checks the hostname of the acceptor and only allows the factory to execute if there is a match.
 
 [id="factories_json_reference-multiplicity"]
 == Multiplicity
 
-If `create : perClick` is used, then every click of the Factory URL will generate a new workspace, each with its own identifier, name and resources. If `create : perUser` is used, then only one workspace will be generated for each unique user that clicks on the Factory URL. If the workspace has previously been generated, we will reopen the existing workspace.
+Using `create : perClick` causes every click of the factory URL to generate a new workspace, each with its own identifier, name, and resources. Using `create : perUser` causes only one workspace to be generated for each unique user that clicks on the factory URL. If the workspace has previously been generated, the existing workspace is reopened.
 
 [id="factories_json_reference-ide-customization"]
-== IDE Customization
+== Customizing the IDE
 
 [source,json]
 ----
-factory.ide.{event} : {          // event = onAppLoaded, onProjectsLoaded, onAppClosed
-  "actions" : [{}]               // List of IDE actions to execute when event triggered
+factory.ide.{event} : {                 <1>
+  "actions" : [{}]                      <2>
 }
 
 factory.ide.{event}.actions : [{
-  "id"         : String,         // Action for IDE to perform when event triggered
-  properties : {}                // Properties to customize action behavior
+  "id"         : String,                <3>
+  properties : {}                       <4>
 }]
 ----
+<1> event = `onAppLoaded`, `onProjectsLoaded`, `onAppClosed`.
+<2> List of IDE actions to be executed when the event is triggered.
+<3> Action for the IDE to perform when the event is triggered.
+<4> Properties to customize action behavior.
 
-You can instruct the Factory to invoke a series of IDE actions based upon events in the lifecycle of the workspace.
+You can instruct the factory to invoke a series of IDE actions based on events in the lifecycle of the workspace.
 
 `onAppLoaded`::
   Triggered when the IDE is loaded.
 `onProjectsLoaded`::
-  Triggered when the workspace and all projects have been activated/imported.
+  Triggered when the workspace and all projects have been activated or imported.
 `onAppClosed`::
   Triggered when the IDE is closed.
 
-This is an example that associates a variety of actions with all of the events.
+Following is an example that associates a variety of actions with all of the events.
 
 [source,json]
 ----
 "ide" : {  
-  "onProjectsLoaded" : {                // Actions triggered when a project is opened
+  "onProjectsLoaded" : {                                               <1>
     "actions" : [{  
-      "id" : "openFile",                // Opens a file in editor. Can add multiple
-      "properties" : {                  // The file to open (include project name)
+      "id" : "openFile",                                               <2>
+      "properties" : {                                                 <3>
         "file" : "/my-project/pom.xml"
       }
     },
     {  
-      "id" : "runCommand",              // Launch command after IDE opens
+      "id" : "runCommand",                                             <4>
       "properties" : {
-        "name" : "MCI"                  // Command name
+        "name" : "MCI"                                                 <5>
       }
     }
   ]},
@@ -158,20 +170,29 @@ This is an example that associates a variety of actions with all of the events.
      "actions": [
         {
            "properties:{
-              "greetingTitle": "Getting Started",           // Title of a Welcome tab
-              "greetingContentUrl": "http://example.com/README.html"    // HTML to be loaded into a tab
+              "greetingTitle": "Getting Started",                      <6>
+              "greetingContentUrl": "http://example.com/README.html"   <7>
            },
            "id": "openWelcomePage"
         }
      ]
   },
-  "onAppClosed" : {                     // Actions to be triggered when IDE is closed
+  "onAppClosed" : {                                                    <8>
     "actions" : [{
-      "id" : "warnOnClose"              // Show warning when closing browser tab
+      "id" : "warnOnClose"                                             <9>
     }]
   }
 }
 ----
+<1> Actions triggered when a project is opened.
+<2> Opens a file in the editor. Can add multiple.
+<3> The file to be opened (include project name).
+<4> Launch command after the IDE opens.
+<5> Command name.
+<6> Title of a *Welcome* tab.
+<7> HTML file to be loaded into a tab.
+<8> Actions to be triggered when the IDE is closed.
+<9> Show warning when closing a browser tab.
 
 Each event type has a set of actions that can be triggered. There is no ordering of actions executed when you provide a list; {{ site.product_mini_name }} will asynchronously invoke multiple actions if appropriate. Some actions can be configured in how they perform and will have an associated `properties : {}` object.
 
@@ -197,13 +218,13 @@ Each event type has a set of actions that can be triggered. There is no ordering
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Action |Properties? |Description
-|`warnOnClose` |No |Opens a warning popup when the user closes the browser tab with a project that has uncommitted changes. Requires `project.parameters.keepVcs` to be `true`.
+|`warnOnClose` |No |Opens a warning pop-up window when the user closes the browser tab with a project that has uncommitted changes. Requires `project.parameters.keepVcs` to be `true`.
 |===
 
 [id="action-open-file"]
 == Action: Open File
 
-This action will open a file as a tab in the editor. You can provide this action multiple times to have multiple files open. The file property is a relative reference to a file in the project’s source tree. The `file` parameter is the relative path within the workspace to the file that should be opened by the editor. The `line` parameter is optional and can be used to move the editor cursor to a specific line when the file is opened. Note that projects are located in the workspaces `/projects` folder.
+This action opens a file as a tab in the editor. You can provide this action multiple times to have multiple files open. The file property is a relative reference to a file in the project source tree. The `file` parameter is the relative path within the workspace to the file that should be opened by the editor. The `line` parameter is optional and can be used to move the editor cursor to a specific line when the file is opened. Projects are located in the `/projects/` directory of a workspace.
 
 [source,json]
 ----
@@ -219,9 +240,9 @@ This action will open a file as a tab in the editor. You can provide this action
 [id="action-find-and-replace"]
 == Action: Find and Replace
 
-If you create a project from a factory, you can have {{ site.product_mini_name }} perform a find / replace on values in the imported source code after it is imported into the project tree. This essentially lets you parameterize your source code. Find and replace can be run as a *Run Command* during `onProjectsLoaded` event. You can use `sed`, `awk` or any other tools that are available in your workspace environment.
+In projects created from a factory, Che can find and replace values in the source code after it is imported into the project tree. This lets you parameterize your source code. Find and replace can be run as a *Run Command* during `onProjectsLoaded` event. You can use `sed`, `awk`, or any other tools that are available in your workspace environment.
 
-Define a command for your workspace in `factory.workspace.workspaceConfig.commands`:
+To define a command for your workspace in `factory.workspace.workspaceConfig.commands`:
 
 ----
 {
@@ -235,9 +256,9 @@ Define a command for your workspace in `factory.workspace.workspaceConfig.comman
 }
 ----
 
-In this example, we have created a named command `replace` which replaces `***` with a string in project’s README.md.
+In the preceding example, a named command `replace` is created. The command replaces each occurrence of `***` with the string `userId984hfy6` in the `README.md` file of the project.
 
-Then register this command to the execution list linked to `onProjectsLoaded` event. In this example, `replace` command is executed after project is imported into a workspace:
+Then register this command to the execution list linked to the `onProjectsLoaded` event. In this example, the `replace` command is executed after the project is imported into a workspace.
 
 ----
 "ide": {
@@ -254,19 +275,23 @@ Then register this command to the execution list linked to `onProjectsLoaded` ev
   }
 ----
 
-Use https://www.gnu.org/software/sed/manual/html_node/Regular-Expressions.html[regular expressions] in sed, both in find/replace and file/file types patterns.
+Use https://www.gnu.org/software/sed/manual/html_node/Regular-Expressions.html[regular expressions] in `sed`, both in find-replace and file-file type patterns.
 
 [id="creator"]
 == Creator
 
-This object has meta information that you can embed within the Factory. These attributes do not affect the automation behavior or the behavior of the generated workspace.
+This object has meta information that you can embed within the factory. These attributes do not affect the automation behavior or the behavior of the generated workspace.
 
 [source,json]
 ----
 factory.creator : {
-  "name"      : STRING,                // Name of author of this configuration file
-  "email"     : STRING,                // Email address of author
-  "created"   : EPOCHTIME,             // Set by the system
-  "userId"    : STRING                 // Set by the system
+  "name"      : STRING,            <1>
+  "email"     : STRING,            <2>
+  "created"   : EPOCHTIME,         <3>
+  "userId"    : STRING             <4>
 }
 ----
+<1> The name of the author of this configuration file.
+<2> The author's email address.
+<3> This value is set by the system.
+<4> This value is set by the system.
