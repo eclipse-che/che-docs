@@ -8,7 +8,7 @@ redirect_from: factories_json_reference.html
 folder: che-6/portable-workspaces
 ---
 
-A factory configuration is a JSON snippet either stored within {{ site.product_mini_name }} or as a `.factory.json` file. You can create factories within the IDE using the Che URL syntax, within the dashboard, or on the command line with the API and CLI.
+A factory configuration is a JSON snippet either stored within Che or as a `.factory.json` file. You can create factories within the IDE using the Che URL syntax, within the dashboard, or on the command line with the API and CLI.
 
 [source,json]
 ----
@@ -22,13 +22,13 @@ factory : {
 ----
 <1> Version of the configuration format.
 <2> Identical to `workspace:{}` object for Eclipse Che.
-<3>(Optional) Restrictions that limit behaviors.
+<3> (Optional) Restrictions that limit behaviors.
 <4> (Optional) Trigger IDE UI actions tied to workspace events.
 <5> (Optional) Identifying information of author.
 
 The `factory.workspace` is identical to the `workspace:{}` object for Eclipse Che and contains the structure of the workspace. To learn more about the workspace JSON object, see link:workspace-data-model.html[Workspace Data Model].
 
-You can export {{ site.product_mini_name }} workspaces and then reuse the workspace definition within a factory. {{ site.product_mini_name }} workspaces are composed of the following:
+You can export Che workspaces and then reuse the workspace definition within a factory. Che workspaces are composed of the following:
 
 * 0..n projects
 * 0..n environments that contain machines to run the code
@@ -58,7 +58,8 @@ A mixin adds additional behaviors to a project as a set of new project type attr
 
 Project attributes alter the behavior of the IDE or workspace.
 
-Different Eclipse Che and Codenvy plug-ins can add their own attributes to affect the behavior of the IDE or workspace. Attribute configuration is always optional and if not provided within a factory definition, the IDE or workspace will set it.
+Different Eclipse Che plug-ins can add their own attributes to affect the behavior of the IDE or workspace. Attribute configuration is always optional and if not provided within a factory definition, the IDE or workspace sets it.
+
 
 [width="100%",cols="50%,50%",options="header",]
 |===
@@ -103,7 +104,7 @@ factory.policies : {
   "create"    : [perClick | perUser]    <4>
 }
 ----
-<1> Works only for clients from referer.
+<1> Works only for clients from a referrer.
 <2> Factory works only after this date.
 <3> Factory works only before this date.
 <4> Create one workpace per click, user, or account.
@@ -111,15 +112,15 @@ factory.policies : {
 [id="factories_json_reference-limitations"]
 == Limitations
 
-You can use `since : EPOCHTIME`, `until : EPOCHTIME`, and `referer` as a way to prevent the factory from executing under certain conditions. `since` and `until` represent a valid time window that will allow the factory to activate. The `referer` will check the hostname of the acceptor and only allow the factory to execute if there is a match.
+You can use `since : EPOCHTIME`, `until : EPOCHTIME`, and `referer` as a way to prevent the factory from executing under certain conditions. `since` and `until` represent a valid time window that allows the factory to activate. The `referrer` checks the hostname of the acceptor and only allows the factory to execute if there is a match.
 
 [id="factories_json_reference-multiplicity"]
 == Multiplicity
 
-If `create : perClick` is used, then every click of the factory URL will generate a new workspace, each with its own identifier, name, and resources. If `create : perUser` is used, only one workspace is generated for each unique user that clicks on the factory URL. If the workspace has previously been generated, the existing workspace is reopened.
+Using `create : perClick` causes every click of the factory URL to generate a new workspace, each with its own identifier, name, and resources. Using `create : perUser` causes only one workspace to be generated for each unique user that clicks on the factory URL. If the workspace has previously been generated, the existing workspace is reopened.
 
 [id="factories_json_reference-ide-customization"]
-== IDE customization
+== Customizing the IDE
 
 [source,json]
 ----
@@ -223,7 +224,7 @@ Each event type has a set of actions that can be triggered. There is no ordering
 [id="action-open-file"]
 == Action: Open File
 
-This action opens a file as a tab in the editor. You can provide this action multiple times to have multiple files open. The file property is a relative reference to a file in the project source tree. The `file` parameter is the relative path within the workspace to the file that should be opened by the editor. The `line` parameter is optional and can be used to move the editor cursor to a specific line when the file is opened. Projects are located in the `/projects` directory of a workspace.
+This action opens a file as a tab in the editor. You can provide this action multiple times to have multiple files open. The file property is a relative reference to a file in the project source tree. The `file` parameter is the relative path within the workspace to the file that should be opened by the editor. The `line` parameter is optional and can be used to move the editor cursor to a specific line when the file is opened. Projects are located in the `/projects/` directory of a workspace.
 
 [source,json]
 ----
@@ -239,7 +240,7 @@ This action opens a file as a tab in the editor. You can provide this action mul
 [id="action-find-and-replace"]
 == Action: Find and Replace
 
-If you create a project from a factory, you can have {{ site.product_mini_name }} find and replace values in the imported source code after it is imported into the project tree. This lets you parameterize your source code. Find and replace can be run as a *Run Command* during `onProjectsLoaded` event. You can use `sed`, `awk` or any other tools that are available in your workspace environment.
+In projects created from a factory, Che can find and replace values in the source code after it is imported into the project tree. This lets you parameterize your source code. Find and replace can be run as a *Run Command* during `onProjectsLoaded` event. You can use `sed`, `awk`, or any other tools that are available in your workspace environment.
 
 To define a command for your workspace in `factory.workspace.workspaceConfig.commands`:
 
@@ -290,7 +291,7 @@ factory.creator : {
   "userId"    : STRING             <4>
 }
 ----
-<1> Name of author of this configuration file.
+<1> The name of the author of this configuration file.
 <2> The author's email address.
 <3> This value is set by the system.
 <4> This value is set by the system.
