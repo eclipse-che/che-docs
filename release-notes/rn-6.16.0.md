@@ -1,4 +1,4 @@
-# Eclipse Che 6.16.0 Release Notes
+# Eclipse Che 6.16 Release Notes
 
 ////
 
@@ -8,9 +8,9 @@ Heading for blog post
 
 ////
 
-The Eclipse Che 6.16.0 release contains the following notable features:
+The Eclipse Che 6.16 release contains the following notable features:
 
-* $HIGHLIGHT1
+* Added an ability to run Che Server with K8s/OS infrastructure on https with a self-signed certificate
 * $HIGHLIGHT2
 * $HIGHLIGHT3
 
@@ -33,13 +33,17 @@ Learn more in our [documentation](https://www.eclipse.org/che/docs/infra-support
 
 ---
 
-## $HIGHLIGHT1
+## An ability to run Che Server with K8s/OS infrastructure on https with a self-signed certificate
 
-Screenshot/illustration
+![Che_on_https](https://www.eclipse.org/che/docs/images/workspaces/chrome_cert.png)
 
-Description
+Added an ability to run Che Server with K8s/OS infrastructure on https with a self-signed certificate.
+It is needed to create secret with a self-signed certificate and Che Server will configure internal communication for itself.
+More about it see https://www.eclipse.org/che/docs/che-6/openshift-config.html#https-mode---self-signed-certs
 
-Links to PRs
+Links to PRs:
+[https://github.com/eclipse/che/pull/12089](https://github.com/eclipse/che/pull/12089)
+[https://github.com/eclipse/che/pull/12112](https://github.com/eclipse/che/pull/12112)
 
 ---
 
