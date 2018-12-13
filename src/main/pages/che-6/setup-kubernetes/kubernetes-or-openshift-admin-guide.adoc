@@ -1,17 +1,19 @@
 // This content (file) is included in:
-// 
+//
 // * setup-kubernetes/kubernetes-admin-guide.adoc
 // * setup-openshift/openshift-admin-guide.adoc
-// 
+//
 // The 'admin-context' variable (set in the parent files)
 // is used to determine K8s or OpenShift use.
 
 //  ifeval::[{admin-context} == "OpenShift"]
 //  :ctl-command: oc
+//  :k8s-namespace: OpenShift Project
 //  endif::[]
-//  
+//
 //  ifeval::[{admin-context} == "Kubernetes"]
 //  :ctl-command: kubectl
+//  :k8s-namespace: Kubernetes Namespace
 //  endif::[]
 
 
@@ -114,8 +116,13 @@ The workspace PVC strategy is configurable:
 [width="100%",cols="25%,25%,25%,25%",options="header",]
 |===
 |strategy |details |pros |cons
-|*unique (default)* |one PVC per workspace |Storage isolation |An undefined number of PVs is required
-|*common* | One PVC for all workspaces, Sub-paths pre-created |Easy to manage and control storage |No need to recyle PVs when pod with PVC is deleted |Workspace pods should all be in one namespace
+|*unique (default)* | One PVC per workspace volume |Storage isolation |An undefined number of PVs is required
+|*common* | One PVC for all workspaces in one {k8s-namespace}
+
+Sub-paths pre-created |Easy to manage and control storage |Workspaces must be in a separate {k8s-namespace} if PV does not support ReadWriteMany (RWX) access mode
+|*per-workspace* | One PVC for one workspace
+
+Sub-paths pre-created |Easy to manage and control storage |Workspace containers must all be in one pod if PV does not support ReadWriteMany (RWX) access mode
 |===
 
 [id="unique-pvc-strategy"]
@@ -171,6 +178,17 @@ When a common strategy is used and a workspace PVC access mode is ReadWriteOnce 
 To change the access mode for workspace PVCs, pass the `CHE_INFRA_KUBERNETES_PVC_ACCESS_MODE=ReadWriteMany` environment variable to Che deployment either when initially deploying Che or through the Che deployment update.
 
 Another restriction is that only pods in the same namespace can use the same PVC.  The `CHE_INFRA_KUBERNETES_PROJECT` environment variable should not be empty.  It should be either the Che server namespace where objects can be created with the Che service account (SA) or a dedicated namespace where a token or a username and password need to be used.
+
+[id="per-workspace-pvc-strategy"]
+=== Per workspace PVC strategy
+
+To define the unique strategy, set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `per-workspace`.
+
+[id="how-the-per-workspace-pvc-strategy-works"]
+==== How the per workspace PVC strategy works
+
+It works similarly to the common PVC strategy.
+The only difference is that all workspace volumes (but not all workspaces) use the same PVC to store data (projects and workspace logs by default and any additional link:volumes.html[volumes] that a user can define).
 
 [id="updating-your-che-deployment"]
 == Updating your Che deployment
