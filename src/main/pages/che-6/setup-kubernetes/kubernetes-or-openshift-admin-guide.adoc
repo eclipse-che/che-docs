@@ -404,3 +404,20 @@ To delete Keycloak and PostgreSQL PVCs:
 $ {ctl-command} delete pvc -l=app=keycloak
 $ {ctl-command} delete pvc -l=app=postgres
 ----
+
+== Monitoring Che Master Server
+
+Master server emits metrics in Prometheus format by default on port `8087` of the Che server host
+(this can be customized by the `che.metrics.port`
+link:properties.html#properties-and-environment-variables[configuration property]).
+
+You can configure your own Prometheus deployment to scrape the metrics (as per convention, the
+metrics are published on the `<CHE_HOST>:8087/metrics` endpoint).
+
+The Che's Helm chart can optionally install Prometheus and Grafana servers preconfigured to collect
+the metrics of the Che server. When you set the `global.metricsEnabled` value to `true` when
+installing Che's Helm chart, Prometheus and Grafana servers are automatically deployed.
+The servers are accessible on `prometheus-<CHE_NAMESPACE>.domain` or `grafana-<CHE_NAMESPACE>.domain`
+domains respectively. The Grafana server is preconfigured with a sample dashboard showing the memory
+usage of the Che server. You can log in to the Grafana server using the predefined username `admin`
+with the default password `admin`.
