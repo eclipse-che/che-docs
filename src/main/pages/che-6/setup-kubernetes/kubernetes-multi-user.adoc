@@ -84,6 +84,12 @@ The context of the commands below is `che/deploy/kubernetes/helm/che`.
 
 To deploy multi-user with dedicated Keycloak as authentication server:
 
+. Make sure Helm dependencies are up-to-date:
++
+----
+helm dependency update
+----
+
 . Use one of the following two methods to override the default values:
 
 ** Change the `values.yaml` file. On the command line, run the following command:
@@ -98,6 +104,8 @@ helm upgrade --install <my-che-installation> --namespace <my-che-namespace> -f .
 helm upgrade --install <my-che-installation> --namespace <my-che-namespace> -f ./values/multi-user.yaml --set global.ingressDomain=<my-hostname> --set cheImage=<my-image> ./
 ----
 
+Once the deployment finishes, you can access Che on the following locations:
+
 * Master: `https://che-<che-namespace>.domain`
 * Keycloak: `https://keycloak-<che-namespace>.domain`
 * Workspaces servers: `https://server-host.domain`
@@ -105,12 +113,18 @@ helm upgrade --install <my-che-installation> --namespace <my-che-namespace> -f .
 [id="to-deploy-without-keycloak-in-multi-user-mode"]
 === Deploying without Keycloak in multi-user mode
 
-Supply the custom OpenID Connect provider using the following flags (for details, see https://github.com/eclipse/che-docs/blob/b2310017b1a75901cbec3b9c665d7ffa1cb23177/src/main/pages/setup-openshift/openshift-config.md[openshift-config.md]):
+. Make sure Helm dependencies are up-to-date:
++
+----
+helm dependency update
+----
 
+. Supply the custom OpenID Connect provider using the following flags (for details, see https://github.com/eclipse/che-docs/blob/b2310017b1a75901cbec3b9c665d7ffa1cb23177/src/main/pages/setup-openshift/openshift-config.md[openshift-config.md]):
++
 ----
 helm upgrade --install <my-che-installation> --namespace <my-che-namespace> -f ./values/multi-user.yaml --set global.ingressDomain=<my-hostname>,cheImage=<my-image>,global.cheDedicatedKeycloak=false,customOidcProvider=<oidc-url>,cheKeycloakClientId=<oidc_clientId>,customOidcUsernameClaim=<user_name_claim> ./
 ----
-
++
 Here:
 
 * `cheKeycloakClientId` is your authentication server client ID.
