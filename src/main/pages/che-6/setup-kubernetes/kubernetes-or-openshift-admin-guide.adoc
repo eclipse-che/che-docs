@@ -306,6 +306,25 @@ To increase the grace termination period, use the following environment variable
 If the `terminationGracePeriodSeconds` variable is explicitly set in the {admin-context} recipe, the `pass:[CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC]` environment variable does not override the recipe.
 ====
 
+[id="kubernetes-or-openshift-admin-guide-che-workspace-stop-on-pods-removing"]
+== Auto-stopping workspace if its pods are removed
+
+Sometimes it may happen that workspace Pods goes down when Che Server considers it as `RUNNING`.
+For example, the user removed it from {admin-context} console, admin can terminate (miner detection) pod or infrastructure node goes down.
+Che Server has periodical job that will stop such Runtimes without existing pods.
+
+It is disabled by default because there is possible Che Server configuration when Che Server doesn't have an ability to interact with Kubernetes API when operation is not invoked by user.
+It DOES work on the following configurations:
+
+* workspaces objects are created in the same namespace where Che Server is located;
+* cluster-admin service account token is mount to Che Server pod;
+
+It DOES NOT work on the following configurations:
+
+* Che Server communicates with Kubernetes API using token from OAuth provider;
+
+And it may be enabled by configuring `pass:[CHE_INFRA_KUBERNETES_RUNTIMES__CONSISTENCY__CHECK__PERIOD__MIN]` environment variable with value more than `0`.
+
 [id="updating-che-without-stopping-active-workspaces"]
 == Updating Che without stopping active workspaces
 
