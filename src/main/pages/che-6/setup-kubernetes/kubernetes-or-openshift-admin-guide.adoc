@@ -16,7 +16,7 @@
 //  :k8s-namespace: Kubernetes Namespace
 //  endif::[]
 
-
+hen the deployment YAML files run,
 [id="ram-prerequisites"]
 == RAM prerequisites
 
@@ -116,7 +116,7 @@ The workspace PVC strategy is configurable:
 [width="100%",cols="25%,25%,25%,25%",options="header",]
 |===
 |strategy |details |pros |cons
-|*unique (default)* | One PVC per workspace volume |Storage isolation |An undefined number of PVs is required
+|*unique (default)* | One PVC per workspace volume or user-defined PVC |Storage isolation |An undefined number of PVs is required
 |*common* | One PVC for all workspaces in one {k8s-namespace}
 
 Sub-paths pre-created |Easy to manage and control storage |Workspaces must be in a separate {k8s-namespace} if PV does not support ReadWriteMany (RWX) access mode
@@ -128,9 +128,25 @@ Sub-paths pre-created |Easy to manage and control storage |Workspace containers 
 [id="unique-pvc-strategy"]
 === Unique PVC strategy
 
-To define the unique strategy, set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `unique`.
+[id="how-the-unique-pvc-strategy-works"]
+==== How the unique PVC strategy works
 
-Every workspace gets its own PVC, which means a workspace PVC is created when a workspace starts for the first time. Workspace PVC is deleted when a corresponding workspace is deleted.
+Every Che Volume of workspace gets its own PVC, which means workspace PVCs are created when a workspace starts for the first time. Workspace PVCs are deleted when a corresponding workspace is deleted.
+
+User-defined PVCs are created with few modifications:
+
+- they are provisioned with genarated names to garantee that it is not conflicting with other PVCs in namespace;
+
+- subpaths of mount volumes that reference user-defined PVCs are prefixed with `{workspace id}/{PVC name}`.
+It is done to have the same data structure on PV on different PVC strategies;
+
+[id="enabling-a-unique-strategy"]
+==== Enabling a unique strategy
+
+If you have already deployed Che with another strategy, set the `CHE_INFRA_KUBERNETES_PVC_STRATEGY` variable to `unique` in `dc/che`.
+Note that existing workspaces data won't be migrated and they will use new unique PVC per Che Volume without cleaning up existing PVCs.
+
+If applying the `che-server-template.yaml` configuration, pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=unique` to the `{ctl-command} new-app` command.
 
 [id="common-pvc-strategy"]
 === Common PVC Strategy
@@ -140,6 +156,12 @@ Every workspace gets its own PVC, which means a workspace PVC is created when a 
 
 All workspaces use the same PVC to store data declared in their volumes (projects and workspace logs by default and whatever additional link:volumes.html[volumes] that a user can define.)
 
+User-defined PVCs are ignored and volumes that reference PVCs are replaced with volume that references common PVC.
+The corresponding containers volume mounts are relinked to common volume and subpaths are prefixed with `'{workspaceId}/{originalPVCName}'`.
+
+User-defined PVC name is used as Che Volume name. It means that if Machine is configured to use Che Volume with the same name as user-defined
+PVC has then they will use the same shared folder in common PVC.
+
 A PV that is bound to PVC `che-claim-workspace` will have the following structure:
 
 ----
@@ -147,7 +169,7 @@ pv0001
   workspaceid1
   workspaceid2
   workspaceidn
-    che-logs projects <volume1> <volume2>
+    che-logs projects <volume1> <volume2> <User-defined PVC name 1 | volume 3> ...
 ----
 
 Volumes can be anything that a user defines as volumes for workspace machines.  The volume name is equal to the directory name in `${PV}/${ws-id}`.
@@ -157,7 +179,8 @@ When a workspace is deleted, a corresponding subdirectory (`${ws-id}`) is delete
 [id="enabling-a-common-strategy"]
 ==== Enabling a common strategy
 
-If you have already deployed Che with unique strategy, set the `CHE_INFRA_KUBERNETES_PVC_STRATEGY` variable to `common` in `dc/che`.
+If you have already deployed Che with another strategy, set the `CHE_INFRA_KUBERNETES_PVC_STRATEGY` variable to `common` in `dc/che`.
+Note that existing workspaces data won't be migrated and they will use common PVC without cleaning up existing PVCs.
 
 If applying the `che-server-template.yaml` configuration, pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=common` to the `{ctl-command} new-app` command.
 
@@ -182,13 +205,20 @@ Another restriction is that only pods in the same namespace can use the same PVC
 [id="per-workspace-pvc-strategy"]
 === Per workspace PVC strategy
 
-To define the unique strategy, set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `per-workspace`.
-
 [id="how-the-per-workspace-pvc-strategy-works"]
 ==== How the per workspace PVC strategy works
 
 It works similarly to the common PVC strategy.
 The only difference is that all workspace volumes (but not all workspaces) use the same PVC to store data (projects and workspace logs by default and any additional link:volumes.html[volumes] that a user can define).
+
+[id="enabling-a-per-workspace-strategy"]
+==== Enabling a per-workspace strategy
+
+If you have already deployed Che with another strategy, set the `CHE_INFRA_KUBERNETES_PVC_STRATEGY` variable to `per-workspace` in `dc/che`.
+Note that existing workspaces data won't be migrated and they will use common PVC per workspace without cleaning up existing PVCs.
+
+If applying the `che-server-template.yaml` configuration, pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=per-workspace` to the `{ctl-command} new-app` command.
+
 
 [id="updating-your-che-deployment"]
 == Updating your Che deployment
