@@ -10,7 +10,7 @@ Heading for blog post
 
 The Eclipse Che 6.16 release contains the following notable features:
 
-* Added an ability to run Che Server with K8s/OS infrastructure on https with a self-signed certificate
+* Run Eclipse Che over https with a self-signed certificate
 * $HIGHLIGHT2
 * $HIGHLIGHT3
 
@@ -33,13 +33,13 @@ Learn more in our [documentation](https://www.eclipse.org/che/docs/infra-support
 
 ---
 
-## An ability to run Che Server with K8s/OS infrastructure on https with a self-signed certificate
+## Run Eclipse Che over https with a self-signed certificate
 
 ![Che_on_https](https://www.eclipse.org/che/docs/images/workspaces/chrome_cert.png)
 
-Added an ability to run Che Server with K8s/OS infrastructure on https with a self-signed certificate.
-It is needed to create secret with a self-signed certificate and Che Server will configure internal communication for itself.
-More about it see https://www.eclipse.org/che/docs/che-6/openshift-config.html#https-mode---self-signed-certs
+Security is increasingly important for web services, and many Eclipse Che users would like to ensure communication between the Che server and client is encrypted and authenticated. In previous versions, it was not possible to start workspaces in Eclipse Che if your container platform was using a self-signed certificate. In this release, we have added that ability. The Che administrator can enable this feature by creating a secret with the certificate, and configuring the server to ensure that the certificate is used by the Che server.
+
+For more information, see https://www.eclipse.org/che/docs/che-6/openshift-config.html#https-mode---self-signed-certs
 
 Links to PRs:
 [https://github.com/eclipse/che/pull/12089](https://github.com/eclipse/che/pull/12089)
