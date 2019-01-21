@@ -1,15 +1,19 @@
-## Release summary
-
-Eclipse Che 6.16 includes:
+# Eclipse Che 6.16 Release Notes
 
 * **Prometheus and Grafana deployed in the Helm chart**: Allowing to collect and inspect metrics emitted by the Che server
 * **Upgrade of Tomcat & CORS Configuration**: Changes to default CORS configuration and providing more configuration options
 * **Improved REST API endpoint `/activity`**: It is now capable of returning information about
 workspace activity.
 
-## Upgrading
+---
 
-Instructions on how to upgrade.
+The Eclipse Che community is please to announce the 6.16 release, with a number of significant improvements. This release brings changes in the configuration of the handling of CORS (Cross-Origin Resource Sharing), and updates to the NodeJS and Java stacks on CentOS. This release contains a total of 61 enhancements or bug fixes.
+
+---
+
+## Quick Start
+
+Che is a cloud IDE and containerized workspace server - get started on:
 
 ## Release details
 
@@ -73,22 +77,3 @@ This information is available only to users with a new `monitorSystem` permissio
 Che installation, this new permission needs to be granted to the users that should be able to access
 this information.
 
-### Feature 2 (#ISSUE)
-
-Feature description focusing on value to the user or contributor.
-
-Learn more in the documentation: [Link to the documentation](<URL>).
-
-## Other notable enhancements
-
-* Issue title. (#ISSUE)
-
-## Notable bug fixes
-
-* Fixed issue’s title. (#ISSUE)
-
-## Community, Thank You!
-
-We’d like to say a big thank you to everyone who helped to make Che even better:
-
-* [Contributor Name](<PROFILE_URL>) – [Company Name](<COMPANY_URL>) – (#PR): [PR Title](<PR_URL>)

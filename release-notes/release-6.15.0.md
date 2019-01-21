@@ -1,4 +1,31 @@
-## Release summary
+# Eclipse Che 6.15 Release Notes
+
+The Eclipse Che 6.15.0 release contains the following notable features:
+ 
+* **New CORS configuration parameters**: Allowing to test new CORS configuration before Che 6.16 release
+* **Prometheus metrics endpoint**: Allowing to expose http endpoint with different metrics in prometheus format
+* **More detailed tracing of Workspace operations**: Allowing for more detailed performance monitoring
+* **Jaeger deployed in the Helm chart**: Allowing to collect tracing data in Kubernetes environment
+
+---
+
+This release of Eclipse Che comes with significant improvements in monitoring and tracing capabilities for both the Che server and for developer workspaces. There are also a large number of incremental improvements 
+---
+
+## Quick Start
+
+Che is a cloud IDE and containerized workspace server - get started on:
+
+* Kubernetes ([single-user](https://www.eclipse.org/che/docs/kubernetes-single-user.html) or [multi-user](https://www.eclipse.org/che/docs/kubernetes-multi-user.html))
+* OpenShift ([single-user](https://www.eclipse.org/che/docs/openshift-single-user.html) or [multi-user](https://www.eclipse.org/che/docs/openshift-multi-user.html))
+* Docker ([single-user](https://www.eclipse.org/che/docs/docker-single-user.html) or [multi-user](https://www.eclipse.org/che/docs/docker-multi-user.html))
+* Try Eclipse Che live at [https://che.openshift.io](https://che.openshift.io)
+
+Learn more in our [documentation](https://www.eclipse.org/che/docs/infra-support.html) and start using a shared Che server or local instance today.
+
+---
+
+# Eclipse Che 6.15 Release Notes
 
 Eclipse Che 6.15 includes:
 
@@ -7,10 +34,6 @@ Eclipse Che 6.15 includes:
 * **More detailed tracing of Workspace operations**: Allowing for more detailed performance monitoring
 * **Jaeger deployed in the Helm chart**: Allowing to collect tracing data in Kubernetes environment
 
-
-## Upgrading
-
-Instructions on how to upgrade.
 
 
 ## Release details
@@ -85,17 +108,3 @@ data, e.g. `"che-server"`
 
 Che 6.15 adds the support for tracing data collection also to its Helm chart for Kubernetes by 
 introducing Jaeger deployment to it.
-
-## Other notable enhancements
-
-* Issue title. (#ISSUE)
-
-## Notable bug fixes
-
-* Fixed issue’s title. (#ISSUE)
-
-## Community, Thank You!
-
-We’d like to say a big thank you to everyone who helped to make Che even better:
-
-* [Contributor Name](<PROFILE_URL>) – [Company Name](<COMPANY_URL>) – (#PR): [PR Title](<PR_URL>)
