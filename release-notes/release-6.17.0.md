@@ -2,7 +2,8 @@
 
 Eclipse Che 6.17 includes:
 
-* **Workspace failure count metric**: Prometheus metric counting the number of workspace failures
+* **Keep track of workspace failures**: Added a Prometheus metric to count the number of workspace
+failures
 
 
 ## Upgrading
@@ -12,7 +13,7 @@ Instructions on how to upgrade.
 
 ## Release details
 
-### Workspace failure count metric
+### Keep track of workspace failures
 
 The Prometheus metrics exposed by the Che server now include the `che_workspace_failure_total` 
 metric which reports the count of workspaces that failed while in different statuses. You can
