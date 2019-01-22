@@ -1,5 +1,5 @@
 ---
-title: "Projects and Project Import"
+title: "Importing projects"
 keywords: workspace, runtime, project, projects
 tags: [workspace, runtime]
 sidebar: che_6_docs
@@ -10,25 +10,26 @@ folder: che-6/user-guide
 
 
 [id="default-location-of-projects"]
-== Default Location of Projects
+== Default location of projects
 
-When a workspace machine with a workspace agent starts, the IDE makes calls to Project API to get workspace projects. By default, they are located in `projects` in a machine container/pod. This location isn’t configurable as many other IDE components depend on it.
+When a workspace machine with a workspace agent starts, the IDE makes calls to the Project API to fetch the workspace projects. By default, projects are located in the `/projects` directory in a machine container or pod. You can not configure this location because other IDE components depend on it.
 
-Projects are displayed in the Project Tree on the left. You can also see them in the terminal - `ls -la /projects`. When a workspace is stopped, its machines are terminated, however, `/projects` gets mounted onto the host file System (either data volume or PVC), so when a new container/pod is started, your workspace projects are always there.
+Projects are displayed in the project tree in the left panel. To view the projects on the terminal, use the `ls -la /projects` command. When a workspace is stopped, its machines are terminated. The `/projects` directory is mounted on the host file system (either data volume or PVC). When a new container or pod is started, your workspace projects are always there.
 
 image::ide/project_tree.png[]
 
 [id="file-watchers"]
-== File Watchers
+== File watchers
 
-Since changes to project source files may not be originated from IDE editor only, there are file watchers listening to changes on the file system. Thus, if you create, edit or delete resources on your file system using terminal or REST API, changes will be propagated to project tree and editor. File watchers are disabled in certain situations, like project import, to avoid flooding events.
+Changes to project source files do not originate from the IDE editor only. File watchers listen to changes on the file system. Resources that you create, edit, or delete on your file system using the terminal or REST API propagate to the project tree and the editor. When importing projects, file watchers are disabled to avoid flooding events.
 
-[id="project-import-and-ssh-connection"]
-== Project Import and SSH Connection
+[id="importing-projects-in-the-ide"]
+== Importing projects in the IDE 
 
-There are multiple ways to import a project:
+The following are two ways to import a project in the IDE:
 
-1.  Add a project to link:projects.html[workspace configuration] in User Dashboard. Once workspace configuration is saved, and the workspace is being opened, the IDE will grab workspace config, and if there are projects associated with it, they will be automatically imported. If these projects can be found on a file system, the IDE skips this step.
-2.  Import a project into a running workspace. This can be done in the IDE, Workspace > Import project menu. If you need to import a private project, link:version-control.html[setup SSH keys].
+* Add a project to the link:projects.html[workspace configuration] in the *Dashboard*. After the workspace configuration is saved, and the workspace is being opened, the IDE obtains the workspace configuration. Projects associated with the workspace configuration are automatically imported. If these projects are present in a file system, the IDE skips this step.
+
+* Import a project into a running workspace using the *Workspace* > *Import project* menu option. To import a private project, link:version-control.html[set up the SSH keys].
 
 image::ide/import_project.png[]
