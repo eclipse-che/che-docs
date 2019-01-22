@@ -84,12 +84,27 @@ The context of the commands below is `che/deploy/kubernetes/helm/che`.
 
 To deploy single-user Che:
 
-. Use one of the following two methods to override the default values:
-
+. Make sure Helm dependencies are up-to-date:
++
 ----
-helm upgrade --install <my-che-installation> --namespace <my-che-namespace> -f ./
+helm dependency update
 ----
 
+. Use following two methods to override the default values:
++
+** Change the `values.yaml` file. On the command line, run the following command:
++
+----
+helm upgrade --install <my-che-installation> --namespace <my-che-namespace> ./
+----
++
+** Or, override default values during installation, using the `--set` flag:
++
+----
+helm upgrade --install <my-che-installation> --namespace <my-che-namespace> --set global.ingressDomain=<my-hostname> --set cheImage=<my-image> ./
+----
+
+Once the deployment finishes, you can access Che on the following locations:
 
 * Master: `https://che-<che-namespace>.domain`
 * Workspaces servers: `https://server-host.domain`

@@ -156,50 +156,78 @@ The `env_file` Compose option is not supported. Environment variables can be man
 [id="kubernetes-yaml-limitations-and-restrictions"]
 == Kubernetes YAML limitations and restrictions
 
-When a workspace is starting, Che creates a https://kubernetes.io/docs/concepts/workloads/pods/pod/[Kubernetes pod]. The following are limitatons and restrictions:
+When a workspace is starting, Che creates various Kubernetes resources to support the IDE and development tools. Workspaces primarily consist of a https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[Deployment] which runs a https://kubernetes.io/docs/concepts/workloads/pods/pod/[Kubernetes pod]. The following are limitatons and restrictions:
 
-1.  Che allows users to create only pods and services.
-2.  Other object kinds will be ignored (PVC and route) or a workspace fails to start with an exception from Kubernetes.
-3.  You cannot use volumes in the container and pod definition. See link:volumes.html[Volumes] for information about persisting and sharing data between pods.
+.  Che allows users specify Pods, Deployments, ConfigMaps, and Services in recipes
+   - If a Pod is specified, it will be wrapped in a simple Deployment when running the workspace
+.  Other object kinds will be ignored (PVC and route) or a workspace fails to start with an exception from Kubernetes.
+.  Che performs some minimal validation of Kubernetes YAML, but invalid yaml in a recipe can cause workspaces to fail to run (e.g. referring to a non-existent configmap)
+.  You cannot use volumes in the container and pod definition. See link:volumes.html[Volumes] for information about persisting and sharing data between pods.
 
-The following is an example of a custom recipe with two containers and one pod, and a service that is bound to port 8081:
+The following is an example of a custom recipe with two containers, a simple config map, one deployment, and a service that is bound to port 8081:
 
 [source,yaml]
 ----
 kind: List
 items:
--
- kind: Service
- apiVersion: v1
- metadata:
-  name: my-service
- spec:
-  selector:
-    name: app
-  ports:
-  - protocol: TCP
-    port: 8081
-    targetPort: 8081
--
-  apiVersion: v1
-  kind: Pod
-  metadata:
-    name: app
-  spec:
-    containers:
-      -
-        image: eclipse/ubuntu_jdk8:latest
-        name: main
-        ports:
-         -
-          containerPort: 8081
-          protocol: TCP
-      -
-        image: eclipse/ubuntu_jdk8:latest
-        name: main1
+  -
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: my-deployment
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          my-workspace-pod: dev
+      template:
+        metadata:
+          name: dev-pod
+          labels:
+            my-workspace-pod: dev
+        spec:
+          containers:
+            -
+              image: eclipse/ubuntu_jdk8:latest
+              name: main
+              ports:
+              -
+                containerPort: 8081
+                protocol: TCP
+              env:
+              -
+                name: MY_ENV_VAR
+                valueFrom:
+                  configMapKeyRef:
+                    name: my-configmap
+                    key: my-key
+            -
+              image: eclipse/ubuntu_jdk8:latest
+              name: main1
+  -
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: my-configmap
+    data:
+      my-key: my-value
+  -
+    kind: Service
+    apiVersion: v1
+    metadata:
+      name: my-service
+    spec:
+      selector:
+        name: app
+      ports:
+      - protocol: TCP
+        port: 8081
+        targetPort: 8081
 ----
 
-You can also have one pod and several containers in it. Che treats those containers as workspace machines. You can also define machine names in annotations. `PodName/Container Name` is the default naming pattern for a machine.
+As a bare minimum, a Kubernetes YAML recipe must contain at least one Pod or Deployment, in which the main dev machine is run.
+
+You can also specify multiple containers within the workspace pod. Che treats those containers as workspace machines. These containers can have machine names defined in annotations. `PodName/Container Name` is the default naming pattern for a machine.
 
 The following is an example of using annotations:
 

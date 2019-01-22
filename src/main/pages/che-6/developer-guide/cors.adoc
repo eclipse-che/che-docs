@@ -1,0 +1,45 @@
+---
+title: Che CORS filters
+sidebar: che_6_docs
+keywords: dev docs
+tags: [cors]
+permalink: che-6/cors.html
+redirect_from: cors.html
+folder: che-6/developer-guide
+---
+
+
+
+Note: Che 6.15 CORS configuration is not compatible with Che 6.16 instances, due to CORS requirementes in Tomcat 8.5.35.
+
+If you are running into an issue related (e.g. IDE is not properly working, and there are CORS related errors in the browser console)
+Make sure to use the correct deployments with updated configuration from 6.16
+Also, do not use localhost as che-host, as it is not supported by browsers.
+
+== CORS filters in Che
+
+CORS filters are present in Che to allow requests with origins, that can be different from the origin that the client is loaded on (For example, GWT IDE executing requests from browser to WS Agent, with origin belonging to WS Master domain).
+
+The default configuration for CORS goes as follows:
+
+WS Master:
+
+"cors.support.credentials" - "false"
+"cors.allowed.origins" - "*"
+
+WS Agent:
+
+"cors.support.credentials" - true
+"cors.allowed.origins" - <domain of ws master, will be provided automatically based on CHE_API variable>
+
+== Overriding default CORS configuration
+
+Here is the full list of environment variables that can be usedfor overriding of default configuration for CORS on WS Master and WS Agent:
+
+* `CHE_CORS_ENABLED` = Enabling CORS Filter on WS Master. On by default
+* `CHE_CORS_ALLOWED_ORIGINS` = List of allowed origins in requests to WS Master. Default is "*".
+* `CHE_CORS_ALLOW_CREDENTIALS` = Allowing requests with credentials to WS Master. Default is "false".
+
+* `CHE_WSAGENT_CORS_ENABLED` = Enabling CORS Filter on WS Agent.
+* `CHE_WSAGENT_CORS_ALLOWED__ORIGINS` = List of allowed origins in requests to WS Agent. If not set, or set to "null", value will be evaluated from CHE_API variable at runtime.
+* `CHE_WSAGENT_CORS_ALLOW__CREDENTIALS` = Allowing requests with credentials to WS Agent. Default is "true".

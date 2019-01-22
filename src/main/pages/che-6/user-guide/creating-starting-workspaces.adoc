@@ -1,5 +1,5 @@
 ---
-title: "Workspace Management"
+title: "Managing workspaces"
 keywords: workspace, runtime, recipe, docker, yaml, Dockerfile, docker, kubernetes, container, pod
 tags: [workspace, runtime, docker, kubernetes]
 sidebar: che_6_docs
@@ -10,41 +10,107 @@ folder: che-6/user-guide
 
 
 [id="creating-workspaces"]
-== Creating Workspaces
+== Creating workspaces
 
-The easiest way to create a workspace is to use ready to go link:stacks.html[stacks] in User Dashboard. Images and configuration in these stacks is certified both for Docker and OpenShift, and these are the stacks that are used in daily functional testing. There are multiple options though, namely:
+Use the link:stacks.html[stacks] in the *Dashboard* to create a workspace. Images and configuration in these stacks are certified both for Docker and OpenShift. These stacks are used in daily functional testing.
 
-*Ready-to-go Stacks*
+=== Creating a workspace from stacks in the dashboard
+
+To create a workspace from stacks in the *Dashboard*, take the following steps:
+
+. In the *Dashboard*, in the left panel, click *Stacks*.
+
+. Click the *Duplicate stack* icon for the stack that you want to create a clone of. A page titled after the selected stack opens.
+
+. Edit the fields that you want to edit.
+
+. Click *Save*.
 
 image::workspaces/ready_to_go_stacks.gif[]
 
-*Duplicate an existing stack*
+=== Duplicating an existing stack
 
-In this scenario, you need to create a stack first, and then use the resulting stack to create a workspace.
+Create a stack and then use the resulting stack to create a workspace.
+
+To create a copy of an existing stack, take the following steps:
+
+. In the *Dashboard*, in the left panel, click *Stacks*.
+
+. Click the *Duplicate stack* icon for the stack that you want to clone.
+
+. Edit the *Name* field.
+
+. In the *Machines* field, edit the *Source* field.
+
+. Click *Save*. The *Stack is successfully updated* message confirms that the stack is updated.
+
+. In the *Dashboard*, click *Workspaces* > *Add Workspace*.
+
+. In the *SELECT STACK* section, scroll through the list to locate the stack that you created in the preceding steps. 
+
+. Click *Create* to create the workspace based on this stack.
 
 image::workspaces/duplicate_stack.gif[]
 
-*Create Custom stack from a custom link:recipes.html[recipe]*
+=== Creating a custom stack from a custom recipe
 
-In this scenario, you need to author a custom link:recipes.html[recipe], then a stack, and finally use the resulting stack to create a workspace.
+Author a custom link:recipes.html[recipe] and then create a stack. Use the resulting stack to create a workspace.
+
+To create a custom stack from a custom recipe, take the following steps:
+
+. In the *Dashboard*, click *Workspaces* > *Add Workspace*.
+
+. From the *SELECT STACK* field, select the required stack.
+
+. Click *Add Stack*.
+
+. In the *Create Stack* dialog box, click *Yes* to confirm that you want to create the stack from a recipe. 
+
+. In the *Build stack from recipe* window, type the recipe name from which you want to build this stack (example: `FROM: eclipse/new-stack`).
+
+. Click *OK*.
+
+. In the *Name* field, type a name for the stack.
+
+. In the *Runtimes* > *Machines* > *Recipe* section, click *Show* to ensure that the stack is being created using the recipe that you set in the preceding steps (*eclipse/new-stack*, in this case).
+
+. Click *Save*.
 
 image::workspaces/custom_recipe_stack.gif[]
 
 [id="starting-workspaces"]
-== Starting Workspaces
+== Starting workspaces
 
-A workspace can be started in one of the following ways:
+You can start a workspace in one of the following ways:
 
-1.  Auto-start when workspace is created in UD
-2.  Run or Open buttons in workspace details view in User Dashboard
-3.  By clicking on a workspace name in the left Dashboard sidebar (recent workspaces)
-4.  Using REST API. See link:rest-api.html[REST API] documentation
+* The workspace starts automatically after it is created in the user's *Dashboard*.
 
-It can take some time for a workspace environment to start. It depends on several factors like network conditions, Docker image availability, configured installers that may attempt to install additional tools and software in runtime etc. When a workspace is starting, you can track progress in a workspace start tab. There are also individual tabs for each machine in workspace environment that stream logs from installers (terminal, exec agent, ws agent, language servers if any).
+* In the user's *Dashboard*, use the *Run* or *Open* buttons in the *Workspace Details* view.
 
-[id="workspace-management"]
-== Workspace Management
+* Click a workspace name from the recent workspaces displayed in the left panel.
 
-Once a workspace is created or started, you can modify it by adding link:projects.html[projects], link:installers.html[installers], link:env-variables.html[env variables], link:volumes.html[volumes]. You can also edit raw workspace config, but beware that you may break your workspace this way, so always have a backup of a working config. If you change configuration of a running workspace and save it, a workspace will be restarted. Follow the links above to learn more about workspace configuration.
+* Use the REST API. For more information about the REST API, see link:rest-api.html[REST API].
+
+The workspace may take time to start depending on factors like network conditions, container image availability, and configured installers attempting to install additional tools and software in the runtime. Track the progress of the workspace start operation in the *Workspace Start* tab. The tabs for each machine in the workspace environment stream logs from the installers (terminal, `exec` agent, `ws` agent, and language servers if any).
+
+[id="managing-a-workspace"]
+== Managing a workspace
+
+After a workspace is created or started, you can modify it by adding projects, installers, environment variables, and volumes. 
+
+[IMPORTANT]
+====
+To edit a raw workspace configuration, back up the working configuration to avoid breaking your workspace. 
+====
+
+Change the configuration of a running workspace and saving it restarts the workspace. To learn more about workspace configuration, see:
+
+* link:projects.html[Creating projects in workspaces]
+
+* link:installers.html[Installers]
+
+* link:env-variables.html[Environment variables]
+
+* link:volumes.html[Volumes]
 
 image::workspaces/ws_details.gif[]
