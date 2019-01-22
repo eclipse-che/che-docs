@@ -2,7 +2,7 @@
 
 Eclipse Che 6.16 includes:
 
-* **Update of the `/activity` REST endpoint**: It is now capable of returning information about
+* **Improved REST API endpoint `/activity`**: It is now capable of returning information about
 workspace activity.
 
 ## Upgrading
@@ -12,7 +12,7 @@ Instructions on how to upgrade.
 
 ## Release details
 
-### Update of the `/activity` REST endpoint
+### Improved REST API endpoint `/activity`
 
 The `/activity` endpoint now accepts `GET` queries for workspace IDs that have been in certain state
 for a certain amount of time. This can be used to query the server for workspaces that seem to have
