@@ -12,10 +12,11 @@ Instructions on how to upgrade.
 ## Release details
 
 ### Prometheus and Grafana deployed in the Helm chart
-Eclipse Che server has been emitting a number of metrics since the release 6.15.0.
-To enable their easier visualization the Helm chart of the Che server now also deploys a Prometheus
-server configured to scrape Che's metrics and a Grafana server pre-configured with a sample
-dashboard visualizing some of those metrics.
+As part of our ongoing work to ensure that Eclipse Che is easier to monitor and trace, we have been
+adding a number of metrics which are tracked since the 6.15.0 release. To make it easier for Che 
+admins to visualize these metrics, a Helm deployment of Eclipse Che now also deploys a Prometheus 
+server which gathers metrics from Che, and Grafana, a popular visualization project, pre-configured 
+with a sample dashboard to visualize these metrics.
 
 To try it out, install Che's Helm chart with `--set global.metricsEnabled=true`. 
 
