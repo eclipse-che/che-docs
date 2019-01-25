@@ -69,7 +69,7 @@ For more information, see [HTTPS Mode - Self-Signed Certs](https://www.eclipse.o
 
 Links to PRs:
 [https://github.com/eclipse/che/pull/12089](https://github.com/eclipse/che/pull/12089)
-[https://github.com/eclipse/che/pull/12112](https://github.com/eclipse/che/pull/12112)
+* [https://github.com/eclipse/che/pull/12112](https://github.com/eclipse/che/pull/12112)
 
 
 ### Improved REST API endpoint `/activity`
