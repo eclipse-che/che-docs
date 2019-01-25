@@ -59,7 +59,7 @@ Here is the full list of environment variables that will be available in Che 6.1
 **Pull requests:**
 * [Upgrade Tomcat and change default CORS configuration](https://github.com/eclipse/che/pull/12144)
 
-### Run Eclipse Che over https with a self-signed certificate
+### Run Eclipse Che over HTTPS with a self-signed certificate
 
 ![Che_on_https](https://www.eclipse.org/che/docs/images/workspaces/chrome_cert.png)
 
