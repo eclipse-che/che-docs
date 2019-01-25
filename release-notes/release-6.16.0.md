@@ -65,7 +65,7 @@ Here is the full list of environment variables that will be available in Che 6.1
 
 Security is increasingly important for web services, and many Eclipse Che users would like to ensure communication between the Che server and client is encrypted and authenticated. In previous versions, it was not possible to start workspaces in Eclipse Che if your container platform was using a self-signed certificate. In this release, we have added that ability. The Che administrator can enable this feature by creating a secret with the certificate, and configuring the server to ensure that the certificate is used by the Che server.
 
-For more information, see https://www.eclipse.org/che/docs/che-6/openshift-config.html#https-mode---self-signed-certs
+For more information, see [HTTPS Mode - Self-Signed Certs](https://www.eclipse.org/che/docs/che-6/openshift-config.html#https-mode---self-signed-certs).
 
 Links to PRs:
 [https://github.com/eclipse/che/pull/12089](https://github.com/eclipse/che/pull/12089)
