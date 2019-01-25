@@ -8,7 +8,7 @@ workspace activity.
 
 ---
 
-The Eclipse Che community is please to announce the 6.16 release, with a number of significant improvements. This release brings changes in the configuration of the handling of CORS (Cross-Origin Resource Sharing), and updates to the NodeJS and Java stacks on CentOS. This release contains a total of 61 enhancements or bug fixes.
+The Eclipse Che community is pleased to announce the 6.16 release with a number of significant improvements. This release brings changes in the configuration of the handling of CORS (Cross-Origin Resource Sharing) and updates to the NodeJS and Java stacks on CentOS. This release contains a total of 61 enhancements or bug fixes.
 
 ---
 
