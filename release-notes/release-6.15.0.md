@@ -3,7 +3,7 @@
 The Eclipse Che 6.15.0 release contains the following notable features:
  
 * **New CORS configuration parameters**: Allowing to test new CORS configuration before Che 6.16 release
-* **Prometheus metrics endpoint**: Allowing to expose http endpoint with different metrics in prometheus format
+* **Prometheus metrics endpoint**: Allowing to expose HTTP endpoint with different metrics in the Prometheus format
 * **More detailed tracing of Workspace operations**: Allowing for more detailed performance monitoring
 * **Jaeger deployed in the Helm chart**: Allowing to collect tracing data in Kubernetes environment
 
