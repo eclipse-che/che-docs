@@ -9,7 +9,7 @@ The Eclipse Che 6.15.0 release contains the following notable features:
 
 ---
 
-This release of Eclipse Che comes with significant improvements in monitoring and tracing capabilities for both the Che server and for developer workspaces. There are also a large number of incremental improvements 
+This release of Eclipse Che comes with significant improvements in monitoring and tracing capabilities for both the Che server and for developer workspaces. There are also a large number of incremental improvements.
 ---
 
 ## Quick Start
