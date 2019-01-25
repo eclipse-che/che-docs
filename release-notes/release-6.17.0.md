@@ -37,5 +37,5 @@ We have also evolved the Factory capability of Eclipse Che to use the new “dev
 
 **Pull requests**:
 
-Use new Factory and Containers plugins: https://github.com/eclipse/che/pull/12396
+* Use new Factory and Containers plugins: https://github.com/eclipse/che/pull/12396
 Factory support of devfile: https://github.com/eclipse/che/pull/12232
