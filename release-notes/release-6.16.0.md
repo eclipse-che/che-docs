@@ -68,7 +68,7 @@ Security is increasingly important for web services, and many Eclipse Che users 
 For more information, see [HTTPS Mode - Self-Signed Certs](https://www.eclipse.org/che/docs/che-6/openshift-config.html#https-mode---self-signed-certs).
 
 Links to PRs:
-[https://github.com/eclipse/che/pull/12089](https://github.com/eclipse/che/pull/12089)
+* [https://github.com/eclipse/che/pull/12089](https://github.com/eclipse/che/pull/12089)
 * [https://github.com/eclipse/che/pull/12112](https://github.com/eclipse/che/pull/12112)
 
 
