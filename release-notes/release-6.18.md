@@ -38,7 +38,7 @@ includes syntax highlighting and Intellisense.
 * Web Plugin: Add VueJS Language Support: https://github.com/eclipse/che/pull/12470
 ---
 
-## Improvements for Physical Volume Claim (PVC) handling
+## Improvements for Persistent Volume Claim (PVC) handling
 
 ![Ephemeral mode switch](https://user-images.githubusercontent.com/1611939/51479083-f50b4580-1d95-11e9-9eb7-0b0e3351cda8.png)
 
