@@ -4,7 +4,7 @@ The Eclipse Che 6.18.0 release contains the following notable features:
  
 * Add Vue.js language support
 * Improvements for Persistent Volume Claim (PVC) handling
-* Support for `mountSources` attribute in `che-plugin.yaml`
+* Support for mounting workspace source code in consistent location for all workspace containers
 
 ---
 
@@ -63,18 +63,17 @@ easier for the cluster administrator to diagnose storage-related issues.
 
 ---
 
-## Support for `mountSources` attribute in `che-plugin.yaml`
+## Support for mounting workspace source code in consistent location for plugin containers
 
 Che plugins can now declare that they want the sources of the workspace projects available in their
 containers.
 
-In `che-plugin.yaml` file, the plugin author can set the new `mountSources` attribute to `true` on
-each container which should have access to the sources. Che makes sure that the volume with
-the sources is mounted to the container and also makes sure that the sources are mounted to the same
-location across all containers of all plugins. This is beneficial when two or more plugins need
-to cooperate and need to "talk" about the same files in the projects. This way, they can use the
-same path and all other plugins will "understand". The path of the projects is available in the
-`CHE_PROJECTS_ROOT` environment variable during container startup and run time.
+In the `che-plugin.yaml` file, the plugin author can set the new `mountSources` attribute to `true` on
+each container which should have access to the sources. Che will make sure that the volume with
+the source code is mounted to the container. The mount location is consistent across all plugin
+containers, which enables different plugins to cooperate and "talk" about the same files in the
+projects. The project's source path is available in the `CHE_PROJECTS_ROOT` environment variable
+during container startup and run time.
 
 **Links to PRs:**
 https://github.com/eclipse/che-plugin-broker/pull/27
