@@ -23,14 +23,14 @@ Learn more in our [documentation](https://www.eclipse.org/che/docs/infra-support
 
 ---
 
-## Incorrect warning no longer emitted to the logs when workspace idling is disabled
+## Improvements in workspace idling diagnostics
 
-Eclipse Che improved on diagnostics of workspace activity and handling possible error conditions for
-workspace idling and expiration detection. Unfortunately, this caused an unnecessary warning to be
-emitted to the logs about missing workspace expiry time when workspace idling was disabled.
+Due to an improvement in Eclipse Che diagnostics of workspace activity, and error handling related to 
+and better handling of possible error conditions, we no longer log an unnecessary warning when
+workspace idling is disabled.
 
-Concretely, if `CHE_LIMITS_WORKSPACE_IDLE_TIMEOUT` was set to a negative value, a warning similar
-to the following is unnecessarily written to the log:
+Concretely, in previous versions, if `CHE_LIMITS_WORKSPACE_IDLE_TIMEOUT` was set to a negative value,
+a warning similar to the following is unnecessarily written to the log:
 
 ```
 2019-02-13 13:19:15,527[ted-scheduler-2]  [WARN ] [a.w.a.WorkspaceActivityChecker 330]  - Found no expiration time on workspace 'workspace5w1v228zcl6sini5'. This was detected 1727206ms after the workspace has been recorded running which is suspicious. Please consider filing a bug report. To restore the normal function, the expiration time has been set to 1550062228321.
