@@ -25,9 +25,8 @@ Learn more in our [documentation](https://www.eclipse.org/che/docs/infra-support
 
 ## Improvements in workspace idling diagnostics
 
-Due to an improvement in Eclipse Che diagnostics of workspace activity, and error handling related to 
-and better handling of possible error conditions, we no longer log an unnecessary warning when
-workspace idling is disabled.
+Due to an improvement in Eclipse Che diagnostics of workspace activity, and better handling of
+possible error conditions, we no longer log an unnecessary warning when workspace idling is disabled.
 
 Concretely, in previous versions, if `CHE_LIMITS_WORKSPACE_IDLE_TIMEOUT` was set to a negative value,
 a warning similar to the following is unnecessarily written to the log:
