@@ -2,7 +2,7 @@
 
 The Eclipse Che 6.19.0 release contains the following notable features:
 
-* Incorrect warning no longer emitted to the logs when workspace idling is disabled
+* Improvements in workspace idling diagnostics
 
 ---
 
