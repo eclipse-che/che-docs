@@ -1,0 +1,124 @@
+---
+title: "Quick-Start"
+keywords: installation, minishift, openshift
+tags: [installation, docker]
+sidebar: che_7_docs
+permalink: che-7/quick-start.html
+redirect_from: quick-start.html
+folder: che-7/overview
+---
+
+Eclipse Che is a developer workspace server and cloud IDE. To run and manage Che you will need Kubernetes or OpenShift and `chectl`.. link:https://github.com/che-incubator/chectl[`chectl`] is a command line tool to manage a Che server and its development workspaces.  
+
+Before deploying Che it is important to understand that Eclipse Che is available in two modes:
+
+* *Single-user*: non-authenticated Che, lighter and suited for personal desktop environments.
+* *Multi-user*: authenticted Che, suited for the cloud, for organizations and developer teams.
+
+See link:single-multi-user.html[Single and Multi-User Che] to learn more.
+
+++++
+<script id="asciicast-216201" src="https://asciinema.org/a/216201.js" async></script>
+++++
+
+== Setup your Kubernetes cluster
+
+=== minikube
+- Install the latest version of link:https://kubernetes.io/docs/tasks/tools/install-minikube/[kubectl and minikube]
+- Start minikube (it is important to *allocate at least 4GB*):
+[source,bash]
+----
+minikube start --memory=4096
+----
+
+
+=== minishift
+- Install the latest version of link:https://docs.okd.io/latest/minishift/getting-started/installing.html[minishift] and link:https://docs.okd.io/latest/minishift/command-ref/minishift_oc-env.html[set the path of the oc binary]
+- Start minishift (it is important to *allocate at least 4GB*):
+[source,bash]
+----
+minishift start --memory=4096
+----
+
+=== Docker Desktop
+
+link:https://che.eclipse.org/running-eclipse-che-on-kubernetes-using-docker-desktop-for-mac-5d972ed511e1[Blog post] that explains how to configure Docker Desktop and deploy Eclipse Che on it.
+
+== Install chectl
+
+=== On macOS
+
+[source,bash]
+----
+$ RELEASE="20190314232124/chectl-macos" && \
+URL=https://github.com/che-incubator/chectl/releases/download/${RELEASE} && \
+sudo curl -sSL ${URL} -o /usr/local/bin/chectl && \
+sudo chmod +x /usr/local/bin/chectl 
+----
+
+=== On Linux
+
+[source,bash]
+----
+$ RELEASE="20190314232124/chectl-linux" && \
+URL=https://github.com/che-incubator/chectl/releases/download/${RELEASE} && \
+sudo curl -sSL ${URL} -o /usr/local/bin/chectl && \
+sudo chmod +x /usr/local/bin/chectl 
+----
+
+=== On Windows
+
+1. Download link:https://github.com/che-incubator/chectl/releases/download/20190314232124/chectl-win.exe[chectl-win.exe]
+2. Add the folder of the download binary to your PATH environment variable
+
+== Deploying Che
+
+=== Single user Che on minikube
+
+[source,bash]
+----
+$ chectl server:start
+----
+
+=== Single user Che on minishift
+
+[source,bash]
+----
+$ chectl server:start --platform minishift
+----
+
+=== Multi user Che on minikube
+
+[source,bash]
+----
+$ chectl server:start --multiuser 
+----
+
+
+=== Other deployment options
+
+[source,bash]
+----
+$ chectl server:start --help
+Start Eclipse Che Server
+
+USAGE
+  $ chectl server:start
+
+OPTIONS
+  -a, --installer=installer            [default: helm] Installer type. Valid values are "helm" and "operator"
+  -b, --domain=domain                  Domain of the Kubernetes/OpenShift cluster (e.g. starter-us-east-2.openshiftapps.com or <local-ip>.nip.io)
+  -d, --debug                          Starts chectl in debug mode
+  -h, --help                           show CLI help
+  -i, --cheimage=cheimage              [default: eclipse/che-server:nightly] Che server container image
+  -m, --multiuser                      Starts che in multi-user mode
+  -n, --chenamespace=chenamespace      [default: kube-che] Kubernetes namespace where Che resources will be deployed
+  -o, --cheboottimeout=cheboottimeout  (required) [default: 40000] Che server bootstrap timeout (in milliseconds)
+  -p, --platform=platform              [default: minikube] Type of Kubernetes platform. Valid values are "minikube", "minishift", "docker4mac", "ocp", "oso".
+  -s, --tls                            Enable TLS encryption and multi-user mode
+  -t, --templates=templates            [default: /snapshot/chectl/templates] Path to the templates folder
+----
+
+.Next steps
+
+link:creating-starting-workspaces.html[Create and start your first workspace], import a link:ide-projects.html[project], and link:commands-ide-macro.html[build and run] your project.
