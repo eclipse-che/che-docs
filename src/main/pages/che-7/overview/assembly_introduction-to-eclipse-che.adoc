@@ -1,7 +1,7 @@
 ---
 title: Introduction to Eclipse Che
 keywords: 
-tags: []
+tags: [Che]
 sidebar: che_7_docs
 permalink: che-7/introduction-to-eclipse-che.html
 redirect_from: che-7/index.html
@@ -13,23 +13,128 @@ summary:
 
 [id='introduction-to-eclipse-che_{context}']
 = Introduction to Eclipse Che
-
 :context: introduction-to-eclipse-che
 
-*Note*: This version of the documentation is currently under construction. You'll find information about version 7 of Eclipse Che.
+Eclipse Che is a Kubernetes native IDE and developer collaboration platform. It provides: 
 
-Eclipse Che provides:
+* Centralized developer environments running on Kubernetes.  
+* Multi-container workspaces for each developer that can be replicated with a single click through Eclipse Che Factories.  
+* Pre-built stacks with the ability to create custom stacks for any language or runtime.  
+* Enterprise integration via Keycloak for AD/LDAP.  
+* Browser-based IDEs, integration Eclipse Theia or any other web IDE (like Jupyter).  
+* Support of most recent tooling protocol: Language Server Protocol, Debug Adapter Protocol.  
+* Plugins mechanism with compatibility of VSCode extensions.  
+* An SDK for creating custom cloud developer platforms.  
 
-* Workspaces that include runtimes and IDEs
-* RESTful workspace server
-* A browser IDE, based on Eclipse Theia
-* Plugins for languages, framework, and tools
-* An SDK for creating plugins and assemblies
 
 [id="getting-started-with-che"]
 == Getting started with Che
 
-You can get started by link:che-quick-starts.html#running-che-locally_che-quick-starts[running Che locally].
+You can get started with Eclipse Che by:
+
+* Following the link:quick-start.html[quick start guide] to get Eclipse Che installed locally on your computer,
+* Learning more about Eclipse Che: link:what-is-che.html[What is Eclipse Che], link:architecture-overview.html[Architecture Overview], link:che-features-and-benefits.html[Features and Benefits]
+* Discovering Eclipse Che capabilities
+
+
+== Join the Community
+
+Interested to join the community? Join us on the following channels:
+
+* **Public Chat:** Join the public link:https://mattermost.eclipse.org/eclipse/channels/eclipse-che[Eclipse Che Mattermost] channel to discuss with us.
+* **GitHub Project Repositories:** Report bugs, feature request and contribute on link:https://github.com/eclipse/che[Eclipse Che Main Repository], improve documentation on link:https://github.com/eclipse/che-docs[Eclipse Che Docs Repo].
+* **Support:** StackOverflow to help other users of Eclipse Che: link:https://stackoverflow.com/questions/tagged/eclipse-che[Eclipse Che on StackOverflow].
+* **Community Blog:** Learn about the latest of Eclipse Che and submit your blog posts to link:https://medium.com/eclipse-che-blog[Eclipse Che Blog].
+* **Weekly Meetings:** Join us in our link:https://github.com/eclipse/che/wiki/Che-Dev-Meetings[Che Community Meeting] every second monday.
+* **Roadmap:** We maintain the link:https://github.com/eclipse/che/wiki/Roadmap[Roadmap] on the wiki.
+
+
+== What is Eclipse Che
+
+Eclipse Che is a Kubernetes native IDE and developer collaboration platform. 
+
+As an open source project, the core values of Eclipse Che are to:
+
+* **Accelerate project and developer onboarding:** As a zero-install development environment that runs in your browser, Eclipse Che makes it easy for someone to join your team and contribute to a project.
+* **Remove inconsistency between developer environments:** No more: “but it works on my machine….” Your code works exactly the same way in everyone’s environment.
+* **Provide built-in security and enterprise readiness:** As Eclipse Che becomes a viable replacement for VDI solutions, it must be secure and it must support enterprise requirements such as role-based access control and the ability to remove all source code from developer machines.
+
+
+
+To deliver those core values, Eclipse Che provides:
+
+* **Workspaces:** Container based developer workspaces providing all the tools and the dependencies needed to code, build, test, run and debug applications. 
+* **Browser based IDEs:** Bundled browser-based IDEs with language tooling, debuggers, terminal, VCS integration and much more.
+* **Extensible platform:** Bring your own IDE. Define, configure and extend the tools that you need for your application by using Plug-ins. Compatible with VSCode extensions.  
+* **Enterprise Integration:** Multi-user capabilities, includes Keycloak for authentication and integration with LDAP/AD. 
+
+
+=== Workspace Model
+
+Che defines the workspace to be the project code files and all of their dependencies necessary to edit, build, run, and debug them. In our world, we treat the IDE and the development runtime as a dependency of the workspace. These items are embedded and included with the workspace, whereever it may run. This compares to classic workspace definitions which may include the project code, but require the developer to bind their IDE and use their laptop localhost to provide a runtime.
+
+Each workspace is isolated from one another and is responsible for managing the lifecycle of the components that are contained within it.
+
+Developers using Eclipse Che use their containers directly in their developer workspaces. **Che workspaces are kubernetes pods which allow to replicate the application runtimes (and its microservices) used in production** and provide a “dev mode” layer on top of those, adding intellisense and IDE toolings.
+
+
+=== Browser based IDEs
+
+Eclipse Che provides browser based IDEs for its workspaces. The default browser based IDE is built on link:https://github.com/theia-ide/theia[Eclipse Theia], with the following capabilities:
+
+* **Monaco based editor:** Fast and responsive editor, codelens and much more.
+* **Language Server Protocol:** Get languague tooling.
+* **Debug Adapter Protocol:** Get debugger tooling.
+* **Command Palette:** Do everything from your keyboard.
+* **Task Support:** Tasks from VS Code are extended and support Che Commands.
+* **Embedded Preview:** Preview your application directly from the IDE, including Markdown preview.
+* **Customizable layout:** Adapt the layout using drag and drop.
+* **And much more:** Outline View, Search, Git.
+
+
+**Different IDEs for different use cases**
+
+
+In Eclipse Che, the IDE is completely decoupled so that it is possible to plug a different IDE into a Che workspaces:
+
+* It can be based on Eclipse Theia (as it is a framework to build a web IDE), such as the popular Sirius on the web:
+
+video::B6aCqywKpyY[youtube]
+
+* Or it can be a completely different solutions, like Jupyter or Eclipse Dirigible
+
+video::VooNzKxRFgw[youtube]
+
+There are a different situations where the default IDE will not cover the use cases of your audience, or you might have stakeholders who are using a dedicated tool that covers their needs instead of using an IDE. In the traditional Eclipse IDE world, that was done with RCP applications.
+
+
+=== Extensible Platform
+
+Eclipse Che is a great platform to build cloud-native tools and it provides a strong extensibility model with an enjoyable developer experience for contributors.
+
+Eclipse Che is extensible in different ways:
+
+* **Plug-ins:** to add capabilities to the IDE. Rely on APIs compatible with Visual Studio Code. Plug-ins are isolated and provide their own dependencies packaged in containers.
+* **Stacks:** to create pre-configured Che workspaces with dedicated set of tools.
+* **Alternate IDEs:** to provide specialized tooling within Eclipse Che. Build your own, based on Eclipse Theia, or pick existing ones like Jupyter.
+* **Marketplace (soon)** to easily distribute tools and custom IDEs to users and communities which can be tried online
+
+As introduced earlier, Eclipse Che use Eclipse Theia as its default browser-based IDE. Eclipse Theia is providing a framework to build web IDEs. It is built in TypeScript and gives contributors a programming model that is flexible, relies on state-of-the-art tooling protocols and makes it faster to build new tools.
+
+In Eclipse Che, a user doesn't need to worry about the dependencies needed for the tools running in their workspace — they should just be available when needed. This means that a Che plugin provides its dependencies, its back-end services (which could be running in a sidecar container connected to the user’s workspace), and the IDE UI extension. By packaging all these elements together, the user is free from having to configure many different tools all together. 
+
+**VSCode Extensibility Compatibility**
+
+
+There is one important aspect of the plugin model — Eclipse Che allows to rationalize the effort for a contributor who is willing to build a plugin and distribute in to different developer communities and tools. For that purpose, Eclipse Che added  into Eclipse Theia plugins API to allow compatibility with the extension points from VS Code. As result, it becomes much easier to bring an existing plugin from VS Code onto Eclipse Che. The main difference is in the way the plugins are packaged. On Eclipse Che, the plugins are delivered with their own dependencies in their own container.
+
+video::HbTKDlOL1eo[youtube]
+
+
+=== Enterprise Integration
+
+Eclipse Che also includes link:https://www.keycloak.org[Keycloak] to handle authentication and security. It allows the integration with any SSO, as well as Active Directory or LDAP. Each users of Eclipse Che gets centralized developer which can be easily defined, administered and managed. Eclipse Che as a kubernetes native application provides state-of-the-art monitoring and tracing capabilities, integrating with link:https://prometheus.io/[Prometheus] and link:https://grafana.com/[Grafana]. 
+
 
 //include::con_introductory-videos.adoc[leveloffset=+1]
 
