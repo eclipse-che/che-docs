@@ -1,5 +1,5 @@
 ---
-title: "Version Control"
+title: "Using version control"
 keywords: workspace, runtime, project, projects, git, subversion, version control, clone, pull, push, ssh key, ssh keys, github, oauth, gitlab, bitbucket
 tags:
 sidebar: che_6_docs
@@ -8,183 +8,248 @@ redirect_from: version-control.html
 folder: che-6/user-guide
 ---
 
+Eclipse Che natively supports the Git version control system (VCS), which is provided by the link:https://www.eclipse.org/jgit/[JGit library]. Versioning functionality is available in the IDE and in the terminal.
 
-Eclipse Che natively supports Git which is provided by https://www.eclipse.org/jgit/[JGit library]. Versioning functionality is available in the IDE and in the terminal. Note: an link:#svn[SVN plugin] also exists, but it’s not part of the default Che assembly.
+ifeval::["{project-context}" == "che"]
+An link:#svn[Subversion (SVN) plug-in] also exists, but it is not part of the default Che assembly.
+endif::[]
 
-The following sections describe how to connect and authenticate users to a remote git repository. Any operations that involve authentication on the remote repository will need to be done via the IDE interface unless authentication is setup separately for the workspace machine(terminal/commands).
+The following sections describe how to connect and authenticate users to a remote Git repository. Any operations that involve authentication on the remote repository need to be done via the IDE interface unless authentication is configured separately for the workspace machine (terminal, commands).
 
-Private repositories will require a secure SSH connection and most developers who plan to push to a repo will clone it via SSH, so an SSH key pair needs to be generated. SSH keys are saved in user preferences, so you need to generate the SSH key only once and it will be used in all workspaces.
+Private repositories require a secure SSH connection. In order to connect to Git repositories over SSH, an SSH key pair needs to be generated. SSH keys are saved in user preferences, so the same key can be used in all workspaces.
 
-*Note: HTTPS git URL can only be used to push changes if you enable oAuth authentication as described in link:user-management.html#social-login-and-brokering[GitHub oAuth]*.
+NOTE: HTTPS Git URLs can only be used to push changes when OAuth authentication is enabled. See link:user-management.html#social-login-and-brokering[GitHub OAuth].
 
-[id="generateupload-ssh-keys"]
-== Generate/Upload SSH Keys
+[id="generating-and-uploading-ssh-keys"]
+== Generating and uploading SSH keys
 
-SSH keys can be generated at `Profile > Preferences > SSH > VCS`. Use the `Generate Key` button and manually save the resulting key to your Git hosting provider account. When prompted to provide the hostname for your repo, make sure it is a bare hostname (no www or http/https) as in the example below. After the key has been generated, you can view and copy it, and save to your repository hosting account.
+SSH keys can be generated in the Che user interface.
 
-*IMPORTANT!*. Hostname is an actual hostname of a VCS provider. Examples: `github.com`, `bitbucket.org`.
+. Go to *Profile > Preferences > SSH > VCS*, and click the btn:[Generate Key] button.
 
-*Use Existing SSH Keys*
+. When prompted to provide the host name for your repository, use the bare host name (do not include `www` or `https`) as in the example below.
 
-You can upload an existing public key instead of creating a new SSH key. When uploading a key add the hostname (using no *www or http/https* - as in the example below). Note that the `public key > view` button will not be available with this option as the public file should be generated already.
+. Save the resulting key to your Git-hosting provider account.
+
+IMPORTANT: The host name is an actual host name of a VCS provider. Examples: `github.com`, `bitbucket.org`.
+
+=== Using existing SSH keys
+
+You can upload an existing public key instead of creating a new SSH key. When uploading a key, add the host name (using no `www` or `https` - as in the example below). Note that the *Public key > View* button is not be available when using this option because the public file should be generated already.
 
 image::git/ssh_keys.gif[]
 
-The following example is specific to GitHub and GitLab but can be used with all git or SVN repository providers that use SSH authentication. Please refer to documentation provided by other providers for additional assistance.
+The following example is specific to GitHub and GitLab, but it can be used with all Git or SVN repository providers that use SSH authentication. See documentation provided by other providers for additional assistance.
 
-*GitHub Example*
+.GitHub example
+[example]
+====
+When not using GitHub OAuth, you can manually upload a key. To add the associated public key to a repository or account on *github.com*:
 
-If you don’t want to setup GitHub oAuth, you can manually upload a key. Add the associated public key to a repository/account using *github.com*, click your user icon(top right) then `settings > ssh and gpg keys > new ssh key`. Give a title to your liking and paste the public key copied from Che into form.
+. Click your user icon (top right).
+. Go to *Settings > SSH and GPG keys* and click the *New SSH key* button.
+. Enter a title and paste the public key copied from Che to the *Key* text field.
 
 image::git/ssh_github.png[]
+====
 
-*GitLab Example*
+.GitLab example
+[example]
+====
+To add the associated public key to a Git repository or account on *gitlab.com*:
 
-To add the associated public key to a git repository/account using *gitlab.com* click your user icon(top right) then `Profile Settings > SSH Keys`. Give a title to your liking and paste the public key copied from Che.
+. Click your user icon (top right).
+. Go to *Settings > SSH Keys*.
+. Enter a title and paste the public key copied from Che to the *Key* text field.
 
 image::git/ssh_gitlab.png[]
+====
 
-*BitBucket Example*
 
-You can setup ssh to a dedicated BitBucket Server. Each user will still need to setup their own SSH key for authentication to the BitBucket Server which will be similar to GitHub/GitLab SSH examples.
+[id="configuring-github-oauth"]
+== Configuring GitHub OAuth
 
-[id="github-oauth"]
-== GitHub oAuth
+OAuth for Github allows users to import projects using SSH addresses (`git@`), push to repositories, and use the pull request panel. To enable automatic SSH key upload to GitHub for users:
 
-oAuth for Github allows users via the IDE git menu to import projects using SSH "git@", push to repository, and use pull request panel. To enable automatic SSH key upload to GitHub for users, register an application in your GitHub account *Settings > Developer Settings > oAuth Apps* with the callback `http://${CHE_HOST}:${CHE_PORT}/api/oauth/callback`:
-
+. On *github.com*, click your user icon (top right).
+. Go to *Settings > Developer settings > OAuth Apps*.
+. Click the btn:[Register a new application] button.
+. In the *Application name* field, enter, for example, `Eclipse Che`.
+. In the *Homepage URL* field, enter `pass:q[https://__${CHE_HOST}__:__${CHE_PORT}__]`.
+. In the *Authorization callback URL* field, enter `pass:q[https://__${CHE_HOST}__:__${CHE_PORT}__/api/oauth/callback]`.
++
 image::git/github_oauth.png[]
 
-*SINGLE-USER ONLY!*. See: link:user-management.html#social-login-and-brokering[Setup GitHub oAuth for Multi-User Che]
-
-Set the following to environment variables in the `che.env` (See: link:docker-config.html[Docker Config]) or update your Che OpenShift deployment (See: link:openshift-config.html[OpenShift Config]).
-
+ifeval::["{project-context}" == "che"]
+. On Docker, set the following to environment variables in the `che.env` file (see link:docker-config.html[Docker configuration]).
+endif::[]
+. On OpenShift, update the deployment configuration (see link:openshift-config.html[OpenShift configuration]).
++
+[subs=+quotes]
 ----
-CHE_OAUTH_GITHUB_CLIENTID=your_github_client_id
-CHE_OAUTH_GITHUB_CLIENTSECRET=your_github_secret
+CHE_OAUTH_GITHUB_CLIENTID=__<your-github-client-id>__
+CHE_OAUTH_GITHUB_CLIENTSECRET=__<your-github-secret>__
 CHE_OAUTH_GITHUB_AUTHURI=https://github.com/login/oauth/authorize
 CHE_OAUTH_GITHUB_TOKENURI=https://github.com/login/oauth/access_token
-CHE_OAUTH_GITHUB_REDIRECTURIS=http://${CHE_HOST}:${CHE_PORT}/api/oauth/callback
+CHE_OAUTH_GITHUB_REDIRECTURIS=http://__${CHE_HOST}__:__${CHE_PORT}__/api/oauth/callback
 ----
 
-Once the oAuth is setup, SSH keys are generated and uploaded automatically to GitHub by a user in workspace IDE `Profile > Preferences > SSH > VCS` by clicking the 'Octocat' icon. You can connect to your GitHub account and choose repos to clone, rather than manually type (or paste) GitHub project URL.
+[NOTE]
+====
+* Substitute all occurrences of `_${CHE_HOST}_` and `_${CHE_PORT}_` with the URL and port of your Che installation.
+
+* Substitute `_<your-github-client-id>_` and `_<your-github-secret>_` with your GitHub client ID and secret.
+
+ifeval::["{project-context}" == "che"]
+* This configuration only applies to single-user deployments of Che. See: link:user-management.html#enabling-authentication-with-social-accounts-and-brokering[Enabling authentication with social accounts and brokering].
+endif::[]
+====
+
+Once OAuth is configured, SSH keys are generated and uploaded automatically to GitHub by a user in the IDE in *Profile > Preferences > SSH > VCS* by clicking the _Octocat_ icon. You can connect to your GitHub account and choose repositories to clone, rather than having to manually type (or paste) GitHub project URLs.
+
 
 [id="gitlab-oauth"]
-== GitLab oAuth
+== Configuring GitLab OAuth
 
-Currently it is not possible for {{ site.product_mini_name }} to use oAuth integration with GitLab. Although GitLab supports oAuth for clone operations, pushes are not supported. You can track https://gitlab.com/gitlab-org/gitlab-ce/issues/18106[this GitLab issue] in their issue management system.
+OAuth integration with GitLab is not supported. Although GitLab supports OAuth for clone operations, pushes are not supported. A feature request to add support exists in the GitLab issue management system: link:https://gitlab.com/gitlab-org/gitlab-ce/issues/18106[Allow runners to push via their CI token].
+
 
 [id="built-in-pull-request-panel"]
-== Built-In Pull Request Panel
+== Submitting pull requests using the built-in Pull Request panel
 
-Within Eclipse Che there is a pull request panel to simplify the creation of pull requests for GitHub, BitBucket or Microsoft VSTS (with git) repositories.
+Eclipse Che provides a *Pull Request* panel to simplify the creation of pull requests for GitHub, BitBucket, and Microsoft VSTS (with Git) repositories.
 
 image::git/pr_panel.png[]
 
-[id="committer-name-and-email"]
-== Committer Name and Email
 
-Committer name and email are set in `Profile > Preferences > Git > Committer`. Once set each commit will include this information.
+[id="saving-committer-name-and-email"]
+== Saving committer name and email
+
+Committer name and email are set in *Profile > Preferences > Git > Committer*. Once set, every commit will include this information.
+
 
 [id="git-workspace-clients"]
-== Git Workspace Clients
+== Interacting with Git from a workspace
 
-After importing repository, you can perform the most common Git operations using interactive menus or as terminal commands. Terminal git commands require its own authentication setup, which means that keys generated in the IDE will work only when Git is used in the IDE menus. Git installed in a terminal is a different git system. You may generate keys in `~/.ssh` there as well.
+After importing a repository, you can perform the most common Git operations using interactive menus or as terminal commands.
+
+NOTE: Terminal Git commands require their own authentication setup. This means that keys generated in the IDE work only when Git is used through the IDE menus. Git installed in a terminal is a different Git system. You can generate keys in `~/.ssh` there as well.
 
 image::git/git.gif[]
 
-To faster access to the most frequently used git functionality one can use keyboard shortcuts:
+Use keyboard shortcuts t access the most frequently used Git functionality faster:
 
-* Commit: `Alt + C`
-* Push to remote: `Alt + Shift + C`
-* Pull from remote: `Alt + P`
-* Work with branches: `Ctrl + B`
-* Compare current changes with the latest repository version: `Ctrl + Alt + D`
+|===
+| Commit |              kbd:[Alt+C]
+| Push to remote |      kbd:[Alt+Shift+C]
+| Pull from remote |    kbd:[Alt+P]
+| Work with branches |  kbd:[Ctrl+B]
+| Compare current changes with the latest repository version | kbd:[Ctrl+Alt+D]
+|===
+
 
 [id="git-in-project-tree-and-editor"]
-== Git in Project Tree and Editor
+== Git status highlighting in the project tree and editor
 
-Files in project explorer and editor tabs can be colored according to their Git Status:
+Files in project explorer and editor tabs can be colored according to their Git status:
 
 image::git/project-explorer-editor-tabs-git-colors.png[]
 
-* Green: new files that are staged in index.
-* Blue: files that contain changes.
-* Yellow: files that are not staged in index.
+* Green: new files that are staged in index
+* Blue: files that contain changes
+* Yellow: files that are not staged in index
 
-Editor displays change markers according to file edits:
+The editor displays change markers according to file edits:
 
 image::git/editor-git-change-markers.png[]
 
-* Yellow marker: modified line(s).
-* Green marker: new line(s).
-* White triangle: removed line(s).
+* Yellow marker: modified line(s)
+* Green marker: new line(s)
+* White triangle: removed line(s)
+
 
 [id="git-operations"]
-== Git Operations
+== Performing Git operations
 
-*Commit*
+=== Commiting
 
-Commit your changes at `Git` -> `Commit...` main menu or call it with `Alt + C` shortcut.
+Commit your changes by navigating to *Git > Commit...* in the main menu, or use the kbd:[Alt+C] shortcut.
 
 image::git/git-commit-tree-view.png[]
 
-You can select files which will be added to index and committed. All files in the selected package / folder in the project explorer will be checked by default. After selecting files, type commit message. Optionally you could select `Amend previous commit` to replace previous commit (for more details https://git-scm.com/docs/git-commit#git-commit---amend[see git docs]).
+. Select files that will be added to index and committed. All files in the selected package or folder in the project explorer are checked by default.
 
-Push your commit to a remote repository by checking `Push committed changes to` check-box and selecting a remote branch.
+. Type your commit message. Optionally, you can select *Amend previous commit* to modify the previous commit (for more details, see link:https://git-scm.com/docs/git-commit#git-commit---amend[Git commit documentation]).
 
-Click `Commit` to proceed (the `Commit` button is active as long as at least 1 file is selected and a commit message is present or `Amend previous commit` is checked).
+. To push your commit to a remote repository by checking the *Push committed changes to* check-box and select a remote branch.
 
-Behavior for files in the list view is the same as in compare window (see link:#compare[Reviewing changed files] section). Double clicking a file will open diff window with it.
+. Click btn:[Commit] to proceed (the btn:[Commit] button is active when at least one file is selected and a commit message is present, or *Amend previous commit* is checked).
 
-*Push/Pull*
+Behavior for files in the list view is the same as in the *Compare* window (see link:#reviewing-changed-files[Reviewing changed files] section). Double-clicking a file opens diff window with it.
 
-Push your commits at `Git` -> `Remotes...` -> `Push` from main menu or `Alt + Shift + c` shortcut.
+=== Pushing and pulling
+
+Push your commits by navigating to *Git > Remotes... > Push* in the main menu, or use the kbd:[Alt+Shift+C] shortcut.
 
 image::git/git-push.png[]
 
-Choose a remote repository, local and remote branch. Optionally, you can force `Force push`. Get changes from a remote repo at `Git` -> `Remotes...` -> `Pull` (`Alt + P` shortcut).
+. Choose the remote repository.
+
+. Choose the local and remote branch.
+
+. Optionally, you can force select *Force push*.
+
+Get changes from a remote repository by navigating to *Git > Remotes... > Pull* in the main menu, or use the kbd:[Alt+P] shortcut.
 
 image::git/git-pull.png[]
 
-You can use `Rebase instead of merge` to keep your local commits on top (for more information https://git-scm.com/docs/git-pull#git-pull--r[see git docs]).
+You can use *Rebase instead of merge* to keep your local commits on top (for more information, see https://git-scm.com/docs/git-pull#git-pull--r[Git pull documentation]).
 
-*Branches*
+=== Managing branches
 
-Manage your git branches at `Git` -> `Branches...` from main menu or `Ctrl + b` shortcut.
+Manage your git branches by navigating to *Git > Branches...* in the main menu, or use the kbd:[Ctrl+B] shortcut.
 
 image::git/git-branches-window.png[]
 
-You can filter branches view by choosing to see only local or remote branches.
+You can filter the branches view by choosing to see only local or remote branches.
 
-[id="compare"]
-== Compare
 
-Git compare window is used to show files which was changed. This widget could be invoked from different places for different states, but the most frequently used way is to use `Git` -> `Compare` -> `<Select-to-what>` from main menu or use `Ctrl + Alt + D` shortcut to compare current state of code to the latest local commit. Another way is to select an object in project tree and click `Git` -> `Select-to-what` from item’s context menu. Note, this widget shows changed files in the selected object in project explorer. To see all changes select project folder. Note, if only one file was changed, diff window will be shown instead of compare window.
+[id="reviewing-changed-files"]
+== Reviewing changed files
+
+The *Git Compare* window is used to show files that have changed.
+
+To compare the current state of code to the latest local commit, navigate to *Git > Compare > Select-to-what* in the main menu, or use the kbd:[Ctrl+Alt+D] shortcut. Another way is to select an object in the project tree and choose *Git > Select-to-what* from the context menu of an item.
+
+.Listing changed files
+
+The *Git Compare* window shows changed files in the selected object in the project explorer. To see all changes, select a project folder. If only one file has changed, a diff window is shown instead of the compare window.
 
 image::git/git-compare-tree-view.png[]
 
 By default, affected files are listed as a tree.
 
-`Expand all directories` and `Collapse all directories` will help you get a better view. `View as list` button switches the view of changed files to a list, where each file is shown with its full path. To return to the tree view just click `Group by directories`.
+The *Expand all directories* and *Collapse all directories* options help to get a better view. The btn:[View as list] button switches the view of changed files to a list, where each file is shown with its full path. To return to the tree view, click btn:[Group by directories].
 
 image::git/git-compare-list-view.png[]
 
-To view diff for a file, select it and click `Compare` or just double click on a file name.
+.Viewing diffs
 
-You can review changes between two states of code. To view the diff, use `Git`->`Compare`->`<Select-to-what>` from main menu. If more than one file has changed the list of changed files will be opened first. To select a file to compare double-click on it or select a file, then click the `Compare`. Another way to open diff is to select a file in project explorer and click `Git` -> `Select-to-what` from context menu or directly from editor’s context menu.
+To view a diff for a file, select the file and click *Compare*, or double-click the file name.
+
+You can review changes between two states of code. To view the diff, go to *Git > Compare > Select-to-what* in main menu. If more than one file has changed, a list of the changed files is opened first. To select a file to compare, double-click it, or select a file, and then click *Compare*. Another way to open a diff is to select a file in the *Projects Explorer* and choose *Git > Select-to-what* from its context menu or directly from the context menu in the editor.
 
 image::git/git-diff-widget.png[]
 
-Your changes are displayed in the left editor and the file being compared to is on the right. The left editor can be used for editing and fixing your changes.
+Your changes are shown on the left, and the file being compared to is on the right. The left pane can be used for editing and fixing your changes.
 
-When you have multiple files to review you have the ability to navigate under all the files that are changed. The number of files that are reviewable is displayed in the title of the wizard. Navigate to the next or previous file with `Next` and `Previous` buttons.
+To review multiple files, you can navigate between them using the btn:[Previous] (or kbd:[Alt+.]) and btn:[Next] (or kbd:[Alt+,]) buttons. The number of files for review is displayed in the title of the diff window.
 
-For a keyboard navigation between the files you can use: `Alt + .` for `Next` and `Alt + ,` for `Previous`.
+The btn:[Refresh] button updates the difference links between the two panes.
 
-The `Refresh` button updates difference links between editors.
-
+ifeval::["{project-context}" == "che"]
 [id="svn"]
-== SVN
+== Subversion (SVN)
 
-SVN plugin isn’t included in the default Che build. You can, however, build your https://github.com/eclipse/che-plugin-svn[own Che assembly with this plugin].
+The SVN plug-in is not included in the default Che build. You can build your own link:https://github.com/eclipse/che-plugin-svn[Che assembly with this plugin].
+endif::[]
