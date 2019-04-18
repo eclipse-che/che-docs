@@ -103,6 +103,15 @@ helm upgrade --install <my-che-installation> --namespace <my-che-namespace> -f .
 ----
 helm upgrade --install <my-che-installation> --namespace <my-che-namespace> -f ./values/multi-user.yaml --set global.ingressDomain=<my-hostname> --set cheImage=<my-image> ./
 ----
++
+[NOTE]
+====
+The default `user:password` will be `admin:admin` unless you specified `--set global.cheSystemAdmin=<my-user>` to helm in the command above, and this value cannot be an email address.
+
+----
+helm upgrade --install <my-che-installation> --namespace <my-che-namespace> -f ./values/multi-user.yaml --set global.ingressDomain=<my-hostname> --set cheImage=<my-image> --set global.cheSystemAdmin=<my-user> ./
+----
+====
 
 Once the deployment finishes, you can access Che on the following locations:
 
