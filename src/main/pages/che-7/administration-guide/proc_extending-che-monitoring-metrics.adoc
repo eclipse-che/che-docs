@@ -1,27 +1,54 @@
 [id="extending-che-monitoring-metrics_{context}"]
 = Extending Che monitoring metrics
 
-This paragraph is the procedure module introduction: a short description of the procedure.
+There are two major modules for metrics:
 
-[discrete]
-== Prerequisites
+* `che-core-metrics-core` -- contains core metrics module
+* `che-core-api-metrics` -- contains metrics that are dependent on core Che components, such as workspace or user managers
 
-* A bulleted list of conditions that must be satisfied before the user starts following this assembly.
-* You can also link to other modules or assemblies the user must follow before starting this assembly.
-* Delete the section title and bullets if the assembly has no prerequisites.
 
 [discrete]
 == Procedure
 
-. Start each step with an active verb.
+To create a metric or a group of metrics, you need a class that extends the `MeterBinder` class. This allows to register the created metric in the overriden `bindTo(MeterRegistry registry)` method.
 
-. Include one command or action per step.
+The following is an example of a metric that has a function that supplies the value for it:
 
-. Use an unnumbered bullet (*) if the procedure includes only one step.
+.Example metric
+[source,java]
+----
+public class UserMeterBinder implements MeterBinder {
+
+  private final UserManager userManager;
+
+  @Inject
+  public UserMeterBinder(UserManager userManager) {
+    this.userManager = userManager;
+  }
+
+  @Override
+  public void bindTo(MeterRegistry registry) {
+    Gauge.builder("che.user.total", this::count)
+        .description("Total amount of users")
+        .register(registry);
+  }
+
+  private double count() {
+    try {
+      return userManager.getTotalCount();
+    } catch (ServerException e) {
+      return Double.NaN;
+    }
+  }
+----
+
+Alternatively, the metric can be stored with a reference and updated manually in some other place in the code.
+
 
 [discrete]
 == Additional resources
 
-* A bulleted list of links to other material closely related to the contents of the procedure module.
-* For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+For more information about the types of metrics and naming conventions, visit Prometheus documentation:
+
+* link:https://prometheus.io/docs/practices/naming/[Naming practices]
+* link:https://prometheus.io/docs/concepts/metric_types/[Metric types]
