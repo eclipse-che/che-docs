@@ -11,17 +11,29 @@ Grafana offers the possibility to add custom panels.
 
 To add a custom panel, use the *New dashboard* view.
 
-. The first section is for defining *Queries to* using the _Prometheus Query Language_ to construct a specific metric, as well as to modify it with various aggregation operators.
+. In the first section, define *Queries to*. Use the _Prometheus Query Language_ to construct a specific metric, as well as to modify it with various aggregation operators.
 +
 .New Grafana dashboard: Queries to
 image::monitoring/monitoring-che-new-grafana-dashboard-queries.png[link="{imagesdir}/monitoring/monitoring-che-new-grafana-dashboard-queries.png"]
 
-. The next section is *Visualisation* where you choose a metric to be shown in the following visual in the form of a graph, gauge, heatmap, or others.
+. In the *Visualisation* section, choose a metric to be shown in the following visual in the form of a graph, gauge, heatmap, or others.
 +
 .New Grafana dashboard: Visualization
 image::monitoring/monitoring-che-new-grafana-dashboard-visualization.png[link="{imagesdir}/monitoring/monitoring-che-new-grafana-dashboard-visualization.png"]
 
-To save changes to the dashboard, click the btn:[Save] button, and copy and paste the JSON code to the deployment.
+. Save changes to the dashboard by clicking the btn:[Save] button, and copy and paste the JSON code to the deployment.
+
+. Load changes in the configuration of a running Grafana deployment. First remove the deployment:
++
+----
+$ oc process -f che-monitoring.yaml | oc delete -f -
+----
++
+Then redeploy your Grafana with the new configuration:
++
+----
+$ oc process -f che-monitoring.yaml | oc apply -f - | oc rollout latest grafana
+----
 
 
 // [discrete]
