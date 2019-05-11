@@ -99,7 +99,7 @@ In the command above, `eclipse-che` is the Che namespace.
 [id="how-the-che-server-uses-PVCs-and-PVs-for-storage"]
 == How the Che server uses PVCs and PVs for storage
 
-Che server, Keycloak and PostgreSQL pods, and workspace pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode]. When the deployment YAML files run, they define the Che PVCs. You can configure link:#che-workspaces-storage[workspace PVC] access mode and claim size with Che deployment environment variables.
+Che server, Keycloak and PostgreSQL pods, and workspace pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode]. When the deployment YAML files run, they define the Che PVCs. You can configure link:#storage-strategies-for-che-workspaces[workspace PVC] access mode and claim size with Che deployment environment variables.
 
 [id="storage-requirements-for-che-infrastructure"]
 === Storage requirements for Che infrastructure
@@ -128,9 +128,9 @@ Sub-paths pre-created |Easy to manage and control storage |Workspace containers 
 [id="unique-pvc-strategy"]
 === Unique PVC strategy
 
-To define the unique strategy, set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `unique`.
+To define the `unique` strategy, set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `unique`.
 
-Every workspace gets its own PVC, which means a workspace PVC is created when a workspace starts for the first time. Workspace PVC is deleted when a corresponding workspace is deleted.
+Every workspace gets its own PVC, which means a workspace PVC is created when a workspace starts for the first time. A workspace PVC is deleted when a corresponding workspace is deleted.
 
 [id="common-pvc-strategy"]
 === Common PVC Strategy
@@ -138,9 +138,9 @@ Every workspace gets its own PVC, which means a workspace PVC is created when a 
 [id="how-the-common-pvc-strategy-works"]
 ==== How the common PVC strategy works
 
-All workspaces use the same PVC to store data declared in their volumes (projects and workspace logs by default and whatever additional link:volumes.html[volumes] that a user can define.)
+All workspaces (within one {k8s-namespace}) use the same PVC to store data declared in their volumes (projects and workspace logs by default and whatever additional link:volumes.html[volumes] that a user can define.)
 
-A PV that is bound to PVC `che-claim-workspace` will have the following structure:
+A PV that is bound to PVC `che-claim-workspace` has the following structure:
 
 ----
 pv0001
@@ -154,10 +154,10 @@ Volumes can be anything that a user defines as volumes for workspace machines.  
 
 When a workspace is deleted, a corresponding subdirectory (`${ws-id}`) is deleted in the PV directory.
 
-[id="enabling-a-common-strategy"]
-==== Enabling a common strategy
+[id="enabling-the-common-strategy"]
+==== Enabling the common strategy
 
-If you have already deployed Che with unique strategy, set the `CHE_INFRA_KUBERNETES_PVC_STRATEGY` variable to `common` in `dc/che`.
+If you have already deployed Che with the `unique` strategy, set the `CHE_INFRA_KUBERNETES_PVC_STRATEGY` variable to `common` in `dc/che`.
 
 If applying the `che-server-template.yaml` configuration, pass `-p CHE_INFRA_KUBERNETES_PVC_STRATEGY=common` to the `{ctl-command} new-app` command.
 
@@ -171,13 +171,13 @@ ifeval::[{admin-context} == "Kubernetes"]
 endif::[]
 
 [id="restrictions-on-using-common-pvc-strategy"]
-==== Restrictions on using common PVC strategy
+==== Restrictions on using the common PVC strategy
 
-When a common strategy is used and a workspace PVC access mode is ReadWriteOnce (RWO), only one {admin-context} node can simultaneously use PVC.  If there are several nodes, you can use a common strategy, but the workspace PVC access mode is ReadWriteMany (RWM). Multiple nodes can use this PVC simultaneously.
+When the `common` strategy is used and a workspace PVC access mode is ReadWriteOnce (RWO), only one {admin-context} node can simultaneously use the PVC.  If there are several nodes, you can use the `common` strategy, but the workspace PVC access mode is ReadWriteMany (RWM). Multiple nodes can use this PVC simultaneously.
 
 To change the access mode for workspace PVCs, pass the `CHE_INFRA_KUBERNETES_PVC_ACCESS_MODE=ReadWriteMany` environment variable to Che deployment either when initially deploying Che or through the Che deployment update.
 
-Another restriction is that only pods in the same namespace can use the same PVC.  The `CHE_INFRA_KUBERNETES_PROJECT` environment variable should not be empty.  It should be either the Che server namespace where objects can be created with the Che service account (SA) or a dedicated namespace where a token or a username and password need to be used.
+Another restriction is that only pods in the same namespace can use the same PVC.  The `CHE_INFRA_KUBERNETES_PROJECT` environment variable should not be empty.  It should be either the Che server namespace where objects can be created with the Che service account (SA) or a dedicated namespace where a token or a user name and password need to be used.
 
 [id="per-workspace-pvc-strategy"]
 === Per workspace PVC strategy
@@ -185,15 +185,14 @@ Another restriction is that only pods in the same namespace can use the same PVC
 To define the unique strategy, set `CHE_INFRA_KUBERNETES_PVC_STRATEGY` to `per-workspace`.
 
 [id="how-the-per-workspace-pvc-strategy-works"]
-==== How the per workspace PVC strategy works
+==== How the per-workspace PVC strategy works
 
-It works similarly to the common PVC strategy.
-The only difference is that all workspace volumes (but not all workspaces) use the same PVC to store data (projects and workspace logs by default and any additional link:volumes.html[volumes] that a user can define).
+The `per-workspace` strategy works similarly to the `common` PVC strategy. The only difference is that all workspace volumes (but not all workspaces) use the same PVC to store data (projects and workspace logs by default and any additional link:volumes.html[volumes] that a user can define).
 
 [id="updating-your-che-deployment"]
 == Updating your Che deployment
 
-To update Che deployment:
+To update a Che deployment:
 
 . Change the image tag:
 +
