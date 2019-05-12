@@ -1,23 +1,126 @@
 [id="che-theia-plug-in-metadata_{context}"]
 = Che-Theia plug-in metadata
 
-This paragraph is the reference module introduction and is only optional. Include it to provide a short overview of the module.
-
-A reference module provide data that users might want to look up, but do not need to remember. It has a very strict structure, often in the form of a list or a table. A well-organized reference module enables users to scan it quickly to find the details they want. AsciiDoc markup to consider for reference data:
+Che-Theia plug-in metadata is information about individual plug-ins for the plugin-registry.
 
 
-.Unordered lists
-* For more details on writing reference modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+== meta.yaml
 
-.Labeled lists
-Term 1:: Definition
-Term 2:: Definition
+The Che-Theia plug-in metadata is defined in a `meta.yaml` file for plug-in.
 
-.Tables
-[options="header"]
-|====
-|Column 1|Column 2|Column 3
-|Row 1, column 1|Row 1, column 2|Row 1, column 3
-|Row 2, column 1|Row 2, column 2|Row 2, column 3
-|====
+.Interface for a Che-Theia plug-in metadata object
+[source,json]
+{
+    id: string;
+    version: string;
+    type: string;
+    name: string;
+        title: string;
+    description: string;
+    url: string;
+}
+----
+
+The most important thing is the `url`, which defines the location of plug-in configuration. Typically, it is a `tar` archive with the plug-in `meta.yaml` file.
+
+When adding a VS Code extension from the oficial marketplace using its ID, the `url` field should be replaced with an `attributes` section that would contain `extension` and `container-image` fields:
+
+.Interface for a VS Code plug-in metadata object
+[source,json]
+----
+{
+    id: string;
+    version: string;
+    type: string;
+    name: string;
+        title: string;
+    description: string;
+    Attributes: {
+       extension: string;      <1>
+       containerImage: string; <2>
+    }
+}
+----
+<1> VS Code extension ID with a `vscode:extension/` prefix
+<2> Points to the container image, in which the extension should run. The image should be based on `wsskeleton/theia-endpoint-runtime` to be able to host VS Code extensions or Che-Theia plug-ins.
+
+
+== che-plugin.yaml
+
+The most detailed information about a plug-in is in the `che-plugin.yaml` file. For example:
+
+.`che-plugin.yaml` file for the link:https://github.com/ws-skeleton/che-editor-theia/blob/master/etc/che-plugin.yaml[che-editor-theia] plug-in
+[source,yaml]
+----
+version: 1.0.0
+type: Che Editor
+name: theia-ide
+id: org.eclipse.che.editor.theia
+title: Eclipse Theia for Eclipse Che
+description: Eclipse Theia
+icon: https://pbs.twimg.com/profile_images/929088242456190976/xjkS2L-0_400x400.jpg
+endpoints:
+ -  name: "theia"
+    public: true
+    targetPort: 3100
+    attributes:
+      protocol: http
+      type: ide
+      secure: true
+      cookiesAuthEnabled: true
+      discoverable: false
+ -  name: "theia-dev"
+    public: true
+    targetPort: 3130
+    attributes:
+      protocol: http
+      type: ide-dev
+      discoverable: false
+containers:
+ - name: theia-ide
+   image: eclipse/che-theia:0.3.18-nightly
+   env:
+       - name: THEIA_PLUGINS
+         value: local-dir:///plugins
+       - name: HOSTED_PLUGIN_HOSTNAME
+         value: 0.0.0.0
+       - name: HOSTED_PLUGIN_PORT
+         value: 3130
+   volumes:
+       - mountPath: "/plugins"
+         name: plugins
+       - mountPath: "/projects"
+         name: projects
+   ports:
+       - exposedPort: 3100
+       - exposedPort: 3130
+   memory-limit: "1536M"
+   memoryLimit: "1536M"
+----
+
+.`che-plugin.yaml` file for the link:https://github.com/eclipse/che-machine-exec/blob/master/assembly/etc/che-plugin.yaml[che-machine-exec] plug-in
+[source,json]
+----
+endpoints:
+ -  name: "che-machine-exec"
+    public: true
+    targetPort: 4444
+    attributes:
+      protocol: ws
+      type: terminal
+      discoverable: false
+containers:
+ - name: che-machine-exec
+   image: eclipse/che-machine-exec
+   ports:
+     - exposedPort: 4444
+editors:
+   - id: org.eclipse.che.editor.theia
+----
+
+
+// .Additional resources
+// 
+// * A bulleted list of links to other material closely related to the contents of the concept module.
+// * For more details on writing concept modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+// * Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].

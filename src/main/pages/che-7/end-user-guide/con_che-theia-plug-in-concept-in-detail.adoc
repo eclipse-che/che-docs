@@ -1,9 +1,36 @@
 [id="che-theia-plug-in-concept-in-detail_{context}"]
 = Che-Theia plug-in concept in detail
 
-Eclipse Che provides a default web IDE for workspaces: Che-Theia. It is based on Eclipse Theia. It’s a subtle different version than a plain Eclipse Theia as there are functionalities that have been added based on the nature of the Eclipse Che workspaces. We are calling this version of Eclipse Theia for Che: *CheTheia.*
+Eclipse Che provides a default web IDE for workspaces: Che-Theia. It is based on Eclipse Theia. It is a slightly different version than a plain Eclipse Theia as there are functionalities that have been added based on the nature of the Eclipse Che workspaces. We call this version of Eclipse Theia for Che: *Che-Theia*.
 
-In CheTheia, you’ll find the following capabilities:
+You can extend the IDE provided with Eclipse Che by building a *Che-Theia plug-in*. Che-Theia plug-ins are compatible with any other Eclipse Theia-based IDE.
+
+
+[id="client-side-and-server-side-che-theia-plug-ins_{context}"]
+== Client-side and server-side Che-Theia plug-ins
+
+The Che-Theia editor plug-ins let you add languages, debuggers, and tools to your installation to support your development workflow. Plug-ins run when the editor completes loading. If a Che-Theia plug-in fails, the main Che-Theia editor continues to work.
+
+Che-Theia plug-ins run either on the client side or on the server side. This is a scheme of the client and server-side plug-in concept:
+
+.Client and server-side Che-Theia plug-ins
+image::extensibility/client-server-side-plug-ins.png[]
+
+The same Che-Theia plug-in API is exposed to plugins running on the client side (Web Worker) or the server side (Node.js).
+
+
+[id="che-theia-plug-in-apis_{context}"]
+== Che-Theia plug-in APIs
+
+For the purpose of providing tool isolation and easy extensibility in Eclipse Che, the Che-Theia IDE has a set of plug-in APIs. The APIs are compatible with Visual Studio Code extension APIs. In most cases, Che-Theia can run VS Code extensions as its own plug-ins. Read more at link:TODO[TODO LINK].
+
+If the plug-in you are authoring depends on or interacts with components of Che workspaces (containers, preferences, factories, …), you can rely on the Che APIs that are embedded in Che-Theia. Learn more about the Che APIs at link:TODO[TODO LINK].
+
+
+[id="che-theia-plug-in-capabilities_{context}"]
+== Che-Theia plug-in capabilities
+
+Che-Theia plug-ins have the following capabilities:
 
 [options="header"]
 |===
@@ -13,32 +40,21 @@ In CheTheia, you’ll find the following capabilities:
 | *Che Factory* | Handles the Eclipse Che Factories | link:TODO[TODO LINK]
 | *Che Container*         | Provides a container view that shows all the containers that are running in the workspace and allows to interact with them. | https://github.com/eclipse/che-theia/tree/master/plugins/containers-plugin[Containers plugins]
 | *Che Dashboard*         | Allows to integrate the IDE with Che Dashboard and facilitate the navigation. | link:TODO[TODO LINK]
-| *Che APIs*              | Extends the IDE APis, to allow interacting with the Che specific components (workspaces, preferences, etc.). | link:TODO[TODO LINK]
+| *Che APIs*              | Extends the IDE APIs to allow interacting with Che-specific components (workspaces, preferences, etc.). | link:TODO[TODO LINK]
 |===
 
-You can extend the IDE provided with Eclipse Che by building a *Che-Theia plug-in*. Che-Theia plug-ins are compatible with any other Eclipse Theia-based IDE.
 
-A Che-Theia Plug-in is built on either:
+[id="vs-code-extensions-and-eclipse-theia-plug-ins_{context}"]
+== VS Code extensions and Eclipse Theia plug-ins
 
-* A Visual Studio Code extension
-* An Eclipse Theia plug-in
+A Che-Theia plug-in can be based on a VS Code extension or an Eclipse Theia plug-in.
 
-If you have already built your plug-in as a Visual Studio Code extension, you can build the corresponding Che-Theia plug-in by repackaging the extension. If the extension is relying on its own set of dependencies, it needs to package those into a container. Eclipse Che users get the plug-in and do not have to worry about the tools dependencies.
+A Visual Studio Code extension:: If you have already built your plug-in as a Visual Studio Code extension, you can build the corresponding Che-Theia plug-in by repackaging the extension. If the extension is relying on its own set of dependencies, it needs to package those into a container. Eclipse Che users get the plug-in and do not have to worry about the tool dependencies. See xref:converting-a-visual-studio-code-extension-to-a-che-theia-plug-in_developing-che-theia-plug-ins[].
 
-Learn more about remote and local plug-in in link:TODO[TODO LINK].
-
-Learn more about how to repackage a VSCode Extension into Eclipse Che link:TODO[TODO LINK].
-
-For the purpose of providing tools isolation and easy extensibility in Eclipse Che, we’ve added and maintain plug-ins APIs into Eclipse Theia. The APIs are providing compatibility with the Visual Studio Code Extension. You can read more at link:TODO[TODO LINK].
-
-You can build a Che-Theia plug-in by implementing an Eclipse Theia plug-in and packaging it to Eclipse Che. Learn more about how to package a Che-Theia plug-in at link:TODO[TODO LINK].
-
-If the plug-in you are authoring relies on or interacts with components of Che workspaces (containers, preferences, factories, …), you can rely on the Che APIs that are embedded in Che-Theia. Learn more about the Che APIs at link:TODO[TODO LINK].
+An Eclipse Theia plug-in:: You can build a Che-Theia plug-in by implementing an Eclipse Theia plug-in and packaging it to Eclipse Che. Learn more about how to package a Che-Theia plug-in at link:TODO[TODO LINK].
 
 
-// [discrete]
-// .Additional resources
-//
-// * A bulleted list of links to other material closely related to the contents of the concept module.
-// * For more details on writing concept modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-// * Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+.Additional resources
+
+* xref:embedded-and-remote-che-theia-plug-ins_what-is-a-che-theia-plug-in[]
+* xref:converting-a-visual-studio-code-extension-to-a-che-theia-plug-in_developing-che-theia-plug-ins[]
