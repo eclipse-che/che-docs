@@ -1,13 +1,3 @@
----
-title: Testing Che-Theia plug-ins
-keywords: 
-tags: []
-sidebar: che_7_docs
-permalink: che-7/testing-che-theia-plug-ins.html
-folder: che-7/end-user-guide
-summary: 
----
-
 :parent-context-of-testing-che-theia-plug-ins: {context}
 
 [id='testing-che-theia-plug-ins_{context}']
@@ -15,24 +5,59 @@ summary:
 
 :context: testing-che-theia-plug-ins
 
-
-This paragraph is the assembly introduction. It explains what the user will accomplish by working through the modules in the assembly and sets the context for the user story the assembly is based on. Can include more than one paragraph. Consider using the information from the user story.
-
-.Prerequisites
-
-* A bulleted list of conditions that must be satisfied before the user starts following this assembly.
-* You can also link to other modules or assemblies the user must follow before starting this assembly.
-* Delete the section title and bullets if the assembly has no prerequisites.
+Developers can test how plug-ins work while working on themby running Che-Theia in hosted mode. It is a special mode in which Che-Theia loads your plug-in directly from the `/projects` directory (as opposed to the rest of the plug-ins, which are loaded from the plug-in registry). Che-Theia hosted mode is similar to debug mode in VS Code.
 
 
-Include modules here.
+== Starting a hosted Che-Theia instance
+
+. Press F1 to display the command palette, and run the `Hosted Plugin: Start Instance` command.
+
+. Specify the path to the plug-in. A new browser tab will be opened.
 
 
+.Status in the hosted instance
 
-== Related information
+When running in hosted mode, Che-Theia displays a *Development Host* message in the status bar. When you hover over the message, a tip is displayed with the name of the hosted plug-in.
 
-* A bulleted list of links to other material closely related to the contents of the concept module.
-* For more details on writing assemblies, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+image::extensibility/che-theia-hosted-mode.png[]
+
+.Status in the main instance
+At the same time, the main instance of Che-Theia displays a *Hosted Plugin* message in the status bar. This element indicates the state of the hosted instance. After starting the hosted instance, main Che-Theia begins to watch the code changes.
+
+image::extensibility/watching-hosted-plug-in.png[]
+
+When you change something in your plug-in, you can just switch to the hosted Che-Theia instance, refresh the page, and immediately see the results.
+
+.Plug-in output
+
+When you run a hosted instance, the main Che-Theia instance opens the *Output* view. This view contains all output from the `yarn` backend process. It also contains the output of the backend plug-in that is being developed.
+
+image::extensibility/hosted-instance-output.png[link="{imagesdir}/extensibility/hosted-instance-output.png"]
+
+
+== Controlling a hosted Che-Theia instance
+
+You can control the state of the hosted instance directly from the main instance. Click *Hosted Plugin* element in the status bar, and a context menu with available actions will be displayed. You will be able to stop and restart the running hosted Che-Theia instance. When a hosted instance is stopped, the context menu can be used to start it. 
+
+image::extensibility/controlling-hosted-che-theia.png[]
+
+
+== Using code completion
+
+There is a full code completion provided to help you write your plug-in. Code completion covers both the Che-Theia plug-in API and the Che plug-in API.
+
+.Code-completion example
+[example]
+====
+Your plug-in will handle the opening of a document and displaying a notification message when the document is opened.
+
+image:extensibility/code-completion-example.gif[link="{imagesdir}/extensibility/code-completion-example.gif"]
+====
+
+// .Related information
+// 
+// * A bulleted list of links to other material closely related to the contents of the concept module.
+// * For more details on writing assemblies, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+// * Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
 
 :context: {parent-context-of-testing-che-theia-plug-ins}

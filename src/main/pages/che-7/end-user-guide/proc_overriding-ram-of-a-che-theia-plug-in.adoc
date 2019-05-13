@@ -1,27 +1,33 @@
 [id="overriding-ram-of-a-che-theia-plug-in_{context}"]
 = Overriding RAM of a Che-Theia plug-in
 
-This paragraph is the procedure module introduction: a short description of the procedure.
+Sometimes, a plug-in consumes more memory than what was allocated for the plug-in by the plug-in author or Che defaults. An example of such case is the use of a language server with a project that has many source files (&8gt;{nbsp}10{nbsp}000). RAM consumption in such circumstanes needs to be tuned, otherwise the machine that runs Che workspaces will kill the process with an out of memory error (OOM) error.
 
-[discrete]
-.Prerequisites
 
-* A bulleted list of conditions that must be satisfied before the user starts following this assembly.
-* You can also link to other modules or assemblies the user must follow before starting this assembly.
-* Delete the section title and bullets if the assembly has no prerequisites.
-
-[discrete]
 .Procedure
 
-. Start each step with an active verb.
+Users can override the RAM limit for a particular plug-in in their workspace configuration.
 
-. Include one command or action per step.
+Set the workspace attribute `sidecar.<plugin ID>.memory_limit` to `1000M` or `10Gi`, or any other value formatted as a number and a unit (`b, k, ki, m, mi, g, gi`). When no unit is specified, the number is in bytes.
 
-. Use an unnumbered bullet (*) if the procedure includes only one step.
+NOTE: Using this notation, units that contain the character `i` denote a number that is a power of 2, such as 1024 (as opposed to numbers that use a power of 10, such as 1000).
 
-[discrete]
-.Additional resources
+.Limiting RAM use for a plug-in
+[example]
+====
+Example of an attribute that sets the RAM limit for the link:https://github.com/eclipse/che-plugin-registry/blob/master/plugins/redhat.vscode-yaml/0.3.0/meta.yaml[YAML language server plug-in] to 768 mebibytes (1073741824 bytes):
 
-* A bulleted list of links to other material closely related to the contents of the procedure module.
-* For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+[source,json]
+----
+"attributes": {
+   "Sidecar.redhat.vscode-yaml.memory_limit": "768mi"
+}
+----
+====
+
+
+// .Additional resources
+// 
+// * A bulleted list of links to other material closely related to the contents of the procedure module.
+// * For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+// * Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].

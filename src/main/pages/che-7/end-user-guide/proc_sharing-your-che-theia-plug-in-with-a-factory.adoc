@@ -1,27 +1,38 @@
 [id="sharing-your-che-theia-plug-in-with-a-factory_{context}"]
 = Sharing your Che-Theia plug-in with a factory
 
-This paragraph is the procedure module introduction: a short description of the procedure.
+A Che-Theia factory can be used to share a plug-in in development environment with other people. This section describes how to do it.
 
-[discrete]
-.Prerequisites
 
-* A bulleted list of conditions that must be satisfied before the user starts following this assembly.
-* You can also link to other modules or assemblies the user must follow before starting this assembly.
-* Delete the section title and bullets if the assembly has no prerequisites.
+[id="sharing-a-factory-with-a-plug-in-development-environment_{context}"]
+== Sharing a factory with a plug-in development environment
 
-[discrete]
-.Procedure
+This approach brings an advantage: other people can and contribute to the development -- provided they have write access to the repository with the plug-in.
 
-. Start each step with an active verb.
+Create a factory with the plug-in development environment, and share it. Reviewers get exactly the same environment and need to build and run the plug-in to test it (a script or instructions on how to build should be included in the plug-in repository).
 
-. Include one command or action per step.
+The reviewer needs to start a hosted plug-in instance and specify the path to the plug-in project inside the workspace. See xref:testing-che-theia-plug-ins_extending-che[] for instructions on how to start a hosted instance of Che-Theia for plug-in testing.
 
-. Use an unnumbered bullet (*) if the procedure includes only one step.
+To make reviewers' work easier, it is possible to invoke a command to build the plug-in after factory load finishes. For more details, see factory documentation (link:link[TODO LINK]).
 
-[discrete]
+
+[id="sharing-a-factory-with-plug-in-configuration_{context}"]
+== Sharing a factory with plug-in configuration
+
+This method provides a workspace with a ready-to-use plug-in. The author of the plug-in needs to host the plug-in binaries in a custom registry (link:link[TODO LINK]).
+
+. Create a factory.
+. Go to the factory details, and scroll to the *Configuration* section.
+. Add the plug-in into the `workspace.attributes.plugins` field. The format is the same as described in xref:adding-a-che-theia-plug-in-into-a-workspace_publishing-che-theia-plug-ins[].
++
+image::extensibility/sharing-plug-in-with-factory.png[link="{imagesdir}/extensibility/sharing-plug-in-with-factory.png"]
+
+. Share the factory link.
+
+WARNING: Accept only factories from trusted sources. Malicious factories could steal data accessible from within your workspace.
+
+
 .Additional resources
 
-* A bulleted list of links to other material closely related to the contents of the procedure module.
-* For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+* xref:adding-a-che-theia-plug-in-into-a-workspace_publishing-che-theia-plug-ins[]
+* xref:testing-che-theia-plug-ins_extending-che[]
