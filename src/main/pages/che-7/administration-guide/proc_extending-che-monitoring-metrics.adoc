@@ -1,0 +1,54 @@
+[id="extending-che-monitoring-metrics_{context}"]
+= Extending Che monitoring metrics
+
+There are two major modules for metrics:
+
+* `che-core-metrics-core` -- contains core metrics module
+* `che-core-api-metrics` -- contains metrics that are dependent on core Che components, such as workspace or user managers
+
+
+[discrete]
+== Procedure
+
+To create a metric or a group of metrics, you need a class that extends the `MeterBinder` class. This allows to register the created metric in the overriden `bindTo(MeterRegistry registry)` method.
+
+The following is an example of a metric that has a function that supplies the value for it:
+
+.Example metric
+[source,java]
+----
+public class UserMeterBinder implements MeterBinder {
+
+  private final UserManager userManager;
+
+  @Inject
+  public UserMeterBinder(UserManager userManager) {
+    this.userManager = userManager;
+  }
+
+  @Override
+  public void bindTo(MeterRegistry registry) {
+    Gauge.builder("che.user.total", this::count)
+        .description("Total amount of users")
+        .register(registry);
+  }
+
+  private double count() {
+    try {
+      return userManager.getTotalCount();
+    } catch (ServerException e) {
+      return Double.NaN;
+    }
+  }
+----
+
+Alternatively, the metric can be stored with a reference and updated manually in some other place in the code.
+
+
+[discrete]
+== Additional resources
+
+For more information about the types of metrics and naming conventions, visit Prometheus documentation:
+
+* link:https://prometheus.io/docs/practices/naming/[Naming practices]
+* link:https://prometheus.io/docs/concepts/metric_types/[Metric types]

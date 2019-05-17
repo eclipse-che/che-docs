@@ -1,0 +1,66 @@
+---
+title: Monitoring Che
+keywords: 
+tags: []
+sidebar: che_7_docs
+permalink: che-7/monitoring-che.html
+folder: che-7/administration-guide
+summary: 
+---
+
+:parent-context-of-monitoring-che: {context}
+
+[id='monitoring-che_{context}']
+= Monitoring Che
+
+:context: monitoring-che
+
+Che can expose certain data as metrics, that can be processed by Prometheus and Grafana stack. Prometheus is a monitoring system, that maintains the collection of metrics - time series key-value data which can represent consumption of resources like CPU and memory, amount of processed HTTP queries and their execution time, and Che specific resources, such as number of users and workspaces, the start and shutdown of workspaces, information about JsonRPC stack.
+
+TODO: NEED LIST OF METRICS REPPORTED BY CHE
+
+Prometheus is powered with a special query language, that allows manipulating the collected data, and perform various binary, vector and aggregation operations with it, to help create a more refined view on data.
+
+While Prometheus is the central piece, responsible for scraping and storing the metrics, while Grafana offers a front-end "facade" with tools to create a various visual representation in the form of dashboards with various panels and graph types.
+
+Note that this monitoring stack is not an official production-ready solution, but rather has an introduction purpose.
+
+.The structure of Che monitoring stack
+image::monitoring/monitoring-che-stack-structure.png[link="{imagesdir}/monitoring/monitoring-che-stack-structure.png"]
+
+[id="enabling-che-metrics-collections"]
+== Enabling Che metrics collections
+
+[id='prerequisites-{context}',discrete]
+== Prerequisites
+
+* Installed Prometheus 2.9.1 or above. See more link:https://prometheus.io/docs/introduction/first_steps/[https://prometheus.io/docs/introduction/first_steps/].
+* Installed Grafana 6.0 or above. See more at link:https://grafana.com/docs/installation/[https://grafana.com/docs/installation/]
+
+[discrete]
+== Procedure
+
+. Set the `CHE_METRICS_ENABLED=true` environment variable
+. Expose the `8087` port as a service on the che-master host
+. Configure Prometheus to scrape metrics from the `8087` port
+. Configure a Prometheus data source on Grafana
+. Deploy Che-specific dashboards on Grafana
+
+
+include::proc_collecting-che-metrics-with-prometheus.adoc[leveloffset=+1]
+
+include::proc_viewing-che-metrics-on-grafana-dashboards.adoc[leveloffset=+1]
+
+include::proc_developing-grafana-dashboards.adoc[leveloffset=+1]
+
+include::proc_extending-che-monitoring-metrics.adoc[leveloffset=+1]
+
+
+// [id='additional-resources-{context}',discrete]
+// == Additional resources
+// 
+// * A bulleted list of links to other material closely related to the contents of the concept module.
+// * For more details on writing assemblies, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+// * Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+
+:context: {parent-context-of-monitoring-che}

@@ -1,0 +1,101 @@
+[id="viewing-che-metrics-on-grafana-dashboards_{context}"]
+= Viewing Che metrics on Grafana dashboards
+
+Grafana is used for informative representation of Prometheus metrics. Providing visibility for Openshift, Grafana’s deployment configuration and ConfigMaps are located in the `che-monitoring.yaml` configuration file.
+
+
+== Configuring and deploying Grafana
+
+Grafana is run on port `3000` with a corresponding *service* and *route*.
+
+Two ConfigMaps are used to configure Grafana:
+
+* `grafana-datasources` -- configuration for Grafana datasource, a Prometheus endpoint
+* `grafana-dashboards` -- configuration of Grafana dashboards and panels
+
+
+== Grafana dashboards overview
+
+Che provides several types of dashboards.
+
+
+=== Che server dashboard
+
+Use case: Che server-specific metrics related to Che components, such as workspaces or users.
+
+.The *General* panel
+image::monitoring/monitoring-che-che-server-dashboard-general-panel.png[]
+
+The *General* panel contains basic information, such as the total number of users and workspaces in the Che database.
+
+.The *Workspaces* panel
+image::monitoring/monitoring-che-che-server-dashboard-workspace-panel.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-workspace-panel.png"]
+
+* *Workspace start rate* -- the ratio between successfully started and failed workspaces
+* *Workspace Failures* -- the number of workspace failures shown on the graph
+* *Starting Workspaces* -- the gauge that shows the number of currently starting workspaces
+* *Running Workspace* -- the gauge that shows the number of currently running workspaces
+* *Average Workspace Start Time* -- 5-minute average of workspace starts or fails
+
+.The *Request* panel
+image::monitoring/monitoring-che-che-server-dashboard-requests-panel.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-requests-panel.png"]
+
+The *Requests* panel displays HTTP requests in a graph that shows the average number of requests per minute.
+
+.The *JsonRPC* panel
+image::monitoring/monitoring-che-che-server-dashboard-jsonrpc-panel.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-jsonrpc-panel.png"]
+
+The *JsonRPC* panel show how the JsonRPC stack is used for sending asynchronous messages between the Che server and clients (for example, the GWT IDE).
+
+There are two endpoints - major and minor. The major endpoint is the primary endpoint. It is used for sending important messages, such as workspace statuses. The minor endpoint is typically used by workspace starting logs.
+
+* *JsonRpcQueue* -- the number of queued tasks on executors
+* *Rejected message/minute* -- the number of messages that will be rejected if executors and queue are full
+* *Seconds Max* -- the maximum time of executing a task through the JsonRPC stack in the given moment of time
+* *Seconds Sum* -- the summary time of executing a task through the JsonRPC stack in the given moment of time
+* *Completed Task/minute* -- the number of completed tasks per minute
+
+.The *Workspace detailed* panel
+image::monitoring/monitoring-che-che-server-dashboard-workspace-detailed-panel.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-workspace-detailed-panel.png"]
+
+The *Workspace Detailed* panel contains heat maps, which illustrate the average time of workspace starts or fails. The row shows some period of time.
+
+
+=== Che server JVM dashboard
+
+Use case: JVM metrics of the Che server, such as JVM memory or classloading.
+
+.Che server JVM dashboard
+image::monitoring/monitoring-che-che-server-jvm-dashboard.png[link="{imagesdir}/monitoring/monitoring-che-che-server-jvm-dashboard.png"]
+
+.Quick Facts
+image::monitoring/monitoring-che-che-server-jvm-dashboard-quick-facts.png[link="{imagesdir}/monitoring/monitoring-che-che-server-jvm-dashboard-quick-facts.png"]
+
+.JVM Memory
+image::monitoring/monitoring-che-che-server-jvm-dashboard-jvm-memory.png[link="{imagesdir}/monitoring/monitoring-che-che-server-jvm-dashboard-jvm-memory.png"]
+
+.JVM Misc
+image::monitoring/monitoring-che-che-server-jvm-dashboard-jvm-misc.png[link="{imagesdir}/monitoring/monitoring-che-che-server-jvm-dashboard-jvm-misc.png"]
+
+.JVM Memory Pools (heap)
+image::monitoring/monitoring-che-che-server-jvm-dashboard-jvm-memory-pools-heap.png[link="{imagesdir}/monitoring/monitoring-che-che-server-jvm-dashboard-jvm-memory-pools-heap.png"]
+
+.JVM Memory Pools (Non-Heap)
+image::monitoring/monitoring-che-che-server-jvm-dashboard-jvm-memory-pools-non-heap.png[link="{imagesdir}/monitoring/monitoring-che-che-server-jvm-dashboard-jvm-memory-pools-non-heap.png"]
+
+.Garbage Collection
+image::monitoring/monitoring-che-che-server-jvm-dashboard-garbage-collection.png[link="{imagesdir}/monitoring/monitoring-che-che-server-jvm-dashboard-garbage-collection.png"]
+
+.Classloading
+image::monitoring/monitoring-che-che-server-jvm-dashboard-classloading.png[link="{imagesdir}/monitoring/monitoring-che-che-server-jvm-dashboard-classloading.png"]
+
+.Buffer Pools
+image::monitoring/monitoring-che-che-server-jvm-dashboard-buffer-pools.png[link="{imagesdir}/monitoring/monitoring-che-che-server-jvm-dashboard-buffer-pools.png"]
+
+
+// [discrete]
+// == Additional resources
+// 
+// * A bulleted list of links to other material closely related to the contents of the procedure module.
+// * For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+// * Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
