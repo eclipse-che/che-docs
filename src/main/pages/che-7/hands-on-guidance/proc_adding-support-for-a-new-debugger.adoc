@@ -1,27 +1,31 @@
 [id="adding-support-for-a-new-debugger_{context}"]
 = Adding support for a new debugger
 
-This paragraph is the procedure module introduction: a short description of the procedure.
+This section describes how to add a new debugger into Eclipse Che.
 
 [discrete]
 == Prerequisites
 
-* A bulleted list of conditions that must be satisfied before the user starts following this assembly.
-* You can also link to other modules or assemblies the user must follow before starting this assembly.
-* Delete the section title and bullets if the assembly has no prerequisites.
+* Install the latest Theia plugin yeoman generator `npm install -g yo @theia/generator-plugin`
+
 
 [discrete]
 == Procedure
 
-. Start each step with an active verb.
+. Generate sample by running `yo @theia/plugin`. When prompted confirm choices for “Backend plug-in”, “Samples” and then “Debugger sample”. It will create a project and a ready-to-use plugin which can be deployed.
 
-. Include one command or action per step.
+. Replace the mock implementation of the debug adapter in `src/vscode-mockDebug.ts` and `src/vscode-mockRuntime.ts` by some code that talks to a "real" debugger or runtime.
 
-. Use an unnumbered bullet (*) if the procedure includes only one step.
+. Build the plugin by running `yarn` in the root of the project.
+
+. Deploy Che Theia plugin via Che plugin-in registry.
+
 
 [discrete]
 == Additional resources
 
-* A bulleted list of links to other material closely related to the contents of the procedure module.
-* For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+* link:https://microsoft.github.io/debug-adapter-protocol/[Debug Adapter Protocol]
+* link:https://code.visualstudio.com/api/extension-guides/debugger-extension[VS Code debugger extension documentation]
+* link:https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/[Implementations Debug Adapters]
+* xref:adding-a-che-theia-plug-in-to-the-che-plug-in-registry[Adding a Che-Theia plug-in to the Che plug-in registry]
+
