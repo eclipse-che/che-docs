@@ -1,0 +1,67 @@
+---
+title: Tracing Che
+keywords:
+tags: []
+sidebar: che_7_docs
+permalink: che-7/tracing-che.html
+folder: che-7/administration-guide
+summary:
+---
+
+:parent-context-of-tracing-che: {context}
+
+[id='tracing-che_{context}']
+= Tracing Che
+
+:context: tracing-che
+
+Tracing helps gather timing data to troubleshoot latency problems in microservice architectures and helps to understand a complete transaction or workflow as it propagates through a distributed system.
+Every transaction might reflect performance anomalies in an early phase when new services are being introduced by independent teams.
+
+Tracers live in the applications. It records timing and metadata about operations that took place. They often instrument libraries, so that their use is transparent to users. For example, an instrumented web server records when it received a request and when it sent a response. The trace data collected is called a Span. Span has a context that contains information such as trace and span identifiers and other kinds of data that can be propagated down the line.
+
+Che utilizes Opentracing API - a vendor-neutral framework for instrumentation. This means that if a developer wants to try out a different tracing backend, then instead of repeating the whole instrumentation process for the new distributed tracing system, the developer can simply change the configuration of the Tracer backend.
+
+Currently, Jaeger was chosen as a tracing backend, Inspired by Dapper and OpenZipkin, is a distributed tracing system released as open source by Uber Technologies. Jaeger extends more complex architecture for a larger scale of requests and performance.
+
+Tracing Che application may help analyse the execution of various operations, such as workspace creations, workspace startup, breaking down the duration of sub-operations executions, helping finding bottlenecks and improve the overall state of the platform.
+
+
+[id="enabling-che-metrics-collections"]
+== Enabling Che metrics collections
+
+[id='prerequisites-{context}',discrete]
+== Prerequisites
+
+* Installed Jaeger v1.12.0 or above. See more link:https://www.jaegertracing.io/docs/1.12/getting-started/[https://www.jaegertracing.io/docs/1.12/getting-started/].
+
+[discrete]
+== Procedure
+
+. Enable following environment variables for Che deployment
+
+----
+
+# Activating Che tracing modules
+CHE_TRACING_ENABLED=true
+# Following variables are the basic Jaeger client library configuration.
+#
+JAEGER_ENDPOINT="http://jaeger-collector:14268/api/traces"
+# Service name
+JAEGER_SERVICE_NAME="che-server"
+# URL to remote sampler
+JAEGER_SAMPLER_MANAGER_HOST_PORT="jaeger:5778"
+# Type and param of sampler ( constant sampler for all traces )
+JAEGER_SAMPLER_TYPE="const"
+JAEGER_SAMPLER_PARAM="1"
+#Maximum queue size of reporter
+JAEGER_REPORTER_MAX_QUEUE_SIZE="10000"
+----
+
+More about Jaeger client environment variables at https://github.com/jaegertracing/jaeger-client-go#environment-variables
+
+include::proc_viewing-che-traces-on-jaeger-ui.adoc[leveloffset=+1]
+
+include::proc_che-tracing-codebase-overview-and-extension-guide.adoc[leveloffset=+1]
+
+:context: {parent-context-of-tracing-che}
