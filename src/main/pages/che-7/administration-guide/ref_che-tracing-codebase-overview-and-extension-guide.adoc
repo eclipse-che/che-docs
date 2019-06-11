@@ -1,0 +1,24 @@
+[id="che-tracing-codebase-overview-and-extension-guide_{context}"]
+= Che tracing codebase overview and extension guide
+
+The core of the tracing implementation for Che is in the `che-core-tracing-core` and `che-core-tracing-web` modules.
+
+All HTTP requests to the tracing API have their own trace. This is done by `TracingFilter` from the link:https://github.com/opentracing-contrib/java-web-servlet-filter[OpenTracing library], which is bound for the whole server application. Adding a `@Traced` annotation to methods causes the `TracingInterceptor` to add tracing spans for them.
+
+== Tagging
+
+Spans may contain standard tags, such as operation name, span origin, error, as well as others that may help users with querying and filtering spans. Workspace-related operations (such as starting or stopping workspaces) have additional tags, including `userId`, `workspaceId`, and `stackId`. Spans created by `TracingFilter` also have an HTTP status code tag.
+
+Declaring tags in a traced method is done statically by setting fields from the `TracingTags` class:
+
+[source,java]
+----
+TracingTags.WORKSPACE_ID.set(workspace.getId());
+----
+
+`TracingTags` is a class where all commonly used tags are declared, as respective `AnnotationAware` tag implementations.
+
+[discrete]
+== Additional resources
+
+For more information about how to use Jaeger UI, visit Jaeger documentation: link:https://www.jaegertracing.io/docs/1.12/getting-started/[Jaeger Getting Started Guide].
