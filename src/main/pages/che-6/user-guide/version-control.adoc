@@ -41,6 +41,27 @@ image::git/ssh_keys.gif[]
 
 The following examples are specific to GitHub and GitLab, but a similar procedure can be used with all Git or SVN repository providers that use SSH authentication. See documentation provided by other providers for additional assistance.
 
+[IMPORTANT]
+====
+
+The default type of SSH key does not work in Che. The `git pull` command fails on authorization. To work around the issue, you need a different type of an SSH key.
+
+To convert an existing SSH key to the `PEM` format, run the following command and substitute `_<your_key_file>_` for the path to your key file.
+
+[subs="+quotes"]
+----
+$ ssh-keygen -p -f _<your_key_file>_ -m PEM
+----
+
+Or, to generate a *new* `PEM` SSH key instead of the default `RFC 4716/SSH2 key`, omit the `-p` flag. Substitute `_<new_key_file>_` for the path to the new file.
+
+[subs="+quotes"]
+----
+$ ssh-keygen -f _<new_key_file>_ -m PEM
+----
+
+====
+
 .GitHub example
 [example]
 ====
