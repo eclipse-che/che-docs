@@ -1,0 +1,39 @@
+[id="enabling-che-metrics-collections_{context}"]
+= Enabling Che metrics collections
+
+[discrete]
+== Prerequisites
+
+* Installed Jaeger v1.12.0 or above. See instructions at link:https://www.jaegertracing.io/docs/1.12/getting-started/[Get up and running with Jaeger in your local environment].
+
+[discrete]
+== Procedure
+
+. Enable the following environment variables for Che deployment:
++
+[source,bash]
+----
+# Activating Che tracing modules
+CHE_TRACING_ENABLED=true
+
+# Following variables are the basic Jaeger client library configuration.
+JAEGER_ENDPOINT="http://jaeger-collector:14268/api/traces"
+
+# Service name
+JAEGER_SERVICE_NAME="che-server"
+
+# URL to remote sampler
+JAEGER_SAMPLER_MANAGER_HOST_PORT="jaeger:5778"
+
+# Type and param of sampler (constant sampler for all traces)
+JAEGER_SAMPLER_TYPE="const"
+JAEGER_SAMPLER_PARAM="1"
+
+# Maximum queue size of reporter
+JAEGER_REPORTER_MAX_QUEUE_SIZE="10000"
+----
+
+[discrete]
+== Additional resources
+
+* List of all link:https://github.com/jaegertracing/jaeger-client-go#environment-variables[Jaeger client environment variables]
