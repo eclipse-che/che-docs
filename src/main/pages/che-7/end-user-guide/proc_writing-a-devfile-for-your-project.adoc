@@ -1,27 +1,81 @@
 [id="writing-a-devfile-for-your-project_{context}"]
 = Writing a Devfile for your project
 
-This paragraph is the procedure module introduction: a short description of the procedure.
+This section describes how to create a minimal devfile for your project and how to include more than one projects in a devfile.
 
-[discrete]
-.Prerequisites
+// .Prerequisites
+// 
+// * A bulleted list of conditions that must be satisfied before the user starts following this assembly.
+// * You can also link to other modules or assemblies the user must follow before starting this assembly.
+// * Delete the section title and bullets if the assembly has no prerequisites.
 
-* A bulleted list of conditions that must be satisfied before the user starts following this assembly.
-* You can also link to other modules or assemblies the user must follow before starting this assembly.
-* Delete the section title and bullets if the assembly has no prerequisites.
 
-[discrete]
-.Procedure
+[id="preparing-a-minimal-devfile_{context}"]
+== Preparing a minimal devfile
 
-. Start each step with an active verb.
+A minimal devfile sufficient to run a workspace consists of the following parts:
 
-. Include one command or action per step.
+* Specification version
+* Name
 
-. Use an unnumbered bullet (*) if the procedure includes only one step.
+Without any further configuration, a workspace with the default editor will be launched along with its default plug-ins, which are configured on Che Server. Che-Theia is configured as the default editor along with the *Che Machine Exec* plug-in.
 
-[discrete]
+To get a more functional workspace, the following parts can be added:
+
+* List of components: development components and user runtimes
+* List of projects: source code repositories
+* List of commands: actions to manage the workspace components, such as running the development tools, starting the runtime environments, and others
+
+.Example of a minimal devfile with a project and a standard set of plug-ins (Chhe-Theia editor, exec plug-in)
+[source,yaml]
+----
+apiVersion: 1.0.0
+metadata:
+  name: petclinic-dev-environment
+projects:
+  - name: petclinic
+    source:
+      type: git
+      location: 'https://github.com/che-samples/web-java-spring-petclinic.git'
+components:
+  - alias: theia-editor
+    type: cheEditor
+    id: eclipse/che-theia/next
+  - alias: exec-plugin
+    type: chePlugin
+    id: eclipse/che-machine-exec-plugin/0.0.1
+----
+
+
+[id="specifying-multiple-projects-in-a-devfile_{context}"]
+== Specifying multiple projects in a devfile
+
+A single devfile can specify multiple projects. For each project, specify the type of the source repository, its location, and optionally also the directory to which the project should be cloned to.
+
+.Example of a devfile with two projects
+[source,yaml]
+----
+apiVersion: 1.0.0
+metadata:
+  name: example-devfile
+projects:
+- name: frontend
+  source:
+    type: git
+    location: https://github.com/acmecorp/frontend.git
+- name: backend
+  clonePath: src/github.com/acmecorp/backend
+  source:
+    type: git
+    location: https://github.com/acmecorp/backend.git
+----
+
+In the example above, there are two projects defined, `frontend` and `backend`. Each project is located in its own repository. The `backend` project has a specific requirement to be cloned into the `src/github.com/acmecorp/backend/` directory under the source root (implicitly defined by the Che runtime) while the `frontend` project will be cloned into the `frontend/` directory under the source root.
+
+
 .Additional resources
 
-* A bulleted list of links to other material closely related to the contents of the procedure module.
-* For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+For a detailed explanation of all devfile component assignments and possible values, see:
+
+* link:https://github.com/redhat-developer/devfile[Specification repository]
+* link:https://redhat-developer.github.io/devfile/devfile[detailed json-schema documentation]
