@@ -1,27 +1,51 @@
 [id="starting-a-workspace-with-a-devfile_{context}"]
-= Starting a workspace with a Devfile
+= Starting a workspace with a devfile
 
-This paragraph is the procedure module introduction: a short description of the procedure.
+This section describes how to start a Che workspace using your own existing devfile.
 
-[discrete]
+
 .Prerequisites
+ 
+* A running instance of Eclipse Che.
+* An existing devfile.
 
-* A bulleted list of conditions that must be satisfied before the user starts following this assembly.
-* You can also link to other modules or assemblies the user must follow before starting this assembly.
-* Delete the section title and bullets if the assembly has no prerequisites.
 
-[discrete]
 .Procedure
 
-. Start each step with an active verb.
+There are several ways to launch a Che workspace based on a prepared devfile:
 
-. Include one command or action per step.
+.Devfile from Git
 
-. Use an unnumbered bullet (*) if the procedure includes only one step.
+Add the devfile to a Git source repository and then create a factory from this repository.
 
-[discrete]
-.Additional resources
+. Put a `devfile.yaml` file in the root of your Git repository.
+. Execute the factory by opening the following URL:
++
+[subs="+quotes"]
+----
+https://__<your-che-host>__/f?url=https://github.com/__<mygroup>__/__<myrepo>__
+----
 
-* A bulleted list of links to other material closely related to the contents of the procedure module.
-* For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+.Devfile from URL
+
+Execute a devfile by constructing the factory with the URL pointing to the raw content of the devfile, for example:
+
+[subs="+quotes"]
+----
+https://__<your-che-host>__/f?url=https://pastebin.com/raw/ux6iCGaW
+----
+
+.Devfile using the `chectl` tool
+
+Execute workspace from a devfile using the `workspace:start` parameter with the `chectl` tool as follows:
+
+[subs="+quotes"]
+----
+$ chectl workspace:start --devfile=devfile.yaml
+----
+
+// .Additional resources
+// 
+// * A bulleted list of links to other material closely related to the contents of the procedure module.
+// * For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+// * Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].

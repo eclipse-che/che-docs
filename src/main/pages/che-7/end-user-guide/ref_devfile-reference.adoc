@@ -1,23 +1,252 @@
 [id="devfile-reference_{context}"]
 = Devfile reference
 
-This paragraph is the reference module introduction and is only optional. Include it to provide a short overview of the module.
+This section contains devfile reference and instructions on how to use the various elements that devfiles consist of.
 
-A reference module provide data that users might want to look up, but do not need to remember. It has a very strict structure, often in the form of a list or a table. A well-organized reference module enables users to scan it quickly to find the details they want. AsciiDoc markup to consider for reference data:
+== Adding components to a devfile
+
+Each component in a single devfile must have a unique name.
+
+=== Component type: cheEditor
+
+Describes the editor used in the workspace by defining its `id`. A devfile can only contain one component of the `cheEditor` type.
+
+[source,yaml]
+----
+components:
+  - alias: theia-editor
+    type: cheEditor
+    id: eclipse/che-theia/next
+----
+
+When `cheEditor` is missing, a default editor is provided along with its default plug-ins. The default plug-ins are also provided for an explicitly defined editor with the same `id` as the default one (even if it is a different version). Che-Theia is configured as default editor along with the *Che Machine Exec* plug-in.
+
+To specify that a workspace requires no editor, use the xref:attribute-editorfree_{context}[`editorFree:true` attribute] in the devfile attributes.
+
+=== Component type: chePlugin
+
+Describes plug-ins in a workspace by defining their `id`. It is allowed to have several `chePlugin` components.
+
+[source,yaml]
+----
+  components:
+   - alias: exec-plugin
+     type: chePlugin
+     id: eclipse/che-machine-exec-plugin/0.0.1
+----
+
+Both types above using id, which is slash-separated publisher, name and version of plugin from Che Plugin registry. +
+List of available Che plugins and more information about registry can be found on https://github.com/eclipse/che-plugin-registry.
+
+=== Specifying an alternative component registry
+
+To specify an alternative registry for the `cheEditor` and `chePlugin` component types, use the `registryUrl` parameter:
+
+[source,yaml]
+----
+  components:
+   - alias: exec-plugin
+     type: chePlugin
+     registryUrl: https://my-customregistry.com
+     id: eclipse/che-machine-exec-plugin/0.0.1
+----
+
+=== Specifying a component by linking to its descriptor
+
+An alternative way of specifying `cheEditor` or `chePlugin`, instead of using the editor or plug-in `id` (and optionally an alternative registry), is to provide a direct link to the component descriptor (typically named `meta.yaml`) by using the `reference` field:
+
+[source,yaml]
+----
+  components:
+   - alias: exec-plugin
+     type: chePlugin
+     reference: https://raw.githubusercontent.com.../plugin/1.0.1/meta.yaml
+----
+
+NOTE: It is not possible to mix the `id` and `reference` fields in a single component definition; they are mutually exclusive.
+
+=== Specifying container memory limit for components
+
+To specify a container(s) memory limit for `cheEditor` or `chePlugin`, use the `memoryLimit` parameter:
+
+[source,yaml]
+----
+  components:
+   - alias: exec-plugin
+     type: chePlugin
+     id: eclipse/che-machine-exec-plugin/0.0.1
+     memoryLimit: 256M
+----
+
+This limit will be applied to every container of the given component.
+
+=== Tuning component configuration
+
+A component may need to be precisely tuned, and in such case, component preferences can be used. The example shows how to configure JVM using plug-in preferences.
+
+[source,yaml]
+----
+  id: redhat/java/0.38.0
+  type: chePlugin
+  preferences:
+     java.jdt.ls.vmargs: '-noverify -Xmx1G -XX:+UseG1GC -XX:+UseStringDeduplication'
+----
 
 
-.Unordered lists
-* For more details on writing reference modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+=== Component type: kubernetes
 
-.Labeled lists
-Term 1:: Definition
-Term 2:: Definition
+A complex component type that allows to apply configuration from a Kubernetes or OpenShift lists. The content of the component can be provided either via the `reference` attribute, which points to the file with the component content.
 
-.Tables
-[options="header"]
-|====
-|Column 1|Column 2|Column 3
-|Row 1, column 1|Row 1, column 2|Row 1, column 3
-|Row 2, column 1|Row 2, column 2|Row 2, column 3
-|====
+[source,yaml]
+----
+  components:
+    - alias: mysql
+      type: kubernetes
+      reference: petclinic.yaml
+      selector:
+        app.kubernetes.io/name: mysql
+        app.kubernetes.io/component: database
+        app.kubernetes.io/part-of: petclinic
+----
+
+Alternatively, to post a devfile with such components to REST API, the contents of the Kubernetes or OpenShift list can be embedded into the devfile using the `referenceContent` field:
+
+[source,yaml]
+----
+  components:
+    - alias: mysql
+      type: kubernetes
+      reference: petclinic.yaml
+      referenceContent: |
+           kind: List
+           items:
+            -
+             apiVersion: v1
+             kind: Pod
+             metadata:
+              name: ws
+             spec:
+              containers:
+              ... etc
+----
+
+As with the xref:component-type-dockerimage_{context}[`dockerimage` component], it is possible to override the entrypoint of the containers contained in the Kubernetes or OpenShift list using the `command` and `args` properties (as link:https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#notes[understood] by Kubernetes).
+
+There can be more containers in the list (contained in pods or pod templates of deployments). To select which containers to apply the entrypoint changes to.
+
+The entrypoints can be defined as follows:
+
+[source,yaml]
+----
+  components:
+    - alias: appDeployment
+      type: kubernetes
+      reference: app-deployment.yaml
+      entrypoints:
+      - parentName: mysqlServer
+        command: ['sleep']
+        args: ['infinity']
+      - parentSelector:
+          app: prometheus
+        args: ['-f', '/opt/app/prometheus-config.yaml']
+----
+
+The `entrypoints` list contains constraints for picking the containers along with the `command` and `args` parameters to apply to them. In the example above, the constraint is `parentName: mysqlServer`, which will cause the command to be applied to all containers defined in any parent object called `mysqlServer`. The parent object is assumed to be a top level object in the list defined in the referenced file, which is `app-deployment.yaml` in the example above.
+
+Other types of constraints (and their combinations) are possible:
+
+`containerName`:: the name of the container
+`parentName`:: the name of the parent object that (indirectly) contains the containers to override
+`parentSelector`:: the set of labels the parent object needs to have
+
+A combination of these constraints can be used to precisely locate the containers inside the referenced Kubernetes list.
+
+
+[id="component-type-dockerimage_{context}"]
+=== Component type: dockerimage
+
+A component type that allows to define a container image-based configuration of a container in a workspace. A devfile can only contain one component of the `dockerimage` type.
+
+[source,yaml]
+----
+ components:
+   - alias: maven
+     type: dockerimage
+     image: eclipe/maven-jdk8:latest
+     volumes:
+       - name: mavenrepo
+         containerPath: /root/.m2
+     env:
+       - name: ENV_VAR
+         value: value
+     endpoints:
+       - name: maven-server
+         port: 3101
+         attributes:
+           protocol: http
+           secure: 'true'
+           public: 'true'
+           discoverable: 'false'
+     memoryLimit: 1536M
+     command: ['tail']
+     args: ['-f', '/dev/null']
+----
+
+
+== Adding commands to a devfile
+
+A devfile allows to specify commands to be available for execution in a workspace. Every command can contain a subset of actions, which are related to a specific component in whose container it will be executed.
+
+[source,yaml]
+----
+ commands:
+   - name: build
+     actions:
+       - type: exec
+         component: mysql
+         command: mvn clean
+         workdir: /projects/spring-petclinic
+----
+
+
+== Devfile attributes
+
+Devfile attributes can be used to configure various features.
+
+[id="attribute-editorfree_{context}"]
+=== Attribute: editorFree
+
+When an editor is not specified in a devfile, a default is provided. When no editor is needed, the `editorFree` attribute should be used. The default value is `false`, and it means that the devfile needs the default editor to be provisioned.
+
+.Example of a devfile without an editor
+[source,yaml]
+----
+apiVersion: 1.0.0
+metadata:
+  name: petclinic-dev-environment
+components:
+  - alias: myApp
+    type: kubernetes
+    local: my-app.yaml
+attributes:
+  editorFree: true
+----
+
+=== Attribute: persistVolumes (ephemeral mode)
+
+By default, volumes and PVCs specified in a devfile are bound to a host folder to persist data even after a container restart. Sometimes, it may be necessary to disable data persistence, such as when volume backend is slow, and it is needed to make workspace faster. To achieve it, the `persistVolumes` devfile attribute should be used. The default value is `true`, and in case of `false`, `emptyDir` volumes will be used for configured volumes and PVC.
+
+.Example of a devfile with ephemeral mode enabled
+[source,yaml]
+----
+apiVersion: 1.0.0
+metadata:
+  name: petclinic-dev-environment
+projects:
+  - name: petclinic
+    source:
+      type: git
+      location: 'https://github.com/che-samples/web-java-spring-petclinic.git'
+attributes:
+  persistVolumes: false
+----
