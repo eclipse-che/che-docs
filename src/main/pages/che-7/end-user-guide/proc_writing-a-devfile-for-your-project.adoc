@@ -18,6 +18,14 @@ A minimal devfile sufficient to run a workspace consists of the following parts:
 * Specification version
 * Name
 
+.Example of a minimal devfile with no project
+[source,yaml]
+----
+apiVersion: 1.0.0
+metadata:
+  name: minimal-workspace
+----
+
 Without any further configuration, a workspace with the default editor will be launched along with its default plug-ins, which are configured on Che Server. Che-Theia is configured as the default editor along with the *Che Machine Exec* plug-in.
 
 To get a more functional workspace, the following parts can be added:
@@ -26,7 +34,7 @@ To get a more functional workspace, the following parts can be added:
 * List of projects: source code repositories
 * List of commands: actions to manage the workspace components, such as running the development tools, starting the runtime environments, and others
 
-.Example of a minimal devfile with a project and a standard set of plug-ins (Chhe-Theia editor, exec plug-in)
+.Example of a minimal devfile with a project
 [source,yaml]
 ----
 apiVersion: 1.0.0
@@ -36,14 +44,10 @@ projects:
   - name: petclinic
     source:
       type: git
-      location: 'https://github.com/che-samples/web-java-spring-petclinic.git'
+      location: 'https://github.com/spring-projects/spring-petclinic.git'
 components:
-  - alias: theia-editor
-    type: cheEditor
-    id: eclipse/che-theia/next
-  - alias: exec-plugin
-    type: chePlugin
-    id: eclipse/che-machine-exec-plugin/0.0.1
+  - type: chePlugin
+    id: redhat/java/latest
 ----
 
 
