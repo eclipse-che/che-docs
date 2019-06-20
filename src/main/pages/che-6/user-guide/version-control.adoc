@@ -128,6 +128,60 @@ endif::[]
 
 Once OAuth is configured, SSH keys are generated and uploaded automatically to GitHub by a user in the IDE in *Profile > Preferences > SSH > VCS* by clicking the _Octocat_ icon. You can connect to your GitHub account and choose repositories to clone, rather than having to manually type (or paste) GitHub project URLs.
 
+[id="configuring-github-oauth-for-openshift-infrastructure"]
+== Configuring GitHub oAuth for OpenShift infrastructure
+
+.Prerequisites
+
+* A deployed instance of Eclipse Che
+
+.Procedure
+
+OAuth for GitHub allows users to import projects using the SSH addresses (`git@`), push to repositories, and use the pull request panel. The steps listed in this section are performed by an administrative user.
+
+To enable automatic SSH key upload to GitHub for users, take the following steps:
+
+. In the *Overview* tab, click the _<application-name>_ to open it.
+
+. Click the Keycloak link to open the *Red Hat Singe Sign-On* window.
+
+. Expand the *Configure* tab and then click *Identity Providers*.
+
+. In the *Add provider* drop-down list, click *GitHub*. The *Add identity provider* window displays. 
+
+. In the *Add identity provider* window:
+
+.. The *Redirect URI* field, depending on your Eclipse Che installation, type the Authorization callback URL.
+
+.. Copy the client ID and the client secret from GitHub and paste them in the *Client ID* and the *Client Secret* fields, respectively.
+
+.. In the *Homepage URL* and the *Authorization callback URL* field, depending on your Eclipse Che installation, type the two URLS.
+
+.. In the *Default Scopes* field, type _repo, user, write:publick_key_.
+
+.. Set *Store Tokens* and *Stored Tokens Readable* to *ON*.
+
+.. Click *Save*.
++
+The *Success! The github provider has been created.* message indicates success. And, the GitHub provider is added to the *Identity Providers* window.
++
+image::git/github-provider-added.png[]
++
+Perform the following steps to set role mapping for non-administrative users.
++
+. Expand the *Manage* tab and then click *Users*.
+
+. Click the *Role Mappings* tab.
+
+. Click the *Client Roles* drop-down menu and click *broker*.
+
+. In the *Available Roles* list, click *read-token*.
+
+. Click *Add selected*.
+
+. In the *Effective Roles* list, click *read-token*.
+
+The GitHub oAuth is now set for the user.
 
 [id="gitlab-oauth"]
 == Configuring GitLab OAuth
