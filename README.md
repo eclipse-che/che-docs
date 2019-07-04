@@ -108,7 +108,9 @@ pass:[VARIABLE_NAME__WITH__UNDERSCORES]
 
 ## How to get support
 
-* **GitHub issue:** [open an issue](https://github.com/eclipse/che-docs/issues/new) in this repository
+* **GitHub issue:** [![New questions](https://img.shields.io/badge/New-question-blue.svg?style=flat-curved)](https://github.com/eclipse/che/issues/new?labels=area/doc,kind/question)
+[![New bug](https://img.shields.io/badge/New-bug-red.svg?style=flat-curved)](https://github.com/eclipse/che/issues/new?labels=area/doc,kind/bug)
+
 * **Public Chat:** Join the public [eclipse-che](https://mattermost.eclipse.org/eclipse/channels/eclipse-che) Mattermost channel to talk to the community and contributors
 
 ## How to contribute
