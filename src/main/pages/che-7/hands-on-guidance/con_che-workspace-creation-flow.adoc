@@ -1,0 +1,42 @@
+// Module included in the following assemblies:
+//
+// che-workspaces
+
+// This module can be included from assemblies using the following include statement:
+// include::<path>/con_che-workspace-creation-flow.adoc[leveloffset=+1]
+
+// The file name and the ID are based on the module title. For example:
+// * file name: con_my-concept-module-a.adoc
+// * ID: [id='con_my-concept-module-a_{context}']
+// * Title: = My concept module A
+//
+// The ID is used as an anchor for linking to the module. Avoid changing
+// it after the module has been published to ensure existing links are not
+// broken.
+//
+// The `context` attribute enables module reuse. Every module's ID includes
+// {context}, which ensures that the module has a unique ID even if it is
+// reused multiple times in a guide.
+//
+// In the title, include nouns that are used in the body text. This helps
+// readers and search engines find information quickly.
+// Do not start the title with a verb. See also _Wording of headings_
+// in _The IBM Style Guide_.
+[id="che-workspace-creation-flow_{context}"]
+= Che workspace creation flow
+
+image::extensibility/che_workspace_creation_flow.png[]
+
+A Che workspace is created in the following way:
+
+. A user starts a Che workspace defined by:
+* An editor (the default is che-theia)
+* A list of plug-ins (example java and kubernetes tooling)
+* A list of runtime applications
+. *wsmaster* retrieves the editor and plug-in metadata from the plug-in registry.
+. For every plug-in type, the *wsmaster* starts a specific plug-in broker.
+. The Che plug-in broker transforms the plug-in metadata into a Che plug-in definition. It executes the following steps:
+* Downloads a plug-in and extracts its content.
+* Processes the plug-in *meta.yaml* file and sends it back to *wsmaster* in the format of a Che plug-in.
+. *wsmaster* starts the editor and the plug-in sidecars.
+. The editor loads the plug-ins from the plug-in persistent volume.
