@@ -8,146 +8,156 @@ redirect_from: commands-ide-macro.html
 folder: che-6/user-guide
 ---
 
+A command is:
 
-Commands are script-like instructions that are injected into the workspace machine for execution. Commands are saved in the configuration storage of your workspace and are part of any workspace export.
+* A set of instructions that is injected into the workspace machine for execution
 
-[id="command-overview"]
-== Command Overview
+* A goal to organize commands for your workflow
 
-A command is defined by:
+* A context to scope the command to particular projects
 
-* A set of instructions to be injected into the workspace machine for execution +
-* A goal to organize commands for your workflow +
-* A context to scope the command to particular project(s) +
-* A previewURL which to expose URL of a running server
+* A preview URL to expose the URL of a running server
+
+Commands are saved in the configuration storage of your workspace and are part of any workspace export operation.
 
 [id="command-goals"]
-== Command Goals
+== Command goals
 
-A command is executed by the developer to achieve a particular step from his flow. We provide the ability to organize commands per goal:
+A developer executes a command to achieve a particular step in the development workflow. Che provides the ability to organize commands per goal:
 
-* _Build_: Commands that build a workspace’s projects. +
-* _Test_: Commands related to test execution. +
-* _Run_: Commands that run a workspace’s projects. +
-* _Debug_: Commands used to start a debugging session. +
-* _Deploy_: Commands that are used to deploy a workspace’s projects onto specific servers or services. +
-* _Common_: General purpose commands.
+* _Build_: Commands that build the projects in a workspace.
+
+* _Test_: Commands related to test execution.
+
+* _Run_: Commands that run projects in a workspace.
+
+* _Debug_: Commands used to start a debugging session.
+
+* _Deploy_: Commands that are used to deploy projects in a workspace on specific servers or services.
+
+* _Common_: Commands used for general purpose.
 
 [id="command-context"]
-== Command Context
+== Command context
 
-All commands are not applicable to every project. So we wanted to add the notion of context to a command. The context of a command defines the project(s) that the command can be used with. For example: a maven build command will be relevant only if the project is using maven.
+The context of a command defines the projects that the command can be used with. For example: a `maven build` command is relevant only if the project uses Maven.
 
 [id="managing-commands"]
-== Managing Commands
+== Managing commands
 
-Workspace commands are available thought the `Commands Explorer` accessible from the left pane where they are organized by goal.
+Workspace commands are available in the *Commands Explorer* view. This view is accessible from the left pane. The commands are organized in this view by goal.
 
 image::commands/command-explorer.png[]
 
-You can create new commands by using the `+` button display next to each goals. Alternatively, you can select a command from the tree to edit, duplicate or delete it.
+To create new commands, use the `+` icon next to a goal. Alternatively, you can select a command from the tree to edit, duplicate, or delete it.
 
 image::commands/command-editor.png[]
 
-The command editor is handled as another tab in the existing editor pane. You get more space to configure the command and benefit from the full screen edit mode (by double clicking on the tab) and the ability to split vertically or horizontally to display multiple editors at the same time.
+The command editor is a distinct tab in the existing editor pane. Double-click the tab to use the full-screen edit mode. The editor can be split vertically or horizontally to display multiple editors at once.
 
-* *Name*: Command name as to be unique in your workspace. The name is not restricted to camelCase. +
-* *Intructions*: Learn more about instructions and link:#macros[macros]. +
-* *Goal*: Use the dropdown to change the goal of the command. +
-* *Context*: By default, the command is available with all project(s) of the workspace. You can scope the command to be available only for selected project(s). +
-* *Preview*: Learn more about link:servers.html[previews].
+* *Name*: A unique command name in your workspace. The name is not restricted to CamelCase. 
 
-Che provides macros that can be used within a command or preview URL to reference workspace objects. Learn more link:#macros[here].
+* *Intructions*: To learn more about instructions and macros, see the link:[Macros] section.
+
+* *Goal*: Use the dropdown list to change the goal of the command.
+
+* *Context*: By default, the command is available with all the workspace projects. You can scope the command to be available only for selected projects.
+
+* *Preview*: To learn more about servers, see the link:servers.html[Servers] section.
+
+Che provides macros that can be used within a command or preview URL to reference workspace objects. To learn more, see the link:#macros[Macros] section.
 
 [id="macros-list"]
 == Macros list
 
-When editing a command, you can get an access to all the macros that can be used in the command’s instructions or in the preview URL. To display the complete list of macros, click on the `Macros` link.
+When editing a command, you can access all the macros that can be used in the command’s instructions or in the preview URL. To display a complete list of macros, click on the `Macros` link.
 
 image::commands/command-macros-list.png[]
 
-[id="macros-auto-completion"]
-== Macros Auto-Completion
+[id="auto-completing-macros"]
+== Auto-completing macros
 
-You can get auto-complete for all macros used in the editor. To activate this feature hit `<Ctrl+Space>` this will bring up a menu listing all the possible macros based on what’s been typed.
+You can auto-complete all macros used in the editor. To activate the auto-complete feature, press *Ctrl+Space*. This displays a menu listing all the possible macros based on what is typed.
+
 
 image::commands/command-macros-autocompletion.png[]
 
-[id="use-commands"]
-== Use Commands
+[id="using-commands"]
+== Using commands
 
-You can use commands from multiple widgets:
+You can use commands from the following widgets:
 
-* Command palette +
-* Command toolbar +
-* Contextual menu in project explorer
+* *Command Palette*
 
-[id="command-palette"]
-== Command Palette
+* Command toolbar
 
-Since commands are often run in the heat of coding, you can use a hotkey to open the command palette.
+* Contextual menu in the *Project Explorer* view
+
+[id="using-the-command-palette"]
+=== Using the Command Palette
+
+Use the *Shift+F10* keys to open the *Command Palette*. Use the arrow keys to navigate through the list of commands. Use *Enter* to execute a selected command.  
 
 image::commands/command-palette.png[]
 
-The command palette allows to quickly select a command to be executed. To call the command palette from the keyboard hit `<shift+F10>` and then use the cursor keys to navigate and enter to execute the command.
-
 [id="command-toolbar"]
-== Command Toolbar
+=== Using the command toolbar
 
-The command toolbar provides a way to execute the most common `Run` and `Debug` goals. It also provides access to all the executed commands and previews from a single place.
+Using the command toolbar, you can execute the most common `Run` and `Debug` goals. The toolbar provides access to all the executed commands and previews.
 
 image::commands/command-toolbar.png[]
 
-*Run and Debug Buttons*
+==== Using the Run and Debug buttons
 
-If you have commands defined for those goals, you can trigger them directly from those buttons.
+To trigger commands directly from the *Run* and *Debug* buttons, you must define the commands for the `Run` and `Debug` goals.
 
-If you have multiple commands defined for the `Run` goal and if it’s the first time you are using the `Run` button, you’ll be asked to choose the default command associated with the button. The next click on the button will trigger the previously selected command.
+You are asked to choose the default command associated with a button when you use this button for the first time and this button has multiple commands defined for a goal. Consecutive clicks of this button trigger the previously selected command.
 
-By doing a long click on the button you can select the command from the `Run` goal to execute. This command will become the default command associated with the `Run` button.
+To select a command to execute from a goal, click and hold the button. This command becomes the default command associated with the button.
 
-The same mechanisms apply to the `Debug` button.
+==== Using the command controller
 
-*Command Controller*
+Use the command controller to view the state of the workspace and the last command that was executed. You can see the time span since a command was started and decide if it should be stopped or relaunched.
 
-The command controller allow you to see the state of the workspace and the last command executed. You can see since how long the command started and also decide if it should be stopped or relaunched.
-
-When multiple commands have been executed it’s possible to see the list of all previously executed commands by clicking on the widget.
+To view the list of all the previously executed commands when multiple commands are executed, click on the widget.
 
 image::commands/command-toolbar-expanded.png[]
 
-To clean the list, remove the command’s process from the list of processes.
+To clean the list, remove the process of the command from the list of processes.
 
 image::commands/command-clean-toolbar.png[]
 
-*Preview Button*
+==== Using the Preview button
 
-If you have a command which start servers (for example, Tomcat) you can define the preview URL to access the running server. Learn more at link:servers.html#preview-urls[server preview URLs].
+For commands used to start servers, define the preview URL to access the running server. To learn more, see the link:servers.html#preview-urls[Preview URLs] section.
 
-The preview button provides quick access to all the servers that are running in workspace’s machines.
+The *Preview* button provides quick access to all of fthe servers that are running in the machines of the workspace.
 
 [id="authoring-command-instructions"]
-== Authoring Command Instructions
+== Authoring command instructions
 
 A command may contain a single instruction or a succession of commands. For example:
 
 ----
-# each command starts from a new line
-cd /projects/spring
+cd /projects/spring				<1>
 mvn clean install
-
-# a succession of several commands where `;` stands for a new line
-cd /projects/spring; mvn clean install
-
-# a succession of several commands where execution of a subsequent command depends on execution of a preceeding one - if there's no /projects/spring directory, `mvn clean install` won't be executed
-cd /projects/spring && mvn clean install
 ----
-
-It is possible to check for conditions, use for loops and other bash syntax:
+<1> Each command starts on a new line
 
 ----
-# copy build artifact only if build is a success
-mvn -f ${current.project.path} clean install
+cd /projects/spring; mvn clean install		<1>
+----
+<1> A succession of several commands where `;` stands for a new line
+----
+cd /projects/spring && mvn clean install	<1>
+----
+<1> A succession of several commands where execution of a subsequent command depends on the execution of the preceeding one. If the `/projects/spring` directory is absent, the `mvn clean install` command is not executed.
+
+
+To check for conditions, use loops and other `bash` syntax:
+
+----
+mvn -f ${current.project.path} clean install	<1>
   if [[ $? -eq 0 ]]; then
     cp /projects/kitchensink/target/*.war /home/user/wildfly-10.0.0.Beta2/standalone/deployments/ROOT.war
     echo "BUILD ARTIFACT SUCCESSFULLY DEPLOYED..."
@@ -155,54 +165,67 @@ else
     echo "FAILED TO DEPLOY NEW ARTIFACT DUE TO BUILD FAILURE..."
 fi
 ----
+<1> Copy build artifact only if build is successful.
 
 [id="macros"]
 == Macros
 
-Che provides macros that can be used within a command or preview URL to reference workspace objects. Macros are translated into real values only when used in the IDE! You cannot use macros in commands that are launched from server side.
+Che provides macros that can be used within a command or preview URL to reference workspace objects. Macros are translated into real values only when used in the IDE. 
+
+[NOTE]
+====
+You cannot use macros in commands that are launched from the server side.
+====
+
+The following table lists the macros and their descriptions.
 
 [width="100%",cols="50%,50%",options="header",]
 |===
 |Macro |Details
-|`${current.project.path}` |Absolute path to the project or module currently selected in the project explorer tree.
-|`${current.project.eldest.parent.path}` |Absolute path to a project root (for example, in Maven multi module project)
-|`${current.class.fqn}` |The fully qualified package.class name of the Java class currently active in the editor panel.
+|`${current.project.path}` |Absolute path to the project or module currently selected in the *Project Explorer* tree.
+|`${current.project.eldest.parent.path}` |Absolute path to a project root (for example, in the Maven-multi-module project).
+|`${current.class.fqn}` |The fully qualified `package.class` name of the Java class currently active in the editor panel.
 |`${current.project.relpath}` |The path to the currently selected project relative to `/projects`. Effectively removes the `/projects` path from any project reference.
-|`${editor.current.file.name}` |Currently selected file in editor
-|`${editor.current.file.basename}` |Currently selected file in editor without extension
-|`${editor.current.file.path}` |Absolute path to the selected file in editor
-|`${editor.current.file.relpath}` |Path relative to the `/projects` folder to the selected file in editor
-|`${editor.current.project.name}` |Project name of the file currently selected in editor
-|`${editor.current.project.type}` |Project type of the file currently selected in editor
-|`${explorer.current.file.name}` |Currently selected file in project tree
-|`${explorer.current.file.basename}` |Currently selected file in project tree without extension
-|`${explorer.current.file.path}` |Absolute path to the selected file in project tree
-|`${explorer.current.file.relpath}` |Path relative to the `/projects` folder in project tree
-|`${explorer.current.project.name}` |Project name of the file currently selected in explorer
-|`${java.main.class}` |Path to the main class
-|`${machine.dev.hostname}` |Current machine host name
-|`${project.java.classpath}` |Project classpath
-|`${project.java.output.dir}` |Path to Java project output dir
-|`${project.java.sourcepath}` |Path to Java project source dir
-|`${explorer.current.project.type}` |Project type of the file currently selected in explorer
-|`${server.<serverName>}` |Returns protocol, hostname and port of an internal server. `<port>` is defined by the same internal port of the internal service that you have exposed in your workspace recipe. +
+|`${editor.current.file.name}` |Currently selected file in the editor.
+|`${editor.current.file.basename}` |Currently selected file in the editor without extension.
+|`${editor.current.file.path}` |Absolute path to the selected file in the editor.
+|`${editor.current.file.relpath}` |Path relative to the `/projects` directory to the selected file in editor.
+|`${editor.current.project.name}` |Project name of the file currently selected in the editor.
+|`${editor.current.project.type}` |Project type of the file currently selected in the editor.
+|`${explorer.current.file.name}` |Currently selected file in the project tree.
+|`${explorer.current.file.basename}` |Currently selected file in the project tree without extension.
+|`${explorer.current.file.path}` |Absolute path to the selected file in the project tree.
+|`${explorer.current.file.relpath}` |Path relative to the `/projects` directory in the project tree.
+|`${explorer.current.project.name}` |Project name of the file currently selected in the explorer.
+|`${java.main.class}` |Path to the main class.
+|`${machine.dev.hostname}` |Current machine host name.
+|`${project.java.classpath}` |Project classpath.
+|`${project.java.output.dir}` |Path to the Java project output directory.
+|`${project.java.sourcepath}` |Path to the Java project source directory.
+|`${explorer.current.project.type}` |Project type of the file currently selected in the explorer.
+|`${server.<serverName>}` |Returns protocol, hostname, and port of an internal server. `<port>` is defined by the same internal port of the internal service that you have exposed in your workspace recipe. +
 |===
 
-* Returns the hostname and port of a service or application you launch inside of a machine. +
-* The hostname resolves to the hostname or the IP address of the workspace machine. This name varies depending upon where Docker is running and whether it is embedded within a VM. +
-* The port returns the Docker ephemeral port that you can give to your external clients to connect to your internal service. Docker uses ephemeral port mapping to expose a range of ports that your clients may use to connect to your internal service. This port mapping is dynamic. In case of OpenShift a route will be returned. +
-| `${workspace.name}` | Returns the name of the workspace +
-| `${workspace.namespace}` | Workspace namespace (defaults to `che` in single user Che)
+* Returns the hostname and port of a service or application you launch inside a machine.
+
+* The hostname resolves to the hostname or the IP address of the workspace machine. This name varies depending on where Docker is running and whether it is embedded within a VM.
+
+* The port returns the Docker ephemeral port that you can give to your external clients to connect to your internal service. Docker uses ephemeral port mapping to expose a range of ports that your clients may use to connect to your internal service. This port mapping is dynamic. In case of OpenShift, a route is returned.
+|===
+|Macro |Details
+|`${workspace.name}` |Returns the name of the workspace.
+| `${workspace.namespace}` |Workspace namespace (defaults to `che` in single-user Che).
+|===
 
 [id="environment-variables"]
-== Environment Variables
+== Environment variables
 
-The workspace machine has a set of system environment variables that have been exported. They are reachable from within your command scripts using `bash` syntax.
+The workspace machine has a set of system environment variables that have been exported. They are reachable from your command scripts using the `bash` syntax.
 
 ----
-# List all available machine system environment variables
-export
+export					<1>
 
-# Reference an environment variable, where $TOMCAT_HOME points to /home/user/tomcat8
-$TOMCAT_HOME/bin/catalina.sh run
+$TOMCAT_HOME/bin/catalina.sh run	<2>
 ----
+<1> List of all the available machine system environment variables.
+<2> Reference an environment variable, where `$TOMCAT_HOME` points to the `/home/user/tomcat8` directory.

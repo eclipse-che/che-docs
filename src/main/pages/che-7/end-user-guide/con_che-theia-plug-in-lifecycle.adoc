@@ -1,0 +1,35 @@
+[id="che-theia-plug-in-lifecycle_{context}"]
+= Che-Theia plug-in lifecycle
+
+When a user is starting a workspace, the following procedure is followed:
+
+. Che master checks for plug-ins to start from the workspace definition.
+. Plug-in metadata is retrieved, and the type of each plug-in is recognized.
+. A broker is selected according to the plug-in type.
+. The broker processes the installation and deployment of the plug-in (the installation process is different for each broker).
+
+NOTE: There are different types of plug-ins (link:link[TODO LINK]). A broker ensures all installation requirements are met for a plug-in to deploy correctly.
+
+.Che-Theia plug-in lifecycle
+image::extensibility/che-theia-plug-in-lifecycle.png[link="{imagesdir}/extensibility/che-theia-plug-in-lifecycle.png"]
+
+Before a Che workspace is launched, Che master starts containers for the workspace:
+
+. The Che-Theia plug-in broker extracts the plug-in (from the `.theia` file) to get the sidecars containers that the plug-in needs.
+. The broker sends the appropriate container informations to Che master.
+. The broker copies the Che-Theia plug-in to a volume to have it available for the Che-Theia Editor container.
+. Che workspace master is then starting all the containers of the workspace.
+. Che-Theia is started in its own container and checks the right folder to load the plug-ins.
+
+Che-Theia plug-in lifecycle:
+
+. When a user is opening a browser tab or window with Che-Theia, Che-Theia starts a new plug-in session (browser or remote *TODO: 'what is _remote_ in this context?'*). Every Che-Theia plug-in is notified that a new session has been started (the `start()` function of the plug-in triggered).
+. A Che-Theia plug-in session is running and interacting with the Che-Theia backend and frontend.
+. When the user is closing the browser tab or there is a timeout, every plug-in is notified (the `stop()` function of the plug-in triggered).
+
+
+// .Additional resources
+// 
+// * A bulleted list of links to other material closely related to the contents of the concept module.
+// * For more details on writing concept modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+// * Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].

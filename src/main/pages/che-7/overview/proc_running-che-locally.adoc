@@ -1,0 +1,142 @@
+[id="running-che-locally_{context}"]
+= Running Che locally
+
+This article offers instructions for deploying and running Eclipse Che locally, on a personal workstation.
+
+[discrete]
+== Prerequisites
+
+To run and manage Che you need:
+
+* A Kubernetes or OpenShift cluster to deploy Che on
+* The link:https://github.com/che-incubator/chectl[`chectl`] command-line tool for managing a Che server and its development workspaces.
+
+Eclipse Che is available in two modes:
+
+* *Single-user*: non-authenticated Che, lighter and suited for personal desktop environments
+* *Multi-user*: authenticted Che, suited for the cloud, for organizations and developer teams
+
+See link:single-multi-user.html[Single and Multi-User Che] to learn more.
+
+Instructions in this article focus on deploying and running Che in *single-user* mode.
+
+++++
+<script id="asciicast-216201" src="https://asciinema.org/a/216201.js" async></script>
+++++
+
+== Setting up a local Kubernetes or OpenShift cluster
+
+Set up a single-node Kubernetes or OpenShift cluster on your machine using the Minikube or Minishift tools. Alternatively, on macOS or Windows, use the Docker Desktop application.
+
+=== Using Minikube to set up Kubernetes
+
+. Install the latest version of link:https://kubernetes.io/docs/tasks/tools/install-minikube/[the `kubectl` tool and Minikube].
+
+. Start Minikube (it is important to *allocate at least 4 GB or RAM*):
++
+----
+$ minikube start --memory=4096
+----
+
+
+=== Using Minishift to set up OpenShift
+
+. Install the latest version of link:https://docs.okd.io/latest/minishift/getting-started/installing.html[Minishift] and link:https://docs.okd.io/latest/minishift/command-ref/minishift_oc-env.html[set the path of the `oc` binary].
+
+. Start Minishift (it is important to *allocate at least 4 GB of RAM*):
++
+----
+$ minishift start --memory=4096
+----
+
+=== Using Docker Desktop for Mac or Windows to set up Kubernetes
+
+See link:https://che.eclipse.org/running-eclipse-che-on-kubernetes-using-docker-desktop-for-mac-5d972ed511e1[Running Eclipse Che on Kubernetes using Docker Desktop on macOS or Windows].
+
+
+== Installing the chectl management tool
+
+Install the `chectl` command-line tool to be able to manage the Che Server application and development workspaces.
+
+=== Installing chectl on Windows
+
+. Download link:https://github.com/che-incubator/chectl/releases/download/20190314232124/chectl-win.exe[chectl-win.exe].
+
+. Add the folder of the downloaded binary to your `PATH` environment variable.
+
+=== Installing chectl on macOS
+
+Run the following commands in the terminal:
+
+----
+$ RELEASE="20190314232124/chectl-macos" && \
+URL=https://github.com/che-incubator/chectl/releases/download/${RELEASE} && \
+sudo curl -sSL ${URL} -o /usr/local/bin/chectl && \
+sudo chmod +x /usr/local/bin/chectl 
+----
+
+=== Installing chectl on Linux
+
+Run the following commands in the terminal:
+
+----
+$ RELEASE="20190314232124/chectl-linux" && \
+URL=https://github.com/che-incubator/chectl/releases/download/${RELEASE} && \
+sudo curl -sSL ${URL} -o /usr/local/bin/chectl && \
+sudo chmod +x /usr/local/bin/chectl 
+----
+
+
+== Deploying Che using chectl
+
+Start Che Server using the `chectl` tool.
+
+=== Deploying single-user Che on Minikube
+
+----
+$ chectl server:start
+----
+
+=== Deploying single-user Che on Minishift
+
+----
+$ chectl server:start --platform minishift
+----
+
+=== Deploying multi-user Che on Minikube
+
+----
+$ chectl server:start --multiuser
+----
+
+=== Che deployment options using chectl
+
+[options="nowrap"]
+----
+$ chectl server:start --help
+Start Eclipse Che Server
+
+USAGE
+  $ chectl server:start
+
+OPTIONS
+  -a, --installer=installer            [default: helm] Installer type. Valid values are "helm" and "operator"
+  -b, --domain=domain                  Domain of the Kubernetes/OpenShift cluster (e.g. starter-us-east-2.openshiftapps.com or <local-ip>.nip.io)
+  -d, --debug                          Starts chectl in debug mode
+  -h, --help                           show CLI help
+  -i, --cheimage=cheimage              [default: eclipse/che-server:nightly] Che server container image
+  -m, --multiuser                      Starts che in multi-user mode
+  -n, --chenamespace=chenamespace      [default: kube-che] Kubernetes namespace where Che resources will be deployed
+  -o, --cheboottimeout=cheboottimeout  (required) [default: 40000] Che server bootstrap timeout (in milliseconds)
+  -p, --platform=platform              [default: minikube] Type of Kubernetes platform. Valid values are "minikube", "minishift", "docker4mac", "ocp", "oso".
+  -s, --tls                            Enable TLS encryption and multi-user mode
+  -t, --templates=templates            [default: /snapshot/chectl/templates] Path to the templates folder
+----
+
+
+[discrete]
+== Next steps after deploying and starting Che
+
+* link:end-user-tasks.html#creating-a-workspace-from-code-sample_end-user-tasks[Create a workspace from code sample], or
+* link:end-user-tasks.html#creating-a-workspace-by-importing-source-code-of-your-project_end-user-tasks[Create a workspace by importing the source code of your project], then
+* link:end-user-tasks.html#editing-the-commands-after-importing-a-project[Edit workspace commands] to build and run your project

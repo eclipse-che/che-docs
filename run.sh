@@ -16,5 +16,5 @@ else
   echo "Building and serving the docs for local preview. To build for production"
   echo "(publishing on eclipse.org/che/docs/), run the script with the '-prod' option:"
   echo "$0 -prod"
-  docker run --rm -ti -p 35729:35729 -p 4000:4000 -v $(pwd)/src/main:/che-docs:Z eclipse/che-docs sh -c "cd /che-docs; jekyll serve --incremental --livereload -H 0.0.0.0"
+  docker run --rm -ti -p 35729:35729 -p 4000:4000 -v $(pwd)/src/main:/che-docs:Z eclipse/che-docs sh -c "cd /che-docs; jekyll build; jekyll serve --incremental --livereload -H 0.0.0.0"
 fi

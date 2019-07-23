@@ -1,0 +1,39 @@
+---
+title: Tracing Che
+keywords:
+tags: []
+sidebar: che_7_docs
+permalink: che-7/tracing-che.html
+folder: che-7/administration-guide
+summary:
+---
+
+:parent-context-of-tracing-che: {context}
+
+[id='tracing-che_{context}']
+= Tracing Che
+
+:context: tracing-che
+
+Tracing helps gather timing data to troubleshoot latency problems in microservice architectures and helps to understand a complete transaction or workflow as it propagates through a distributed system. Every transaction may reflect performance anomalies in an early phase when new services are being introduced by independent teams.
+
+Tracing the Che application may help analyse the execution of various operations, such as workspace creations, workspace startup, breaking down the duration of sub-operations executions, helping finding bottlenecks and improve the overall state of the platform.
+
+Tracers live in applications. They record timing and metadata about operations that take place. They often instrument libraries, so that their use is transparent to users. For example, an instrumented web server records when it received a request and when it sent a response. The trace data collected is called a *span*. A span has a context that contains information such as trace and span identifiers and other kinds of data that can be propagated down the line.
+
+== Tracing API
+
+Che utilizes Opentracing API - a vendor-neutral framework for instrumentation. This means that if a developer wants to try a different tracing backend, then instead of repeating the whole instrumentation process for the new distributed tracing system, the developer can simply change the configuration of the tracer backend.
+
+== Tracing backend
+
+By default, Che uses Jaeger as the tracing backend. Jaeger was inspired by Dapper and OpenZipkin, and it is a distributed tracing system released as open source by Uber Technologies. Jaeger extends a more complex architecture for a larger scale of requests and performance.
+
+
+include::proc_enabling-che-metrics-collections.adoc[leveloffset=+1]
+
+include::proc_viewing-che-traces-in-jaeger-ui.adoc[leveloffset=+1]
+
+include::ref_che-tracing-codebase-overview-and-extension-guide.adoc[leveloffset=+1]
+
+:context: {parent-context-of-tracing-che}

@@ -1,0 +1,345 @@
+[id="che-extension-points_{context}"]
+= Che extension points
+
+In addition to using API methods and events, each plug-in can bring new components into Che-Theia. These components include visual, such as panels, menus, and others. Other types of components are language servers, debuggers, and others.
+
+The mechanism for adding additional components into Che-Theia is called extension points. An extension point is a section in a Che-Theia plug-in configuration into which meta-information about a new component is added. This chapter contains the full list of available extension points in Che-Theia.
+
+
+[id="syntax-highlighting-grammars_{context}"]
+== Syntax-highlighting grammars
+
+This section provides syntax highlight rules for specified file types. To add syntax highlighting into Che-Theia using a plug-in, add a record that describes the new grammar into the `contributes.grammars` array of the plug-in's `package.json` file.
+
+.Example of a grammar record
+[source,json]
+----
+"grammars": [
+  {
+    "language": "lang",                      <1>
+    "scopeName": "text.ext",                 <2>
+    "path": "./path/to/lang.tmLanguage.json" <3>
+  }
+]
+----
+<1> Specifies the language to which this syntax highlighting should be applied.
+<2> TextMate scope name and grammar.
+<3> Syntax-highlighting rules.
+
+See link:https://macromates.com/manual/en/language_grammars[TextMate documentation] for more details about syntax-highlighting rules. A full example: link:https://github.com/eclipse/che-theia-samples/tree/master/samples/xml-language-server-plugin[xml-language-server-plugin].
+
+
+[id="preferences-configuration_{context}"]
+== Preferences (configuration)
+
+A plug-in can introduce new *preferences*. These are defined in the `"configuration"` sub-object of the `"contribution"` object in the `package.json` file. A preference is contributed as a JSON schema that describes what is actually contributed and allows users to get support when editing settings in the *Preferences Editor*.
+
+.Example of configuration contribution for a plug-in preference that defines a logging level
+[source,json]
+----
+{
+   "contributes": {
+       "configuration": {
+           "type": "object",
+           "title": "A plug-in configuration",
+           "properties": {
+               "myPlugin.logLevel": {
+                   "type": "string",
+                   "default": "error",
+                   "description": "Plug-in logging level"
+               }
+           }
+       }
+   }
+}
+----
+
+There are three scopes of preferences defined in Che-Theia:
+
+* The *default* scope consists of values defined in the `"configuration"` sub-section in `package.json`. These are default values of the preferences contributed by the plug-in.
+
+* The *global* or *application-wide* scope values can be set in *User Preferences*. They override the default ones.
+
+* The *workspace* scope values, which are applied only when a Che-Theia workspace is opened, override default and global values. They can be set in *Workspace Preferences*.
+
+A user can obtain preferences using `theia.workspace.getConfiguration(section)`. If a `section` is defined, only that subset of preferences is returned.
+
+.Example of preferences definition
+[source,javascript]
+----
+// all preferences contributed by a plug-in
+theia.workspace.getConfiguration('myPlugin'); // { "logLevel": "error" }
+
+// or
+theia.workspace.getConfiguration().get('myPlugin'); // { "logLevel": "error" }
+
+// or, `logLevel` value:
+theia.workspace.getConfiguration().get('myPlugin').get('logLevel'); // "error"
+----
+
+The plug-in API allows to update preferences as well:
+
+[source,javascript]
+----
+const pluginPrefs = theia.workspace.getConfiguration('myPlugin');
+pluginPrefs.update('logLevel', 'debug', theia.ConfigurationTarget.User);
+----
+
+To get all information about a configuration setting, use the `inspect` method. The `inspect` method returns an object that consists of `default`, `global`, and `workspace` (if one exists) values of a preference key:
+
+[source,javascript]
+----
+pluginPrefs.inspect('logLevel');
+// {
+//     "key": "myPlugin.logLevel",
+//     "defaultValue": "error",
+//     "globalValue": "debug"
+// }
+----
+
+
+[id="view-containers_{context}"]
+== View containers
+
+A *view container* is a container that holds xref:views_che-extensibility-reference[views]. In Che-Theia, views are usually in the form of panels. All view containers are divided in three sections: *left*, *bottom*, and *right*. The position of a view container depends on the section to which it belongs. This defines the default position of a view container, which can be changed at runtime by dragging and dropping.
+
+To add a view container into Che-Theia, add the appropriate record into the `viewsContainers` object located under the `contributes` object in the plug-in `package.json` file:
+
+.Example of a view-container definition
+[source,json]
+----
+"contributes": {
+   "viewsContainers": {
+     "bottom": [
+       {
+         "id": "view-container-id",                   <1>
+         "title": "The title"                         <2>
+       },
+       {
+         "id": "another-view-container-id",
+         "title": "Some title"
+       }
+     ],
+     "right": [
+       {
+         "id": "view-container-on-the-right-side-id",
+         "title": "Panel on the right"
+       }
+     ]
+   }
+}
+----
+<1> The identifier of the view container. Used to attach to this view container.
+<2> Text displayed on the panel tab.
+
+Note that a view container is only useful with views in it. See a full example at link:https://github.com/eclipse/che-theia-samples/tree/master/samples/tree-view-sample-plugin[tree-view-sample-plugin].
+
+
+[id="views_{context}"]
+== Views
+
+A *view* is a visual component that should be placed into a xref:view-containers_che-extensibility-reference[view container].
+
+To add a view into Che-Theia, add an appropriate record into the `contributes.views` object of a plug-in `package.json` file. Each view is defined by an object with two name:value pairs. Each view description should be included in an array within the `views` object, and the array name should be the same as the `view-container-id` value:
+
+.Example of a view definition
+[source,json]
+----
+"viewsContainers": {
+    "left": [
+        {
+          "id": "view-container-id",    <1>
+          "title": "The title"          <2>
+        }
+    ],
+},
+"views": {
+    "view-container-id": [
+        {
+          "id": "tree-at-left-side",
+          "name": "A list"
+        },
+        {
+          "id": "widget-at-left-side",
+          "name": "A widget"
+        }
+    ]
+}
+----
+<1> view identifier
+<2> name of the view, which will be displayed as the widget title inside the view container
+
+Currently, only tree view is supported as a view widget.
+
+For more details, see a full example at https://github.com/eclipse/che-theia-samples/tree/master/samples/tree-view-sample-plugin[tree-view-sample-plugin].
+
+
+[id="menus_{context}"]
+== Menus
+
+Plug-ins can add new *menu items* into Che-Theia through the `contributes.menus` object in a plug-in `package.json` file. The `menus` object consists of menu names and menu items:
+
+.Example of a menu definition
+[source,json]
+----
+"menus": {
+    "editor/context": [
+        {
+            "command": "my.command.id",                                        <1>
+            "group": "custom.group",                                           <2>
+            "when": "view == widget-at-left-side && config.namespace.property" <3>
+        },
+        {
+            "command": "core.about"
+        }
+    ],
+    "explorer/context": [
+        {
+            "command": "other.command.id",
+            "group": "some.group"
+        }
+    ]
+}
+----
+<1> The identifier of the Che-Theia command that is executed when the menu item is used. The handler receives the selected resource as the first argument.
+<2> (optional) The name of the group in the menu to which the command is added. When omitted, the menu item is added to the common group in the specified menu.
+<3> (optional) The condition that defines when this menu item is visible. When omitted, the menu item is always visible. The conditions are the same as in the link:https://code.visualstudio.com/docs/getstarted/keybindings#_when-clause-contexts[VS Code when clause].
+
+Menus that support extending:
+
+* `explorer/context`
+* `editor/context`
+* `editor/title`
+* `debug/callstack/context`
+* `view/item/context`
+
+A plug-in example that adds menu items: link:https://github.com/eclipse/che-theia-samples/tree/master/samples/menus-contribution-plugin[menus-contribution-plugin].
+
+
+[id="key-bindings_{context}"]
+== Key bindings
+
+Plug-ins can add new *keyboard shortcuts* or redefine existing ones. To describe a new shortcut, add a definition in the `contributes.keybindings` object of a plug-in `package.json` file. Each key bonding is described by three values:
+
+.Example of a keyboard-shortcut definition
+[source,json]
+----
+"keybindings": [
+     {
+         "key": "ctrl+b",                 <1>
+         "command": "ts.compile",         <2>
+         "when": "resourceExtname == .ts" <3>
+     },
+     {
+         "key": "ctrl+f alt+b",
+         "command": "some.command"
+     }
+]
+----
+<1> Defines the key combination for this shortcut. link:https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-rules[Rules for defining key combinations] are the same as for VS Code.
+<2> The identifier of the command, which should be invoked when the shortcut is pressed.
+<3> (optional) The condition that defines when this shortcut is available. When omitted, the shortcut is always available. The condition format is the same as in the link:https://code.visualstudio.com/docs/getstarted/keybindings#_when-clause-contexts[VS Code when clause].
+
+Note that `ctrl+f alt+b` defines a _chord_: the command is invoked after pressing both combinations one after the other.
+
+
+[id="debuggers_{context}"]
+== Debuggers
+
+Plug-ins can add new *debuggers*. To do so, you need to implement the link:https://microsoft.github.io/debug-adapter-protocol/[Debagger Adapter Protocol] (DAP) for a specific debugger. The debugger then can registered in the `contributes.debuggers` debuggers of a plug-in `package.json` file.
+
+For instruction on how to add a debugger, see link:link[TODO LINK].
+
+See the link:https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/[list of debuggers] from the official DAP site for reference and examples.
+
+
+[id="languages-language-servers_{context}"]
+== Languages (language servers)
+
+NOTE: This is an experimental approach, which may change in the future.
+
+To add a language server into Che-Theia using a plug-in:
+
+. Describe the server in the `contributes.languages` array in the plug-in's `package.json` file:
++
+.Example of a language-server definition
+[source,json]
+----
+"languages": [
+    {
+      "id": "lang",                                    <1>
+      "aliases": [                                     <2>
+        "Lang",
+        "LANG"
+      ],
+      "extensions": [                                  <3>
+        ".ext"
+      ],
+      "firstLine": "^#!/.*interpreter",                <4>
+      "configuration": "./language-configuration.json" <5>
+    }
+]
+----
+<1> The ID of the language for which the language server is created.
+<2> Other names for the language.
+<3> File-name extensions for which this language server is added.
+<4> Hashbang (first line) for which this language server is added.
+<5> Path to a JSON file with the language configuration (TODO: our section or just link to link:https://code.visualstudio.com/api/language-extensions/language-configuration-guide[VS Code docs]?).
+
+. Register the language server using the following API call:
++
+[source,typescript]
+----
+theia.languageServer.registerLanguageServerProvider(xLanguageServerInfo);
+----
++
+Where `xLanguageServerInfo` is an object of `theia.LanguageServerInfo` and has to contain the following fields:
++
+|===
+| `id` | language ID; should be the same as `id` in the configuration JSON file
+| `name` | human-readable name of the language server
+| `globPatterns` | file pattern that specifies files for which this language server is added
+| `command` | the language server start executable
+| `args` | arguments for the language server start executable
+|===
++
+After the command above is invoked, the language server should start.
+
+See a full example at https://github.com/eclipse/che-theia-samples/tree/master/samples/xml-language-server-plugin[xml-language-server-plugin].
+
+
+[id="web-view-api_{context}"]
+== Web view API
+
+A *web view API* is not a contribution point by definition, but it behaves like one and allows to bring a many new features to Che-Theia. Web view API plug-ins can add custom UI, graphical data, or anything what can be displayed in a web page. A web view API provides an HTML `iframe` to which a plug-in has access.
+
+To create an instance of web view:
+
+. use the `createWebviewPanel` function:
++
+[source,typescript]
+----
+const webViewPanel = theia.window.createWebviewPanel('webViewId', 'Title',  theia.ViewColumn.One);
+----
+
+. Add content:
++
+[source,typescript]
+----
+webViewPanel.webview.html ='<html><body><h1>Hello from web view</h1></body></html>';
+----
+
+[NOTE]
+====
+Web view content is destroyed when hidden. To restore state, register a serializer, or set the `retainContextWhenHidden` option for the web view. Even with this option set, hiding a web view pauses all scripts, and the web view will not be process messages from the plug-in.
+
+The current state of a web view can be read from the web view panel object.
+
+It is possible to load resources and scripts into a web view and communicate with a plug-in by posting messages. See a full sample plug-in at link:https://github.com/eclipse/che-theia-samples/tree/master/samples/webview-sample-plugin[webview-sample-plugin] for more details.
+====
+
+// .Additional resources
+// 
+// * A bulleted list of links to other material closely related to the contents of the concept module.
+// * For more details on writing concept modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+// * Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].

@@ -1,0 +1,132 @@
+[id="creating-a-workspace-from-code-sample_{context}"]
+= Creating a workspace from code sample
+
+This section describes how to select a workspace, then load a stack and its accompanying sample project.
+
+It will also explain how to customize a workspace using the *Dashboard*.
+
+[NOTE]
+====
+Every stack includes a sample codebase, which is defined by the stack's devfile. For more information on devfiles, see xref:configuring-a-che-workspace-using-a-devfile_{context}[Configuring a Che workspace using a devfile].
+====
+
+[discrete]
+== Prerequisites
+
+* You need an OKD (link:https://www.okd.io/minishift/[Minishift]), OCP, or OSD cluster, if using Che on Openshift.
+
+* Or, you need a Kubernetes cluster such as link:https://github.com/kubernetes/minikube#installation[Minikube] to use Che on Kubernetes.
+
+* To install on Minishift or Minikube, see xref:che-quick-starts#deploying-che-using-chectl[Deploying Che using chectl].
+
+[discrete]
+== Procedure
+
+=== Accessing the Dashboard
+
+The *Dashboard* is accessible on your cluster from a URL like http://`che-instance`.`your.IP.address.here`.nip.io/dashboard/.
+
+==== Minishift
+
+See xref:che-quick-starts#deploying-che-using-chectl[Deploying Che using chectl].
+
+[NOTE]
+====
+For versions of link:https://github.com/minishift/minishift/releases[Minishift up to 1.34], you need to apply a small change:
+
+```
+oc set env dc/che CHE_WORKSPACE_PLUGIN__REGISTRY__URL=https://che-plugin-registry.openshift.io/v3
+```
+====
+
+. Next, log into your console at https://`your.IP.address.here`:8443/console/.
+
+. From there, select the mini-che project:
+
+* https://`your.IP.address.here`:8443/console/project/mini-che/overview
+
+. Then click through to the mini-che route link, which will load the *Dashboard* by default and prompt you to create a workspace.
+
+* http://che-che.`your.IP.address.here`.nip.io/
+
+==== OCP and OSD
+
+If using OCP or OSD, talk to your administrator to obtain the URL for the che instance.
+
+=== Selecting a stack
+
+. When the *Dashboard* opens, click the link in the left navigation panel for *Workspaces*, if it's not already open.
+
+. Choose a stack from the list.
+
+. Name your workspace, if you don't like the default-generated name.
+
+image::workspaces/select-workpace.png[Select a stack from the list]
+
+=== Viewing the compute resource limits
+
+The memory needed by the stack is pre-calculated and displayed on the stack description line. Changing the memory requirements is only possible xref:#configure-devfile[from the devfile].
+
+=== Start the workspace
+
+There are two ways to start the workspace:
+
+. Simple start: just push the *Create & Open* button at the top or bottom of the form:
++
+image::workspaces/create-and-open.png[Create and Open]
+
+. Advanced start: from the top of the page, click the down arrow next to the *Create & Open* button, then select the menu item below to edit your workspace's configuration.
++
+This will allow you to make further configuration before starting the workspace.
++
+image::workspaces/create-and-edit.png[Create and Edit]
+
+=== Change the workspace configuration
+
+If you chose the second option, you'll be able to configure the workspace's YAML, among other tasks:
+
+. From the *Overview* tab, quickly rename a workspace, if you forgot to do that when creating it. Or, also toggle ephemeral mode, or export your workspace config to a file or private cloud. This is also one of serveral places from which you can delete a workspace.
++
+image::workspaces/workspace-config-overview.png[Worksapce configuration overview]
+
+// TODO https://github.com/eclipse/che/issues/13665 fix screenshot
+. From the *Projects* tab, you can add more projects to an existing workspace:
++
+image::workspaces/workspace-config-projects.png[Add projects to workspace]
+
+. From the *Plugins* tab, enable or disable workspace plugins. For example, start with a generic Java-based stack, then later add support for Node or Python.
+
+. From the *Editors* tab, enable or disable workspace editors. For example, to switch to the Che 6 editor, select the GWT IDE. The Che 7 editor is based on Theia.
+
+[id="configure-devfile"]
+[start=5]
+. From the *Devfile* tab, edit the workspace's YAML configuration. This is also where you can load a custom container, if you previously built one and pushed it to some container registry.  You can also add commands and sample projects, if you prefer to enter code than to click buttons.
++
+image::workspaces/workspace-config-yaml.png[YAML configuration]
+
+For example, to add a project into the workspace, add or edit the following section:
+
+```
+projects:
+  - name: che
+    source:
+      type: git
+      location: 'https://github.com/eclipse/che.git'
+```
+
+=== Running a workspace
+
+There are multiple ways to run a workspace:
+
+* From the *Run*  button in the top right corner of the Workspace configuration page, which will start the workspace but will NOT switch to it
+* From the *Open* button in the top right corner of the Workspace configuration page, which will both start the workspace and launch it in your browser
+* From the list of *Recent Workspaces* on the left navigation panel, right-click a non-running workspace to start it, or right-click a running workspace to stop it.
++
+image::workspaces/run-from-recent-workspaces.png[Run from Recent Workspaces]
+
+[discrete]
+== Additional resources
+
+* xref:che-quick-starts#deploying-che-using-chectl[Deploying Che using chectl]
+* link:https://docs.okd.io/latest/minishift/getting-started/preparing-to-install.html[Minishift installation]
+* link:https://github.com/kubernetes/minikube#installation[Minikube installation]

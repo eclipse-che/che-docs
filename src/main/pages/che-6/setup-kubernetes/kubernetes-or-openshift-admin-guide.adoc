@@ -99,7 +99,7 @@ In the command above, `eclipse-che` is the Che namespace.
 [id="how-the-che-server-uses-PVCs-and-PVs-for-storage"]
 == How the Che server uses PVCs and PVs for storage
 
-Che server, Keycloak and PostgreSQL pods, and workspace pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode]. When the deployment YAML files run, they define the Che PVCs. You can configure link:#che-workspaces-storage[workspace PVC] access mode and claim size with Che deployment environment variables.
+Che server, Keycloak and PostgreSQL pods, and workspace pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode]. When the deployment YAML files run, they define the Che PVCs. You can configure link:#storage-strategies-for-che-workspaces[workspace PVC] access mode and claim size with Che deployment environment variables.
 
 [id="storage-requirements-for-che-infrastructure"]
 === Storage requirements for Che infrastructure
@@ -154,7 +154,7 @@ If applying the `che-server-template.yaml` configuration, pass `-p CHE_INFRA_KUB
 [id="how-the-common-pvc-strategy-works"]
 ==== How the common PVC strategy works
 
-All workspaces use the same PVC to store data declared in their volumes (projects and workspace logs by default and whatever additional link:volumes.html[volumes] that a user can define.)
+All workspaces (within one {k8s-namespace}) use the same PVC to store data declared in their volumes (projects and workspace logs by default and whatever additional link:volumes.html[volumes] that a user can define.)
 
 User-defined PVCs are ignored and volumes that reference PVCs are replaced with volume that references common PVC.
 The corresponding containers volume mounts are relinked to common volume and subpaths are prefixed with `'{workspaceId}/{originalPVCName}'`.
@@ -176,8 +176,8 @@ Volumes can be anything that a user defines as volumes for workspace machines.  
 
 When a workspace is deleted, a corresponding subdirectory (`${ws-id}`) is deleted in the PV directory.
 
-[id="enabling-a-common-strategy"]
-==== Enabling a common strategy
+[id="enabling-the-common-strategy"]
+==== Enabling the common strategy
 
 If you have already deployed Che with another strategy, set the `CHE_INFRA_KUBERNETES_PVC_STRATEGY` variable to `common` in `dc/che`.
 Note that existing workspaces data won't be migrated and they will use common PVC without cleaning up existing PVCs.
@@ -194,22 +194,21 @@ ifeval::[{admin-context} == "Kubernetes"]
 endif::[]
 
 [id="restrictions-on-using-common-pvc-strategy"]
-==== Restrictions on using common PVC strategy
+==== Restrictions on using the common PVC strategy
 
-When a common strategy is used and a workspace PVC access mode is ReadWriteOnce (RWO), only one {admin-context} node can simultaneously use PVC.  If there are several nodes, you can use a common strategy, but the workspace PVC access mode is ReadWriteMany (RWM). Multiple nodes can use this PVC simultaneously.
+When the `common` strategy is used and a workspace PVC access mode is ReadWriteOnce (RWO), only one {admin-context} node can simultaneously use the PVC.  If there are several nodes, you can use the `common` strategy, but the workspace PVC access mode is ReadWriteMany (RWM). Multiple nodes can use this PVC simultaneously.
 
 To change the access mode for workspace PVCs, pass the `CHE_INFRA_KUBERNETES_PVC_ACCESS_MODE=ReadWriteMany` environment variable to Che deployment either when initially deploying Che or through the Che deployment update.
 
-Another restriction is that only pods in the same namespace can use the same PVC.  The `CHE_INFRA_KUBERNETES_PROJECT` environment variable should not be empty.  It should be either the Che server namespace where objects can be created with the Che service account (SA) or a dedicated namespace where a token or a username and password need to be used.
+Another restriction is that only pods in the same namespace can use the same PVC.  The `CHE_INFRA_KUBERNETES_PROJECT` environment variable should not be empty.  It should be either the Che server namespace where objects can be created with the Che service account (SA) or a dedicated namespace where a token or a user name and password need to be used.
 
 [id="per-workspace-pvc-strategy"]
 === Per workspace PVC strategy
 
 [id="how-the-per-workspace-pvc-strategy-works"]
-==== How the per workspace PVC strategy works
+==== How the per-workspace PVC strategy works
 
-It works similarly to the common PVC strategy.
-The only difference is that all workspace volumes (but not all workspaces) use the same PVC to store data (projects and workspace logs by default and any additional link:volumes.html[volumes] that a user can define).
+The `per-workspace` strategy works similarly to the `common` PVC strategy. The only difference is that all workspace volumes (but not all workspaces) use the same PVC to store data (projects and workspace logs by default and any additional link:volumes.html[volumes] that a user can define).
 
 [id="enabling-a-per-workspace-strategy"]
 ==== Enabling a per-workspace strategy
@@ -223,7 +222,7 @@ If applying the `che-server-template.yaml` configuration, pass `-p CHE_INFRA_KUB
 [id="updating-your-che-deployment"]
 == Updating your Che deployment
 
-To update Che deployment:
+To update a Che deployment:
 
 . Change the image tag:
 +
@@ -255,7 +254,7 @@ You can get the list of available versions at https://github.com/eclipse/che/tag
 +
 To change the pull policy, do one of the following:
 
-* Add  `--set cheImagePullPolicy=IfNotPresent` to the link:openshift-multi-user[Che deployment].
+* Add  `--set cheImagePullPolicy=IfNotPresent` to the link:openshift-multi-user.html[Che deployment].
 * Manually edit `dc/che` after deployment.
 
 The default pull policy is `Always`. The default tag is `nightly`. This tag sets the image pull policy to `Always` and triggers a new deployment with a newer image, if available.
@@ -335,6 +334,26 @@ To increase the grace termination period, use the following environment variable
 ====
 If the `terminationGracePeriodSeconds` variable is explicitly set in the {admin-context} recipe, the `pass:[CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC]` environment variable does not override the recipe.
 ====
+
+
+[id="kubernetes-or-openshift-admin-guide-che-workspace-stop-on-pods-removing"]
+== Auto-stopping a workspace when its pods are removed
+
+Che Server includes a job that automatically stops workspace runtimes if their pods have been terminated. Pods are terminated when, for example, users remove them from the {admin-context} console, administrators terminate them to prevent misuse, or an infrastructure node crashes.
+
+The job is disabled by default to avoid problems in configurations where Che Server cannot interact with the Kubernetes API without user intervention.
+
+The job cannot function with the following Che Server configuration:
+
+* Che Server communicates with the Kubernetes API using a token from the OAuth provider.
+
+The job can function with the following Che Server configurations:
+
+* Workspaces objects are created in the same namespace where Che Server is located.
+* The *cluster-admin* service account token is mounted to the Che Server pod.
+
+To enable the job, set the `pass:[CHE_INFRA_KUBERNETES_RUNTIMES__CONSISTENCY__CHECK__PERIOD__MIN]` environment variable to contain a value greater than `0`. The value is the time period in minutes between checks for runtimes without pods.
+
 
 [id="updating-che-without-stopping-active-workspaces"]
 == Updating Che without stopping active workspaces
@@ -434,3 +453,20 @@ To delete Keycloak and PostgreSQL PVCs:
 $ {ctl-command} delete pvc -l=app=keycloak
 $ {ctl-command} delete pvc -l=app=postgres
 ----
+
+== Monitoring Che Master Server
+
+Master server emits metrics in Prometheus format by default on port `8087` of the Che server host
+(this can be customized by the `che.metrics.port`
+link:properties.html#properties-and-environment-variables[configuration property]).
+
+You can configure your own Prometheus deployment to scrape the metrics (as per convention, the
+metrics are published on the `<CHE_HOST>:8087/metrics` endpoint).
+
+The Che's Helm chart can optionally install Prometheus and Grafana servers preconfigured to collect
+the metrics of the Che server. When you set the `global.metricsEnabled` value to `true` when
+installing Che's Helm chart, Prometheus and Grafana servers are automatically deployed.
+The servers are accessible on `prometheus-<CHE_NAMESPACE>.domain` or `grafana-<CHE_NAMESPACE>.domain`
+domains respectively. The Grafana server is preconfigured with a sample dashboard showing the memory
+usage of the Che server. You can log in to the Grafana server using the predefined username `admin`
+with the default password `admin`.
