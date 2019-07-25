@@ -1,0 +1,97 @@
+// This assembly is included in the following assemblies:
+//
+// user-authentication
+
+:parent-context-of-authentication-on-the-che-server-using-openid: {context}
+
+[id='authentication-on-the-che-server-using-openid_{context}']
+= Authentication on the Che server using OpenID
+
+// The `context` attribute enables module reuse. Every module's ID
+// includes {context}, which ensures that the module has a unique ID even if
+// it is reused multiple times in a guide.
+:context: authentication-on-the-che-server-using-openid
+
+// The following block is rendered only if the `internal` variable is set.
+// The table shows various metadata useful when editing this file.
+ifdef::internal[]
+[cols="1,4"]
+|===
+| Included in |
+LIST OF ASSEMBLIES
+| User story |
+USER STORY
+| Jira |
+JIRA LINK
+| BZ |
+BUGZILLA LINK
+| SMEs |
+SME NAMES
+| SME Ack |
+YES/NO
+| Peer Ack |
+YES/NO
+|===
+endif::[]
+
+OpenId authentication on the Che server implies the presence of an external OpenID Connect provider and has the following main steps:
+
+* Authenticate the user through the JWT token that is retrieved from the HTTP request or redirect the user to log in page on Keycloak, in case of a missing or invalid token.
+
+* Authentication tokens should be send in an Authorization header. Also, in limited cases when it is not possible to use the Authorization header, the token can be sent in the token query parameter. Example: OAuth authentication initialization.
+
+* The Composition of an internal `subject` object that represents the current user inside the Che server code.
+
+*Note*: Currently,  the only supported and tested OpenID provider is Keycloak.
+
+[id='procedure-{context}']
+== Procedure
+
+To authenticate the Che server using the OpenID authentication:
+
+. Request the OpenID settings service where clients can find all the necessary URLs and properties of the OpenId provider such as jwks.endpoint, token.endpoint, logout.endpoint, realm.name, client_id returned in the JSON format.
+
+. The service URL is `<che.host>:<che.port>/api/keycloak/settings` and it is only available in the Che multi-user mode. The presence of the service in the URL, confirms that the authentication is enabled in the current deployment.
++
+Example output:
++
+```
+{
+    "che.keycloak.token.endpoint": "http://172.19.20.9:5050/auth/realms/che/protocol/openid-connect/token",
+    "che.keycloak.profile.endpoint": "http://172.19.20.9:5050/auth/realms/che/account",
+    "che.keycloak.client_id": "che-public",
+    "che.keycloak.auth_server_url": "http://172.19.20.9:5050/auth",
+    "che.keycloak.password.endpoint": "http://172.19.20.9:5050/auth/realms/che/account/password",
+    "che.keycloak.logout.endpoint": "http://172.19.20.9:5050/auth/realms/che/protocol/openid-connect/logout",
+    "che.keycloak.realm": "che"
+  }
+```
++
+Also, this service allows   downloading the JS client library to interact with the provider using the `<che.host>:<che.port>/api/keycloak/OIDCKeycloak.js` URL.
+
+
+. Redirect the user to the appropriate provider’s login page with all the necessary parameters like client_id, return redirection path. This can be done with any client library (JS or Java).
+
+. After the user is logged in to the provider and the client side code is obtained, and the JWT token has validated the token , the creation of the subject begins.
+
+Verification of the token signature occurs in two main steps:
+
+* Authentication: Token is extracted from the Authorization header or from the `token` query parameter and is parsed using the public key retrieved from the provider. In case of expired, invalid, or malformed tokens, a `403` error is sent to the user. The usage of the query parameter should be minimised as much as possible, since its support may be limited or dropped at some point.
+
+If the validation is successful, the parsed form of the token is passed to the environment initialization  step:
+
+* Environment initialization. The filter extracts data from the JWT token claims, creates the user in the local database if it is not yet present, and constructs the `subject` object and sets it into the per-request *EnvironmentContext* object, which is statically accessible everywhere.
+
+If the request was made using only a machine token, the following   single authentication filter is used:
+
+* *org.eclipse.che.multiuser.machine.authentication.server.MachineLoginFilter*: Finds the user that the userId token belongs to, retrieves the user instance, and sets the principal to the session.
+The Che server-to-server requests are performed using dedicated request factory that signs every request with the current subject token obtained from the EnvironmentContext object.
+
+include::con_providing-user-specific-data.adoc[leveloffset=+1]
+
+include::con_obtaining-the-token-from-keycloak.adoc[leveloffset=+1]
+
+
+// The following line is necessary to allow assemblies be included in other
+// assemblies. It restores the `context` variable to its previous state.
+:context: {parent-context-of-authentication-on-the-che-server-using-openid}

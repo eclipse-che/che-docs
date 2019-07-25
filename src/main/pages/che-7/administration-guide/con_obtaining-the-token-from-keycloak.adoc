@@ -1,0 +1,22 @@
+// Module included in the following assemblies:
+//
+// authentication-on-the-che-server-using-openid
+
+[id="obtaining-the-token-from-keycloak_{context}"]
+= Obtaining the token from Keycloak
+
+Clients that cannot run JS or other clients (like CLI or selenium tests), must request the authorization token directly from Keycloak.
+
+To obtain the token, send a request to the token endpoint with the username and password credentials. This request can be schematically described as the following cURL request:
+```
+curl --data "grant_type=password&client_id=<client_name>&username=<username>&password=<password>"
+
+http://<keyckloak_host>:5050/auth/realms/<realm_name>/protocol/openid-connect/token
+```
+
+Since the Che dashboard utilizes the native Keycloak js library, it uses a customized Keycloak login page and an authentication mechanism using the grant_type=authorization_code.
+It is a two step authentication process:
+
+. Logining in and obtaining the authorization code.
+
+. Obtaining the token using this code.

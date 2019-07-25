@@ -1,0 +1,53 @@
+// This assembly is included in the following assemblies:
+//
+// securing-che
+
+:parent-context-of-user-authentication: {context}
+
+
+[id='user-authentication_{context}']
+= User authentication
+
+// The `context` attribute enables module reuse. Every module's ID
+// includes {context}, which ensures that the module has a unique ID even if
+// it is reused multiple times in a guide.
+:context: user-authentication
+
+// The following block is rendered only if the `internal` variable is set.
+// The table shows various metadata useful when editing this file.
+ifdef::internal[]
+[cols="1,4"]
+|===
+| Included in |
+LIST OF ASSEMBLIES
+| User story |
+USER STORY
+| Jira |
+JIRA LINK
+| BZ |
+BUGZILLA LINK
+| SMEs |
+SME NAMES
+| SME Ack |
+YES/NO
+| Peer Ack |
+YES/NO
+|===
+endif::[]
+
+This document covers all aspects of the authentication of users inside Eclipse Che both on the Che Server and inside the workspaces. This includes securing all the REST API endpoints, WebSocket/JSON RPC connections, and some web resources. Each of the authentication types uses the link:https://jwt.io/introduction/[JWT open standard] as a container for transferring user identity information. In addition, the Che server authentication is based on the link:https://openid.net/connect/[OpenID Connect] protocol implementation, which is provided by default by link:https://www.keycloak.org/[Keycloak]. Authentication on workspaces implies issuance of the self-signed per-workspace JWT tokens and their verification on the dedicated service based on link:https://www.keycloak.org/[JWTProxy].
+
+include::assembly_authentication-on-the-che-server-using-openid.adoc[leveloffset=+1]
+
+include::proc_authentication-on-the-che-server-using-other-authentication-implementations.adoc[leveloffset=+1]
+
+include::con_authentication-on-the-che-server-using-oauth.adoc[leveloffset=+1]
+
+include::con_using-swagger-or-rest-clients-to-execute-queries.adoc[leveloffset=+1]
+
+include::assembly_authentication-inside-the-workspace.adoc[leveloffset=+1]
+
+
+// The following line is necessary to allow assemblies be included in other
+// assemblies. It restores the `context` variable to its previous state.
+:context: {parent-context-of-user-authentication}

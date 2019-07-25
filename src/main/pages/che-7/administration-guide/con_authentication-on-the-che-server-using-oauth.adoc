@@ -1,0 +1,26 @@
+// Module included in the following assemblies:
+//
+// user-authentication
+
+
+[id="authentication-on-the-che-server-using-oauth_{context}"]
+= Authentication on the Che server using OAuth
+
+For easy user interaction with third party services, the Che server supports OAuth authentication. OAuth tokens are also used for GitHub-related plug-ins.
+
+OAuth authentication has two main flows - internal and external, which is based on the Keycloak brokering mechanism. The following are the two main OAuth API implementations:
+
+* *org.eclipse.che.security.oauth.EmbeddedOAuthAPI*, for the internal flow.
+
+* *org.eclipse.che.multiuser.keycloak.server.oauth2.DelegatedOAuthAPI*,forthe external flow.
+
+Use the the che.oauth.service_mode=<embedded|delegated> configuration property to switch between the two implementations.
+The main REST endpoint in the OAuth API is *org.eclipse.che.security.oauth.OAuthAuthenticationService, which contains*:
+
+* Authenticate method to start the OAuth authentication flow
+
+* Callback method to process callbacks from the provider
+
+* Token to retrieve current user’s oAuth token
+
+These methods refer to the currently activated embedded or delegated OAuthAPI that does the underlying operations like finding the appropriate authenticator, initializing the login process, user forwarding.

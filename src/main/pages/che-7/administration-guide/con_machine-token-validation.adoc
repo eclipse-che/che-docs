@@ -1,0 +1,10 @@
+// Module included in the following assemblies:
+//
+// authentication-inside-the-workspace
+
+[id="machine-token-validation_{context}"]
+= Machine token validation
+
+Validation of machine tokens is performed using dedicated per-workspace service with `JWTProxy` running on it in a separate pod. When the workspace starts, this service receives the public part of the SHA key from the Che server. For all the secure servers, separate verification endpoint is created. When traffic comes to that endpoint, `JWTProxy` tries to extract the token from the cookies or headers, and validates it using the public key part.
+
+If a particular server has to query the Che server, it can use the machine token provided in the `CHE_MACHINE_TOKEN` environment variable. This token is the user’s token who starts the workspace. The scope of such requests is restricted to the current workspace only.The list of allowed operations is also strictly limited.
