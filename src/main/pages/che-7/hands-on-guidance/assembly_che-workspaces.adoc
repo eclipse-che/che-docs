@@ -1,0 +1,27 @@
+:parent-context-of-che-workspaces-architecture: {context}
+
+[id='che-workspaces-architecture_{context}']
+= Che workspaces architecture
+
+:context: che-workspaces-architecture
+
+The Che workspace is a web application. It is composed of microservices running in containers that provide all the services of a modern IDE (an editor, language auto-completion, debugging tooling). The IDE services are deployed with the development tooling, packaged in containers and user runtime applications, which are defined as Kubernetes resources.
+
+The source code of the projects of a Che workspace is persisted in a Kubernetes `PersistentVolume`. Microservices run in containers that have read-write access to the source code (IDE services, development tools), and runtime applications have read-write access to this shared folder.
+
+The following diagram shows the detailed components of a Che workspace.
+
+.Che workspace components
+image::architecture/che-workspaces.png[]
+
+The diagram shows three running workspaces: two belonging to *User A* and one to *User C*. A fourth workspace is getting provisioned where the plug-in broker is verifying and completing the workspace configuration.
+
+Use the devfile format to specify the tools and runtime applications of a Che workspace.
+
+include::assembly_che-workspace-components.adoc[leveloffset=+1]
+
+include::assembly_che-workspace-configuration.adoc[leveloffset=+1]
+
+include::con_che-workspace-creation-flow.adoc[leveloffset=+1]
+
+:context: {parent-context-of-che-workspaces-architecture}
