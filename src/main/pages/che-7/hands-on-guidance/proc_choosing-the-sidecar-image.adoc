@@ -1,38 +1,17 @@
-// Module included in the following assemblies:
-//
-// using-a-visual-studio-code-extension-in-che
-
-// This module can be included from assemblies using the following include statement:
-// include::<path>/proc_choosing-the-sidecar-image.adoc[leveloffset=+1]
-
-// The file name and the ID are based on the module title. For example:
-// * file name: proc_doing-procedure-a.adoc
-// * ID: [id='proc_doing-procedure-a_{context}']
-// * Title: = Doing procedure A
-//
-// The ID is used as an anchor for linking to the module. Avoid changing
-// it after the module has been published to ensure existing links are not
-// broken.
-//
-// The `context` attribute enables module reuse. Every module's ID includes
-// {context}, which ensures that the module has a unique ID even if it is
-// reused multiple times in a guide.
-//
-// Start the title with a verb, such as Creating or Create. See also
-// _Wording of headings_ in _The IBM Style Guide_.
 [id="choosing-the-sidecar-image_{context}"]
 = Choosing the sidecar image
 
-Che plug-ins are special services that extend the Che workspace capabilities. Che plug-ins are packaged as containers. These containers that the plug-ins are packaged into, run as sidecars of the Che workspace editor and augment its capabilities.
+Che plug-ins are special services that extend the Che workspace capabilities. Che plug-ins are packaged as containers. The containers that the plug-ins are packaged into run as _sidecars_ of the Che workspace editor and augment its capabilities.
 
-[discrete]
-== Procedure
+.Procedure
 
 To choose a sidecar image:
 
 . If the VS code extension does not have any external dependencies, use `eclipse/che-theia-endpoint-runtime: next` as a sidecar container image for the extension.
 +
-*Note*: In addition to the `eclipse/che-theia-endpoint-runtime:next` base image, the following ready-to-use sidecar images that include language-specific dependencies are available:
+[NOTE]
+====
+In addition to the `eclipse/che-theia-endpoint-runtime:next` base image, the following ready-to-use sidecar images that include language-specific dependencies are available:
 
 * eclipse/che-remote-plugin-runner-java8
 * eclipse/che-remote-plugin-runner-java11
@@ -44,5 +23,8 @@ To choose a sidecar image:
 * eclipse/che-remote-plugin-kubernetes-tooling-0.1.17
 * eclipse/che-remote-plugin-openshift-connector-0.0.17
 * eclipse/che-remote-plugin-openshift-connector-0.0.21
+====
+
+. If a VS Code extension has external dependencies that are not found in one of the ready-to-use images, use a container image that contains the needed dependencies for the extension and is based on the `eclipse/che-theia-endpoint-runtime:next` image.
 +
-. If a VS Code extension has external dependencies that are not found in one of the preceding images, use a container image that contains the needed dependencies for the extension and is based on the `eclipse/che-theia-endpoint-runtime:next` image. Example: the `FROM` directive should look like `FROM eclipse/che-theia-endpoint-runtime:next`. This is required because this base image contains tools for running the remote VS Code extension and communications between the sidecar and the Che Theia editor so that the VS Code extension does not have to know that it is a remote one.
+Example: the `FROM` directive should be similar to `FROM eclipse/che-theia-endpoint-runtime:next`. This is required because this base image contains tools for running the remote VS Code extension and communications between the sidecar and the Che-Theia editor, so that the VS Code extension does not have to know that it is a remote one.

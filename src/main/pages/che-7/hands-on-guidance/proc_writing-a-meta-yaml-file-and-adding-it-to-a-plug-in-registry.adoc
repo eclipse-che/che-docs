@@ -1,62 +1,37 @@
-// Module included in the following assemblies:
-//
-// publishing-a-vs-code-extension-into-the-che-plug-in-registry
-
-// This module can be included from assemblies using the following include statement:
-// include::<path>/proc_proc_writing-a-meta-yaml-file-and-adding-it-to-a-plug-in-registry.adoc[leveloffset=+1]
-
-// The file name and the ID are based on the module title. For example:
-// * file name: proc_doing-procedure-a.adoc
-// * ID: [id='proc_doing-procedure-a_{context}']
-// * Title: = Doing procedure A
-//
-// The ID is used as an anchor for linking to the module. Avoid changing
-// it after the module has been published to ensure existing links are not
-// broken.
-//
-// The `context` attribute enables module reuse. Every module's ID includes
-// {context}, which ensures that the module has a unique ID even if it is
-// reused multiple times in a guide.
-//
-// Start the title with a verb, such as Creating or Create. See also
-// _Wording of headings_ in _The IBM Style Guide_.
 [id="proc_writing-a-meta-yaml-file-and-adding-it-to-a-plug-in-registry_{context}"]
 = Writing a meta.yaml file and adding it to a plug-in registry
 
-The plug-in meta information is required to publish a VS Code extension in an Eclipse Che plug-in registry. This meta information is provided as a `meta.yaml` file. To create a `meta.yaml` file for your extension, see the following instructions.
+The plug-in meta information is required to publish a VS Code extension in an Eclipse Che plug-in registry. This meta information is provided as a `meta.yaml` file. To create a `meta.yaml` file for an extension, see the following instructions.
 
-[Discrete]
-== Procedure
+.Procedure
 
-. Create a `meta.yaml` file in the following plug-in registry directory:
-`<apiVersion>/plugins/<publisher>/<pluginName>/<pluginVersion>/`
+. Create a `meta.yaml` file in the following plug-in registry directory: `__<apiVersion>__/plugins/__<publisher>__/__<plug-inName>__/__<plug-inVersion>__/`.
 +
-//NOTE: Support of two or more extensions is broken. See the link:https://github.com/eclipse/che/issues/13578[GitHub description for this issue] for further information.
+// NOTE: Support of two or more extensions is broken. See the link:https://github.com/eclipse/che/issues/13578[GitHub description for this issue] for further information.
 
-. Edit the `meta.yaml` and provide the necessary information. The configuration file must adhere to the following structure:
-
+. Edit the `meta.yaml` file and provide the necessary information. The configuration file must adhere to the following structure:
++
 [source,yaml]
---
-apiVersion: `v3`                                                 <1>
-publisher: `myorg`                                               <2>
-name: `my-vscode-ext`	                                    <3>
-version: `1.7.2`                                                 <4>
+----
+apiVersion: v3                                                   <1>
+publisher: myorg                                                 <2>
+name: my-vscode-ext                                              <3>
+version: 1.7.2                                                   <4>
 type:name: value                                                 <5>
-displayName: 	                                            <6>
-title: 			                                  <7>
-description: 		                                    <8>
-icon: `https://www.eclipse.org/che/images/logo-eclipseche.svg`   <9>
-repository: 		                                    <10>
-category: 		                                      <11>
+displayName:                                                     <6>
+title:                                                           <7>
+description:                                                     <8>
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg     <9>
+repository:                                                     <10>
+category:                                                       <11>
 spec:
-containers: # If this section is omitted, the VS Code extension is added into the Che Theia IDE container
-    - image: The Docker image from which the sidecar container will be started. Example: "eclipse/che-theia-endpoint-runtime:next"
-      memoryLimit: The RAM which is given for the sidecar container by default. Example: "256Mi". This value might be overridden by the user in the component configuration.
-  extensions: A list of VA Code extensions that should be run in this sidecar container. Example:
-https://github.com/redhat-developer/vscode-yaml/releases/download/0.4.0/redhat.vscode-yaml-0.4.0.vsix
-vscode:extension/SonarSource.sonarlint-vscode
---
-
+  containers:                                                   <12>
+    - image:                                                    <13>
+      memoryLimit:                                              <14>
+  extensions:                                                   <15>
+    - https://github.com/redhat-developer/vscode-yaml/releases/download/0.4.0/redhat.vscode-yaml-0.4.0.vsix
+    - vscode:extension/SonarSource.sonarlint-vscode
+----
 <1> Version of the file structure.
 <2> Name of the plug-in publisher. Must be the same as the publisher in the path.
 <3> Plug-in name. Must be the same as in path.
@@ -68,3 +43,7 @@ vscode:extension/SonarSource.sonarlint-vscode
 <9> The link to the plug-in logo.
 <10> Optional. The link to the source-code repository of the plug-in.
 <11> Defines the category that this plug-in belongs to. Should be one of the following: `Editor`, `Debugger`, `Formatter`, `Language`, `Linter`, `Snippet`, `Theme`, or `Other`.
+<12> If this section is omitted, the VS Code extension is added into the Che-Theia IDE container.
+<13> The Docker image from which the sidecar container will be started. Example: `eclipse/che-theia-endpoint-runtime:next`.
+<14> The RAM which is given for the sidecar container by default. Example: "256Mi". This value might be overridden by the user in the component configuration.
+<15> A list of VA Code extensions that should be run in this sidecar container.
