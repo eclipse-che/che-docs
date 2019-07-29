@@ -1,0 +1,61 @@
+// Module included in the following assemblies:
+//
+// importing-a-kubernetes-application-into-a-che-workspace
+
+[id="including-a-kubernetes-application-in-a-workspace-devfile-definition_{context}"]
+= Including a Kubernetes application in a workspace devfile definition
+
+The devfile format is used to define a Che workspace and its format is described in the section “Making a workspace portable using a devfile”.
+
+The simplest devfile looks like this:
+```
+apiVersion: 1.0.0
+metadata:
+name: minimal-workspace
+```
+Only the name (minimal-workspace) is specified. Once processed by the Che Server this devfile will be converted in a minimal Che workspace that only has the default editor (Che-Theia) and the default editor plugins (e.g. the terminal).
+
+Adding Kubernetes applications to a workspace is possible using components of type Kubernetes in a devfile.
+
+For example, the NodeJS-Mongo application seen above can be embedded in the minimal-workspace defined in this paragraph adding a `components` section:
+```
+apiVersion: 1.0.0
+metadata:
+ name: minimal-workspace
+components:
+ - type: kubernetes
+   reference: https://raw.githubusercontent.com/.../mongo-db.yaml
+ - alias: nodejs-app
+   type: kubernetes
+   reference: https://raw.githubusercontent.com/.../nodejs-app.yaml
+   entrypoints:
+     - command: ['sleep']
+       args: ['infinity']
+```
+Note that we have added the command `sleep infinity` as the entry point of the `nodeJS`. This is useful to avoid that the application is started at the workspace startup but only when a user wants to test or debug it.
+
+To make it easier for a developer to test the application, add those commands in the devfile:
+```
+apiVersion: 1.0.0
+metadata:
+ name: minimal-workspace
+components:
+ - type: kubernetes
+   reference: https://raw.githubusercontent.com/.../mongo-db.yaml
+ - alias: nodejs-app
+   type: kubernetes
+   reference: https://raw.githubusercontent.com/.../nodejs-app.yaml
+   entrypoints:
+     - command: ['sleep']
+       args: ['infinity']
+commands:
+ - name: run
+   actions:
+     - type: exec
+       component: nodejs-app
+       command: cd ${CHE_PROJECTS_ROOT}/nodejs-mongo-app/EmployeeDB/ && npm install && sed -i -- ''s/localhost/mongo/g'' app.js && node app.js
+```
+
+This devfile can be used to create and start a workspace with `chectl`: `chectl worspace:start --devfile <devfile-path>`.
+
+The command “run” added to the devfile will be available as a task in `che-theia`, available from the command palette. When executed the command will start the nodeJS application.

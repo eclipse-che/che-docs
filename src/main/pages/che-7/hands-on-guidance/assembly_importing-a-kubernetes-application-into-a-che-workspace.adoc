@@ -1,0 +1,66 @@
+// This assembly is included in the following assemblies:
+//
+// end-user-tasks
+
+[id='importing-a-kubernetes-application-into-a-che-workspace_{context}']
+= Importing a Kubernetes application into a Che workspace
+
+// The `context` attribute enables module reuse. Every module's ID
+// includes {context}, which ensures that the module has a unique ID even if
+// it is reused multiple times in a guide.
+:context: importing-a-kubernetes-application-into-a-che-workspace
+
+// The following block is rendered only if the `internal` variable is set.
+// The table shows various metadata useful when editing this file.
+ifdef::internal[]
+[cols="1,4"]
+|===
+| Included in |
+LIST OF ASSEMBLIES
+| User story |
+USER STORY
+| Jira |
+JIRA LINK
+| BZ |
+BUGZILLA LINK
+| SMEs |
+SME NAMES
+| SME Ack |
+YES/NO
+| Peer Ack |
+YES/NO
+|===
+endif::[]
+
+This is a hands-on article that shows how to add a Kubernetes application in a Che workspace.
+
+As an example for the article we are going to use a sample Kubernetes applications that has two pods:
+
+* A NodeJS application specified by this link:https://raw.githubusercontent.com/redhat-developer/devfile/master/samples/web-nodejs-with-db-sample/nodejs-app.yaml[yaml]
+* A mongo DB pod specified by this link:https://raw.githubusercontent.com/redhat-developer/devfile/master/samples/web-nodejs-with-db-sample/mongo-db.yaml[yaml]
+
+To run it on a Kubernetes cluster:
+
+```
+node=https://raw.githubusercontent.com/redhat-developer/devfile/master/samples/web-nodejs-with-db-sample/nodejs-app.yaml && \
+mongo=https://raw.githubusercontent.com/redhat-developer/devfile/master/samples/web-nodejs-with-db-sample/mongo-db.yaml && \
+kubectl apply -f ${mongo} && \
+kubectl apply -f ${node}
+```
+
+In the following sections will see how to deploy a new instance of this application in a Che workspace in 3 different scenarios:
+
+* Starting from scratch -> writing a new devfile
+* Modifying an existing workspace -> using the dashboard UI
+* From a running application-> generating a devfile with `chectl`
+
+include::con_including-a-kubernetes-application-in-a-workspace-devfile-definition.adoc[leveloffset=+1]
+
+include::con_adding-a-kubernetes-application-to-an-existing-workspace-using-the-dashboard.adoc[leveloffset=+1]
+
+include::con_generating-a-devfile-from-an-existing-kubernetes-application.adoc[leveloffset=+1]
+
+
+
+
+:context: {parent-context-of-importing-a-kubernetes-application-into-a-che-workspace}
