@@ -1,0 +1,33 @@
+// Module included in the following assemblies:
+//
+// authorizing-users
+
+[id="assigning-che-permissions_{context}"]
+= Assigning Che permissions
+
+To assign permissions to a resource, perform the `POST /permissions` request. The suitable domain values are:
+
+* system
+* organization
+* workspace
+
+The following is a message body that requests permissions for a user with a `userID` to a workspace with a `workspaceID`:
+
+.Requesting Che user permissions
+[source,json]
+----
+{
+  "actions": [
+    "read",
+    "use",
+    "run",
+    "configure",
+    "setPermissions"
+  ],
+  "userId": "userID",          <1>
+  "domainId": "workspace",
+  "instanceId": "workspaceID"  <2>
+}
+----
+<1> The *userId* parameter is the ID of the user that has been granted certain permissions.
+<2> The *instanceId* parameter is the ID of the resource that retrieves the permission for all users. 
