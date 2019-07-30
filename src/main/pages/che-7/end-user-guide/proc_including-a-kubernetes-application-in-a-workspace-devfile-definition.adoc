@@ -1,21 +1,25 @@
-
 // importing-a-kubernetes-application-into-a-che-workspace
 
 [id="including-a-kubernetes-application-in-a-workspace-devfile-definition_{context}"]
 = Including a Kubernetes application in a workspace devfile definition
 
 // TO DO Supply URL for that file location
-The devfile format is used to define a Che workspace and its format is described in the Making a workspace portable using a devfile section. The following is an example of the simplest devfile:
+The devfile format is used to define a Che workspace, and its format is described in the link:#making-a-workspace-portable-using-a-devfile_using-developer-environments-workspaces[Making a workspace portable using a devfile] section. The following is an example of the simplest devfile:
+
+[source,yaml]
 ----
 apiVersion: 1.0.0
 metadata:
  name: minimal-workspace
 ----
+
 Only the name (minimal-workspace) is specified. After the Che server processes this devfile, the devfile is converted to a minimal Che workspace that only has the default editor (Che-Theia) and the default editor plug-ins (example: the terminal).
 
 Use the `Kubernetes` type of components in the devfile to add Kubernetes applications to a workspace.
 
-For example, the user can embed the `NodeJS-Mongo` application above in the minimal-workspace defined in this paragraph by adding a `components` section.
+For example, the user can embed the `NodeJS-Mongo` application in the minimal-workspace defined in this paragraph by adding a `components` section.
+
+[source,yaml]
 ----
 apiVersion: 1.0.0
 metadata:
@@ -30,8 +34,12 @@ components:
      - command: ['sleep']
        args: ['infinity']
 ----
-Note that the `sleep infinity` command is added as the entry point of the NodeJS application. This avoids the application to start at the workspace start phase, allowing the user to start it when needed for testing or debugging purposes.
+
+Note that the `sleep infinity` command is added as the entry point of the NodeJS application. This prevents the application from starting at the workspace start phase, allowing the user to start it when needed for testing or debugging purposes.
+
 To make it easier for a developer to test the application, add the commands in the devfile:
+
+[source,yaml]
 ----
 apiVersion: 1.0.0
 metadata:
@@ -52,6 +60,12 @@ commands:
        component: nodejs-app
        command: cd ${CHE_PROJECTS_ROOT}/nodejs-mongo-app/EmployeeDB/ && npm install && sed -i -- ''s/localhost/mongo/g'' app.js && node app.js
 ----
-Use this devfile to create and start a workspace with the `chectl`: `chectl worspace:start --devfile __<devfile-path>__` command.
 
-The `run` command added to the devfile is available as a task in `che-theia`, which is available from the command palette. When executed, the command starts the `NodeJS` application.
+Use this devfile to create and start a workspace with the `chectl` command:
+
+[subs="+quotes"]
+----
+$ chectl worspace:start --devfile _<devfile-path>_
+----
+
+The `run` command added to the devfile is available as a task in Che-Theia from the command palette. When executed, the command starts the NodeJS application.
