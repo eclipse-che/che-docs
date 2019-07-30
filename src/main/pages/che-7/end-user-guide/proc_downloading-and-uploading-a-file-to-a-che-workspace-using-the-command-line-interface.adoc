@@ -3,45 +3,36 @@
 [id="downloading-and-uploading-a-file-to-a-che-workspace-using-the-command-line-interface_{context}"]
 = Downloading and uploading a file to a Che workspace using the command-line interface
 
-[discrete]
-== Prerequisites
+This procedure describes how to use the `kubectl` tool to download or upload files remotely from or to an Eclipse Che workspace.
 
-* Remote access to the Che workspace you intend to modify. For instructions see xref:remote-access-to-che-workspaces-using-the-kubernetes-command-line-tool_remote-access-to-che-workspaces[].
+.Prerequisites
 
-[discrete]
-== Procedure
+* Remote access to the Che workspace you intend to modify. For instructions see xref:remotely-accessing-che-workspaces-using-the-kubernetes-command-line-tool_remotely-accessing-che-workspaces[].
+
+.Procedure
 
 * To download a local file named `downloadme.txt` from a workspace container to the current home directory of the user, use the following in the Che remote shell.
 +
-[literal]
---
+[subs="+quotes",options="+nowrap"]
+----
 $ REMOTE_FILE_PATH=/projects/downloadme.txt
 $ NAMESPACE=che
 $ POD=workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4
 $ CONTAINER=maven
 $ kubectl cp ${NAMESPACE}/${POD}:${REMOTE_FILE_PATH} ~/downloadme.txt -c ${CONTAINER}
---
+----
 
 * To upload a local file named `uploadme.txt` to a workspace container in the `/projects` directory:
 
-[literal]
---
+[subs="+quotes",options="+nowrap"]
+----
 $ LOCAL_FILE_PATH=./uploadme.txt
 $ NAMESPACE=che
 $ POD=workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4
 $ CONTAINER=maven
 $ kubectl cp ${LOCAL_FILE_PATH} ${NAMESPACE}/${POD}:/projects -c ${CONTAINER}
---
+----
 
 Using the steps above, the user can also download and upload folders.
 
 // HERE SHOULD BE AN EXAMPLE?
-
-////
-[discrete]
-== Additional resources
-
-* A bulleted list of links to other material closely related to the contents of the procedure module.
-* For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-////
