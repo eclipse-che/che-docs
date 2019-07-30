@@ -1,0 +1,32 @@
+[id="language-servers-and-debug-adapters_{context}"]
+= Language servers and debug adapters
+
+[discrete]
+== Procedure
+
+To find the cluster where the workspace is running, query the OpenShift
+API on che.openshift.io for user metadata and the URL of the OpenShift
+cluster where the workspaces run. The following *curl* commands extract
+this URL using *username* or *email* as a parameter, where *username* or
+*email* are the credentials that the user used to log into
+che.openshift.io:
+
+curl -sgSL
+"https://api.openshift.io/api/users?filter[username]=<username>" | jq -r
+".data[0].attributes.cluster"
+
+Or
+
+curl -sgSL "https://api.openshift.io/api/users?filter[email]=<email>" |
+jq -r ".data[0].attributes.cluster"
+
+The output of the query is the OpenShift Online cluster URL (for
+example:
+https://api.starter-us-east-2.openshift.com/[_https://api.starter-us-east-2.openshift.com/_]).
+
+After the user logs in to the Openshift Console and the underlying
+cluster using the openshift.io login, the user gets read-only access to
+the *<username>-che* namespace where all the workspace related pods are
+created.
+
+image::{imagesdir}/logs//Pictures/10000201000007680000029D2117F8486FEAD499.png[]
