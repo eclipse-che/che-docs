@@ -3,26 +3,22 @@
 [id="configuring-the-workspace-and-adding-tooling_{context}"]
 = Configuring the workspace and adding tooling
 
-[discrete]
+
 == Adding plug-ins
 
-Che 7 plug-ins replace the Che 6 installers.
-The following table lists the Che 7 plug-ins that have replaced the Che 6 installers.
+Che 7 plug-ins replace Che 6 installers. The following table lists the Che 7 plug-ins that have replaced Che 6 installers.
 
-.Che 7 plug-ins that have replaced the Che 6 installers
-[width="80%", options="header,footer"]
+.Che 7 plug-ins that have replaced Che 6 installers
+[options="header"]
 |===
-| CHE6  Installer | CHE7 Plug-in
-| org.eclipse.che.ws-agent
- | Deprecated and not necessary
-| org.eclipse.che.terminal
-| Deprecated and not necessary anymore-
-| org.eclipse.che.exec | Che machine-exec Service
-| org.eclipse.che.ls.java | Language Support for Java(TM)
+| Che 6 installer | Che 7 plug-in
+| org.eclipse.che.ws-agent | Deprecated and not necessary
+| org.eclipse.che.terminal | Deprecated and not necessary anymore-
+| org.eclipse.che.exec     | Che machine-exec Service
+| org.eclipse.che.ls.java  | Language Support for Java
 |===
 
-[discrete]
-=== Procedure
+.Procedure
 
 To add plug-ins to your workspace:
 
@@ -31,31 +27,29 @@ To add plug-ins to your workspace:
 +
 image::workspaces/adding-pluggins-to-workspace.png[link="{imagesdir}/workspaces/adding-pluggins-to-workspace.png"]
 
-[discrete]
+
 == Defining the workspace editor
 
-[discrete]
-=== Procedure
+.Procedure
 
-To define the editor that you want to use with the workspace:
+To define the editor to use with the workspace:
 
-. Click the Editors tab.
+. Click the *Editors* tab.
 +
-NOTE: The recommended editor for Che 7 is the *theia-ide* editor.
+NOTE: The recommended editor for Che 7 is Che-Theia.
 
-. Enable the editor that you want to add and click btn:[Save].
+. Enable the editor to add and click the btn:[Save] button.
 +
 image::workspaces/definin-the-workspace-editor.png[link="{imagesdir}/workspaces/definin-the-workspace-editor.png"]
-+
+
 . Click the *Devfile* tab to view the changes.
 +
 image::workspaces/workspace-devfile.png[link="{imagesdir}/workspaces/workspace-devfile.png"]
 
-[discrete]
-== Defining  the specific container images
 
-[discrete]
-=== Procedure
+== Defining specific container images
+
+.Procedure
 
 To add a new container image:
 
@@ -80,12 +74,14 @@ To add a new container image:
    image: 'maven:3.6.0-jdk-11'
 ----
 +
-. If you are using type: `kubernetes` or type: `openshift`, you must:
-* Use seperate recipe files
-* Or, add the content as a *referenceContent*
+. When using `type: kubernetes` or `type: openshift`, you must:
 +
-.. To use separate recipe files, the paths can be relative or absolute. For example:
+* Use seperate recipe files.
 +
+[NOTE]
+====
+To use separate recipe files, the paths can be relative or absolute. For example:
+
 [source,yaml]
 ----
 ...
@@ -93,7 +89,7 @@ To add a new container image:
     reference: deploy_k8s.yaml
 ...
 ----
-+
+
 [source,yaml]
 ----
 ...
@@ -101,24 +97,22 @@ To add a new container image:
     reference: deploy_openshift.yaml
 ...
 ----
-+
-.. To Add as a `referenceContent`:
-+
-The referenceContent field replaces the Che 6 recipe content.
+====
+* Alternatively, add the content as `referenceContent` (the `referenceContent` field replaces the Che 6 recipe content).
 +
 image::workspaces/che-6-workspace-confg.png[link="{imagesdir}/workspaces/che-6-workspace-confg.png"]
-+
-. Add a Che 6 recipe content to the Che 7 devfile as a referenceContent:
+
+. Add a Che 6 recipe content to the Che 7 devfile as `referenceContent`:
 
 .. Click the *Containers* tab (*Workspace -> Details -> Containers*).
 +
 image::workspaces/edit-the-container.png[link="{imagesdir}/workspaces/edit-the-container.png"]
-+
-.. Copy the Che 6 recipe and paste it into the separate Che 7 component as a *referenceContent*.
+
+.. Copy the Che 6 recipe, and paste it into the separate Che 7 component as a *referenceContent*.
 +
 image::workspaces/component_as_a_referenceContent.png[link="{imagesdir}/workspaces/component_as_a_referenceContent.png"]
-+
-.. Set the type from the origin Che 6 configuration. The following is an example of the resultant file :
+
+.. Set the type from the original Che 6 configuration. The following is an example of the resulting file:
 +
 [source,yaml]
 ----
@@ -137,23 +131,23 @@ image::workspaces/component_as_a_referenceContent.png[link="{imagesdir}/workspac
        limits:
          memory: 512Mi
 ----
-+
-. Copy the required fields from the old workspace (image, volumes, endpoints). For example:
+
+. Copy the required fields from the old workspace (`image`, `volumes`, `endpoints`). For example:
 +
 image::workspaces/workspace_config_Che_6.png[link="{imagesdir}/workspaces/workspace_config_Che_6.png"]
 +
 image::workspaces/workspace_devfile_che_7_.png[link="{imagesdir}/workspaces/workspace_devfile_che_7_.png"]
 +
-.СHE6/СHE7 equivalence table
-[width="80%", options="header,footer"]
+.Сhe 6 and Сhe 7 equivalence table
+[options="header"]
 |===
-| CHE6 workspace config | CHE7 workspace devfile
-| environments[‘defaultEnv’].machines[‘target’].servers | components[n].endpoints
-| environments[‘defaultEnv’].machines[‘machineName’].volumes | components[n].volumes
-| environments[‘defaultEnv’].recipe.type | components[n].type
-| environments[‘defaultEnv’].recipe.content | components[n].image
+| Che 6 workspace configuration | Che 7 workspace devfile
+| `environments['defaultEnv'].machines['target'].servers` | `components[n].endpoints`
+| `environments['defaultEnv'].machines['machineName'].volumes` | `components[n].volumes`
+| `environments['defaultEnv'].recipe.type` | `components[n].type`
+| `environments['defaultEnv'].recipe.content` | `components[n].image`
 |===
-+
+
 . Change the `memoryLimit` and `alias` variables, if needed. Here, the field `alias` is used for setting a name for the component. It is generated automatically from the `image` field, if not set.
 +
 [source,yaml]
@@ -161,7 +155,7 @@ image::workspaces/workspace_devfile_che_7_.png[link="{imagesdir}/workspaces/work
   image: 'maven:3.6.0-jdk-11'
   alias: maven3-jdk11
 ----
-+
+
 . Change the `memoryLimit` field to specify the `RAM` required for the component.
 +
 [source,yaml]
@@ -169,17 +163,17 @@ image::workspaces/workspace_devfile_che_7_.png[link="{imagesdir}/workspaces/work
   alias: maven3-jdk11
   memoryLimit: 256M
 ----
-+
+
 . Open the *Devfile* tab to see the changes.
 +
 image::workspaces/devfile-tab.png[link="{imagesdir}/workspaces/devfile-tab.png"]
-+
-. Repeat the above steps to add additional container images.
 
-[discrete]
+. Repeat the steps to add additional container images.
+
+
 == Adding commands to your workspace
 
-The following is a comparison between a Workspace configuration commands in Che 6 (Figure 1.) and a Workspace configuration commands in Che 7 (Figure 2.):
+The following is a comparison between workspace configuration commands in Che 6 (Figure 1) and Che 7 (Figure 2):
 
 .An example of the Workspace configuration commands in Che 6
 image::workspaces/workspace-devfile.png[link="{imagesdir}/workspaces/workspace-devfile.png"]
@@ -187,16 +181,15 @@ image::workspaces/workspace-devfile.png[link="{imagesdir}/workspaces/workspace-d
 .An example of the Workspace configuration commands in Che 7
 image::workspaces/workspace-devfile.png[link="{imagesdir}/workspaces/workspace-devfile.png"]
 
-.СHE6/СHE7 equivalence table
-[width="80%", options="header,footer"]
+.Сhe 6 and Сhe 7 equivalence table
+[options="header"]
 |===
-| CHE6 workspace config | CHE7 workspace devfile
-| environments[‘defaultEnv’].commands[n].name | commands[n].name
-| environments[‘defaultEnv’].commands[n].actions.command | components[n].commandLine
+| Che 6 workspace configuration | Che 7 workspace devfile
+| `environments['defaultEnv'].commands[n].name` | `commands[n].name`
+| `environments['defaultEnv'].commands[n].actions.command` | `components[n].commandLine`
 |===
 
-[discrete]
-=== Procedure
+.Procedure
 
 To define commands to your workspace, edit the workspace devfile:
 
@@ -210,8 +203,8 @@ commands:
       - type: exec
         command: mvn clean install
 ----
-+
-. Copy the following YAML into the `commands` section to add a new command. Change the `name` and the `command` fields from the original workspace configuration (see the preceding equivalence table).
+
+. Copy the following YAML code into the `commands` section to add a new command. Change the `name` and the `command` fields from the original workspace configuration (see the preceding equivalence table).
 +
 [source,yaml]
 ----
@@ -220,13 +213,15 @@ commands:
       - type: exec
         command: mvn clean install && java -jar
 ----
-+
-. Optionally, add the field `component` into `actions`. This indicates the component alias where the command will be performed.
+
+. Optionally, add the `component` field into `actions`. This indicates the component alias where the command will be performed.
+
 . Repeat step 2 to add more commands to the devfile.
+
 . Click the *Devfile* tab to view the changes.
 +
 image::workspaces/workspace-devfile-changes.png[link="{imagesdir}/workspaces/workspace-devfile-changes.png"]
-+
+
 . Save changes and start the new Che 7 workspace.
 +
 image::workspaces/save-and-start-the-new-che-workspace.png[link="{imagesdir}/workspaces/save-and-start-the-new-che-workspace.png"]
