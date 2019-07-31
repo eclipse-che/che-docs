@@ -1,0 +1,114 @@
+[id="deploying-registries-in-kubernetes_{context}"]
+= Deploying registries in Kubernetes
+
+[discrete]
+== Procedure
+
+A Helm chart for the plug-in registry is available in the `/kubernetes/che-plugin-registry/` directory of the GitHub repository.
+
+. To deploy the plug-in registry using the Helm chart, run the following command:
++
+----
+NAMESPACE=<namespace-name> # the default Che namespace is "che"
+DOMAIN=<kubernetes-cluster-domain> # on minikube use "$(minikube ip).nip.io"
+IMAGE="my-plugin-registry"
+helm upgrade --install che-plugin-registry \
+ --debug \
+ --namespace $\{NAMESPACE} \
+ --set global.ingressDomain=$\{DOMAIN} \
+ --set chePluginRegistryImage=$\{IMAGE} \
+ --set chePluginRegistryImagePullPolicy="IfNotPresent" \
+ ./kubernetes/che-plugin-registry/
+----
+
+. The devfile registry also has a Helm chart in the `deploy/kubernetes/che-devfile-registry` directory of the GitHub repository. To deploy it, run the command:
++
+----
+NAMESPACE=<namespace-name> # the default Che namespace is "che"
+DOMAIN=<kubernetes-cluster-domain> # on minikube use "$(minikube ip).nip.io"
+IMAGE="my-devfile-registry"
+helm upgrade --install che-devfile-registry \
+ --debug \
+ --namespace $\{NAMESPACE} \
+ --set global.ingressDomain=$\{DOMAIN} \
+ --set cheDevfileRegistryImage=$\{IMAGE} \
+ --set cheDevfileRegistryImagePullPolicy="IfNotPresent" \
+ ./deploy/kubernetes/che-devfile-registry/
+----
+
+. The Helm chart creates a pod, a service, and an Ingress. To get them, use the `app=che-plugin-registry` (or, `app=che-plugin-registry` for the devfile registry).
++
+----
+$ kubectl get -o custom-columns=TYPE:.kind,NAME:.metadata.name \
+ -l app=che-plugin-registry pod,svc,ingress
+TYPE NAME
+Pod che-plugin-registry-5c7cd8d5c9-zlqlz
+Service che-plugin-registry
+Ingress che-plugin-registry
+----
+
+. To verify that the new plug-in is correctly published on the plug-in registry, make a request to the registry path `/v3/plugins/index.json` (or, `/devfiles/index.json` for the devfile registry).
++
+----
+$ URL=$(kubectl get -o 'custom-columns=URL:.spec.rules[0].host' \
+ -l app=che-plugin-registry ingress --no-headers)
+$ INDEX_JSON=$(curl -sSL http://$\{URL}/v3/plugins/index.json)
+$ echo $\{INDEX_JSON} | grep -A 4 -B 5 "\"name\":\"my-plugin\""
+,\{
+ "id": "my-org/my-plugin/1.0.0",
+ "displayName":"This is my first Che plugin",
+ "version":"1.0.0",
+ "type":"VS Code extension",
+ "name":"my-plugin",
+ "description":"This plugins shows that we are able to add plugins to the registry...",
+ "publisher":"my-org",
+ "links": \{"self":"/v3/plugins/my-org/my-plugin/1.0.0" }
+}
+--
+--
+,\{
+ "id": "my-org/my-plugin/latest",
+ "displayName":"This is my first Che plugin",
+ "version":"latest",
+ "type":"VS Code extension",
+ "name":"my-plugin",
+ "description":"This plugins shows that we are able to add plugins to the registry...",
+ "publisher":"my-org",
+ "links": \{"self":"/v3/plugins/my-org/my-plugin/latest" }
+}
+----
+
+. Verify that the Che server points to the URL of the registry. To do this, compare the value of `CHE_WORKSPACE_PLUGIN__REGISTRY__URL` parameter on the ConfigMap `che` (or, `CHE_WORKSPACE_DEVFILE__REGISTRY__URL` for the devfile registry).
++
+----
+$ kubectl get \
+ -o "custom-columns=URL:.data['CHE_WORKSPACE_PLUGIN__REGISTRY__URL']" \
+ --no-headers cm/che
+URL
+http://che-plugin-registry-che.192.168.99.100.nip.io/v3
+----
++
+With the URL of the Ingress:
++
+----
+$ kubectl get -o 'custom-columns=URL:.spec.rules[0].host' \
+ -l app=che-plugin-registry ingress --no-headers
+che-plugin-registry-che.192.168.99.100.nip.io
+----
+
+.  If they do not match, update the ConfigMap and restart the Che server.
++
+----
+$ kubectl edit cm/che
+(...)
+$ kubectl scale --replicas=0 deployment/che
+$ kubectl scale --replicas=1 deployment/che
+----
++
+After the new registries are deployed and the Che server is configured to use them, the new plug-ins are available in the *Plugin* view of a workspace.
++
+image::customization/deploying-plugin-registry-in-kubernetes.png[]
++
+The new stacks are displayed in the *New Workspace* tab of the user dashboard.
++
+image::customization/deploying-devfile-registry-in-kubernetes.png[]

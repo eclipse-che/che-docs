@@ -1,0 +1,36 @@
+[id="deploying-registries-in-openshift_{context}"]
+= Deploying registries in OpenShift
+
+[discrete]
+== Procedure
+
+An OpenShift template to deploy the plug-in registry is available in the `openshift` directory of the GitHub repository.
+
+. To deploy the plug-in registry using the OpenShift template, run the following command:
++
+----
+NAMESPACE=<namespace-name> # the default Che namespace is "che"
+IMAGE_NAME="my-plugin-registry"
+IMAGE_TAG="latest"
+oc new-app -f openshift/che-plugin-registry.yml \
+ -n "$\{NAMESPACE}" \
+ -p IMAGE="$\{IMAGE_NAME}" \
+ -p IMAGE_TAG="$\{IMAGE_TAG}" \
+ -p PULL_POLICY="IfNotPresent"
+----
+
+. The devfile registry has an OpenShift template in the `deploy/openshift` directory of the GitHub repository. To deploy it, run the command:
++
+----
+NAMESPACE=<namespace-name> # the default Che namespace is "che"
+IMAGE_NAME="my-devfile-registry"
+IMAGE_TAG="latest"
+oc new-app -f openshift/che-devfile-registry.yml \
+ -n "$\{NAMESPACE}" \
+ -p IMAGE="$\{IMAGE_NAME}" \
+ -p IMAGE_TAG="$\{IMAGE_TAG}" \
+ -p PULL_POLICY="IfNotPresent"
+----
+
+. Check if the registries are deployed successfully on OpenShift. The steps to check are similar to the Kubernetes steps. For details, see *Deploying registries in Kubernetes* section.
+The only difference is that, on OpenShift, Ingresses are replaced with routes.

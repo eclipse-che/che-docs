@@ -1,0 +1,39 @@
+[id="adding-a-devfile-at-runtime_{context}"]
+= Adding a devfile at runtime
+
+[discrete]
+== Procedure
+To add a devfile:
+
+. Get the name of the Kubernetes pod that hosts the plug-in registry container. To do this, filter through the *app=che-devfile-registry* label.
++
+----
+DEVFILE_REG_POD=$(kubectl get -o custom-columns=NAME:.metadata.name \
+ --no-headers -l app=che-devfile-registry pod)
+----
+
+. Create the new devfile directory in the devfile registry container, if it does not exist.
++
+----
+STACK="my-stack"
+kubectl exec $\{DEVFILE_REG_POD} -i -t -- \
+ mkdir -p /var/www/html/devfiles/$\{STACK}
+----
+
+.  Copy the `devfile.yaml` file and the `meta.yaml` file in the container.
++
+----
+LOCAL_META="$(PWD)/meta.yaml"
+LOCAL_DEVFILE="$(PWD)/devfile.yaml"
+kubectl cp "$\{LOCAL_META}" \
+ $\{DEVFILE_REG_POD}:/var/www/html/devfiles/$\{STACK}
+kubectl cp "$\{LOCAL_DEVFILE}" \
+ $\{DEVFILE_REG_POD}:/var/www/html/devfiles/$\{STACK}
+----
+
+.  Update the `index.json` file of the registry.
++
+----
+kubectl exec $\{DEVFILE_REG_POD} -i -t -- \
+ /var/www/html/index.sh > /var/www/html/devfiles/index.json
+----
