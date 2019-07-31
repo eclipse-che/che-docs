@@ -1,0 +1,61 @@
+[id="adding-a-new-plug-in_{context}"]
+= Adding a new plug-in
+
+The `v3/plugins/` directory in the repository contains the plug-ins. The following is the structure of a plug-in directory:
+
+[subs="+quotes"]
+----
+./che-plugin-registry/v3/plugins
+ ├── _<publisher>_
+ ├── _<plugin-name>_
+ ├── _<plugin-version>_
+ └── meta.yaml
+----
+
+To add a new plug-in:
+
+.Procedure
+
+. In the `v3/plugins/` directory, create a new directory and name it `__<publisher>__/__<plugin-name>__/__<plugin-version>__/`.
+. Create a plug-in `meta.yaml` file in the new directory.
++
+[TIP]
+.Example
+====
+The following is an example directory called `my-org/my-plugin/1.0.0/`, and it contains a meta.yaml file:
+
+----
+$ mkdir -p che-plugin-registry/v3/plugins/my-org/my-plugin/1.0.0/
+$ touch che-plugin-registry/v3/plugins/my-org/my-plugin/1.0.0/meta.yaml
+$ tree ./che-plugin-registry/v3/plugins
+./che-plugin-registry/v3/plugins
+ ├── my-org
+ ├── my-plugin
+ ├── 1.0.0
+ └── meta.yaml
+----
+====
+
+. Add valid content to the `meta.yaml` file. See the “Using a Visual Studio Code extension in Che” section or the README.md file in the `eclipse/che-plugin-registry` repository for a detailed description of the `meta.yaml` file format.
+
+. Create a directory called `latest/` and copy the `meta.yaml` file in it, too. The `meta.yaml` file in the `latest/` directory is used when the plug-in version is not specified (in a devfile, for example).
++
+IMPORTANT: The `latest/` directory should always contain a copy of the latest stable `meta.yaml` file.
++
+[TIP]
+.Example
+====
+----
+$ mkdir che-plugin-registry/v3/plugins/my-org/my-plugin/latest/
+$ copy che-plugin-registry/v3/plugins/my-org/my-plugin/1.0.0/meta.yaml \
+che-plugin-registry/v3/plugins/my-org/my-plugin/latest
+$ tree ./che-plugin-registry/v3/plugins
+./che-plugin-registry/v3/plugins
+ ├── my-org
+ ├── my-plugin
+ ├── 1.0.0
+ ├── meta.yaml
+ ├── latest
+ └── meta.yaml
+----
+====

@@ -1,0 +1,49 @@
+[id="adding-a-new-devfile_{context}"]
+= Adding a new devfile
+
+The `devfiles/` directory contains the devfiles. Every devfile directory has the following structure:
+
+[subs="+quotes"]
+----
+./che-devfile-registry/devfiles
+ ├── _<stack-name>_
+ ├── devfile.yaml
+ └── meta.yaml
+----
+
+To add a new devfile:
+
+.Procedure
+
+. In the `devfiles/` directory, create a new subdirectory `__<stack-name>__/`.
+
+. In this new subdirectory, add a new plug-in `devfile.yaml` file and a `meta.yaml` file. The following is an example `my-stack/` directory, and it contains a `devfile.yaml` file and a `meta.yaml` file:
++
+----
+$ mkdir -p che-devfile-registry/devfiles/my-devfile
+$ touch che-devfile-registry/devfiles/my-devfile/devfile.yaml
+$ touch che-devfile-registry/devfiles/my-devfile/meta.yaml
+$ tree ./che-devfile-registry/devfiles
+./che-devfile-registry/devfiles
+ ├── my-devfile
+ ├── devfile.yaml
+ └── meta.yaml
+----
+
+. Add valid content in the `devfile.yaml` file. For a detailed description of the devfile format, see the link:using-developer-environments-workspaces.html#making-a-workspace-portable-using-a-devfile_using-developer-environments-workspaces[Making a workspace portable using a Devfile] section.
+
+. Ensure that the `meta.yaml` file conforms to the following structure:
++
+[source,yaml]
+----
+displayName: My Stack                                        <1>
+description: This is a custom stack for Che                  <2>
+tags: ["Java", "maven", "ubi"]                               <3>
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg <4>
+globalMemoryLimit: 1686Mi                                    <5>
+----
+<1> Name of the stack as it appears on the user dashboard.
+<2> Description of the stack as it appears on the user dashboard.
+<3> Tags of the stack. Tags usually include the tools included in the stack.
+<4> The link to an `.svg` file that is displayed on the user dashboard.
+<5> The sum of the memory limits of all the components of the stack. This number will be visible on the user dashboard. It is informative and is not taken into account by the Che server.
