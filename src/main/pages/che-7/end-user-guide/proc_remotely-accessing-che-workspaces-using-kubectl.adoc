@@ -1,0 +1,73 @@
+// remote-access-to-che-workspaces
+
+[id="remotely-accessing-che-workspaces-using-the-kubernetes-command-line-tool_{context}"]
+= Remotely accessing Che workspaces using the Kubernetes command-line tool
+
+To access Che workspaces remotely using Kubernetes command-line tool (`kubectl`), follow the instructions in this section.
+
+NOTE: The `kubectl` tool is used in this section to open a shell and manage files in a Che workspace. Alternatively, it is possible to use the `oc`  OpenShift command-line tool.
+
+.Prerequisites
+
+* The kubectl binary from the https://kubernetes.io/docs/tasks/tools/install-kubectl/[Kubernetes website].
+* To verify the installation of `kubectl` using the `kubectl version` command:
++
+[subs="+quotes",options="+nowrap"]
+----
+$ kubectl version
+Client Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.0", GitCommit:"e8462b5b5dc2584fdcd18e6bcfe9f1e4d970a529", GitTreeState:"clean", BuildDate:"2019-06-19T16:40:16Z", GoVersion:"go1.12.5", Compiler:"gc", Platform:"darwin/amd64"}
+Server Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.0", GitCommit:"e8462b5b5dc2584fdcd18e6bcfe9f1e4d970a529", GitTreeState:"clean", BuildDate:"2019-06-19T16:32:14Z", GoVersion:"go1.12.5", Compiler:"gc", Platform:"linux/amd64"}
+----
++
+If the version is 1.5.0 or higher, you can proceed to the steps below.
+
+.Procedure
+
+. Use the `exec` command to open a remote shell.
+// Fill THE OUTPUT HERE
+
+. To find the name of the Kubernetes namespace and pod that runs the Che workspace:
++
+[subs="+quotes",options="+nowrap"]
+----
+$ kubectl get pod -l che.workspace_id --all-namespaces
+NAMESPACE   NAME                                               READY   STATUS    RESTARTS   AGE
+che         workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4   4/4     Running   0          6m4s
+----
+
+In the example above, the pod name is `workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4`, and the namespace is `che`.
+
+. To find the name of the container:
++
+[subs="+quotes",options="+nowrap"]
+----
+$ NAMESPACE=che
+$ POD=workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4
+$ kubectl get pod ${POD} -o custom-columns=CONTAINERS:.spec.containers[*].name
+CONTAINERS
+maven,che-machine-execpau,theia-ide6dj,vscode-javaw92
+----
+
+. When you have the namespace, pod name, and the name of the container, use the `kubectl` command to open a remote shell:
++
+[literal,subs="+quotes",options="nowrap"]
+--
+$ NAMESPACE=che
+$ POD=workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4
+$ CONTAINER=maven
+$ kubectl exec -ti -n ${NAMESPACE} ${POD} -c ${CONTAINER} bash
+user@workspace7b2wemdf3hx7s3ln $
+--
+
+. From the container, execute the `build` and `run` commands (as if from the Che workspace terminal):
++
+[subs="+quotes",options="+nowrap"]
+----
+user@workspace7b2wemdf3hx7s3ln $ mvn clean install
+[INFO] Scanning for projects...
+(...)
+----
+
+.Additional resources
+
+* For more about `kubectl`, see the link:https://kubernetes.io/docs/reference/kubectl/overview/[Kubernetes documentation].

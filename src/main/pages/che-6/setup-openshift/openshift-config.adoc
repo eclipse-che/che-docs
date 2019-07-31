@@ -187,8 +187,21 @@ CHE_KEYCLOAK_OIDC__PROVIDER=<base URL of the OIDC provider that provides a confi
 If the optional http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest[`nonce` OpenId request parameter] is not supported, the following environment variable should be added:
 
 ----
-CHE_KEYCLOAK.USE__NONCE=FALSE
+CHE_KEYCLOAK_USE__NONCE=FALSE
 ----
+
+By default, the OIDC authentication in Che requires using redirect URLs with wildcards. For alternate OIDC providers that only support a list of fixed redirect URLs, use the following environment variable to switch to fixed redirect URL mode:
+
+----
+CHE_KEYCLOAK_USE__FIXED__REDIRECT__URLS=TRUE
+----
+
+In this case, the two redirect URLs that should be registered in the OIDC provider configuration are:
+----
+${CHE_SERVER_ROUTE}/api/keycloak/oidcCallbackIde.html
+${CHE_SERVER_ROUTE}/api/keycloak/oidcCallbackDashboard.html
+----
+
 
 *_Che Server and PostgreSQL_*
 
