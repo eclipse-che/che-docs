@@ -1,0 +1,134 @@
+// installing-che-on-openshift-4-from-operatorhub
+
+[id="installing-che-on-openshift-4_{context}"]
+= Installing Che on OpenShift 4
+
+
+[discrete]
+== Procedure
+ To install Che on OpenShift 4:
+
+ . Create a project named *che* using the *Projects tab*.
+ . Click the *Create Project* button.
+
++
+image::install/open-shift-create-project.png[link="{imagesdir}/install/open-shift-create-project.png"]
+
+. In the *Name* field, type che and click the btn:[Create] button.
++
+image::install/create-project-button.png[link="{imagesdir}/install/create-project-button.png"]
+
+. After the Che project is created, install the operator. In the left panel, expand *Catalog* and click *OperatorHub*.
++
+image::install/catalog-operatorhub.png[link="{imagesdir}/install/catalog-operatorhub.png"]
+
+. In the *Search by keyword* field, type _eclipse che_.
++
+image::install/eclipse-che-in-openshift-creation.png[link="{imagesdir}/install/eclipse-che-in-openshift-creation.png"]
+
+. Click *Eclipse Che*.
++
+image::install/select-eclipse-che-in-openshift.png[link="{imagesdir}/install/select-eclipse-che-in-openshift.png"]
+
+. Click the btn:[Install] button in the *Eclipse Che* pop-up window.
++
+image::install/install-eclipse-che-in-openshift.png[link="{imagesdir}/install/install-eclipse-che-in-openshift.png"]
+
+. In the *A specific namespace* in the cluster drop-down list, select *che*. Click the btn:[Subscribe] button.
++
+image::install/eclipse-che-create-operator-subscription.png[link="{imagesdir}/install/eclipse-che-create-operator-subscription.png"]
++
+The operator is successfully installed and is available in the *Installed Operators* section.
++
+image::install/eclipse-che-overview.png[link="{imagesdir}/install/eclipse-che-overview.png"]
+
+. Navigate to the *Catalog -> Installed Operators* section.
++
+image::install/eclipse-che-installed-operators.png[link="{imagesdir}/install/eclipse-che-installed-operators.png"]
++
+Eclipse Che is displayed as an installed operator having the InstallSucceeded status.
+
+ . To deploy Che, click *Eclipse Che* in the list of installed operators.
++
+image::install/eclipse-che-overview-provided-apis.png[link="{imagesdir}/install/eclipse-che-overview-provided-apis.png"]
+
+. Click the *Create New* link in *Provided APIs* section.
++
+image::install/cc-eclipse-che-cluster.png[link="{imagesdir}/install/cc-eclipse-che-cluster.png"]
+
+. Leave the default values as they are and click the btn:[Create] button in the bottom-left corner of the window.
++
+image::install/create-che-cluster-intalled-operators.png[link="{imagesdir}/install/create-che-cluster-intalled-operators.png"]
++
+As a result, the Eclipse Che cluster is created.
++
+image::install/eclipse-che-cluster-create-che-cluster.png[link="{imagesdir}/install/eclipse-che-cluster-create-che-cluster.png"]
+
+. To track the deployment, click the *eclipse-che* cluster.
++
+image::install/eclipse-che-cluster-overview.png[link="{imagesdir}/install/eclipse-che-cluster-overview.png"]
+
+. Click the Resources tab.
++
+image::install/eclipse-che-resources-tab.png[link="{imagesdir}/install/eclipse-che-resources-tab.png"]
++
+The user can also track the deployment using the command line and these two commands.
++
+[literal,subs="+quotes",options="nowrap"]
+--
+$ oc project che
+$  oc get pods
+NAME                            READY     STATUS    RESTARTS   AGE
+che-8495f4946b-jrzdc            0/1       Running   0          86s
+che-operator-578765d954-99szg   1/1       Running   0          42m
+keycloak-74fbfb9654-g9vp5       1/1       Running   0          4m32s
+postgres-5d579c6847-w6wx5       1/1       Running   0          5m14s
+--
+
+. To view the che-operator logs, run the following command:
++
+[literal,subs="+quotes",options="nowrap"]
+--
+$ oc logs --tail=10 -f che-operator-578765d954-99szg
+time="2019-07-12T09:48:29Z" level=info msg="Exec successfully completed"
+time="2019-07-12T09:48:29Z" level=info msg="Updating eclipse-che CR with status: provisioned with OpenShift identity provider: true"
+time="2019-07-12T09:48:29Z" level=info msg="Custom resource eclipse-che updated"
+time="2019-07-12T09:48:29Z" level=info msg="Creating a new object: ConfigMap, name: che"
+time="2019-07-12T09:48:29Z" level=info msg="Creating a new object: ConfigMap, name: custom"
+time="2019-07-12T09:48:29Z" level=info msg="Creating a new object: Deployment, name: che"
+time="2019-07-12T09:48:30Z" level=info msg="Updating eclipse-che CR with status: Che API: Unavailable"
+time="2019-07-12T09:48:30Z" level=info msg="Custom resource eclipse-che updated"
+time="2019-07-12T09:48:30Z" level=info msg="Waiting for deployment che. Default timeout: 420 seconds"
+--
+
+. To obtain the Eclipse Che URL, wait for the logs to show the following information.
++
+[literal,subs="+quotes",options="nowrap"]
+--
+time="2019-07-12T09:50:13Z" level=info msg="Updating eclipse-che CR with Eclipse Che server URL: http://che-che.apps.cluster-fre-f0a2.fre-f0a2.openshiftworkshop.com"
+time="2019-07-12T09:50:13Z" level=info msg="Custom resource eclipse-che updated"
+time="2019-07-12T09:50:13Z" level=info msg="Eclipse Che is now available at: http://che-che.apps.cluster-fre-f0a2.fre-f0a2.openshiftworkshop.com"
+time="2019-07-12T09:50:13Z" level=info msg="Updating eclipse-che CR with version: 7.0.0-RC-2.0"
+--
++
+The URL is also displayed in the Eclipse Che cluster on the *Installed Operators* window in the `ECLIPSE CHE URL` field.
++
+image::install/eclipse-che-url-filef-overview.png[link="{imagesdir}/install/eclipse-che-url-filef-overview.png"]
+
+. Click on the *Eclipse Che URL* link to display the Eclipse Che login page.
++
+image::install/eclipse-che-login-page.png[link="{imagesdir}/install/eclipse-che-login-page.png"]
+
+. To log in, use OpenShift OAuth or register as a new user. The user must grant permissions if using OAuth to log in to Eclipse Che.
++
+image::install/authorize-access-for-eclipse-che-openshift.png[link="{imagesdir}/install/authorize-access-for-eclipse-che-openshift.png"]
+
+. Update Account information
++
+image::install/update-account-information-eclipse-che.png[link="{imagesdir}/install/update-account-information-eclipse-che.png"]
++
+After the user is logged in, the Eclipse Che *Dashboard* displays where the user can create a workspace.
++
+image::install/eclipse-che-loading.png[link="{imagesdir}/install/eclipse-che-loading.png"]
++
+image::install/eclipse-che-loading.png[link="{imagesdir}/install/eclipse-che-loading.png"]

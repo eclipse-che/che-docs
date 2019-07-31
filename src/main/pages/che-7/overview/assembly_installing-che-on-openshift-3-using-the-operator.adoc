@@ -1,0 +1,82 @@
+// che-quick-starts
+
+:parent-context-of-installing-che-on-openshift-3-using-the-operator: {context}
+
+[id='installing-che-on-openshift-3-using-the-operator_{context}']
+= Installing Che on OpenShift 3 using the operator
+
+:context: installing-che-on-openshift-3-using-the-operator
+
+[discrete]
+== Prerequisites
+
+* A running instance of Openshift 3.11
+* The `oc` tool installed
+* The `chectl` tool installed
+* Administrator rights to the OpenShift installation (if not, che-role will not have enough permissions)
+
+[discrete]
+== Procedure
+
+To Install the Che on OpenShift 3 using the operator:
+
+. Log in to OpenShift (you can, for example, copy the login command from the OpenShift console).
++
+[literal,subs="+quotes",options="nowrap"]
+--
+$ oc login https://master.rhpds311.openshift.opentlc.com:443 --token=<token>
+--
++
+image::install/log-into-openshift.gif[link="{imagesdir}/install/log-into-openshift.gif"]
+
+. Check if the latest oc binary tool is installed on the system.
++
+[literal,subs="+quotes",options="nowrap"]
+--
+$ oc version
+oc v3.11.0+0cbc58b
+kubernetes v1.11.0+d4cacc0
+features: Basic-Auth
+
+Server https://master.rhpds311.openshift.opentlc.com:443
+openshift v3.11.43
+kubernetes v1.11.0+d4cacc0
+--
+
+. Give a  domain to `chectl`. This is the remote hostname that will be accessible. If it is unknown, grab it with a new project using the following command:
++
+[literal,subs="+quotes",options="nowrap"]
+--
+$ oc new-project hello-world
+$ oc new-app centos/httpd-24-centos7~https://github.com/openshift/httpd-ex
+$ oc expose svc/httpd-ex
+$ oc get route httpd-ex
+NAME       HOST/PORT                                                  PATH      SERVICES   PORT       TERMINATION   WILDCARD
+httpd-ex   httpd-ex-hello-world.apps.rhpds311.openshift.opentlc.com             httpd-ex   8080-tcp                 None
+--
+
+. Extract the domain from link:httpd-ex-hello-world.apps.rhpds311.openshift.opentlc.com["Hello World" Openshift page]. It is  the part after the first name: `apps.rhpds311.openshift.opentlc.com`.
+
+. Remove the project.
++
+[literal,subs="+quotes",options="nowrap"]
+--
+$ oc delete project hello-world
+--
+
+
+
+
+include::proc_installing-che-on-openshift-using-the-operator.adoc[leveloffset=+1]
+
+include::proc_installing-che-on-openshift-using-the-operator-and-ssl.adoc[leveloffset=+1]
+
+////
+[id='related-information-{context}']
+== Related information
+
+* A bulleted list of links to other material closely related to the contents of the concept module.
+* For more details on writing assemblies, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+////
+:context: {parent-context-of-installing-che-on-openshift-3-using-the-operator}
