@@ -1,0 +1,56 @@
+[id="viewing-che-theia-ide-logs-on-the-cli_{context}"]
+= Viewing Che-Theia IDE logs on the command line
+
+This section describes how to view Che-Theia IDE logs on the command line.
+
+.Procedure
+
+. Run the following command to get the list of all the pods:
++
+----
+$ oc get pods
+----
++
+[TIP]
+.Example
+====
+----
+$ oc get pods
+NAME                                              READY  STATUS   RESTARTS  AGE
+che-9-xz6g8                                       1/1    Running  1         15h
+workspace0zqb2ew3py4srthh.go-cli-549cdcf69-9n4w2  4/4    Running  0         1h
+----
+====
+
+. Run the following command to get the list of all the containers in the particular pod:
++
+[subs="+quotes"]
+----
+$ oc get pods _<name-of-pod>_ -o
+----
++
+[TIP]
+.Example
+====
+----
+$ oc get pods workspace0zqb2ew3py4srthh.go-cli-549cdcf69-9n4w2 -o
+jsonpath='\{.spec.containers[*].name}'
+> go-cli che-machine-exechr7 theia-idexzb vscode-gox3r
+----
+====
+
+. Get logs from the `theia/ide` container:
++
+[subs="+quotes"]
+----
+$ oc logs -f _<name-of-container>_ -c
+----
++
+[TIP]
+.Example
+====
+----
+$ oc logs -f workspace0zqb2ew3py4srthh.go-cli-549cdcf69-9n4w2 -c
+theia-idexzb
+----
+====
