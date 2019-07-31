@@ -1,41 +1,40 @@
 [id="adding-a-plug-in-at-runtime_{context}"]
 = Adding a plug-in at runtime
 
-[discrete]
-== Procedure
+.Procedure
 
 To add a plug-in:
 
-.  Get the name of the Kubernetes pod that hosts the plug-in registry container. To do this, filter the *app=che-plugin-registry* label.
+. Get the name of the Kubernetes pod that hosts the plug-in registry container. To do this, filter the `app=che-plugin-registry` label:
 +
 ----
-PLUGIN_REG_POD=$(kubectl get -o custom-columns=NAME:.metadata.name \
+$ PLUGIN_REG_POD=$(kubectl get -o custom-columns=NAME:.metadata.name \
  --no-headers -l app=che-plugin-registry pod)
 ----
 
-.  Create the new plug-in directory in the plug-in registry container, if it does not exist.
+. Create the new plug-in directory in the plug-in registry container, if it does not exist:
 +
 ----
-ORG="my-org"
-PLUGIN="my-plugin"
-VERSION="1.0.1"
-kubectl exec $\{PLUGIN_REG_POD} -i -t -- \
+$ ORG="my-org"
+$ PLUGIN="my-plugin"
+$ VERSION="1.0.1"
+$ kubectl exec $\{PLUGIN_REG_POD} -i -t -- \
  mkdir -p /var/www/html/v3/plugins/$\{ORG}/$\{PLUGIN}/$\{VERSION}
 ----
 
-.  Copy the `meta.yaml` file in the container.
+. Copy the `meta.yaml` file in the container:
 +
 ----
 LOCAL_META="$(PWD)/meta.yaml"
-kubectl cp "$\{LOCAL_META}" \
- $\{PLUGIN_REG_POD}:/var/www/html/v3/plugins/$\{ORG}/$\{PLUGIN}/$\{VERSION}
+$ kubectl cp "$\{LOCAL_META}" \
+  $\{PLUGIN_REG_POD}:/var/www/html/v3/plugins/$\{ORG}/$\{PLUGIN}/$\{VERSION}
 ----
 
-.  Update the` index.json` file of the registry.
+. Update the `index.json` file of the registry:
 +
 ----
-kubectl exec $\{PLUGIN_REG_POD} -i -t -- \
- /var/www/html/index_v2.sh v3 > /var/www/html/v3/plugins/index.json
+$ kubectl exec $\{PLUGIN_REG_POD} -i -t -- \
+  /var/www/html/index_v2.sh v3 > /var/www/html/v3/plugins/index.json
 ----
 
-. The user can use this new plug-in from a Che instance.
+. The new plug-in can now be used from a Che instance.

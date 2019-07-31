@@ -1,11 +1,11 @@
 [id="including-the-plug-in-binaries-in-the-registry-image_{context}"]
 = Including the plug-in binaries in the registry image
 
-[discrete]
-== Procedure
-The plug-in registry hosts only Che plug-in metadata. The binaries are usually referred through a link in the `meta.yaml` file. In some cases, such as offline environments, it may be necessary to make the binaries available inside the registry image.
+The plug-in registry only hosts Che plug-in metadata. The binaries are usually referred through a link in the `meta.yaml` file. In some cases, such as offline environments, it may be necessary to make the binaries available inside the registry image.
 
-This section describes how to modify a plug-in `meta.yaml` file to point to a local file inside the container and rebuild a new registry that contains the modified plug-in `meta.yaml` file and the binary. In the following example the Java plug-in that refers to two remote VS Code extensions binaries is considered.
+This section describes how to modify a plug-in `meta.yaml` file to point to a local file inside the container and rebuild a new registry that contains the modified plug-in `meta.yaml` file and the binary. In the following example, the Java plug-in that refers to two remote VS Code extensions binaries is considered.
+
+.Procedure
 
 . Download the binaries locally.
 +
@@ -27,22 +27,22 @@ $\{URL_VS_CODE_EXT2}
 ____________________
 ----
 
+// TODO: this part is obviously missing
 . Retrieve the plugin-registry URL.
 +
-// TODO: this part is obviously missing
 ----
-l
+FIXME
 ----
 
-. Update the URLs in the `meta.yaml` file so that they point to the VS Code extension binaries that are saved in the registry container:.
+. Update the URLs in the `meta.yaml` file, so that they point to the VS Code extension binaries that are saved in the registry container:
 +
 ----
 NEW_URL_VS_CODE_EXT1=http://$\{PLUGIN_REG_URL}/v3/plugins/$\{ORG}/$\{NAME}/$\{VERSION}/$\{VS_CODE_EXT1}
 NEW_URL_VS_CODE_EXT2=http://$\{PLUGIN_REG_URL}/v3/plugins/$\{ORG}/$\{NAME}/$\{VERSION}/$\{VS_CODE_EXT2}
-sed -i -e “s/$\{URL_PLUGIN1}/$\{NEW_URL_VS_CODE_EXT1}/g” \
-./che-plugin-registry/v3/plugins/$\{ORG}/$\{NAME}/$\{VERSION}/meta.yaml
+sed -i -e 's/$\{URL_PLUGIN1}/$\{NEW_URL_VS_CODE_EXT1}/g' \
+  ./che-plugin-registry/v3/plugins/$\{ORG}/$\{NAME}/$\{VERSION}/meta.yaml
 sed -i -e 's/$\{URL_PLUGIN2}/$\{NEW_URL_VS_CODE_EXT2}/g' \
-./che-plugin-registry/v3/plugins/$\{ORG}/$\{NAME}/$\{VERSION}/meta.yaml
+  ./che-plugin-registry/v3/plugins/$\{ORG}/$\{NAME}/$\{VERSION}/meta.yaml
 ----
 
-. Build and deploy the plug-in registry using the instructions in the **Building and running a custom registry image** section.
+. Build and deploy the plug-in registry using the instructions in the xref:building-and-running-a-custom-registry-image_customizing-the-devfile-and-plug-in-registries[] section.

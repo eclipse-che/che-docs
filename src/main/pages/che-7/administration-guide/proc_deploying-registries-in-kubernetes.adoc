@@ -1,16 +1,16 @@
 [id="deploying-registries-in-kubernetes_{context}"]
 = Deploying registries in Kubernetes
 
-[discrete]
-== Procedure
+.Procedure
 
 A Helm chart for the plug-in registry is available in the `/kubernetes/che-plugin-registry/` directory of the GitHub repository.
 
 . To deploy the plug-in registry using the Helm chart, run the following command:
 +
+[subs="+quotes"]
 ----
-NAMESPACE=<namespace-name> # the default Che namespace is "che"
-DOMAIN=<kubernetes-cluster-domain> # on minikube use "$(minikube ip).nip.io"
+NAMESPACE=__<namespace-name>__     <1>
+DOMAIN=__<kubernetes-cluster-domain>__ <2>
 IMAGE="my-plugin-registry"
 helm upgrade --install che-plugin-registry \
  --debug \
@@ -20,12 +20,15 @@ helm upgrade --install che-plugin-registry \
  --set chePluginRegistryImagePullPolicy="IfNotPresent" \
  ./kubernetes/che-plugin-registry/
 ----
-
-. The devfile registry also has a Helm chart in the `deploy/kubernetes/che-devfile-registry` directory of the GitHub repository. To deploy it, run the command:
+<1> The default Che namespace is `che`.
+<2> On Minikube, use `$(minikube ip).nip.io`
+ 
+. The devfile registry also has a Helm chart in the `deploy/kubernetes/che-devfile-registry/` directory of the GitHub repository. To deploy it, run the command:
 +
+[subs="+quotes"]
 ----
-NAMESPACE=<namespace-name> # the default Che namespace is "che"
-DOMAIN=<kubernetes-cluster-domain> # on minikube use "$(minikube ip).nip.io"
+NAMESPACE=__<namespace-name>__     <1>
+DOMAIN=__<kubernetes-cluster-domain>__ <2>
 IMAGE="my-devfile-registry"
 helm upgrade --install che-devfile-registry \
  --debug \
@@ -35,23 +38,25 @@ helm upgrade --install che-devfile-registry \
  --set cheDevfileRegistryImagePullPolicy="IfNotPresent" \
  ./deploy/kubernetes/che-devfile-registry/
 ----
+<1> The default Che namespace is `che`.
+<2> On Minikube, use `$(minikube ip).nip.io`
 
-. The Helm chart creates a pod, a service, and an Ingress. To get them, use the `app=che-plugin-registry` (or, `app=che-plugin-registry` for the devfile registry).
+. The Helm chart creates a pod, a service, and an Ingress. To get them, use `app=che-plugin-registry` (or `app=che-plugin-registry` for the devfile registry).
 +
 ----
 $ kubectl get -o custom-columns=TYPE:.kind,NAME:.metadata.name \
- -l app=che-plugin-registry pod,svc,ingress
-TYPE NAME
-Pod che-plugin-registry-5c7cd8d5c9-zlqlz
-Service che-plugin-registry
-Ingress che-plugin-registry
+  -l app=che-plugin-registry pod,svc,ingress
+TYPE      NAME
+Pod       che-plugin-registry-5c7cd8d5c9-zlqlz
+Service   che-plugin-registry
+Ingress   che-plugin-registry
 ----
 
-. To verify that the new plug-in is correctly published on the plug-in registry, make a request to the registry path `/v3/plugins/index.json` (or, `/devfiles/index.json` for the devfile registry).
+. To verify that the new plug-in is correctly published to the plug-in registry, make a request to the registry path `/v3/plugins/index.json` (or `/devfiles/index.json` for the devfile registry).
 +
 ----
 $ URL=$(kubectl get -o 'custom-columns=URL:.spec.rules[0].host' \
- -l app=che-plugin-registry ingress --no-headers)
+  -l app=che-plugin-registry ingress --no-headers)
 $ INDEX_JSON=$(curl -sSL http://$\{URL}/v3/plugins/index.json)
 $ echo $\{INDEX_JSON} | grep -A 4 -B 5 "\"name\":\"my-plugin\""
 ,\{
@@ -78,25 +83,25 @@ $ echo $\{INDEX_JSON} | grep -A 4 -B 5 "\"name\":\"my-plugin\""
 }
 ----
 
-. Verify that the Che server points to the URL of the registry. To do this, compare the value of `CHE_WORKSPACE_PLUGIN__REGISTRY__URL` parameter on the ConfigMap `che` (or, `CHE_WORKSPACE_DEVFILE__REGISTRY__URL` for the devfile registry).
+. Verify that the Che server points to the URL of the registry. To do this, compare the value of the `pass:[CHE_WORKSPACE_PLUGIN__REGISTRY__URL]` parameter in the `che` ConfigMap (or `pass:[CHE_WORKSPACE_DEVFILE__REGISTRY__URL]` for the devfile registry):
 +
 ----
 $ kubectl get \
- -o "custom-columns=URL:.data['CHE_WORKSPACE_PLUGIN__REGISTRY__URL']" \
- --no-headers cm/che
+  -o "custom-columns=URL:.data['CHE_WORKSPACE_PLUGIN__REGISTRY__URL']" \
+  --no-headers cm/che
 URL
 http://che-plugin-registry-che.192.168.99.100.nip.io/v3
 ----
 +
-With the URL of the Ingress:
+with the URL of the Ingress:
 +
 ----
 $ kubectl get -o 'custom-columns=URL:.spec.rules[0].host' \
- -l app=che-plugin-registry ingress --no-headers
+  -l app=che-plugin-registry ingress --no-headers
 che-plugin-registry-che.192.168.99.100.nip.io
 ----
 
-.  If they do not match, update the ConfigMap and restart the Che server.
+. If they do not match, update the ConfigMap and restart the Che server.
 +
 ----
 $ kubectl edit cm/che
@@ -105,7 +110,7 @@ $ kubectl scale --replicas=0 deployment/che
 $ kubectl scale --replicas=1 deployment/che
 ----
 +
-After the new registries are deployed and the Che server is configured to use them, the new plug-ins are available in the *Plugin* view of a workspace.
+When the new registries are deployed and the Che server is configured to use them, the new plug-ins are available in the *Plugin* view of a workspace.
 +
 image::customization/deploying-plugin-registry-in-kubernetes.png[]
 +
