@@ -9,7 +9,8 @@
 
 The Che-Theia IDE allows users to define custom commands in a devfile that are then available when working in a workspace.
 
-The following is an example of commands section of a devfile.
+The following is an example of the `commands` section of a devfile.
+
 [source,yaml]
 ----
 commands:
@@ -25,17 +26,17 @@ commands:
   - type: vscode-task
     referenceContent: |
             {
-                    "version": "2.0.0",
-                    "tasks":
-                    [
-                     {
-                      "label": "theia:watch",
-                       "type": "shell",
-                       "options": {"cwd": "/projects/theia"},
-                       "command": "yarn",
-                       "args": ["watch"]
-                     }
-                    ]
+             "version": "2.0.0",
+             "tasks":
+             [
+              {
+               "label": "theia:watch",
+                "type": "shell",
+                "options": {"cwd": "/projects/theia"},
+                "command": "yarn",
+                "args": ["watch"]
+              }
+             ]
             }
 - name: debug
   actions:
@@ -53,42 +54,28 @@ commands:
              ]
             }
 ----
-*Che commands*
 
-`theia:build`:
-
-Here:
-
+Che commands:: `theia:build`
++
 * The `exec` type implies that the Che runner is used for command execution. The user can specify the component in whose container the command is executed.
 * The `command` field contains the command line for execution.
 * The `workdir` is the working directory in which the command is executed.
 
-*Visual Studio Code (VS Code) tasks*
-
-`run`
-
-Here:
-
+Visual Studio Code (VS Code) tasks:: `run`
++
 * The type is `vscode-task`.
 * For this type of command, the `referenceContent` field must contain content with task configurations in the VS Code format.
 * For more information about VS Code tasks, see the link:https://code.visualstudio.com/docs/editor/tasks[Task section at Visual Studio User Guide page].
 
-*VS Code launch configurations*
-
-`debug`
-
-Here:
-
+VS Code launch configurations:: `debug`
++
 * The type is `vscode-launch`.
 * It contains the launch configurations in the VS Code format.
-* For more information about VS Code launch configurations, see the link:https://code.visualstudio.com/docs/editor/debugging#_launch-configurations[Debugging section at Visual Studio documentation page].
+* For more information about VS Code launch configurations, see the link:https://code.visualstudio.com/docs/editor/debugging#_launch-configurations[Debugging section at the Visual Studio documentation page].
 
-For a list of available tasks and launch configurations, see the `tasks.json` and the `launch.json` configuration files in the `/workspace/.theia` directory where the configurations from the devfile are exported to.
+For a list of available tasks and launch configurations, see the `tasks.json` and the `launch.json` configuration files in the `/workspace/.theia` directory where the configuration from the devfile is exported to.
 
-
-
-
-include::con_executing-a-task.adoc[leveloffset=+1]
+include::con_che-theia-task-types.adoc[leveloffset=+1]
 
 include::proc_running-and-debugging.adoc[leveloffset=+1]
 
@@ -102,4 +89,5 @@ include::proc_editing-a-task-and-a-launch-configuration.adoc[leveloffset=+1]
 * For more details on writing assemblies, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
 * Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
 ////
+
 :context: {parent-context-of-defining-custom-commands-for-che-theia}
