@@ -1,10 +1,10 @@
-id='installing-the-cert-manager_{context}']
-= Installing the cert-manager
+[id='installing-cert-manager-on-azure_{context}']
+= Installing cert-manager on Azure
 
-[discrete]
-== Procedure
 
-. To install the cert-manager:
+.Procedure
+
+. To install the cert-manager on Azure, start by creating the *cert-manager* namespace:
 +
 ----
 $ kubectl create namespace cert-manager
@@ -12,21 +12,21 @@ namespace/cert-manager created
 
 $ kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
 ----
-+
-. Set `validate=false`. If not, the cert-manager will only work on the latest Kubernetes version.
+
+. Set `validate=false`. Without it, cert-manager only works with the latest Kubernetes version:
 +
 ----
 $ kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.8.1/cert-manager.yaml --validate=false
 ----
-+
-. Create the che namespace if it does not already exist.
+
+. Create the *che* namespace if it does not already exist:
 +
 ----
 $ kubectl create namespace che
 namespace/che created
 ----
-+
-. Create the certificate issuer. Enter your email address in the *email* field.
+
+. Create the certificate issuer. Enter your email address in the *email* field:
 +
 ----
 cat <<EOF | kubectl apply -f -
@@ -62,8 +62,8 @@ spec:
     server: https://acme-v02.api.letsencrypt.org/directory
 EOF
 ----
-+
-. Create the certificate. Edit the domain name.
+
+. Create the certificate. Edit the domain name:
 +
 ----
 cat <<EOF | kubectl apply -f -
@@ -87,20 +87,20 @@ spec:
          - '*.azr.my-ide.cloud'
 EOF
 ----
-+
-. Check that the *issuerRef* name is the same as the *ClusterIssuer*. A new DNS challenge is added to the DNS zone for Let’s encrypt.
+
+. Check that the `issuerRef` name is the same as the `ClusterIssuer`. A new DNS challenge is added to the DNS zone for _Let’s Encrypt_.
 +
 image::installation/new-dns-challenge-added.png[link="{imagesdir}/installation/new-dns-challenge-added.png"]
 +
 The cert-manager logs should contain information about the DNS challenge.
-+
-. Obtain the logs using the following command (here, *cert-manager-8d478bb45-2924h*  is the name of the cert-manager pod).
+
+. Obtain the logs using the following command (here, `cert-manager-8d478bb45-2924h` is the name of the cert-manager pod):
 +
 ----
 $  kubectl logs -f -n cert-manager cert-manager-8d478bb45-2924h 
 ----
-+ 
-. Ensure that the certificate is ready.
+
+. Ensure that the certificate is ready:
 +
 ----
 $ kubectl describe certificate/che-tls -n che
@@ -120,7 +120,7 @@ Events:
   Normal  GenerateSelfSigned  47s   cert-manager  Generated temporary self signed certificate
   Normal  OrderCreated        47s   cert-manager  Created Order resource "che-tls-3529929423”
 ----
-+
+
 . Wait for the status to show *OK* and ensure that the log contains the following:
 +
 ----
@@ -166,7 +166,3 @@ Events:
   Normal  OrderComplete  34s   cert-manager  Order "che-tls-3633081213" completed successfully
   Normal  CertIssued     34s   cert-manager  Certificate issued successfully
 ----
-
-
-
-
