@@ -1,0 +1,224 @@
+[id="installing-cert-manager-on-kubernetes_{context}"]
+= Installing cert-manager on Kubernetes
+
+[discrete]
+== Procedure
+
+1.  To install cert-manager:
+
+$ kubectl create namespace cert-manager
+
+namespace/cert-manager created
+
+$ kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
+
+$ kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.8.1/cert-manager.yaml --validate=false
+
+1.  Create the *che* namespace if it does not already exist.
+
+$ kubectl create namespace che
+
+namespace/che created
+
+1.  Create the certificate issuer. Replace your email address in the `email` field.
+
+______________________________
+cat <<EOF | kubectl apply -f -
+______________________________
+
+_______________________________________
+apiVersion: certmanager.k8s.io/v1alpha1
+_______________________________________
+
+___________________
+kind: ClusterIssuer
+___________________
+
+_________
+metadata:
+_________
+
+_____________________________
+ name: che-certificate-issuer
+_____________________________
+
+_____
+spec:
+_____
+
+______
+ acme:
+______
+
+_______
+ dns01:
+_______
+
+___________
+ providers:
+___________
+
+____________
+ - clouddns:
+____________
+
+_______________________
+ project: eclipse-che-1
+_______________________
+
+_________________________
+ serviceAccountSecretRef:
+_________________________
+
+______________
+ key: key.json
+______________
+
+_____________________________________
+ name: clouddns-dns01-solver-svc-acct
+_____________________________________
+
+_______________
+ name: clouddns
+_______________
+
+___________________________
+ email: florent@example.com
+___________________________
+
+_____________________
+ privateKeySecretRef:
+_____________________
+
+__________________
+ name: letsencrypt
+__________________
+
+_________________________________________________________________________________________________________
+ server: https://acme-v02.api.letsencrypt.org/directory[_https://acme-v02.api.letsencrypt.org/directory_]
+_________________________________________________________________________________________________________
+
+EOF
+
+1.  Create the certificate. Edit the domain name.
+
+cat <<EOF | kubectl apply -f -
+
+apiVersion: certmanager.k8s.io/v1alpha1
+
+kind: Certificate
+
+metadata:
+
+ name: che-tls
+
+ namespace: che
+
+spec:
+
+ secretName: che-tls
+
+ issuerRef:
+
+ name: che-certificate-issuer
+
+ kind: ClusterIssuer
+
+ dnsNames:
+
+ - '*.gcp.my-ide.cloud'
+
+ acme:
+
+ config:
+
+ - dns01:
+
+ provider: clouddns
+
+ domains:
+
+ - '*.gcp.my-ide.cloud'
+
+EOF
+
+1.  Check that the *issuerRef* name is the same as the **ClusterIssuer. **A new DNS challenge is added to the DNS zone for Let’s encrypt.
+
+image:./Pictures/10000201000004C6000001F6317DA523E36863F6.png[image,width=624,height=255]
+
+The cert-manager logs should contain information about the DNS challenge:
+
+1.  Obtain the logs using the following command (here, `cert-manager-8d478bb45-2924h` is the name of the cert-manager pod):
+
+$ kubectl logs -f -n cert-manager cert-manager-8d478bb45-2924h
+
+I0729 13:50:39.414729 1 dns.go:112] Checking DNS propagation for "gcp.my-ide.cloud" using name servers: [10.112.0.10:53]
+
+E0729 13:50:39.422521 1 sync.go:180] cert-manager/controller/challenges "msg"="propagation check failed" "error"="DNS record for \"gcp.my-ide.cloud\" not yet propagated" "dnsName"="gcp.my-ide.cloud" "resource_kind"="Challenge" "resource_name"="che-tls-3529929423-0" "resource_namespace"="che" "type"="dns-01"
+
+I0729 13:50:39.422598 1 controller.go:219] cert-manager/controller/challenges "level"=0 "msg"="finished processing work item" "key"="che/che-tls-3529929423-0"
+
+I0729 13:50:49.406767 1 controller.go:213] cert-manager/controller/challenges "level"=0 "msg"="syncing resource" "key"="che/che-tls-3529929423-0"
+
+I0729 13:50:49.409802 1 dns.go:112] Checking DNS propagation for "gcp.my-ide.cloud" using name servers: [10.112.0.10:53]
+
+E0729 13:50:49.420131 1 sync.go:180] cert-manager/controller/challenges "msg"="propagation check failed" "error"="DNS record for \"gcp.my-ide.cloud\" not yet propagated" "dnsName"="gcp.my-ide.cloud" "resource_kind"="Challenge" "resource_name"="che-tls-3529929423-0" "resource_namespace"="che" "type"="dns-01"
+
+I0729 13:50:49.420198 1 controller.go:219] cert-manager/controller/challenges "level"=0 "msg"="finished processing work item" "key"="che/che-tls-3529929423-0"
+
+1.  Ensure that the certificate is ready.
+
+ $ kubectl describe certificate/che-tls -n che
+
+Status:
+
+ Conditions:
+
+ Last Transition Time: 2019-07-29T13:50:35Z
+
+ Message: Certificate issuance in progress. Temporary certificate issued.
+
+ Reason: TemporaryCertificate
+
+ Status: False
+
+ Type: Ready
+
+Events:
+
+ Type Reason Age From Message
+
+ ---- ------ ---- ---- -------
+
+ Normal Generated 47s cert-manager Generated new private key
+
+ Normal GenerateSelfSigned 47s cert-manager Generated temporary self signed certificate
+
+ Normal OrderCreated 47s cert-manager Created Order resource "che-tls-3529929423"
+
+1.  Wait for the status to become *OK* and ensure that the log contains the following:
+
+I0729 13:56:26.140886 1 conditions.go:143] Found status change for Certificate "che-tls" condition "Ready": "False" -> "True"; setting lastTransitionTime to 2019-07-29 13:56:26.140866531 +0000 UTC m=+4557.134131468
+
+entry
+
+1.  Ensure that the status is up-to-date using the following command:
+
+$ kubectl describe certificate/che-tls -n che
+
+ +
+Status:
+
+ Conditions:
+
+ Last Transition Time: 2019-07-29T13:56:26Z
+
+ Message: Certificate is up to date and has not expired
+
+ Reason: Ready
+
+ Status: True
+
+ Type: Ready
+
+ Not After: 2019-10-27T12:56:24Z
