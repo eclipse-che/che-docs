@@ -1,0 +1,168 @@
+[id='installing-cert-manager-on-azure_{context}']
+= Installing cert-manager on Azure
+
+
+.Procedure
+
+. To install the cert-manager on Azure, start by creating the *cert-manager* namespace:
++
+----
+$ kubectl create namespace cert-manager
+namespace/cert-manager created
+
+$ kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
+----
+
+. Set `validate=false`. Without it, cert-manager only works with the latest Kubernetes version:
++
+----
+$ kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.8.1/cert-manager.yaml --validate=false
+----
+
+. Create the *che* namespace if it does not already exist:
++
+----
+$ kubectl create namespace che
+namespace/che created
+----
+
+. Create the certificate issuer. Enter your email address in the *email* field:
++
+----
+cat <<EOF | kubectl apply -f -
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: ClusterIssuer
+metadata:
+  name: che-certificate-issuer
+spec:
+  acme:
+    dns01:
+      providers:
+      - azuredns:
+          # Service principal clientId (It's the value printed in the previous lines: echo ID=$AZURE_CERT_MANAGER_SP_APP_ID )
+          clientID: <AZURE_CERT_MANAGER_SP_APP_ID>
+          # A secretKeyRef to a service principal ClientSecret (password)
+          # ref: https://docs.microsoft.com/en-us/azure/container-service/kubernetes/container-service-kubernetes-service-principal
+          clientSecretSecretRef:
+            name: azuredns-config
+            key: CLIENT_SECRET
+          # Azure subscription Id that can be obtained with command:
+          # $ az account show  | jq -r '.id' 
+          subscriptionID: <SUBSCRIPTION_ID>
+          # Azure AD tenant Id that can be obtained with command:
+          # $ az account show  | jq -r '.tenantId' 
+          tenantID: <TENANT_ID>
+          resourceGroupName: eclipseCheResourceGroup
+          # The DNS Zone to use
+          hostedZoneName: azr.my-ide.cloud
+        name: azuredns
+    email: florent@example.com
+    privateKeySecretRef:
+      name: letsencrypt
+    server: https://acme-v02.api.letsencrypt.org/directory
+EOF
+----
+
+. Create the certificate. Edit the domain name:
++
+----
+cat <<EOF | kubectl apply -f -
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+ name: che-tls
+ namespace: che
+spec:
+ secretName: che-tls
+ issuerRef:
+   name: che-certificate-issuer
+   kind: ClusterIssuer
+ dnsNames:
+   - '*.azr.my-ide.cloud'
+ acme:
+   config:
+     - dns01:
+         provider: azuredns
+       domains:
+         - '*.azr.my-ide.cloud'
+EOF
+----
+
+. Check that the `issuerRef` name is the same as the `ClusterIssuer`. A new DNS challenge is added to the DNS zone for _Let’s Encrypt_.
++
+image::installation/new-dns-challenge-added.png[link="{imagesdir}/installation/new-dns-challenge-added.png"]
++
+The cert-manager logs should contain information about the DNS challenge.
+
+. Obtain the logs using the following command (here, `cert-manager-8d478bb45-2924h` is the name of the cert-manager pod):
++
+----
+$  kubectl logs -f -n cert-manager cert-manager-8d478bb45-2924h 
+----
+
+. Ensure that the certificate is ready:
++
+----
+$ kubectl describe certificate/che-tls -n che
+
+Status:
+  Conditions:
+    Last Transition Time:  2019-07-29T13:50:35Z
+    Message:               Certificate issuance in progress. Temporary certificate issued.
+    Reason:                TemporaryCertificate
+    Status:                False
+    Type:                  Ready
+
+Events:
+  Type    Reason              Age   From          Message
+  ----    ------              ----  ----          -------
+  Normal  Generated           47s   cert-manager  Generated new private key
+  Normal  GenerateSelfSigned  47s   cert-manager  Generated temporary self signed certificate
+  Normal  OrderCreated        47s   cert-manager  Created Order resource "che-tls-3529929423”
+----
+
+. Wait for the status to show *OK* and ensure that the log contains the following:
++
+----
+$ kubectl describe certificate/che-tls -n che
+Name:         che-tls
+Namespace:    che
+Labels:       <none>
+Annotations:  kubectl.kubernetes.io/last-applied-configuration:
+                {"apiVersion":"certmanager.k8s.io/v1alpha1","kind":"Certificate","metadata":{"annotations":{},"name":"che-tls","namespace":"che"},"spec":{...
+API Version:  certmanager.k8s.io/v1alpha1
+Kind:         Certificate
+Metadata:
+  Creation Timestamp:  2019-07-30T08:22:13Z
+  Generation:          1
+  Resource Version:    76822
+  Self Link:           /apis/certmanager.k8s.io/v1alpha1/namespaces/che/certificates/che-tls
+  UID:                 225a1cfb-b2a3-11e9-9e1c-76b96a78248b
+Spec:
+  Acme:
+    Config:
+      dns01:
+        Provider:  azuredns
+      Domains:
+        *.azr.my-ide.cloud
+  Dns Names:
+    *.azr.my-ide.cloud
+  Issuer Ref:
+    Kind:       ClusterIssuer
+    Name:       che-certificate-issuer
+  Secret Name:  che-tls
+Status:
+  Conditions:
+    Last Transition Time:  2019-07-30T08:23:21Z
+    Message:               Certificate is up to date and has not expired
+    Reason:                Ready
+    Status:                True
+    Type:                  Ready
+  Not After:               2019-10-28T07:23:19Z
+Events:
+  Type    Reason         Age   From          Message
+  ----    ------         ----  ----          -------
+  Normal  OrderCreated   102s  cert-manager  Created Order resource "che-tls-3633081213"
+  Normal  OrderComplete  34s   cert-manager  Order "che-tls-3633081213" completed successfully
+  Normal  CertIssued     34s   cert-manager  Certificate issued successfully
+----
