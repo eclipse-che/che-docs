@@ -1,44 +1,40 @@
 [id="creating-a-workspace-by-importing-source-code-of-your-project_{context}"]
 = Creating a workspace by importing the source code of your project
 
-This section is about how to create a new workspace to edit an existing codebase.
+This section describes how to create a new workspace to edit an existing codebase.
 
-There are 2 ways to do that *before* starting a workspace:
+There are two ways to do that *before* starting a workspace:
 
 * xref:#configure-devfile[Select a stack from the *Dashboard*, then change the devfile to include your project]
-* xref:#configuring-a-che-workspace-using-a-devfile_end-user-tasks[Add a devfile to a git repository and start the workspace using chectl or a factory]
+* xref:#configuring-a-che-workspace-using-a-devfile_end-user-tasks[Add a devfile to a Git repository and start the workspace using chectl or a factory]
 
 
 To create a new workspace to edit an existing codebase, use one of the following three methods *after* you have started the workspace:
 
-* xref:#importing-from-the-user-dashboard-into-an-existing-workspace[Import from the *Dashboard* into an existing workspace]
-* xref:#importing-to-a-running-workspace-with-git-clone-command[Import to a running workspace with git clone command]
-* xref:#importing-to-a-running-workspace-with-git-clone-in-a-terminal[Import to a running workspace with git clone in a terminal]
 * Import a workspace from the *Dashboard* into an existing workspace. For details, see xref:#importing-from-the-user-dashboard-into-an-existing-workspace.
 * Import to a running workspace using the `git clone` command. For details, see xref:#importing-to-a-running-workspace-with-git-clone-in-a-terminal.
 * Import to a running workspace using the `git clone` command in a terminal. For details, see xref:#importing-to-a-running-workspace-with-git-clone-in-a-terminal.
+
 [discrete]
 == Prerequisites
 
-* You need an OKD, OCP, or OSD cluster, if using Che on Openshift. See below for use of link:https://www.okd.io/minishift/[Minishift] (OKD).
+* An OKD, OCP, or OSD cluster, if using Che on Openshift. See below for use of link:https://www.okd.io/minishift/[Minishift] (OKD).
 
-* Or, you can use a Kubernetes cluster such as link:https://github.com/kubernetes/minikube#installation[Minikube].
+* Or, use a Kubernetes cluster such as link:https://github.com/kubernetes/minikube#installation[Minikube].
 
 * To install on Minishift or Minikube, see xref:che-quick-starts#deploying-che-using-chectl[Deploying Che using chectl].
 
-* You need to have created a workspace with plugins related to your development environment.
+* A workspace with plug-ins related to your development environment.
 
 [discrete]
 == Importing from the Dashboard into an existing workspace
 
-There are at least two ways to import a project via the *Dashboard*.
+. Import the project. There are at least two ways to import a project via the *Dashboard*.
 
-From the *Dashboard*, select Workspaces, then select your workspace by clicking on its name, or use the gear icon. The former will link you to the workspace's *Overview* tab, while the latter will link to the *Devfile* tab where you can enter your own YAML configuration.
-You can import a project using the *Dashboard* in one of the following two ways:
+* From the *Dashboard*, select *Workspaces*, then select your workspace by clicking on its name. This will link you to the workspace's *Overview* tab.
 
-* On the *Dashboard*, click *Workspaces*. Then, click the required workspace. The *Overview* tab displays showing the overview of the workspace.
-* On the *Dashboard*, click *Workspaces*. Then, click the gear icon next to the required workspace. The *Devfile* tab displays allowing you to enter the YAML configuration.
-In either case, click the *Projects* tab next.
+* Or, use the gear icon. This will link to the *Devfile* tab where you can enter your own YAML configuration.
+
 . Click the *Projects* tab.  
 // TODO https://github.com/eclipse/che/issues/13665 remove ref to blank and zip
 . Click *Add Project*. You can then import a sample project, create a blank project, import from a Git project, or import from a zip file.
@@ -53,24 +49,25 @@ You can add a project to a non-running workspace, but you must start the workspa
 // TODO https://github.com/eclipse/che/issues/13665 remove section
 === Creating a new repository
 
-To add a blank project, take the following steps:
+To add a blank project:
 
 . Type a name and a description in the *Name* and *Description* fields.
-
-
++
 image::workspaces/add-blank-project.png[Add blank project]
-
++
 . Click *Open* to open your workspace.
 
 image::workspaces/open-blank-project.png[Your empty project]
 
-=== Edit an existing repository
+=== Editing an existing repository
 
-To edit an existing repository, choose the git project or zip file, and Che will load it into your workspace.
+To edit an existing repository:
 
+. Choose the Git project or zip file, and Che will load it into your workspace.
++
 image::workspaces/add-git-project.png[Add existing git project]
-
-Next, open your workspace by clicking the green *Open* button.
++
+. To open the workspace, click the btn:[Open] button.
 
 // TODO https://github.com/eclipse/che/issues/13665 fix screenshot
 image::workspaces/open-git-project.png[Your git project]
@@ -79,30 +76,34 @@ image::workspaces/open-git-project.png[Your git project]
 
 After you have a project in your workspace, you can add commands to it. Adding commands to your projects allows you to run, debug, or launch your application in a browser.
 
-. To add commands to the project, open the workspace configuration in the *Dashboard*, then select the *Devfile* tab:
+To add commands to the project:
+
+. Open the workspace configuration in the *Dashboard*, then select the *Devfile* tab.
 +
 image::workspaces/workspace-config-yaml.png[Add commands to workspace]
 
 . Open the workspace. 
 
-. To run a command, select *Terminal* > *Run Task...* from the main menu.
+. To run a command, select *Terminal* > *Run Task* from the main menu.
 +
 image::workspaces/run-command.png[Run task]
-
-. To configure commands, select *Terminal* > *Configure Tasks...* from the main menu.
++
+. To configure commands, select *Terminal* > *Configure Tasks* from the main menu.
 +
 image::workspaces/configure-command.png[Configure tasks]
 
-== Importing to a running workspace using the *Git: Clone...* command
+== Importing to a running workspace using the *Git: Clone* command
 
-. Start a workspace, then use the *Git: Clone...* command from the command palette or the Welcome screen to import a project to a running workspace.
+To import to a running workspace using the *Git: Clone* command:
+
+. Start a workspace, then use the *Git: Clone* command from the command palette or the Welcome screen to import a project to a running workspace.
 +
 image::workspaces/welcome.png[Welcome screen]
-
-. Open the command palette with `F1` or `CTRL-SHIFT-P`, or from the link in the Welcome screen.
++
+. Open the command palette using `F1` or `CTRL-SHIFT-P`, or from the link in the Welcome screen.
 +
 image::workspaces/git-clone-command.png[Invoke git clone command]
-
++
 . Enter the path to the project you want to clone.
 +
 image::workspaces/git-clone-command-2.png[Configure git clone command]
@@ -115,7 +116,7 @@ image::workspaces/git-clone-terminal.png[Run git clone in a terminal]
 
 [NOTE]
 ====
-Importing or deleting workspace projects in the terminal does not update workspace configuration, and the change is not reflected in the *Project* and *Devfile* tabs in the dashboard.
+Importing or deleting workspace projects in the terminal does not update the workspace configuration, and the change is not reflected in the *Project* and *Devfile* tabs in the dashboard.
 
 Similarly, if you add a project via the *Dashboard*, then delete it with `rm -fr myproject`, it may still appear in the *Projects* or *Devfile* tab.
 ====
