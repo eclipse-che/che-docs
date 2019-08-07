@@ -1,0 +1,85 @@
+[id='changing-the-configuration-of-an-existing-workspace-from-the-user-dashboard_{context}']
+= Changing the configuration of an existing workspace from the User Dashboard
+
+This section describes how to change the configuration of an existing workspace from the User Dashboard.
+
+[discrete]
+== Prerequisites
+
+* A running instance of Eclipse Che. To install an instance of Eclipse Che see link:{site-baseurl}che-7/che-quick-starts/[Che quick starts].
+
+* An existing workspace defined on this instance of Eclipse Che xref:creating-a-workspace-from-user-dashboard_{context}[Creating a workspace from user dashboard]. 
+
+[discrete]
+== Procedure
+
+. Navigate to the Che Dashboard. See link:{site-baseurl}che-7/navigating-che-using-the-dashboard/[Navigating Che using the dashboard].
+
+. In the left navigation panel, navigate to  *Workspaces*.
+
+. Click on the name of a workspace to navigate to the configuration overview page.
+
+. Click on the *Overview* tab, to execute following actions:
+
+** Change the *Workspace name*. 
+
+** Toggle *Ephemeral mode*. 
+
+** *Export* the workspace configuration to a file or private cloud. 
+
+** *Delete* the workspace.
++
+image::workspaces/workspace-config-overview.png[Worksapce configuration overview]
+
+// TODO https://github.com/eclipse/che/issues/13665 fix screenshot
+
+. In the *Projects* section, choose the projects to integrate in the workspace.
+
+.. Click on the btn:[Add Project] button
+
+.. Select the projects to integrate in the workspace.
+
+.. Click on th btn:[Add] button.
++
+image::workspaces/workspace-config-projects.png[Add projects to workspace]
++ 
+
+. In the *Plugins* section, choose the plugins to integrate in the workspace.
++
+[TIP]
+.Example
+====
+Start with a generic Java-based stack, then later add support for Node or Python.
+====
+
+. In the *Editors* section, choose the editors to integrate in the workspace. The Che 7 editor is based on Theia.
++
+[TIP]
+.Example: Switch to the Che 6 editor
+====
+* To Switch to the Che 6 editor, select the GWT IDE.
+====
+
+[id="configure-devfile"]
+[start=5]
+. From the *Devfile* tab, edit the workspace's YAML configuration. See link:{site-baseurl}che-7/making-a-workspace-portable-using-a-devfile/#devfile-reference_making-a-workspace-portable-using-a-devfile[Devfile reference].
++
+[TIP]
+.Example: add commands
+====
+image::workspaces/workspace-config-yaml.png[YAML configuration]
+====
++
+[TIP]
+.Example: add a project
+====
+To add a project into the workspace, add or edit the following section:
+
+```
+projects:
+  - name: che
+    source:
+      type: git
+      location: 'https://github.com/eclipse/che.git'
+```
+====
