@@ -15,15 +15,18 @@ summary:
 
 :context: monitoring-che
 
-Che can expose certain data as metrics, that can be processed by Prometheus and Grafana stack. Prometheus is a monitoring system, that maintains the collection of metrics - time series key-value data which can represent consumption of resources like CPU and memory, amount of processed HTTP queries and their execution time, and Che specific resources, such as number of users and workspaces, the start and shutdown of workspaces, information about JsonRPC stack.
+Che can expose certain data as metrics, that can be processed by Prometheus and Grafana stacks. Prometheus is a monitoring system, that maintains the collection of metrics - time series key-value data which can represent consumption of resources like CPU and memory, amount of processed HTTP queries and their execution time, and Che specific resources, such as number of users and workspaces, the start and shutdown of workspaces, information about JsonRPC stack.
 
-Prometheus is powered with a special query language, that allows manipulating the collected data, and perform various binary, vector and aggregation operations with it, to help create a more refined view on data.
+Prometheus is powered with a special query language, that allows manipulating the collected data, and performing various binary, vector, and aggregation operations with it. This helps create a more refined view on data.
 
-While Prometheus is the central piece, responsible for scraping and storing the metrics, while Grafana offers a front-end "facade" with tools to create a various visual representation in the form of dashboards with various panels and graph types.
+Prometheus is the central piece, which is responsible for scraping and storing the metrics. Grafana offers a front-end "facade" with tools to create various visual representations in the form of dashboards with panels and graph types.
 
-Note that this monitoring stack is not an official production-ready solution, but rather has an introduction purpose.
+[NOTE]
+====
+This monitoring stack is not an official production-ready solution.
+====
 
-.The structure of Che monitoring stack
+.The structure of Che monitoring stacks
 image::monitoring/monitoring-che-stack-structure.png[link="{imagesdir}/monitoring/monitoring-che-stack-structure.png"]
 
 [id="enabling-che-metrics-collections"]
@@ -32,16 +35,20 @@ image::monitoring/monitoring-che-stack-structure.png[link="{imagesdir}/monitorin
 [id='prerequisites-{context}',discrete]
 .Prerequisites
 
-* Installed Prometheus 2.9.1 or above. See more link:https://prometheus.io/docs/introduction/first_steps/[https://prometheus.io/docs/introduction/first_steps/].
-* Installed Grafana 6.0 or above. See more at link:https://grafana.com/docs/installation/[https://grafana.com/docs/installation/]
+* Installed Prometheus 2.9.1 or higher. For more information, see link:https://prometheus.io/docs/introduction/first_steps/[https://prometheus.io/docs/introduction/first_steps/].
+* Installed Grafana 6.0 or higher. For more information, see link:https://grafana.com/docs/installation/[https://grafana.com/docs/installation/]
 
 .Procedure
 
-. Set the `CHE_METRICS_ENABLED=true` environment variable
-. Expose the `8087` port as a service on the che-master host
-. Configure Prometheus to scrape metrics from the `8087` port
-. Configure a Prometheus data source on Grafana
-. Deploy Che-specific dashboards on Grafana
+. Set the `CHE_METRICS_ENABLED=true` environment variable.
+
+. Expose the `8087` port as a service on the che-master host.
+
+. Configure Prometheus to scrape metrics from the `8087` port.
+
+. Configure a Prometheus data source on Grafana.
+
+. Deploy Che-specific dashboards on Grafana.
 
 
 include::proc_collecting-che-metrics-with-prometheus.adoc[leveloffset=+1]
