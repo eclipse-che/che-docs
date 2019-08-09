@@ -1,5 +1,15 @@
-[id="configuring-a-che-workspace-using-a-devfile_{context}"]
-= Configuring a Che workspace using a Devfile
+---
+title: Configuring a workspace using a devfile
+keywords:
+tags: []
+sidebar: che_7_docs
+permalink: che-7/configuring-a-workspace-using-a-devfile/
+folder: che-7/end-user-guide
+summary:
+---
+
+[id="configuring-a-workspace-using-a-devfile"]
+= Configuring a workspace using a devfile
 
 This section describes how to select a workspace, loading in the required stack and a sample project, all in one step.
 
@@ -11,13 +21,13 @@ See the link:https://redhat-developer.github.io/devfile/devfile[Devfile specific
 
 * Or, you can use a Kubernetes cluster such as link:https://github.com/kubernetes/minikube#installation[Minikube].
 
-* To install on Minishift or Minikube, see xref:che-quick-starts#deploying-che-using-chectl[Deploying Che using chectl].
+* To install on Minishift or Minikube, see link:{{site.baseurl}}che-7/running-che-locally/#deploying-che-using-chectl[Deploying Che using chectl].
 
 .Procedure
 
 == Importing a project using a devfile
 
-Stacks are defined as link:using-developer-environments-workspaces.html#making-a-workspace-portable-using-a-devfile_using-developer-environments-workspaces[devfiles]. This gives the user more flexibility when defining the project(s), IDE, commands, tools, and application runtimes needed in their workspace.
+Stacks are defined as link:{{site.baseurl}}che-7/making-a-workspace-portable-using-a-devfile/[devfiles]. This gives the user more flexibility when defining the project(s), IDE, commands, tools, and application runtimes needed in their workspace.
 
 NOTE: In Che 6, a stack is defined with a Dockerfile. In Che 7, `devfile.yaml` is used instead.
 
@@ -50,19 +60,19 @@ To create a workspace from a devfile:
 
 . Commit a `devfile.yaml` file into the root of your git repo.
 
-. When your repository contains a `devfile.yaml` file, point a running Che 7 instance at that link:https://github.com/eclipse/che[project] and it will use the discovered link:https://github.com/eclipse/che/blob/master/devfile.yaml[devfile.yaml] file to build a workspace using the xref:api-reference#factory-api_api-reference[Factory API], `/f?url=`.
+. When the repository contains a `devfile.yaml` file, point a running Che 7 instance at that link:https://github.com/eclipse/che[project], and it will use the discovered link:https://github.com/eclipse/che/blob/master/devfile.yaml[devfile.yaml] file to build a workspace using the `/f?url=` API.
 
-* For example, when using xref:che-quick-starts#deploying-che-using-chectl[Che inside Minishift]: ++http://che-che.<your.IP.address.here>.nip.io/f?url=https://github.com/eclipse/che++.
+* For example, when using link:{{site.baseurl}}che-7/running-che-locally/#deploying-che-using-chectl[Che inside Minishift]: `++http://che-che.<IP-address>.nip.io/f?url=https://github.com/eclipse/che++`.
 
 image::workspaces/che-in-che-devfile.png[Che in Che]
 
-. You can also point at a plain text file: ++http://che-che.<your.IP.address.here>.nip.io/f?url=https://gist.githubusercontent.com/nickboldt/9551284c2c779a93ccf16bc801416205/raw/7ad1e949880d7f8ed30360e74bb9f8426450db05/devfile.yaml++.
+. You can also point at a plain text file: `++http://che-che.<IP-address>.nip.io/f?url=https://gist.githubusercontent.com/nickboldt/9551284c2c779a93ccf16bc801416205/raw/7ad1e949880d7f8ed30360e74bb9f8426450db05/devfile.yaml++`.
 
 . If you are familiar with link:https://github.com/che-incubator/chectl/[chectl], you can also reference a local devfile. For example, to create a workspace in which to build the Che project:
 +
-* First xref:che-quick-starts#deploying-che-using-chectl[deploy Che onto Minishift] (or another cluster).
+* First link:{{site.baseurl}}che-7/running-che-locally/#deploying-che-using-chectl[deploy Che onto Minishift] (or another cluster).
 +
-* Next, fetch the devfile and run `chectl` to start a workspace called `che-in-che` from the devfile on your Minishift `che-che` instance.
+* Next, fetch the devfile and run the `chectl` command to start a workspace called *che-in-che* from the devfile in the Minishift `che-che` instance.
 +
 ----
 $ wget https://raw.githubusercontent.com/eclipse/che/master/devfile.yaml -o /tmp/devfile.yaml
@@ -78,9 +88,7 @@ http://che-che.`your.IP.address.here`.nip.io/dashboard/#/ide/che/che-in-che
 
 .Additional resources
 
-* link:using-developer-environments-workspaces.html#making-a-workspace-portable-using-a-devfile_using-developer-environments-workspaces[Making a workspace portable using a Devfile]
+* link:{{site.baseurl}}che-7/making-a-workspace-portable-using-a-devfile[Making a workspace portable using a Devfile]
 * link:https://redhat-developer.github.io/devfile/devfile[Devfile specifications]
-
-* link:che-quick-starts.html#deploying-che-using-chectl[Deploying Che using chectl]
 * link:https://docs.okd.io/latest/minishift/getting-started/preparing-to-install.html[Minishift installation]
 * link:https://github.com/kubernetes/minikube#installation[Minikube installation]

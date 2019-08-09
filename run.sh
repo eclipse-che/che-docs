@@ -11,7 +11,7 @@
 if [ "$1" = "-prod" ]; then
   echo "Building for production (publishing on eclipse.org/che/docs/). To preview"
   echo -e "the docs locally, run the script ($0) without the '-prod' option.\n"
-  docker run --rm -v $(pwd)/src/main:/che-docs:Z eclipse/che-docs sh -c "cd /che-docs; jekyll build --baseurl '/che/docs/'"
+  docker run --rm -v $(pwd)/src/main:/che-docs:Z eclipse/che-docs sh -c "cd /che-docs; jekyll clean; jekyll build --config _config.yml,_config-war.yml"
 else
   echo "Building and serving the docs for local preview. To build for production"
   echo "(publishing on eclipse.org/che/docs/), run the script with the '-prod' option:"
