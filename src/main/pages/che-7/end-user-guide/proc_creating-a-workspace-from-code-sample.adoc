@@ -17,7 +17,7 @@ It will also explain how to customize a workspace using the *Dashboard*.
 
 [NOTE]
 ====
-Every stack includes a sample codebase, which is defined by the stack's devfile. For more information on devfiles, see link:{{site.baseurl}}che-7/configuring-a-workspace-using-a-devfile[Configuring a Che workspace using a devfile].
+Every stack includes a sample codebase, which is defined by the devfile of the stack. For more information on devfiles, see link:{{site.baseurl}}che-7/configuring-a-workspace-using-a-devfile[Configuring a Che workspace using a devfile].
 ====
 
 .Prerequisites
@@ -40,34 +40,34 @@ See link:{{site.baseurl}}che-7/running-che-locally/#deploying-che-using-chectl[D
 
 [NOTE]
 ====
-For versions of link:https://github.com/minishift/minishift/releases[Minishift up to 1.34], you need to apply a small change:
+For versions of link:https://github.com/minishift/minishift/releases[Minishift up to 1.34], apply the following change:
 
 ----
 $ oc set env dc/che CHE_WORKSPACE_PLUGIN__REGISTRY__URL=https://che-plugin-registry.openshift.io/v3
 ----
 ====
 
-. Next, log into your console at `++https://<IP-address>:8443/console/++`.
+. Log into your console at `++https://<IP-address>:8443/console/++`.
 
-. From there, select the *mini-che* project:
+. Select the *mini-che* project:
 +
 * `++https://<IP-address>:8443/console/project/mini-che/overview++`
 
-. Then click through to the mini-che route link, which will load the *Dashboard* by default and prompt you to create a workspace.
+. Click through to the mini-che route link, which loads the *Dashboard* by default and prompts you to create a workspace.
 +
 * `++http://che-che.<IP-address>.nip.io/++`
 
 ==== OCP and OSD
 
-If using OCP or OSD, talk to your administrator to obtain the URL for the Che instance.
+If using OCP or OSD, obtain the URL for the Che instance from your administrator.
 
 === Selecting a stack
 
-. When the *Dashboard* opens, click the link in the left navigation panel for *Workspaces*, if it's not already open.
+. When the *Dashboard* opens, click the link in the left navigation panel for *Workspaces*, if it is not already open.
 
 . Choose a stack from the list.
 
-. Name your workspace, if you don't like the default-generated name.
+. Name your workspace, or choose the default name.
 
 image::workspaces/select-workpace.png[Select a stack from the list]
 
@@ -75,40 +75,40 @@ image::workspaces/select-workpace.png[Select a stack from the list]
 
 The memory needed by the stack is pre-calculated and displayed on the stack description line. Changing the memory requirements is only possible xref:#configure-devfile[from the devfile].
 
-=== Start the workspace
+=== Starting the workspace
 
 There are two ways to start the workspace:
 
-. Simple start: just push the *Create & Open* button at the top or bottom of the form:
+. Simple start: Click the btn:[Create & Open] button at the top or bottom of the form.
 +
 image::workspaces/create-and-open.png[Create and Open]
 
-. Advanced start: from the top of the page, click the down arrow next to the *Create & Open* button, then select the menu item below to edit your workspace's configuration.
+. Advanced start: From the top of the page, click the down arrow next to the btn:[Create & Open] button. Then, select the menu item below to edit the workspace configuration.
 +
-This will allow you to make further configuration before starting the workspace.
+This allows the user to make further configuration before starting the workspace.
 +
 image::workspaces/create-and-edit.png[Create and Edit]
 
-=== Change the workspace configuration
+=== Changing the workspace configuration
 
-If you chose the second option, you'll be able to configure the workspace's YAML, among other tasks:
+If you chose the second option, you can configure the workspace's YAML configuration, among other tasks:
 
-. From the *Overview* tab, quickly rename a workspace, if you forgot to do that when creating it. Or, also toggle ephemeral mode, or export your workspace config to a file or private cloud. This is also one of serveral places from which you can delete a workspace.
+. From the *Overview* tab, rename a workspace, if you forgot to do that when creating it. Or, toggle the ephemeral mode, or export your workspace configuration to a file or private cloud. The user can also delete a workspace from here.
 +
 image::workspaces/workspace-config-overview.png[Worksapce configuration overview]
 
 // TODO https://github.com/eclipse/che/issues/13665 fix screenshot
-. From the *Projects* tab, you can add more projects to an existing workspace:
+. From the *Projects* tab, add more projects to an existing workspace:
 +
 image::workspaces/workspace-config-projects.png[Add projects to workspace]
 
-. From the *Plugins* tab, enable or disable workspace plugins. For example, start with a generic Java-based stack, then later add support for Node or Python.
+. From the *Plugins* tab, enable or disable workspace plug-ins. For example, start with a generic Java-based stack, then later add support for Node or Python.
 
 . From the *Editors* tab, enable or disable workspace editors. For example, to switch to the Che 6 editor, select the GWT IDE. The Che 7 editor is based on Theia.
 
 [id="configure-devfile"]
 [start=5]
-. From the *Devfile* tab, edit the workspace's YAML configuration. This is also where you can load a custom container, if you previously built one and pushed it to some container registry.  You can also add commands and sample projects, if you prefer to enter code than to click buttons.
+. From the *Devfile* tab, edit the workspace YAML configuration. You can also load a custom container from here, if you previously built one and pushed it to a container registry.  You can also add commands and sample projects, if you prefer entering code over clicking buttons.
 +
 image::workspaces/workspace-config-yaml.png[YAML configuration]
 
@@ -127,8 +127,8 @@ projects:
 
 There are multiple ways to run a workspace:
 
-* From the *Run*  button in the top right corner of the Workspace configuration page, which will start the workspace but will NOT switch to it
-* From the *Open* button in the top right corner of the Workspace configuration page, which will both start the workspace and launch it in your browser
+* From the btn:[Run]  button in the top-right corner of the Workspace configuration page, which will start the workspace but will NOT switch to it.
+* From the btn:[Open] button in the top-right corner of the Workspace configuration page, which will start the workspace and launch it in the browser.
 * From the list of *Recent Workspaces* on the left navigation panel, right-click a non-running workspace to start it, or right-click a running workspace to stop it.
 +
 image::workspaces/run-from-recent-workspaces.png[Run from Recent Workspaces]
