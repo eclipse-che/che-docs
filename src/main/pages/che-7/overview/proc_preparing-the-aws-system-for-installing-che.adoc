@@ -21,12 +21,14 @@ on Amazon Elastic Compute Cloud (Amazon EC2).
 
 . Install Kubernetes on EC2. There are several ways to have a running Kubernetes instance on EC2. Here, the *kops* tool is used to install Kubernetes. For details, see link:https://kubernetes.io/docs/setup/production-environment/tools/kops/[Installing Kubernetes with kops].
 
+. Set up `IAM` user for *kops*. For detailed instructions, see https://github.com/kubernetes/kops/blob/master/docs/aws.md#setup-iam-user[Set up IAM user].
+
 This document assumes that Eclipse Che must be configured to run at link:http://che.aws.my-ide.cloud[Che AWS Cloud].
 
 
 == Setting up DNS
 
-One way to set up Domain Name System (DNS) is to create the Amazon Route53 to manage the `aws.my-ide.cloud` domain.
+One way to set up Domain Name System (DNS) is to create the Amazon Route53 to manage the `aws.my-ide.cloud` domain. 
 
 To set up DNS:
 
@@ -63,7 +65,7 @@ $ aws route53 create-hosted-zone --name aws.my-ide.cloud --caller-reference 1
 }
 ----
 
-. Configure the four DNS nameservers on the `my-ide.cloud` DNS.
+. Configure the four DNS nameservers on the `my-ide.cloud` DNS. Note that if you are using your own DNS provider, updating the record takes a few hours.
 +
 image::installation/dns-nameservers.png[]
 
@@ -188,7 +190,7 @@ Run the following command to create the role:
 $ aws iam create-service-linked-role --aws-service-name "elasticloadbalancing.amazonaws.com"
 ----
 
-. Add hosts on route 53 with this given hostname link:https://console.aws.amazon.com/route53/home?region=eu-west-1#hosted-zones[]:
+. Add hosts on route 53 with this given hostname *link:https://console.aws.amazon.com/route53/home?region=eu-west-1#hosted-zones[]:*. Ensure that you include the colon (*:*) at the end of this URL.
 . Create the wildcard DNS `*` (for `*.aws-my-ide.cloud`) with the previous hostname and ensure to add the dot (`.`) at the end of the hostname. In the *Type* drop-down list, select *CNAME*.
 +
 image::installation/create-record-set.png[link="{imagesdir}/installation/create-record-set.png"]
@@ -266,17 +268,17 @@ $ aws route53 list-hosted-zones
 
 . In the *EC2 Dashboard*, identify the *IAM role* used by the master node.
 +
-// TODO: image::installation/aws-lauch-Instance.png[link="{imagesdir}/installation/aws-lauch-Instance.png"]
+image::installation/aws-lauch-instance.png[link="{imagesdir}/installation/aws-lauch-instance.png"]
 +
 It is located under the *Description* tab, in the *IAM role* field.
 +
 image::installation/describtion-tab-iam-role.png[link="{imagesdir}/installation/describtion-tab-iam-role.png"]
 
-. Click on the *IAM role* link (`masters.eu.aws.my-ide.cloud`, in this case).
+. Click the *IAM role* link (`masters.eu.aws.my-ide.cloud`, in this case).
+. Click the *Add inline policy* link at the bottom of the window.
 +
 image::installation/aws-summary-iam-role.png[link="{imagesdir}/installation/aws-summary-iam-role.png"]
 
-. Click the *Add inline policy* link at the bottom of the window.
 . In the *Create policy* window, on the *JSON* tab, paste the content of the JSON file created earlier and click the *Review policy* button.
 +
 image::installation/aws-create-policy.png[link="{imagesdir}/installation/aws-create-policy.png"]
@@ -292,8 +294,10 @@ image::installation/create-policy-review-policy.png[link="{imagesdir}/installati
 +
 [subs="+quotes",options="nowrap"]
 ----
-$ kubectl create namespace cert-manager namespace/cert-manager created
+$ kubectl create namespace cert-manager 
+namespace/cert-manager created
 $ kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
+namespace/cert-manager labeled
 ----
 
 . Set `validate=false`. If set to `true`, it will only work with the latest Kubernetes:
@@ -333,6 +337,7 @@ $ aws iam create-user --user-name cert-manager
 +
 [subs="+quotes",options="nowrap"]
 ----
+$ aws iam create-access-key --user-name cert-manager
 {
     "AccessKey": {
         "UserName": "cert-manager",
@@ -368,7 +373,7 @@ image::installation/aws-summary-iam-role.png[link="{imagesdir}/installation/aws-
         {
             "Effect": "Allow",
             "Action": "route53:GetChange",
-            "Resource": "arn:aws:route53:::change/*"
+            "Resource": "arn:aws:route53:::change/\*"
         },
         {
             "Effect": "Allow",
@@ -450,6 +455,18 @@ EOF
 image::installation/aws-hosted-zones-dns.png[link="{imagesdir}/installation/aws-hosted-zones-dns.png"]
 +
 The cert-manager logs should contain information about the DNS challenge.
+
+. Obtain the name of the pods:
++
+[subs="+quotes",options="nowrap"]
+----
+$ kubectl get pods --namespace cert-manager
+NAME                                       READY   STATUS    RESTARTS   AGE
+cert-manager-6587688cb8-wj68p              1/1     Running   0          6h
+cert-manager-cainjector-76d56f7f55-zsqjp   1/1     Running   0          6h
+cert-manager-webhook-7485dd47b6-88m6l      1/1     Running   0          6h
+----
++
 
 . Obtain the logs using the following command (here, `cert-manager-8d478bb45-sdfmz` is the name of the cert-manager pod):
 +
