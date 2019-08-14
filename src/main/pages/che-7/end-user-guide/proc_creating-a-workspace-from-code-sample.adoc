@@ -1,4 +1,14 @@
-[id="creating-a-workspace-from-code-sample_{context}"]
+---
+title: Creating a workspace from code sample
+keywords:
+tags: []
+sidebar: che_7_docs
+permalink: che-7/creating-a-workspace-from-code-sample/
+folder: che-7/end-user-guide
+summary:
+---
+
+[id="creating-a-workspace-from-code-sample"]
 = Creating a workspace from code sample
 
 This section describes how to select a workspace, then load a stack and its accompanying sample project.
@@ -7,51 +17,49 @@ It will also explain how to customize a workspace using the *Dashboard*.
 
 [NOTE]
 ====
-Every stack includes a sample codebase, which is defined by the stack's devfile. For more information on devfiles, see xref:configuring-a-che-workspace-using-a-devfile_{context}[Configuring a Che workspace using a devfile].
+Every stack includes a sample codebase, which is defined by the stack's devfile. For more information on devfiles, see link:{{site.baseurl}}che-7/configuring-a-workspace-using-a-devfile[Configuring a Che workspace using a devfile].
 ====
 
-[discrete]
-== Prerequisites
+.Prerequisites
 
 * You need an OKD (link:https://www.okd.io/minishift/[Minishift]), OCP, or OSD cluster, if using Che on Openshift.
 
 * Or, you need a Kubernetes cluster such as link:https://github.com/kubernetes/minikube#installation[Minikube] to use Che on Kubernetes.
 
-* To install on Minishift or Minikube, see xref:che-quick-starts#deploying-che-using-chectl[Deploying Che using chectl].
+* To install on Minishift or Minikube, see link:{{site.baseurl}}che-7/running-che-locally/#deploying-che-using-chectl[Deploying Che using chectl].
 
-[discrete]
-== Procedure
+.Procedure
 
-=== Accessing the Dashboard
+== Accessing the dashboard
 
-The *Dashboard* is accessible on your cluster from a URL like http://`che-instance`.`your.IP.address.here`.nip.io/dashboard/.
+The *Dashboard* is accessible on the cluster from a URL like `++http:/<che-instance>.<IP-address>.nip.io/dashboard/++`.
 
-==== Minishift
+=== Minishift
 
-See xref:che-quick-starts#deploying-che-using-chectl[Deploying Che using chectl].
+See link:{{site.baseurl}}che-7/running-che-locally/#deploying-che-using-chectl[Deploying Che using chectl].
 
 [NOTE]
 ====
 For versions of link:https://github.com/minishift/minishift/releases[Minishift up to 1.34], you need to apply a small change:
 
-```
-oc set env dc/che CHE_WORKSPACE_PLUGIN__REGISTRY__URL=https://che-plugin-registry.openshift.io/v3
-```
+----
+$ oc set env dc/che CHE_WORKSPACE_PLUGIN__REGISTRY__URL=https://che-plugin-registry.openshift.io/v3
+----
 ====
 
-. Next, log into your console at https://`your.IP.address.here`:8443/console/.
+. Next, log into your console at `++https://<IP-address>:8443/console/++`.
 
-. From there, select the mini-che project:
-
-* https://`your.IP.address.here`:8443/console/project/mini-che/overview
+. From there, select the *mini-che* project:
++
+* `++https://<IP-address>:8443/console/project/mini-che/overview++`
 
 . Then click through to the mini-che route link, which will load the *Dashboard* by default and prompt you to create a workspace.
-
-* http://che-che.`your.IP.address.here`.nip.io/
++
+* `++http://che-che.<IP-address>.nip.io/++`
 
 ==== OCP and OSD
 
-If using OCP or OSD, talk to your administrator to obtain the URL for the che instance.
+If using OCP or OSD, talk to your administrator to obtain the URL for the Che instance.
 
 === Selecting a stack
 
@@ -106,13 +114,14 @@ image::workspaces/workspace-config-yaml.png[YAML configuration]
 
 For example, to add a project into the workspace, add or edit the following section:
 
-```
+[source,yaml]
+----
 projects:
   - name: che
     source:
       type: git
       location: 'https://github.com/eclipse/che.git'
-```
+----
 
 === Running a workspace
 
@@ -124,9 +133,8 @@ There are multiple ways to run a workspace:
 +
 image::workspaces/run-from-recent-workspaces.png[Run from Recent Workspaces]
 
-[discrete]
-== Additional resources
+.Additional resources
 
-* xref:che-quick-starts#deploying-che-using-chectl[Deploying Che using chectl]
+* link:{{site.baseurl}}che-7/running-che-locally/#deploying-che-using-chectl[Deploying Che using chectl]
 * link:https://docs.okd.io/latest/minishift/getting-started/preparing-to-install.html[Minishift installation]
 * link:https://github.com/kubernetes/minikube#installation[Minikube installation]
