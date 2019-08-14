@@ -30,21 +30,21 @@ $ cat <<EOF | kubectl apply -f -
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: ClusterIssuer
 metadata:
- name: che-certificate-issuer
+  name: che-certificate-issuer
 spec:
- acme:
- dns01:
- providers:
- - clouddns:
- project: eclipse-che-1
- serviceAccountSecretRef:
- key: key.json
- name: clouddns-dns01-solver-svc-acct
- name: clouddns
- email: joe@example.com
- privateKeySecretRef:
- name: letsencrypt
- server: https://acme-v02.api.letsencrypt.org/directory[_https://acme-v02.api.letsencrypt.org/directory_]
+  acme:
+    dns01:
+      providers:
+      - clouddns:
+          project: eclipse-che-1
+          serviceAccountSecretRef:
+            key: key.json
+            name: clouddns-dns01-solver-svc-acct
+        name: clouddns
+    email: joe@example.com
+    privateKeySecretRef:
+      name: letsencrypt
+    server: https://acme-v02.api.letsencrypt.org/directory
 EOF
 ----
 
@@ -60,16 +60,16 @@ metadata:
 spec:
  secretName: che-tls
  issuerRef:
- name: che-certificate-issuer
- kind: ClusterIssuer
+   name: che-certificate-issuer
+   kind: ClusterIssuer
  dnsNames:
- - '*.gcp.my-ide.cloud'
+   - '*.gcp.my-ide.cloud'
  acme:
- config:
- - dns01:
- provider: clouddns
- domains:
- - '*.gcp.my-ide.cloud'
+   config:
+     - dns01:
+         provider: clouddns
+       domains:
+         - '*.gcp.my-ide.cloud'
 EOF
 ----
 
@@ -137,4 +137,3 @@ Status:
  Type: Ready
  Not After: 2019-10-27T12:56:24Z
 ----
- 
