@@ -18,7 +18,7 @@ This article offers instructions for deploying and running Eclipse Che locally, 
 To run and manage Che you need:
 
 * A Kubernetes or OpenShift cluster to deploy Che on
-* The link:https://github.com/che-incubator/chectl[`chectl`] command-line tool for managing a Che server and its development workspaces.
+* The link:https://github.com/che-incubator/chectl[`chectl`] command-line tool for managing a Che server and its development workspaces. See link:{site-baseurl}che-7/installing-the-chectl-management-tool/[Installing the `chectl` management tool].
 
 Eclipse Che is available in two modes:
 
@@ -63,42 +63,13 @@ $ minishift start --memory=4096
 See link:https://che.eclipse.org/running-eclipse-che-on-kubernetes-using-docker-desktop-for-mac-5d972ed511e1[Running Eclipse Che on Kubernetes using Docker Desktop on macOS or Windows].
 
 
-== Installing the chectl management tool
-
-Install the `chectl` command-line tool to be able to manage the Che Server application and development workspaces.
-
-=== Installing chectl on Windows
-
-. Download link:https://github.com/che-incubator/chectl/releases/download/20190314232124/chectl-win.exe[chectl-win.exe].
-
-. Add the folder of the downloaded binary to your `PATH` environment variable.
-
-=== Installing chectl on macOS
-
-Run the following commands in the terminal:
-
-----
-$ RELEASE="20190314232124/chectl-macos" && \
-URL=https://github.com/che-incubator/chectl/releases/download/${RELEASE} && \
-sudo curl -sSL ${URL} -o /usr/local/bin/chectl && \
-sudo chmod +x /usr/local/bin/chectl 
-----
-
-=== Installing chectl on Linux
-
-Run the following commands in the terminal:
-
-----
-$ RELEASE="20190314232124/chectl-linux" && \
-URL=https://github.com/che-incubator/chectl/releases/download/${RELEASE} && \
-sudo curl -sSL ${URL} -o /usr/local/bin/chectl && \
-sudo chmod +x /usr/local/bin/chectl 
-----
-
-
 == Deploying Che using chectl
 
 Start Che Server using the `chectl` tool.
+
+.Prerequisites
+
+* `chectl` management tool is installed. See link:{site-baseurl}che-7/installing-the-chectl-management-tool/[Installing the `chectl` management tool].
 
 === Deploying single-user Che on Minikube
 
@@ -108,6 +79,16 @@ $ chectl server:start
 
 === Deploying single-user Che on Minishift
 
+[discrete]
+== Prerequisites
+
+* Use Minishift version `1.34.1` or greater.
+
+[discrete]
+== Procedure
+
+* Run following command:
++
 ----
 $ chectl server:start --platform minishift
 ----
@@ -145,6 +126,6 @@ OPTIONS
 
 == Next steps after deploying and starting Che
 
-* link:{{site.baseurl}}che-7/creating-a-workspace-from-code-sample[Creating a workspace from code sample]
-* link:{{site.baseurl}}che-7/creating-a-workspace-by-importing-source-code-of-a-project[Creating a workspace by importing the source code of a project]
+* link:{site-baseurl}che-7/creating-a-workspace-from-code-sample[Creating a workspace from code sample]
+* link:{site-baseurl}che-7/creating-a-workspace-by-importing-source-code-of-a-project[Creating a workspace by importing the source code of a project]
 // TODO: * link:editing-commands-after-importing-a-project.html[Editing workspace commands] to build and run your project
