@@ -3,14 +3,14 @@
 [id="converting-a-che-6-workspace-to-a-basic-che-7-devfile_{context}"]
 = Converting a Che 6 workspace to a basic Che 7 devfile
 
-This section describes how to convert a Che 6 workspace to a Che 7 devfile with minimal features. The result is a basic Che 7 devfile that can be used to start working.
+This section describes how to convert a Che 6 workspace to a Che 7 devfile. The result is a basic Che 7 devfile that can be used for further workspace creation.
 
 .Procedure
 
-To convert a Che 6 workspace to a workspace:
+To convert a Che 6 workspace to a Che 7 devfile:
 
-. Open an old Che 6 configuration file.
-. Create a new workspace from the similar Che 7 devfile
+. Open an old Che 6 configuration file to identify which Che 6 stack is used in the workspace. Below, there is a detailed guide for  <<accessing-che-6-workspace-configuration_{context}>>.
+. Create a new workspace from the Che 7 devfile that corresponds to the Che 6 stack.
 +
 .Che 7 devfile corresponding to the respective Che 6 stacks.
 [options="header",cols="2"]
@@ -20,16 +20,16 @@ To convert a Che 6 workspace to a workspace:
 
 | Apache Camel based projects, +
 Apache Camel based projects on Che 7
-| Apache Camel based projects on Che 7
+| Apache Camel based on Spring Boot
 
 | .NET, +
 .NET Core with Theia IDE
-| .NET Core with Theia IDE
+| .NET Core
 
 | Go, +
 CentOS Go, +
 Go with Theia IDE
-| Go with Theia IDE
+| Go
 
 | Java Gradle
 | Java Gradle
@@ -37,7 +37,8 @@ Go with Theia IDE
 | Blank, +
 Java, +
 Java-MySQL, +
-Eclipse Che
+Eclipse Che, +
+Java CentOS
 | Java Maven
 
 | Node, +
@@ -46,10 +47,33 @@ CentOS nodejs
 
 | Python, +
 Python with Theia IDE
-| Python with Theia IDE
+| Python
+
+| Eclipse Vert.x
+| Java Vert.x
+
+| PHP
+| PHP Simple
+
+| Spring Boot
+| Java Spring Boot
 |===
 
-. Add the required number of blank projects.
-. Change the required *devfile* fields.
+.. By default, the example project is added to the workspace. To remove the default project, click the btn:[Remove] button:
 +
-image::workspaces/devfile-fields.png[link="{imagesdir}/workspaces/devfile-fields.png"]
+image::workspaces/remove-default-project.png[link="{imagesdir}/workspaces/remove-default-project.png"]
+
+.. To import a custom project that was used in Che 6 workspace, click the *Add or Import Project* and select *Git* or *GitHub* option:
++
+image::workspaces/add-custom-project.png[link="{imagesdir}/workspaces/add-custom-project.png"]
+
+.. Various commands can be added to devfiles of imported projects, for example, `run`, `build`, and  `test`. The commands are then accessible from the IDE when a workspace is started. Custom commands and other devfile components can be added in the *Devfile* configuration.
+
+.. Click the btn:[Create & Proceed Editing] button. 
++
+image::workspaces/create-and-edit.png[link="{imagesdir}/workspaces/create-and-edit.png"]
++
+Select the *Devfile* tab to update the configuration. Machine servers in Che 6 workspaces can be specified as components endpoints in a Devfile and Che 6 installers as components of type chePlugin. See the link:https://redhat-developer.github.io/devfile/devfile[Devfile specification] for the detailed information about the supported properties and attributes.
++
+image::workspaces/update-devfile-configuration.png[link="{imagesdir}/workspaces/update-devfile-configuration.png"]
+.. Once the *Devfile* configuration is completed, click the btn:[Open] button to start a newly created Che 7 workspace.

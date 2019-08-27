@@ -1,6 +1,6 @@
 ---
 title: Converting a Che 6 workspace to a Che 7 devfile
-keywords: 
+keywords:
 tags: []
 sidebar: che_7_docs
 permalink: che-7/converting-a-che-6-workspace-to-a-che-7-devfile/
@@ -19,16 +19,189 @@ summary:
 
 This section describes how to manually convert an old Che 6 workspace configuration to a Che 7 devfile. The following are the benefits of using a Che 7 devfile:
 
-* Using an original Che 7 devfile instead of a Che 6 factory
-* A human-readable YAML format for all content
+* Using a portable file that works with any installation of Che; nothing needs to be changed on the server to start a workspace.
+* Configuration can be stored in project repository and automatically used by Che to start a workspace. To start a workspace, specify a devfile using the following format: `__<che-instance-domain>__/f?url=path`, for example:
 
-The following is a comparison between a *Che 7 devfile* (Figure 1) and a *Che 6 workspace configuration* (Figure 2):
+----
+https://che.openshift.io/f?url=https://raw.githubusercontent.com/redhat-developer/devfile/master/getting-started/vertx/devfile.yaml
+----
 
-.Che 7 referenceContent (devfile)
-image::workspaces/workspace-devfile.png[]
+This creates and starts a new workspace based on the link:https://github.com/redhat-developer/devfile/blob/master/getting-started/vertx/devfile.yaml[devfile] defined in the URL attribute.
+* A human-readable YAML format for all content.
 
-.Che 6 recipe content (workspace configuration)
-image::workspaces/che-6-workspace-configuration.png[]
+Below, there is a comparison of a *Che 6 workspace configuration* and a *Che 7 devfile*. Both are *Java Vert.x* stacks with a default project and default settings:
+
+.Che 6 configuration file
+[source,json]
+----
+{
+  "defaultEnv": "default",
+  "environments": {
+    "default": {
+      "machines": {
+        "dev-machine": {
+          "attributes": {
+            "memoryLimitBytes": "2147483648"
+          },
+          "servers": {
+            "8080/tcp": {
+              "attributes": {},
+              "port": "8080",
+              "protocol": "http"
+            }
+          },
+          "volumes": {},
+          "installers": [
+            "com.redhat.oc-login",
+            "com.redhat.bayesian.lsp",
+            "org.eclipse.che.ls.java",
+            "org.eclipse.che.ws-agent",
+            "org.eclipse.che.exec",
+            "org.eclipse.che.terminal"
+          ],
+          "env": {}
+        }
+      },
+      "recipe": {
+        "type": "dockerimage",
+        "content": "quay.io/openshiftio/che-vertx"
+      }
+    }
+  },
+  "projects": [
+    {
+      "links": [],
+      "name": "vertx-http-booster",
+      "attributes": {
+        "language": [
+          "java"
+        ]
+      },
+      "type": "maven",
+      "source": {
+        "location": "https://github.com/openshiftio-vertx-boosters/vertx-http-booster",
+        "type": "git",
+        "parameters": {}
+      },
+      "path": "/vertx-http-booster",
+      "description": "HTTP Vert.x Booster",
+      "problems": [],
+      "mixins": []
+    }
+  ],
+  "name": "wksp-jhwp",
+  "commands": [
+    {
+      "commandLine": "scl enable rh-maven33 'mvn compile vertx:debug -f ${current.project.path} -Dvertx.disableDnsResolver=true'",
+      "name": "debug",
+      "attributes": {
+        "goal": "Debug",
+        "previewUrl": "${server.8080/tcp}"
+      },
+      "type": "custom"
+    },
+    {
+      "commandLine": "scl enable rh-maven33 'mvn compile vertx:run -f ${current.project.path} -Dvertx.disableDnsResolver=true'",
+      "name": "run",
+      "attributes": {
+        "goal": "Run",
+        "previewUrl": "${server.8080/tcp}"
+      },
+      "type": "custom"
+    },
+    {
+      "commandLine": "scl enable rh-maven33 'mvn clean install -f ${current.project.path}'",
+      "name": "build",
+      "attributes": {
+        "goal": "Build",
+        "previewUrl": ""
+      },
+      "type": "mvn"
+    },
+    {
+      "commandLine": "mvn -Duser.home=${HOME} -f ${CHE_PROJECTS_ROOT}/vertx-http-booster clean package",
+      "name": "vertx-http-booster:build",
+      "attributes": {
+        "goal": "Build",
+        "previewUrl": ""
+      },
+      "type": "mvn"
+    },
+    {
+      "commandLine": "mvn -Duser.home=${HOME} -f ${CHE_PROJECTS_ROOT}/vertx-http-booster vertx:run",
+      "name": "vertx-http-booster:run",
+      "attributes": {
+        "goal": "Run",
+        "previewUrl": "${server.8080/tcp}"
+      },
+      "type": "mvn"
+    }
+  ],
+  "links": []
+}
+----
+
+.Che 7 devfile
+[source,yaml]
+----
+metadata:
+  name: testing-workspace
+projects:
+  - name: java-web-vertx
+    source:
+      location: 'https://github.com/che-samples/web-java-vertx'
+      type: git
+components:
+  - id: redhat/java/latest
+    type: chePlugin
+  - mountSources: true
+    endpoints:
+      - name: 8080/tcp
+        port: 8080
+    memoryLimit: 512Mi
+    type: dockerimage
+    volumes:
+      - name: m2
+        containerPath: /home/user/.m2
+    alias: maven
+    image: 'quay.io/eclipse/che-java8-maven:nightly'
+apiVersion: 1.0.0
+commands:
+  - name: maven build
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/java-web-vertx'
+        type: exec
+        command: 'mvn -Duser.home=${HOME} clean install'
+        component: maven
+  - name: run app
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/java-web-vertx'
+        type: exec
+        command: >
+          JDBC_URL=jdbc:h2:/tmp/db \
+
+          java -jar -Xdebug
+          -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 \
+
+          ./target/*fat.jar
+        component: maven
+  - name: Debug remote java application
+    actions:
+      - referenceContent: |
+          {
+          "version": "0.2.0",
+          "configurations": [
+            {
+              "type": "java",
+              "name": "Debug (Attach) - Remote",
+              "request": "attach",
+              "hostName": "localhost",
+              "port": 5005
+            }]
+          }
+        type: vscode-launch
+
+----
 
 include::proc_converting-a-che-6-workspace-to-a-basic-che-7-devfile.adoc[leveloffset=+1]
 
