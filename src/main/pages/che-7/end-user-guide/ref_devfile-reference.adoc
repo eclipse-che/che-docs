@@ -386,6 +386,14 @@ Here, there are two dockerimages, each defining a single endpoint. Endpoint is a
 
 * `protocol`: For public endpoints the protocol is a hint to the UI on how to construct the URL for the endpoint access. Typical values are `http`, `https`, `ws`, `wss`.
 
+* `secure`: A boolean (defaulting to `false`) specifying whether the endpoint will be put behind a JWT proxy requiring a JWT workspace token to grant access.
+
+* `path`: The URL path of the endpoint
+
+* `unsecuredPaths`: A comma-separated list of paths in the endpoint that should not be secured, even if the `secure` attribute is set to `true`
+
+* `cookieAuthEnabled`: If set to `true` (the default is `false`), the JWT workspace token will be automatically fetched and put to a workspace-specific cookie so that the JWT proxy let's the requests through. Note that this brings along with it a potential danger of a link:https://en.wikipedia.org/wiki/Cross-site_request_forgery[CSRF] attack if used conjunction with a server using POST requests. Use this after a careful consideration.
+
 If you start a new server within your component, Che will autodetect this and the UI will offer you to automatically expose this port as a `public` port. This is useful for debugging a web application, for example. But, it is not possible to do this for servers that autostart with the container (for example, a database server). For such components, you must specify the endpoints explicitly.
 
 ==== Kubernetes and OpenShift resources
