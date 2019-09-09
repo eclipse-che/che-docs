@@ -497,7 +497,7 @@ $ dockerfiles/build.sh
 $ docker run -ti -v '/var/run/docker.sock:/var/run/docker.sock \
                  -v /local/data/path:/data \
                  -e "IMAGE_CHE=your/che-server" \
-                 -e "IMAGE_INIT=your/init-image" eclipse/che:$tag start'
+                 -e "IMAGE_INIT=your/init-image" eclipse/che::{{site.latest_6_x_version}} start'
 ----
 
 You have built `IMAGE_CHE` in `dockerfiles/che` and `IMAGE_INIT` is the one from `dockerfiles/init`.
@@ -524,7 +524,7 @@ DOCKER_OPTS=" -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock"
 ----
 $ docker run -ti -e DOCKER_HOST=tcp://1.1.1.1:2375 \
                  -v /var/run/docker.sock:/var/run/docker.sock \
-                 -v ~/Documents/che-data1:/data eclipse/che start
+                 -v ~/Documents/che-data1:/data eclipse/che:{{site.latest_6_x_version}} start
 ----
 +
 . Alternatively, you can save this environment variable in the `che.env` file and restart Che.
