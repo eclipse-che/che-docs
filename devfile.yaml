@@ -1,0 +1,49 @@
+metadata:
+  name: che-docs-in-che
+projects:
+  - name: che-docs
+    source:
+      location: 'https://github.com/eclipse/che-docs.git'
+      type: git
+components:
+  - mountSources: true
+    endpoints:
+      - name: che-docs-web-server
+        attributes:
+          public: 'true'
+          protocol: http
+          path: /
+        port: 4000
+      - name: che-docs-livereload-server
+        attributes:
+          public: 'true'
+          protocol: http
+          path: /
+        port: 35729
+    memoryLimit: 1Gi
+    type: dockerimage
+    image: 'eclipse/che-docs:latest'
+    alias: che-docs-dev
+  - id: eclipse/che-theia/next
+    type: cheEditor
+  - id: joaompinto/vscode-asciidoctor/latest
+    type: chePlugin
+apiVersion: 1.0.0
+commands:
+  - name: build che-docs
+    actions:
+      - workdir: /projects/che-docs/src/main
+        type: exec
+        command: 'mkdir -p _site && jekyll build --config _config.yml,_config-war.yml'
+        component: che-docs-dev
+  - name: serve che-docs
+    actions:
+      - workdir: /projects/che-docs/src/main
+        type: exec
+        command: 'jekyll serve --incremental --livereload -H 0.0.0.0'
+        component: che-docs-dev
+  - name: killall ruby
+    actions:
+      - type: exec
+        command: killall ruby
+        component: che-docs-dev
