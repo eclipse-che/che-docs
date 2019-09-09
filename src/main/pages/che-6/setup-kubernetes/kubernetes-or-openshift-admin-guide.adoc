@@ -101,6 +101,20 @@ In the command above, `eclipse-che` is the Che namespace.
 
 Che server, Keycloak and PostgreSQL pods, and workspace pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode]. When the deployment YAML files run, they define the Che PVCs. You can configure link:#storage-strategies-for-che-workspaces[workspace PVC] access mode and claim size with Che deployment environment variables.
 
+[IMPORTANT]
+====
+To run multiple workspaces, the following two conditions must be met:
+
+* Che uses the `common` Persistent Volume Claim (PVC) strategy
+* Persistent volumes (PVs) use `ReadWriteOnce` (RWO) access mode
+
+To work around this limitation, use one of the following measures:
+
+* Set `ReadWriteMany` (RWX) access mode for PVs
+* Use the `unique` PVC strategy
+* Use the `per-workspace` strategy
+====
+
 [id="storage-requirements-for-che-infrastructure"]
 === Storage requirements for Che infrastructure
 
