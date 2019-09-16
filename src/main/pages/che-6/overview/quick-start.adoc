@@ -4,7 +4,6 @@ keywords: docker, installation, minishift, openshift
 tags: [installation, docker]
 sidebar: che_6_docs
 permalink: che-6/quick-start.html
-redirect_from: quick-start.html
 folder: che-6/overview
 ---
 
@@ -32,7 +31,7 @@ See link:single-multi-user.html[Single and Multi-User Che] to learn more. The qu
 Where `$IP` is found either in *Preferences > Advanced > Docker subnet*, or run
 +
 ----
-$ docker run --rm --net host eclipse/che-ip:nightly
+$ docker run --rm --net host eclipse/che-ip:{{site.latest_6_x_version}}
 ----
 
 .Procedure
@@ -40,7 +39,7 @@ $ docker run --rm --net host eclipse/che-ip:nightly
 To run Che in single-user mode, run the command below. Note that `/local/path` in the command below needs to be changed and can be any path on your local machine where you want to store Che data and projects.
 
 ----
-$ docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v /local/path:/data eclipse/che start
+$ docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v /local/path:/data eclipse/che:{{site.latest_6_x_version}} start
 ----
 
 Once Che has started, it can be accessed at `localhost:8080`.
@@ -70,7 +69,7 @@ $ git clone https://github.com/minishift/minishift-addons
 $ minishift addons install <path_to_minishift-addons-clone>/add-ons/che
 $ minishift addons enable che
 $ minishift addons apply \
-    --addon-env CHE_DOCKER_IMAGE=eclipse/che-server:nightly \
+    --addon-env CHE_DOCKER_IMAGE=eclipse/che-server:{{site.latest_6_x_version}} \
     --addon-env OPENSHIFT_TOKEN=$(oc whoami -t) \
     che
 ----
