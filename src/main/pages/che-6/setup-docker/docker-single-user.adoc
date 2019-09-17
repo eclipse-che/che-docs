@@ -25,7 +25,7 @@ wget -qO- https://get.docker.com/ | sh
 macOS users must create an IP alias using the `sudo ifconfig lo0 alias $IP` command. Here, `$IP` is the IP that you can obtain from Docker for the Mac application from *Preferences* -> *Advanced* -> *Docker subnet* or by running the following command:
 
 ----
-docker run --rm --net host eclipse/che-ip:nightly
+docker run --rm --net host eclipse/che-ip:{{site.latest_6_x_version}}
 ----
 ====
 +
@@ -69,16 +69,14 @@ Fedora and RHEL or CentOS users may encounter issues with SElinux. To fix the is
 To start Che, run the following command where `<path>` is a local directory:
 
 ----
-docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v <path>:/data eclipse/che start
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v <path>:/data eclipse/che:{{site.latest_6_x_version}} start
 ----
 
 The following is an example of the output:
 
 ----
-$ docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v ~/Documents/che-data1:/data eclipse/che start
-WARN: Bound 'eclipse/che' to 'eclipse/che:5.20.1'
-INFO: (che cli): 5.20.1 - using docker 17.10.0-ce / native
-WARN: Newer version '5.21.0' available
+$ docker run -ti -v /var/run/docker.sock:/var/run/docker.sock -v ~/Documents/che-data1:/data eclipse/che:{{site.latest_6_x_version}} start
+INFO: (che cli): {{site.latest_6_x_version}} - using docker 17.10.0-ce / native
 INFO: (che config): Generating che configuration...
 INFO: (che config): Customizing docker-compose for running in a container
 INFO: (che start): Preflight checks
@@ -92,14 +90,14 @@ INFO: (che start): Starting containers...
 INFO: (che start): Services booting...
 INFO: (che start): Server logs at "docker logs -f che"
 INFO: (che start): Booted and reachable
-INFO: (che start): Ver: 5.20.1
+INFO: (che start): Ver: {{site.latest_6_x_version}}
 INFO: (che start): Use: http://172.19.20.180:8080
 INFO: (che start): API: http://172.19.20.180:8080/swagger
 ----
 
 [NOTE]
 ====
-You can run the `docker run -it eclipse/che start` command, which will fail by default. But, it will print options on how to proceed.
+You can run the `docker run -it eclipse/che:{{site.latest_6_x_version}} start` command, which will fail by default. But, it will print options on how to proceed.
 ====
 
 `eclipse/che` is a Docker image that manages the other Docker images and supporting utilities that Che uses during its configuration or operational phases. It is recommended to install Che using the `eclipse/che` image. To run the `che-server` image directly, see link:#run-without-cli[Run Che-Server directly].
@@ -107,25 +105,23 @@ You can run the `docker run -it eclipse/che start` command, which will fail by d
 [id="versions"]
 == Versions
 
-Each version of Che is available as a Docker image tagged with a label that matches the version, such as `eclipse/che:6.0.0`. For a list of the available versions, run the `docker run eclipse/che version` command or browse https://hub.docker.com/r/eclipse/che/tags/[Docker Hub].
+Each version of Che is available as a Docker image tagged with a label that matches the version, such as `eclipse/che:6.0.0`. For a list of the available versions, browse https://hub.docker.com/r/eclipse/che/tags/[Docker Hub].
 
 The following table lists the _redirection_ labels that reference special versions of Che:
 
 [cols=",",options="header",]
 |===
 |Variable |Description
-|`latest` |The most recent stable release.
-|`6.0.0-latest` |The most recent stable release on the 6.x branch.
 |`nightly` |The nightly build.
 |===
 
 The software referenced by these labels can change over time. Because Docker will cache images locally, the `eclipse/che:<version>` image that you are running locally may not be current with the one cached on Docker Hub. Additionally, the `eclipse/che:<version>` image that you are running references a manifest of Docker images that Che depends upon, which can also change if you are using these special redirection tags.
 
-In case of 'latest' images, when you initialize an installation using the CLI, the `/instance/che.ver` file is encoded with the numbered version that the latest image references. If you use a CLI version that mismatches with the one that was installed, you will encounter an error.
+If you use a CLI version that mismatches with the one that was installed, you will encounter an error.
 
-To avoid issues caused by using the `nightly` or `latest` redirections, ensure that you adhere to the following:
+To avoid issues caused by using the `nightly` redirections, ensure that you adhere to the following:
 
-. Use the `docker pull eclipse/che:<version>` command to ensure that you have the most recent Docker version.
+. Use the `docker pull eclipse/che:{{site.latest_6_x_version}}` command to ensure that you have the most recent Docker version.
 . When using the CLI, commands that use other Docker images have an optional `--pull` and `--force` command line option https://hub.docker.com/r/eclipse/che/[that instructs the CLI to check Docker Hub] for a newer version and pull it. Using these flags slows down performance, but it ensures that your local cache is up-to-date.
 
 If you run Che using a tagged version that is not a redirection label, such as `6.0.0`, you will not encounter the caching issues because the installed software is tagged and specific to the particular version and does not change over time.
@@ -161,7 +157,7 @@ docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
 
 To host Che on a cloud service like DigitalOcean, AWS, or Scaleways, the `CHE_HOST` variable must be set to the public IP address of the server or its DNS.
 
-You can automatically set the `CHE_HOST` variable by running the internal utility `docker run --net=host eclipse/che-ip:nightly` command. This utility is usually accurate on desktops, but it usually fails on hosted servers. You can explicitly set this value to the IP address of your server:
+You can automatically set the `CHE_HOST` variable by running the internal utility `docker run --net=host eclipse/che-ip:{{site.latest_6_x_version}}` command. This utility is usually accurate on desktops, but it usually fails on hosted servers. You can explicitly set this value to the IP address of your server:
 
 ----
 docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock
@@ -272,7 +268,7 @@ You can run the Che server directly by launching a Docker image. This approach b
 
 To run Che directly by launching a Docker image, take the following steps:
 
-. Run the latest released version of Che.
+. Run the latest released version of Che 6.x: {{site.latest_6_x_version}}.
 . Replace `<LOCAL_PATH>` with any host directory. Che places the backup files (configurable properties, workspaces, lib, storage) in this directory.
 +
 ----
@@ -281,14 +277,14 @@ docker run -p 8080:8080 \
            --rm \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v <LOCAL_PATH>:/data \
-           eclipse/che-server:6.0.0
+           eclipse/che-server:{{site.latest_6_x_version}}
 ----
 
 The following is a selection of commands:
 
-* To run the nightly version of Che, replace `eclipse/che-server:5.0.0-latest` with `eclipse/che-server:nightly`.
+* To run the nightly version of Che, replace `eclipse/che-server:{{site.latest_6_x_version}}` with `eclipse/che-server:nightly`.
 
-* To run a specific tagged version of Che, replace `eclipse/che-server:5.0.0-latest` with `eclipse/che-server:<_version_>`.
+* To run a specific tagged version of Che, replace `eclipse/che-server:{{site.latest_6_x_version}}` with `eclipse/che-server:<_version_>`.
 
 * To stop the container running Che, use the `docker stop che` command.
 
@@ -297,7 +293,7 @@ The following is a selection of commands:
 * To upgrade to a newer version, use the following commands in order:
 +
 ----
-docker pull eclipse/che-server:<_latest-version_>
+docker pull eclipse/che-server:{{site.latest_6_x_version}}
 docker restart che
 ----
 
@@ -314,7 +310,7 @@ docker run -p 8080:8080 \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v <LOCAL_PATH>:/data:Z \
            --security-opt label:disable \
-           eclipse/che-server:<_latest-version_>
+           eclipse/che-server:{{site.latest_6_x_version}}
 ----
 
 *Running Che on ports*
@@ -328,7 +324,7 @@ docker run -p 9000:9500 \
            -e CHE_PORT=9500 \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v <LOCAL_PATH>:/data \
-           eclipse/che-server:<_latest-version_>
+           eclipse/che-server:{{site.latest_6_x_version}}
 ----
 
 *Configuring properties*
@@ -341,7 +337,7 @@ docker run -p:9000:9000 \
            -e CHE_SERVER_ACTION=stop \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v <LOCAL_PATH>:/data \
-           eclipse/che-server:6.0.0
+           eclipse/che-server:{{site.latest_6_x_version}}
 ----
 
 The following table contains a list of variables that can be set.
@@ -370,7 +366,7 @@ docker run -p:8080:8080 \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v <LOCAL_PATH>:/data \
            --env-file /home/user/che.env \
-           eclipse/che-server:6.0.0
+           eclipse/che-server:{{site.latest_6_x_version}}
 ----
 
 *Running Che on a public IP address*
@@ -391,7 +387,7 @@ docker run -p:8080:8080 \
            -e CHE_HOST=10.0.75.4 \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v <LOCAL_PATH>:/data \
-           eclipse/che-server:6.0.0
+           eclipse/che-server:{{site.latest_6_x_version}}
 ----
 
 *Running Che as a daemon*
@@ -405,7 +401,7 @@ docker run -p:8080:8080 \
            -e CHE_HOST=10.0.75.4 \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v <LOCAL_PATH>:/data \
-           eclipse/che-server:6.0.0
+           eclipse/che-server:{{site.latest_6_x_version}}
 ----
 
 *Running Che with Docker Compose*
@@ -413,7 +409,7 @@ docker run -p:8080:8080 \
 [source,yaml]
 ----
 che:
-   image: eclipse/che-server:6.0.0
+   image: eclipse/che-server:{{site.latest_6_x_version}}
    port: 8080:8080
    restart: always
    volumes:

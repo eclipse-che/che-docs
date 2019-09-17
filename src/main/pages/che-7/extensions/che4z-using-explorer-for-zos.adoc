@@ -1,0 +1,117 @@
+---
+title: Using Explorer for z/OS
+keywords: 
+tags: [Che4z]
+sidebar: che_7_docs
+permalink: che-7/che4z-using-explorer-for-zos/
+folder: che-7/extensions
+summary: 
+---
+
+[id="che4z-using-explorer-for-zos"]
+= Using Explorer for z/OS
+
+:context: che4z-using-explorer-for-zos
+
+Eclipse Che4z Explorer for z/OS allows you to remotely view and edit the content of partitioned data sets within the Eclipse Theia IDE. You can create, copy and delete PDS members, and allocate new data sets copying the parameters of a model data set. You can also configure filters to enable fast indexing of large numbers of data sets. You can also enable syntax highlighting for COBOL text by installing the LSP for COBOL extension.
+
+== Hosts
+
+Before you start using Explorer for z/OS, you first create a host connection to the mainframe. This produces a list of all data sets with your user name as the high level qualifier. You can have as many host connections as you need.
+
+=== Create a Host Connection to z/OS
+
+To be able to work with z/OS data sets, a host connection to z/OS is required. A host connection lets you access all data sets stored on the host.
+
+*Follow these steps:*
+
+. In Explorer for z/OS, click *New connection*.
+. Fill in the following fields:
+	* URL (http://host:port or https://host:port)
+	* Host name (identifies the mainframe instance). +
+		NOTE: Ensure the host name is unique.
+	* Mainframe credentials (*user* and *password*) +
+		NOTE: The password is only remembered for the session the IDE is opened in. After you restart the IDE you need to provide your password again.
+. Click *Save* to validate the connection. If the connection is unreachable, an error message displays. You can still save the credentials and connection information and connect later if the connection is down.
+
+The host connection displays in the list of hosts on the left hand side of the interface. An expandable list of all data sets with your username as the high level qualifier displays beneath the host.
+
+=== Edit or Delete a Host Connection
+
+To edit a host connection, right click the *edit* icon next to the host connection. You can update the connection name and credentials. The URL cannot be changed.
+
+To delete a host connection, click the *delete* icon next to the host connection. The host connection is deleted from the active list of hosts and all stored information (connection, filters, credentials) are erased from the memory.
+
+== Filters
+
+To filter the list of data sets, you can create any number of customizable filters, which produce lists of data sets that match the filter parameters. Once you define a filter, it is stored in memory for the next time you log in with your credentials.
+
+=== Create a New Filter
+
+To create a new filter, click the *+* icon next to *Data Sets* under your host connection.
+
+The filter creates a new tree which lists all data sets that match the specified filter string. The filter string can contain wildcards anywhere except on the high level qualifier, which is mandatory. The filter string cannot end with a dot.
+
+Example 1::
+
+The filter string `MYHLQ.*` returns all data sets with the high level qualifier "MYHLQ".
+
+Example 2::
+
+The filter string `MYHLQ.**.JCL` returns all data sets with the high level qualifier "MYHLQ" and the ending "JCL".
+
+Example 3::
+
+The filter string `MYHLQ.*.JCL` returns all data sets with the high level qualifier "MYHLQ" and the ending "JCL" which have only one further qualifier in the space specified by the wildcard.
+
+=== Edit or Delete a Filter
+
+To edit or delete an existing filter, click the *edit* or *delete* icons next to the filter.
+
+== Actions
+
+In Explorer for z/OS you can browse, edit, copy and delete members of partitioned data sets (PDS) and allocate data sets.
+
+=== Browse a Member
+
+To browse a member of a PDS, right click on the member and select *Browse*.
+
+NOTE: In a browse session, you cannot save the data set on the mainframe.
+
+=== Edit a Member 
+
+To edit a member of a PDS, right click on the member and select *Edit*. When you have finished editing, select *File* - *Save* to save the data set on the mainframe. 
+
+Eclipse Che4z does not currently support file locking during the edit session. Any edit conflicts caused by other users editing the same data set are overwritten.
+
+TIP: If you try to edit a locked data set or member, you cannot save the data set on the mainframe. You can copy and paste the content into a new member, or save the content on your machine locally using *File* - *Save As*.
+
+=== Syntax Awareness
+
+If a data set name ends with .JCL, Explorer for z/OS recognizes the member or data set as a JCL. If you have third-party JCL syntax awareness software installed, the syntax is highlighted when browsing or editing members of the data set.
+
+If the data set name ends with .COBOL, z/OS Explorer recognizes the members of the data set as COBOL files, and Eclipse Che4z LSP syntax awareness is enabled when browsing or editing members of the data set.
+
+=== Create a Member
+
+To create a new member of a PDS, right click on the data set and select *Create Member*. Specify a unique name for the member.
+
+=== Allocate a Data Set
+
+Explorer for z/OS lets you allocate a data set using the parameters of an existing data set as a model. The parameters cannot be edited. As well as partitioned data sets, this functionality is also supported for sequential files, as long as they use tracks (TRK) or cylinders (CYL) as the space allocation unit. VSAM data sets and sequential files that use blocks (BLK) as the space allocation unit are not supported.
+
+To allocate a new data set like a model, right click on the model data set and select *Allocate like*. Specify a unique name for the new data set. 
+
+=== Copy a Member 
+
+Explorer for z/OS lets you copy members of a data set to another data set or the same data set. The destination data set can be on the same host or a different host.
+
+*Follow these steps:*
+
+. Right click the member that you want to copy and select *Copy*.
+. Right click on the destination data set from the tree and select *Paste*.
+. If there is already a member in the destination data set with the same name, a prompt opens. Specify a new unique name for the member.
+
+=== Delete a Member 
+
+To delete a member, right click on the member and select *Delete*. 
