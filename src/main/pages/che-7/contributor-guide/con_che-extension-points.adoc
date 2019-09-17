@@ -13,13 +13,13 @@ summary:
 
 In addition to using API methods and events, each plug-in can bring new components into Che-Theia. These components include visual, such as panels, menus, and others. Other types of components are language servers, debuggers, and others.
 
-The mechanism for adding additional components into Che-Theia is called extension points. An extension point is a section in a Che-Theia plug-in configuration into which meta-information about a new component is added. This chapter contains the full list of available extension points in Che-Theia.
+The mechanism for adding additional components into Che-Theia is called extension points. An extension point is a section in a Che-Theia plug-in configuration into which the meta-information about a new component is added. This chapter contains the full list of available extension points in Che-Theia.
 
 
 [id="syntax-highlighting-grammars_{context}"]
 == Syntax-highlighting grammars
 
-This section provides syntax highlight rules for specified file types. To add syntax highlighting into Che-Theia using a plug-in, add a record that describes the new grammar into the `contributes.grammars` array of the plug-in's `package.json` file.
+This section provides syntax highlight rules for specified file types. To add syntax highlighting into Che-Theia using a plug-in, add a record that describes the new grammar into the `contributes.grammars` array of the `package.json` file of the plug-in.
 
 .Example of a grammar record
 [source,json]
@@ -66,7 +66,7 @@ A plug-in can introduce new *preferences*. These are defined in the `"configurat
 
 There are three scopes of preferences defined in Che-Theia:
 
-* The *default* scope consists of values defined in the `"configuration"` sub-section in `package.json`. These are default values of the preferences contributed by the plug-in.
+* The *default* scope consists of values defined in the `"configuration"` sub-section in the `package.json` file. These are default values of the preferences contributed by the plug-in.
 
 * The *global* or *application-wide* scope values can be set in *User Preferences*. They override the default ones.
 
@@ -87,7 +87,7 @@ theia.workspace.getConfiguration().get('myPlugin'); // { "logLevel": "error" }
 theia.workspace.getConfiguration().get('myPlugin').get('logLevel'); // "error"
 ----
 
-The plug-in API allows to update preferences as well:
+The plug-in API also allows to update preferences:
 
 [source,javascript]
 ----
@@ -176,8 +176,8 @@ To add a view into Che-Theia, add an appropriate record into the `contributes.vi
     ]
 }
 ----
-<1> view identifier
-<2> name of the view, which will be displayed as the widget title inside the view container
+<1> View identifier
+<2> Name of the view, which is displayed as the widget title inside the view container
 
 Currently, only tree view is supported as a view widget.
 
@@ -256,7 +256,7 @@ Note that `ctrl+f alt+b` defines a _chord_: the command is invoked after pressin
 [id="debuggers_{context}"]
 == Debuggers
 
-Plug-ins can add new *debuggers*. To do so, you need to implement the link:https://microsoft.github.io/debug-adapter-protocol/[Debagger Adapter Protocol] (DAP) for a specific debugger. The debugger then can registered in the `contributes.debuggers` debuggers of a plug-in `package.json` file.
+Plug-ins can add new *debuggers* by implementing the link:https://microsoft.github.io/debug-adapter-protocol/[Debagger Adapter Protocol] (DAP) for a specific debugger. The debugger can then register in the `contributes.debuggers` debuggers of a plug-in `package.json` file.
 
 // TODO: For instruction on how to add a debugger, see link:link[Adding support for a new debugger].
 
@@ -270,7 +270,7 @@ NOTE: This is an experimental approach, which may change in the future.
 
 To add a language server into Che-Theia using a plug-in:
 
-. Describe the server in the `contributes.languages` array in the plug-in's `package.json` file:
+. Describe the server in the `contributes.languages` array in the plug-in `package.json` file:
 +
 .Example of a language-server definition
 [source,json]
@@ -306,14 +306,14 @@ theia.languageServer.registerLanguageServerProvider(xLanguageServerInfo);
 Where `xLanguageServerInfo` is an object of `theia.LanguageServerInfo` and has to contain the following fields:
 +
 |===
-| `id` | language ID; should be the same as `id` in the configuration JSON file
-| `name` | human-readable name of the language server
-| `globPatterns` | file pattern that specifies files for which this language server is added
-| `command` | the language server start executable
-| `args` | arguments for the language server start executable
+| `id` | Language ID; should be the same as `id` in the configuration JSON file
+| `name` | Human-readable name of the language server
+| `globPatterns` | File pattern that specifies files for which this language server is added
+| `command` | The language server start executable
+| `args` | Arguments for the language server start executable
 |===
 +
-After the command above is invoked, the language server should start.
+After the command above is invoked, the language server is started.
 
 See a full example at https://github.com/eclipse/che-theia-samples/tree/master/samples/xml-language-server-plugin[xml-language-server-plugin].
 
@@ -321,11 +321,11 @@ See a full example at https://github.com/eclipse/che-theia-samples/tree/master/s
 [id="web-view-api_{context}"]
 == Web view API
 
-A *web view API* is not a contribution point by definition, but it behaves like one and allows to bring a many new features to Che-Theia. Web view API plug-ins can add custom UI, graphical data, or anything what can be displayed in a web page. A web view API provides an HTML `iframe` to which a plug-in has access.
+A *web view API* is not a contribution point by definition, but it behaves like one and allows to bring many new features to Che-Theia. Web view API plug-ins can add custom UI, graphical data, or anything that can be displayed in a web page. A web view API provides an HTML `iframe` to which a plug-in has access.
 
 To create an instance of web view:
 
-. use the `createWebviewPanel` function:
+. Use the `createWebviewPanel` function:
 +
 [source,typescript]
 ----
@@ -341,7 +341,7 @@ webViewPanel.webview.html ='<html><body><h1>Hello from web view</h1></body></htm
 
 [NOTE]
 ====
-Web view content is destroyed when hidden. To restore state, register a serializer, or set the `retainContextWhenHidden` option for the web view. Even with this option set, hiding a web view pauses all scripts, and the web view will not be process messages from the plug-in.
+Web view content is destroyed when hidden. To restore its state, register a serializer, or set the `retainContextWhenHidden` option for the web view. Even with this option set, hiding a web view pauses all scripts, and the web view will not process messages from the plug-in.
 
 The current state of a web view can be read from the web view panel object.
 
