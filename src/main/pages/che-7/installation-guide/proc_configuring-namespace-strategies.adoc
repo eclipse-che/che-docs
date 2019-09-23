@@ -1,27 +1,27 @@
 [id="configuring-namespace-strategies_{context}"]
 = Configuring namespace strategies
 
-This paragraph is the procedure module introduction: a short description of the procedure.
+NOTE: The term _namespace_ (Kubernetes) is used interchangeably with _project_ (OpenShift).
 
-[discrete]
-== Prerequisites
+=== One Namespace per User strategy
 
-* A bulleted list of conditions that must be satisfied before the user starts following this assembly.
-* You can also link to other modules or assemblies the user must follow before starting this assembly.
-* Delete the section title and bullets if the assembly has no prerequisites.
+The strategy isolates each user in their own namespace.
 
-[discrete]
-== Procedure
+To use the strategy, set the `CHE_INFRA_KUBERNETES_NAMESPACE` variable on Kubernetes or the `CHE_INFRA_OPENSHIFT_PROJECT` variable on OpenShift. The value must contain one or more user identifiers. Currently supported identifiers are `_<username>_` and `_<userid>_`.
 
-. Start each step with an active verb.
+.Example
+To assign namespace names composed of a `che-ws` prefix and individual usernames (`che-ws-user1`, `che-ws-user2`), set:
 
-. Include one command or action per step.
+[subs="+quotes"]
+----
+CHE_INFRA_KUBERNETES_NAMESPACE=che-ws-__<username>__
+----
 
-. Use an unnumbered bullet (*) if the procedure includes only one step.
+[IMPORTANT]
+====
+Using the _One Namespace per User_ strategy with the `common` PVC strategy only works correctly when the user runs not more than one workspace at a time. To enforce this limit, set:
 
-[discrete]
-== Additional resources
-
-* A bulleted list of links to other material closely related to the contents of the procedure module.
-* For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+----
+CHE_LIMITS_USER_WORKSPACES_RUN_COUNT=1
+----
+====
