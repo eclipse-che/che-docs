@@ -62,7 +62,7 @@ Since Keycloak may store user-specific information (first and last name, phone n
 
 
 [id="obtaining-the-token-from-keycloak_{context}"]
-== Obtaining the token from Keycloak
+== Obtaining the token from credentials through Keycloak
 
 Clients that cannot run JavaScript or other clients (such as command-line clients or Selenium tests) must request the authorization token directly from Keycloak.
 
@@ -78,3 +78,34 @@ The Che dashboard uses a customized Keycloak login page and an authentication me
 
 . Logging in and obtaining the authorization code.
 . Obtaining the token using this authorization code.
+
+[id="obtaining-the-token-from-openshift-token-through-keycloak_{context}"]
+== Obtaining the token from the OpenShift token through Keycloak
+
+When the OpenShift OAuth integration is enabled, then the Che authentication token
+of a user can also be retrieved from the user OpenShift token.
+
+To do this, send a request to the token endpoint that can be schematically described as the following cURL request:
+
+[subs="+quotes"]
+----
+$ curl -X POST -d "client_id=__<client_name>__" --data-urlencode "grant_type=urn:ietf:params:oauth:grant-type:token-exchange" -d "subject_token=__<user_openshift_token>__" \
+ -d "subject_issuer=__<openshift_identity_provider_name>__" --data-urlencode "subject_token_type=urn:ietf:params:oauth:token-type:access_token" \
+ http://<keyckloak_host>:5050/auth/realms/__<realm_name>__/protocol/openid-connect/token
+----
+
+The default values for the __<openshift_identity_provider_name>__ are:
+
+- On Openshift 3.11: `openshift-v3`
+- On Openshift 4.x: `openshift-v4`
+
+The __<user_openshift_token>__ is the token retrieved by the end-user with the command:
+[subs="+quotes"]
+----
+$ oc whoami --show-token
+----
+
+__WARNING :__ Before using this token exchange feature for an end-user, the end user should have
+logged at least once interactively to the Che Dashboard through the OpenShift login page.
+This is required to properly link OpenShift and Keycloak user accounts, and set the required user
+profile information (email, first and last names).
