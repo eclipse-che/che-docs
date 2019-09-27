@@ -16,13 +16,13 @@ Eclipse Che uses http://www.Keycloak.org[Keycloak] to create, import, manage, de
 
 Local users and imported federation users must have an email address in their profile.
 
-The default Keycloak credentials are `admin:admin`. You can use the `admin:admin` credentials when logging into Che for the first time. It has system privileges. 
+The default Keycloak credentials are `admin:admin`. You can use the `admin:admin` credentials when logging into Che for the first time. It has system privileges.
 
 To find your Keycloak URL:
 
 If Che is deployed on OpenShift:
 
-* Go to the OpenShift web console and navigate to the *Keycloak* namespace. 
+* Go to the OpenShift web console and navigate to the *Keycloak* namespace.
 
 ifeval::["{project-context}" == "che"]
 If Che is running on Docker:
@@ -35,10 +35,10 @@ endif::[]
 
 The deployment script ensures that Keycloak is properly configured when Che is deployed on OpenShift or installed on Docker. When the `che-public` client is created, the following fields are populated:
 
-* *Valid Redirect URIs*: Use this URL to access Che. 
+* *Valid Redirect URIs*: Use this URL to access Che.
 * *Web Origins*
 
-The following are common errors when configuring Che to work with Keycloak: 
+The following are common errors when configuring Che to work with Keycloak:
 
 *Invalid `redirectURI` error*:  occurs when you access Che at `myhost`, which is an alias, and your original `CHE_HOST` is `1.1.1.1`.  If this error occurs, go to the Keycloak administration console and ensure that the valid redirect URIs are configured.
 
@@ -47,7 +47,7 @@ The following are common errors when configuring Che to work with Keycloak:
 [id="configuring-keycloak-tokens"]
 == Configuring Keycloak tokens
 
-A user token expires after 30 minutes by default. 
+A user token expires after 30 minutes by default.
 
 You can change the following Keycloak token settings:
 
@@ -67,9 +67,9 @@ See the http://www.keycloak.org/docs/3.2/server_admin/topics/user-federation/lda
 
 Keycloak provides built-in support for GitHub, OpenShift, and most common social networks such as Facebook and Twitter. See Instructions to http://www.keycloak.org/docs/3.2/server_admin/topics/identity-broker/social/github.html[enable Login with GitHub].
 
-You can also enable the SSH key and upload it to the Che users’ GitHub accounts. 
+You can also enable the SSH key and upload it to the Che users’ GitHub accounts.
 
-To enable this feature when you register a GitHub identity provider: 
+To enable this feature when you register a GitHub identity provider:
 
 . Set scope to `repo,user,write:public_key`.
 
@@ -87,25 +87,54 @@ To use Che's OAuth Authenticator, set `che.oauth.service_mode` to `embedded` and
 
 See link:ide_projects.html#importing-projects-in-the-ide[SSH key management] for more information.
 
+[id="setting-up-user-federation-gitlab"]
+=== GitLab
+
+. Login as admin on keycloak then go to identity provider and add `OpenID Connect v1.0`.
+. Copy `Redirect URI`'s value and set the `Display Name` to how you would like to your login button appear.
+
+image::keycloak/gitLab_application_added.png[]
+
+. Go to your GitLab server, `Admin Area`, then `Applications` and click New `Application`.
+
+image::keycloak/gitlab_new_application.png[]
+
+. Set `Name` to a friendly name, i.e: `Che`.
+. Paste `Redirect URI`'s value that we previously copied from Keycloak.
+. Check `trusted`, `read_user`, `openid, `profile, and `email` then click `Submit`.
+
+image::keycloak/gitLab_application_added.png[]
+
+. Copy `Application ID`'s value then go back to Keycloak and paste it in `Client ID`.
+. Return back to your GitLab and copy `Secret` then paste it in Keycloak `Client Secret`.
+. Now you can close GitLab and go back to keycloak.
+. Scroll all to the bottom of the page to `Import from URL`.
+
+image::keycloak/keycloak_import_external_idp_config.png[]
+
+. Add your gitlab URL, i.e: `https://<your-gitlab-server-url>/.well-known/openid-configuration` then click `Import`
+. Scroll up and make sure that the values we previously added did not get overwritten.
+. Click `Save` and you're all set.
+
 [id="using-protocol-based-providers"]
 == Using protocol-based providers
 
 Keycloak supports http://www.Keycloak.org/docs/3.2/server_admin/topics/identity-broker/saml.html[SAML v2.0] and http://www.Keycloak.org/docs/3.2/server_admin/topics/identity-broker/oidc.html[OpenID Connect v1.0] protocols. You can connect your identity provider systems if they support these protocols.
 
 [id="managing-users"]
-== Managing users 
+== Managing users
 
 You can add, delete, and edit users in the user interface. See: http://www.Keycloak.org/docs/3.2/server_admin/topics/users.html[Keycloak User Management] for more information.
 
 [id="smtp-configurationemail-notifications"]
 == Configuring SMTP and email notifications
 
-Eclipse Che does not provide any pre-configured MTP servers. 
+Eclipse Che does not provide any pre-configured MTP servers.
 
 To enable SMTP servers in Keycloak:
 
-. Go to `che realm settings > Email`. 
+. Go to `che realm settings > Email`.
 
-. Specify the host, port, username, and password. 
+. Specify the host, port, username, and password.
 
 Eclipse Che uses the default theme for email templates for registration, email confirmation, password recovery, and failed login.
