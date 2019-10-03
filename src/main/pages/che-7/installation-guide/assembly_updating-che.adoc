@@ -28,7 +28,43 @@ This paragraph is the assembly introduction. It explains what the user will acco
 
 Include modules here.
 
+== Known issues
 
+=== Upgrading from Che 6
+
+If you installed Che 6 using the operator, you might have to do a couple of adjustments after the upgrade of
+the operator. Upon its upgrade the operator ventures on updating Che server and other components of
+the installation to the versions defined by the operator. Because of the change in how such upgrades are handled
+between Che 6 and Che 7 operator, this might result in some components being stuck in their old versions.
+
+To resolve this situation, it is necessary to manually update the images mentioned in the `checluster` custom resource
+describing the Che installation. Namely, it might be necessary to review the following components:
+
+|===
+| Component | CR attribute name | How to update
+| Postgresql | `spec.database.postgresImage` | The version of the Postgresql database actually hasn't changed. If you
+manually changed the image of the Postgresql server, the change will be preserved.
+| Keycloak | `spec.auth.identityProviderImage` | Che uses a customized version of Keycloak image that follows
+the versioning of Che itself. Please update the image from `eclipse/che-keycloak:6.19.0` to `eclipse/che-keycloak:7.1.0`
+if you upgraded to Che 7.1.0 or use any other corresponding version.
+|===
+
+=== Updating Che installation using the operator
+
+When making changes to the `checluster` custom resource, make sure to use patching to make updates to it, e. g.:
+
+```
+kubectl patch checluster my-che --type=json -n che-namespace -p '...'
+```
+
+or
+
+```
+oc patch checluster my-che --type=json -n che-namespace -p '...'
+```
+
+WARNING: Making local updates to the YAML file of the `checluster` resource and then applying such changed resource to
+the cluster using `kubectl apply -f` or `oc apply -f` can result in invalidation of the Che installation.
 
 [id='related-information-{context}']
 == Related information
