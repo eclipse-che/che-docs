@@ -11,16 +11,55 @@ A link:https://docs.openshift.com/container-platform/latest/builds/setting-up-tr
 
 link:https://docs.openshift.com/container-platform/latest/applications/operators/olm-what-operators-are.html[Operators] are software extensions to Kubernetes that use link:https://docs.openshift.com/container-platform/latest/applications/crds/crd-managing-resources-from-crds.html[custom resources] to manage applications and their components.
 
-Che installed using the Operator provides the user with two automatically generated `configMaps`:
+Che installed using the Operator provides the user with an automatically generated `che` `configMap`.
 
-* `che` (main)
-* `custom` (additional)
+The `che` `configMap` contains the main properties for the installation and is in sync with the information stored in the CheCluster Custom Resource file. User modifications of the `che` `configMap` after installing Che using the Operator are automatically overwritten by values that the Operator obtains from the `CheCluster` Custom Resource. 
 
-* The `che` `configMap` contains the main properties for the installation and is in sync with the information stored in the CheCluster Custom Resource file. User modifications of the `che` `configMap` after installing Che using the Operator are automatically overwritten by values that the Operator obtains from the `CheCluster` Custom Resource. +
 To edit the `che` `configMap`, edit the Custom Resource manually.
 The `configMap` derives values from the `CheCluster` field. User modifications of the `CheCluster` Custom Resource field cause the Operator to change the attributes of the `che` `configMap` accordingly. The `configMap` changes automatically trigger a restart of the Che Pod.
 
-* The secondary `custom` `configMap` is intended for additional manual customization of properties by users. These properties include environment variables that are not already specified in the main `che` `configMap`. To apply manual changes to the `custom` `configMap`, delete the Che Pod to manually restart it.
+To add custom properties, such as environment variables that are not created by the `che` `configMap` by default, or to override standard properties, the `CheCluster` Custom Resource has a `overrideCheProperties` field, that expects a list of key/value pairs.  
+
+For example, to add a property named `FOO` with value `BAR`, add an entry in `overrideCheProperties`:
+
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  name: eclipse-che
+  namespace: che
+spec:
+  server:
+    cheImageTag: ''
+    devfileRegistryImage: ''
+    pluginRegistryImage: ''
+    tlsSupport: false
+    selfSignedCert: false
+    overrideCheProperties:
+       - name: FOO
+         value: BAR
+  database:
+    externalDb: false
+    chePostgresHostname: ''
+    chePostgresPort: ''
+    chePostgresUser: ''
+    chePostgresPassword: ''
+    chePostgresDb: ''
+  auth:
+    openShiftoAuth: true
+    identityProviderImage: ''
+    externalIdentityProvider: false
+    identityProviderURL: ''
+    identityProviderRealm: ''
+    identityProviderClientId: ''
+  storage:
+    pvcStrategy: per-workspace
+    pvcClaimSize: 1Gi
+    preCreateSubPaths: true
+----
+
+Previous versions of the Che operator had a configMap named `custom` to fulfill this role.  If the Che operator finds a `configMap` with the name `custom`, it will add the data it contains to the `overrideCheProperties` field, redeploy Che, and delete the `configMap`. 
 
 == Che installed using a Helm Chart
 
