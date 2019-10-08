@@ -620,6 +620,28 @@ This example shows association of a `tasks.json` file with a devfile. Notice the
 
 In addition to the `vscode-task` commands, the Che-Theia editor understands `vscode-launch` type using which you can specify the launch configurations.
 
+=== Command preview URL
+
+It is possible to specify a preview URL for commands that expose web UI. This URL is offered for opening when the command is executed.
+
+[source,yaml]
+----
+commands:
+    - name: tasks
+      previewUrl:
+        port: 8080     <1>
+        path: /myweb   <2>
+      actions:
+      - type: exec
+        component: go-cli
+        command: "go run webserver.go"
+        workdir: ${CHE_PROJECTS_ROOT}/webserver
+----
+<1> TCP port where the application listens. Mandatory parameter.
+<2> The path part of the URL to the UI. Optional parameter. The default is root (`/`).
+
+The example above opens `++http://__<server-domain>__/myweb++`, where `_<server-domain>_` is the URL to the dynamically created Kubernetes Ingress or OpenShift Route.
+
 == Devfile attributes
 
 Devfile attributes can be used to configure various features.
