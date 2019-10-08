@@ -38,15 +38,15 @@ the installation to the versions defined by the operator. Because of the change 
 between Che 6 and Che 7 operator, this might result in some components being stuck in their old versions.
 
 To resolve this situation, it is necessary to manually update the images mentioned in the `checluster` custom resource
-describing the Che installation. Namely, it might be necessary to review the following components:
+describing the Che installation. To reset the images to their default versions for given operator version, it is enough
+to set the image properties to empty string. This will make Che operator use the default versions it was built with.
+Namely, it might be necessary to review the following components:
 
 |===
-| Component | CR attribute name | How to update
-| Postgresql | `spec.database.postgresImage` | The version of the Postgresql database actually hasn't changed. If you
-manually changed the image of the Postgresql server, the change will be preserved.
-| Keycloak | `spec.auth.identityProviderImage` | Che uses a customized version of Keycloak image that follows
-the versioning of Che itself. Please update the image from `eclipse/che-keycloak:6.19.0` to `eclipse/che-keycloak:7.1.0`
-if you upgraded to Che 7.1.0 or use any other corresponding version.
+| Component | CR attribute name 
+| Postgresql | `spec.database.postgresImage` 
+| Keycloak | `spec.auth.identityProviderImage` 
+| PVC Jobs | `spec.storage.pvcJobsImage`
 |===
 
 === Updating Che installation using the operator
