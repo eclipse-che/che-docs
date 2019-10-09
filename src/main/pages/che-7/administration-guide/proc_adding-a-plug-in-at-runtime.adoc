@@ -18,22 +18,22 @@ $ PLUGIN_REG_POD=$(kubectl get -o custom-columns=NAME:.metadata.name \
 $ ORG="my-org"
 $ PLUGIN="my-plugin"
 $ VERSION="1.0.1"
-$ kubectl exec $\{PLUGIN_REG_POD} -i -t -- \
- mkdir -p /var/www/html/v3/plugins/$\{ORG}/$\{PLUGIN}/$\{VERSION}
+$ kubectl exec ${PLUGIN_REG_POD} -i -t -- \
+ mkdir -p /var/www/html/v3/plugins/${ORG}/${PLUGIN}/${VERSION}
 ----
 
 . Copy the `meta.yaml` file in the container:
 +
 ----
-LOCAL_META="$(PWD)/meta.yaml"
-$ kubectl cp "$\{LOCAL_META}" \
-  $\{PLUGIN_REG_POD}:/var/www/html/v3/plugins/$\{ORG}/$\{PLUGIN}/$\{VERSION}
+LOCAL_META="${PWD}/meta.yaml"
+$ kubectl cp "${LOCAL_META}" \
+  ${PLUGIN_REG_POD}:/var/www/html/v3/plugins/${ORG}/${PLUGIN}/${VERSION}
 ----
 
 . Update the `index.json` file of the registry:
 +
 ----
-$ kubectl exec $\{PLUGIN_REG_POD} -i -t -- \
+$ kubectl exec ${PLUGIN_REG_POD} -i -t -- \
   /var/www/html/index_v2.sh v3 > /var/www/html/v3/plugins/index.json
 ----
 
