@@ -1,28 +1,24 @@
+// configuring-a-workspace-using-a-devfile
+
 [id="creating-a-workspace-using-chectl-and-a-local-devfile_{context}"]
 = Creating a workspace using chectl and a local devfile
 
-This paragraph is the procedure module introduction: a short description of the procedure.
+A Che 7 workspace can be created by pointing the chectl tool to a locally-stored devfile. The Che 7 instance then uses the discovered devfile to build a workspace.
 
 .Prerequisites
-
-* A bulleted list of conditions that must be satisfied before the user starts following this assembly.
-* You can also link to other modules or assemblies the user must follow before starting this assembly.
-* Delete the section title and bullets if the assembly has no prerequisites.
+* A running instance of Eclipse Che. To install an instance of Eclipse Che, see link:{site-baseurl}che-7/che-quick-starts/[Che 'quick-starts'].
+*  The link:https://github.com/che-incubator/chectl[`chectl`] command-line tool for managing a Che server and its development workspaces. See link:{site-baseurl}che-7/installing-the-chectl-management-tool/[Installing the `chectl` management tool].
+* The devfile is available on the local filesystem in the current working directory. See link:{site-baseurl}che-7//making-a-workspace-portable-using-a-devfile/[Making a workspace portable using a Devfile] for detailed information about creating and using devfiles.
++
+Example:
++
+Download the `devfile.yaml` file from the link:https://github.com/eclipse/che/blob/master/devfile.yaml[GitHub repository]  to the current working directory.
 
 .Procedure
 
-. Start each step with an active verb.
-. Include one command or action per step.
-. Use an unnumbered bullet (*) if the procedure includes only one step.
+. Execute a workspace from a devfile using the `workspace:start` parameter with the `chectl` tool as follows:
 
-.Verification steps
-
-. (Optional) Provide the user with verification method(s) for the procedure, such as expected output or commands that can be used to check for success or failure.
-. Use an unnumbered bullet (*) if the procedure includes only one step.
-
-.Additional resources
-
-* A bulleted list of links to other material closely related to the contents of the procedure module.
-* Currently, modules cannot include xrefs, so you cannot include links to other content in your collection. If you need to link to another assembly, add the xref to the assembly that includes this module.
-* For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+[subs="+quotes"]
+----
+$ chectl workspace:start --devfile=devfile.yaml
+----
