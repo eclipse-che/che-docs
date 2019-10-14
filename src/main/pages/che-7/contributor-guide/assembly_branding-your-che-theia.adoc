@@ -1,0 +1,112 @@
+---
+title: Branding Your Che-Theia
+keywords:
+tags: []
+sidebar: che_7_docs
+permalink: che-7/branding-your-che-theia/
+folder: che-7/contributor-guide
+summary:
+---
+
+:parent-context-of-branding-your-che-theia: {context}
+
+[id='branding-your-che-theia']
+= Branding Your Che-Theia
+
+:context: branding-your-che-theia
+
+As a user you may be interested in customizing your Che-Theia to be consistent with your product. You can easily change the name of the product, logo and description that are displayed in Welcome page and About dialog and a list of helpful resources.
+
+Since Che-Theia is running in a separate `eclipse/che-theia` container, you need to:
+
+* Build container image with your Che-Theia.
+* Define an editor meta.yaml which will use your custom image.
+* Create a workspace from a devfile with your editor.
+
+To build container image with your Che-Theia you need to do following steps:
+
+* Create JSON file with product information.
+* Prepare two images with logo of your product for dark and light themes.
+* Build a Che-Theia container image containing sample product JSON.
+
+== Create JSON file with product information
+
+The first you have to create a `product.json` file containing the name of the product, logo, description, list of hyperlinks to be shown in the welcome page and place it somewhere on the file system.
+
+An example of `product.json`:
+
+----
+{
+    "name": "Red Hat CodeReady Workspaces",
+    "icon": "CodeReady.png",
+    "logo": {
+        "dark": "CodeReady_Workspaces_Light.png",
+        "light": "CodeReady_Workspaces_Dark.png"
+    },
+    "welcome": {
+        "title": "Welcome to Your Workspace",
+        "links": ["website"]
+    },
+    "links": {
+        "website": {
+            "name": "Discover CodeReady Workspaces",
+            "url": "https://developers.redhat.com/products/codeready-workspaces/overview"
+        },
+        "documentation": {
+            "name": "Browse Documentation",
+            "url": "https://www.redhat.com/docs"
+        }
+    }
+}
+----
+
+In this file:
+
+* *name*: the name of the product. It will be used as tab title for welcome page, and as a title for about dialog.
+* *icon*: small logo of your product. It will be displayed in welcome page tab title.
+* *logo*: two logo images of the product for dark and light themes. Logo is shown in the Welcome page and in the about dialog. The logo can point on the images relative to your `product.json` file. You also could use absolute path or http / https resources.
+* *welcome*: this section is optional. It describes the behavior of welcome page. For welcome page you can set the invitation title and pick the links will be shown inside `Help` section. In this example only link to the website will be shown. If you omit `welcome/links`, all the links described in `links` section will be listed.
+* *links*: list of all helpful hyperlinks for you product. For future expanding, each link is tagged (e.g. website, documentation). This gives the ability to find the appropriate link by tag name.
+
+
+== Prepare product logo
+
+The next you have to prepare your product logo. It could be an image of any format which is supported by your browser. Images with a transparent background are preferred.
+
+
+== Build a Che-Theia container image containing sample product JSON
+
+To build a container with your Che-Theia you can use this dockerfile.
+
+----
+```yaml
+FROM eclipse/che-theia:next
+
+ADD product.json ${HOME}/product.json
+ADD logo.png ${HOME}/logo.png
+
+ENV PRODUCT_JSON=${HOME}/product.json
+```
+----
+
+
+First, prepare your custom `product.json` and place it next to the dockerfile. Then you need to add you logo and build the image by running `$ docker build` command. If you want to use external logo, you can easily remove the line which adds the logo in the container and use an http or https resource.
+
+----
+"logo": "http://host/path/logo.png"
+----
+
+
+image::branding/welcome-dark.png[link="{imagesdir}/branding/welcome-dark.png"]
+
+
+image::branding/about-dark.png[link="{imagesdir}/branding/about-dark.png"]
+
+
+image::branding/welcome-light.png[link="{imagesdir}/branding/welcome-light.png"]
+
+
+image::branding/about-light.png[link="{imagesdir}/branding/about-light.png"]
+
+
+:context: {parent-context-of-branding-your-che-theia}
