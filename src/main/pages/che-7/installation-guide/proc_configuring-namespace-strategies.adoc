@@ -15,27 +15,34 @@ summary:
 
 NOTE: The term _namespace_ (Kubernetes) is used interchangeably with _project_ (OpenShift).
 
+The namespace strategies are configured with `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` environment variable.
+
+WARNING: There are legacy variables `CHE_INFRA_KUBERNETES_NAMESPACE` and `CHE_INFRA_OPENSHIFT_PROJECT`. These should be left unset for new instalations. Changing these variables during update might lead to data loss.
+
 === One Namespace per Workspace strategy
 
-The strategy creates new namespace for each new workspace. Name of new namespace is workspace's id.
+The strategy creates new namespace for each new workspace.
 
-To use the strategy, unset or leave empty `CHE_INFRA_KUBERNETES_NAMESPACE` variable on Kubernetes or `CHE_INFRA_OPENSHIFT_PROJECT` variable on Openshift.
+To use the strategy, the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable value must contain `_<workspaceid>_` identifier. It may be used alone or even combined with other identifiers or any string.
+
+.Example
+To assign namespace names composed of a `che-ws` prefix and workspace id, set:
 [subs="+quotes"]
 ----
-CHE_INFRA_KUBERNETES_NAMESPACE=
+CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=che-ws-__<workspaceid>__
 ----
 
 === One Namespace for all Workspaces strategy
 
 The strategy uses one predefined namespace for all workspaces.
 
-To use the strategy, set the `CHE_INFRA_KUBERNETES_NAMESPACE` variable on Kubernetes or the `CHE_INFRA_OPENSHIFT_PROJECT` variable on Openshift. The value must be name of desired namespace that you want to use.
+To use the strategy, the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable value must be name of desired namespace you want to use.
 
 .Example
 To have all workspaces created in `che-workspaces` namespace, set:
 [subs="+quotes"]
 ----
-CHE_INFRA_KUBERNETES_NAMESPACE=che-workspaces
+CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=che-workspaces
 ----
 
 
@@ -43,14 +50,13 @@ CHE_INFRA_KUBERNETES_NAMESPACE=che-workspaces
 
 The strategy isolates each user in their own namespace.
 
-To use the strategy, set the `CHE_INFRA_KUBERNETES_NAMESPACE` variable on Kubernetes or the `CHE_INFRA_OPENSHIFT_PROJECT` variable on OpenShift. The value must contain one or more user identifiers. Currently supported identifiers are `_<username>_` and `_<userid>_`.
+To use the strategy, the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable value must contain one or more user identifiers. Currently supported identifiers are `_<username>_` and `_<userid>_`.
 
 .Example
 To assign namespace names composed of a `che-ws` prefix and individual usernames (`che-ws-user1`, `che-ws-user2`), set:
-
 [subs="+quotes"]
 ----
-CHE_INFRA_KUBERNETES_NAMESPACE=che-ws-__<username>__
+CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=che-ws-__<username>__
 ----
 
 [IMPORTANT]
