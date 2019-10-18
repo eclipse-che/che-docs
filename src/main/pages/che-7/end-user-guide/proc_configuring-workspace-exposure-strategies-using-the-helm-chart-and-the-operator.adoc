@@ -8,12 +8,12 @@ The following section describes how to configure workspace exposure strategies o
 A link:https://helm.sh/[Helm Chart] is a Kubernetes extension for defining, installing, and upgrading Kubernetes applications.
 
 When deploying Che using the Helm chart, configure the workspace exposure strategy using the `global.serverStrategy` property. To do so, add the following option to the `helm install` or `helm upgrade` command:
-[subs=”+quotes”]
+[subs="+quotes"]
 ----
 $ helm install --set global.serverStrategy=__<single-host>__
 ----
 Or
-[subs=”+quotes”]
+[subs="+quotes"]
 ----
 $ helm upgrade --set global.serverStrategy=__<single-host>__
 ----
@@ -26,12 +26,12 @@ When deploying Che using the Operator, configure the intended strategy by modify
 To activate changes done to CheCluster YAML file, do one of the following:
 
 * Create a new cluster by executing the `kubectl apply` command. For example:
-[subs=”+quotes”]
+[subs="+quotes"]
 ----
 $ kubectl apply -f _<my-cluster.yaml>_
 ----
 * Update the YAML file properties of an already running cluster by executing the `kubectl patch` command. For example:
-[subs=”+quotes”]
+[subs="+quotes"]
 ----
 $ kubectl patch checluster eclipse-che --type=json -p '[{"op": "replace", "path": "/spec/k8s/ingressStrategy", "value": "__<single-host>__"}]'
 ----
