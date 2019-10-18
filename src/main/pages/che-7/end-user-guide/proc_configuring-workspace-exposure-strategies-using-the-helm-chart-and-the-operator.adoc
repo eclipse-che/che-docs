@@ -4,35 +4,47 @@
 = Configuring workspace exposure strategies using the Helm chart and the Operator
 The following section describes how to configure workspace exposure strategies of a Che server using the Helm chart and the Operator.
 
+
 == Helm chart
+
 A link:https://helm.sh/[Helm Chart] is a Kubernetes extension for defining, installing, and upgrading Kubernetes applications.
 
 When deploying Che using the Helm chart, configure the workspace exposure strategy using the `global.serverStrategy` property. To do so, add the following option to the `helm install` or `helm upgrade` command:
+
 [subs="+quotes"]
 ----
 $ helm install --set global.serverStrategy=__<single-host>__
 ----
-Or
+
+or:
+
 [subs="+quotes"]
 ----
 $ helm upgrade --set global.serverStrategy=__<single-host>__
 ----
+
 Depending on the strategy used, replace the `_<single-host>_` option in the above example with `multi-host` or `default-host`.
 
+
 == Operator
+
 link:https://docs.openshift.com/container-platform/latest/applications/operators/olm-what-operators-are.html[Operators] are software extensions to Kubernetes that use link:https://docs.openshift.com/container-platform/latest/applications/crds/crd-managing-resources-from-crds.html[custom resources] to manage applications and their components.
 
 When deploying Che using the Operator, configure the intended strategy by modifying the `spec.k8s.ingressStrategy` property of the CheCluster custom resource object YAML file.
 To activate changes done to CheCluster YAML file, do one of the following:
 
 * Create a new cluster by executing the `kubectl apply` command. For example:
++
 [subs="+quotes"]
 ----
 $ kubectl apply -f _<my-cluster.yaml>_
 ----
+
 * Update the YAML file properties of an already running cluster by executing the `kubectl patch` command. For example:
++
 [subs="+quotes"]
 ----
-$ kubectl patch checluster eclipse-che --type=json -p '[{"op": "replace", "path": "/spec/k8s/ingressStrategy", "value": "__<single-host>__"}]'
+$ kubectl patch checluster eclipse-che --type=json -p '[{"op": "replace", "path": "/spec/k8s/ingressStrategy", "value": "__single-host__"}]'
 ----
-Depending on the strategy used, replace the `_<single-host>_` option in the above example with `multi-host` or `default-host`.
+
+Depending on the strategy used, replace the `_single-host_` option in the above example with `multi-host` or `default-host`.
