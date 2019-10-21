@@ -8,36 +8,24 @@ folder: che-7/end-user-guide
 summary:
 ---
 
-[id='che-theia-troubleshooting']
+[id="che-theia-troubleshooting"]
 = Che-Theia Troubleshooting
 
-This section describes some most frequent issues with Che-Theia IDE
+This section describes some of the most frequent issues with the Che-Theia IDE.
 
-== FAQ
+Che-Theia shows a notification with the following message: `Plugin runtime crashed unexpectedly, all plugins are not working, please reload the page. Probably there is not enough memory for the plugins.`::
 
-// qanda doesn't support multiline q&a, so using bold text for questions
+  This means that one of the Che-Theia plug-ins that are running in the Che-Theia IDE container requires more memory than the container has. To fix this problem, increase the amount of memory for the Che-Theia IDE container:
 
-**
-Che-Theia shows notification with message:
-`Plugin runtime crashed unexpectedly, all plugins are not working, please reload the page. Probably there is not enough memory for the plugins.`
-What to do?
-**
+  . Navigate to the Che Dashboard.
+  . Select the workspace in which the problem happened.
+  . Switch to the *Devfile* tab.
+  . In the `components` section of the devfile, find a component of the `cheEditor` type.
+  . Add a new property, `memoryLimit: 1024M` (or increase the value if it already exists).
+  . Save changes and restart the workspace.
 
-This means that one of your Che-Theia plugins which runs in the Che-Theia IDE container requires more memory than the container has.
-To fix this problem one may increase amount of memory for the Che-Theia IDE container:
 
-1. Navigate to Che dashboard.
-2. Select the workspace in which the problem happend.
-3. Switch to `Devfile` tab.
-4. In the `components` section of the devfile find a component of `cheEditor` type.
-5. Add a new prperty `memoryLimit: 1024M` (or increase the value if it already exists).
-6. Save changes and restart the workspace.
+.Additional resources
 
-{empty} +
-
-**
-I did everything what docs says, but I still have a problem
-**
-
-You may ask community for help in https://mattermost.eclipse.org/eclipse/channels/eclipse-che[Mattermost channel] dedicated to Eclipse Che.
-Or if you think that this is a bug, please report issue in https://github.com/eclipse/che[Eclipse Che repository].
+* Asking the community for help: link:https://mattermost.eclipse.org/eclipse/channels/eclipse-che[Mattermost channel] dedicated to Eclipse Che.
+* Reporting a bug: link:https://github.com/eclipse/che[Eclipse Che repository issues].
