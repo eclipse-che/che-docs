@@ -3,58 +3,61 @@
 
 This section contains devfile reference and instructions on how to use the various elements that devfiles consist of.
 
+
 == Adding projects to a devfile
 
-In most cases devfile contains one or more projects for which development the whole workspace is created.
-Projects are added in `projects` section of devfile.
+In most cases, a devfile contains one or more projects. A workspace is created to develop those projects. Projects are added in the `projects` section of devfiles.
 
-Each project in a single devfile must have a unique name.
+Each project in a single devfile must have:
 
-Beside project name each project must have its source specified.
+* Unique name
+* Source specified
+
 Project source consists of two mandatory values: `type` and `location`.
 
-`type` defined kind of project source provider.
- +
-`location` contains URI to where project source is located.
+`type`:: The kind of project-source provider.
+`location`:: The URL of project source.
 
-Che support the following project types:
+Che supports the following project types:
 
- * `git` - projects which is under git VCS. Location should point to clone link.
- * `github` - the same as above, but for projects hosted on https://github.com/[GitHub] only.
-   If there is no plan to use GitHub specific features, one may use `git` type instead.
- * `zip` - projects which sources is in zip archive. Location should point to zip file.
+`git`:: Projects with sources in Git. The location points to a clone link.
 
-=== The full project source specification of type `git`:
+`github`:: Same as `git` but for projects hosted on link:https://github.com/[GitHub] only. Use `git` for projects that do not use GitHub-specific features.
+
+`zip`:: Projects with sources in a ZIP archive. Location points to a ZIP file.
+
+
+=== Project-source type: git
 
 [source,yaml]
 ----
 source:
     type: git
     location: https://github.com/eclipse/che.git
-    startPoint: master
+    startPoint: master           <1>
     tag: 7.2.0
     commitId: 36fe587
     branch: master
-    sparseCheckoutDir: wsmaster
+    sparseCheckoutDir: wsmaster  <2>
 ----
+<1> `startPoint` is the general value for `tag`, `commitId`, and `branch`. The `startPoint`, `tag`, `commitId`, and `branch` parameters are mutually exclusive. When more than one is supplied, the following order is used: `startPoint`, `tag`, `commitId`, `branch`.
+<2> `sparseCheckoutDir` the template for the sparse checkout Git feature. This is useful when only a part of a project (typically only a single directory) is needed.
 
-`startPoint` is general value for `tag`, `commitId` and `branch`.
-Note, that `startPoint`, `tag`, `commitId` and `branch` are mutually exclusive.
-However, if a few of them are given the following order is used: `startPoint`, `tag`, `commitId`, `branch`.
+.`sparseCheckoutDir` parameter settings
+====
+* Set to `/my-module/` to create only the root `my-module` directory (and its content).
 
-`sparseCheckoutDir` parameter allows to set a template for sparse checkout git feature.
-It might be useful if it is needed to have a part (usually a single directory) of a project.
-For example, setting the parameter to `/my-module/` will create only `my-module` directory (with its content) from project root.
-Please note slashes.
-If drop leading slash it will create all `my-module` directories of the project.
-Including, for example, `/addons/my-module/`.
-Trailing slash shows that only directories with the given name (including their content) should be created.
+* Omit the leading slash (`my-module/`) to create all `my-module` directories that exist in the project. Including, for example, `/addons/my-module/`.
++
+The trailing slash indicates that only directories with the given name (including their content) should be created.
 
-Also it is possible to use wildcard as a value.
-For example: `module-*` will checkout all directories of given project which starts from `module-`.
-For more information see https://git-scm.com/docs/git-read-tree#_sparse_checkout[git docs].
+* Use wildcards to specify more than one directory name. For example, setting `module-*` checks out all directories of the given project that start with `module-`.
+====
 
-=== The full project source specification of type `zip`:
+For more information, see link:https://git-scm.com/docs/git-read-tree#_sparse_checkout[Sparse checkout in Git documentation].
+
+
+=== Project-source type: zip
 
 [source,yaml]
 ----
@@ -63,13 +66,12 @@ source:
     location: http://host.net/path/project-src.zip
 ----
 
-=== Other project parameters
 
-Also each project may have `clonePath` parameter, which specifies the path into which the project should be cloned.
-It should be relative to `/projects` directory and cannot leave it.
-By default it is equal to project name.
+=== Project clone-path parameter: clonePath
 
-An devfile example:
+The `clonePath` parameter specifies the path into which the project is to be cloned. The path must be relative to the `/projects/` directory, and it cannot leave the `/projects/` directory. The default value is the project name.
+
+.Example devfile with projects
 [source,yaml]
 ----
 apiVersion: 1.0.0
@@ -88,9 +90,10 @@ projects:
       branch: develop
 ----
 
-Note, for comfortable development you'll probably need some tooling.
-For more information see <<Adding components to a devfile, adding components to a devfile>>.
+See <<adding-components-to-a-devfile_{context}>> for instructions on how to add tooling to a devfile.
 
+
+[id="adding-components-to-a-devfile_{context}"]
 == Adding components to a devfile
 
 Each component in a single devfile must have a unique name.
@@ -386,9 +389,9 @@ components:
 
 [NOTE]
 ====
-* The variable expansion works between the environment variables and it uses the Kubernetes convention for the variable references.
+* The variable expansion works between the environment variables, and it uses the Kubernetes convention for the variable references.
 
-* You can use the predefined variables in your own definitions.
+* The predefined variables are available for use in custom definitions.
 ====
 
 The following environment variables are pre-set by the Che server:
@@ -488,17 +491,17 @@ When starting a new server within a component, Che autodetects this, and the UI 
 
 ==== Kubernetes and OpenShift resources
 
-Complex deployments can be described using Kubernetes or OpenShift resource lists that can be referenced in the devfile. This will make them part of the workspace.
+Complex deployments can be described using Kubernetes or OpenShift resource lists that can be referenced in the devfile. This makes them a part of the workspace.
 
 [IMPORTANT]
 ====
 * Because a Che workspace is internally represented as a single deployment, all resources from the Kubernetes or OpenShift list are merged into that single deployment.
 
-* You must be careful when designing such lists because this can result in name conflicts and other problems.
+* Be careful when designing such lists because this can result in name conflicts and other problems.
 
-* Only the following subset of the Kubernetes objects are supported: `deployments`, `pods`, `services`, `persistent volume claims`, `secrets`, and `config maps`. Kubernetes ingresses are ignored but OpenShift routes are supported. A workspace created from a devfile using any other object types will fail to start.
+* Only the following subset of the Kubernetes objects are supported: `deployments`, `pods`, `services`, `persistent volume claims`, `secrets`, and `config maps`. Kubernetes Ingresses are ignored, but OpenShift routes are supported. A workspace created from a devfile using any other object types fails to start.
 
-* If you run Che on a Kubernetes cluster, only Kubernetes lists are supported. However, if you run Che on an OpenShift cluster, both Kubernetes and OpenShift lists are supported (because OpenShift is a superset of Kubernetes).
+* When running Che on a Kubernetes cluster, only Kubernetes lists are supported. When running Che on an OpenShift cluster, both Kubernetes and OpenShift lists are supported.
 ====
 
 [source,yaml]
