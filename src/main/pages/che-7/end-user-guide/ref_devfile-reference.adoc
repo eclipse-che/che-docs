@@ -41,13 +41,7 @@ source:
     sparseCheckoutDir: wsmaster  <2>
 ----
 <1> `startPoint` is the general value for `tag`, `commitId`, and `branch`. The `startPoint`, `tag`, `commitId`, and `branch` parameters are mutually exclusive. When more than one is supplied, the following order is used: `startPoint`, `tag`, `commitId`, `branch`.
-<2> `sparseCheckoutDir` the template for the sparse checkout Git feature.
-
-////
-TODO: @mmorhun -- I don't understand this sentence. Could you please try to reword it?
-
-It might be useful if it is needed to have a part (usually a single directory) of a project.
-////
+<2> `sparseCheckoutDir` the template for the sparse checkout Git feature. This is useful when only a part of a project (typically only a single directory) is needed.
 
 .`sparseCheckoutDir` parameter settings
 ====
@@ -75,9 +69,9 @@ source:
 
 === Project clone-path parameter: clonePath
 
-The `clonePath` parameter specifies the path into which the project is to be cloned. The path must be relative to the `/projects` directory, and it cannot leave the `projects/` directory. The default value is the project name.
+The `clonePath` parameter specifies the path into which the project is to be cloned. The path must be relative to the `/projects/` directory, and it cannot leave the `/projects/` directory. The default value is the project name.
 
-.Example of the `clonePath` parameter
+.Example devfile with projects
 [source,yaml]
 ----
 apiVersion: 1.0.0
@@ -397,7 +391,7 @@ components:
 ====
 * The variable expansion works between the environment variables, and it uses the Kubernetes convention for the variable references.
 
-* Use the predefined variables in your own definitions.
+* The predefined variables are available for use in custom definitions.
 ====
 
 The following environment variables are pre-set by the Che server:
@@ -497,7 +491,7 @@ When starting a new server within a component, Che autodetects this, and the UI 
 
 ==== Kubernetes and OpenShift resources
 
-Complex deployments can be described using Kubernetes or OpenShift resource lists that can be referenced in the devfile. This makea them a part of the workspace.
+Complex deployments can be described using Kubernetes or OpenShift resource lists that can be referenced in the devfile. This makes them a part of the workspace.
 
 [IMPORTANT]
 ====
