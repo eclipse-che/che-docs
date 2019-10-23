@@ -1,0 +1,161 @@
+---
+title: Installing Che in air-gapped or offline mode
+keywords: air-gap, airgap, offline
+tags: [installation]
+sidebar: che_7_docs
+permalink: che-7/airgap-install/
+folder: che-7/installation-guide
+summary:
+---
+
+:parent-context-of-installing-che-in-air-gapped-or-offline-mode: {context}
+
+[id='installing-che-in-air-gapped-or-offline-mode_{context}']
+= Installing Che in air-gapped or offline mode
+
+:context: installing-che-in-air-gapped-or-offline-mode
+
+## Introduction
+By default, Eclipse Che's workspaces reference various external resources, whether they are docker images available on public registries, or sample projects hosted on GitHub.
+
+In some situations, it may be desirable to deploy Che in an environment where these external resources are not available (e.g. on a cluster that is not exposed to the public internet). Doing this requires a few customizations:
+
+* Certain images need to be built containing external resources (workspace plugins, projects)
+* All images to be used for running Che need to be pulled to a registry that is visible
+* Che needs to be configured to use these images
+
+The following sections describe the steps necessary to deploy Che in an airgapped Kubernetes or OpenShift cluster.
+
+[#offline-registries]
+## Building offline versions of the plugin and devfile registry
+[NOTE]
+====
+This section describes how to build _offline_ registry images. For additional information, see the main link:{site-baseurl}che-7/building-and-running-a-custom-registry-image/[building and running a custom registry image] doc.
+====
+
+The main purpose of building offline regsitry images is to ensure that workspaces can be started without relying on resources from the outside internet. For the plugin registry, this means building a registry that serves all plugin or extension artifacts in additiona to plugin metadata. Similarly, an offline devfile registry serves all sample projects referenced in devfiles as `zip` files.
+
+The plugin registry repositories contain scripts to make it easier to build custom images.
+
+
+### Offline plugin registry
+[source,bash]
+----
+git clone https://github.com/eclipse/che-plugin-registry.git <1>
+cd che-plugin-registry
+git checkout 7.3.0 // <2>
+# Build the image
+./build.sh --organization <my-org> \
+           --registry <my-registry> \
+           --tag <my-tag> \
+           --offline // <3>
+----
+<1> Clone the plugin registry repository
+<2> Check out version of registry to be deployed
+<3> Full options for the `build.sh` script can be found by passing parameter `--help`
+
+This build of the registry will build a docker image that contains all `.vsix` and `.theia` extensions that can be used in workspaces; since this results in a quite large image, a version of the registry that contains only the _latest_ version of each plugin can be build using the argument `--latest-only`.
+
+
+### Offline devfile registry
+[source,bash]
+----
+git clone https://github.com/eclipse/che-devfile-registry.git <1>
+cd che-devfile-registry
+git checkout 7.3.0 // <2>
+# Build the image
+./build.sh --organization <my-org> \
+           --registry <my-registry> \
+           --tag <my-tag> \
+           --offline // <3>
+----
+<1> Clone the devfile registry repository
+<2> Check out version of registry to be deployed
+<3> Full options for the `build.sh` script can be found by passing parameter `--help`
+
+
+## Pulling images used by Che to a private registry
+As Che workspaces consist of pods running on a cluster, a fairly large number of images are required to support all languages and plugins that could be used for a workspace. In an air-gap or offline deployment, these images must be made available to the Che server running in the cluster.
+
+### Essential images
+In general, the images _essential_ to starting a workspace are infrastructure images those that are included in every workspace launch:
+
+[cols="2*"]
+|===
+| `docker.io/eclipse/che-server`
+| The main Che server image
+
+| `docker.io/eclipse/che-postgres`
+| The database used by Che
+
+| `docker.io/eclipse/che-keycloak`
+| Keycloak pod used for user authentication
+
+| `quay.io/eclipse/che-jwtproxy`
+| JWT proxy image used for enabling authentication between services. See: link:{site-baseurl}pages/che-7/overview/con_che-workspace-jwt-proxy.html[additional documentation]
+
+| `docker.io/eclipse/che-unified-plugin-broker` +
+  `docker.io/eclipse/che-init-plugin-broker`
+| Images used for adding plugins to workspaces. See: link:{site-baseurl}pages/che-7/overview/con_che-plug-in-broker.html[additional documentation]
+
+| `quay.io/eclipse/che-plugin-registry` +
+  `quay.io/eclipse/che-devfile-registry`
+| Plugin and devfile registries that store metadata for workspaces. See link:{site-baseurl}che-7/airgap-install/#offline-registries[steps for building offline registries] for information on building appropriate images.
+|===
+
+### Workspace-specific images
+The following images are also required for running a workspace; however, any one workspace will just use a subset of the images mentioned below. While this doc is written to include all images, strictly speaking it is only necessary to include the images that will be used in workspaces created. For instance, if Che will only be used for developing in Java, many images can be omitted without issue.
+
+To avoid issues, if only a subset of images described below is desired, it's safest to remove unnecessary plugins and devfiles when building custom registries (see link:{site-baseurl}che-7/customizing-the-devfile-and-plug-in-registries/[steps on customizing registries] for more information).
+
+#### Plugin sidecar images
+
+Many workspace plugins are run in sidecar containers to ensure their dependencies are available. Since the plugins included in the plugin registry vary from release to release, it's impossible to compile a static list of required images.
+
+However, the offline plugin registry (see link:{site-baseurl}che-7/airgap-install/#offline-plugin-registry[above]) includes a list of all images referenced in its plugins. The easiest way to get a list of images required for plugins is by reading this file -- assuming an offline build of the plugin registry is tagged `<my-offline-registry>`, the following command will print a list of images referenced in this image:
+
+[source,bash]
+----
+docker run -it --rm --entrypoint cat <my-offline-registry> /var/www/html/v3/external_images.txt
+----
+
+
+#### Devfile base images
+
+In addition to the sidecar containers used by plugins, every Che workspace comes with one or more 'base' images, which contain the development dependencies for the projects being built. As the sample devfiles included in the devfile registry refer to images suited for this purpose, it is necessary to pull these images as well to be able to use the samples.
+
+Similarly to the plugin registry, an offline devfile registry (see link:{site-baseurl}che-7/airgap-install/#offline-devfile-registry[above]) contains a list of all images referenced in its devfiles:
+
+[source,bash]
+----
+docker run -it --rm --entrypoint cat <my-offline-registry> /var/www/html/devfiles/external_images.txt
+----
+
+where `<my-offline-registry>` is the image name and tag of the custom devfile registry.
+
+
+## Configuring Che to run in airgapped mode
+
+Once all the required images have been placed in an image repository that is visible to the cluster where Che is to be deployed, the final step is to configure Che and related containers to refer to these images instead of the default.
+
+The steps below assume that the images described in link:{site-baseurl}che-7/airgap-install/#pulling-images-used-by-che-to-a-private-registry[the pulling section] have been pushed to a registry `<my-internal-registry>` under organization `<my-organization>`, with the same image names and tags. Additionally the placeholders `<my-offline-devfile-registry>` and `<my-offline-plugin-registry>` are used to refer to the offline registries built according to the steps link:{site-baseurl}che-7/airgap-install/#offline-registries[above]. Finally, placeholder `<ver>` is used in place of the release of Che that is being deployed.
+
+Currently, the only supported method of deploying Che in airgap mode is through the Che operator
+
+### Using the Che Operator
+
+The `CheCluster` custom resource that is created by the operator includes a few fields to make deploying an airgapped instance of Che easier. When creating the `CheCluster`, it's sufficient to specify the fields
+
+[source,yaml]
+----
+[...]
+spec:
+  server:
+    devfileRegistryImage: '<my-offline-devfile-registry>'
+    pluginRegistryImage: '<my-offline-plugin-registry>'
+    airGapContainerRegistryHostname: '<my-internal-registry>'
+    airGapContainerRegistryOrganization: '<my-organization>'
+[...]
+----
+
+:context: {parent-context-of-installing-che-in-air-gapped-or-offline-mode}
