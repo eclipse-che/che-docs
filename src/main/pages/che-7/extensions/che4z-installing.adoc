@@ -13,4 +13,50 @@ summary:
 
 :context: installing-che4z
 
-To download and install the Eclipse Che4z plugins, follow the instructions on link:https://projects.eclipse.org/projects/ecd.che.che4z/downloads[this page].
+=== Prerequisites
+- Minimum of 2 CPUs and 4GB RAM
+- Docker
+- Internet access
+
+'''
+
+=== Installation
+
+===== *Follow these steps:*
+. Install Eclipse Che by running the following command, and replacing <DATA_FOLDER> with the location of user data on the host machine:
+----
+	docker run -it --rm -e CHE_MULTIUSER=true -e CHE_HOST=`hostname -f` -e
+	CHE_WORKSPACE_VOLUME=/var/run/docker.sock:/var/run/docker.sock -v
+	/var/run/docker.sock:/var/run/docker.sock -v /<DATA_FOLDER>:/data eclipse/che:7.0.0-beta-4.0 start
+----
+- For more information on configuring Eclipse Che with Docker, see https://www.eclipse.org/che/docs/che-6/docker-multi-user.html[here]
+
+. Log in to Che using the default administrator account:
+  - (username = admin, password = admin).
+
+. (Optional) Configure the Keycloak security server by following the instructions https://www.eclipse.org/che/docs/che-6/user-management.html#che-and-keycloak[here].
+
+. Download and unzip the installer.
+
+. Run *start_installer.sh* (on Linux) or *start_installer.cmd* (on Windows).
+
+. When prompted, enter the Che URL and administrator account credentials.
+
+You installed Eclipse Che and the Che4z extensions.
+
+'''
+
+=== Creating a Workspace
+
+===== *Follow these steps:*
+
+1. Log in to Che. Use your credentials, or the default administrator account credentials:
+  - (username = admin, password = admin).
+
+2. To create a new workspace, select *Workspaces - Add Workspace*.
+
+3. In *Select Stack*, select *view all*, then choose *Broadcom Mainframe* stack.
+
+4. Create and open the workspace.
+
+You created a workspace and can now use the Eclipse Che4z extensions.
