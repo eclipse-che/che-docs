@@ -59,7 +59,12 @@ CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=che-ws-__<username>__
 
 [IMPORTANT]
 ====
-Using the _One namespace per user_ strategy with the `common` PVC strategy only works correctly when the user runs not more than one workspace at a time. To enforce this limit, set:
+Using the _One namespace per user_ or _One namespace for all workspaces_ strategy with the `common` PVC
+strategy requires persistent volumes with `ReadWriteMany` access mode if more than 1 workspace needs to be running
+concurrently. Because this might be tricky to set up reliably you may want to use a different PVC strategy or, in case
+of _One namespace per user_, to limit the number of concurrently running workspaces per user to 1.
+
+To enforce this limit, set:
 
 ----
 CHE_LIMITS_USER_WORKSPACES_RUN_COUNT=1
