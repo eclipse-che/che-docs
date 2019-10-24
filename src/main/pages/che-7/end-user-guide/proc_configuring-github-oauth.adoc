@@ -1,0 +1,40 @@
+// version-control
+
+[id="configuring-github-oauth_{context}"]
+= Configuring GitHub OAuth
+
+OAuth for Github allows users to clone projects using SSH addresses (git@) and push to repositories.
+
+.Procedure
+
+To enable automatic SSH key upload to GitHub for users:
+
+. On *github.com*, click your user icon (top right).
+. Go to *Settings* > *Developer settings* > *OAuth Apps*.
+. Click the btn:[Register a new application] button.
+. In the *Application name* field, enter, for example, `Eclipse Che`.
+. In the *Homepage URL* field, enter `pass:q[http://__${CHE_HOST}__:__${CHE_PORT}__]`.
+. In the *Authorization callback URL* field, enter `pass:q[http://__${CHE_HOST}__:__${CHE_PORT}__/api/oauth/callback]`.
++
+image::git/github_oauth.png[]
+
+ifeval::["{project-context}" == "che"]
+. On OpenShift or Kubernetes, update the deployment configuration (see link:https://www.eclipse.org/che/docs/che-6/openshift-config.html[OpenShift configuration]).
++
+[subs=+quotes]
+----
+CHE_OAUTH_GITHUB_CLIENTID=__<your-github-client-id>__
+CHE_OAUTH_GITHUB_CLIENTSECRET=__<your-github-secret>__
+----
+endif::[]
+
+[NOTE]
+====
+* Substitute all occurrences of `_${CHE_HOST}_` and `_${CHE_PORT}_` with the URL and port of your Che installation.
+
+* Substitute `_<your-github-client-id>_` and `_<your-github-secret>_` with your GitHub client ID and secret.
+
+ifeval::["{project-context}" == "che"]
+* This configuration only applies to single-user deployments of Che.
+endif::[]
+====
