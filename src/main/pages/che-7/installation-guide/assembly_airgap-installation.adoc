@@ -33,7 +33,7 @@ The following sections describe the steps necessary to deploy Che in an airgappe
 This section describes how to build _offline_ registry images. For additional information, see the main link:{site-baseurl}che-7/building-and-running-a-custom-registry-image/[building and running a custom registry image] doc.
 ====
 
-The main purpose of building offline regsitry images is to ensure that workspaces can be started without relying on resources from the outside internet. For the plugin registry, this means building a registry that serves all plugin or extension artifacts in additiona to plugin metadata. Similarly, an offline devfile registry serves all sample projects referenced in devfiles as `zip` files.
+The main purpose of building offline registry images is to ensure that workspaces can be started without relying on resources from the outside internet. For the plugin registry, this means building a registry that serves all plugin or extension artifacts in addition to plugin metadata. Similarly, an offline devfile registry serves all sample projects referenced in devfiles as `zip` files.
 
 The plugin registry repositories contain scripts to make it easier to build custom images.
 
@@ -54,7 +54,7 @@ git checkout 7.3.0 // <2>
 <2> Check out version of registry to be deployed
 <3> Full options for the `build.sh` script can be found by passing parameter `--help`
 
-This build of the registry will build a docker image that contains all `.vsix` and `.theia` extensions that can be used in workspaces; since this results in a quite large image, a version of the registry that contains only the _latest_ version of each plugin can be build using the argument `--latest-only`.
+This build of the registry will build a docker image that contains all `.vsix` and `.theia` extensions that can be used in workspaces; since this results in a quite large image, a version of the registry that contains only the _latest_ version of each plugin can be built using the argument `--latest-only`.
 
 
 ### Offline devfile registry
@@ -144,18 +144,24 @@ Currently, the only supported method of deploying Che in airgap mode is through 
 
 ### Using the Che Operator
 
-The `CheCluster` custom resource that is created by the operator includes a few fields to make deploying an airgapped instance of Che easier. When creating the `CheCluster`, it's sufficient to specify the fields
+The `CheCluster` custom resource that is managed by the operator includes a few fields to make deploying an airgapped instance of Che easier. When creating the `CheCluster`, it's sufficient to specify the fields
 
 [source,yaml]
 ----
 # [...]
 spec:
   server:
-    devfileRegistryImage: '<my-offline-devfile-registry>'
-    pluginRegistryImage: '<my-offline-plugin-registry>'
     airGapContainerRegistryHostname: '<my-internal-registry>'
     airGapContainerRegistryOrganization: '<my-organization>'
 # [...]
+----
+
+Note that setting these values will use `<my-internal-registry>` and `<my-organization>` for all images. This means that the operator assumes the offline plugin and devfile registries are available at
+
+[source]
+----
+<my-internal-registry>/<my-organization>/che-plugin-registry:<ver>
+<my-internal-registry>/<my-organization>/che-devfile-registry:<ver>
 ----
 
 :context: {parent-context-of-installing-che-in-air-gapped-or-offline-mode}
