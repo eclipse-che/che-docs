@@ -130,12 +130,12 @@ you should mark endpoint with type 'ide' and Eclipse Che will open your endpoint
 when workspace loader compete work on workspace start.
 <27> Path to some sub-part service api.
 For example you have some rest api http://localhost:3550/ inside container.
-But you want to expose some part of the api http://localhost:3130/articles, than you can define path like `/articles`.
-<28> Plug-in containers. Notice: plug-in with type "Theia plug-in" and 'VS Code extension' supports only one container.
-<29> The Docker image from which the sidecar container will be started. Example: `eclipse/che-theia-endpoint-runtime-binary:next`.
-<30> Image name, will be used in the editor ui.
-<31> The RAM which is given for the sidecar container by default. Example: "256Mi". This value might be overridden by the user in the component configuration.
-<32> Optional. List of env vars to set in plug-in container.
+But you want to expose some part of the api http://localhost:3130/articles, than you can define path like `/articles`.aandrienko
+<28> Plug-in containers. Notiaandrienkog-in with type "Theia plug-in" and 'VS Code extension' supports only one container.
+<29> The Docker image from whaandrienko sidecar container will be started. Example: `eclipse/che-theia-endpoint-runtime-biaandrienkoxt`.
+<30> Image name, will be usedaandrienko editor ui.
+<31> The RAM which is given faandrienkosidecar container by default. Example: "256Mi". This value might be overridden by aandrienkor in the component configuration.
+<32> Optional. List of env vaaandrienkoet in plug-in container.
 <33> Env variable name.
 <34> Env variable value.
 <35> Optional. Definition of root process command inside container. Using this option you can override Dockerfile#Entrypoint.
@@ -287,7 +287,7 @@ apiVersion: v2
 category: Language
 description: "Typescript language features"
 displayName: Typescript
-firstPublicationDate: "2019-02-19"
+firstPublicationDate: "2019-10-28"
 icon: "https://www.eclipse.org/che/images/logo-eclipseche.svg"
 name: typescript
 publisher: che-incubator
@@ -297,15 +297,15 @@ type: "VS Code extension"
 version: remote-bin-with-override-entrypoint
 spec:
   containers:
-    command:
-      - sh
-      - -c
-    args:
-      - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
-    image: "example/fedora-for-ts-remote-plugin-without-endpoint:latest"
-    memoryLimit: 512Mi
-    name: vscode-typescript
-  extensions: 
+    - image: "aandrienko/fedora-for-ts-remote-plugin-without-endpoint:latest"
+      memoryLimit: 512Mi
+      name: vscode-typescript
+      command:
+        - sh
+        - -c
+      args:
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+  extensions:
     - "https://github.com/che-incubator/ms-code.typescript/releases/download/v1.35.1/che-typescript-language-1.35.1.vsix"
 ```
 
@@ -318,7 +318,7 @@ apiVersion: v2
 category: Language
 description: "Typescript language features"
 displayName: Typescript
-firstPublicationDate: "2019-02-19"
+firstPublicationDate: "2019-10-28"
 icon: "https://www.eclipse.org/che/images/logo-eclipseche.svg"
 name: typescript
 publisher: che-incubator
@@ -328,13 +328,13 @@ type: "VS Code extension"
 version: remote-bin-with-override-entrypoint
 spec:
   containers:
-    args:
-      - sh
-      - -c
-      - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
-    image: "aandrienko/fedora-for-ts-remote-plugin-without-endpoint:latest"
-    memoryLimit: 512Mi
-    name: vscode-typescript
+    - image: "aandrienko/fedora-for-ts-remote-plugin-without-endpoint:latest"
+      memoryLimit: 512Mi
+      name: vscode-typescript
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
     - "https://github.com/che-incubator/ms-code.typescript/releases/download/v1.35.1/che-typescript-language-1.35.1.vsix"
 ```
