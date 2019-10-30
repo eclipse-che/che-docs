@@ -39,38 +39,12 @@ spec:
         discoverable:                                           <24>
         cookiesAuthEnabled:                                     <25>
         type:                                                   <26>
-        path:                                                   <27> 
+        path:                                                   <27>
   containers:                                                   <28>
     - image:                                                    <29>
       name:                                                     <30>
       memoryLimit:                                              <31>
       env:                                                      <32>
-        - name:                                                 <33>
-          value:                                                <34>  
-      command:                                                  <35>
-        - /bin/sh
-      args:                                                     <36>
-        - -c
-        - ./entrypoint.sh
-      volumes:                                                  <37>
-        - mountPath:                                            <38>
-          name:                                                 <39>
-          ephemeral:                                            <40>
-      ports:                                                    <41>
-        - exposedPort:                                          <42>
-      commands:                                                 <43> 
-        - name:                                                 <44> 
-          workingDir:                                           <45>
-          command:                                              <46>
-            - rm
-            - -rf
-            - /cache/.m2/repository
-      mountSources:                                             <47>
-    initContainers:                                             <48>
-    - image:                                                    <29> 
-      name:                                                     <30>
-      memorylimit:                                              <31>
-      env:                                                      <32>  
         - name:                                                 <33>
           value:                                                <34>
       command:                                                  <35>
@@ -92,7 +66,33 @@ spec:
             - -rf
             - /cache/.m2/repository
       mountSources:                                             <47>
-  workspaceEnv:                                                 <48>
+    initContainers:                                             <48>
+    - image:                                                    <29>
+      name:                                                     <30>
+      memorylimit:                                              <31>
+      env:                                                      <32>
+        - name:                                                 <33>
+          value:                                                <34>
+      command:                                                  <35>
+        - /bin/sh
+      args:                                                     <36>
+        - -c
+        - ./entrypoint.sh
+      volumes:                                                  <37>
+        - mountPath:                                            <38>
+          name:                                                 <39>
+          ephemeral:                                            <40>
+      ports:                                                    <41>
+        - exposedPort:                                          <42>
+      commands:                                                 <43>
+        - name:                                                 <44>
+          workingDir:                                           <45>
+          command:                                              <46>
+            - rm
+            - -rf
+            - /cache/.m2/repository
+      mountSources:                                             <47>
+  workspaceEnv:                                                 <49>
     - name:                                                     <33>
       value:                                                    <34>
   extensions:                                                   <50>
@@ -124,9 +124,9 @@ spec:
 <23> Use secure version of protocol above; convert 'ws' -> 'wss', 'http' -> 'https'.
 <24> Boolean. If false, no k8s service is created for this endpoint.
 <25> Boolean. If true, endpoint is exposed through JWTProxy.
-<26> Endpoint type. There are some special endpoint types for Eclipse Che. 
-For example if you want to apply own plug-in editor, 
-you should mark endpoint with type 'ide' and Eclipse Che will open your endpoint and show editor, 
+<26> Endpoint type. There are some special endpoint types for Eclipse Che.
+For example if you want to apply own plug-in editor,
+you should mark endpoint with type 'ide' and Eclipse Che will open your endpoint and show editor,
 when workspace loader compete work on workspace start.
 <27> Path to some sub-part service api.
 For example you have some rest api http://localhost:3550/ inside container.
@@ -157,15 +157,15 @@ Noticed: by default property value is false(volume persisted).
 <49> Optional. List common env vars for all workspace containers.
 <50> List extensions: consist of plug-ins with type `VS Code extension` and `Theia plug-in` that should be run in this sidecar container.
 
-# Using initContainers for plug-ins
+## Using initContainers for plug-ins
 
 Inside Eclipse Che workspace you can use init containers. Init containers always start before containers and init containers always run to completion.
 Each init container must complete successfully before the next one starts.
 For remote plug-in init containers could be useful to change some configuration files or include some binaries to the container volume. Use plug-in meta.yaml field `initContainers` to define list init containers.
 
-# Remote plug-in endpoint
+## Remote plug-in endpoint
 
-Eclipse Che has remote plug-in endpoint service to start VS Code Extensions and Che theia plug-ins in the separated containers. Eclipse Che inject remote plug-in endpoint binaries to each remote plug-in container. This service start your remote extensions and plug-ins defined in the plug-in meta.yaml#extensions file and connect them to the che-theia editor container. 
+Eclipse Che has remote plug-in endpoint service to start VS Code Extensions and Che theia plug-ins in the separated containers. Eclipse Che inject remote plug-in endpoint binaries to each remote plug-in container. This service start your remote extensions and plug-ins defined in the plug-in meta.yaml#extensions file and connect them to the che-theia editor container.
 
 So, main goal remote plug-in endpoint - creation plugin api proxy between your remote plug-in container and che-theia editor container. Also remote plug-in endpoint is interceptor for some plug-in api parts to launch them inside remote sidecar container, instead of editor container. For example terminal api, debug api and so on.
 
@@ -177,7 +177,7 @@ Exection remote plugin endpoint in the container from shell is very easy:
 
 `${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}`
 
-# Prepare plug-in image and meta.yaml to use remote plug-in endpoint.
+## Prepare plug-in image and meta.yaml to use remote plug-in endpoint.
 
 > Notice: Since Eclipse Che 7.3.1
 
@@ -186,7 +186,7 @@ Eclipse Che provides two ways to start remote plug-in endpoint with your sidecar
  - plug-in writer defines launch remote plug-in endpoint using Dockerfile. Requires image patching and rebuild.
  - plug-in writer defines launch remote plug-in endpoint in the plug-in meta.yaml. This way plugin writer should use if he doesn't want to patch some original image to start remote plug-in endpoint.
 
-# Define launch remote plug-in endpoint using Dockerfile.
+## Define launch remote plug-in endpoint using Dockerfile.
 
 To start remote plug-in endpoint use env variable `PLUGIN_REMOTE_ENDPOINT_EXECUTABLE` in the Dockerfile.
 
@@ -194,17 +194,17 @@ To start remote plug-in endpoint use env variable `PLUGIN_REMOTE_ENDPOINT_EXECUT
 
 ```dockerfile
 FROM fedora:30
- 
+
 RUN dnf update -y && dnf install -y nodejs htop && node -v
- 
+
 RUN mkdir /home/user
- 
+
 ENV HOME=/home/user
- 
+
 RUN mkdir /projects \
     && chmod -R g+rwX /projects \
     && chmod -R g+rwX "${HOME}"
- 
+
 CMD ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
 ```
 
@@ -212,17 +212,17 @@ CMD ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
 
 ```dockerfile
 FROM fedora:30
- 
+
 RUN dnf update -y && dnf install -y nodejs htop && node -v
- 
+
 RUN mkdir /home/user
- 
+
 ENV HOME=/home/user
- 
+
 RUN mkdir /projects \
     && chmod -R g+rwX /projects \
     && chmod -R g+rwX "${HOME}"
- 
+
 ENTRYPOINT ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
 ```
 
@@ -272,9 +272,9 @@ CMD ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
 
 How it works? Container on start launch `/entrypoint.sh` script defined in the Dockerfile#ENTRYPOINT, this script fix permissions and execute command using `exec $@`. Like argument for our ENTRYPOINT will be CMD, that’s why command `exec $@` will call `${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}` and remote plug-in endpoint starts in the container after permission fix.
 
-# Define launch remote plug-in endpoint in the plug-in meta.yaml
+## Define launch remote plug-in endpoint in the plug-in meta.yaml
 
-There are a lot of images which were already created and you want to use them to start remote plug-in endpoint without patching. In this case you can try to use image like is, but you need to change plug-in meta.yaml definition to start remote plug-in endpoint. To achieve this purpose plug-in meta.yaml definition in the container section has two properties: `command` and `args`:  
+There are a lot of images which were already created and you want to use them to start remote plug-in endpoint without patching. In this case you can try to use image like is, but you need to change plug-in meta.yaml definition to start remote plug-in endpoint. To achieve this purpose plug-in meta.yaml definition in the container section has two properties: `command` and `args`:
 
 - `command` - Eclipse Che uses to override Dockerfile#ENTRYPOINT.
 - `args`  - Eclipse Che uses to override Dockerfile#CMD.
@@ -282,7 +282,7 @@ There are a lot of images which were already created and you want to use them to
 1) So if you want to override both Dockerfile#ENTRYPOINT, Dockerfile#CMD and start remote plug-in endpoint, you can do something like that:
 
 ```yaml
---- 
+---
 apiVersion: v2
 category: Language
 description: "Typescript language features"
@@ -313,7 +313,7 @@ spec:
 2) If you have an image with wrapper script pattern, than you are interested in saving call entypoint.sh. That’s why you should not override `command` in the plug-in metal.yaml section. You can override only `args`:
 
 ```yaml
---- 
+---
 apiVersion: v2
 category: Language
 description: "Typescript language features"
@@ -343,7 +343,7 @@ In this case Eclipse Che will call entrypoint.sh defined in the Dockerfile#Entry
 
 3) There are another remote plug-in image cases. For example for remote plug-in you want to execute some service on start container and also you need to start remote plug-in endpoint. In this case you still can use meta.yaml `command` and `args`. You can start your service, detach process and start remote plugin endpoint and they will work parallel together.
 
-# Plug-in endpoints
+## Plug-in endpoints
 
 > Notice: Since Eclipse Che 7.3.1
 
