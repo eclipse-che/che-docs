@@ -18,3 +18,93 @@ This section describes how to use Minikube to set up Kubernetes.
 ----
 $ minikube start --memory=4096
 ----
+
+= Running Minikube inside a LXC container
+
+This section describes how to properly configure a LXC container to set up Minikube when the hypervisor uses ZFS/BTRFS/LVM to provision the containers storage
+
+[discrete]
+== Background
+The chectl command-line tool requires the minikube ingress plugin to be enabled in Minikube, at the same time the Minikube ingress plugin requires docker to be running with the overlay filesystem driver. 
+
+[discrete]
+== Problem
+According to link:https://docs.docker.com/storage/storagedriver/select-storage-driver/[Docker storage drivers] docker overlay2 driver is only supported with ext4 and xfs (with ftype=1).
+
+[discrete]
+== Solution
+The solution is to create a virtual block device inside a volume, which in the case of BTRFS is not possible and will require to use a file as the virtual block device.
+
+[discerte]
+== Procedure
+
+Note: change the Zpool name / LVM volume_group name and dockerstorage to your use case and preferences
+
+. Create a fixed size ZFS dataset / LVM volume on the hypervisor side
++
+----
+$ zfs create -V 50G zfsPool/dockerstorage #USING ZFS
+$ lvcreate -L 50G -n dockerstorage volumegroup_name #USING LVM
+----
+
+. Use a partition tool to create a partition inside the virtual block device
++
+----
+$ parted /dev/zvol/zfsPool/dockerstorage --script mklabel gpt #USING ZFS
+$ parted /dev/zvol/zfsPool/dockerstorage --script mkpart primary 1 100% #USING ZFS
+$ parted /dev/mapper/volumegroup_name-dockerstorage --script mklabel gpt #USING LVM
+$ parted /dev/mapper/volumegroup_name-dockerstorage --script mkpart primary 1 100% #USING LVM
+----
+
+After this there will be a reference called dockerstorage-part1 inside the /dev/zvol/zfsPool folder for the case of ZFS and a reference called volumegroup_name-dockerstorage1 inside the /dev/mapper folder for the case of LVM. This is the virtual block device's partition to be used to store /var/lib/docker from the LXC container.
+
+. Format the virtual partition to xfs with the ftype flag set to 1
++
+----
+$ mkfs.xfs -n ftype=1 /dev/zvol/zfsPool/dockerstorage-part1 #FOR ZFS
+$ mkfs.xfs -n ftype=1 /dev/mapper/volumegroup_name-dockerstorage1 #FOR LVM
+----
+
+. Finally attach the virtual partition to the container (minikube is the name of LXC container, dockerstorage is the name for the storage instance in LXC configuration)
++
+----
+$ lxc config device add minikube dockerstorage disk path=/var/lib/docker source=/dev/zvol/zfsPool/dockerstorage-part1 #FOR ZFS
+$ lxc config device add minikube dockerstorage disk path=/var/lib/docker source=/dev/mapper/volumegroup_name-dockerstorage1 #FOR LVM
+----
+You can check the filesystem inside the container using the command 'df -T /var/lib/docker'
+
+. Use the following LXC configuration profile in the LXC container to allow it running Minikube
++
+----
+config:
+  linux.kernel_modules: ip_vs,ip_vs_rr,ip_vs_wrr,ip_vs_sh,ip_tables,ip6_tables,netlink_diag,nf_nat,overlay,br_netfilter
+  raw.lxc: |
+    lxc.apparmor.profile=unconfined
+    lxc.mount.auto=proc:rw sys:rw
+    lxc.cgroup.devices.allow=a
+    lxc.cap.drop=
+  security.nesting: "true"
+  security.privileged: "true"
+description: Profile supporting minikube in containers
+devices:
+  aadisable:
+    path: /sys/module/apparmor/parameters/enabled
+    source: /dev/null
+    type: disk
+  aadisable2:
+    path: /sys/module/nf_conntrack/parameters/hashsize
+    source: /sys/module/nf_conntrack/parameters/hashsize
+    type: disk
+  aadisable3:
+    path: /dev/kmsg
+    source: /dev/kmsg
+    type: disk
+name: minikube
+----
+
+. After starting and setting up networking and docker inside the container, start Minikube. 
++
+----
+minikube start --vm-driver=none --extra-config kubeadm.ignore-preflight-errors=SystemVerification 
+----
+
