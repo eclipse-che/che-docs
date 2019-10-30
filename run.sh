@@ -21,7 +21,7 @@ case "${RUNNER}" in
       sudo rm -rf src/main/_site/ 
     ;;
   *docker)
-    echo "podman not detected. Using fallback runner $RUNNER. This runner is deprecated, please install podman."
+    echo "The preferred runner podman is not installed. Using fallback runner $RUNNER."
     ;;
   *)
     echo "No runner detected. Please install podman."
