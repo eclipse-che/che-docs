@@ -1,61 +1,65 @@
----
-title: Configuring namespace strategies
-keywords:
-tags: []
-sidebar: che_7_docs
-permalink: che-7/configuring-namespace-strategies/
-folder: che-7/installation-guide
-summary:
----
-
 :parent-configuring-namespace-strategies: {context}
 
-[id="configuring-namespace-strategies"]
+[id="configuring-namespace-strategies_{context}"]
 = Configuring namespace strategies
 
 NOTE: The term _namespace_ (Kubernetes) is used interchangeably with _project_ (OpenShift).
 
-=== One Namespace per Workspace strategy
+The namespace strategies are configured using the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` environment variable.
 
-The strategy creates new namespace for each new workspace. Name of new namespace is workspace's id.
+WARNING: There are legacy variables `CHE_INFRA_KUBERNETES_NAMESPACE` and `CHE_INFRA_OPENSHIFT_PROJECT`. These should be left unset for new instalations. Changing these variables during update can lead to data loss.
 
-To use the strategy, unset or leave empty `CHE_INFRA_KUBERNETES_NAMESPACE` variable on Kubernetes or `CHE_INFRA_OPENSHIFT_PROJECT` variable on Openshift.
+== One namespace per workspace strategy
+
+The strategy creates a new namespace for each new workspace.
+
+To use the strategy, the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable value must contain the `_<workspaceid>_` identifier. It can be used alone or combined with other identifiers or any string.
+
+.One namespace per workspace
+====
+To assign namespace names composed of a `che-ws` prefix and workspace id, set:
+
 [subs="+quotes"]
 ----
-CHE_INFRA_KUBERNETES_NAMESPACE=
+CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=che-ws-__<workspaceid>__
 ----
+====
 
-=== One Namespace for all Workspaces strategy
+== One namespace for all workspaces strategy
 
 The strategy uses one predefined namespace for all workspaces.
 
-To use the strategy, set the `CHE_INFRA_KUBERNETES_NAMESPACE` variable on Kubernetes or the `CHE_INFRA_OPENSHIFT_PROJECT` variable on Openshift. The value must be name of desired namespace that you want to use.
+To use the strategy, the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable value must be the name of the desired namespace to use.
 
-.Example
+.One namespace for all workspaces
+====
 To have all workspaces created in `che-workspaces` namespace, set:
+
 [subs="+quotes"]
 ----
-CHE_INFRA_KUBERNETES_NAMESPACE=che-workspaces
+CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=che-workspaces
 ----
+====
 
-
-=== One Namespace per User strategy
+== One namespace per user strategy
 
 The strategy isolates each user in their own namespace.
 
-To use the strategy, set the `CHE_INFRA_KUBERNETES_NAMESPACE` variable on Kubernetes or the `CHE_INFRA_OPENSHIFT_PROJECT` variable on OpenShift. The value must contain one or more user identifiers. Currently supported identifiers are `_<username>_` and `_<userid>_`.
+To use the strategy, the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable value must contain one or more user identifiers. Currently supported identifiers are `_<username>_` and `_<userid>_`.
 
-.Example
+.One namespace per user
+====
 To assign namespace names composed of a `che-ws` prefix and individual usernames (`che-ws-user1`, `che-ws-user2`), set:
 
 [subs="+quotes"]
 ----
-CHE_INFRA_KUBERNETES_NAMESPACE=che-ws-__<username>__
+CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=che-ws-__<username>__
 ----
+====
 
 [IMPORTANT]
 ====
-Using the _One Namespace per User_ strategy with the `common` PVC strategy only works correctly when the user runs not more than one workspace at a time. To enforce this limit, set:
+Using the _One namespace per user_ strategy with the `common` PVC strategy only works correctly when the user runs not more than one workspace at a time. To enforce this limit, set:
 
 ----
 CHE_LIMITS_USER_WORKSPACES_RUN_COUNT=1
