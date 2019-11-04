@@ -1,17 +1,18 @@
 [id="viewing-che-metrics-on-grafana-dashboards_{context}"]
 = Viewing Che metrics on Grafana dashboards
 
-Grafana is used for informative representation of Prometheus metrics. Providing visibility for Openshift, Grafana’s deployment configuration and ConfigMaps are located in the `che-monitoring.yaml` configuration file.
+Grafana is used for informative representation of Prometheus metrics. Providing visibility for OpenShift, Grafana’s deployment configuration and ConfigMaps are located in the `che-monitoring.yaml` configuration file.
 
 
 == Configuring and deploying Grafana
 
 Grafana is run on port `3000` with a corresponding *service* and *route*.
 
-Two ConfigMaps are used to configure Grafana:
+Three ConfigMaps are used to configure Grafana:
 
 * `grafana-datasources` -- configuration for Grafana datasource, a Prometheus endpoint
 * `grafana-dashboards` -- configuration of Grafana dashboards and panels
+* `grafana-dashboard-provider`  -- configuration of the Grafana dashboard provider API object, which tells Grafana where to look in the file system for pre-provisioned dashboards
 
 
 == Grafana dashboards overview
@@ -35,9 +36,11 @@ image::monitoring/monitoring-che-che-server-dashboard-workspace-panel.png[link="
 * *Workspace stop rate* -- the ratio between successful and failed stopped workspaces
 * *Workspace Failures* -- the number of workspace failures shown on the graph
 * *Starting Workspaces* -- the gauge that shows the number of currently starting workspaces
-* *Running Workspace* -- the gauge that shows the number of currently running workspaces
-* *Average Workspace Start Time* -- 5-minute average of workspace starts or fails
-* *Average Workspace Stop Time* -- 5-minute average of workspace stops
+* *Average Workspace Start Time* -- 1-hour average of workspace starts or fails
+* *Average Workspace Stop Time* -- 1-hour average of workspace stops
+* *Running Workspaces* -- the gauge that shows the number of currently running workspaces
+* *Stopping Workspaces* -- the gauge that shows the number of currently stopping workspaces
+* *Workspaces started under 60 seconds* -- the percentage of workspaces started under 60 seconds
 * *Number of Workspaces* -- the number of workspaces created over time
 
 .The *Users* panel
@@ -46,23 +49,84 @@ image::monitoring/monitoring-che-che-server-dashboard-users-panel.png[link="{ima
 * *Number of Users* -- the number of users known to Che over time
 
 
+.The *Tomcat* panel
+image::monitoring/monitoring-che-che-server-dashboard-tomcat-panel.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-tomcat-panel.png"]
+
+* *Max number of active sessions* -- the max number of active sessions that have been active at the same time
+* *Number of current active sessions* -- the number of currently active sessions
+* *Total sessions* -- the total number of sessions
+* *Expired sessions* -- the number of sessions that have expired
+* *Rejected sessions* -- the number of sessions that were not created because the maximum number of active sessions was reached
+* *Longest time of an expired session* -- the longest time (in seconds) that an expired session had been alive
+
 .The *Request* panel
 image::monitoring/monitoring-che-che-server-dashboard-requests-panel.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-requests-panel.png"]
 
 The *Requests* panel displays HTTP requests in a graph that shows the average number of requests per minute.
 
-.The *JsonRPC* panel
-image::monitoring/monitoring-che-che-server-dashboard-jsonrpc-panel.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-jsonrpc-panel.png"]
+.The *Executors* panel, part 1
+image::monitoring/monitoring-che-che-server-dashboard-executors-panel-1.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-executors-panel-1.png"]
 
-The *JsonRPC* panel show how the JsonRPC stack is used for sending asynchronous messages between the Che server and clients (for example, the GWT IDE).
+* *Threads running* - the number of threads that are not terminated aka alive. May include threads that are in a waiting or blocked state. 
+* *Threads terminated* - the number of threads that was finished its execution.
+* *Threads created* - number of threads created by thread factory for given executor service.
+* *Created thread/minute* - Speed of thread creating for the given executor service.
 
-There are two endpoints - major and minor. The major endpoint is the primary endpoint. It is used for sending important messages, such as workspace statuses. The minor endpoint is typically used by workspace starting logs.
+.The *Executors* panel, part 2
+image::monitoring/monitoring-che-che-server-dashboard-executors-panel-2.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-executors-panel-2.png"]
 
-* *JsonRpcQueue* -- the number of queued tasks on executors
-* *Rejected message/minute* -- the number of messages that will be rejected if executors and queue are full
-* *Seconds Max* -- the maximum time of executing a task through the JsonRPC stack in the given moment of time
-* *Seconds Sum* -- the summary time of executing a task through the JsonRPC stack in the given moment of time
-* *Completed Task/minute* -- the number of completed tasks per minute
+* *Executor threads active* - number of threads that actively execute tasks.
+* *Executor pool size* - number of threads that actively execute tasks.
+* *Queued task* - the approximate number of tasks that are queued for execution
+* *Queued occupancy* - the percent of the queue used by the tasks that is waining for execution.
+
+.The *Executors* panel, part 3
+image::monitoring/monitoring-che-che-server-dashboard-executors-panel-3.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-executors-panel-3.png"]
+
+* *Rejected task* - the number of tasks that were rejected from execution.
+* *Rejected task/minute* - the speed of task rejections
+* *Completed tasks* - the number of completed tasks
+* *Completed tasks/minute* - the speed of task execution
+
+.The *Executors* panel, part 4
+image::monitoring/monitoring-che-che-server-dashboard-executors-panel-4.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-executors-panel-4.png"]
+
+* *Task execution seconds max* - 5min moving maximum of task execution
+* *Tasks execution seconds avg* - 1h moving average of task execution
+* *Executor idle seconds max* - 5min moving maximum of executor idle state.
+* *Executor idle seconds avg* - 1h moving average of executor idle state.
+
+.The *Traces* panel, part 1
+image::monitoring/monitoring-che-che-server-dashboard-trace-panel-1.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-trace-panel-1.png"]
+
+* *Workspace start Max* - maximum workspace start time
+* *Workspace start Avg* - 1h moving average of the workspace start time components
+* *Workspace stop Max* - maximum of workspace stop time
+* *Workspace stop Avg* - 1h moving average of the workspace stop time components
+
+.The *Traces* panel, part 2
+image::monitoring/monitoring-che-che-server-dashboard-trace-panel-2.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-trace-panel-2.png"]
+
+* *OpenShiftInternalRuntime#start Max* - maximum time of OpenShiftInternalRuntime#start operation
+* *OpenShiftInternalRuntime#start Avg* - 1h moving average time of OpenShiftInternalRuntime#start operation
+* *Plugin Brokering Execution Max* - maximum time of PluginBrokerManager#getTooling operation
+* *Plugin Brokering Execution Avg* - 1h moving average of PluginBrokerManager#getTooling operation
+
+.The *Traces* panel, part 3
+image::monitoring/monitoring-che-che-server-dashboard-trace-panel-3.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-trace-panel-3.png"]
+
+* *OpenShiftEnvironmentProvisioner#provision Max* - maximum time of OpenShiftEnvironmentProvisioner#provision operation
+* *OpenShiftEnvironmentProvisioner#provision Avg* -1h moving average of OpenShiftEnvironmentProvisioner#provision operation
+* *Plugin Brokering Execution Max* - maximum time of PluginBrokerManager#getTooling components execution time
+* *Plugin Brokering Execution Avg* - 1h moving average of time of PluginBrokerManager#getTooling components execution time
+
+.The *Traces* panel, part 4
+image::monitoring/monitoring-che-che-server-dashboard-trace-panel-4.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-trace-panel-4.png"]
+
+* *WaitMachinesStart Max* - maximim time of WaitMachinesStart operations
+* *WaitMachinesStart Avg* - 1h moving average time of WaitMachinesStart operations
+* *OpenShiftInternalRuntime#startMachines Max* - maximim time of OpenShiftInternalRuntime#startMachines operations
+* *OpenShiftInternalRuntime#startMachines Avg* - 1h moving average of the time of OpenShiftInternalRuntime#startMachines operations
 
 .The *Workspace detailed* panel
 image::monitoring/monitoring-che-che-server-dashboard-workspace-detailed-panel.png[link="{imagesdir}/monitoring/monitoring-che-che-server-dashboard-workspace-detailed-panel.png"]

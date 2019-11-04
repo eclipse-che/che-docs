@@ -1,0 +1,60 @@
+[id="viewing-the-state-of-the-che-cluster-deployment-using-openshift-4-cli-tools_{context}"]
+= Viewing the state of the Che cluster deployment using OpenShift 4 CLI tools
+
+This section describes how to view the state of the Che cluster deployment using OpenShift 4 CLI tools.
+
+[discrete]
+== Prerequisites
+
+* An installation of an Eclipse Che cluster. See xref:installing-che-using-the-che-operator-in-openshift-4-web-console_{context}[].
+
+
+[discrete]
+== Procedure
+
+. Run the following commands to select the `che` project:
++
+[subs="+attributes,+quotes",options="nowrap"]
+----
+$ oc project che
+----
+
+. Run the following commands to get the name and status of the pods running in the selected project:
++
+[subs="+attributes,+quotes",options="nowrap"]
+----
+$ oc get pods
+----
+
+. Check that the status of all pods is `Running`.
++
+[subs="+attributes,+quotes",options="nowrap"]
+----
+NAME                            READY     STATUS    RESTARTS   AGE
+che-8495f4946b-jrzdc            0/1       Running   0          86s
+che-operator-578765d954-99szg   1/1       Running   0          42m
+keycloak-74fbfb9654-g9vp5       1/1       Running   0          4m32s
+postgres-5d579c6847-w6wx5       1/1       Running   0          5m14s
+----
+
+. Run the following command:
++
+[subs="+attributes,+quotes",options="nowrap"]
+----
+$ oc logs --tail=10 -f `oc get pods -o name | grep operator`
+----
+
+. This is an example output of the command:
++
+[subs="+attributes,+quotes",options="nowrap"]
+----
+time="2019-07-12T09:48:29Z" level=info msg="Exec successfully completed"
+time="2019-07-12T09:48:29Z" level=info msg="Updating eclipse-che CR with status: provisioned with OpenShift identity provider: true"
+time="2019-07-12T09:48:29Z" level=info msg="Custom resource eclipse-che updated"
+time="2019-07-12T09:48:29Z" level=info msg="Creating a new object: ConfigMap, name: che"
+time="2019-07-12T09:48:29Z" level=info msg="Creating a new object: ConfigMap, name: custom"
+time="2019-07-12T09:48:29Z" level=info msg="Creating a new object: Deployment, name: che"
+time="2019-07-12T09:48:30Z" level=info msg="Updating eclipse-che CR with status: Che API: Unavailable"
+time="2019-07-12T09:48:30Z" level=info msg="Custom resource eclipse-che updated"
+time="2019-07-12T09:48:30Z" level=info msg="Waiting for deployment che. Default timeout: 420 seconds"
+----

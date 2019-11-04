@@ -3,6 +3,97 @@
 
 This section contains devfile reference and instructions on how to use the various elements that devfiles consist of.
 
+
+== Adding projects to a devfile
+
+In most cases, a devfile contains one or more projects. A workspace is created to develop those projects. Projects are added in the `projects` section of devfiles.
+
+Each project in a single devfile must have:
+
+* Unique name
+* Source specified
+
+Project source consists of two mandatory values: `type` and `location`.
+
+`type`:: The kind of project-source provider.
+`location`:: The URL of project source.
+
+Che supports the following project types:
+
+`git`:: Projects with sources in Git. The location points to a clone link.
+
+`github`:: Same as `git` but for projects hosted on link:https://github.com/[GitHub] only. Use `git` for projects that do not use GitHub-specific features.
+
+`zip`:: Projects with sources in a ZIP archive. Location points to a ZIP file.
+
+
+=== Project-source type: git
+
+[source,yaml]
+----
+source:
+    type: git
+    location: https://github.com/eclipse/che.git
+    startPoint: master           <1>
+    tag: 7.2.0
+    commitId: 36fe587
+    branch: master
+    sparseCheckoutDir: wsmaster  <2>
+----
+<1> `startPoint` is the general value for `tag`, `commitId`, and `branch`. The `startPoint`, `tag`, `commitId`, and `branch` parameters are mutually exclusive. When more than one is supplied, the following order is used: `startPoint`, `tag`, `commitId`, `branch`.
+<2> `sparseCheckoutDir` the template for the sparse checkout Git feature. This is useful when only a part of a project (typically only a single directory) is needed.
+
+.`sparseCheckoutDir` parameter settings
+====
+* Set to `/my-module/` to create only the root `my-module` directory (and its content).
+
+* Omit the leading slash (`my-module/`) to create all `my-module` directories that exist in the project. Including, for example, `/addons/my-module/`.
++
+The trailing slash indicates that only directories with the given name (including their content) should be created.
+
+* Use wildcards to specify more than one directory name. For example, setting `module-*` checks out all directories of the given project that start with `module-`.
+====
+
+For more information, see link:https://git-scm.com/docs/git-read-tree#_sparse_checkout[Sparse checkout in Git documentation].
+
+
+=== Project-source type: zip
+
+[source,yaml]
+----
+source:
+    type: zip
+    location: http://host.net/path/project-src.zip
+----
+
+
+=== Project clone-path parameter: clonePath
+
+The `clonePath` parameter specifies the path into which the project is to be cloned. The path must be relative to the `/projects/` directory, and it cannot leave the `/projects/` directory. The default value is the project name.
+
+.Example devfile with projects
+[source,yaml]
+----
+apiVersion: 1.0.0
+metadata:
+  name: my-project-dev
+projects:
+  - name: my-project-resourse
+    clonePath: resources/my-project
+    source:
+      type: zip
+      location: http://host.net/path/project-res.zip
+  - name: my-project
+    source:
+      type: git
+      location: https://github.com/my-org/project.git
+      branch: develop
+----
+
+See <<adding-components-to-a-devfile_{context}>> for instructions on how to add tooling to a devfile.
+
+
+[id="adding-components-to-a-devfile_{context}"]
 == Adding components to a devfile
 
 Each component in a single devfile must have a unique name.
@@ -36,7 +127,7 @@ Describes plug-ins in a workspace by defining their `id`. It is allowed to have 
 ----
 
 Both types above using id, which is slash-separated publisher, name and version of plugin from Che Plugin registry. +
-List of available Che plugins and more information about registry can be found on https://github.com/eclipse/che-plugin-registry.
+List of available Che plugins and more information about registry can be found in the link:https://github.com/eclipse/che-plugin-registry[Che plug-in registry] GitHub repository.
 
 === Specifying an alternative component registry
 
@@ -212,7 +303,7 @@ A component type that allows to define a container image-based configuration of 
 [source,yaml]
 ----
 apiVersion: 1.0.0
-metadata: 
+metadata:
     name: MyDevfile
 components:
 type: dockerimage
@@ -232,7 +323,7 @@ For the `dockerimage` component to have access to the project sources, you must 
 [source,yaml]
 ----
 apiVersion: 1.0.0
-metadata: 
+metadata:
     name: MyDevfile
 components:
 type: dockerimage
@@ -255,52 +346,52 @@ Docker image tools can specify the custom volumes to be mounted on specific loca
 [source,yaml]
 ----
 apiVersion: 1.0.0
-metadata: 
-    name: MyDevfile
+metadata:
+  name: MyDevfile
 components:
-type: dockerimage
-image: golang
-memoryLimit: 512Mi
-mountSources: true
-command: ['sleep', 'infinity']
-volumes:
-    - name: cache
-      containerPath: /.cache
+  - type: dockerimage
+    image: golang
+    memoryLimit: 512Mi
+    mountSources: true
+    command: ['sleep', 'infinity']
+    volumes:
+      - name: cache
+        containerPath: /.cache
 ----
 
 ==== Environment
-    
+
 Eclipse Che allows you to configure Docker containers by modifying the environment variables available in the container of an image.
 
 [source,yaml]
 ----
 apiVersion: 1.0.0
-metadata: 
-    name: MyDevfile
+metadata:
+  name: MyDevfile
 projects:
-name: my-go-project
-source:
-    type: git
-    location: https://github.com/acme/my-go-project.git
+  - name: my-go-project
     clonePath: go/src/github.com/acme/my-go-project
+    source:
+      type: git
+      location: https://github.com/acme/my-go-project.git
 components:
-type: dockerimage
-image: golang
-memoryLimit: 512Mi
-mountSources: true
-command: ['sleep', 'infinity']
-env:
-    - name: GOPATH
-      value: $(CHE_PROJECTS_ROOT)/go
-    - name: GOCACHE
-      value: /tmp/go-cache
+  - type: dockerimage
+    image: golang
+    memoryLimit: 512Mi
+    mountSources: true
+    command: ['sleep', 'infinity']
+    env:
+      - name: GOPATH
+        value: $(CHE_PROJECTS_ROOT)/go
+      - name: GOCACHE
+        value: /tmp/go-cache
 ----
 
 [NOTE]
 ====
-* The variable expansion works between the environment variables and it uses the Kubernetes convention for the variable references. 
+* The variable expansion works between the environment variables, and it uses the Kubernetes convention for the variable references.
 
-* You can use the predefined variables in your own definitions. 
+* The predefined variables are available for use in custom definitions.
 ====
 
 The following environment variables are pre-set by the Che server:
@@ -334,48 +425,48 @@ Endpoints have a number of properties as shown in the following example:
 [source,yaml]
 ----
 apiVersion: 1.0.0
-metadata: 
-    name: MyDevfile
+metadata:
+  name: MyDevfile
 projects:
-name: my-go-project
-source:
-    type: git
-    location: https://github.com/acme/my-go-project.git
+  - name: my-go-project
     clonePath: go/src/github.com/acme/my-go-project
+    source:
+      type: git
+      location: https://github.com/acme/my-go-project.git
 components:
-type: dockerimage
-image: golang
-memoryLimit: 512Mi
-mountSources: true
-command: ['sleep', 'infinity']
-env:
-    - name: GOPATH
-      value: $(CHE_PROJECTS_ROOT)/go
-    - name: GOCACHE
-      value: /tmp/go-cache
-endpoints:
-name: web
-    port: 8080
-    attributes: 
-        discoverable: false
-        public: true
-        protocol: http
-type: dockerimage
-image: postgres
-memoryLimit: 512Mi
-env: 
-name: POSTGRES_USER
-value: user
-name: POSTGRES_PASSWORD
-value: password
-name: POSTGRES_DB
-    value: database
-endpoints:
-name: postgres
-    port: 5432
-    attributes:
-        discoverable: true
-        public: false
+  - type: dockerimage
+    image: golang
+    memoryLimit: 512Mi
+    mountSources: true
+    command: ['sleep', 'infinity']
+    env:
+      - name: GOPATH
+        value: $(CHE_PROJECTS_ROOT)/go
+      - name: GOCACHE
+        value: /tmp/go-cache
+    endpoints:
+     - name: web
+       port: 8080
+       attributes:
+         discoverable: false
+         public: true
+         protocol: http
+  - type: dockerimage
+    image: postgres
+    memoryLimit: 512Mi
+    env:
+      - name: POSTGRES_USER
+        value: user
+      - name: POSTGRES_PASSWORD
+        value: password
+      - name: POSTGRES_DB
+        value: database
+    endpoints:
+      - name: postgres
+        port: 5432
+        attributes:
+          discoverable: true
+          public: false
 ----
 
 Here, there are two dockerimages, each defining a single endpoint. Endpoint is an accessible port that can be made accessible inside the workspace or also publicly (example, from the UI). Each endpoint has a name and port, which is the port on which certain server running inside the container is listening. The following are a few attributes that you can set on the endpoint:
@@ -400,33 +491,33 @@ When starting a new server within a component, Che autodetects this, and the UI 
 
 ==== Kubernetes and OpenShift resources
 
-Complex deployments can be described using Kubernetes or OpenShift resource lists that can be referenced in the devfile. This will make them part of the workspace. 
+Complex deployments can be described using Kubernetes or OpenShift resource lists that can be referenced in the devfile. This makes them a part of the workspace.
 
 [IMPORTANT]
 ====
-* Because a Che workspace is internally represented as a single deployment, all resources from the Kubernetes or OpenShift list are merged into that single deployment. 
+* Because a Che workspace is internally represented as a single deployment, all resources from the Kubernetes or OpenShift list are merged into that single deployment.
 
-* You must be careful when designing such lists because this can result in name conflicts and other problems. 
+* Be careful when designing such lists because this can result in name conflicts and other problems.
 
-* Only the following subset of the Kubernetes objects are supported: `deployments`, `pods`, `services`, `persistent volume claims`, `secrets`, and `config maps`. Kubernetes ingresses are ignored but OpenShift routes are supported. A workspace created from a devfile using any other object types will fail to start.
+* Only the following subset of the Kubernetes objects are supported: `deployments`, `pods`, `services`, `persistent volume claims`, `secrets`, and `config maps`. Kubernetes Ingresses are ignored, but OpenShift routes are supported. A workspace created from a devfile using any other object types fails to start.
 
-* If you run Che on a Kubernetes cluster, only Kubernetes lists are supported. However, if you run Che on an OpenShift cluster, both Kubernetes and OpenShift lists are supported (because OpenShift is a superset of Kubernetes).
+* When running Che on a Kubernetes cluster, only Kubernetes lists are supported. When running Che on an OpenShift cluster, both Kubernetes and OpenShift lists are supported.
 ====
 
 [source,yaml]
 ----
 apiVersion: 1.0.0
-metadata: 
-    name: MyDevfile
+metadata:
+  name: MyDevfile
 projects:
-name: my-go-project
-source:
-    type: git
-    location: https://github.com/acme/my-go-project.git
+  - name: my-go-project
     clonePath: go/src/github.com/acme/my-go-project
+    source:
+      type: git
+      location: https://github.com/acme/my-go-project.git
 components:
-type: kubernetes
-reference: ../relative/path/postgres.yaml
+  -  type: kubernetes
+     reference: ../relative/path/postgres.yaml
 ----
 
 The preceding component references a file that is relative to the location of the devfile itself. Meaning, this devfile is only loadable by a Che factory to which you supply the location of the devfile and therefore it is able to figure out the location of the referenced Kubernetes resource list.
@@ -465,7 +556,7 @@ items:
             - name: pg-storage
               persistentVolumeClaim:
                   claimName: pg-storage
--    
+-
     apiVersion: v1
     kind: Service
     metadata:
@@ -494,26 +585,26 @@ items:
                 storage: 1Gi
 ----
 
-For a basic example of a devfile with an associated Kubernetes or OpenShift list, see https://github.com/redhat-developer/devfile/tree/master/samples/web-nodejs-with-db-sample.
+For a basic example of a devfile with an associated Kubernetes or OpenShift list, see link:https://github.com/redhat-developer/devfile/tree/master/samples/web-nodejs-with-db-sample[web-nodejs-with-db-sample] on redhat-developer GitHub.
 
 If you use generic or large resource lists from which you will only need a subset of resources, you can select particular resources from the list using a selector (which, as the usual Kubernetes selectors, works on the labels of the resources in the list).
 
 [source,yaml]
 ----
 apiVersion: 1.0.0
-metadata: 
-    name: MyDevfile
+metadata:
+  name: MyDevfile
 projects:
-name: my-go-project
-source:
-    type: git
-    location: https://github.com/acme/my-go-project.git
+  - name: my-go-project
     clonePath: go/src/github.com/acme/my-go-project
+    source:
+      type: git
+      location: https://github.com/acme/my-go-project.git
 components:
-type: kubernetes
-reference: ../relative/path/postgres.yaml
-selector:
-    app: postgres    
+  - type: kubernetes
+    reference: ../relative/path/postgres.yaml
+    selector:
+      app: postgres
 ----
 
 Additionally, it is also possible to modify the entrypoints (command and arguments) of the containers present in the resource list. For details of the advanced use case, see the reference (TODO: link).
@@ -548,33 +639,33 @@ Each che-specific command has an *action* attribute that is a command to execute
 [source,yaml]
 ----
 apiVersion: 1.0.0
-metadata: 
-    name: MyDevfile
+metadata:
+  name: MyDevfile
 projects:
-name: my-go-project
-source:
-    type: git
-    location: https://github.com/acme/my-go-project.git
+  - name: my-go-project
     clonePath: go/src/github.com/acme/my-go-project
+    source:
+      type: git
+      location: https://github.com/acme/my-go-project.git
 components:
-type: dockerimage
-image: golang
-alias: go-cli
-memoryLimit: 512Mi
-mountSources: true
-command: ['sleep', 'infinity']
-env:
-    - name: GOPATH
-      value: $(CHE_PROJECTS_ROOT)/go
-    - name: GOCACHE
-      value: /tmp/go-cache
+  - type: dockerimage
+    image: golang
+    alias: go-cli
+    memoryLimit: 512Mi
+    mountSources: true
+    command: ['sleep', 'infinity']
+    env:
+      - name: GOPATH
+        value: $(CHE_PROJECTS_ROOT)/go
+      - name: GOCACHE
+        value: /tmp/go-cache
 commands:
-- name: compile and run
-  actions:
-  - type: exec
-    component: go-cli
-    command: “go get -d && go run main.go”
-    workdir: “${CHE_PROJECTS_ROOT}/src/github.com/acme/my-go-project”
+  - name: compile and run
+    actions:
+     - type: exec
+       component: go-cli
+       command: “go get -d && go run main.go”
+       workdir: “${CHE_PROJECTS_ROOT}/src/github.com/acme/my-go-project”
 ----
 +
 [NOTE]
@@ -591,34 +682,60 @@ If the editor in the workspace supports it, the devfile can specify additional c
 [source,yaml]
 ----
 apiVersion: 1.0.0
-metadata: 
-    name: MyDevfile
+metadata:
+  name: MyDevfile
 projects:
-name: my-go-project
-source:
-    type: git
-    location: https://github.com/acme/my-go-project.git
+  - name: my-go-project
     clonePath: go/src/github.com/acme/my-go-project
+    source:
+      type: git
+      location: https://github.com/acme/my-go-project.git
 commands:
-        - name: tasks
-          actions:
-          - type: vscode-task
-            referenceContent: >
-                {
-                    "version": "2.0.0",
-                    "tasks": [
-                        {
-                            "label": "create test file",
-                            "type": "shell",
-                            "command": "touch ${workspaceFolder}/test.file"
-                        }
-                    ]
-                }
+  - name: tasks
+    actions:
+      - type: vscode-task
+        referenceContent: >
+            {
+                "version": "2.0.0",
+                "tasks": [
+                    {
+                        "label": "create test file",
+                        "type": "shell",
+                        "command": "touch ${workspaceFolder}/test.file"
+                    }
+                ]
+            }
 ----
 
 This example shows association of a `tasks.json` file with a devfile. Notice the `vscode-task` type that instructs the Che-Theia editor to interpret this command as a tasks definition and `referenceContent` attribute that contains the contents of the file itself. You can also save this file separately from the devfile and use `reference` attribute to specify a relative or absolute URL to it.
 
 In addition to the `vscode-task` commands, the Che-Theia editor understands `vscode-launch` type using which you can specify the launch configurations.
+
+=== Command preview URL
+
+WARNING: This is a Beta feature. Definition may change in future releases without any warning. It's available in devfile version `1.0.1-beta`.
+
+It is possible to specify a preview URL for commands that expose web UI. This URL is offered for opening when the command is executed.
+
+[source,yaml]
+----
+apiVersion: 1.0.1-beta
+
+commands:
+    - name: tasks
+      previewUrl:
+        port: 8080     <1>
+        path: /myweb   <2>
+      actions:
+      - type: exec
+        component: go-cli
+        command: "go run webserver.go"
+        workdir: ${CHE_PROJECTS_ROOT}/webserver
+----
+<1> TCP port where the application listens. Mandatory parameter.
+<2> The path part of the URL to the UI. Optional parameter. The default is root (`/`).
+
+The example above opens `++http://__<server-domain>__/myweb++`, where `_<server-domain>_` is the URL to the dynamically created Kubernetes Ingress or OpenShift Route.
 
 == Devfile attributes
 

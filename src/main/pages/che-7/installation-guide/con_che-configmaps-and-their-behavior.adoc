@@ -11,34 +11,55 @@ A link:https://docs.openshift.com/container-platform/latest/builds/setting-up-tr
 
 link:https://docs.openshift.com/container-platform/latest/applications/operators/olm-what-operators-are.html[Operators] are software extensions to Kubernetes that use link:https://docs.openshift.com/container-platform/latest/applications/crds/crd-managing-resources-from-crds.html[custom resources] to manage applications and their components.
 
-Che installed using the Operator provides the user with two automatically generated `configMaps`:
+Che installed using the Operator provides the user with an automatically generated `configMap` called `che`.
 
-* `che` (main)
-* `custom` (additional)
+The `che` `configMap` contains the main properties for the Che server, and is in sync with the information stored in the CheCluster Custom Resource file. User modifications of the `che` `configMap` after installing Che using the Operator are automatically overwritten by values that the Operator obtains from the `CheCluster` Custom Resource.
 
-* The `che` `configMap` contains the main properties for the installation and is in sync with the information stored in the CheCluster Custom Resource file. User modifications of the `che` `configMap` after installing Che using the Operator are automatically overwritten by values that the Operator obtains from the `CheCluster` Custom Resource. +
 To edit the `che` `configMap`, edit the Custom Resource manually.
 The `configMap` derives values from the `CheCluster` field. User modifications of the `CheCluster` Custom Resource field cause the Operator to change the attributes of the `che` `configMap` accordingly. The `configMap` changes automatically trigger a restart of the Che Pod.
 
-* The secondary `custom` `configMap` is intended for additional manual customization of properties by users. These properties include environment variables that are not already specified in the main `che` `configMap`. To apply manual changes to the `custom` `configMap`, delete the Che Pod to manually restart it.
+To add custom properties to the Che server, such as environment variables that are not automatically generated in the `che` `configMap` by the Operator, or to override automatically generated properties, the `CheCluster` Custom Resource has a `customCheProperties` field, which expects a map.
+
+For example, to overrride the default memory limit for workspaces, add the `CHE_WORKSPACE_DEFAULT\__MEMORY__LIMIT__MB` property to `customCheProperties`:
+
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  name: eclipse-che
+  namespace: che
+spec:
+  server:
+    cheImageTag: ''
+    devfileRegistryImage: ''
+    pluginRegistryImage: ''
+    tlsSupport: false
+    selfSignedCert: false
+    customCheProperties:
+      CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB: 2048
+  auth:
+...
+----
+
+Previous versions of the Che Operator had a configMap named `custom` to fulfill this role.  If the Che Operator finds a `configMap` with the name `custom`, it adds the data it contains into the `customCheProperties` field, redeploys Che, and deletes the `custom` `configMap`.
 
 == Che installed using a Helm Chart
 
 A link:https://helm.sh/[Helm Chart] is a Kubernetes extension for defining, installing, and upgrading Kubernetes applications.
 
-* When Che is installed using a Helm Chart, the user configures Che manually by modifying the `configMap` object. The `configMap` object is called `che` and is generated as an editable template after the installation. To apply manual changes to the `custom` `configMap`, delete the Che pod to manually restart it. +
-Alternatively, use the following `kubectl` command:
-+
+When Che is installed using a Helm Chart, the user configures Che manually by modifying the `configMap` object. The `configMap` object is called `che` and is generated as an editable template after the installation. To apply manual changes to the `custom` `configMap`, delete the Che pod to manually restart it. Alternatively, use the following `kubectl` command:
+
 ----
 $ kubectl rollout restart deployment/che
 ----
-+
+
 This avoids the downtime associated with deleting a Pod because it deploys and starts a new Pod, and only then deletes the old Pod.
 
 ////
 .Additional resources
-
 * A bulleted list of links to other material closely related to the contents of the concept module.
 * Currently, modules cannot include xrefs, so you cannot include links to other content in your collection. If you need to link to another assembly, add the xref to the assembly that includes this module.
 * For more details on writing concept modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
 * Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+////
