@@ -15,26 +15,21 @@ summary:
 
 :context: branding-your-che-theia
 
-As a user you may be interested in customizing your Che-Theia to be consistent with your product. You can easily change the name of the product, logo and description that are displayed in Welcome page and in About dialog. Also you can customize the list of helpful resources that are displayed in Help section in the Welcome page.
+The following section describes how to easily customize the product in Che-Theia.
 
-Since Che-Theia is running in a separate `eclipse/che-theia` container, you need to:
+== Introduction
+Che-Theia allows easy customization of your product.
+On the Welcome page and in the About dialogue you can modify the product name, the product logo, and the description. In the Help section of the Welcome page you can modify the list of helpful resources.
 
-* Build container image with your Che-Theia.
-* Define an editor meta.yaml which uses your custom image.
-* Create a workspace from a devfile with your editor.
 
-To build container image with your Che-Theia you need to do following steps:
+[id="creating-a-json-file-with-the-product-information_{context}"]
+== Creating a JSON file with the product information
 
-* Create JSON file with product information.
-* Prepare two images with logo of your product for dark and light themes.
-* Build a Che-Theia container image containing sample product JSON.
-
-== Create JSON file with product information
-
-The first you have to create a `product.json` file containing the name of the product, logo, description, list of hyperlinks to be shown in the welcome page and place it somewhere on the file system.
-
+. Create a `product.json` file with a new name of the product, logo, description, and list of hyperlinks on the Welcome page.
++
 An example of `https://github.com/che-samples/che-theia-branding-example/blob/master/branding/product.json[product.json]`:
-
++
+[source,json,attrs="nowrap"]
 ----
 {
     "name": "Red Hat CodeReady Workspaces",
@@ -59,14 +54,17 @@ An example of `https://github.com/che-samples/che-theia-branding-example/blob/ma
     }
 }
 ----
-
-In this file:
-
-* *name*: the name of the product. It will be used as tab title for welcome page, and as a title for about dialog.
-* *icon*: small logo of your product. Is used as an icon for welcome page tab title.
-* *logo*: two logo images of you product for dark and light themes. Logo is shown in the Welcome page and in the about dialog. This property can refer on the images relative to your `product.json` file. You can also use absolute path or http resource.
-It's possible simplify the conficuration and use one logo image for both dark and light themes:
 +
+In this file:
++
+* *name*: a tab title for the Welcome page and the About dialogue.
+* *icon*: an icon for the Welcome page tab title.
+* *logo*: the logo of you product for dark and light themes on the Welcome page and in the About dialogue. Use a relative path, an absolute path or a URL to an image.
++
+[NOTE]
+====
+You can define only one logo image for both dark and light themes:
+[source,json,attrs="nowrap"]
 ----
 {
     ...
@@ -74,66 +72,46 @@ It's possible simplify the conficuration and use one logo image for both dark an
     ...
 }
 ----
-* *welcome*: this section is optional. It describes the behavior of welcome page.
-For welcome page you can set the invitation title and pick the links which will be shown inside `Help` section.
-In this example both links to the website and to the documentation will be shown. If you omit `welcome/links` property, the Welcome page will display all the links, that are described in the `links` section.
-* *links*: list of helpful resources for you product. For future expanding, each link is tagged (e.g. website, documentation). This gives the ability to find the appropriate link by tag name.
+====
+* *welcome*: the behavior of the Welcome page. Customize the invitation title and the links in the Help section. If you omit `welcome/links` property, the Welcome page will display the links from the `links` section.
+* *links*: list of helpful resources for the product. Use tags to group links for better findability.
 
+[id="preparing-the-product-logo_{context}"]
+== Preparing the product logo
 
-== Prepare two images with logo of your product for dark and light themes
+* Choose images of the preferred format supported by your browser.
+* Images should have maximum height 80 pixels for the Welcome page and 100 pixels for the About dialogue. 
+* Images should have the product icon and the product name on the transparent background.
 
-The next step is to prepare product logo. It's better to have two dedicates images for dark and light themes.
-Image should have your product icon and name which are placed on the transparent background. You have to save the image in any format which you prefer and which is supported by your browser.
-Place images next to your `product.json` file and specify them in corresponsing JSON propertires.
+[id="building-a-che-theia-container-image_{context}"]
+== Building a Che-Theia container image
 
-If you prefer to use http resources, you can easily do it like following
-----
-{
-    ...
-    "logo": {
-        "dark": "https://raw.githubusercontent.com/che-samples/che-theia-branding-example/master/branding/codeready-workspaces-logo-light.png",
-        "light": "https://raw.githubusercontent.com/che-samples/che-theia-branding-example/master/branding/codeready-workspaces-logo-dark.png"
-    }
-    ...
-}
-----
-
-Please note, that the maximum height of logo is 80 pixels for Welcome page and 100 pixels for About dialog.
-Don't use wery wide logo to not broke the design.
-
-== Build a Che-Theia container image containing sample product JSON
-
-Below is an example of the `https://github.com/che-samples/che-theia-branding-example/blob/master/Dockerfile[Dockerfile]` to build a container with your Che-Theia.
-
-----
-FROM eclipse/che-theia:next
-
-COPY branding ${HOME}/branding
-
-ENV PRODUCT_JSON=${HOME}/branding/product.json
-----
-
-Create `Dockerfile` somewhere on the file system.
-Then create `branding` directory next to the `Dockerfile` and move your `product.json` and logo images inside this directory.
-Now you can build the container image with your Che-Theia by running `$ docker build` command and then push the image to the dockerhub using `$ docker push`.
-
+. Download an example link:https://github.com/che-samples/che-theia-branding-example/blob/master/Dockerfile[`Dockerfile`].
+. Create `branding` directory next to the `Dockerfile` and move your `product.json` and logo images into `branding` directory.
+. Build the container image with Che-Theia and push the image to the dockerhub:
++
 ----
 $ docker build -t username/che-theia-codeready-workspaces:next .
 $ docker push username/che-theia-codeready-workspaces:next
 ----
 
-== Define an editor meta.yaml which uses your custom image
+[id="testing-che-theia-with-the-meta-file_{context}"]
+== Testing Che-Theia with the `meta.yaml` file
 
-The easiest way to test your Che-Theia is to create a new `meta.yaml` describing custom `Che Editor` and use it in your devfile.
+To test the Che-Theia create a new `meta.yaml` file describing a custom `Che Editor` and use it in your devfile.
 
-It's better to pick the latest Che-Theia `meta.yaml` from https://github.com/eclipse/che-plugin-registry/tree/master/v3/plugins/eclipse/che-theia[plugin registry] and replace `image` inside `containers` section.
+* Download the the latest Che-Theia `meta.yaml` from the https://github.com/eclipse/che-plugin-registry/tree/master/v3/plugins/eclipse/che-theia[plugin registry]
+* Replace `image` value in the `containers` section.
 
-== Create a workspace from a devfile with your editor
 
-Create a workspace from the https://github.com/che-samples/che-theia-branding-example/blob/master/devfile.yaml[devfile] to see the result:
+[id="creating-a-workspace-from-a-devfile_{context}"]
+== Creating a workspace from a devfile
 
+. Create a workspace from the https://github.com/che-samples/che-theia-branding-example/blob/master/devfile.yaml[devfile] to apply the changes:
++
 image::https://che.openshift.io/factory/resources/factory-contribute.svg[link="https://che.openshift.io/f?url=https://raw.githubusercontent.com/che-samples/che-theia-branding-example/master/devfile.yaml"]
-
++
+[source,yaml,attrs="nowrap"]
 ----
 metadata:
   name: che-theia-all
@@ -149,17 +127,19 @@ components:
       https://raw.githubusercontent.com/che-samples/che-theia-branding-example/master/che-editor.meta.yaml
 apiVersion: 1.0.0
 ----
++
+. Run the workspace and see the changes:
 
-After running the workspace you Che-Theia will look like following:
-
+* The dark theme of Che-Theia:
++
 image::branding/welcome-dark.png[link="{imagesdir}/branding/welcome-dark.png"]
-
++
 image::branding/about-dark.png[link="{imagesdir}/branding/about-dark.png"]
-
-Everything should look fine when switching to light theme.
-
++
+* The light theme of Che-Theia:
++
 image::branding/welcome-light.png[link="{imagesdir}/branding/welcome-light.png"]
-
++
 image::branding/about-light.png[link="{imagesdir}/branding/about-light.png"]
 
 :context: {parent-context-of-branding-your-che-theia}
