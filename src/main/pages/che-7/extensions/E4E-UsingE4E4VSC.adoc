@@ -1,0 +1,34 @@
+# Using Explorer for Endevor for Visual Studio Code
+
+Explorer for Endevor for Visual Studio Code (VSC) lets you investigate and retrieve Endevor data using a user-friendly, intuitive modern interface.
+
+Explorer for Endevor allows you to create custom filters for Endevor data based on your search results. These filters enable you to identify and retrieve specific elements, without navigating the mainframe-based Endevor interface. You can then view the identified Endevor data using a user-friendly, intuitive modern interface.
+
+### Use Cases
+- As a modern application developer working with Endevor, you use Explorer for Endevor to browse elements controlled by Endevor. You can then decide if you want to retrieve any Element into your workspace, either alone or with dependencies.
+- Find and Retrieve Elements from different CA Endevor® SCM environments into local Git monitored projects.
+- Set different wildcard criteria to customise filters and find other Elements with the same high level qualifiers.
+- Use Map View in Explorer for Endevor to explore Endevor locations (Environment, Stage, System, and Subsystem) and save them as filter definitions.
+
+### Hosts
+Explorer for Endevor Hosts define a path to a Endevor data source Explorer for Endevor can support the creation of several Hosts in one instance. You can, for example:
+- Create one host per project or per time period, according to your needs.
+- You can also have several hosts for one project which uses several data sources.
+- Hosts can be renamed as their purpose changes. You can also update your credentials to ensure access to the data source is maintained.
+
+### Views
+Explorer for Endevor offers two views through which you can inspect Endevor data:
+- Filters View
+  
+  Filters View contains all filters created by your previous searches in the Map View.
+- Map View
+  
+  Map View expands to show the several levels of Endevor data. Use the path followed in Map View to create filters which mimic the path taken. These filters then allow you to only show the relevant information.
+
+### Actions
+- Filter Actions
+  
+  Filter Actions allow you to Create and Edit filters, and then to Delete filters once no longer required.
+- Element Actions
+  
+  Element Actions allow you to Browse and inspect Elements. You can then Retrieve them and manipulate them as required in your chosen IDE.

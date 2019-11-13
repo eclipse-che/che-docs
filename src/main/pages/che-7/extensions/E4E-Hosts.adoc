@@ -1,0 +1,85 @@
+# Explorer for Endevor Hosts
+
+Endevor Explorer Hosts define a path to a Endevor data source location. Explorer for Endevor can support the creation of multiple hosts in one instance.
+
+You can, for example:
+- Create one host per project or per time period, if working with a single data source.
+- Use several hosts for one project, drawing from one data source each.
+- Once a host is created, you can then refresh, update, or delete it as required.
+
+### Create An Explorer for Endevor Host
+
+To create an Endevor Host, specify the data source that you want to view, with or without write access.
+#### Follow these steps:
+1. Open the Explorer tab in Visual Studio Code and enter your Mainframe credentials when prompted.
+2. Minimize the other tabs if needed
+3. Click the plus icon on the Explorer for Endevor tab.
+    - You will be prompted to enter a z/OS URL in the format 'http(s)://url:port', for example: http://myhost01:9090 then press 'Enter' to confirm or 'Escape' to cancel.
+4. Enter a unique name for the Endevor Host
+5. Click Next. If the repository name and URL are accepted, the CA Endevor SCM configuration becomes available.
+6. Select a CA Endevor SCM configuration from the drop-down list.
+
+You have successfully created a new Host connected to a repository, and the Host is listed under Explorer for Endevor in the Visual Studio Code interface.
+
+### Refresh Explorer for Endevor Host Repository
+The Explorer for Endevor tab in Visual Studio Code shows all your currently mapped Explorer for Endevor Hosts. Each of these hosts show the contents of the specified data source. You can refresh each host to ensure that the data you are working with is current.
+#### Follow these steps:
+1. Select the host that you want to refresh. The filter is highlighted, and the following icons are displayed:
+    - Delete
+    - Refresh
+    - Edit
+2. Click Refresh. A blue progress indicator appears above the tabs.
+
+The Host has been refreshed
+
+### Update Explorer for Endevor Host
+
+The Explorer for Endevor Host shows the contents of the specified data source. You may need to update the host name or your credentials. 
+#### Note:
+You cannot currently update the URL of the data source, or the selected Endevor Configuration. If you need to update these, you must create a new host.
+
+#### Follow these steps:
+1. Navigate to Explorer for Endevor Your current Hosts are displayed under the Explorer for Endevor tab in the Explorer view.
+2. Select the host that you want to update The host is highlighted, and the following icons are displayed:
+    - Delete
+    - Refresh
+    - Edit
+3. Click the Edit icon. The following fields appear in the display panel:
+- Repository Name
+  - Ensure that you specify a unique name for the repository. If you enter a name that already exists, the following error message is displayed:
+      - "Host with name <Proposed Host Name> already exists"
+- URL
+- Endevor Configuration
+- User
+- Password
+
+#### Note:
+The Endevor Configuration and the Data Source URL are shown for reference only
+
+4. Apply your required changes, and click Save Connection. The changes are reflected in the Explorer for Endevor tab
+
+The Host has been updated.
+
+### Delete an Explorer for Endevor Host
+
+You may add several hosts for each project in Explorer for Endevor, and as such, the list of Hosts can quickly become unmanageable.
+
+To maintain it as an easy reference point, you can easily delete redundant Hosts from the Explorer for Endevor view.
+
+#### Follow these steps:
+1. Select the host that you want to delete. The Host is highlighted, and the following icons are displayed:
+    - Delete
+    - Refresh
+    - Edit
+2. Click the Delete icon
+
+The following message appears:
+
+"Delete connection: < Host Name > ?"
+
+"Source: Explorer for Endevor (Extension)"
+
+3. Verify that the name of the displayed connection matches the one you want to delete.
+4. Click OK to confirm deletion.
+
+The host is deleted and has been removed from the list in the Explorer for Endevor tab.
