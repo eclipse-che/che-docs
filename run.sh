@@ -37,12 +37,24 @@ case "$1" in
     $RUNNER run --rm \
       -v "${SRC_PATH}":/che-docs:Z \
       eclipse/che-docs \
+      sh -c "cd /che-docs && jekyll clean && jekyll build --config _config.yml,_config-web.yml"
+    ;;
+  -war)
+    echo "Building for embedding in Che (linking from the app). To preview"
+    echo "the docs locally, run the script ($0) without the '-war' option."
+    $RUNNER run --rm \
+      -v "${SRC_PATH}":/che-docs:Z \
+      eclipse/che-docs \
       sh -c "cd /che-docs && jekyll clean && jekyll build --config _config.yml,_config-war.yml"
     ;;
   *)
-    echo "Building and serving the docs for local preview. To build for production testing"
-    echo "(publishing on eclipse.org/che/docs/), run the script with the '-prod' option:"
-    echo "$0 -prod"
+    echo -e "Building and serving the docs for local preview.\n"
+    echo -e "* To build for production testing (publishing on eclipse.org/che/docs/),"
+    echo "  run the script with the '-prod' option:"
+    echo -e "  $0 -prod\n"
+    echo -e "* To build for embedding in Che (linking from the app),"
+    echo "  run the script with the '-war' option:"
+    echo -e "  $0 -war\n"
     $RUNNER run --rm -ti \
       -p 35729:35729 -p 4000:4000 \
       -v "${SRC_PATH}":/che-docs:Z \
