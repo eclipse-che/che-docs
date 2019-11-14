@@ -125,7 +125,7 @@ The filters list automatically contains every filter that you have created and s
 
 The filter is deleted.
 
-## Explorer for Endevor Element Actions
+## Element Actions
 
 Once you identify the relevant data, you can perform the following actions:
 
@@ -136,26 +136,30 @@ Once you identify the relevant data, you can perform the following actions:
 - Retrieve Element
 
 * Retrieves the Element, with no additional data.
-The Element is stored locally while you work with it, and you can then apply your changes.
+* The Element is stored locally while you work with it, and you can then apply your changes.
 
 - Retrieve Element with Dependencies
 
 * Retrieves the Element, with additional information highlighting any other elements or processes that use the element in its current state.
-The Element is stored locally while it is worked on, before you then upload it back to the main repository.
+* The Element is stored locally while it is worked on, before you then upload it back to the main repository.
 
 - Retrieve Multiple Elements
 
 * Retrieves the several selected Elements, with no additional data.
-The Elements are stored locally while being worked on, before you then upload them back to the main repository.
+* The Elements are stored locally while being worked on, before you then upload them back to the main repository.
 
 ### Browse Element
 
-The Browse Element action displays the entire contents of the Element, including related metadata. This allows you to determine if you want to retrieve and work with the Element
+The Browse Element action displays the entire contents of the Element, including related metadata.
+
+This allows you to determine if you want to retrieve and work with the Element
 
 *Procedure:*
 
 . Right-click on the element in either the Map or Filters view. The options to Browse or Retrieve the Element appear.
-. Select the Browse Element option. The Element is displayed in the panel, including related information, as follows:
+. Select the Browse Element option.
+
+The Element is displayed in the panel, including related information, as follows:
 
 ```
 *1CA Endevor SCM Version 18.0.12 Copyright (C) 1986-2018 CA. All Rights
@@ -184,13 +188,14 @@ GENERATED PABJU03 14MAY19 08:25
 +0100 //DELMOD EXEC PGM=CONDELE,PARM=*COMPONENTS*
 ```
 
-. Review the displayed information to determine if it is relevant or useful to you.
+Review the displayed information to determine if it is relevant or useful to you.
 
 You have successfully opened an element for inspection.
 
 #### Note:
 ```
-Elements are read-only in their native location. To edit an Element, perform the Retrieve Element action and store a copy of the Element to your specified Workspace.
+Elements are read-only in their native location.
+To edit an Element, perform the Retrieve Element action and store a copy of the Element to your Workspace.
 ```
 
 ### Retrieve Element
@@ -200,7 +205,8 @@ The Retrieve Element action allows you to save a copy of the Element to your wor
 *Procedure:*
 
 . Right-click on the element in either the Map or Filters view. The options to Browse or Retrieve Element are displayed.
-. Select Retrieve Element. The Element is saved to your specified Workspace and is displayed in the panel, including related information, as follows:
+. Select Retrieve Element.
+- The Element is saved to your specified Workspace and is displayed in the panel, including related information, as follows:
 
 ```
     //DELPROC PROC
@@ -214,7 +220,9 @@ You have successfully retrieved an element.
 
 ### Retrieve Element with Dependencies
 
-The Retrieve Element with Dependencies action allows you to save a copy of the Element, along with any other elements that are dependent on it. The data is saved in your specified Workspace, and can be edited as required
+The Retrieve Element with Dependencies action allows you to save a copy of the Element, along with any other elements that are dependent on it.
+
+The data is saved in your specified Workspace, and can be edited as required
 
 *Procedure:*
 
@@ -233,23 +241,23 @@ Element:
 
 ```
 ********************************************************************
-    * ACMQAPIA : call ACMQ API programs (ACMQAPI2) *
-    * *
-    * Change INVOKE to ACMQAPI1/2/3 to test other programs *
-    ******************************************************************** 
-    ACMQAPIA @C1INIT INVOKE=(ACMQAPI2,DYNAM), X 
-    TYPE=ACMQ_batch, X  
-    STACK=72000, X 
-    ESTAE=NO, X 
-    SLAT=YES 
-    END
+* ACMQAPIA : call ACMQ API programs (ACMQAPI2) *
+* *
+* Change INVOKE to ACMQAPI1/2/3 to test other programs *
+******************************************************************** 
+ACMQAPIA @C1INIT INVOKE=(ACMQAPI2,DYNAM), X 
+TYPE=ACMQ_batch, X  
+STACK=72000, X 
+ESTAE=NO, X 
+SLAT=YES 
+END
 ```
 
 First Dependency:
 
 ```
-    ASMA90 = 'RENT,TERM,XREF(SHORT),USING(MAP,WARN(11)),LIST(133),'+ 00000010'LANGUAGE(UE),' 00000110IGYCRCTL       ='OBJECT,APOST,AWO,DATA(24),FASTSRT,FLAG(W),'+ 00000200'LIST,RENT,TRUNC(BIN),'+ 00000300'NODBCS,SOURCE,MAP,NOSEQ,XREF,
-    NONUMBER,LIST,' 00000400IEWL = 'LIST,MAP,RENT,REUS,NOLET,XREF,SIZE=(256K,64K),' 00000500CCNDRVR = 'SOURCE,SHOWINC,LIST,NOOPT,AGG,XR,LO,ARCH(3),' 00000600
+ASMA90 = 'RENT,TERM,XREF(SHORT),USING(MAP,WARN(11)),LIST(133),'+ 00000010'LANGUAGE(UE),' 00000110IGYCRCTL       ='OBJECT,APOST,AWO,DATA(24),FASTSRT,FLAG(W),'+ 00000200'LIST,RENT,TRUNC(BIN),'+ 00000300'NODBCS,SOURCE,MAP,NOSEQ,XREF,
+NONUMBER,LIST,' 00000400IEWL = 'LIST,MAP,RENT,REUS,NOLET,XREF,SIZE=(256K,64K),' 00000500CCNDRVR = 'SOURCE,SHOWINC,LIST,NOOPT,AGG,XR,LO,ARCH(3),' 00000600
 ```
 Second Dependency:
 
@@ -262,11 +270,12 @@ You can now work with the Element and dependencies stored in your Workspace
 You have successfully retrieved an element.
 
 #### Notes:
+
 ```
-    - All dependencies are saved to the Workspace in appropriate folders based on their type
-    - If the type folder for the dependencies doesn't exist new folder is created
-    - No limit on the number of dependencies for the retrieved Element
-    - Retrieve Element with Dependencies is not compatible with the Retrieve Multiple Elements action.
+- All dependencies are saved to the Workspace in appropriate folders based on their type
+- If the type folder for the dependencies doesn't exist new folder is created
+- No limit on the number of dependencies for the retrieved Element
+- Retrieve Element with Dependencies is not compatible with the Retrieve Multiple Elements action.
 ```
 
 ### Retrieve Multiple Elements
@@ -274,8 +283,6 @@ You have successfully retrieved an element.
 The Retrieve Multiple Elements action allows you to save a copy of several Elements in a single action. The elements are saved without related metadata to your workspace, grouped in folders by Type.
 
 The elements can be used as required, and then merged back to the desired location, or used elsewhere.
-
-As a developer unfamiliar with the classic Endevor interface, you need to retrieve a multiple elements to your Workspace.
 
 This action allows you to retrieve several elements simultaneously, ensuring that you receive an accurate impression of the elements at the same point in time.
 
@@ -292,9 +299,10 @@ This action allows you to retrieve several elements simultaneously, ensuring tha
 . Select Retrieve Element.
 . The Elements will be saved sequentially to your specified Workspace, sorted info folders according to Type.
 . The Elements are displayed as multiple separate tabs in the panel, including related information, as follows:
+
 ```
-    //DELPROC PROC
-    //DELMOD EXEC PGM=CONDELE,PARM=*COMPONENTS
+//DELPROC PROC
+//DELMOD EXEC PGM=CONDELE,PARM=*COMPONENTS
 ```
 
 You have successfully retrieved multiple elements and can now work with them in Visual Studio Code or your preferred IDE.
