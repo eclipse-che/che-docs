@@ -10,23 +10,23 @@ summary:
 
 :parent-context-of-installing-che-in-restricted-environment: {context}
 
-[id='installing-che-in-restricted-environment_{context}']
-= Installing Che in offline mode
+[id='installing-{prod-id-short}-in-restricted-environment_{context}']
+= Installing {prod-short} in offline mode
 
 :context: installing-che-in-restricted-environment
 
-The following sections describe the steps necessary to deploy Che in a Kubernetes or OpenShift cluster in a restricted environment (also called _offline mode_ or _air-gap scenario_).
+The following sections describe the steps necessary to deploy {prod-short} in a Kubernetes or OpenShift cluster in a restricted environment (also called _offline mode_ or _air-gap scenario_).
 
 
 == Introduction
 
-By default, Eclipse Che workspaces reference various external resources, including container images available in public registries or sample projects hosted on GitHub.
+By default, {prod} workspaces reference various external resources, including container images available in public registries or sample projects hosted on GitHub.
 
-To deploy Che in an environment where these external resources are not available (for example, on a cluster that is not exposed to the public Internet):
+To deploy {prod-short} in an environment where these external resources are not available (for example, on a cluster that is not exposed to the public Internet):
 
 * Build images containing external resources (workspace plug-ins, projects).
-* Pull all images needed for running Che to a registry that is accessible.
-* Configure Che to use these images.
+* Pull all images needed for running {prod-short} to a registry that is accessible.
+* Configure {prod-short} to use these images.
 
 
 [id="building-offline-versions-of-the-plug-in-and-devfile-registry_{context}"]
@@ -99,10 +99,10 @@ $ git checkout 7.3.0
 Use the `--help` parameter to display full options for the `build.sh` script.
 
 
-[id="pulling-images-used-by-che-to-a-private-registry_{context}"]
-== Pulling images used by Che to a private registry
+[id="pulling-images-used-by-{prod-id-short}-to-a-private-registry_{context}"]
+== Pulling images used by {prod-short} to a private registry
 
-Che workspaces consist of pods running on a cluster, and therefore, many images are required to support all languages and plug-ins that can be used for a workspace. In an offline deployment, these images must be made available to the Che server running in the cluster.
+{prod-short} workspaces consist of pods running on a cluster, and therefore, many images are required to support all languages and plug-ins that can be used for a workspace. In an offline deployment, these images must be made available to the {prod-short} server running in the cluster.
 
 
 === Essential images
@@ -113,20 +113,20 @@ The images _essential_ to starting a workspace are infrastructure images that ar
 [cols="2*"]
 |===
 | `docker.io/eclipse/che-server`
-| The main Che server image
+| The main {prod-short} server image
 
 | `docker.io/eclipse/che-postgres`
-| The database used by Che
+| The database used by {prod-short}
 
 | `docker.io/eclipse/che-keycloak`
 | Keycloak pod for user authentication
 
 | `quay.io/eclipse/che-jwtproxy`
-| JWT proxy image for enabling authentication between services. See link:{site-baseurl}che-7/che-workspaces-architecture/#che-workspace-jwt-proxy_che-workspace-components[Che workspace JWT proxy].
+| JWT proxy image for enabling authentication between services. See link:{site-baseurl}che-7/che-workspaces-architecture/#che-workspace-jwt-proxy_che-workspace-components[{prod-short} workspace JWT proxy].
 
 | `docker.io/eclipse/che-unified-plugin-broker` +
   `docker.io/eclipse/che-init-plugin-broker`
-| Images for adding plug-ins to workspaces. See link:{site-baseurl}che-7/che-workspaces-architecture/#che-plug-in-broker_che-workspace-components[Che plug-in broker].
+| Images for adding plug-ins to workspaces. See link:{site-baseurl}che-7/che-workspaces-architecture/#che-plug-in-broker_che-workspace-components[{prod-short} plug-in broker].
 
 | `quay.io/eclipse/che-plugin-registry` +
   `quay.io/eclipse/che-devfile-registry`
@@ -136,7 +136,7 @@ The images _essential_ to starting a workspace are infrastructure images that ar
 
 === Workspace-specific images
 
-The images described in this section are required for running a workspace. Any one workspace uses a subset of the images below. It is only necessary to include the images that are used in workspaces created. For example, when using Che only for developing in Java, many images can be omitted.
+The images described in this section are required for running a workspace. Any one workspace uses a subset of the images below. It is only necessary to include the images that are used in workspaces created. For example, when using {prod-short} only for developing in Java, many images can be omitted.
 
 To avoid issues when only a subset of the images described below is needed, remove unnecessary plug-ins and devfiles when building custom registries (see link:{site-baseurl}che-7/customizing-the-devfile-and-plug-in-registries/[Customizing devfile and plug-in registries] for more information).
 
@@ -158,7 +158,7 @@ In the example above, substitute `<my-offline-registry>` for the image name and 
 
 ==== Devfile base images
 
-Every Che workspace uses one or more _base_ images, which contain the development dependencies for the projects being built. Because the sample devfiles included in the devfile registry refer to images suited for this purpose, it is necessary to pull these images to be able to use the samples.
+Every {prod-short} workspace uses one or more _base_ images, which contain the development dependencies for the projects being built. Because the sample devfiles included in the devfile registry refer to images suited for this purpose, it is necessary to pull these images to be able to use the samples.
 
 An offline devfile registry (see xref:building-offline-devfile-registry_{context}[]) contains a file with the list of all images referenced in its devfiles:
 
@@ -171,13 +171,13 @@ $ docker run -it --rm \
 In the example above, substitute `<my-offline-registry>` for the image name and tag of the custom devfile registry.
 
 
-== Configuring Che to run in restricted environment
+== Configuring {prod-short} to run in restricted environment
 
-This section describes how to configure Che and related containers to refer to images in a restricted environment instead of the default images in an online registry.
+This section describes how to configure {prod-short} and related containers to refer to images in a restricted environment instead of the default images in an online registry.
 
 .Prerequisites
 
-* All required images available in an image registry that is visible to the cluster where Che is to be deployed.
+* All required images available in an image registry that is visible to the cluster where {prod-short} is to be deployed.
 
 .Procedure
 
@@ -187,7 +187,7 @@ This procedure uses the following placeholders:
 [cols="1,2"]
 |===
 | `<my-internal-registry>`
-| hostname of the container-image registry (which is accessible in the restricted environment, see xref:pulling-images-used-by-che-to-a-private-registry_{context}[])
+| hostname of the container-image registry (which is accessible in the restricted environment, see xref:pulling-images-used-by-{prod-id-short}-to-a-private-registry_{context}[])
 
 | `<my-organization>`
 | organization of the container-image registry
@@ -197,10 +197,10 @@ This procedure uses the following placeholders:
 | offline plug-in and devfile registries (see xref:building-offline-versions-of-the-plug-in-and-devfile-registry_{context}[])
 
 | `<ver>`
-| release of Che that is being deployed
+| release of {prod-short} that is being deployed
 |===
 
-The `CheCluster` Custom Resource, which is managed by the Che Operator, includes fields to facilitate deploying an instance of Che in a restricted environment:
+The `CheCluster` Custom Resource, which is managed by the {prod-short} Operator, includes fields to facilitate deploying an instance of {prod-short} in a restricted environment:
 
 [source,yaml,subs="+quotes"]
 ----

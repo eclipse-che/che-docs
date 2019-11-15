@@ -3,16 +3,16 @@
 [id="security-considerations_{context}"]
 = Security considerations
 
-This section explains the security impact of using different Che workspace exposure strategies.
+This section explains the security impact of using different {prod-short} workspace exposure strategies.
 
-All the security-related considerations below are only applicable to Che in multi-user mode. The single user mode does not impose any security restrictions.
+All the security-related considerations below are only applicable to {prod-short} in multi-user mode. The single user mode does not impose any security restrictions.
 
 [id="json-web-token-jwt-proxy_{context}"]
 == JSON web token (JWT) proxy
 
-All Che plug-ins, editors, and components can require authentication of the user accessing them. This authentication is performed using a JSON web token (JWT) proxy that functions as a reverse proxy of the respective component based on its configuration and performs the authentication on behalf of the component.
+All {prod-short} plug-ins, editors, and components can require authentication of the user accessing them. This authentication is performed using a JSON web token (JWT) proxy that functions as a reverse proxy of the respective component based on its configuration and performs the authentication on behalf of the component.
 
-The authentication uses a redirect to a special page on the Che server that propagates the workspace and user-specific authentication token (workspace access token) back to the originally requested page.
+The authentication uses a redirect to a special page on the {prod-short} server that propagates the workspace and user-specific authentication token (workspace access token) back to the originally requested page.
 
 The JWT proxy accepts the workspace access token from the following places in the incoming requests, in the following order:
 
@@ -22,15 +22,15 @@ The JWT proxy accepts the workspace access token from the following places in th
 
 == Secured plug-ins and editors
 
-Che users do not need to secure workspace plug-ins and workspace editors (such as Che-Theia). This is because the JWT proxy authentication is transparent to the user and is governed by the plug-in or editor definition in their `meta.yaml` descriptors.
+{prod-short} users do not need to secure workspace plug-ins and workspace editors (such as {prod-short}-Theia). This is because the JWT proxy authentication is transparent to the user and is governed by the plug-in or editor definition in their `meta.yaml` descriptors.
 
 == Secured container-image components
 
-Container-image components can define custom endpoints for which the devfile author can require Che-provided authentication, if needed. This authentication is configured using two optional attributes of the endpoint:
+Container-image components can define custom endpoints for which the devfile author can require {prod-short}-provided authentication, if needed. This authentication is configured using two optional attributes of the endpoint:
 
-* `secure` - A boolean attribute that instructs the Che server to put the JWT proxy in front of the endpoint. Such endpoints have to be provided with the workspace access token in one of the several ways explained in xref:#json-web-token-jwt-proxy_{context}[]. The default value of the attribute is `false`.
+* `secure` - A boolean attribute that instructs the {prod-short} server to put the JWT proxy in front of the endpoint. Such endpoints have to be provided with the workspace access token in one of the several ways explained in xref:#json-web-token-jwt-proxy_{context}[]. The default value of the attribute is `false`.
 
-* `cookiesAuthEnabled` - A boolean attribute that instructs the Che server to automatically redirect the unauthenticated requests for current user authentication as described in xref:#json-web-token-jwt-proxy_{context}[]. Setting this attribute to `true` has security consequences because it makes Cross-site request forgery (CSRF) attacks possible. The default value of the attribute is `false`.
+* `cookiesAuthEnabled` - A boolean attribute that instructs the {prod-short} server to automatically redirect the unauthenticated requests for current user authentication as described in xref:#json-web-token-jwt-proxy_{context}[]. Setting this attribute to `true` has security consequences because it makes Cross-site request forgery (CSRF) attacks possible. The default value of the attribute is `false`.
 
 == Cross-site request forgery attacks
 
