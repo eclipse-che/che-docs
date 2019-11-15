@@ -20,7 +20,7 @@ helm upgrade --install che-plugin-registry \
  --set chePluginRegistryImagePullPolicy="IfNotPresent" \
  ./kubernetes/che-plugin-registry/
 ----
-<1> The default Che namespace is `che`.
+<1> The default {prod-short} namespace is `che`.
 <2> On Minikube, use `$(minikube ip).nip.io`
  
 . The devfile registry also has a Helm chart in the `deploy/kubernetes/che-devfile-registry/` directory of the GitHub repository. To deploy it, run the command:
@@ -38,7 +38,7 @@ helm upgrade --install che-devfile-registry \
  --set cheDevfileRegistryImagePullPolicy="IfNotPresent" \
  ./deploy/kubernetes/che-devfile-registry/
 ----
-<1> The default Che namespace is `che`.
+<1> The default {prod-short} namespace is `che`.
 <2> On Minikube, use `$(minikube ip).nip.io`
 
 . The Helm chart creates a pod, a service, and an Ingress. To get them, use `app=che-plugin-registry` (or `app=che-plugin-registry` for the devfile registry).
@@ -61,7 +61,7 @@ $ INDEX_JSON=$(curl -sSL http://$\{URL}/v3/plugins/index.json)
 $ echo $\{INDEX_JSON} | grep -A 4 -B 5 "\"name\":\"my-plug-in\""
 ,\{
  "id": "my-org/my-plug-in/1.0.0",
- "displayName":"This is my first Che plug-in",
+ "displayName":"This is my first {prod-short} plug-in",
  "version":"1.0.0",
  "type":"VS Code extension",
  "name":"my-plug-in",
@@ -73,7 +73,7 @@ $ echo $\{INDEX_JSON} | grep -A 4 -B 5 "\"name\":\"my-plug-in\""
 --
 ,\{
  "id": "my-org/my-plug-in/latest",
- "displayName":"This is my first Che plug-in",
+ "displayName":"This is my first {prod-short} plug-in",
  "version":"latest",
  "type":"VS Code extension",
  "name":"my-plug-in",
@@ -83,7 +83,7 @@ $ echo $\{INDEX_JSON} | grep -A 4 -B 5 "\"name\":\"my-plug-in\""
 }
 ----
 
-. Verify that the Che server points to the URL of the registry. To do this, compare the value of the `pass:[CHE_WORKSPACE_PLUGIN__REGISTRY__URL]` parameter in the `che` ConfigMap (or `pass:[CHE_WORKSPACE_DEVFILE__REGISTRY__URL]` for the devfile registry):
+. Verify that the {prod-short} server points to the URL of the registry. To do this, compare the value of the `pass:[CHE_WORKSPACE_PLUGIN__REGISTRY__URL]` parameter in the `che` ConfigMap (or `pass:[CHE_WORKSPACE_DEVFILE__REGISTRY__URL]` for the devfile registry):
 +
 ----
 $ kubectl get \
@@ -101,7 +101,7 @@ $ kubectl get -o 'custom-columns=URL:.spec.rules[0].host' \
 che-plugin-registry-che.192.168.99.100.nip.io
 ----
 
-. If they do not match, update the ConfigMap and restart the Che server.
+. If they do not match, update the ConfigMap and restart the {prod-short} server.
 +
 ----
 $ kubectl edit cm/che
@@ -110,7 +110,7 @@ $ kubectl scale --replicas=0 deployment/che
 $ kubectl scale --replicas=1 deployment/che
 ----
 +
-When the new registries are deployed and the Che server is configured to use them, the new plug-ins are available in the *Plugin* view of a workspace.
+When the new registries are deployed and the {prod-short} server is configured to use them, the new plug-ins are available in the *Plugin* view of a workspace.
 +
 image::customization/deploying-plugin-registry-in-kubernetes.png[]
 +
