@@ -17,8 +17,8 @@ s/\(\(\[id=\|xref\|<<\).*\)\bche\b/\1{prod-id-short}/g
 s/\(\(\[id=\|xref\|<<\).*\)\bche\b/\1{prod-id-short}/g
 
 # Replace version numbers
-s/\({prod-id-short}-\|{prod-short} \)6/\1{prod-prev-ver}/g
-s/\({prod-id-short}-\|{prod-short} \)7/\1{prod-ver}/g
+s/\({prod-id-short}-\|{prod-short} \|{prod} \)6/\1{prod-prev-ver}/g
+s/\({prod-id-short}-\|{prod-short} \|{prod} \)7/\1{prod-ver}/g
 
 # Revert back baseurl in xref to hardcoded values
 s/{site-baseurl}{prod-id-short}-{prod-ver}/{site-baseurl}che-7/g
