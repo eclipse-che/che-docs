@@ -1,0 +1,56 @@
+[id="testing-{prod-id-short}-theia-with-custom-branding_{context}"]
+= Testing {prod-short}-Theia with custom branding
+
+This section describes how to test a customized {prod-short}-Theia by opening a new workspace with custom branding.
+
+
+.Prerequisites
+
+* {prod-short}-Theia container image built with custom branding definitions
+
+
+.Procedure
+
+To test a custom {prod-short}-Theia image, create a new `meta.yaml` file describing a custom {prod-short} editor, and use it in a devfile for the testing workspace.
+
+. Download the latest {prod-short}-Theia `meta.yaml` from the link:https://github.com/eclipse/che-plugin-registry/tree/master/v3/plugins/eclipse/che-theia[plug-in registry]
+. Replace the `image` value in the `containers` section to point to the custom {prod-short}-Theia container image.
+. Create a workspace using the sample https://github.com/che-samples/che-theia-branding-example/blob/master/devfile.yaml[che-theia-branding-example devfile] to apply the changes:
++
+image::https://che.openshift.io/factory/resources/factory-contribute.svg[link="https://che.openshift.io/f?url=https://raw.githubusercontent.com/che-samples/che-theia-branding-example/master/devfile.yaml"]
++
+[source,yaml,attrs="nowrap"]
+----
+metadata:
+  name: che-theia-all
+projects:
+  - name: che-cheia-branding-example
+    source:
+      location: 'https://github.com/che-samples/che-theia-branding-example.git'
+      type: git
+      branch: master
+components:
+  - type: cheEditor
+    reference: >-
+      https://raw.githubusercontent.com/che-samples/che-theia-branding-example/master/che-editor.meta.yaml
+apiVersion: 1.0.0
+----
+
+. Run the workspace to see the changes:
++
+* The dark theme of {prod-short}-Theia:
++
+image::branding/welcome-dark.png[link="{imagesdir}/branding/welcome-dark.png"]
++
+image::branding/about-dark.png[link="{imagesdir}/branding/about-dark.png"]
+
+* The light theme of {prod-short}-Theia:
++
+image::branding/welcome-light.png[link="{imagesdir}/branding/welcome-light.png"]
++
+image::branding/about-light.png[link="{imagesdir}/branding/about-light.png"]
+
+
+////
+.Additional resources
+////
