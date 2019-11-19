@@ -1,6 +1,4 @@
-[id="how-the-che-server-uses-PVCs-and-PVs-for-storage"]
-
-[id="storage-strategies-for-che-workspaces"]
+[id="storage-strategies-for-che-workspaces_{context}"]
 = Storage strategies for Che workspaces
 
 Workspace pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode].
@@ -19,11 +17,10 @@ See how to configure link:#workspace-namespaces-configuration_che-workspace-conf
 
 |===
 
-[id="unique-pvc-strategy"]
-= Unique PVC strategy
+[id="unique-pvc-strategy_{context}"]
+== Unique PVC strategy
 
-[id="how-the-unique-pvc-strategy-works"]
-== How the unique PVC strategy works
+.How the unique PVC strategy works
 
 Every Che Volume of workspace gets its own PVC, which means workspace PVCs are created when a workspace starts for the first time. Workspace PVCs are deleted when a corresponding workspace is deleted.
 
@@ -34,11 +31,10 @@ User-defined PVCs are created with few modifications:
 - subpaths of mount volumes that reference user-defined PVCs are prefixed with `{workspace id}/{PVC name}`.
 It is done to have the same data structure on PV on different PVC strategies(link:#how-the-subpaths-are-used[more]);
 
-[id="common-pvc-strategy"]
-= Common PVC Strategy
+[id="common-pvc-strategy_{context}"]
+== Common PVC Strategy
 
-[id="how-the-common-pvc-strategy-works"]
-== How the common PVC strategy works
+.How the common PVC strategy works
 
 All workspaces (within one {k8s-namespace}) use the same PVC to store data in their declared volumes (projects and workspace logs by default and whatever additional volumes that a user can define.)
 
@@ -50,25 +46,22 @@ PVC has then they will use the same shared folder in common PVC.
 
 When a workspace is deleted, a corresponding subdirectory (`${ws-id}`) is deleted in the PV directory.
 
-[id="restrictions-on-using-common-pvc-strategy"]
-== Restrictions on using the common PVC strategy
+.Restrictions on using the common PVC strategy
 
 When the `common` strategy is used and a workspace PVC access mode is ReadWriteOnce (RWO), only one {admin-context} node can simultaneously use the PVC.
 If there are several nodes, you can use the `common` strategy, but:
 - the workspace PVC access mode must be reconfigured to ReadWriteMany (RWM), so multiple nodes can use this PVC simultaneously.
 - the only one workspace in the same namespace may be running. See how to configure link:#workspace-namespaces-configuration_che-workspace-configuration[namespace strategy] and link:#TODO[running workspace count]
 
-[id="per-workspace-pvc-strategy"]
-= Per workspace PVC strategy
+[id="per-workspace-pvc-strategy_{context}"]
+== Per workspace PVC strategy
 
-[id="how-the-per-workspace-pvc-strategy-works"]
-== How the per-workspace PVC strategy works
+.How the per-workspace PVC strategy works
 
 The `per-workspace` strategy works similarly to the `common` PVC strategy. The only difference is that all workspace volumes (but not all workspaces) use the same PVC to store data (projects and workspace logs by default and any additional volumes that a user can define).
 
-
-[id="how-the-subpaths-are-used"]
-= How the subpaths are used in PVCs
+[id="how-the-subpaths-are-used_{context}"]
+== How the subpaths are used in PVCs
 
 ----
 /pv0001
@@ -86,12 +79,12 @@ The `per-workspace` strategy works similarly to the `common` PVC strategy. The o
 Volumes can be anything that a user defines as volumes for workspace machines.  The volume name is equal to the directory name in `${PV}/${ws-id}`.
 
 
-[id="configuring-a-needed-workspace-strategy"]
-= Configuring a per-workspace strategy
-The following section describes how to configure workspace PVCs strategies of a Che server using the Helm chart and the Operator.
-Note: it's not recommended to reconfigure PVC strategies on an existing Che cluster with existing workspaces. After that workspaces will lost their data.
+[id="configuring-a-needed-workspace-strategy-using-the-helm-chart_{context}"]
+== Configuring a per-workspace strategy using the Helm chart
 
-== Using a Helm chart
+The following section describes how to configure workspace PVCs strategies of a Che server using the Helm chart.
+
+Note: it's not recommended to reconfigure PVC strategies on an existing Che cluster with existing workspaces. After that workspaces will lost their data.
 
 A link:https://helm.sh/[Helm Chart] is a Kubernetes extension for defining, installing, and upgrading Kubernetes applications.
 
@@ -112,7 +105,12 @@ $ helm upgrade --set global.pvcStrategy=__<common>__
 Depending on the strategy used, replace the `_<common>_` option in the above example with `unique` or `per-workspace`.
 
 
-== Using an Operator
+[id="configuring-a-needed-workspace-strategy-using-the-operator_{context}"]
+== Configuring a per-workspace strategy using the Operator
+
+The following section describes how to configure workspace PVCs strategies of a Che server using the Operator.
+
+Note: it's not recommended to reconfigure PVC strategies on an existing Che cluster with existing workspaces. After that workspaces will lost their data.
 
 link:https://docs.openshift.com/container-platform/latest/applications/operators/olm-what-operators-are.html[Operators] are software extensions to Kubernetes that use link:https://docs.openshift.com/container-platform/latest/applications/crds/crd-managing-resources-from-crds.html[custom resources] to manage applications and their components.
 
