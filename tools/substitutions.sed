@@ -25,3 +25,4 @@ s/{site-baseurl}{prod-id-short}-{prod-ver}/{site-baseurl}che-7/g
 
 # Revert back Che-Theia
 s/{prod-short}-Theia/Che-Theia/g
+s/{prod-id-short}-theia/che-theia/g
