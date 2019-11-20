@@ -1,0 +1,100 @@
+// uninstalling-the-che-instance
+
+[id="uninstalling-the-che-instance-after-operatorhub-installation_{context}"]
+= Uninstalling the Che instance after OperatorHub installation
+
+Users have two options how to uninstall Che from an OpenShift cluster. The following sections describe both of these methods:
+
+* Using the OpenShift Administrator Perspective web UI
+* Using `oc` commands from the OpenShift console
+
+== Uninstalling the Che instance after OperatorHub installation using the OpenShift Container Platform web UI
+
+The OpenShift Container Platform web UI provides a quick way to uninstall Che. The following section describes how to uninstall Che from a cluster using the Openshift Administrator Perspective main menu.
+
+
+.Prerequsities
+
+* Che is installed on an OpenShift cluster using OperatorHub.
+
+.Procedure
+
+. Open the OpenShift web console.
+. Navigate to the *Operators → Installed Operators* section.
+. Click *Eclipse Che* in the list of installed operators.
+. Navigate to the *Eclipse Che Cluster* tab.
+. In the row that displays information about a specific Che cluster, delete the Che Cluster deployment using the icon:fa-ellipsis-v[] drop-down menu illustrated as two horizontal dots situated on the right side of the screen.
++
+image::uninstall/che-delete-che-cluster.png[link="{imagesdir}/uninstall/che-delete-che-cluster.png"]
+
+. Navigate again to the *Operators → Installed Operators* section in OpenShift Developer Perspective.
+. In the row that displays information about a specific Eclipse Che Operator, uninstall the Che Operator using the icon:fa-ellipsis-v[] drop-down menu illustrated as two horizontal dots situated on the right side of the screen.
++
+image::uninstall/che-uninstall-operator.png[link="{imagesdir}/uninstall/che-uninstall-operator.png"]
+
+== Uninstalling the Che instance after OperatorHub installation using `oc` commands
+
+To uninstall a Che instance, you can use `oc` commands instead of the Openshift Container Platform web UI. This section provides instructions to do so.
+
+.Prerequisites
+
+* Che was installed on an OpenShift cluster using OperatorHub.
+* OpenShift command-line tools are installed on the local workstation.
+
+.Procedure
+
+The following procedure provides command line outputs as an example. Note that input in user terminal may differ.
+
+To uninstall a Che instance from a cluster:
+
+. Sign in to the cluster.
++
+----
+# oc login -u <yourLogin> -p <yourPassword> <clusterURL>
+----
+
+. Switch to the project where the Che instance is deployed.
++
+----
+# oc project <myProject>
+----
+
+. Obtain the Che cluster name. The following shows a cluster named `eclipse-che`.
++
+----
+# oc get checluster
+NAME          AGE
+eclipse-che   27m
+----
+
+. Delete the Che cluster.
++
+----
+# oc delete checluster eclipse-che
+checluster.org.eclipse.che "eclipse-che" deleted
+----
+
+. Obtain the name of the Che cluster service version (CSV) module. The following detects a CSV module named `eclipse-che.v7.4.0`.
++
+----
+# oc get csv
+NAME                 DISPLAY       VERSION   REPLACES             PHASE
+eclipse-che.v7.4.0   Eclipse Che   7.4.0     eclipse-che.v7.3.1   Succeeded
+----
+
+. Delete the Che CSV.
++
+----
+# oc delete csv eclipse-che.v7.4.0
+clusterserviceversion.operators.coreos.com "eclipse-che.v7.4.0" deleted
+----
+
+
+////
+.Additional resources
+
+* A bulleted list of links to other material closely related to the contents of the procedure module.
+* Currently, modules cannot include xrefs, so you cannot include links to other content in your collection. If you need to link to another assembly, add the xref to the assembly that includes this module.
+* For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+////
