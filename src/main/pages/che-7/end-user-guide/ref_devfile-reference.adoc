@@ -18,7 +18,7 @@ Project source consists of two mandatory values: `type` and `location`.
 `type`:: The kind of project-source provider.
 `location`:: The URL of project source.
 
-Che supports the following project types:
+{prod-short} supports the following project types:
 
 `git`:: Projects with sources in Git. The location points to a clone link.
 
@@ -110,7 +110,7 @@ components:
     id: eclipse/che-theia/next
 ----
 
-When `cheEditor` is missing, a default editor is provided along with its default plug-ins. The default plug-ins are also provided for an explicitly defined editor with the same `id` as the default one (even if it is a different version). Che-Theia is configured as default editor along with the *Che Machine Exec* plug-in.
+When `cheEditor` is missing, a default editor is provided along with its default plug-ins. The default plug-ins are also provided for an explicitly defined editor with the same `id` as the default one (even if it is a different version). Che-Theia is configured as default editor along with the *{prod-short} Machine Exec* plug-in.
 
 To specify that a workspace requires no editor, use the xref:attribute-editorfree_{context}[`editorFree:true` attribute] in the devfile attributes.
 
@@ -126,8 +126,8 @@ Describes plug-ins in a workspace by defining their `id`. It is allowed to have 
      id: eclipse/che-machine-exec-plugin/0.0.1
 ----
 
-Both types above using id, which is slash-separated publisher, name and version of plugin from Che Plugin registry. +
-List of available Che plugins and more information about registry can be found in the link:https://github.com/eclipse/che-plugin-registry[Che plug-in registry] GitHub repository.
+Both types above use an ID, which is slash-separated publisher, name and version of plug-in from the {prod-short} Plug-in registry. +
+List of available {prod-short} plugins and more information about registry can be found in the link:https://github.com/eclipse/che-plugin-registry[{prod-short} plug-in registry] GitHub repository.
 
 === Specifying an alternative component registry
 
@@ -186,7 +186,9 @@ A component may need to be precisely tuned, and in such case, component preferen
 
 === Component type: kubernetes
 
-A complex component type that allows to apply configuration from a Kubernetes or OpenShift lists. The content of the component can be provided either via the `reference` attribute, which points to the file with the component content.
+A complex component type that allows to apply configuration from a list of Kubernetes or OpenShift components.
+
+The content can be provided either via the `reference` attribute, which points to the file with the component content.
 
 [source,yaml]
 ----
@@ -314,7 +316,7 @@ command: ['sleep', 'infinity']
 
 It specifies the type of the component, `dockerimage` and the `image` attribute names the image to be used for the component using the usual docker naming conventions, that is, the above `type` attribute is equal to `docker.io/library/golang:latest`.
 
-A `dockerimage` component has many features that enable augmenting the image with additional resources and information needed for meaningful integration of the *tool* provided by the image with Eclipse Che.
+A `dockerimage` component has many features that enable augmenting the image with additional resources and information needed for meaningful integration of the *tool* provided by the image with {prod}.
 
 ==== Mounting project sources
 
@@ -337,7 +339,7 @@ The sources is mounted on a location stored in the `CHE_PROJECTS_ROOT` environme
 
 ==== Container Entrypoint
 
-The `command` attribute of the `dockerimage` along with other arguments, is used to modify the `entrypoint` command of the container created from the image. In Eclipse Che the container is needed to run indefinitely so that you can connect to it and execute arbitrary commands in it at any time. Because the availability of the `sleep` command and the support for the `infinity` argument for it is different and depends on the base image used in the particular images, Che cannot insert this behavior automatically on its own. However, you can take advantage of this feature to, for example, start up necessary servers with modified configurations, etc.
+The `command` attribute of the `dockerimage` along with other arguments, is used to modify the `entrypoint` command of the container created from the image. In {prod} the container is needed to run indefinitely so that you can connect to it and execute arbitrary commands in it at any time. Because the availability of the `sleep` command and the support for the `infinity` argument for it is different and depends on the base image used in the particular images, {prod-short} cannot insert this behavior automatically on its own. However, you can take advantage of this feature to, for example, start up necessary servers with modified configurations, etc.
 
 ==== Persistent Storage
 
@@ -361,7 +363,7 @@ components:
 
 ==== Environment
 
-Eclipse Che allows you to configure Docker containers by modifying the environment variables available in the container of an image.
+{prod} allows you to configure Docker containers by modifying the environment variables available in the container of an image.
 
 [source,yaml]
 ----
@@ -394,13 +396,13 @@ components:
 * The predefined variables are available for use in custom definitions.
 ====
 
-The following environment variables are pre-set by the Che server:
+The following environment variables are pre-set by the {prod-short} server:
 
 * `CHE_PROJECTS_ROOT`: The location of the projects directory (note that if the component does not mount the sources, the projects will not be accessible).
 
 * `CHE_WORKSPACE_LOGS_ROOT__DIR`: The location of the logs common to all the components. If the component chooses to put logs into this directory, the log files are accessible from all other components.
 
-* `CHE_API_INTERNAL`: The URL to the Che server API endpoint used for communication with the Che server.
+* `CHE_API_INTERNAL`: The URL to the {prod-short} server API endpoint used for communication with the {prod-short} server.
 
 * `CHE_WORKSPACE_ID`: The ID of the current workspace.
 
@@ -408,17 +410,17 @@ The following environment variables are pre-set by the Che server:
 
 * `CHE_WORKSPACE_NAMESPACE`: The namespace of the current workspace.
 
-* `CHE_MACHINE_TOKEN`: The token used to authenticate the request against the Che server.
+* `CHE_MACHINE_TOKEN`: The token used to authenticate the request against the {prod-short} server.
 
-* `CHE_MACHINE_AUTH_SIGNATURE__PUBLIC__KEY`: The public key used to secure the communication with the Che server.
+* `CHE_MACHINE_AUTH_SIGNATURE__PUBLIC__KEY`: The public key used to secure the communication with the {prod-short} server.
 
-* `CHE_MACHINE_AUTH_SIGNATURE__ALGORITHM`: The encryption algorithm used in the secured communication with the Che server.
+* `CHE_MACHINE_AUTH_SIGNATURE__ALGORITHM`: The encryption algorithm used in the secured communication with the {prod-short} server.
 
-A devfiles may only need the `CHE_PROJECTS_ROOT` environment variable to locate the cloned projects in the component's container. More advanced devfiles might use the `CHE_WORKSPACE_LOGS_ROOT__DIR` environment variable to read the logs (for example as part of a devfile command). The environment variables used to securely access the Che server are mostly out of scope for devfiles and are present only for advanced use cases that are usually handled by the Che plug-ins.
+A devfiles may only need the `CHE_PROJECTS_ROOT` environment variable to locate the cloned projects in the component's container. More advanced devfiles might use the `CHE_WORKSPACE_LOGS_ROOT__DIR` environment variable to read the logs (for example as part of a devfile command). The environment variables used to securely access the {prod-short} server are mostly out of scope for devfiles and are present only for advanced use cases that are usually handled by the {prod-short} plug-ins.
 
 ==== Endpoints
 
-You can specify the endpoints that the docker image exposes. These endpoints can be made accessible to the users if the Che cluster is running using a Kubernetes ingress or an OpenShift route and to the other components within the workspace. You can create an endpoint for your application or database, if your application or database server is listening on a port and you want to be able to directly interact with it yourself or you want other components to interact with it.
+You can specify the endpoints that the docker image exposes. These endpoints can be made accessible to the users if the {prod-short} cluster is running using a Kubernetes ingress or an OpenShift route and to the other components within the workspace. You can create an endpoint for your application or database, if your application or database server is listening on a port and you want to be able to directly interact with it yourself or you want other components to interact with it.
 
 Endpoints have a number of properties as shown in the following example:
 
@@ -473,7 +475,7 @@ Here, there are two dockerimages, each defining a single endpoint. Endpoint is a
 
 * `discoverable`: If an endpoint is discoverable, it means that it can be accessed using its name as the hostname within the workspace containers (in the Kubernetes parlance, a service is created for it with the provided name).
 
-* `public`: The endpoint will be accessible outside of the workspace, too (such endpoint can be accessed from the Che user interface). Such endpoints are publicized always on port `80` or `443` (depending on whether `tls` is enabled in Che).
+* `public`: The endpoint will be accessible outside of the workspace, too (such endpoint can be accessed from the {prod-short} user interface). Such endpoints are publicized always on port `80` or `443` (depending on whether `tls` is enabled in {prod-short}).
 
 * `protocol`: For public endpoints the protocol is a hint to the UI on how to construct the URL for the endpoint access. Typical values are `http`, `https`, `ws`, `wss`.
 
@@ -487,7 +489,7 @@ Here, there are two dockerimages, each defining a single endpoint. Endpoint is a
 +
 WARNING: This setting potentially allows a link:https://en.wikipedia.org/wiki/Cross-site_request_forgery[CSRF] attack when used in conjunction with a server using POST requests.
 
-When starting a new server within a component, Che autodetects this, and the UI offers to automatically expose this port as a `public` port. This is useful for debugging a web application, for example. It is not possible to do this for servers that autostart with the container (for example, a database server). For such components, specify the endpoints explicitly.
+When starting a new server within a component, {prod-short} autodetects this, and the UI offers to automatically expose this port as a `public` port. This is useful for debugging a web application, for example. It is not possible to do this for servers that autostart with the container (for example, a database server). For such components, specify the endpoints explicitly.
 
 ==== Kubernetes and OpenShift resources
 
@@ -495,13 +497,13 @@ Complex deployments can be described using Kubernetes or OpenShift resource list
 
 [IMPORTANT]
 ====
-* Because a Che workspace is internally represented as a single deployment, all resources from the Kubernetes or OpenShift list are merged into that single deployment.
+* Because a {prod-short} workspace is internally represented as a single deployment, all resources from the Kubernetes or OpenShift list are merged into that single deployment.
 
 * Be careful when designing such lists because this can result in name conflicts and other problems.
 
 * Only the following subset of the Kubernetes objects are supported: `deployments`, `pods`, `services`, `persistent volume claims`, `secrets`, and `config maps`. Kubernetes Ingresses are ignored, but OpenShift routes are supported. A workspace created from a devfile using any other object types fails to start.
 
-* When running Che on a Kubernetes cluster, only Kubernetes lists are supported. When running Che on an OpenShift cluster, both Kubernetes and OpenShift lists are supported.
+* When running {prod-short} on a Kubernetes cluster, only Kubernetes lists are supported. When running {prod-short} on an OpenShift cluster, both Kubernetes and OpenShift lists are supported.
 ====
 
 [source,yaml]
@@ -520,7 +522,7 @@ components:
      reference: ../relative/path/postgres.yaml
 ----
 
-The preceding component references a file that is relative to the location of the devfile itself. Meaning, this devfile is only loadable by a Che factory to which you supply the location of the devfile and therefore it is able to figure out the location of the referenced Kubernetes resource list.
+The preceding component references a file that is relative to the location of the devfile itself. Meaning, this devfile is only loadable by a {prod-short} factory to which you supply the location of the devfile and therefore it is able to figure out the location of the referenced Kubernetes resource list.
 
 The following is an example of the `postgres.yaml` file.
 
@@ -628,11 +630,11 @@ You can use commands to automate the workspace. You can define commands for buil
 
 The following are two kinds of commands:
 
-* Che specific commands: You have full control over what component executes the command.
+* {prod-short} specific commands: You have full control over what component executes the command.
 
-* Editor specific commands: You can use the editor-specific command definitions (example: `tasks.json` and `launch.json` in Theia, which is equivalent to how these files work in VS Code).
+* Editor specific commands: You can use the editor-specific command definitions (example: `tasks.json` and `launch.json` in Che-Theia, which is equivalent to how these files work in VS Code).
 
-=== Che-specific commands
+=== {prod-short}-specific commands
 
 Each che-specific command has an *action* attribute that is a command to execute and a *component* attribute that specifies the container in which the command should be executed. The commands are run using the default shell in the container.
 
@@ -670,14 +672,14 @@ commands:
 +
 [NOTE]
 ====
-* If a component to be used in a command must have an alias. This alias is used to reference the component in the command definition. Example: `alias: go-cli` in the component definition and `component: go-cli` in the command definition. This ensures that Eclipse Che can find the correct container to run the command in.
+* If a component to be used in a command must have an alias. This alias is used to reference the component in the command definition. Example: `alias: go-cli` in the component definition and `component: go-cli` in the command definition. This ensures that {prod} can find the correct container to run the command in.
 
 * A command can have only one action.
 ====
 
 === Editor-specific commands
 
-If the editor in the workspace supports it, the devfile can specify additional configuration in the editor-specific format. This is dependent on the integration code present in the workspace editor itself and so is not a generic mechanism. However, the default Theia editor within Eclipse Che is equipped to understand the `tasks.json` and `launch.json` files provided in the devfile.
+If the editor in the workspace supports it, the devfile can specify additional configuration in the editor-specific format. This is dependent on the integration code present in the workspace editor itself and so is not a generic mechanism. However, the default Che-Theia editor within {prod} is equipped to understand the `tasks.json` and `launch.json` files provided in the devfile.
 
 [source,yaml]
 ----

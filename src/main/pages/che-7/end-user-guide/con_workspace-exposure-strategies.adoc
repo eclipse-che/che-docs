@@ -5,7 +5,7 @@
 
 Specific components of workspaces need to be made accessible outside of the Kubernetes or OpenShift cluster. This is typically the user interface of the workspace’s IDE, but it can also be the web UI of the application being developed. This enables developers to interact with the application during the development process.
 
-Che supports three ways to make workspace components available to the users, also referred to as _strategies_:
+{prod-short} supports three ways to make workspace components available to the users, also referred to as _strategies_:
 
 * multi-host strategy
 * single-host strategy
@@ -15,17 +15,17 @@ The strategies define whether new subdomains are created for components of the w
 
 == Multi-host strategy
 
-With this strategy, each workspace component is assigned a new subdomain of the main domain configured for the Che server. On OpenShift, this is the only possible strategy, and manual configuration of the workspace exposure strategy is therefore always ignored.
+With this strategy, each workspace component is assigned a new subdomain of the main domain configured for the {prod-short} server. On OpenShift, this is the only possible strategy, and manual configuration of the workspace exposure strategy is therefore always ignored.
 
 This strategy is the easiest to understand from the perspective of component deployment because any paths present in the URL to the component are received as they are by the component.
 
-On a Che server secured using the Transport Layer Security (TLS) protocol, creating new subdomains for each component of each workspace requires a wildcard certificate to be available for all such subdomains for the Che deployment to be practical.
+On a {prod-short} server secured using the Transport Layer Security (TLS) protocol, creating new subdomains for each component of each workspace requires a wildcard certificate to be available for all such subdomains for the {prod-short} deployment to be practical.
 
 == Single-host strategy
 
-This strategy is available on Kubernetes, but not on OpenShift. When it is used, all workspaces are deployed to subpaths of the main Che server domain.
+This strategy is available on Kubernetes, but not on OpenShift. When it is used, all workspaces are deployed to subpaths of the main {prod-short} server domain.
 
-This is convenient for TLS-secured Che servers because it is sufficient to have a single certificate for the Che server, which will cover all the workspace component deployments as well.
+This is convenient for TLS-secured {prod-short} servers because it is sufficient to have a single certificate for the {prod-short} server, which will cover all the workspace component deployments as well.
 
 This strategy limits the exposed components and user applications. Any absolute URL generated on the server side that points back to the server does not work. This is because the server is hidden behind a path-rewriting Ingress that hides the workspace and the component-specific URL prefix from the server.
 
