@@ -1,0 +1,58 @@
+[id="deploying-{prod-id-short}-with-https-mode_{context}"]
+= Deploying {prod-short} with supporting Git repositories with self-signed SSL certificates
+
+This paragraph is the procedure module introduction: a short description of the procedure.
+
+[discrete]
+== Motivation
+
+Eclipse Che does't support Git operation for repositries with self-signed certificates from the box.
+But you can add this feature after easy changes in configuration of your instalation.
+
+[discrete]
+=== Kubernetes
+
+After successfully deploy Eclipse Che on k8s need to execute folowing command:
+
+----
+kubectl create configmap che-git-self-signed-cert --from-file=ca.crt --from-literal=githost={host}:{port} -n=che
+----
+where:
+
+ca.crt:: 
+your self-signed certificate 
+
+host:port::
+host and port for HTTPS 
+connection on your git server.  (optional)
+
+[NOTE]
+====
+if *githost* not set given certificate will be used for all HTTPS repositories
+====
+Afetr creating ConfigMap need to set global property which turn on self-sign support 
+
+----
+helm upgrade che --set global.useGitSelfSignedCerts=true
+----
+
+[discrete]
+=== OpenShift
+[NOTE]
+====
+TBD soon
+====
+
+
+Now you can create and start new workspace.
+On each container of your workspace will be mount special volume that contains file with your self-signed certificate and to the gitconfig section with information about git server host and path to the certificate. E.g.
+
+----
+[http "https://10.33.177.118:3000"]
+        sslCAInfo = /etc/che/git/cert/ca.crt
+----
+
+[NOTE]
+====
+Tested on Git version 2+ probably will not work on old git version less than 1.9.
+====
