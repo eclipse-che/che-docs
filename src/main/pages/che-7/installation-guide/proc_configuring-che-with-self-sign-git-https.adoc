@@ -12,8 +12,15 @@ But you can add this feature after easy changes in configuration of your instala
 [discrete]
 === Kubernetes
 
-After successfully deploy Eclipse Che on k8s need to execute folowing command:
+Using a Helm chart
+A link:https://helm.sh/[Helm Chart] is a Kubernetes extension for defining, installing, and upgrading Kubernetes applications.
 
+When deploying Che using the Helm chart, configure the workspace exposure strategy using the global.useGitSelfSignedCerts property. To do so, add the following option to the helm upgrade command:
+----
+helm upgrade che --set global.useGitSelfSignedCerts=true
+----
+
+After that need to create new ConfigMap with corresponding configuration about your Git server. 
 ----
 kubectl create configmap che-git-self-signed-cert --from-file=ca.crt --from-literal=githost={host}:{port} -n=che
 ----
@@ -24,18 +31,12 @@ your self-signed certificate
 
 host:port::
 host and port for HTTPS 
-connection on your git server.  (optional)
+connection on your git server (optional)
 
 [NOTE]
 ====
 if *githost* not set given certificate will be used for all HTTPS repositories
 ====
-Afetr creating ConfigMap need to set global property which turn on self-sign support 
-
-----
-helm upgrade che --set global.useGitSelfSignedCerts=true
-----
-
 [discrete]
 === OpenShift
 [NOTE]
