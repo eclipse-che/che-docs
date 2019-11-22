@@ -223,6 +223,8 @@ Alternatively, to post a devfile with such components to REST API, the contents 
               ... etc
 ----
 
+=== Overriding container entrypoints
+
 As with the xref:component-type-dockerimage_{context}[`dockerimage` component], it is possible to override the entrypoint of the containers contained in the Kubernetes or OpenShift list using the `command` and `args` properties (as link:https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#notes[understood] by Kubernetes).
 
 There can be more containers in the list (contained in pods or pod templates of deployments). To select which containers to apply the entrypoint changes to.
@@ -254,7 +256,24 @@ Other types of constraints (and their combinations) are possible:
 
 A combination of these constraints can be used to precisely locate the containers inside the referenced Kubernetes list.
 
-=== Specifying mount sources option
+=== Overriding container environment variables
+
+To provision or override entrypoints in a Kubernetes or OpensShift component, configure it in the following way:
+
+[source,yaml]
+----
+  components:
+    - alias: appDeployment
+      type: kubernetes
+      reference: app-deployment.yaml
+      env:
+        - name: ENV_VAR
+          value: value
+----
+
+This is useful for temporary content or without access to editing the referenced content. The specified environment variables are provisioned into each init container and containers inside all Pods and Deployments.
+
+=== Specifying mount-source option
 
 To specify a project sources directory mount into container(s), use the `mountSources` parameter:
 
