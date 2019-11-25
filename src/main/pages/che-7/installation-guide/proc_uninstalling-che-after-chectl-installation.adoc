@@ -1,0 +1,58 @@
+// uninstalling-che
+
+[id="uninstalling-{prod-id-short}-after-{prod-cli}-installation_{context}"]
+= Uninstalling {prod-short} after {prod-cli} installation
+
+This section describes how to uninstall an instance of {prod} that was installed using the `{prod-cli}` tool.
+
+[IMPORTANT]
+====
+* For {prod-short} installed using the `{prod-cli} server:start` command and the `-n` argument (custom namespace specified), use the `-n` argument also to uninstall the {prod-short} instance.
+
+ifeval::["{project-context}" == "che"]
+* For installations that did not use the `-n` argument, the created namespace is named `{prod-id-short}` by default.
+endif::[]
+
+ifeval::["{project-context}" == "crw"]
+* For installations that did not use the `-n` argument, the created namespace is named `workspaces` by default.
+endif::[]
+====
+
+.Prerequisites
+
+* {prod-short} was installed on an OpenShift cluster using `{prod-cli}`.
+* OpenShift command-line tools (`oc`) and `{prod-cli}` are installed on the local workstation.
+* The user is logged in a {prod-short} cluster using `oc`.
+
+.Procedure
+
+. Stop the {prod} Server:
++
+[subs="+quotes,attributes"]
+----
+$ {prod-cli} server:stop
+----
+
+. Obtain the name of the {prod-short} namespace:
++
+----
+$ oc get checluster --all-namespaces -o=jsonpath="{.items[*].metadata.namespace}"
+----
+
+. Remove {prod-short} from the cluster:
++
+[subs="+quotes,attributes"]
+----
+$ {prod-cli} server:delete -n _<namespace>_
+----
++
+This removes all {prod-short} installations from the cluster.
+
+////
+.Additional resources
+
+* A bulleted list of links to other material closely related to the contents of the procedure module.
+* Currently, modules cannot include xrefs, so you cannot include links to other content in your collection. If you need to link to another assembly, add the xref to the assembly that includes this module.
+* For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+////
