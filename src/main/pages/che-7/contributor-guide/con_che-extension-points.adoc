@@ -11,15 +11,15 @@ summary:
 [id="{prod-id-short}-extension-points_{context}"]
 = {prod-short} extension points
 
-In addition to using API methods and events, each plug-in can bring new components into {prod-short}-Theia. These components include visual, such as panels, menus, and others. Other types of components are language servers, debuggers, and others.
+In addition to using API methods and events, each plug-in can bring new components into Che-Theia. These components include visual, such as panels, menus, and others. Other types of components are language servers, debuggers, and others.
 
-The mechanism for adding additional components into {prod-short}-Theia is called extension points. An extension point is a section in a {prod-short}-Theia plug-in configuration into which the meta-information about a new component is added. This chapter contains the full list of available extension points in {prod-short}-Theia.
+The mechanism for adding additional components into Che-Theia is called extension points. An extension point is a section in a Che-Theia plug-in configuration into which the meta-information about a new component is added. This chapter contains the full list of available extension points in Che-Theia.
 
 
 [id="syntax-highlighting-grammars_{context}"]
 == Syntax-highlighting grammars
 
-This section provides syntax highlight rules for specified file types. To add syntax highlighting into {prod-short}-Theia using a plug-in, add a record that describes the new grammar into the `contributes.grammars` array of the `package.json` file of the plug-in.
+This section provides syntax highlight rules for specified file types. To add syntax highlighting into Che-Theia using a plug-in, add a record that describes the new grammar into the `contributes.grammars` array of the `package.json` file of the plug-in.
 
 .Example of a grammar record
 [source,json]
@@ -64,13 +64,13 @@ A plug-in can introduce new *preferences*. These are defined in the `"configurat
 }
 ----
 
-There are three scopes of preferences defined in {prod-short}-Theia:
+There are three scopes of preferences defined in Che-Theia:
 
 * The *default* scope consists of values defined in the `"configuration"` sub-section in the `package.json` file. These are default values of the preferences contributed by the plug-in.
 
 * The *global* or *application-wide* scope values can be set in *User Preferences*. They override the default ones.
 
-* The *workspace* scope values, which are applied only when a {prod-short}-Theia workspace is opened, override default and global values. They can be set in *Workspace Preferences*.
+* The *workspace* scope values, which are applied only when a Che-Theia workspace is opened, override default and global values. They can be set in *Workspace Preferences*.
 
 A user can obtain preferences using `theia.workspace.getConfiguration(section)`. If a `section` is defined, only that subset of preferences is returned.
 
@@ -111,9 +111,9 @@ pluginPrefs.inspect('logLevel');
 [id="view-containers_{context}"]
 == View containers
 
-A *view container* is a container that holds xref:views_che-extensibility-reference[views]. In {prod-short}-Theia, views are usually in the form of panels. All view containers are divided in three sections: *left*, *bottom*, and *right*. The position of a view container depends on the section to which it belongs. This defines the default position of a view container, which can be changed at runtime by dragging and dropping.
+A *view container* is a container that holds xref:views_che-extensibility-reference[views]. In Che-Theia, views are usually in the form of panels. All view containers are divided in three sections: *left*, *bottom*, and *right*. The position of a view container depends on the section to which it belongs. This defines the default position of a view container, which can be changed at runtime by dragging and dropping.
 
-To add a view container into {prod-short}-Theia, add the appropriate record into the `viewsContainers` object located under the `contributes` object in the plug-in `package.json` file:
+To add a view container into Che-Theia, add the appropriate record into the `viewsContainers` object located under the `contributes` object in the plug-in `package.json` file:
 
 .Example of a view-container definition
 [source,json]
@@ -150,7 +150,7 @@ Note that a view container is only useful with views in it. See a full example a
 
 A *view* is a visual component that should be placed into a xref:view-containers_che-extensibility-reference[view container].
 
-To add a view into {prod-short}-Theia, add an appropriate record into the `contributes.views` object of a plug-in `package.json` file. Each view is defined by an object with two name:value pairs. Each view description should be included in an array within the `views` object, and the array name should be the same as the `view-container-id` value:
+To add a view into Che-Theia, add an appropriate record into the `contributes.views` object of a plug-in `package.json` file. Each view is defined by an object with two name:value pairs. Each view description should be included in an array within the `views` object, and the array name should be the same as the `view-container-id` value:
 
 .Example of a view definition
 [source,json]
@@ -187,7 +187,7 @@ For more details, see a full example at https://github.com/eclipse/che-theia-sam
 [id="menus_{context}"]
 == Menus
 
-Plug-ins can add new *menu items* into {prod-short}-Theia through the `contributes.menus` object in a plug-in `package.json` file. The `menus` object consists of menu names and menu items:
+Plug-ins can add new *menu items* into Che-Theia through the `contributes.menus` object in a plug-in `package.json` file. The `menus` object consists of menu names and menu items:
 
 .Example of a menu definition
 [source,json]
@@ -211,7 +211,7 @@ Plug-ins can add new *menu items* into {prod-short}-Theia through the `contribut
     ]
 }
 ----
-<1> The identifier of the {prod-short}-Theia command that is executed when the menu item is used. The handler receives the selected resource as the first argument.
+<1> The identifier of the Che-Theia command that is executed when the menu item is used. The handler receives the selected resource as the first argument.
 <2> (optional) The name of the group in the menu to which the command is added. When omitted, the menu item is added to the common group in the specified menu.
 <3> (optional) The condition that defines when this menu item is visible. When omitted, the menu item is always visible. The conditions are the same as in the link:https://code.visualstudio.com/docs/getstarted/keybindings#_when-clause-contexts[VS Code when clause].
 
@@ -268,7 +268,7 @@ See the link:https://microsoft.github.io/debug-adapter-protocol/implementors/ada
 
 NOTE: This is an experimental approach, which may change in the future.
 
-To add a language server into {prod-short}-Theia using a plug-in:
+To add a language server into Che-Theia using a plug-in:
 
 . Describe the server in the `contributes.languages` array in the plug-in `package.json` file:
 +
@@ -321,7 +321,7 @@ See a full example at https://github.com/eclipse/che-theia-samples/tree/master/s
 [id="web-view-api_{context}"]
 == Web view API
 
-A *web view API* is not a contribution point by definition, but it behaves like one and allows to bring many new features to {prod-short}-Theia. Web view API plug-ins can add custom UI, graphical data, or anything that can be displayed in a web page. A web view API provides an HTML `iframe` to which a plug-in has access.
+A *web view API* is not a contribution point by definition, but it behaves like one and allows to bring many new features to Che-Theia. Web view API plug-ins can add custom UI, graphical data, or anything that can be displayed in a web page. A web view API provides an HTML `iframe` to which a plug-in has access.
 
 To create an instance of web view:
 

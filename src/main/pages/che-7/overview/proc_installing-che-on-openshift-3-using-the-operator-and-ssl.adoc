@@ -1,0 +1,40 @@
+// installing-che-on-openshift-3-using-the-operator
+
+[id="installing-{prod-id-short}-on-openshift-3-using-the-operator-and-ssl_{context}"]
+= Installing {prod-short} on OpenShift 3 using the Operator and SSL
+
+This section describes how to install {prod-short} on OpenShift 3 with the CLI management tool, using the Operator method and the SSL option.
+
+.Prerequisites
+
+* A running instance of OpenShift 3.11.
+* Administrator rights on this OpenShift 3 instance.
+* The `oc` OpenShift 3.11 CLI management tool is installed and configured. See link:https://docs.openshift.com/container-platform/3.11/cli_reference/get_started_cli.html#installing-the-cli[Installing the OpenShift 3.11 CLI].
+* The `{prod-cli}` CLI management tool is installed. See link:{site-baseurl}che-7/installing-the-chectl-management-tool/[Installing the `{prod-cli}` CLI management tool].
+* The URL for applications on this OpenShift instance is known as `<OPENSHIFT_APPS_URL>`. See xref:preparing-openshift-3-for-installing-che_{context}[].
+
+.Procedure
+
+. Create a new project called *{prod-id-short}*:
++
+[subs="+quotes,+attributes"]
+----
+$ oc new-project {prod-id-short}
+----
+
+. Run the following command to create the {prod-short} instance:
++
+[subs="+quotes,+attributes",options="nowrap"]
+----
+$ {prod-cli} server:start --platform=openshift --installer=operator --domain=<OPENSHIFT_APPS_URL> --tls
+----
+
+.Verification steps
+
+. The output of the previous command ends with:
++ 
+----
+Command server:start has completed successfully.
+----
+
+. Navigate to the {prod-short} cluster instance. The domain is now prefixed with HTTPS and using _Let’s Encrypt_ ACME certificates: `++https://++che-che.__<OPENSHIFT_APPS_URL>__`.

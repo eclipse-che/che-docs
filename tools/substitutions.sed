@@ -22,3 +22,7 @@ s/\({prod-id-short}-\|{prod-short} \|{prod} \)7/\1{prod-ver}/g
 
 # Revert back baseurl in xref to hardcoded values
 s/{site-baseurl}{prod-id-short}-{prod-ver}/{site-baseurl}che-7/g
+
+# Revert back Che-Theia
+s/{prod-short}-Theia/Che-Theia/g
+s/{prod-id-short}-theia/che-theia/g

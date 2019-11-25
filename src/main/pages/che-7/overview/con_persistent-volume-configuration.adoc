@@ -1,8 +1,8 @@
-[id="storage-strategies-for-che-workspaces_{context}"]
-= Storage strategies for Che workspaces
+[id="storage-strategies-for-{prod-id-short}-workspaces_{context}"]
+= Storage strategies for {prod-short} workspaces
 
 Workspace pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode].
-The way how Che server uses PVCs for workspaces is configurable and it's called PVC strategy:
+The way how {prod-short} server uses PVCs for workspaces is configurable and it's called PVC strategy:
 
 [width="100%",cols="25%,25%,25%,25%",options="header",]
 |===
@@ -22,7 +22,7 @@ See how to configure link:#workspace-namespaces-configuration_che-workspace-conf
 
 .How the unique PVC strategy works
 
-Every Che Volume of workspace gets its own PVC, which means workspace PVCs are created when a workspace starts for the first time. Workspace PVCs are deleted when a corresponding workspace is deleted.
+Every {prod-short} Volume of workspace gets its own PVC, which means workspace PVCs are created when a workspace starts for the first time. Workspace PVCs are deleted when a corresponding workspace is deleted.
 
 User-defined PVCs are created with few modifications:
 
@@ -41,7 +41,7 @@ All workspaces (within one {k8s-namespace}) use the same PVC to store data in th
 User-defined PVCs are ignored and volumes that reference PVCs are replaced with volume that references common PVC.
 The corresponding containers volume mounts are relinked to common volume and subpaths are prefixed with `'{workspaceId}/{originalPVCName}'` (link:#how-the-subpaths-are-used[more]).
 
-User-defined PVC name is used as Che Volume name. It means that if Machine is configured to use Che Volume with the same name as user-defined
+User-defined PVC name is used as {prod-short} Volume name. It means that if Machine is configured to use {prod-short} Volume with the same name as user-defined
 PVC has then they will use the same shared folder in common PVC.
 
 When a workspace is deleted, a corresponding subdirectory (`${ws-id}`) is deleted in the PV directory.
@@ -82,13 +82,13 @@ Volumes can be anything that a user defines as volumes for workspace machines.  
 [id="configuring-a-needed-workspace-strategy-using-the-helm-chart_{context}"]
 == Configuring a per-workspace strategy using the Helm chart
 
-The following section describes how to configure workspace PVCs strategies of a Che server using the Helm chart.
+The following section describes how to configure workspace PVCs strategies of a {prod-short} server using the Helm chart.
 
-Note: it's not recommended to reconfigure PVC strategies on an existing Che cluster with existing workspaces. After that workspaces will lost their data.
+Note: it's not recommended to reconfigure PVC strategies on an existing {prod-short} cluster with existing workspaces. After that workspaces will lost their data.
 
 A link:https://helm.sh/[Helm Chart] is a Kubernetes extension for defining, installing, and upgrading Kubernetes applications.
 
-When deploying Che using the Helm chart, configure the workspace PVC strategy by setting values for `global.pvcStrategy`. To do so, add the following option to the `helm install` or `helm upgrade` command:
+When deploying {prod-short} using the Helm chart, configure the workspace PVC strategy by setting values for `global.pvcStrategy`. To do so, add the following option to the `helm install` or `helm upgrade` command:
 
 [subs="+quotes"]
 ----
@@ -108,13 +108,13 @@ Depending on the strategy used, replace the `_<common>_` option in the above exa
 [id="configuring-a-needed-workspace-strategy-using-the-operator_{context}"]
 == Configuring a per-workspace strategy using the Operator
 
-The following section describes how to configure workspace PVCs strategies of a Che server using the Operator.
+The following section describes how to configure workspace PVCs strategies of a {prod-short} server using the Operator.
 
-Note: it's not recommended to reconfigure PVC strategies on an existing Che cluster with existing workspaces. After that workspaces will lost their data.
+Note: it's not recommended to reconfigure PVC strategies on an existing {prod-short} cluster with existing workspaces. After that workspaces will lost their data.
 
 link:https://docs.openshift.com/container-platform/latest/applications/operators/olm-what-operators-are.html[Operators] are software extensions to Kubernetes that use link:https://docs.openshift.com/container-platform/latest/applications/crds/crd-managing-resources-from-crds.html[custom resources] to manage applications and their components.
 
-When deploying Che using the Operator, configure the intended strategy by modifying the `spec.storage.pvcStrategy` property of the CheCluster custom resource object YAML file.
+When deploying {prod-short} using the Operator, configure the intended strategy by modifying the `spec.storage.pvcStrategy` property of the CheCluster custom resource object YAML file.
 To activate changes done to CheCluster YAML file, do one of the following:
 
 * Create a new cluster by executing the `kubectl apply` command. For example:

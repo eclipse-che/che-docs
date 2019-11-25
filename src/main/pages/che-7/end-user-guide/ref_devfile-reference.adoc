@@ -110,7 +110,7 @@ components:
     id: eclipse/che-theia/next
 ----
 
-When `cheEditor` is missing, a default editor is provided along with its default plug-ins. The default plug-ins are also provided for an explicitly defined editor with the same `id` as the default one (even if it is a different version). {prod-short}-Theia is configured as default editor along with the *{prod-short} Machine Exec* plug-in.
+When `cheEditor` is missing, a default editor is provided along with its default plug-ins. The default plug-ins are also provided for an explicitly defined editor with the same `id` as the default one (even if it is a different version). Che-Theia is configured as default editor along with the *{prod-short} Machine Exec* plug-in.
 
 To specify that a workspace requires no editor, use the xref:attribute-editorfree_{context}[`editorFree:true` attribute] in the devfile attributes.
 
@@ -186,7 +186,9 @@ A component may need to be precisely tuned, and in such case, component preferen
 
 === Component type: kubernetes
 
-A complex component type that allows to apply configuration from a Kubernetes or OpenShift lists. The content of the component can be provided either via the `reference` attribute, which points to the file with the component content.
+A complex component type that allows to apply configuration from a list of Kubernetes or OpenShift components.
+
+The content can be provided either via the `reference` attribute, which points to the file with the component content.
 
 [source,yaml]
 ----
@@ -221,6 +223,8 @@ Alternatively, to post a devfile with such components to REST API, the contents 
               ... etc
 ----
 
+=== Overriding container entrypoints
+
 As with the xref:component-type-dockerimage_{context}[`dockerimage` component], it is possible to override the entrypoint of the containers contained in the Kubernetes or OpenShift list using the `command` and `args` properties (as link:https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#notes[understood] by Kubernetes).
 
 There can be more containers in the list (contained in pods or pod templates of deployments). To select which containers to apply the entrypoint changes to.
@@ -252,7 +256,24 @@ Other types of constraints (and their combinations) are possible:
 
 A combination of these constraints can be used to precisely locate the containers inside the referenced Kubernetes list.
 
-=== Specifying mount sources option
+=== Overriding container environment variables
+
+To provision or override entrypoints in a Kubernetes or OpensShift component, configure it in the following way:
+
+[source,yaml]
+----
+  components:
+    - alias: appDeployment
+      type: kubernetes
+      reference: app-deployment.yaml
+      env:
+        - name: ENV_VAR
+          value: value
+----
+
+This is useful for temporary content or without access to editing the referenced content. The specified environment variables are provisioned into each init container and containers inside all Pods and Deployments.
+
+=== Specifying mount-source option
 
 To specify a project sources directory mount into container(s), use the `mountSources` parameter:
 
@@ -630,7 +651,7 @@ The following are two kinds of commands:
 
 * {prod-short} specific commands: You have full control over what component executes the command.
 
-* Editor specific commands: You can use the editor-specific command definitions (example: `tasks.json` and `launch.json` in {prod-short}-Theia, which is equivalent to how these files work in VS Code).
+* Editor specific commands: You can use the editor-specific command definitions (example: `tasks.json` and `launch.json` in Che-Theia, which is equivalent to how these files work in VS Code).
 
 === {prod-short}-specific commands
 
@@ -677,7 +698,7 @@ commands:
 
 === Editor-specific commands
 
-If the editor in the workspace supports it, the devfile can specify additional configuration in the editor-specific format. This is dependent on the integration code present in the workspace editor itself and so is not a generic mechanism. However, the default {prod-short}-Theia editor within {prod} is equipped to understand the `tasks.json` and `launch.json` files provided in the devfile.
+If the editor in the workspace supports it, the devfile can specify additional configuration in the editor-specific format. This is dependent on the integration code present in the workspace editor itself and so is not a generic mechanism. However, the default Che-Theia editor within {prod} is equipped to understand the `tasks.json` and `launch.json` files provided in the devfile.
 
 [source,yaml]
 ----
@@ -707,9 +728,9 @@ commands:
             }
 ----
 
-This example shows association of a `tasks.json` file with a devfile. Notice the `vscode-task` type that instructs the {prod-short}-Theia editor to interpret this command as a tasks definition and `referenceContent` attribute that contains the contents of the file itself. You can also save this file separately from the devfile and use `reference` attribute to specify a relative or absolute URL to it.
+This example shows association of a `tasks.json` file with a devfile. Notice the `vscode-task` type that instructs the Che-Theia editor to interpret this command as a tasks definition and `referenceContent` attribute that contains the contents of the file itself. You can also save this file separately from the devfile and use `reference` attribute to specify a relative or absolute URL to it.
 
-In addition to the `vscode-task` commands, the {prod-short}-Theia editor understands `vscode-launch` type using which you can specify the launch configurations.
+In addition to the `vscode-task` commands, the Che-Theia editor understands `vscode-launch` type using which you can specify the launch configurations.
 
 === Command preview URL
 
