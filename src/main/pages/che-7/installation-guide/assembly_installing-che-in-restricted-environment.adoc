@@ -29,6 +29,11 @@ To deploy {prod-short} in an environment where these external resources are not 
 * Configure {prod-short} to use these images.
 
 
+== Prerequesite Notes on Network Connectivity
+
+Restricted network environments can range from a private subnet in a cloud provider, to a separate network owned by a company, cut off from the public internet.  While your organization's network will be different, Che will work *provided that the Ingress/Routes that are created for the Che components (che-server, keycloak, devfile-registry, plugin-registry) are accessible from inside the Kubernetes cluster).*  You should take into account the network topology of your environment to determine how best to accomplish this.  For example, in a network owned by a company or organization, the network administrators should ensure that traffic bound from the cluster can be routed to Ingress/Route hostnames.  In other cases, e.g. in AWS, you may need to create a proxy configuration allowing the traffic to leave the node to get to an external-facing Load Balancer.
+
+
 [id="building-offline-versions-of-the-plug-in-and-devfile-registry_{context}"]
 == Building offline versions of the plug-in and devfile registry
 
