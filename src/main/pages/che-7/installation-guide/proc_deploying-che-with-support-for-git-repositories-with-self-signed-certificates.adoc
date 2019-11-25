@@ -1,0 +1,45 @@
+[id="deploying-{prod-id-short}-with-support-for-git-repositories-with-self-signed-certificates_{context}"]
+= Deploying {prod-short} with support for Git repositories with self-signed certificates
+
+This procedure describes how to configure {prod-short} for deployment with support for Git operations on repositories that use self-signed certificates.
+
+.Prerequisites
+
+* Git version 2 or later.
+
+.Procedure
+
+[discrete]
+== Configuring support for self-signed Git repositories on Kubernetes
+
+.Deploying {prod-short} using a link:https://helm.sh/[Helm Chart]
+
+. Configure the workspace exposure strategy using the `global.useGitSelfSignedCerts` property. To do that, add the following option to the `helm upgrade` command:
++
+----
+$ helm upgrade che --set global.useGitSelfSignedCerts=true
+----
+
+. Create a new *configMap* with details about the Git server:
++
+[subs="+quotes"]
+----
+$ kubectl create configmap che-git-self-signed-cert --from-file=__<ca.crt>__ \
+  --from-literal=githost=__<host:port>__ -n=che
+----
++
+In the command, substitute `_<ca.crt>_` for the self-signed certificate and _`<host:port>_` for the host and port of the HTTPS connection on the Git server (optional).
++
+NOTE: When `githost` is not specified, the given certificate is used for all HTTPS repositories.
+====
+
+// TODO
+// [discrete]
+// == Configuring support for self-signed Git repositories on OpenShift
+
+Create and start new workspace. Every container used by the workspace mounts a special volume that contains a file with the self-signed certificate. The `gitconfig` section contains information about the Git server host and the path to the certificate. For example:
+
+----
+[http "https://10.33.177.118:3000"]
+        sslCAInfo = /etc/che/git/cert/ca.crt
+----
