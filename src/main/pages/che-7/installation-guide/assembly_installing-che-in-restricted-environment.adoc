@@ -29,6 +29,12 @@ To deploy {prod-short} in an environment where these external resources are not 
 * Configure {prod-short} to use these images.
 
 
+== Notes on network connectivity in restricted environments
+
+Restricted network environments range from a private subnet in a cloud provider to a separate network owned by a company, disconnected from the public Internet. Regardless of the network configuration, {prod-short} works *provided that the Ingress and Routes that are created for {prod-short} components ({prod-id-short}-server, keycloak, devfile-registry, plugin-registry) are accessible from inside the Kubernetes or OpenShift cluster.*
+
+Take into account the network topology of the environment to determine how best to accomplish this. For example, on a network owned by a company or an organization, the network administrators must ensure that traffic bound from the cluster can be routed to Ingress and Route hostnames. In other cases, for example, on AWS, create a proxy configuration allowing the traffic to leave the node to reach an external-facing Load Balancer.
+
 [id="building-offline-versions-of-the-plug-in-and-devfile-registry_{context}"]
 == Building offline versions of the plug-in and devfile registry
 
