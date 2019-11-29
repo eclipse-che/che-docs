@@ -1,0 +1,26 @@
+// overriding-devfile-values-using-factory-parameters
+
+[id="overriding-devfile-values-using-factory-parameters_{context}"]
+= Overriding some devfile values using factory parameters
+
+A some values of the remote devfile can be overriden using specially constructed additional factory parameters. Currently allowed sections to override values are: apiVesion, metadata, projects.
+
+.Prerequisites
+* A running instance of {prod}. To install an instance of {prod}, see link:{site-baseurl}che-7/che-quick-starts/[{prod-short} quick-starts].
+* The publicly-accessible standalone `devfile.yaml` file. See link:{site-baseurl}che-7//making-a-workspace-portable-using-a-devfile/[Making a workspace portable using a Devfile] for detailed information about creating and using devfiles.
+
+.Procedure
+. Execute the workspace by opening the following URL: `++https://++__<your-che-host>__/f?url=https://__<yourhosturl>__/devfile.yaml&override.<parameter.path>=<value>`
+
+.Example of overriding generateName property
+[subs="+quotes"]
+----
+https://che.openshift.io/f?url=https://gist.githubusercontent.com/themr0c/ef8e59a162748a8be07e900b6401e6a8/raw/8802c20743cde712bbc822521463359a60d1f7a9/devfile.yaml&override.metadata.generateName=myprefix
+----
+
+
+.Example of overriding project source branch property
+[subs="+quotes"]
+----
+https://che.openshift.io/f?url=https://gist.githubusercontent.com/themr0c/ef8e59a162748a8be07e900b6401e6a8/raw/8802c20743cde712bbc822521463359a60d1f7a9/devfile.yaml&override.projects.web-java-spring-petclinic.source.branch=1.0.x
+----
