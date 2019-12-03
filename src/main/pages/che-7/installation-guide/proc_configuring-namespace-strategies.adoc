@@ -41,6 +41,8 @@ CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=che-workspaces
 ----
 ====
 
+IMPORTANT: To run more than one workspace at a time when using this strategy together with the `common` PVC strategy, configure persistent volumes to use `ReadWriteMany` access mode.
+
 == One namespace per user strategy
 
 The strategy isolates each user in their own namespace.
@@ -59,9 +61,24 @@ CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=che-ws-__<username>__
 
 [IMPORTANT]
 ====
-Using the _One namespace per user_ strategy with the `common` PVC strategy only works correctly when the user runs not more than one workspace at a time. To enforce this limit, set:
+To run more than one workspace at a time when using this strategy together with the `common` PVC strategy, configure persistent volumes to use `ReadWriteMany` access mode.
 
-----
-CHE_LIMITS_USER_WORKSPACES_RUN_COUNT=1
-----
+To limit the number of concurrently running workspaces per user to one, set the `CHE_LIMITS_USER_WORKSPACES_RUN_COUNT` environment variable to `1`.
+
+// Links to Helm and Operator docs need to be added below:
+
+To limit the number of concurrently running workspaces per user to one (1):
+
+* For Helm Chart deployments: set the `.global.workspace.number` parameter to `1`.
+* For Operator deployments: set the `spec.server.cheCustomProperties.CHE_LIMITS_USER_WORKSPACE_RUN_COUNT` variable of the CheCluster Custom Resource (CR) to `1`.
 ====
+
+== Allowing user-defined workspace namespaces
+
+Che server can be configured to honor the user selection of a namespace when a workspace is created. This feature is
+disabled by default. To allow user-defined workspace namespaces, set:
+
+[subs="+quotes"]
+----
+CHE_INFRA_KUBERNETES_NAMESPACE_ALLOW__USER__DEFINED=true
+----
