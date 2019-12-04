@@ -22,6 +22,7 @@ To add custom properties to the Che server, such as environment variables that a
 
 For example, to overrride the default memory limit for workspaces, add the `CHE_WORKSPACE_DEFAULT\__MEMORY__LIMIT__MB` property to `customCheProperties`:
 
+[subs="+attributes"]
 [source,yaml]
 ----
 apiVersion: org.eclipse.che/v1
@@ -44,6 +45,7 @@ spec:
 
 Previous versions of the Che Operator had a configMap named `custom` to fulfill this role.  If the Che Operator finds a `configMap` with the name `custom`, it adds the data it contains into the `customCheProperties` field, redeploys Che, and deletes the `custom` `configMap`.
 
+ifeval::["{project-context}" == "che"]
 == Che installed using a Helm Chart
 
 A link:https://helm.sh/[Helm Chart] is a Kubernetes extension for defining, installing, and upgrading Kubernetes applications.
@@ -55,6 +57,7 @@ $ kubectl rollout restart deployment/che
 ----
 
 This avoids the downtime associated with deleting a Pod because it deploys and starts a new Pod, and only then deletes the old Pod.
+endif::[]
 
 ////
 .Additional resources
