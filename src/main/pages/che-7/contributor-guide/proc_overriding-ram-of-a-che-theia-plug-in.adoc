@@ -8,20 +8,21 @@ Sometimes, a plug-in consumes more memory than what has been allocated to it by 
 
 Users can override the RAM limit for a particular plug-in in their workspace configuration.
 
-* Set the workspace attribute `sidecar.<plug-in ID>.memory_limit` to `1000M` or `10Gi`, or any other value formatted as a number and a unit (`b, k, ki, m, mi, g, gi`). When no unit is specified, the number is in bytes.
+* Set the `memoryLimit` for devfile component  to `1000M` or `10Gi`, or any other value formatted as a number and a unit (`b, k, ki, m, mi, g, gi`). When no unit is specified, the number is in bytes.
 
 NOTE: Using this notation, units that contain the character `i`, denote a number that is of the power 2, such as 1024 (as opposed to numbers that use a power of 10, such as 1000).
 
 .Limiting RAM use for a plug-in
 [example]
 ====
-Example of an attribute that sets the RAM limit for the link:https://github.com/eclipse/che-plugin-registry/blob/master/plugins/redhat.vscode-yaml/0.3.0/meta.yaml[YAML language server plug-in] to 768 mebibytes (1073741824 bytes):
+Example of an attribute that sets the RAM limit for the link:https://github.com/eclipse/che-plugin-registry/blob/master/v3/plugins/redhat/vscode-yaml/0.3.0/meta.yaml[YAML language server plug-in] to 256 mebibytes:
 
-[source,json]
+[source,yaml]
 ----
-"attributes": {
-   "Sidecar.redhat.vscode-yaml.memory_limit": "768mi"
-}
+components:
+  - id: redhat/vscode-yaml/0.3.0
+    type: chePlugin
+    memoryLimit: 1Gi
 ----
 ====
 
