@@ -1,0 +1,101 @@
+[id="installing-{prod-id-short}-on-kind-using-chectl_{context}"]
+= Installing che on kind using chectl
+
+This section describes how to install {prod-short} on https://github.com/kubernetes-sigs/kind[kind] using chectl.  Kind is a tool for running local Kubernetes clusters using Docker containers as nodes.  It is very useful for quickly creating ephemeral clusters, and is used as part of the test infrastructure of the Kubernetes project.  Running {prod-short} in Kind is a great way to try it out, or for a contributer to test out their change quickly with a real cluster.
+
+[discrete]
+== Prerequesites
+
+* `chectl` management tool is installed. See link:{site-baseurl}che-7/installing-the-chectl-management-tool/[Installing the `chectl` management tool].
+
+* A running Kind cluster.  See link:https://kind.sigs.k8s.io/#installation-and-usage[here] for Kind installation instructions.
+
+[discrete]
+== Procedure
+
+* Install https://github.com/kubernetes-csi/csi-driver-host-path[csi-driver-host-path] in the Kind cluster.
++
+----
+$ git clone https://github.com/kubernetes-csi/csi-driver-host-path && cd csi-driver-host-path
+$ ./deploy/kubernetes-1.16/deploy-hostpath.sh
+$ kubectl apply -f examples/csi-storageclass.yaml
+----
+
+* Set `csi-hostpath-sc` as the default `StorageClass`.
++
+----
+$ kubectl patch storageclass csi-hostpath-sc -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "true"}}}'
+$ kubectl patch storageclass standard -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "false"}}}'
+----
+
+* Install the NGINX Ingress Controller
++
+----
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud-generic.yaml
+----
+
+* Install https://metallb.universe.tf/[MetalLB].  
++
+----
+$ kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.3/manifests/metallb.yaml
+----
++
+[NOTE]
+====
+The above command may refer to an out-of-date version of MetalLB Kubernetes manifests.  See https://metallb.universe.tf/installation/[the installation instructions] for the most up-to-date command.
+====
+
+* Determine an IP range to allocate to MetalLB from the `docker` bridge network.
++
+----
+$ docker inspect bridge | grep -C 5 Subnet
+"IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.17.0.0/16",
+                    "Gateway": "172.17.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+----
+
+In this case, we have a /16 subnet range to allocate, so we will choose a section in the `172.17.250.0` range.
+
+* Create a `ConfigMap` for MetalLB with the IP range to expose specified.
++
+----
+$ cat << EOF > metallb-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb-system
+  name: config
+data:
+  config: |
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - 172.17.250.1-172.17.250.250
+EOF
+$ kubectl apply -f metallb-config.yaml
+----
+
+The `ingress-nginx` service should now have an external IP.
+
+----
+$ kubectl get svc -n ingress-nginx
+NAME            TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)                      AGE
+ingress-nginx   LoadBalancer   10.107.194.26   172.17.255.1   80:32033/TCP,443:30428/TCP   19h
+----
+
+* Run `chectl`, using the external IP of the `ingress-nginx` Service, as an https://nip.io[nip.io] url.
+
++
+----
+$ chectl server:start --installer operator --platform k8s --domain 172.17.250.1.nip.io
+----
