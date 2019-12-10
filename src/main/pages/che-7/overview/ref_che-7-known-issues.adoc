@@ -23,6 +23,16 @@ When using the {prod} dark theme in Firefox, workspace content is rendered using
 
 Issue: link:https://github.com/eclipse/che/issues/13442[]
 
+== Workspace start failures when StorageClass configured with `volumeBindingMode` set to `WaitForFirstConsumer` on Openshift older than 4.2
+
+When {prod} is installed on OpenShift older than 4.2, and StorageClass is configured with the `volumeBindingMode` property set to `WaitForFirstConsumer`, workspaces may fail to start with a `Unrecoverable event occured: 'FailedScheduling'` message.
+
+To work around the issue, use one the following:
+
+* Reconfigure {prod} and remove `FailedScheduling` from the `che.infra.kubernetes.workspace_unrecoverable_events` property value (in the `che.properties` file or deployment configuration)
+* Upgrade the OpenShift installation to version 4.2 or higher.
+
+Issue: link:https://github.com/eclipse/che/issues/14670[]
 
 == Other issues
 
