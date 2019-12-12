@@ -24,7 +24,13 @@ Pods manage each component of a {prod-short} workspace. Therefore, everything ru
 
 The embedded browser-based IDE is the point of access for everything running in a {prod-short} workspace. This makes a {prod-short} workspace easily shareable.
 
-IMPORTANT: By default, it is possible to run only one workspace at a time. To change the default value, see link:{site-baseurl}che-7/advanced-configuration-options/#limits-for-the-workspaces-of-an-user[Limits for the workspaces of a user].
+IMPORTANT: By default, it is possible to run only one workspace at a time. 
+ifeval::["{project-context}" == "che"]
+To change the default value, see link:{site-baseurl}che-7/advanced-configuration-options/#limits-for-the-workspaces-of-an-user[Limits for the workspaces of a user].
+endif::[]
+ifeval::["{project-context}" == "crw"]
+To change the default value, see link:{prod-ig-url}[the {prod-ig}].
+endif::[]
 
 .Features and benefits
 [options="header",cols="h,,"]
@@ -58,6 +64,7 @@ IMPORTANT: By default, it is possible to run only one workspace at a time. To ch
 | Yes. Only requires a browser.
 |===
 
+ifeval::["{project-context}" == "che"]
 To start a {prod-short} workspace, following options are available:
 
 * link:{site-baseurl}che-7/creating-and-configuring-a-new-che-7-workspace[Creating and configuring a new {prod-short} {prod-ver} workspace using the Dashboard].
@@ -79,3 +86,47 @@ Use a devfile as the preferred way to start a {prod-short} {prod-ver} workspace:
 * link:{site-baseurl}che-7/importing-a-kubernetes-application-into-a-che-workspace[Importing a Kubernetes application into a {prod-short} workspace]
 
 Use the browser-based IDE as the preferred way to interact with a {prod-short} {prod-ver} workspace. For an alternative way to interact with a {prod-short} {prod-ver} workspace, see: link:{site-baseurl}che-7/remotely-accessing-che-workspaces[Remotely accessing workspaces].
+endif::[]
+
+ifeval::["{project-context}" == "crw"]
+// Because of Jekyll navigation constraints on downstreaming process, we need a downstream specific version
+
+To start a workspace, following options are available:
+
+* xref:creating-and-configuring-a-new-{prod-id-short}-{prod-ver}-workspace[].
+
+* xref:configuring-a-workspace-using-a-devfile_{context}[]
+
+Use the Dashboard to discover {prod-short} {prod-ver}:
+
+* xref:creating-a-workspace-from-code-sample_{context}[]
+
+* xref:creating-a-workspace-by-importing-source-code-of-a-project[]
+
+Use a devfile as the preferred way to start a {prod-short} {prod-ver} workspace:
+
+* xref:making-a-workspace-portable-using-a-devfile_{context}[]
+
+See link:{prod-eug-url}[the {prod-eug}].
+
+* xref:importing-a-kubernetes-application-into-a-workspace[]
+
+Use the browser-based IDE as the preferred way to interact with a {prod-short} {prod-ver} workspace. For an alternative way to interact with a {prod-short} {prod-ver} workspace, see: xref:remotely-accessing-workspaces_{context}[].
+
+include::assembly_creating-and-configuring-a-new-che-7-workspace.adoc[leveloffset=+1]
+
+include::assembly_configuring-a-workspace-using-a-devfile.adoc[leveloffset=+1]
+
+include::assembly_creating-a-workspace-from-code-sample.adoc[leveloffset=+1]
+
+include::proc_creating-a-workspace-by-importing-source-code-of-a-project.adoc[leveloffset=+1]
+
+include::assembly_making-a-workspace-portable-using-a-devfile.adoc[leveloffset=+1]
+
+include::assembly_converting-a-che-6-workspace-to-a-che-7-devfile.adoc[leveloffset=+1]
+
+include::assembly_importing-a-kubernetes-application-into-a-workspace.adoc[leveloffset=+1]
+
+include::assembly_remotely-accessing-workspaces.adoc[leveloffset=+1]
+
+endif::[]
