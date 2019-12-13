@@ -156,24 +156,9 @@ An alternative way of specifying `cheEditor` or `chePlugin`, instead of using th
 
 NOTE: It is not possible to mix the `id` and `reference` fields in a single component definition; they are mutually exclusive.
 
-=== Specifying container memory limit for components
+=== Tuning chePlugin component configuration
 
-To specify a container(s) memory limit for `cheEditor` or `chePlugin`, use the `memoryLimit` parameter:
-
-[source,yaml]
-----
-  components:
-   - alias: exec-plugin
-     type: chePlugin
-     id: eclipse/che-machine-exec-plugin/0.0.1
-     memoryLimit: 256M
-----
-
-This limit will be applied to every container of the given component.
-
-=== Tuning component configuration
-
-A component may need to be precisely tuned, and in such case, component preferences can be used. The example shows how to configure JVM using plug-in preferences.
+A chePlugin component may need to be precisely tuned, and in such case, component preferences can be used. The example shows how to configure JVM using plug-in preferences.
 
 [source,yaml]
 ----
@@ -380,21 +365,35 @@ components:
         containerPath: /.cache
 ----
 
-==== Environment
+=== Specifying container memory limit for components
 
-{prod} allows you to configure Docker containers by modifying the environment variables available in the container of an image.
+To specify a container(s) memory limit for `dockerimage`, `chePlugin`, `cheEditor`, `kubernetes`, `openshift`, use the `memoryLimit` parameter:
+
+[source,yaml]
+----
+  components:
+   - alias: exec-plugin
+     type: chePlugin
+     id: eclipse/che-machine-exec-plugin/0.0.1
+     memoryLimit: 1Gi
+   - type: kubernetes
+     reference: ../relative/path/postgres.yaml
+     memoryLimit: 512M
+----
+
+This limit will be applied to every container of the given component.
+
+=== Environment variables
+
+{prod} allows you to configure Docker containers by modifying the environment variables available in component's configuration.
+Environment variables are supported by the following component types: `dockerimage`, `chePlugin`, `cheEditor`, `kubernetes`, `openshift`.
+In case component has multiple containers, environment variables will be provisioned to each container.
 
 [source,yaml]
 ----
 apiVersion: 1.0.0
 metadata:
   name: MyDevfile
-projects:
-  - name: my-go-project
-    clonePath: go/src/github.com/acme/my-go-project
-    source:
-      type: git
-      location: https://github.com/acme/my-go-project.git
 components:
   - type: dockerimage
     image: golang
@@ -404,8 +403,13 @@ components:
     env:
       - name: GOPATH
         value: $(CHE_PROJECTS_ROOT)/go
-      - name: GOCACHE
-        value: /tmp/go-cache
+  - type: cheEditor
+    alias: theia-editor
+    id: eclipse/che-theia/next
+    memoryLimit: 2Gi
+    env:
+    - name: HOME
+      value: $(CHE_PROJECTS_ROOT)
 ----
 
 [NOTE]

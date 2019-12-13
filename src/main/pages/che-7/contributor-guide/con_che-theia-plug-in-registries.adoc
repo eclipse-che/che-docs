@@ -3,7 +3,7 @@
 
 A plug-in registry is a simple service that hosts information (metadata) about the plug-ins.
 
-To retrieve a full list of plug-ins hosted in a registry, navigate to the following address: `<registry-base-uri>/plugins/index.json`.
+To retrieve a full list of plug-ins hosted in a registry, navigate to the following address: `<registry-base-uri>/v3/plugins/index.json`.
 
 Each plug-in item in the list is represented by a JSON definition:
 
@@ -11,42 +11,46 @@ Each plug-in item in the list is represented by a JSON definition:
 [source,json]
 ----
 {
-    "id": "che-dummy-plugin",
-    "version": "0.0.1",
-    "type": "{prod-short} Plugin",
-    "name": "{prod-short} Samples Hello World Plugin",
-    "description": "A hello world theia plug-in wrapped into a {prod-short} Plug-in",
-    "links": {
-        "self": "/plugins/che-dummy-plugin/0.0.1/meta.yaml"                  <1>
- }
+  "publisher": "joaompinto",
+  "apiVersion": "v2",
+  "version": "2.7.7",
+  "type": "VS Code extension",
+  "name": "vscode-asciidoctor",
+  "displayName": "AsciiDoc support",
+  "title": "AsciiDoctor Plugin",
+  "description": "Provides a live preview, syntax highlighting and snippets for the AsciiDoc format",
+  "icon": "https://www.eclipse.org/che/images/logo-eclipseche.svg",
+  "category": "Language",
+  "repository": "https://github.com/asciidoctor/asciidoctor-vscode",
+  "firstPublicationDate": "2019-12-02",
+  "spec": {
+    "extensions": [
+      "https://github.com/asciidoctor/asciidoctor-vscode/releases/download/v2.7.7/asciidoctor-vscode-2.7.7.vsix"
+    ]
+  }
+}
 ----
 <1> Points to a more complete plug-in description (`meta.yaml`).
 
 .Sample plug-in `meta.yaml` file
 [source,yaml]
 ----
-id: che-dummy-plugin
-version: 0.0.1
-type: {prod-short} Plugin
-name: {prod-short} Samples Hello World Plugin
-title: Che Samples Hello World Plugin
-description: A hello world theia plug-in wrapped into a {prod-short} Plug-in
+publisher: joaompinto
+apiVersion: v2
+version: 2.7.7
+type: VS Code extension
+name: vscode-asciidoctor
+displayName: AsciiDoc support
+title: AsciiDoctor Plugin
+description: Provides a live preview, syntax highlighting and snippets for the AsciiDoc format
 icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
-url: https://github.com/ws-skeleton/che-dummy-plugin/releases/download/untagged-8f3e198285a2f3b6b2db/che-dummy-plugin.tar.gz <1>
+category: Language
+repository: https://github.com/asciidoctor/asciidoctor-vscode
+firstPublicationDate: "2019-12-02"
+spec:
+  extensions:
+  - https://github.com/asciidoctor/asciidoctor-vscode/releases/download/v2.7.7/asciidoctor-vscode-2.7.7.vsix
 ----
-<1> Points to the plug-in configuration. Typically, it is a TAR archive with the plug-in YAML file. It is also possible to have a link to the raw content of a plug-in YAML file.
-
-For a VS Code extension, the `url` field is replaced with an `attributes` section.
-
-.Sample `attributes` section of `meta.yaml`
-[source,yaml]
-----
-attributes:
-extension: "vscode:extension/extension.id"             <1>
-container-image: "my.docker.registry/remote-theia:tag" <2>
-----
-<1> VS Code extension ID with a `vscode:extension/` prefix
-<2> Points to a container image in which the extension runs. Note that the image should contain an appropriate Node.js version with installed dependencies for Che-Theia remote plug-ins.
 
 For more details about the `meta.yaml` structure, see xref:che-theia-plug-in-metadata_what-is-a-che-theia-plug-in[].
 

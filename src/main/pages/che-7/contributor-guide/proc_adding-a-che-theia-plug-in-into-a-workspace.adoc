@@ -20,28 +20,31 @@ image::extensibility/adding-plug-ins-in-dashboard.png[link="{imagesdir}/extensib
 
 
 [id="adding-a-plug-in-by-configuring-a-workspace_{context}"]
-== Adding a plug-in by configuring a workspace
+== Adding a plug-in by configuring a devfile
 
 This method is useful when you need to add plug-ins from a non-default registry.
 
 . Navigate to the *Workspaces* tab in the dashboard.
 . Select the workspace to which you want to add the plug-in.
-. Switch to the *Config* tab, and find the `attributes.plugins` section.
+. Switch to the *Devfile* tab, and find the `components` section.
 +
-.Adding plug-ins by configuring a workspace
-image::extensibility/adding-plug-ins-in-workspace-configuration.png[link="{imagesdir}/extensibility/adding-plug-ins-in-workspace-configuration.png"]
+.Adding plug-ins by configuring a component
+image::extensibility/adding-plug-ins-in-workspace-devfile.png[link="{imagesdir}/extensibility/adding-plug-ins-in-workspace-devfile.png"]
+
 +
-Plug-ins are separated by commas (`,`).
-. To add plug-ins, append new records after the separator. A record has the following format:
+Plug-ins are added in YAML format as array elements in the `components` section.
+. To add plug-ins, append this lines to the `components` section. A record has the following format:
 +
 ----
- <registry-base-uri>/plugins/<plugin-name>:<version>
+  - type: chePlugin
+    reference: >-
+      <registry-base-uri>/v3/plugins/<plugins-group>/<plugin-name>/<version>
 ----
 +
-Examples:
+Reference URL examples:
 +
-* pass:[https://custom-registry/plugins/org.name.plugin.theia:1.0.0]
-* pass:[https://raw.githubusercontent.com/username/che-custom-plugins/master/plugins/org.name.plugin.theia:0.0.1]
+* pass:[https://custom-registry/v3/plugins/custom-plugin-name/0.0.1/]
+* pass:[https://raw.githubusercontent.com/username/che-custom-plugins/master/v3/plugins/custom-plugin-name/0.0.1/meta.yaml]
 
 
 [id="adding-a-plug-in-at-runtime_{context}"]
