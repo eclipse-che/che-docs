@@ -103,7 +103,7 @@ spec:
 <2> Name of the plug-in publisher. Must be the same as the publisher in the path.
 <3> Plug-in name. Must be the same as in path.
 <4> The Che plug-in version. Must be the same as in path.
-<5> Type of the Che plug-in. For VS Code extensions, it must be `VS Code extension`.
+<5> Che plug-in type. For VS Code extensions, it must be `VS Code extension`.
 <6> A short name of the plug-in.
 <7> Plug-in title.
 <8> A brief explanation of the plug-in and what it does.
@@ -130,12 +130,12 @@ you should mark endpoint with type 'ide' and Eclipse Che will open your endpoint
 when workspace loader compete work on workspace start.
 <27> Path to some sub-part service api.
 For example you have some rest api http://localhost:3550/ inside container.
-But you want to expose some part of the api http://localhost:3130/articles, than you can define path like `/articles`.aandrienko
-<28> Plug-in containers. Notiaandrienkog-in with type "Theia plug-in" and 'VS Code extension' supports only one container.
-<29> The Docker image from whaandrienko sidecar container will be started. Example: `eclipse/che-theia-endpoint-runtime-biaandrienkoxt`.
-<30> Image name, will be usedaandrienko editor ui.
-<31> The RAM which is given faandrienkosidecar container by default. Example: "256Mi". This value might be overridden by aandrienkor in the component configuration.
-<32> Optional. List of env vaaandrienkoet in plug-in container.
+But you want to expose some part of the api http://localhost:3130/articles, than you can define path like `/articles`.
+<28> Plug-in containers. Notice: "Theia plug-in" and 'VS Code extension' can have only one container.
+<29> The Docker image from which sidecar container will be started. Example: `eclipse/che-theia-endpoint-runtime-binary`.
+<30> Image name.
+<31> Default RAM size for sidecar container. Example: "256Mi". This value might be overridden by the user in the component configuration.
+<32> Optional. List of env variables in plug-in container.
 <33> Env variable name.
 <34> Env variable value.
 <35> Optional. Definition of root process command inside container. Using this option you can override Dockerfile#Entrypoint.
@@ -143,9 +143,9 @@ But you want to expose some part of the api http://localhost:3130/articles, than
 <37> Optional. Volumes required by plug-in.
 <38> Volume path in the container file system.
 <39> Volume name.
-<40> Boolean. If true volume will be ephemeral and volume content will be erased after Eclipse Che workspace restart.
-If true volume will be persisted and save content after Eclipse Che workspace restart.
-Noticed: by default property value is false(volume persisted).
+<40> Boolean. If true, volume will be ephemeral, so its content will be erased after Eclipse Che workspace restart.
+If false, volume content will be persisted between Eclipse Che workspace restart.
+Default value is false.
 <41> Optional. Ports exposed by plug-in (on the container) for external services.
 <42> Exposed port value.
 <43> Optional. Development commands available to plug-in container.
@@ -153,9 +153,9 @@ Noticed: by default property value is false(volume persisted).
 <45> Working directory for command.
 <46> List of commands + arguments.
 <47> Optional. Boolean. All user's projects inside Eclipse Che workspace stored in the volume `/projects`. Property should be true if you want to share this volume with you plug-in container. Default value is false.
-<48> Optional. List init containers. Could be useful when you need to apply or modify some data in your containers in runtime.
-<49> Optional. List common env vars for all workspace containers.
-<50> List extensions: consist of plug-ins with type `VS Code extension` and `Theia plug-in` that should be run in this sidecar container.
+<48> Optional. List of init containers. Could be useful when you need to manipulate with some data in your containers at runtime.
+<49> Optional. List of common env vars for all workspace containers.
+<50> List of extensions: consist of plug-ins with type `VS Code extension` and `Theia plug-in` that should be run in this sidecar container.
 
 ## Using initContainers for plug-ins
 
@@ -167,13 +167,13 @@ For remote plug-in init containers could be useful to change some configuration 
 
 Eclipse Che has remote plug-in endpoint service to start VS Code Extensions and Che theia plug-ins in the separated containers. Eclipse Che inject remote plug-in endpoint binaries to each remote plug-in container. This service start your remote extensions and plug-ins defined in the plug-in meta.yaml#extensions file and connect them to the che-theia editor container.
 
-So, main goal remote plug-in endpoint - creation plugin api proxy between your remote plug-in container and che-theia editor container. Also remote plug-in endpoint is interceptor for some plug-in api parts to launch them inside remote sidecar container, instead of editor container. For example terminal api, debug api and so on.
+Main goal of remote plug-in endpoint - creation plugin api proxy between your remote plug-in container and che-theia editor container. Also remote plug-in endpoint is interceptor for some plug-in api parts to launch them inside remote sidecar container, instead of editor container. For example terminal api, debug api and so on.
 
 Remote plug-in endpoint executable command stored in the env variable of the remote plug-in container:
 
 `PLUGIN_REMOTE_ENDPOINT_EXECUTABLE`
 
-Exection remote plugin endpoint in the container from shell is very easy:
+Execution remote plugin endpoint using shell:
 
 `${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}`
 
@@ -274,7 +274,7 @@ How it works? Container on start launch `/entrypoint.sh` script defined in the D
 
 ## Define launch remote plug-in endpoint in the plug-in meta.yaml
 
-There are a lot of images which were already created and you want to use them to start remote plug-in endpoint without patching. In this case you can try to use image like is, but you need to change plug-in meta.yaml definition to start remote plug-in endpoint. To achieve this purpose plug-in meta.yaml definition in the container section has two properties: `command` and `args`:
+There are a lot of images which were already created and you want to reuse them to start remote plug-in endpoint without modification. In this case you can try to use image like is, but you need to change plug-in meta.yaml definition to start remote plug-in endpoint. To achieve this purpose plug-in meta.yaml definition in the container section has two properties: `command` and `args`:
 
 - `command` - Eclipse Che uses to override Dockerfile#ENTRYPOINT.
 - `args`  - Eclipse Che uses to override Dockerfile#CMD.
@@ -297,7 +297,7 @@ type: "VS Code extension"
 version: remote-bin-with-override-entrypoint
 spec:
   containers:
-    - image: "aandrienko/fedora-for-ts-remote-plugin-without-endpoint:latest"
+    - image: "example/fedora-for-ts-remote-plugin-without-endpoint:latest"
       memoryLimit: 512Mi
       name: vscode-typescript
       command:
@@ -310,7 +310,7 @@ spec:
 ```
 
 
-2) If you have an image with wrapper script pattern, than you are interested in saving call entypoint.sh. That’s why you should not override `command` in the plug-in metal.yaml section. You can override only `args`:
+2) If you have an image with wrapper script pattern, than you are interested in saving call entypoint.sh. That’s why you should override `args` instead of `command` in the plug-in metal.yaml section:
 
 ```yaml
 ---
@@ -328,7 +328,7 @@ type: "VS Code extension"
 version: remote-bin-with-override-entrypoint
 spec:
   containers:
-    - image: "aandrienko/fedora-for-ts-remote-plugin-without-endpoint:latest"
+    - image: "example/fedora-for-ts-remote-plugin-without-endpoint:latest"
       memoryLimit: 512Mi
       name: vscode-typescript
       args:
