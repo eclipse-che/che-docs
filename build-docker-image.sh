@@ -15,9 +15,9 @@ NC='\033[0m'
 BOLD='\033[1m'
 
 printf "${BOLD}Building${NC} ${BLUE}eclipse/che-docs${NC} Che documentation ${BLUE}docker image${NC}\n"
-docker build -t eclipse/che-docs .
-if docker build -t eclipse/che-docs .; then
-  printf "${BOLD}Build${NC} ${BLUE}eclipse/che-docs${NC} ${GREEN}[OK]${NC}\n"
+docker build -t quay.io/eclipse/che-docs .
+if docker build -t quay.io/eclipse/che-docs .; then
+  printf "${BOLD}Build${NC} ${BLUE}quay.io/eclipse/che-docs${NC} ${GREEN}[OK]${NC}\n"
 else
-  printf "${BOLD}Build${NC} ${BLUE}eclipse/che-docs${NC} ${RED}[Failure]${NC}\n"
+  printf "${BOLD}Build${NC} ${BLUE}quay.io/eclipse/che-docs${NC} ${RED}[Failure]${NC}\n"
 fi
