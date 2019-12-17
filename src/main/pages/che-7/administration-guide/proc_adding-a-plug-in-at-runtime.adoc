@@ -5,11 +5,11 @@
 
 To add a plug-in:
 
-. Get the name of the Kubernetes pod that hosts the plug-in registry container. To do this, filter the `app=che-plugin-registry` label:
+. Get the name of the pod that hosts the plug-in registry container. To do this, filter the `component=plugin-registry` label:
 +
 ----
 $ PLUGIN_REG_POD=$(kubectl get -o custom-columns=NAME:.metadata.name \
- --no-headers -l app=che-plugin-registry pod)
+ --no-headers pod -l component=plugin-registry)
 ----
 
 . Create the new plug-in directory in the plug-in registry container, if it does not exist:
