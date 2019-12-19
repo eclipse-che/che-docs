@@ -5,7 +5,9 @@ Prometheus is a monitoring system that collects metrics in real time and stores 
 
 Prometheus comes with a console accessible at the `9090` port of the application pod. By default, a template provides an existing *service* and a *route* to access it. It can be used to query and view metrics.
 
+ifeval::["{project-context}" == "che"]
 image::monitoring/monitoring-che-prometheus-console.png[link="{imagesdir}/monitoring/monitoring-che-prometheus-console.png"]
+endif::[]
 
 == Prometheus terminology
 
@@ -20,7 +22,7 @@ histogram:: a more complex metric that is suited for performing observations. Me
 == Configuring Prometheus
 
 .Prometheus configuration
-[source,yaml]
+[source,yaml,subs="+attributes"]
 ----
 - apiVersion: v1
   data:
@@ -31,18 +33,10 @@ histogram:: a more complex metric that is suited for performing observations. Me
       scrape_configs:
         - job_name: 'che'
           static_configs:
-            - targets: ['che-host:8087']
+            - targets: ['{prod-host}:8087']
   kind: ConfigMap
   metadata:
     name: prometheus-config
 ----
 <1> rate, at which a target is scraped
 <2> rate, at which recording and alerting rules are re-checked (not used in our system at the moment)
-
-
-// [discrete]
-// == Additional resources
-// 
-// * A bulleted list of links to other material closely related to the contents of the procedure module.
-// * For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-// * Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
