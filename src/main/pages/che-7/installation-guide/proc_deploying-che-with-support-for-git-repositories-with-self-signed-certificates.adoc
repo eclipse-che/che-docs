@@ -11,33 +11,46 @@ This procedure describes how to configure {prod-short} for deployment with suppo
 
 [discrete]
 == Configuring support for self-signed Git repositories on Kubernetes
-
-.Deploying {prod-short} using a link:https://helm.sh/[Helm Chart]
-
-. Configure the workspace exposure strategy using the `global.useGitSelfSignedCerts` property. To do that, add the following option to the `helm upgrade` command:
-+
-----
-$ helm upgrade che --set global.useGitSelfSignedCerts=true
-----
-
 . Create a new *configMap* with details about the Git server:
 +
 [subs="+quotes"]
 ----
-$ kubectl create configmap che-git-self-signed-cert --from-file=__<ca.crt>__ \
+$ kubectl create configmap che-git-self-signed-cert --from-file=ca.crt \
   --from-literal=githost=__<host:port>__ -n=che
 ----
-+
-In the command, substitute `_<ca.crt>_` for the self-signed certificate and _`<host:port>_` for the host and port of the HTTPS connection on the Git server (optional).
+In the command, substitute `_<host:port>_` for the host and port of the HTTPS connection on the Git server (optional).
 +
 NOTE: When `githost` is not specified, the given certificate is used for all HTTPS repositories.
++
+NOTE: The certificate file must be named `ca.crt`.
 
+. Configure the workspace exposure strategy
++
+=====
+.If {prod-short} is deployed using a link:https://helm.sh/[Helm Chart]
+. Clone the https://github.com/eclipse/che[che] project
+. Go to `deploy/kubernetes/helm/che` directory
+. Update the `global.useGitSelfSignedCerts` property. To do that, add the following option to the `helm upgrade` command:
++
+----
+$ helm upgrade che --set global.useGitSelfSignedCerts=true --set global.ingressDomain=$(minikube ip).nip.io .
+----
+=====
++
+====
+.If {prod-short} is deployed using link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators]
+Update the `gitSelfSignedCert` property. To do that, execute:
+
+----
+$ kubectl patch checluster eclipse-che -n che --type=json -p '[{"op": "replace", "path": "/spec/server/gitSelfSignedCert", "value": true}]'
+----
+====
 // TODO
 // [discrete]
 // == Configuring support for self-signed Git repositories on OpenShift
 
-Create and start new workspace. Every container used by the workspace mounts a special volume that contains a file with the self-signed certificate. The repository's `.git/config` file contains information about the Git server host (its URL) and the path to the certificate in the `http` section (see Git documentation about link:https://git-scm.com/docs/git-config#Documentation/git-config.txt-httpsslCAInfo[git-config]). For example:
-
+. Create and start new workspace. Every container used by the workspace mounts a special volume that contains a file with the self-signed certificate. The repository's `.git/config` file contains information about the Git server host (its URL) and the path to the certificate in the `http` section (see Git documentation about link:https://git-scm.com/docs/git-config#Documentation/git-config.txt-httpsslCAInfo[git-config]). For example:
++
 ----
 [http "https://10.33.177.118:3000"]
         sslCAInfo = /etc/che/git/cert/ca.crt
