@@ -11,29 +11,25 @@ This section describes how to use the Prometheus monitoring system to collect, s
 
 .Procedure
 
+
+
 * Configure Prometheus to scrape metrics from the `8087` port
 +
 .Prometheus configuration example
 [source,yaml,subs="+attributes"]
 ----
-- apiVersion: v1
-  data:
-    prometheus.yml: |-
-      global:
-        scrape_interval:     5s           <1>
-        evaluation_interval: 5s           <2>
-      scrape_configs:
-        - job_name: 'che'
-          static_configs:
-            - targets: ['{prod-host}:8087'] <3>
-  kind: ConfigMap
-  metadata:
-    name: prometheus-config
+include::examples/prometheus-config.yaml[]
 ----
 +
-<1> rate, at which a target is scraped
-<2> rate, at which recording and alerting rules are re-checked (not used in our system at the moment)
-<3> scrape metrics from the `8087` port
+ifeval::["{project-context}" == "che"]
+Latest version is: link:https://+github.com/eclipse/che/blob/master/deploy/openshift/templates/monitoring/prometheus-config.yaml[example prometheus-config.yaml on GitHub]
+endif::[]
++
+There are two blocks of configuration in the `prometheus-config.yml` block of the example configuration file: `global` and `scrape_configs`.
++
+The `global` block controls the Prometheus server's global configuration. We have two options present. The first, `scrape_interval`, controls how often Prometheus will scrape targets. You can override this for individual targets. In this case the global setting is to scrape every 5 seconds. The `evaluation_interval` option controls how often Prometheus will evaluate rules. Prometheus uses rules to create new time series and to generate alerts. This option is not used in the example here.
++
+The last block, `scrape_configs`, controls what resources Prometheus monitors. In the default configuration there is a single job, called `{prod-host}`, which scrapes the time series data exposed by the {prod-short} server. The job contains a single, statically configured, target, the `{prod-host}` host on port `8087`.
 
 .Verification steps
 
