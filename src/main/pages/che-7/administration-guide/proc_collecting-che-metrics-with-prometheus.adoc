@@ -1,27 +1,19 @@
 [id="collecting-{prod-id-short}-metrics-with-prometheus_{context}"]
 = Collecting {prod-short} metrics with Prometheus
 
-Prometheus is a monitoring system that collects metrics in real time and stores them in a time series database.
+This section describes how to use the Prometheus monitoring system to collect, store and query metrics about {prod-short}.
 
-Prometheus comes with a console accessible at the `9090` port of the application pod. By default, a template provides an existing *service* and a *route* to access it. It can be used to query and view metrics.
+.Prerequisites
 
-ifeval::["{project-context}" == "che"]
-image::monitoring/monitoring-che-prometheus-console.png[link="{imagesdir}/monitoring/monitoring-che-prometheus-console.png"]
-endif::[]
+* {prod-short} is exposing metrics on port `8087`. See xref:enabling-and-exposing-{prod-id-short}-metrics_{context}[].
 
-== Prometheus terminology
+* Prometheus 2.9.1 or above is running. Prometheus console is running on port `9090` with a corresponding *service* and *route*. See link:https://prometheus.io/docs/introduction/first_steps/[First steps with Prometheus].
 
-Prometheus offers:
+.Procedure
 
-counter:: the simplest numerical type of metric whose value can be only increased. A typical example is counting the amount of HTTP requests that go through the system.
-
-gauge:: numerical value that can be increased or decreased. Best suited for representing values of objects.
-
-histogram:: a more complex metric that is suited for performing observations. Metrics are collected and grouped in configurable buckets, which allwos to present the results, for instance, in a form of a heatmap.
-
-== Configuring Prometheus
-
-.Prometheus configuration
+* Configure Prometheus to scrape metrics from the `8087` port
++
+.Prometheus configuration example
 [source,yaml,subs="+attributes"]
 ----
 - apiVersion: v1
@@ -33,10 +25,26 @@ histogram:: a more complex metric that is suited for performing observations. Me
       scrape_configs:
         - job_name: 'che'
           static_configs:
-            - targets: ['{prod-host}:8087']
+            - targets: ['{prod-host}:8087'] <3>
   kind: ConfigMap
   metadata:
     name: prometheus-config
 ----
++
 <1> rate, at which a target is scraped
 <2> rate, at which recording and alerting rules are re-checked (not used in our system at the moment)
+<3> scrape metrics from the `8087` port
+
+.Verification steps
+
+* Use the Prometheus console to query and view metrics.
+
+.Additional resources
+
+* link:https://prometheus.io/docs/introduction/first_steps/[First steps with Prometheus].
+
+* link:https://prometheus.io/docs/prometheus/latest/configuration/configuration/[Configuring Prometheus].
+
+* link:https://prometheus.io/docs/prometheus/latest/querying/basics/[Querying Prometheus].
+
+* link:https://prometheus.io/docs/concepts/metric_types/[Prometheus metric types].
