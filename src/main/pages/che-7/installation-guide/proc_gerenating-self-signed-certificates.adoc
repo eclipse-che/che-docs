@@ -1,0 +1,95 @@
+[id="gerenating-self-signed-certificates_{context}"]
+= Generating self-signed TLS certificates
+
+This section describes how to prepare self-signed TLS certificates to use with {prod-short} on different platforms.
+
+
+[discrete]
+== Prerequisites
+
+* Find out expected domain name where {prod-short} deployment is planned
+
+* Find out `openssl.cnf` file location on target machine
+
+[discrete]
+== Procedure
+
+. Set necessary environment variables
+
++
+[subs="+quotes"]
+----
+$ CA_CN=minishift-signer
+$ DOMAIN=*.<expected.domain.com>
+----
+
+. Generate root CA key. Add `-des3` parameter if pass phrase is needed
+
++
+[subs="+quotes"]
+----
+$ openssl genrsa -out rootCA.key 4096
+----
+
+
+. Generate root certificate.
+
++
+[subs="+quotes"]
+----
+$ openssl req -x509 \
+  -new -nodes \
+  -key rootCA.key \
+  -sha256 \
+  -days 1024 \
+  -out rootCA.crt \
+  -subj /CN=${CA_CN} \
+  -reqexts SAN \
+  -extensions SAN \
+  -config <(cat /path/to/openssl.cnf \
+      <(printf '[SAN]\nbasicConstraints=critical, CA:TRUE\nkeyUsage=keyCertSign, cRLSign, digitalSignature, keyEncipherment'))
+
+----
+
+
+. Generate domain key.
+
++
+[subs="+quotes"]
+----
+$ openssl genrsa -out domain.key 2048
+----
+
+. Generate domain csr.
+
++
+[subs="+quotes"]
+----
+$ openssl req -new -sha256 \
+    -key domain.key \
+    -subj "/C=UA/ST=CK/O=RedHat/CN=${DOMAIN}" \
+    -reqexts SAN \
+    -config <(cat /path/to/openssl.cnf \
+        <(printf "\n[SAN]\nsubjectAltName=DNS:${DOMAIN}\nbasicConstraints=critical, CA:FALSE\nkeyUsage=keyCertSign, digitalSignature, keyEncipherment\nextendedKeyUsage=serverAuth")) \
+    -out domain.csr
+----
+
+
+. Generate domain certificate.
+
++
+[subs="+quotes"]
+----
+$ openssl x509 \
+-req \
+-extfile <(printf "subjectAltName=DNS:${DOMAIN}\nbasicConstraints=critical, CA:FALSE\nkeyUsage=keyCertSign,                       digitalSignature, keyEncipherment\nextendedKeyUsage=serverAuth") \
+-days 365 \ 
+-in domain.csr \
+-CA rootCA.crt \
+-CAkey rootCA.key \
+-CAcreateserial -out domain.crt
+----
+
+
+After executing those steps, it will be possible to use domain.crt and domain.key for Route/Ingress TLS
+and rootCA.crt for importing into browsers.
