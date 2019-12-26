@@ -11,5 +11,5 @@
 # update machine, get required deps in place
 # this script assumes its being run on CentOS Linux 7/x86_64
 
-./cico_build.sh
+./.ci/cico_build.sh
 
