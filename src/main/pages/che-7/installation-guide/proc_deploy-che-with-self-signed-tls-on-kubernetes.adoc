@@ -1,0 +1,50 @@
+[id="deploy-{prod-id-short}-with-self-signed-tls-on-kubernetes_{context}"]
+= Deploy {prod-short} with self signed TLS certificates on Kubernetes
+
+This section describes how to deploy {prod-short} with self-signed TLS certificates on Kubernetes platform.
+
+
+[discrete]
+== Prerequisites
+
+* Have all required keys/certificates generated
+
+
+[discrete]
+== Procedure
+
+. Pre-create namespace for {prod-short}
+
++
+[subs="+quotes"]
+----
+$ kubectl create namespace che
+----
+
+
+. Create secret with domain key and certificate
+
++
+[subs="+quotes"]
+----
+$ kubectl create secret tls che-tls --key=domain.key --cert=domain.crt -n che
+----
+
+
+. Create secret with ca certificate
+
++
+[subs="+quotes"]
+----
+$ cp rootCA.crt ca.crt
+$ kubectl create secret generic self-signed-cert --from-file=ca.crt -n che
+----
+
+
+. Deploy {prod-short} using `chectl`
+
++
+[subs="+quotes"]
+----
+$ chectl server:start --platform=minikube --installer=helm --multiuser --tls --self-signed-cert
+----
