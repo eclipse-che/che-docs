@@ -49,7 +49,7 @@ $ OPENSSL_CNF=<path_to_openssl.cnf>
 ----
 # Example with minikube on Fedora 31
 $ CA_CN=eclipse-che-signer
-$ DOMAIN=*.$( minikube ip ).nip.io
+$ DOMAIN=\*.$( minikube ip ).nip.io
 $ OPENSSL_CNF=/etc/pki/tls/openssl.cnf
 
 # Example with crc on OSX
@@ -117,6 +117,7 @@ $ openssl req -new -sha256 \
 ----
 $ openssl x509 \
 -req \
+-sha256 \
 -extfile <(printf "subjectAltName=DNS:${DOMAIN}\nbasicConstraints=critical, CA:FALSE\nkeyUsage=keyCertSign,                       digitalSignature, keyEncipherment\nextendedKeyUsage=serverAuth") \
 -days 365 \ 
 -in domain.csr \
