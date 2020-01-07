@@ -1,0 +1,175 @@
+## Remote plug-in endpoint
+
+Eclipse Che has remote plug-in endpoint service to start VS Code Extensions and Che theia plug-ins in the separated containers. Eclipse Che inject remote plug-in endpoint binaries to each remote plug-in container. This service start your remote extensions and plug-ins defined in the plug-in meta.yaml#extensions file and connect them to the che-theia editor container.
+
+Main goal of remote plug-in endpoint - creation plugin api proxy between your remote plug-in container and che-theia editor container. Also remote plug-in endpoint is interceptor for some plug-in api parts to launch them inside remote sidecar container, instead of editor container. For example terminal api, debug api and so on.
+
+Remote plug-in endpoint executable command stored in the env variable of the remote plug-in container:
+
+`PLUGIN_REMOTE_ENDPOINT_EXECUTABLE`
+
+## Prepare plug-in image and meta.yaml to use remote plug-in endpoint.
+
+> Notice: Since Eclipse Che 7.3.1
+
+Eclipse Che provides two ways to start remote plug-in endpoint with your sidecar image:
+
+ - plug-in writer defines launch remote plug-in endpoint using Dockerfile. Requires image patching and rebuild.
+ - plug-in writer defines launch remote plug-in endpoint in the plug-in meta.yaml. This way plugin writer should use if he doesn't want to patch some original image to start remote plug-in endpoint.
+
+## Define launch remote plug-in endpoint using Dockerfile.
+
+To start remote plug-in endpoint use env variable `PLUGIN_REMOTE_ENDPOINT_EXECUTABLE` in the Dockerfile.
+
+1) You can start remote plug-in endpoint using Dockerfile#CMD:
+
+```dockerfile
+FROM fedora:30
+
+RUN dnf update -y && dnf install -y nodejs htop && node -v
+
+RUN mkdir /home/user
+
+ENV HOME=/home/user
+
+RUN mkdir /projects \
+    && chmod -R g+rwX /projects \
+    && chmod -R g+rwX "${HOME}"
+
+CMD ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+```
+
+2) You can start remote plug-in endpoint using Dockerfile#ENTRYPOINT:
+
+```dockerfile
+FROM fedora:30
+
+RUN dnf update -y && dnf install -y nodejs htop && node -v
+
+RUN mkdir /home/user
+
+ENV HOME=/home/user
+
+RUN mkdir /projects \
+    && chmod -R g+rwX /projects \
+    && chmod -R g+rwX "${HOME}"
+
+ENTRYPOINT ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+```
+
+3) There are some images which uses wrapper script pattern. Main pattern idea: start script defined in the Dockerfile#Entrypoint to fix some permissions inside container and then script executes main process defined in the Dockerfile#CMD. Eclipse Che could use such images with wrapper script to provide some permission fixes on the different infrastructures with advanced security, for example Openshift.
+
+Example of the wrapper script:
+
+```shell
+#!/bin/sh
+
+set -e
+
+export USER_ID=$(id -u)
+export GROUP_ID=$(id -g)
+
+if ! whoami >/dev/null 2>&1; then
+    echo "${USER_NAME:-user}:x:${USER_ID}:0:${USER_NAME:-user} user:${HOME}:/bin/sh" >> /etc/passwd
+fi
+
+# Grant access to projects volume in case of non root user with sudo rights
+if [ "${USER_ID}" -ne 0 ] && command -v sudo >/dev/null 2>&1 && sudo -n true > /dev/null 2>&1; then
+    sudo chown "${USER_ID}:${GROUP_ID}" /projects
+fi
+
+exec "$@"
+```
+
+Dockerfile:
+
+```dockerfile
+FROM alpine:3.10.2
+
+ENV HOME=/home/theia
+
+RUN mkdir /projects ${HOME} && \
+    # Change permissions to let any arbitrary user
+    for f in "${HOME}" "/etc/passwd" "/projects"; do \
+      echo "Changing permissions on ${f}" && chgrp -R 0 ${f} && \
+      chmod -R g+rwX ${f}; \
+    done
+
+ADD entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+```
+
+How it works? Container on start launch `/entrypoint.sh` script defined in the Dockerfile#ENTRYPOINT, this script fix permissions and execute command using `exec $@`. Like argument for our ENTRYPOINT will be CMD, that’s why command `exec $@` will call `${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}` and remote plug-in endpoint starts in the container after permission fix.
+
+## Define launch remote plug-in endpoint in the plug-in meta.yaml
+
+There are a lot of images which were already created and you want to reuse them to start remote plug-in endpoint without modification. In this case you can try to use image like is, but you need to change plug-in meta.yaml definition to start remote plug-in endpoint. To achieve this purpose plug-in meta.yaml definition in the container section has two properties: `command` and `args`:
+
+- `command` - Eclipse Che uses to override Dockerfile#ENTRYPOINT.
+- `args`  - Eclipse Che uses to override Dockerfile#CMD.
+
+1) So if you want to override both Dockerfile#ENTRYPOINT, Dockerfile#CMD and start remote plug-in endpoint, you can do something like that:
+
+```yaml
+---
+apiVersion: v2
+category: Language
+description: "Typescript language features"
+displayName: Typescript
+firstPublicationDate: "2019-10-28"
+icon: "https://www.eclipse.org/che/images/logo-eclipseche.svg"
+name: typescript
+publisher: che-incubator
+repository: "https://github.com/Microsoft/vscode"
+title: "Typescript language features"
+type: "VS Code extension"
+version: remote-bin-with-override-entrypoint
+spec:
+  containers:
+    - image: "example/fedora-for-ts-remote-plugin-without-endpoint:latest"
+      memoryLimit: 512Mi
+      name: vscode-typescript
+      command:
+        - sh
+        - -c
+      args:
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+  extensions:
+    - "https://github.com/che-incubator/ms-code.typescript/releases/download/v1.35.1/che-typescript-language-1.35.1.vsix"
+```
+
+
+2) If you have an image with wrapper script pattern, than you are interested in saving call entypoint.sh. That’s why you should override `args` instead of `command` in the plug-in metal.yaml section:
+
+```yaml
+---
+apiVersion: v2
+category: Language
+description: "Typescript language features"
+displayName: Typescript
+firstPublicationDate: "2019-10-28"
+icon: "https://www.eclipse.org/che/images/logo-eclipseche.svg"
+name: typescript
+publisher: che-incubator
+repository: "https://github.com/Microsoft/vscode"
+title: "Typescript language features"
+type: "VS Code extension"
+version: remote-bin-with-override-entrypoint
+spec:
+  containers:
+    - image: "example/fedora-for-ts-remote-plugin-without-endpoint:latest"
+      memoryLimit: 512Mi
+      name: vscode-typescript
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+  extensions:
+    - "https://github.com/che-incubator/ms-code.typescript/releases/download/v1.35.1/che-typescript-language-1.35.1.vsix"
+```
+
+In this case Eclipse Che will call entrypoint.sh defined in the Dockerfile#Entrypoint, and entrypoint.sh like wrapper script will call `[ ‘sh’, ‘-c”, ‘ ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}’ ]` using `exec “$@”`.
+
+3) There are another remote plug-in image cases. For example for remote plug-in you want to execute some service on start container and also you need to start remote plug-in endpoint. In this case you still can use meta.yaml `command` and `args`. You can start your service, detach process and start remote plugin endpoint and they will work parallel together.
