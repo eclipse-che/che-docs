@@ -1,2 +1,7 @@
-$ git clone git@github.com:redhat-developer/codeready-workspaces.git
-$ cd codeready-workspaces/che-plugin-registry
+$ podman login registry.redhat.io
+Username: ${REGISTRY-SERVICE-ACCOUNT-USERNAME}
+Password: ${REGISTRY-SERVICE-ACCOUNT-PASSWORD}
+Login Succeeded!
+
+$ podman pull registry.redhat.io/codeready-workspaces/pluginregistry-rhel8
+$ cd codeready-workspaces/pluginregistry-rhel8
