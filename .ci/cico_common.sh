@@ -60,7 +60,7 @@ install_deps(){
     yum -q -y install centos-release-scl-rh java-1.8.0-openjdk-devel git 
     yum -q -y install rh-maven33
     yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-    yum -q -y docker-ce
+    yum -q -y install docker-ce
     service docker start
 }
 
