@@ -101,7 +101,7 @@ releaseProject() {
     echo ">>>>>>>>>> $tag"
     setReleaseVersionInMavenProject $tag
     git commit -asm "Release version ${tag}"
-    build_and_deploy_artifacts
+    #build_and_deploy_artifacts
     git tag "${tag}" || die_with "Failed to create tag ${tag}! Release has been deployed, however"
     git push --tags ||  die_with "Failed to push tags. Please do this manually"
     exit 0
