@@ -1,5 +1,6 @@
 ## Eclipse Che documentation
 
+
 Che docs use Jekyll to convert `.adoc` (AsciiDoc) files into HTML pages. Docs are published at [https://www.eclipse.org/che/docs](https://www.eclipse.org/che/docs/). Updates are synced with a release cycle.
 
 ## Build and preview
