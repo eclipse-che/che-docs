@@ -113,7 +113,7 @@ projects:
 ...
 ----
 
-To add or override source branch value, the following factory URL can be used:
+To add or override `persistVolumes` attribute value, the following factory URL can be used:
 
 [subs="+quotes"]
 ----
@@ -134,3 +134,29 @@ attributes:
 projects:
 ...
 ----
+
+
+
+When overriding attributes, everything that follows the `attributes` keyword treat as an attribute name, so it's 
+possible to use dot-separated names:
+
+[subs="+quotes"]
+----
+https://che.openshift.io/f?url=https://gist.githubusercontent.com/themr0c/ef8e59a162748a8be07e900b6401e6a8/raw/8802c20743cde712bbc822521463359a60d1f7a9/devfile.yaml&override.attributes.dot.name.format.attribute=true
+----
+
+
+The resulting workspace will have the following devfile model:
+
+[subs="+quotes"]
+----
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: golang-
+attributes: 
+   dot.name.format.attribute: true
+projects:
+...
+----
+
