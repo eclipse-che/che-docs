@@ -18,6 +18,7 @@ BUFF="= Che configuration properties $NEWLINEx2"
 
 
 fetch_current_version() {
+  # TODO: add errorprone
   CURRENT_VERSION=$(grep -ri "<version>" pom.xml | tail -n 1 |sed -e "s/^[ \t]*<version>\([^<]*\)<.*$/\1/")
   if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
      CURRENT_VERSION="master"
@@ -26,6 +27,7 @@ fetch_current_version() {
 
 
 fetch_conf_files_content() {
+  # TODO: add errorprone
   CHE_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse/che/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/che.properties"
   RAW_CONTENT=$(curl -s "$CHE_PROPERTIES_URL")
   MULTIUSER_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse/che/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/multiuser.properties"
@@ -37,19 +39,19 @@ parse_content() {
   do
     if [[ $LINE == '##'* ]]; then
       if [[ ! -z $TOPIC ]]; then
-        BUFF="$BUFF$TABLE_FOOTER"  # topic changes, closing the table
+        BUFF="$BUFF$TABLE_FOOTER"                   # topic changes, closing the table
       fi
-      TOPIC="${LINE//#}"
+      TOPIC="${LINE//#}"                            # read topic stripping #-s
       BUFF="$BUFF==${TOPIC} $TABLE_HEADER $NEWLINE" # new topic and table header
     elif [[ $LINE == '#'* ]] && [[ ! -z $TOPIC ]]; then
-      TRIM_LINE=${LINE//#}
-      DESCR_BUFF="$DESCR_BUFF${TRIM_LINE/ /}" # collect all description lines into buffer
+      TRIM_LINE=${LINE//#}                          # read description stripping #-s
+      DESCR_BUFF="$DESCR_BUFF${TRIM_LINE/ /}"       # collect all description lines into buffer
     elif [[ -z $LINE ]] && [[ ! -z $TOPIC ]]; then
-      DESCR_BUFF=""                           # empty line separator = cleanup description and property
+      DESCR_BUFF=""                                 # empty line is a separator = cleanup description and property name + value
       KEY=""
       VALUE=""
     elif [[ ! -z $TOPIC ]]; then
-      IFS=$'=' read KEY VALUE <<< $LINE
+      IFS=$'=' read KEY VALUE <<< $LINE             # property split into key and value
       BUFF="$BUFF $KEY,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
     fi
   done <<< $RAW_CONTENT
