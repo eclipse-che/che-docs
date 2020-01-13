@@ -7,14 +7,14 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-
+ 
 CURRENT_VERSION=""
 RAW_CONTENT=""
 NEWLINE=$'\n'
-NEWLINEX2=$'\n\n'
-TABLE_HEADER=",=== $NEWLINE Name,Default value, Description $NEWLINE"
-TABLE_FOOTER=",==="
-BUFF="= Che configuration properties $NEWLINEX2"
+NEWLINEx2=$'\n\n'
+TABLE_HEADER="$NEWLINEx2,=== $NEWLINE Name,Default value, Description $NEWLINE"
+TABLE_FOOTER=",=== $NEWLINEx2"
+BUFF="= Che configuration properties $NEWLINEx2"
 
 
 fetch_current_version() {
@@ -37,10 +37,10 @@ parse_content() {
   do
     if [[ $LINE == '##'* ]]; then
       if [[ ! -z $TOPIC ]]; then
-        BUFF="$BUFF$TABLE_FOOTER $NEWLINE $NEWLINE"  # topic changes, closing the table
+        BUFF="$BUFF$TABLE_FOOTER"  # topic changes, closing the table
       fi
       TOPIC="${LINE//#}"
-      BUFF="$BUFF==${TOPIC} $NEWLINEX2$TABLE_HEADER $NEWLINE" # new topic and table header
+      BUFF="$BUFF==${TOPIC} $TABLE_HEADER $NEWLINE" # new topic and table header
     elif [[ $LINE == '#'* ]] && [[ ! -z $TOPIC ]]; then
       TRIM_LINE=${LINE//#}
       DESCR_BUFF="$DESCR_BUFF${TRIM_LINE/ /}" # collect all description lines into buffer
