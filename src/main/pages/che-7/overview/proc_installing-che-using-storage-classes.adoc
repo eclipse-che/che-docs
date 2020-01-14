@@ -1,0 +1,136 @@
+[id="proc_installing-che-using-storage-classes_{context}"]
+
+= Install Eclipse Che using storage classes.
+
+Eclipse Che has two components which requires infrastructure persisted volumes to store data. First component it is Postgres data base. Second component it is Eclipse Che workspaces. Che workspaces store user's source code using volumes. Usually it is `/projects` volume and so on.
+
+> Notice: source code will be stored in the persisted volume only if workspace is not ephemeral.
+
+Eclipse Che doesn't create persisted volumes in the infrastructure itself. To mount persisted volumes inside Eclipse Che used persisted volume claims(PVC). Eclipse Che server creates persisted volume claimsitself. Administrators can apply storage class name in the Eclipse Che configuration to use storage classes feature in the Eclipse Che PVC. Storage classes provides ability to configure infrastructure storage in a flexible way with a lot of storage parameters. Also administrators can bind static provisioned persisted volumes to Eclispe Che PVC using class name.
+
+To provide storage class name for postgress PVC you can use `chectl` argument `"--postgres-pvc-storage-class-name"` for `server:start` command.
+For example:
+
+```shell
+chectl server:start -m -p minikube -a operator --postgres-pvc-storage-class-name=postgress-storage
+```
+
+
+To provide storage class name for Che workspaces you can use `chectl` argument `"--workspace-pvc-storage-class-name"` for `server:start` command.
+For example:
+
+```shell
+chectl server:start -m -p minikube -a operator --workspace-pvc-storage-class-name=workspace-storage
+```
+
+For Eclipse Che workspaces storage class name has different behavior dependent on workspace PVC strategy.
+
+Notice: `"postgres-pvc-storage-class-name=postgress-storage"` and `"workspace-pvc-storage-class-name"` works for operator and helm installers.
+
+Also you can define storage classe names using Eclipse Che custom resources definition yaml. You need to create separated yaml file and copy full custom resources definion content for your Eclipse Che installation. After that you need to find and change properties:
+spec#storage#postgresPVCStorageClassName and spec#storage#workspacePVCStorageClassName.
+For example:
+
+```yaml
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  name: eclipse-che
+spec:
+  # ...
+  storage:
+    # ...
+    # keep blank unless you need to use a non default storage class for Postgres PVC
+    postgresPVCStorageClassName: 'postgres-storage'
+    # ...
+    # keep blank unless you need to use a non default storage class for workspace PVC(s)
+    workspacePVCStorageClassName: 'workspace-storage'
+    # ...
+```
+
+> Notice: `# ...` it is missing for readability, but required  content.
+
+Then you can start new che server with your custom resources. For example:
+
+```shell
+chectl server:start -m -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
+```
+
+== Bind static provisined volumes
+
+Administrators can provision persisted volumes and use them in Eclipse Che PVC using class names like was mentioned above. The easiest way to archive it: bind two persisted volumes: first one for Postgres db and second one for Che workspaces.
+Example:
+
+```yaml
+# che-postgres-pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: postgres-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/che/postgres"
+```
+
+
+```yaml
+# che-workspace-pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: workspace-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: workspace-storage
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/che/workspace"
+```
+
+```shell
+$ kubectl apply -f che-workspace-pv.yaml -f che-postgres-pv.yaml
+```
+
+> Warning: administrators should provide valid file permissions for volumes. You can do it with help of storage class configuration or manually if file system doesn't support set up storageClass#mountOptions uid and gid. Postgress volume requires uid=26 and gid=26
+
+To configure Eclipse Che to store all workspaces in the one persisted volume you need to configure Che to use `Common` PVC strategy. Also you need configure Che to start workspaces in the single namespace. And finally you need to set up `postgresPVCStorageClassName` and `workspacePVCStorageClassName`. All this properties you can define using Eclipse Che custom resources yaml. Example:
+
+```yaml
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  name: eclipse-che
+spec:
+  server:
+    # ...
+    workspaceNamespaceDefault: 'che'
+    # ...
+  storage:
+    # ...
+    # Defaults to common
+    pvcStrategy: 'common'
+    # ...
+    # keep blank unless you need to use a non default storage class for Postgres PVC
+    postgresPVCStorageClassName: 'postgres-storage'
+    # ...
+    # keep blank unless you need to use a non default storage class for workspace PVC(s)
+    workspacePVCStorageClassName: 'workspace-storage'
+    # ...
+```
+
+Then you can start new che server with your custom resources. For example:
+
+```shell
+chectl server:start -m -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
+```
