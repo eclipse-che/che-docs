@@ -12,7 +12,7 @@ CURRENT_VERSION=""
 RAW_CONTENT=""
 NEWLINE=$'\n'
 NEWLINEx2=$'\n\n'
-TABLE_HEADER="$NEWLINEx2,=== $NEWLINE Name,Default value, Description $NEWLINE"
+TABLE_HEADER="$NEWLINEx2,=== $NEWLINE Environment Variable Name,Default value, Description $NEWLINE"
 TABLE_FOOTER=",=== $NEWLINEx2"
 BUFF="= Che configuration properties $NEWLINEx2"
 
@@ -52,11 +52,21 @@ parse_content() {
       VALUE=""
     elif [[ ! -z $TOPIC ]]; then
       IFS=$'=' read KEY VALUE <<< $LINE             # property split into key and value
-      BUFF="$BUFF $KEY,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
+      ENV=${KEY^^}                                  # capitalize property name
+      ENV="+${ENV//_/__}+"                          # replace single underscore with double
+      ENV=${ENV//./_}                               # replace docs with single underscore
+      BUFF="$BUFF $ENV,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
     fi
   done <<< $RAW_CONTENT
-  echo "$BUFF" >> test.adoc
+  echo "$BUFF" >> $1
 }
+
+if [ $# -eq 0 ]; then
+  echo "Error: output filename required."
+  echo -e "$HELP"
+  exit 1
+fi
+
 
 fetch_current_version
 fetch_conf_files_content
