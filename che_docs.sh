@@ -70,4 +70,4 @@ fi
 
 fetch_current_version
 fetch_conf_files_content
-parse_content
+parse_content $1
