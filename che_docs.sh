@@ -73,7 +73,6 @@ parse_content() {
 
 if [ $# -eq 0 ]; then
   echo "Error: output filename required."
-  echo -e "$HELP"
   exit 1
 fi
 
