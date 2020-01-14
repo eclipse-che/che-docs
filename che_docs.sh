@@ -12,7 +12,7 @@ set -o pipefail
 CURRENT_VERSION=""
 RAW_CONTENT=""
 NEWLINE=$'\n'
-NEWLINEx2=$'\n\n'
+NEWLINEx2="$NEWLINE$NEWLINE"
 TABLE_HEADER="$NEWLINEx2,=== $NEWLINE Environment Variable Name,Default value, Description $NEWLINE"
 TABLE_FOOTER=",=== $NEWLINEx2"
 BUFF="= Che configuration properties $NEWLINEx2"
@@ -63,8 +63,8 @@ parse_content() {
     elif [[ ! -z $TOPIC ]]; then
       IFS=$'=' read KEY VALUE <<< $LINE             # property split into key and value
       ENV=${KEY^^}                                  # capitalize property name
-      ENV="+${ENV//_/__}+"                          # replace single underscore with double
-      ENV=${ENV//./_}                               # replace docs with single underscore
+      ENV="+${ENV//_/__}+"                          # replace single underscores with double
+      ENV=${ENV//./_}                               # replace dots with single underscore
       BUFF="$BUFF $ENV,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
     fi
   done <<< $RAW_CONTENT
