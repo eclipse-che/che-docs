@@ -7,7 +7,8 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
- 
+set -o pipefail
+
 CURRENT_VERSION=""
 RAW_CONTENT=""
 NEWLINE=$'\n'
@@ -16,10 +17,12 @@ TABLE_HEADER="$NEWLINEx2,=== $NEWLINE Environment Variable Name,Default value, D
 TABLE_FOOTER=",=== $NEWLINEx2"
 BUFF="= Che configuration properties $NEWLINEx2"
 
-
 fetch_current_version() {
-  # TODO: add errorprone
   CURRENT_VERSION=$(grep -ri "<version>" pom.xml | tail -n 1 |sed -e "s/^[ \t]*<version>\([^<]*\)<.*$/\1/")
+  if [ $? -ne 0 ]; then
+    echo "Failure: Cannot read version from pom.xml" >&2
+    exit 1
+  fi
   if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
      CURRENT_VERSION="master"
   fi
@@ -27,11 +30,18 @@ fetch_current_version() {
 
 
 fetch_conf_files_content() {
-  # TODO: add errorprone
   CHE_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse/che/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/che.properties"
-  RAW_CONTENT=$(curl -s "$CHE_PROPERTIES_URL")
+  RAW_CONTENT=$(curl -sf "$CHE_PROPERTIES_URL")
+  if [ $? -ne 0 ]; then
+    echo "Failure: Cannot read che.properties from URL $CHE_PROPERTIES_URL" >&2
+    exit 1
+  fi
   MULTIUSER_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse/che/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/multiuser.properties"
-  RAW_CONTENT="$RAW_CONTENT $(curl -s "$MULTIUSER_PROPERTIES_URL")"
+  RAW_CONTENT="$RAW_CONTENT $(curl -sf "$MULTIUSER_PROPERTIES_URL")"
+  if [ $? -ne 0 ]; then
+    echo "Failure: Cannot read multiuser.properties from URL $MULTIUSER_PROPERTIES_URL" >&2
+    exit 1
+  fi
 }
 
 parse_content() {
@@ -58,7 +68,7 @@ parse_content() {
       BUFF="$BUFF $ENV,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
     fi
   done <<< $RAW_CONTENT
-  echo "$BUFF" >> $1
+  echo "$BUFF" > $1
 }
 
 if [ $# -eq 0 ]; then
