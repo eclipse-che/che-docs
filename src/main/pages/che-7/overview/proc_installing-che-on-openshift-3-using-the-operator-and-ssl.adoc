@@ -15,18 +15,18 @@ This section describes how to install {prod-short} on OpenShift 3 with the CLI m
 
 .Procedure
 
-. Create a new project called *{prod-id-short}*:
-+
-[subs="+quotes,+attributes"]
-----
-$ oc new-project {prod-id-short}
 ----
 
 . Run the following command to create the {prod-short} instance:
 +
 [subs="+quotes,+attributes",options="nowrap"]
 ----
-$ {prod-cli} server:start --platform=openshift --installer=operator --domain=<OPENSHIFT_APPS_URL> --tls
+$ {prod-cli} server:start -n _<project-name>_ --domain=<OPENSHIFT_APPS_URL> --tls 
+----
++
+[NOTE]
+----
+To create the {prod-short} instance on demo OpenShift clusters that have not been setup with a valid certificate for the routes, run the command with the `--self-signed-cert` flag.
 ----
 
 .Verification steps
