@@ -5,36 +5,58 @@
 
 To add a plug-in:
 
-. Get the name of the Kubernetes pod that hosts the plug-in registry container. To do this, filter the `app=che-plugin-registry` label:
+. Check out the plugin registry sources.
++
+----
+$ git clone https://github.com/eclipse/che-plugin-registry; \
+  cd che-plugin-registry
+----
+
+. Create a `meta.yaml` in some local folder. This can be done from scratch or by copying from an existing plug-in's `meta.yaml` file.
++
+----
+$ PLUGIN="v3/plugins/new-org/new-plugin/0.0.1"; \
+  mkdir -p ${PLUGIN}; cp v3/plugins/che-incubator/cpptools/0.1/* ${PLUGIN}/
+  echo "${PLUGIN##*/}" > ${PLUGIN}/../latest.txt
+----
+
+. If copying from an existing plug-in, make changes to the `meta.yaml` file to suit your needs. Make sure your new plug-in has a unique `title`, `displayName` and `description`. Update the `firstPublicationDate` to today's date. 
+
+. These fields in `meta.yaml` must match the path defined in `PLUGIN` above.
++
+----
+publisher: new-org
+name: new-plugin
+version: 0.0.1
+----
+
+. Get the name of the pod that hosts the plug-in registry container. To do this, filter the `component=plugin-registry` label:
 +
 ----
 $ PLUGIN_REG_POD=$(kubectl get -o custom-columns=NAME:.metadata.name \
- --no-headers -l app=che-plugin-registry pod)
+  --no-headers pod -l component=plugin-registry)
 ----
 
-. Create the new plug-in directory in the plug-in registry container, if it does not exist:
+. Regenerate the registry's `index.json` file to include your new plug-in.
 +
 ----
-$ ORG="my-org"
-$ PLUGIN="my-plug-in"
-$ VERSION="1.0.1"
-$ kubectl exec ${PLUGIN_REG_POD} -i -t -- \
-  mkdir -p /var/www/html/v3/plugins/${ORG}/${PLUGIN}/${VERSION}
+$ cd che-plugin-registry; \
+    "$(pwd)/build/scripts/generate_latest_metas.sh" v3 && \
+    "$(pwd)/build/scripts/check_plugins_location.sh" v3 && \
+    "$(pwd)/build/scripts/set_plugin_dates.sh" v3 && \
+    "$(pwd)/build/scripts/check_plugins_viewer_mandatory_fields.sh" v3 && \
+    "$(pwd)/build/scripts/index.sh" v3 > v3/plugins/index.json
 ----
 
-. Copy the `meta.yaml` file in the container:
+. Copy the new `index.json` and `meta.yaml` files from your new local plug-in folder to the container.
 +
 ----
-LOCAL_META="${PWD}/meta.yaml"
-$ kubectl cp "${LOCAL_META}" \
-  ${PLUGIN_REG_POD}:/var/www/html/v3/plugins/${ORG}/${PLUGIN}/${VERSION}
+$ cd che-plugin-registry; \ 
+  LOCAL_FILES="$(pwd)/${PLUGIN}/meta.yaml $(pwd)/v3/plugins/index.json"; \
+  kubectl exec ${PLUGIN_REG_POD} -i -t -- mkdir -p /var/www/html/${PLUGIN}; \
+  for f in $LOCAL_FILES; do e=${f/$(pwd)\//}; echo "Upload ${f} -> /var/www/html/${e}"; \
+    kubectl cp "${f}" ${PLUGIN_REG_POD}:/var/www/html/${e}; done
 ----
 
-. Update the `index.json` file of the registry:
-+
-----
-$ kubectl exec ${PLUGIN_REG_POD} -i -t -- \
-  /var/www/html/index_v2.sh v3 > /var/www/html/v3/plugins/index.json
-----
+. The new plug-in can now be used from the existing {prod-short} instance's plug-in registry. To discover it, go to the {prod-short} dashboard, then click the `Workspaces` link. From there, click the gear icon to configure one of your workspaces. Select the `Plugins` tab to see the updated list of available plug-ins.
 
-. The new plug-in can now be used from a {prod-short} instance.

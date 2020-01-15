@@ -5,35 +5,46 @@
 
 To add a devfile:
 
-. Get the name of the Kubernetes pod that hosts the devfile registry container. To do this, filter the `app=che-devfile-registry` label:
+. Check out the devfile registry sources.
++
+----
+$ git clone https://github.com/eclipse/che-devfile-registry; \
+  cd che-devfile-registry
+----
+
+. Create a `devfile.yaml` and `meta.yaml` in some local folder. This can be done from scratch or by copying from an existing devfile.
++
+----
+$ STACK="new-stack"; \
+  mkdir -p devfiles/${STACK}; cp devfiles/nodejs/* devfiles/${STACK}/
+----
+
+. If copying from an existing devfile, make changes to the devfile to suit your needs. Make sure your new devfile has a unique `displayName` and `description`.
+
+. Get the name of the pod that hosts the devfile registry container. To do this, filter the `component=devfile-registry` label:
 +
 ----
 $ DEVFILE_REG_POD=$(kubectl get -o custom-columns=NAME:.metadata.name \
-  --no-headers -l app=che-devfile-registry pod)
+  --no-headers pod -l component=devfile-registry)
 ----
 
-. Create the new devfile directory in the devfile registry container, if it does not exist.
+. Regenerate the registry's `index.json` file to include your new devfile.
 +
 ----
-$ STACK="my-stack"
-$ kubectl exec $\{DEVFILE_REG_POD} -i -t -- \
-  mkdir -p /var/www/html/devfiles/$\{STACK}
+$ cd che-devfile-registry; \
+  "$(pwd)/build/scripts/check_mandatory_fields.sh" devfiles; \
+  "$(pwd)/build/scripts/index.sh" > index.json
 ----
 
-. Copy the `devfile.yaml` file and the `meta.yaml` file to the container.
+. Copy the new `index.json`, `devfile.yaml` and `meta.yaml` files from your new local devfile folder to the container.
 +
 ----
-$ LOCAL_META="$(PWD)/meta.yaml"
-$ LOCAL_DEVFILE="$(PWD)/devfile.yaml"
-$ kubectl cp "$\{LOCAL_META}" \
-  $\{DEVFILE_REG_POD}:/var/www/html/devfiles/$\{STACK}
-$ kubectl cp "$\{LOCAL_DEVFILE}" \
-  $\{DEVFILE_REG_POD}:/var/www/html/devfiles/$\{STACK}
+$ cd che-devfile-registry; \ 
+  LOCAL_FILES="$(pwd)/${STACK}/meta.yaml $(pwd)/${STACK}/devfile.yaml $(pwd)/index.json"; \
+  kubectl exec ${DEVFILE_REG_POD} -i -t -- mkdir -p /var/www/html/devfiles/${STACK}; \
+  for f in $LOCAL_FILES; do e=${f/$(pwd)\//}; echo "Upload ${f} -> /var/www/html/devfiles/${e}"
+    kubectl cp "${f}" ${DEVFILE_REG_POD}:/var/www/html/devfiles/${e}; done
 ----
 
-. Update the `index.json` file of the registry.
-+
-----
-$ kubectl exec $\{DEVFILE_REG_POD} -i -t -- \
-  /var/www/html/index.sh > /var/www/html/devfiles/index.json
-----
+. The new devfile can now be used from the existing {prod-short} instance's devfile registry. To discover it, go to the {prod-short} dashboard, then click the `Workspaces` link. From there, click `Add Workspace` to see the updated list of available devfiles.
+

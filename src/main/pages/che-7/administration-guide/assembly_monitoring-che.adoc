@@ -15,39 +15,21 @@ summary:
 
 :context: monitoring-che
 
-{prod-short} can expose certain data as metrics, that can be processed by Prometheus and Grafana stack. Prometheus is a monitoring system, that maintains the collection of metrics - time series key-value data which can represent consumption of resources like CPU and memory, amount of processed HTTP queries and their execution time, and {prod-short} specific resources, such as number of users and workspaces, the start and shutdown of workspaces, information about JsonRPC stack.
+This chapter describes how to configure {prod-short} to expose metrics and how to build an example monitoring stack with external tools to process data exposed as metrics by {prod-short}. 
 
-Prometheus is powered with a special query language, that allows manipulating the collected data, and perform various binary, vector and aggregation operations with it, to help create a more refined view on data.
-
-While Prometheus is the central piece, responsible for scraping and storing the metrics, while Grafana offers a front-end "facade" with tools to create a various visual representation in the form of dashboards with various panels and graph types.
-
-Note that this monitoring stack is not an official production-ready solution, but rather has an introduction purpose.
-
-.The structure of {prod-short} monitoring stack
-image::monitoring/monitoring-che-stack-structure.png[link="{imagesdir}/monitoring/monitoring-che-stack-structure.png"]
-
-[id="enabling-{prod-id-short}-metrics-collections"]
-== Enabling {prod-short} metrics collections
-
-[id='prerequisites-{context}',discrete]
-.Prerequisites
-
-* Installed Prometheus 2.9.1 or above. See more link:https://prometheus.io/docs/introduction/first_steps/[https://prometheus.io/docs/introduction/first_steps/].
-* Installed Grafana 6.0 or above. See more at link:https://grafana.com/docs/installation/[https://grafana.com/docs/installation/]
-
-.Procedure
-
-. Set the `CHE_METRICS_ENABLED=true` environment variable
-. Expose the `8087` port as a service on the che-master host
-. Configure Prometheus to scrape metrics from the `8087` port
-. Configure a Prometheus data source on Grafana
-. Deploy {prod-short}-specific dashboards on Grafana
+include::proc_enabling-and-exposing-che-metrics.adoc[leveloffset=+1]
 
 include::proc_collecting-che-metrics-with-prometheus.adoc[leveloffset=+1]
 
+ifeval::["{project-context}" == "che"]
+
 include::proc_viewing-che-metrics-on-grafana-dashboards.adoc[leveloffset=+1]
 
+include::ref_grafana-dashboards-for-che.adoc[leveloffset=+1]
+
 include::proc_developing-grafana-dashboards.adoc[leveloffset=+1]
+
+endif::[]
 
 include::proc_extending-che-monitoring-metrics.adoc[leveloffset=+1]
 

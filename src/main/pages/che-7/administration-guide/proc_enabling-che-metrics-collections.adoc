@@ -1,14 +1,16 @@
+// tracing-che
+
 [id="enabling-{prod-id-short}-metrics-collections_{context}"]
 = Enabling {prod-short} metrics collections
 
 .Prerequisites
 
-* Installed Jaeger v1.12.0 or above. See instructions at link:https://www.jaegertracing.io/docs/1.12/getting-started/[Get up and running with Jaeger in your local environment].
+* Installed Jaeger v1.12.0 or above. See instructions at xref:installing-the-jaeger-tracing-tool_tracing-che[]
 
 .Procedure
 
-. Enable the following environment variables for {prod-short} deployment:
-+
+For Jaeger tracing to work, enable the following environment variables in your {prod-short} deployment:
+
 [source,bash]
 ----
 # Activating {prod-short} tracing modules
@@ -31,6 +33,34 @@ JAEGER_SAMPLER_PARAM="1"
 JAEGER_REPORTER_MAX_QUEUE_SIZE="10000"
 ----
 
-.Additional resources
+To enable the following environment variables:
 
-* List of all link:https://github.com/jaegertracing/jaeger-client-go#environment-variables[Jaeger client environment variables]
+. In the  `yaml` source code of the {prod-short} deployment, add the following configuration variables under `spec.server.customCheProperties`.
++
+[source,yaml]
+----
+customCheProperties:
+      CHE_TRACING_ENABLED: 'true'
+      JAEGER_SAMPLER_TYPE: const
+      DEFAULT_JAEGER_REPORTER_MAX_QUEUE_SIZE: '10000'
+      JAEGER_SERVICE_NAME: che-server
+      JAEGER_ENDPOINT: 'http://jaeger-collector:14268/api/traces'
+      JAEGER_SAMPLER_MANAGER_HOST_PORT: 'jaeger:5778'
+      JAEGER_SAMPLER_PARAM: '1'
+----
+
+. Edit the `JAEGER_ENDPOINT` value to match the name of the Jaeger collector service in your deployment.
++
+From the left menu of the main {ocp} screen, obtain the value of JAEGER_ENDPOINT by navigation to *Networking -> Services*. Alternatively, execute the following `oc` command:
++
+----
+$ oc get services
+----
++
+The requested value is included in the service name that contains the `collector` string.
+
+
+
+.Additional resources
+* For additional information about custom environment properties and how to define them in CheCluster Customer Resource, see link:https://www.eclipse.org/che/docs/che-7/advanced-configuration-options/[Advanced configuration options].
+*  For custom configuration of Jaeger, see the list of link:https://github.com/jaegertracing/jaeger-client-go#environment-variables[Jaeger client environment variables].

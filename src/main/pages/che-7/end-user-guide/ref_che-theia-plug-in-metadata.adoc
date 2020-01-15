@@ -3,125 +3,143 @@
 
 Che-Theia plug-in metadata is information about individual plug-ins for the plug-in registry.
 
-
-== meta.yaml
-
 The Che-Theia plug-in metadata is defined in a `meta.yaml` file for the specific plug-in.
 
-.Interface for a Che-Theia plug-in metadata object
-[source,json]
-----
-{
-    id: string;
-    version: string;
-    type: string;
-    name: string;
-        title: string;
-    description: string;
-    url: string;
-}
-----
+The link:https://github.com/eclipse/che-plugin-registry/tree/master/v3/plugins[che-plugin-registry repository] contains .
 
-The most important part of the object is the `url`, which defines the location of plug-in configuration. Typically, it is a `tar` archive with the plug-in `meta.yaml` file.
+.`meta.yml`
 
-When adding a VS Code extension from the oficial marketplace using its ID, the `url` field should be replaced with an `attributes` section that would contain `extension` and `container-image` fields:
+:===
+`apiVersion`: API version (should be `v2`).
+`category`: Available \: `Language`, `Other`.
+`description`: Description (a phrase).
+`displayName`: Display name.
+`firstPublicationDate`: Date in the form `"YYYY-MM-DD"`. Example\: `"2019-12-02"`.
+`icon`: URL of a svg icon.
+`name`: Name (no spaces allowed).
+`publisher`: Name of the publisher.
+`repository`: URL of the source repository.
+`title`: Title (long).
+`type`: `Che Plugin`, `VS Code extension`.
+`version`: Version (example\: `7.5.1`).
+`spec`: Specifications (see underneath).
+:===
 
-.Interface for a VS Code plug-in metadata object
-[source,json]
-----
-{
-    id: string;
-    version: string;
-    type: string;
-    name: string;
-        title: string;
-    description: string;
-    Attributes: {
-       extension: string;      <1>
-       containerImage: string; <2>
-    }
-}
-----
-<1> VS Code extension ID with a `vscode:extension/` prefix
-<2> Points to the container image in which the extension runs. Use images based on `eclipse/che-theia-endpoint-runtime` to be able to host VS Code extensions or Che-Theia plug-ins.
+.`spec` attributes
+:===
+`endpoints`: plugin endpoints
+`containers`: sidecar containers for plugin. `Che Plugin` and `VS Code extension` supports only one container.
+`initContainers`: sidecar init containers for plugin
+`workspaceEnv`: environment variables for the workspace.
+`extensions`: For a VisualStudio Code Extension, list of U4`image`: URI of the container image
+:===
+
+.`spec.containers`. Notice: `spec.initContainers` has absolutely the same container definition.
+:===
+`name`: sidecar container name
+`image`: container image
+`memorylimit`: Kubernetes/OpenShift-spec memory limit string (e.g. "512Mi")
+`env`: list of environment variables to set in sidecar
+`command`: string array definition of the root process command inside container.
+`args`: string array arguments for the root process command inside container
+`volumes`: volumes required by plugin
+`ports`: ports exposed by plugin (on the container)
+`commands`: development commands available to plugin container
+`mountSources`: boolean flag to bound volume with source code `/projects` to the plugin container.
+:===
+
+.`spec.containers.env` (and `spec.initContainers.env`) attributes. Notice: `workspaceEnv` has absolutely the same attributes
+:===
+`name`: env variable name
+`value`: env variable value
+:===
+
+.`spec.containers.volumes` (and `spec.initContainers.volumes`) attributes
+:===
+`mountPath`: path to the volume in the container
+`name`: volume name
+`ephemeral`: if true volume will be ephemeral, otherwise volume will be persisted
+:===
+
+.`spec.containers.ports` (and `spec.initContainers.ports`) attributes
+:===
+`exposedPort`: Exposed port.
+:===
+
+.`spec.containers.commands` (and `spec.initContainers.commands`) attributes
+:===
+`name`: command name
+`workingDir`: command working directory
+`command`: string array which define development command
+:===
+
+.`spec.endpoints` attributes
+:===
+`name`: Name (no spaces allowed).
+`public`: `true`, `false`
+`targetPort`: Target port.
+`attributes`: Endpoint attributes.
+:===
+
+.`spec.endpoints.attributes` attributes
+:===
+`protocol`: Protocol, example: `ws`
+`type`: `ide`, `ide-dev`
+`discoverable`: `true`, `false`
+`secure`: `true`, `false`
+`cookiesAuthEnabled`: `true`, `false`
+:===
 
 
-== che-plugin.yaml
-
-The most detailed information about a plug-in is in the `che-plugin.yaml` file. For example:
-
-.`che-plugin.yaml` file for the link:https://github.com/ws-skeleton/che-editor-theia/blob/master/etc/che-plugin.yaml[che-editor-theia] plug-in
+.Example `meta.yaml` for a Che-Theia plug-in: the Che machine-exec Service
 [source,yaml]
 ----
-version: 1.0.0
-type: {prod-short} Editor
-name: theia-ide
-id: org.eclipse.che.editor.theia
-title: Eclipse Theia for Eclipse Che
-description: Eclipse Theia
-icon: https://pbs.twimg.com/profile_images/929088242456190976/xjkS2L-0_400x400.jpg
-endpoints:
- -  name: "theia"
-    public: true
-    targetPort: 3100
-    attributes:
-      protocol: http
-      type: ide
-      secure: true
-      cookiesAuthEnabled: true
-      discoverable: false
- -  name: "theia-dev"
-    public: true
-    targetPort: 3130
-    attributes:
-      protocol: http
-      type: ide-dev
-      discoverable: false
-containers:
- - name: theia-ide
-   image: eclipse/che-theia:0.3.18-nightly
-   env:
-       - name: THEIA_PLUGINS
-         value: local-dir:///plugins
-       - name: HOSTED_PLUGIN_HOSTNAME
-         value: 0.0.0.0
-       - name: HOSTED_PLUGIN_PORT
-         value: 3130
-   volumes:
-       - mountPath: "/plugins"
-         name: plugins
-       - mountPath: "/projects"
-         name: projects
-   ports:
-       - exposedPort: 3100
-       - exposedPort: 3130
-   memory-limit: "1536M"
-   memoryLimit: "1536M"
+apiVersion: v2
+category: Other
+description: Che Plug-in with che-machine-exec service to provide creation terminal or tasks for Eclipse CHE workspace containers.
+displayName: Che machine-exec Service
+firstPublicationDate: "2019-12-02"
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+name: che-machine-exec-plugin
+publisher: eclipse
+repository: https://github.com/eclipse/che-machine-exec/
+title: Che machine-exec Service Plugin
+type: Che Plugin
+version: 7.5.1
+spec:
+  endpoints:
+   -  name: "che-machine-exec"
+      public: true
+      targetPort: 4444
+      attributes:
+        protocol: ws
+        type: terminal
+        discoverable: false
+        secure: true
+        cookiesAuthEnabled: true
+  containers:
+   - name: che-machine-exec
+     image: "quay.io/eclipse/che-machine-exec:7.5.1"
+     ports:
+       - exposedPort: 4444
 ----
 
-.`che-plugin.yaml` file for the link:https://github.com/eclipse/che-machine-exec/blob/master/assembly/etc/che-plugin.yaml[che-machine-exec] plug-in
-[source,json]
+.Example `meta.yaml` for a VisualStudio Code extension: the AsciiDoc support extension
+[source,yaml]
 ----
-endpoints:
- -  name: "che-machine-exec"
-    public: true
-    targetPort: 4444
-    attributes:
-      protocol: ws
-      type: terminal
-      discoverable: false
-containers:
- - name: che-machine-exec
-   image: eclipse/che-machine-exec
-   ports:
-     - exposedPort: 4444
-editors:
-   - id: org.eclipse.che.editor.theia
+apiVersion: v2
+category: Language
+description: This extension provides a live preview, syntax highlighting and snippets for the AsciiDoc format using Asciidoctor flavor.
+displayName: AsciiDoc support
+firstPublicationDate: "2019-12-02"
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+name: vscode-asciidoctor
+publisher: joaompinto
+repository: https://github.com/asciidoctor/asciidoctor-vscode
+title: AsciiDoctor Plugin.
+type: VS Code extension
+version: 2.7.7
+spec:
+  extensions:
+  - https://github.com/asciidoctor/asciidoctor-vscode/releases/download/v2.7.7/asciidoctor-vscode-2.7.7.vsix
 ----
-
-
-// .Additional resources
-// 
-// * A bulleted list of links to other material closely related to the contents of the concept module.
-// * For more details on writing concept modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-// * Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].

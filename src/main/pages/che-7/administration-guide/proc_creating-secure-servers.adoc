@@ -7,27 +7,12 @@
 
 To create secure servers in {prod-short} workspaces, set the `secure` attribute of the endpoint to `true` in the `dockerimage` type component in the devfile.
 
+.Devfile snippet for a secure server
 [source,yaml]
 ----
-apiVersion: 1.0.0
-metadata:
-  name: petclinic-dev-environment
 components:
   - type: dockerimage
-    image: eclipse/maven-jdk8:latest
-    volumes:
-      - name: maven-repo
-        containerPath: /root/.m2
-        env:
-      - name: ENV_VAR
-        value: value
-        endpoints:
-      - name: maven-server
-        port: 3101
-        attributes:
-        protocol: http
-        secure: 'true'
-        public: 'true'
-        discoverable: 'false'
-        memoryLimit: 1536M
+    endpoints:
+      - attributes:
+          secure: 'true'
 ----
