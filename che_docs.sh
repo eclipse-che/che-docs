@@ -15,7 +15,8 @@ NEWLINE=$'\n'
 NEWLINEx2="$NEWLINE$NEWLINE"
 TABLE_HEADER="$NEWLINEx2,=== $NEWLINE Environment Variable Name,Default value, Description $NEWLINE"
 TABLE_FOOTER=",=== $NEWLINEx2"
-BUFF="= Che configuration properties $NEWLINEx2"
+BUFF=""
+OUTPUT_PATH="src/main/pages/che-7/administration-guide/ref_configuring-system-variables.adoc"
 
 fetch_current_version() {
   CURRENT_VERSION=$(grep -ri "<version>" pom.xml | tail -n 1 |sed -e "s/^[ \t]*<version>\([^<]*\)<.*$/\1/")
@@ -68,15 +69,9 @@ parse_content() {
       BUFF="$BUFF $ENV,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
     fi
   done <<< $RAW_CONTENT
-  echo "$BUFF" > $1
+  echo "$BUFF" >> $OUTPUT_PATH
 }
-
-if [ $# -eq 0 ]; then
-  echo "Error: output filename required."
-  exit 1
-fi
-
 
 fetch_current_version
 fetch_conf_files_content
-parse_content $1
+parse_content
