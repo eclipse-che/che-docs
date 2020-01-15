@@ -67,13 +67,13 @@ parse_content() {
       KEY=""
       VALUE=""
     elif [[ -n $TOPIC ]]; then                          # non empty line after any topic and didnt starts with # treat as propety line
-      IFS=$'=' read -r KEY VALUE <<< $LINE              # property split into key and value
+      IFS=$'=' read -r KEY VALUE <<< "$LINE"            # property split into key and value
       ENV=${KEY^^}                                      # capitalize property name
       ENV="+${ENV//_/__}+"                              # replace single underscores with double
       ENV=${ENV//./_}                                   # replace dots with single underscore
       BUFF="$BUFF $ENV,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
     fi
-  done <<< $RAW_CONTENT
+  done <<< "$RAW_CONTENT"
   echo "$BUFF" >> $OUTPUT_PATH
   echo "Processing done. Output file is $OUTPUT_PATH" >&2
 }
