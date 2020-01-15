@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Copyright (c) 2018 Red Hat, Inc.
 # This program and the accompanying materials are made
@@ -53,21 +53,21 @@ parse_content() {
   while read -r LINE
   do
     if [[ $LINE == '##'* ]]; then                       # Line starting from two or more #-s means new topic is started
-      if [[ ! -z $TOPIC ]]; then
+      if [[ -n $TOPIC ]]; then
         BUFF="$BUFF$TABLE_FOOTER"                       # topic changes, closing the table
       fi
       TOPIC="${LINE//#}"                                # read topic stripping #-s
       echo "   Found begin of topic: $TOPIC" >&2
       BUFF="$BUFF==${TOPIC} $TABLE_HEADER $NEWLINE"     # new topic and table header
-    elif [[ $LINE == '#'* ]] && [[ ! -z $TOPIC ]]; then # line starting with single # means property description (can be multi-line)
+    elif [[ $LINE == '#'* ]] && [[ -n $TOPIC ]]; then   # line starting with single # means property description (can be multi-line)
       TRIM_LINE=${LINE//#}                              # read description stripping #-s
       DESCR_BUFF="$DESCR_BUFF${TRIM_LINE/ /}"           # collect all description lines into buffer
-    elif [[ -z $LINE ]] && [[ ! -z $TOPIC ]]; then
+    elif [[ -z $LINE ]] && [[ -n $TOPIC ]]; then
       DESCR_BUFF=""                                     # empty line is a separator = cleanup description and property name + value
       KEY=""
       VALUE=""
-    elif [[ ! -z $TOPIC ]]; then                        # non empty line after any topic and didnt starts with # treat as propety line
-      IFS=$'=' read KEY VALUE <<< $LINE                 # property split into key and value
+    elif [[ -n $TOPIC ]]; then                          # non empty line after any topic and didnt starts with # treat as propety line
+      IFS=$'=' read -r KEY VALUE <<< $LINE              # property split into key and value
       ENV=${KEY^^}                                      # capitalize property name
       ENV="+${ENV//_/__}+"                              # replace single underscores with double
       ENV=${ENV//./_}                                   # replace dots with single underscore
