@@ -16,11 +16,11 @@ NEWLINEx2="$NEWLINE$NEWLINE"
 TABLE_HEADER="$NEWLINEx2,=== $NEWLINE Environment Variable Name,Default value, Description $NEWLINE"
 TABLE_FOOTER=",=== $NEWLINEx2"
 BUFF=""
-OUTPUT_PATH="src/main/pages/che-7/administration-guide/ref_configuring-system-variables.adoc"
+OUTPUT_PATH="../src/main/pages/che-7/administration-guide/ref_configuring-system-variables.adoc"
 
 fetch_current_version() {
   echo "Trying to read current product version from pom.xml..." >&2
-  CURRENT_VERSION=$(grep -ri "<version>" pom.xml | tail -n 1 |sed -e "s/^[ \t]*<version>\([^<]*\)<.*$/\1/")
+  CURRENT_VERSION=$(grep -ri "<version>" ../pom.xml | tail -n 1 |sed -e "s/^[ \t]*<version>\([^<]*\)<.*$/\1/")
   if [ $? -ne 0 ]; then
     echo "Failure: Cannot read version from pom.xml" >&2
     exit 1
