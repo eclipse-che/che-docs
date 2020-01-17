@@ -34,3 +34,18 @@ s/Che Plugin metadata/{prod-short} plug-in metadata/g
 s/Che Plugin registry/{prod-short} plug-in registry/g
 #s/metadata of Che Plugin/metadata of {prod-short} plug-in/g
 s/{prod-short} Editor/Che Editor/g
+
+# Replace version numbers
+s/\({prod-id-short}-\|{prod-short} \|{prod} \)6/\1{prod-prev-ver}/g
+s/\({prod-id-short}-\|{prod-short} \|{prod} \)7/\1{prod-ver}/g
+
+# Replace prod-cli
+s/\bchectl\b/{prod-cli}/g
+
+# Revert back chectl in file names, attributes names
+s/\(ifdef:.*\?\){prod-cli}/\1chectl/g
+s/\(include::.*\?\){prod-cli}/\1chectl/g
+s/\(name:.*\?\){prod-cli}/\1chectl/g
+s/\(permalink:.*\?\){prod-cli}/\1chectl/g
+s/\(title:.*\?\){prod-cli}/\1chectl/g
+s/\(:parent.*\?\){prod-cli}/\1chectl/g
