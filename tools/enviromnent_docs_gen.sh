@@ -16,7 +16,7 @@ NEWLINEx2="$NEWLINE$NEWLINE"
 TABLE_HEADER="$NEWLINEx2,=== $NEWLINE Environment Variable Name,Default value, Description $NEWLINE"
 TABLE_FOOTER=",=== $NEWLINEx2"
 BUFF=""
-OUTPUT_PATH="../src/main/pages/che-7/administration-guide/ref_configuring-system-variables.adoc"
+OUTPUT_PATH="../src/main/pages/che-7/administration-guide/examples/system-variables.adoc"
 
 fetch_current_version() {
   echo "Trying to read current product version from pom.xml..." >&2
@@ -57,8 +57,9 @@ parse_content() {
         BUFF="$BUFF$TABLE_FOOTER"                       # topic changes, closing the table
       fi
       TOPIC="${LINE//#}"                                # read topic stripping #-s
+      TOPIC="${TOPIC/ }"                                # trim first space
       echo "   Found begin of topic: $TOPIC" >&2
-      BUFF="$BUFF==${TOPIC} $TABLE_HEADER $NEWLINE"     # new topic and table header
+      BUFF="$BUFF.${TOPIC} $TABLE_HEADER $NEWLINE"      # new topic and table header
     elif [[ $LINE == '#'* ]] && [[ -n $TOPIC ]]; then   # line starting with single # means property description (can be multi-line)
       TRIM_LINE=${LINE//#}                              # read description stripping #-s
       DESCR_BUFF="$DESCR_BUFF${TRIM_LINE/ /}"           # collect all description lines into buffer
@@ -74,7 +75,7 @@ parse_content() {
       BUFF="$BUFF $ENV,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
     fi
   done <<< "$RAW_CONTENT"
-  echo "$BUFF" >> $OUTPUT_PATH
+  echo "$BUFF" > $OUTPUT_PATH
   echo "Processing done. Output file is $OUTPUT_PATH" >&2
 }
 
