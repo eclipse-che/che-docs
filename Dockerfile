@@ -33,5 +33,5 @@ RUN apk add --no-cache --update libstdc++ bash ca-certificates curl python3 \
            chmod -R g+rwX ${f}; \
        done
 
-WORKDIR /che-docs
+WORKDIR /che-docs/src/main
 CMD jekyll clean && jekyll serve --livereload -H 0.0.0.0 --trace
