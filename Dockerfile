@@ -6,12 +6,16 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-FROM ruby:2.5-alpine
+FROM ruby:2.6-alpine
 COPY src/main/Gemfile* /tmp/
 RUN apk add --no-cache --virtual build-dependencies build-base \
-    && cd /tmp && bundle install \
+    && cd /tmp \
+    && bundle install \
     && apk del build-dependencies build-base \
-    && apk add libstdc++ \
+    && apk add --no-cache libstdc++ bash curl python3 \
+    && pip3 install newdoc \
+    && curl -o /usr/bin/test-adoc.sh https://raw.githubusercontent.com/jhradilek/check-links/master/test-adoc.sh \
+    && chmod +x /usr/bin/test-adoc.sh \
     && mkdir /projects \
     && for f in "/projects"; do \
            chgrp -R 0 ${f} && \
