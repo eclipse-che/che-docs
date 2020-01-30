@@ -70,7 +70,7 @@ build_and_deploy_artifacts() {
     if [ $? -eq 0 ]; then
         echo 'Build Success!'
         echo 'Going to deploy artifacts'
-        scl enable rh-maven33 "mvn clean deploy -Pcodenvy-release -DcreateChecksum=true  -Dgpg.passphrase=$CHE_OSS_SONATYPE_PASSPHRASE"
+        scl enable rh-maven33 "mvn clean deploy -DcreateChecksum=true  -Dgpg.passphrase=$CHE_OSS_SONATYPE_PASSPHRASE"
 
     else
         echo 'Build Failed!'
@@ -96,9 +96,7 @@ releaseProject() {
     set -x
     git checkout -f release
     curVer=$(getCurrentVersion)
-    echo ">>>>>>>> $curVer"
     tag=$(getReleaseVersion $curVer)
-    echo ">>>>>>>>>> $tag"
     setReleaseVersionInMavenProject $tag
     git commit -asm "Release version ${tag}"
     #build_and_deploy_artifacts
