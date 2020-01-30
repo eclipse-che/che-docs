@@ -64,6 +64,7 @@ install_deps(){
     service docker start
 }
 
+
 build_and_deploy_artifacts() {
     set -x
     scl enable rh-maven33 'mvn clean install -U'
