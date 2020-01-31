@@ -47,5 +47,6 @@ s/\(ifdef:.*\?\){prod-cli}/\1chectl/g
 s/\(include::.*\?\){prod-cli}/\1chectl/g
 s/\(name:.*\?\){prod-cli}/\1chectl/g
 s/\(permalink:.*\?\){prod-cli}/\1chectl/g
+s/\(link:[^\[]*\){prod-cli}/\1chectl/g
 s/\(title:.*\?\){prod-cli}/\1chectl/g
 s/\(:parent.*\?\){prod-cli}/\1chectl/g
