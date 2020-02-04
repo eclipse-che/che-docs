@@ -1,22 +1,31 @@
 [id="finding-{prod-id-short}-cluster-url-using-openshift-4-cli-tools_{context}"]
 = Finding {prod-short} cluster URL using OpenShift 4 CLI tools
 
-This section describes how to {prod-short} cluster URL using OpenShift 4 CLI tool.
+This section describes how to obtain the {prod-short} cluster URL using the OpenShift 4 CLI tool. The URL can be retrieved from the OpenShift logs or from the `checluster` Customer Resource.
 
-[discrete]
-== Prerequisites
+.Prerequisites
+* {prod-short} is deployed in a OpenShift cluster. This can validated by osbserving Openshift logs. See xref:viewing-the-state-of-the-{prod-id-short}-cluster-deployment-using-openshift-4-cli-tools_{context}[].
+* User is located in a {prod-short} installation namespace.
 
-* View the logs of the {prod-short} Operator. See xref:viewing-the-state-of-the-{prod-id-short}-cluster-deployment-using-openshift-4-cli-tools_{context}[].
+.Procedure
 
-[discrete]
-== Procedure
-
-* Wait for the logs to show the message `{prod} is now available at:` followed by {prod-short} URL:
+. Run following command for retrieving a {prod-short} cluster URL from the `checluster` CR.
 +
-[subs="+quotes,+attributes",options="nowrap"]
 ----
-time="2019-07-12T09:50:13Z" level=info msg="Updating eclipse-che CR with {prod} server URL: http://che-che.apps.cluster-fre-f0a2.fre-f0a2.openshiftworkshop.com"
-time="2019-07-12T09:50:13Z" level=info msg="Custom resource eclipse-che updated"
-time="2019-07-12T09:50:13Z" level=info msg="{prod} is now available at: http://che-che.apps.cluster-fre-f0a2.fre-f0a2.openshiftworkshop.com"
-time="2019-07-12T09:50:13Z" level=info msg="Updating eclipse-che CR with version: 7.0.0-RC-2.0"
+oc get checluster -o=jsonpath='{.items[0].status.cheURL}'
+----
+
+. The {prod-short} cluster URL is displayed.
++
+Alternatively, wait for the logs to show the message `{prod} is now available at:` followed by the {prod-short} cluster URL:
++
+[subs="+attributes",options="nowrap",role=white-space-pre]
+----
+include::examples/{project-context}-cluster-url-logs.log[]
+----
++
+After the deployment is finished, click the {prod-short} cluster URL in the log output or use the following command to filter it out:
++
+----
+$ oc logs --tail=10 `oc get pods -o name | grep operator` | grep "available at" | awk -F'available at: ' '{print $2}' | sed 's/"//'
 ----
