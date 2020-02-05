@@ -1,7 +1,7 @@
 [id="viewing-che-theia-ide-logs-on-the-cli_{context}"]
-= Viewing Che-Theia IDE logs on the command line
+= Viewing Che-Theia editor logs using the OpenShif CLI
 
-Observing Che-Theia IDE logs helps get a better understanding and insight over the plugins or other components' behavior. This section describes how to access the Che-Theia IDE logs and obtain their output using the OpenShift CLI.
+Observing Che-Theia editor logs helps get a better understanding and insight over the plugins that got loaded by the editor. This section describes how to access the Che-Theia editor logs and obtain their output using the OpenShift CLI.
 
 .Prerequisites
 * {prod-short} is deployed in a OpenShift cluster. This can validated by osbserving Openshift logs. See xref:viewing-the-state-of-the-{prod-id-short}-cluster-deployment-using-openshift-4-cli-tools_{context}[].
@@ -21,7 +21,7 @@ $ oc get pods
 ----
 $ oc get pods
 NAME                                              READY  STATUS   RESTARTS  AGE
-{project-context}-9-xz6g8                                       1/1    Running  1         15h
+{prod-deployment}-9-xz6g8                                 1/1    Running  1         15h
 workspace0zqb2ew3py4srthh.go-cli-549cdcf69-9n4w2  4/4    Running  0         1h
 ----
 
@@ -52,7 +52,9 @@ $ oc logs -f <name-of-pod> -c <name-of-container>
 ----
 $ oc logs -f workspace0zqb2ew3py4srthh.go-cli-549cdcf69-9n4w2 -c
 theia-idexzb
->root WARN A handler with prefix term  is already registered.
+>root INFO unzipping the plug-in 'task_plugin.theia' to directory: /tmp/theia-unpacked/task_plugin.theia
+root INFO unzipping the plug-in 'theia_yeoman_plugin.theia' to directory: /tmp/theia-unpacked/theia_yeoman_plugin.theia
+root WARN A handler with prefix term  is already registered.
 root INFO [nsfw-watcher: 75] Started watching: /home/theia/.theia
 root WARN e.onStart is slow, took: 367.4600000013015 ms
 root INFO [nsfw-watcher: 75] Started watching: /projects
