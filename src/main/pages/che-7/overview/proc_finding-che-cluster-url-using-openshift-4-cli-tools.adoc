@@ -1,18 +1,19 @@
 [id="finding-{prod-id-short}-cluster-url-using-openshift-4-cli-tools_{context}"]
-= Finding {prod-short} cluster URL using OpenShift 4 CLI tools
+= Finding {prod-short} cluster URL using the OpenShift 4 CLI
 
-This section describes how to obtain the {prod-short} cluster URL using the OpenShift 4 CLI tool. The URL can be retrieved from the OpenShift logs or from the `checluster` Customer Resource.
+This section describes how to obtain the {prod-short} cluster URL using the OpenShift 4 CLI (command line interface). The URL can be retrieved from the OpenShift logs or from the `checluster` Customer Resource.
 
 .Prerequisites
-* {prod-short} is deployed in a OpenShift cluster. This can validated by osbserving Openshift logs. See xref:viewing-the-state-of-the-{prod-id-short}-cluster-deployment-using-openshift-4-cli-tools_{context}[].
+* {prod-short} is deployed in a OpenShift cluster. This can be validated by osbserving Openshift logs. See xref:viewing-the-state-of-the-{prod-id-short}-cluster-deployment-using-openshift-4-cli-tools_{context}[].
 * User is located in a {prod-short} installation namespace.
 
 .Procedure
 
-. Run following command for retrieving a {prod-short} cluster URL from the `checluster` CR.
+. For retrieving a {prod-short} cluster URL from the `checluster` CR, run the following command:
 +
+[options="nowrap",role=white-space-pre]
 ----
-oc get checluster -o=jsonpath='{.items[0].status.cheURL}'
+$ oc get checluster --output jsonpath='{.items[0].status.cheURL}'
 ----
 
 . The {prod-short} cluster URL is displayed.
@@ -26,6 +27,7 @@ include::examples/{project-context}-cluster-url-logs.log[]
 +
 After the deployment is finished, click the {prod-short} cluster URL in the log output or use the following command to filter it out:
 +
+[options="nowrap",role=white-space-pre]
 ----
-$ oc logs --tail=10 `oc get pods -o name | grep operator` | grep "available at" | awk -F'available at: ' '{print $2}' | sed 's/"//'
+$ oc logs --tail=10 `oc get pods --output name | grep operator` | grep "available at" | awk -F'available at: ' '{print $2}' | sed 's/"//'
 ----
