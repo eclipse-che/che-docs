@@ -4,11 +4,10 @@ metadata:
   name: prometheus-config
 data:
   prometheus.yml: |-
-    global:
-      scrape_interval:     5s
-      evaluation_interval: 5s
-    scrape_configs:
-      - job_name: 'che'
-        static_configs:
-          - targets: ['{prod-host}:8087']
-
+      global:
+        scrape_interval:     5s             <1>
+        evaluation_interval: 5s             <2>
+      scrape_configs:                       <3>  
+        - job_name: 'che'
+          static_configs:
+            - targets: ['[che-host]:8087']  <4>          
