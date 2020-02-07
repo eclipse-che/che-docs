@@ -1,37 +1,56 @@
 [id="proc_installing-che-using-storage-classes_{context}"]
 
-= Install Eclipse Che using storage classes.
+= Installing {prod} using storage classes
 
-Eclipse Che has two components which requires infrastructure persisted volumes to store data. First component it is Postgres data base. Second component it is Eclipse Che workspaces. Che workspaces store user's source code using volumes. Usually it is `/projects` volume and so on.
+:context: installing-che-using-storage-classes
 
-> Notice: source code will be stored in the persisted volume only if workspace is not ephemeral.
+{prod} has two components which require Persistent Volumes to store data:
+ * a Postgres database.
+ * an {prod} workspaces. {prod} workspaces store source code using volumes, for example `/projects` volume.
 
-Eclipse Che doesn't create persisted volumes in the infrastructure itself. To mount persisted volumes inside Eclipse Che used persisted volume claims(PVC). Eclipse Che server creates persisted volume claimsitself. Administrators can apply storage class name in the Eclipse Che configuration to use storage classes feature in the Eclipse Che PVC. Storage classes provides ability to configure infrastructure storage in a flexible way with a lot of storage parameters. Also administrators can bind static provisioned persisted volumes to Eclispe Che PVC using class name.
+[NOTE]
+====
+Source code is stored in the Persistent Volume only if workspace is not ephemeral.
+====
 
-To provide storage class name for postgress PVC you can use `chectl` argument `"--postgres-pvc-storage-class-name"` for `server:start` command.
-For example:
+{prod} does not create Persisted Volumes in the infrastructure. {prod} uses Persisted Volume Claims (PVC) to mount Persisted Volumes. {prod} server creates  Persisted Volume Claims.
+You can define storage class name in the {prod} configuration to use storage classes feature in the {prod} PVC. With storage classes, you can configure infrastructure storage in a flexible way with a lot of storage parameters. You can also bind static provisioned Persisted Volumes to {prod} PVC using class name.
 
-```shell
-chectl server:start -m -p minikube -a operator --postgres-pvc-storage-class-name=postgress-storage
-```
+.Procedure
 
+== Defining storage class names with the `server:start command`
 
-To provide storage class name for Che workspaces you can use `chectl` argument `"--workspace-pvc-storage-class-name"` for `server:start` command.
-For example:
+* To provide storage class name for Postgres PVC, use the `chectl` `server:start` command with the `--postgres-pvc-storage-class-name` flag:
++
+[source,bash]
+----
+$ chectl server:start -m -p minikube -a operator --postgres-pvc-storage-class-name=postgress-storage
+----
 
-```shell
-chectl server:start -m -p minikube -a operator --workspace-pvc-storage-class-name=workspace-storage
-```
+* To provide storage class name for Che workspaces, use the `server:start` command with the `--workspace-pvc-storage-class-name` flag:
++
+[source,bash]
+----
+$ chectl server:start -m -p minikube -a operator --workspace-pvc-storage-class-name=workspace-storage
+----
 
-For Eclipse Che workspaces storage class name has different behavior dependent on workspace PVC strategy.
+For {prod} workspaces, storage class name has different behavior depending on a workspace PVC strategy.
 
-Notice: `"postgres-pvc-storage-class-name=postgress-storage"` and `"workspace-pvc-storage-class-name"` works for operator and helm installers.
+[NOTE]
+====
+`postgres-pvc-storage-class-name=postgress-storage` and `workspace-pvc-storage-class-name` work for the operator installer and the Helm installer.
+====
 
-Also you can define storage classe names using Eclipse Che custom resources definition yaml. You need to create separated yaml file and copy full custom resources definion content for your Eclipse Che installation. After that you need to find and change properties:
-spec#storage#postgresPVCStorageClassName and spec#storage#workspacePVCStorageClassName.
-For example:
+== Defining storage class names using a custom resources YAML file
+You can define storage classe names using {prod} custom resources definition YAML.
 
-```yaml
+.Procedure
+
+.  Create a YAML file with custom resources defined for the {prod} installation.
+.  Define fields: spec#storage#postgresPVCStorageClassName and spec#storage#workspacePVCStorageClassName.
++
+[source,yaml]
+----
 apiVersion: org.eclipse.che/v1
 kind: CheCluster
 metadata:
@@ -46,22 +65,25 @@ spec:
     # keep blank unless you need to use a non default storage class for workspace PVC(s)
     workspacePVCStorageClassName: 'workspace-storage'
     # ...
-```
+----
 
-> Notice: `# ...` it is missing for readability, but required  content.
+. Start the {prod-id-short} server with your custom resources:
++
+[source,bash]
+----
+$ chectl server:start -m -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
+----
 
-Then you can start new che server with your custom resources. For example:
+== Binding static provisined volumes
 
-```shell
-chectl server:start -m -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
-```
+Administrators can provision Persisted Volumes using class names.
 
-== Bind static provisined volumes
+.Procedure
 
-Administrators can provision persisted volumes and use them in Eclipse Che PVC using class names like was mentioned above. The easiest way to archive it: bind two persisted volumes: first one for Postgres db and second one for Che workspaces.
-Example:
-
-```yaml
+. Define Persistent Volume for a Postgres database:
++
+[source,yaml]
+----
 # che-postgres-pv.yaml
 apiVersion: v1
 kind: PersistentVolume
@@ -77,10 +99,12 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: "/data/che/postgres"
-```
+----
 
-
-```yaml
+. Define Persistent Volume for a {prod-short} workspace:
++
+[source,yaml]
+----
 # che-workspace-pv.yaml
 apiVersion: v1
 kind: PersistentVolume
@@ -96,17 +120,37 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: "/data/che/workspace"
-```
+----
 
-```shell
+. Bind the two Persisted Volumes:
+[source,bash]
+----
 $ kubectl apply -f che-workspace-pv.yaml -f che-postgres-pv.yaml
-```
+----
 
-> Warning: administrators should provide valid file permissions for volumes. You can do it with help of storage class configuration or manually if file system doesn't support set up storageClass#mountOptions uid and gid. Postgress volume requires uid=26 and gid=26
+[NOTE]
+====
+You must provide valid file permissions for volumes. You can do it using storage class configuration or manually. To manually define permission, define `storageClass#mountOptions` `uid` and `gid`. Postgres volume requires `uid=26` and `gid=26`.
+====
 
-To configure Eclipse Che to store all workspaces in the one persisted volume you need to configure Che to use `Common` PVC strategy. Also you need configure Che to start workspaces in the single namespace. And finally you need to set up `postgresPVCStorageClassName` and `workspacePVCStorageClassName`. All this properties you can define using Eclipse Che custom resources yaml. Example:
+== Configuring {prod} to store workspaces in one Persisted Volume
 
-```yaml
+.Procedure
+
+To configure {prod} to store all workspaces in one Persisted Volume:
+
+. Modify your custom resources YAML file:
+
+* Set `pvcStrategy` as `common`.
+
+* Configure {prod-short} to start workspaces in the single namespace.
+
+* Define storage class names for `postgresPVCStorageClassName` and `workspacePVCStorageClassName`.
+
+* Example of the YAML file:
++
+[source,yaml]
+----
 apiVersion: org.eclipse.che/v1
 kind: CheCluster
 metadata:
@@ -127,10 +171,11 @@ spec:
     # keep blank unless you need to use a non default storage class for workspace PVC(s)
     workspacePVCStorageClassName: 'workspace-storage'
     # ...
-```
+----
 
-Then you can start new che server with your custom resources. For example:
-
-```shell
-chectl server:start -m -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
-```
+. Start the {prod-id-short} server with your custom resources:
++
+[source,bash]
+----
+$ chectl server:start -m -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
+----
