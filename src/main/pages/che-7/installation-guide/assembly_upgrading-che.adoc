@@ -1,11 +1,11 @@
 ---
 title: Upgrading Che
-keywords: 
+keywords:
 tags: []
 sidebar: che_7_docs
 permalink: che-7/upgrading-che/
 folder: che-7/installation-guide
-summary: 
+summary:
 ---
 
 :parent-context-of-upgrading-che: {context}
@@ -49,9 +49,9 @@ When upgrading the Operator of a {prod-short} {prod-prev-ver} installation to {p
 Review the following components:
 
 |===
-| Component | CR attribute name 
-| Postgresql | `spec.database.postgresImage` 
-| Keycloak | `spec.auth.identityProviderImage` 
+| Component | CR attribute name
+| Postgresql | `spec.database.postgresImage`
+| Keycloak | `spec.auth.identityProviderImage`
 | PVC Jobs | `spec.storage.pvcJobsImage`
 |===
 
@@ -60,18 +60,20 @@ Review the following components:
 
 When making changes to the `checluster` custom resource, use patching to make updates to it. For example:
 
+ifeval::["{project-context}" == "che"]
 On Kubernetes, run:
 
-[subs="+quotes,+attributes"]
+[subs="+quotes,+attributes",options="nowrap",role=white-space-pre]
 ----
-$ kubectl patch checluster _<my-che>_ --type=json -n _<che-namespace>_ -p '...'
+$ kubectl patch checluster _<{prod-deplyoment}-cluster>_ --type=json -n _<{prod-deplyoment}-namespace>_ --patch '_<requested-patch>_'
 ----
+
 
 On OpenShift, run:
 
-[subs="+quotes,+attributes"]
+[subs="+quotes,+attributes",options="nowrap",role=white-space-pre]
 ----
-$ oc patch checluster _<my-che>_ --type=json -n _<che-namespace>_ -p '...'
+$ oc patch checluster _<{prod-deplyoment}-cluster>_ --type=json -n _<{prod-deplyoment}-namespace>_ --patch '_<requested-patch>_'
 ----
 
 WARNING: Making local updates to the YAML file of the `checluster` resource and then applying such changed resource to
