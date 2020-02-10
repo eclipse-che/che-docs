@@ -67,7 +67,7 @@ spec:
       steps {
         container('che-docs') {
             dir('che-docs') {
-                sh 'cd src/main && jekyll build --config _config.yml,_config-web.yml'
+                sh './tools/enviromnent_docs_gen.sh &&  cd src/main && jekyll build --config _config.yml,_config-web.yml'
             }
         }
       }
