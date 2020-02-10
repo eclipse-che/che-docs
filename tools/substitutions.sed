@@ -43,10 +43,10 @@ s/\({prod-id-short}-\|{prod-short} \|{prod} \)7/\1{prod-ver}/g
 s/\bchectl\b/{prod-cli}/g
 
 # Revert back chectl in file names, attributes names
-s/\(ifdef:.*\?\){prod-cli}/\1chectl/g
-s/\(include::.*\?\){prod-cli}/\1chectl/g
-s/\(name:.*\?\){prod-cli}/\1chectl/g
-s/\(permalink:.*\?\){prod-cli}/\1chectl/g
+s/\(include:[^\[]*\){prod-cli}/\1chectl/g
+s/\(name:[^\[]*\){prod-cli}/\1chectl/g
+s/\(permalink:[^\[]*\){prod-cli}/\1chectl/g
 s/\(link:[^\[]*\){prod-cli}/\1chectl/g
-s/\(title:.*\?\){prod-cli}/\1chectl/g
-s/\(:parent.*\?\){prod-cli}/\1chectl/g
+s/\(title:[^\[]*\){prod-cli}/\1chectl/g
+s/\(:parent[^:]*\){prod-cli}/\1chectl/g
+s/\({parent[^}]*\){prod-cli}/\1chectl/g
