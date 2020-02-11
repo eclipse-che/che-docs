@@ -20,7 +20,7 @@ oc new-app -f openshift/che-plugin-registry.yml \
  -p IMAGE_TAG="$\{IMAGE_TAG}" \
  -p PULL_POLICY="IfNotPresent"
 ----
-<1> The default {prod-short} namespace is `che`.
+<1> If installed using {prod-cli}, the default {prod-short} namespace is `{prod-namespace}`. The OperatorHub installation method deploys {prod-short} to the users current namespace.
 
 . The devfile registry has an OpenShift template in the `deploy/openshift/` directory of the GitHub repository. To deploy it, run the command:
 +
@@ -35,6 +35,12 @@ oc new-app -f openshift/che-devfile-registry.yml \
  -p IMAGE_TAG="$\{IMAGE_TAG}" \
  -p PULL_POLICY="IfNotPresent"
 ----
-<1> The default {prod-short} namespace is `che`.
+<1> If installed using {prod-cli}, the default {prod-short} namespace is `{prod-namespace}`. The OperatorHub installation method deploys {prod-short} to the users current namespace.
 
-. Check if the registries are deployed successfully on OpenShift. The steps to check are similar to the Kubernetes steps. For details, see the xref:deploying-registries-in-kubernetes_deploying-the-registries[] section. The only difference is that, on OpenShift, Ingresses are replaced with routes.
+. Check if the registries are deployed successfully on OpenShift.
+ifeval::["{project-context}" == "crw"]
+For details, see the xref:deploying-registries-in-kubernetes_deploying-the-registries[Deploying registries in Kubernetes] section, where the only difference when deploying in OpenShift is that Ingresses are replaced with routes.
+endif::[]
+ifeval::["{project-context}" == "che"]
+The steps to check are similar to the Kubernetes steps. For details, see the xref:deploying-registries-in-kubernetes_deploying-the-registries[] section, where the only difference when deploying in OpenShift is that Ingresses are replaced with routes.
+endif::[]
