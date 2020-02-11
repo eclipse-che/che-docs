@@ -1,22 +1,35 @@
 [id="finding-{prod-id-short}-cluster-url-using-openshift-4-cli-tools_{context}"]
-= Finding {prod-short} cluster URL using OpenShift 4 CLI tools
+= Finding {prod-short} cluster URL using the OpenShift 4 CLI
 
-This section describes how to {prod-short} cluster URL using OpenShift 4 CLI tool.
+This section describes how to obtain the {prod-short} cluster URL using the OpenShift 4 CLI (command line interface). The URL can be retrieved from the OpenShift logs or from the `checluster` Customer Resource.
 
-[discrete]
-== Prerequisites
+.Prerequisites
+* {prod-short} is deployed in a OpenShift cluster. Verify the state of the deployment, see xref:viewing-the-state-of-the-{prod-id-short}-cluster-deployment-using-openshift-4-cli-tools_{context}[].
+* User is located in a {prod-short} installation namespace.
 
-* View the logs of the {prod-short} Operator. See xref:viewing-the-state-of-the-{prod-id-short}-cluster-deployment-using-openshift-4-cli-tools_{context}[].
+.Procedure
 
-[discrete]
-== Procedure
-
-* Wait for the logs to show the message `{prod} is now available at:` followed by {prod-short} URL:
+. To retrieve a {prod-short} cluster URL from the `checluster` CR, run:
 +
-[subs="+quotes,+attributes",options="nowrap"]
+[options="nowrap",role=white-space-pre]
 ----
-time="2019-07-12T09:50:13Z" level=info msg="Updating eclipse-che CR with {prod} server URL: http://che-che.apps.cluster-fre-f0a2.fre-f0a2.openshiftworkshop.com"
-time="2019-07-12T09:50:13Z" level=info msg="Custom resource eclipse-che updated"
-time="2019-07-12T09:50:13Z" level=info msg="{prod} is now available at: http://che-che.apps.cluster-fre-f0a2.fre-f0a2.openshiftworkshop.com"
-time="2019-07-12T09:50:13Z" level=info msg="Updating eclipse-che CR with version: 7.0.0-RC-2.0"
+$ oc get checluster --output jsonpath='{.items[0].status.cheURL}'
 ----
+
+. The {prod-short} cluster URL is displayed.
+////
++
+Alternatively, wait for the logs to show the message `{prod} is now available at:` followed by the {prod-short} cluster URL:
++
+[subs="+attributes",options="nowrap",role=white-space-pre]
+----
+include::examples/{project-context}-cluster-url-logs.log[]
+----
++
+After the deployment is finished, click the {prod-short} cluster URL in the log output or use the following command to filter it out:
++
+[options="nowrap",role=white-space-pre]
+----
+$ oc logs --tail=10 `oc get pods --output name | grep operator` | grep "available at" | awk -F'available at: ' '{print $2}' | sed 's/"//'
+----
+////
