@@ -502,7 +502,9 @@ Here, there are two dockerimages, each defining a single endpoint. Endpoint is a
 
 * `protocol`: For public endpoints the protocol is a hint to the UI on how to construct the URL for the endpoint access. Typical values are `http`, `https`, `ws`, `wss`.
 
-* `secure`: A boolean (defaulting to `false`) specifying whether the endpoint is put behind a JWT proxy requiring a JWT workspace token to grant access.
+* `secure`: A boolean (defaulting to `false`) specifying whether the endpoint is put behind a JWT proxy requiring a JWT workspace token to grant access. The JWT proxy is deployed in the same pod as the server and assumes the server listens solely on the local loopback interface (i.e. the `127.0.0.1` address).
++
+WARNING: Listening on any other interface than the local loopback poses a security risk, because such server will be accessible without the JWT authentication within the cluster network on the corresponding IP addresses.
 
 * `path`: The URL of the endpoint
 
