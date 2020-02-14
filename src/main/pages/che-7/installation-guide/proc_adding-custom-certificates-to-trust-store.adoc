@@ -1,0 +1,34 @@
+[id="adding-custom-certificates-to-trust-store_{context}"]
+= Adding custom public SSL certificates to {prod-short} trust-store
+
+This procedure describes how to configure {prod-short} to be able to handle HTTP requests from untrusted sources.
+
+.Procedure
+. Save the certificate that you want to apply to `ca.crt` file.
+. Create a new *configMap* with the certificate:
++
+[subs="+quotes"]
+----
+$ kubectl create configmap custom-public-cert --from-file=ca.crt -n=che
+----
+. Set the `global.customPublicCert` property to `true`.
++
+=====
+.If {prod-short} is deployed using a link:https://helm.sh/[Helm Chart]
+. Clone the https://github.com/eclipse/che[che] project
+. Go to `deploy/kubernetes/helm/che` directory
+. Update the `global.tls.useCustomPublicCerts` property. To do that, add the following option to the `helm upgrade` command:
++
+----
+$ helm upgrade che --set global.tls.useCustomPublicCerts=true --set global.ingressDomain=$(minikube ip).nip.io .
+----
+=====
++
+====
+.If {prod-short} is deployed using link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators]
+Update the `gitSelfSignedCert` property. To do that, execute:
+
+----
+$ kubectl patch checluster eclipse-che -n che --type=json -p '[{"op": "replace", "path": "/spec/server/customPublicCert", "value": true}]'
+----
+====
