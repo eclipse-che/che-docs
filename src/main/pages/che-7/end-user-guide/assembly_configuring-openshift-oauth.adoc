@@ -1,0 +1,61 @@
+---
+title: Configuring OpenShift OAuth
+keywords: 
+tags: []
+sidebar: che_7_docs
+permalink: che-7/configuring-openshift-oauth/
+folder: che-7/end-user-guide
+summary: 
+---
+
+[id="configuring-openshift-oauth_{context}"]
+= Configuring OpenShift OAuth
+
+OAuth for OpenShift allows to obtain OpenShift token.
+
+.Procedure
+
+. Register Che OAuth client in OpenShift (see link:https://docs.openshift.com/container-platform/4.3/authentication/configuring-internal-oauth.html#oauth-register-additional-client_configuring-internal-oauth[Register an OAuth client in OpenShift]).
++
+[subs="+quotes"]
+----
+$ oc create -f <(echo '
+kind: OAuthClient
+apiVersion: oauth.openshift.io/v1
+metadata:
+ name: che
+secret: "<random set of symbols>"
+redirectURIs:
+ - "<Che api url>/oauth/callback"
+grantMethod: prompt
+')
+----
+. Add the OpenShift SSL certificate to the Che Java trust store.
+.. Export the OpenShift SSL certificate to `ca.crt` file.
+.. Create a *configMap* with the certificate.
++
+====
+[subs="+quotes"]
+----
+oc create configmap custom-public-cert --from-file=ca.crt -n che
+----
+====
+. Update the OpenShift deployment configuration
+(see link:{site-baseurl}che-7/advanced-configuration-options/#che-configmaps-and-their-behavior_advanced-configuration-options[Che configMaps and their behavior],
+link:{site-baseurl}che-7/advanced-configuration-options/#che-installed-using-a-helm-chart[Che installed using a Helm Chart]).
++
+====
+[subs="+quotes"]
+----
+CHE_OAUTH_OPENSHIFT_CLIENTID: <client-id>
+CHE_OAUTH_OPENSHIFT_CLIENTSECRET: <openshift-secret>
+CHE_OAUTH_OPENSHIFT_OAUTH__ENDPOINT: <oauth-endpoint>
+CHE_OAUTH_OPENSHIFT_VERIFY__TOKEN__URL: <verify-token-url>
+----
+====
+* <client-id> a name specified in the OpenShift OAuthClient.
+* <openshift-secret> a secret specified in the OpenShift OAuthClient.
+* <oauth-endpoint> the url of the OpenShift oauth service:
+** For OpenShift 3 specify the OpenShift master url.
+** For OpenShift 4 specify the `oauth-openshift` route.
+* <verify-token-url> request url that is used to verify the token. `<OpenShift master url>/api` can be used for OpenShift 3 and 4.

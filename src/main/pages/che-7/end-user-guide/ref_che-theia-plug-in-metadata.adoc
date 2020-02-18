@@ -38,7 +38,10 @@ The link:https://github.com/eclipse/che-plugin-registry/tree/master/v3/plugins[c
 :===
 `name`: sidecar container name
 `image`: container image
-`memorylimit`: Kubernetes/OpenShift-spec memory limit string (e.g. "512Mi")
+`memoryLimit`: Kubernetes/OpenShift-spec memory limit string (e.g. "512Mi")
+`memoryRequest`: Kubernetes/OpenShift-spec memory request string (e.g. "512Mi")
+`cpuLimit`: Kubernetes/OpenShift-spec CPU limit string (e.g. "2500m")
+`cpuRequest`: Kubernetes/OpenShift-spec CPU request string (e.g. "125m")
 `env`: list of environment variables to set in sidecar
 `command`: string array definition of the root process command inside container.
 `args`: string array arguments for the root process command inside container
@@ -83,10 +86,10 @@ The link:https://github.com/eclipse/che-plugin-registry/tree/master/v3/plugins[c
 
 .`spec.endpoints.attributes` attributes
 :===
-`protocol`: Protocol, example: `ws`
+`protocol`: Protocol, example\: `ws`
 `type`: `ide`, `ide-dev`
 `discoverable`: `true`, `false`
-`secure`: `true`, `false`
+`secure`: `true`, `false`. If `true` the endpoint is assumed to listen solely on `127.0.0.1` and is exposed using a JWT proxy.
 `cookiesAuthEnabled`: `true`, `false`
 :===
 
