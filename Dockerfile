@@ -10,23 +10,24 @@
 FROM ruby:2.6-alpine
 COPY src/main/Gemfile* /tmp/
 
-RUN apk add --no-cache --update libstdc++ bash ca-certificates curl python3 \
+RUN apk add --no-cache --update libstdc++ bash ca-certificates curl python3 grep perl libxml2-dev xmlstarlet \
     && apk add --no-cache --virtual build-dependencies build-base \
     && cd /tmp \
     && time bundle install --no-cache --frozen \
     && time apk del build-dependencies build-base \
+    && rm -rf /root/.bundle/cache \
     && time pip3 install newdoc --upgrade pip --no-cache-dir \
+    && newdoc --version \
     && curl -sfLo /usr/bin/test-adoc.sh https://raw.githubusercontent.com/jhradilek/check-links/master/test-adoc.sh \
     && chmod +x /usr/bin/test-adoc.sh \
-    && curl -sfLo vale.sh https://install.goreleaser.com/github.com/ValeLint/vale.sh \
-    && bash vale.sh -b /usr/bin \
-    && newdoc --version \
     && test-adoc.sh -V \
     && curl -sfLo /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
     && curl -sfLo glibc-2.30-r0.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-2.30-r0.apk \
-    && apk add glibc-2.30-r0.apk \
+    && apk add --no-cache glibc-2.30-r0.apk \
+    && curl -sfLo vale.tar.gz https://github.com/errata-ai/vale/releases/download/v2.0.0/vale_2.0.0_Linux_64-bit.tar.gz \
+    && tar xvzf vale.tar.gz -C /usr/bin/ \
+    && rm vale.tar.gz \
     && vale -v \
-    && rm -rf /root/.bundle/cache \
     && mkdir /che-docs \
     && for f in "/che-docs"; do \
            chgrp -R 0 ${f} && \
