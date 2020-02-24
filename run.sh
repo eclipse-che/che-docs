@@ -101,7 +101,8 @@ case "$1" in
     ;;
   -test-adoc)
     shift
-    FILES="${*:-pages/*/*/*.adoc}"
+    SRC_PATH="$(pwd)"
+    FILES="${*:-src/main/pages/*/*/*.adoc}"
     echo "Running test-adoc.sh on ${FILES}"
     runner "${IMAGE}" \
       bash -c "test-adoc.sh ${FILES}"
