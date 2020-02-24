@@ -1,34 +1,37 @@
 [id="adding-custom-certificates-to-trust-store_{context}"]
 = Adding custom public SSL certificates to {prod-short} trust-store
 
-This procedure describes how to configure {prod-short} to be able to handle HTTP requests from untrusted sources.
+This procedure describes how to configure {prod-short} to be able to perform HTTP requests to unrecognized resources.
 
 .Procedure
-. Save the certificate that you want to apply to `ca.crt` file.
-. Create a new *configMap* with the certificate:
+. Save the public certificate(s) that you want to apply.
+. Create a new *configMap* with the certificate(s):
 +
 [subs="+quotes"]
 ----
-$ kubectl create configmap custom-public-cert --from-file=ca.crt -n=che
+$ kubectl create configmap <config-map name> --from-file=<certificate file path> -n=che
 ----
-. Enable fetching the custom public certificate.
+To apply more then one certificate, add `--from-file=<certificate file path>` key to the command.
+. Define the certificates config-map name.
 +
 =====
 .If {prod-short} is deployed using a link:https://helm.sh/[Helm Chart]
 . Clone the https://github.com/eclipse/che[che] project
 . Go to `deploy/kubernetes/helm/che` directory
-. Set the `global.tls.useCustomPublicCerts` property to `true`. To do that, add the following option to the `helm upgrade` command:
+. Set the `global.tls.customPublicCertsConfigMapName` property to previously created config-map name. To do that, add the following option to the `helm upgrade` command:
 +
+[subs="+quotes"]
 ----
-$ helm upgrade che --set global.tls.useCustomPublicCerts=true --set global.ingressDomain=$(minikube ip).nip.io .
+$ helm upgrade che --set global.tls.customPublicCertsConfigMapName=<config-map name> --set global.ingressDomain=__<kubernetes-cluster-domain>__ .
 ----
+<kubernetes-cluster-domain> On Minikube, use `$(minikube ip).nip.io`
 =====
 +
 ====
 .If {prod-short} is deployed using link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators]
-Set the `customPublicCert` property to `true`. To do that, execute:
+Set the `customPublicCertsConfigMapName` property to previously created config-map name. To do that, execute:
 
 ----
-$ kubectl patch checluster eclipse-che -n che --type=json -p '[{"op": "replace", "path": "/spec/server/customPublicCert", "value": true}]'
+$ kubectl patch checluster eclipse-che -n che --type=json -p '[{"op": "replace", "path": "/spec/server/customPublicCertsConfigMapName", "value": "<config-map name>"}]'
 ----
 ====
