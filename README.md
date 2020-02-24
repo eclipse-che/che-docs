@@ -23,7 +23,24 @@ Then, instead of the `run.sh` script, run Maven directly:
 $ mvn clean install -Pnative
 ```
 
-## Adding a new page
+## Adding a new page with `newdoc`
+
+`newdoc` is a script that generates empty module and assembly files. `newdoc` can be installed locally or executed from the `che-docs` container.
+
+To install `newdoc` locally:
+
+```
+$ pip3 install newdoc
+$ cd src/main/pages/che-7/end-user-guide/
+$ newdoc -Ca "Using Che in restricted environment"
+```
+
+To run `newdoc` from the container:
+
+```
+$ bash run.sh -test-adoc src/main/pages/che-<MAJOR-VERSION>/${subdir}
+```
+
 
 In order to add a new page, create an `.adoc` file in `src/main/pages/che-<MAJOR-VERSION>/${subdir}` (substitute `<MAJOR-VERSION>` for either `6` or `7`, depending for which version of Che your content is intended).
 
@@ -54,7 +71,12 @@ To add a tag, look at available tags in `src/main/pages/che-<MAJOR-VERSION>/tags
 
 ## Formatting and AsciiDoc syntax
 
+Documentation is formatted in AsciiDoc.
 See [AsciiDoc Writer's Guide](https://asciidoctor.org/docs/asciidoc-writers-guide/) for syntax and general help with AsciiDoc.
+
+```
+bash run.sh -test-adoc pages/che-7/administration-guide/assembly_authenticating-in-a-che-workspace.adoc
+```  	    
 
 ### Links
 
