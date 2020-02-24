@@ -10,9 +10,25 @@
 
 set -e
 
+usage() {
+  echo "$0 [-h] [-prod] [-war] [-testadoc]
+  OPTIONS:
+    (no option)                     Building and serving the docs for local preview.
+    -prod                           Building for production, to publish on eclipse.org/che/docs/.
+    -war                            Building for embedding in Che, to link from the app.
+    -newassembly <guide> <title>    Create a new assembly in guide <guide>, with title <title>
+    -newconcept <guide> <title>     Create a new concept in guide <guide>, with title <title>
+    -newprocedure <guide> <title>   Create a new procedure in guide <guide>, with title <title>
+    -newreference <guide> <title>   Create a new reference in guide <guide>, with title <title>
+    -test-adoc [<fileslist>]        Run test-adoc.sh on files (default: on all files)
+    -vale [<fileslist>]             Run vale linter on files (default: on all files)
+  VARIABLES:
+     CHEDOCSIMAGE             Override the default container image.
+  "
+}
+
 # Detect presence of podman. Fallback to docker
 RUNNER="$(command -v podman 2>/dev/null || command -v docker)"
-IMAGE=quay.io/eclipse/che-docs
 
 case "${RUNNER}" in
   *podman)
@@ -29,39 +45,78 @@ case "${RUNNER}" in
     ;;
 esac
 
+# Use the user defined container, else the default container.
+IMAGE=${CHEDOCSIMAGE:-quay.io/eclipse/che-docs}
+
+# Default mountmoint for the container
 SRC_PATH="$(pwd)/src/main"
 
-$RUNNER pull $IMAGE
+# Define the run command as a function (shellcheck recommendation)
+runner() {
+  # Pull the default container image, else assume the image is present.
+  [ "${IMAGE}" = "quay.io/eclipse/che-docs" ] && "${RUNNER}" pull "${IMAGE}"
+
+  "${RUNNER}" run --rm -v "${SRC_PATH}":/che-docs:Z "$@"
+}
+
+run_newdoc() {
+    shift
+    SRC_PATH="$(pwd)/src/main/pages/che-7/${1}"
+    shift
+    TITLE="${*}"
+    echo "Running newdoc in ${SRC_PATH} with option ${NATURE} ${TITLE}"
+    runner "${IMAGE}" \
+      bash -c "newdoc -C ${NATURE} ${TITLE}"
+}
 
 case "$1" in
+  -h)
+    usage
+    ;;
   -prod)
-    echo "Building for production (publishing on eclipse.org/che/docs/). To preview"
-    echo "the docs locally, run the script ($0) without the '-prod' option."
-    $RUNNER run --rm \
-      -v "${SRC_PATH}":/che-docs:Z \
-      "${IMAGE}" \
+    echo "Building for production (publishing on eclipse.org/che/docs/)."
+    runner "${IMAGE}" \
       sh -c "cd /che-docs && jekyll clean && jekyll build --config _config.yml,_config-web.yml"
     ;;
   -war)
-    echo "Building for embedding in Che (linking from the app). To preview"
-    echo "the docs locally, run the script ($0) without the '-war' option."
-    $RUNNER run --rm \
-      -v "${SRC_PATH}":/che-docs:Z \
-      "${IMAGE}" \
+    echo "Building for embedding in Che (linking from the app)."
+    runner "${IMAGE}" \
       sh -c "cd /che-docs && jekyll clean && jekyll build --config _config.yml,_config-war.yml"
     ;;
+  -newassembly)
+    NATURE="-a"
+    run_newdoc "$@"
+    ;;
+  -newconcept)
+    NATURE="-c"
+    run_newdoc "$@"
+    ;;
+  -newprocedure)
+    NATURE="-p"
+    run_newdoc "$@"
+    ;;
+  -newreference)
+    NATURE="-r"
+    run_newdoc "$@"
+    ;;
+  -test-adoc)
+    shift
+    FILES="${*:-pages/*/*/*.adoc}"
+    echo "Running test-adoc.sh on ${FILES}"
+    runner "${IMAGE}" \
+      bash -c "test-adoc.sh ${FILES}"
+    ;;
+  -vale)
+    shift
+    SRC_PATH="$(pwd)"
+    FILES="${*:-.}"
+    echo "Running vale on ${FILES}"
+    runner "${IMAGE}" \
+      bash -c "vale ${FILES}"
+    ;;
   *)
-    echo -e "Building and serving the docs for local preview.\n"
-    echo -e "* To build for production testing (publishing on eclipse.org/che/docs/),"
-    echo "  run the script with the '-prod' option:"
-    echo -e "  $0 -prod\n"
-    echo -e "* To build for embedding in Che (linking from the app),"
-    echo "  run the script with the '-war' option:"
-    echo -e "  $0 -war\n"
-    $RUNNER run --rm -ti \
-      -p 35729:35729 -p 4000:4000 \
-      -v "${SRC_PATH}":/che-docs:Z \
-      "${IMAGE}" \
+    echo "Building and serving the docs for local preview."
+    runner -p 35729:35729 -p 4000:4000 "${IMAGE}" \
       sh -c "cd /che-docs && jekyll clean && jekyll serve --livereload -H 0.0.0.0 --trace"
   ;;
 esac
