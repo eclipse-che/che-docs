@@ -1,0 +1,43 @@
+---
+title: Database Setup
+keywords:
+tags: [database]
+sidebar: che_7_docs
+permalink: che-7/database-setup
+folder: che-7/administration-guide
+summary:
+---
+
+:parent-context-of-database-setup: {context}
+
+[id="database-setup_{context}"]
+= Database Setup
+
+PostgreSQL database is used for persisting data about the state of {prod-short} and contains vital information about the user accounts, workspaces, preferences, ssh keys etc.
+
+By default, {prod-short} operator creates and manages a database deployment. 
+
+However, {prod-short} operator does not support the full lifecycle capabilities like backups and recovery. For business-critical setup, it is recommended to configure an external database with the following disaster recovery options:
+
+* High Availability (HA)
+* Point In Time Recovery (PITR)
+
+External PostgreSQL instance can be set up on-premises or via cloud services like RDS, which allows deploying production databases in a Multi-Availability Zone configuration for a resilient disaster recovery strategy with both daily and on-demand snapshots.
+ The recommended configuration, in this case, is the following:
+
+----
+Instance class: db.t2.small
+vCPU: 1
+RAM: 2GB
+Multi-az: True, 2 replicas
+Engine version: 9.6.11
+TLS: Enabled
+Automated backups: Enabled (30 Days)
+----
+
+An external database is configured via the `externalDb: true` property in the {prod-short} Custom Resource (in this case the operator skips deploying a database, and passes connection details of existing DB to {prod-short} server using `chePostgresHostName`, `chePostgresPort`, `chePostgresUser`, `chePostgresPassword`, `chePostgresDb` parameters).
+
+.Additional resources
+
+* link:https://www.postgresql.org/[PostgreSQL]
+* link:https://aws.amazon.com/rds/[RDS]
