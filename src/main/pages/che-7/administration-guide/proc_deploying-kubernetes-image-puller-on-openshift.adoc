@@ -1,0 +1,104 @@
+---
+title: Deploying the Kubernetes Image Puller on OpenShift
+keywords:
+tags: []
+sidebar: che_7_docs
+permalink: che-7/deploy-kubernetes-image-puller-on-openshift
+folder: che-7/administration-guide
+summary:
+---
+
+The Kubernetes Image Puller repository contains OpenShift templates to easily deploy on OpenShift.  Alternatively, you can link:{site-baseurl}/che-7/deploy-kubernetes-image-puller-on-k8s-with-helm[use helm to deploy to OpenShift.]
+
+An Openshift cluster and the `oc` binary are the only prerequesites to installing with Openshift Templates.
+
+The following parameters are available to further configure the Openshift templates:
+
+|======
+|Value	|Usage	|Default
+|`DAEMONSET_NAME`	|The value of `DAEMONSET_NAME` to be set in the ConfigMap	|`kubernetes-image-puller`
+|`IMAGE`	|Image used for the `kubernetes-image-puller` deployment |`quay.io/eclpise/kubernetes-image-puller`
+|`IMAGE_TAG` |The image tag to pull	|`latest`
+|`SERVICEACCOUNT_NAME`	|The name of the ServiceAccount used by the deployment (created as part of installation) |`k8s-image-puller`
+|`CACHING_INTERVAL_HOURS`	|The value of `CACHING_INTERVAL_HOURS` to be set in the ConfigMap |``"1"``
+|`CACHING_INTERVAL_REQUEST`	|The value of `CACHING_MEMORY_REQUEST` to be set in the ConfigMap	|`"10Mi"`
+|`CACHING_INTERVAL_LIMIT`	|The value of `CACHING_MEMORY_LIMIT` to be set in the ConfigMap	|`"20Mi"``
+|`configMap.nodeSelector`	|The value of `NODE_SELECTOR` to be set in the ConfigMap |`"{}"`
+|======
+
+See link:{site-baseurl}/che-7/kubernetes-image-puller-overview#configuration[here] for more information about configuration values such as `DAEMONSET_NAME`, `CACHING_INTERVAL_HOURS`, and `CACHING_MEMORY_REQUEST`.
+
+=== Installation
+First, clone the `kubernetes-image-puller` repository: 
+
+`git clone https://github.com/che-incubator/kubernetes-image-puller && cd kubernetes-image-puller`
+
+Then, log into your Openshift cluster and create a namespace to deploy the puller into:
+
+```
+$ oc login -u username -p password https://openshift-cluster-api:6443
+
+Login successful.
+
+You have access to 53 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+
+$ oc create namespace k8s-image-puller 
+```
+Process and apply the templates:
+
+```
+$ for template in $(ls deploy/openshift); do oc process -f deploy/openshift/$template | oc apply -f -; done
+deployment.apps/kubernetes-image-puller created
+configmap/k8s-image-puller created
+role.rbac.authorization.k8s.io/create-daemonset created
+rolebinding.rbac.authorization.k8s.io/create-daemonset created
+serviceaccount/k8s-image-puller created
+```
+
+To set different values than the defaults, use `oc process -p parameterName=value -f deploy/openshift/$template | oc apply -f -`
+
+=== Verify Installation
+After installation, you should see a deployment, and a `kubernetes-image-puller` deployment, and daemonset named `DAEMONSET_NAME` with a pod for each node in your cluster:
+
+```
+$ kubectl get deployment,daemonset,pod -n k8s-image-puller
+deployment.extensions/kubernetes-image-puller   1/1       1            1           2m19s
+
+NAME                                           DESIRED   CURRENT   READY     UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+daemonset.extensions/kubernetes-image-puller   1         1         1         1            1           <none>          2m10s
+
+NAME                                           READY     STATUS    RESTARTS   AGE
+pod/kubernetes-image-puller-5495f46497-mkd4p   1/1       Running   0          2m18s
+pod/kubernetes-image-puller-n8bmf              3/3       Running   0          2m10s
+```
+
+Check that the `ConfigMap` named `k8s-image-puller` has the values you specified in your parameter substitution, or that they contain the default values:
+
+```
+$ kubectl get configmap k8s-image-puller -o yaml
+apiVersion: v1
+data:
+  CACHING_INTERVAL_HOURS: "1"
+  CACHING_MEMORY_LIMIT: 20Mi
+  CACHING_MEMORY_REQUEST: 10Mi
+  DAEMONSET_NAME: kubernetes-image-puller
+  IMAGES: |
+    java11-maven=quay.io/eclipse/che-java11-maven:nightly; che-theia=eclipse/che-theia:next; java-plugin-runner=eclipse/che-remote-plugin-runner-java8:latest;
+  NAMESPACE: k8s-image-puller
+  NODE_SELECTOR: '{}'
+kind: ConfigMap
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","data":{"CACHING_INTERVAL_HOURS":"1","CACHING_MEMORY_LIMIT":"20Mi","CACHING_MEMORY_REQUEST":"10Mi","DAEMONSET_NAME":"kubernetes-image-puller","IMAGES":"java11-maven=quay.io/eclipse/che-java11-maven:nightly; che-th
+eia=eclipse/che-theia:next; java-plugin-runner=eclipse/che-remote-plugin-runner-java8:latest;\n","NAMESPACE":"k8s-image-puller","NODE_SELECTOR":"{}"},"kind":"ConfigMap","metadata":{"annotations":{},"name":"k8s-image-puller","namespace":"k
+8s-image-puller"},"type":"Opaque"}
+  creationTimestamp: 2020-02-17T22:40:13Z
+  name: k8s-image-puller
+  namespace: k8s-image-puller
+  resourceVersion: "72250"
+  selfLink: /api/v1/namespaces/k8s-image-puller/configmaps/k8s-image-puller
+  uid: 76430ed6-51d6-11ea-9c19-52fdfc072182
+```

@@ -1,0 +1,35 @@
+---
+title: Overview of the Kubernetes Image Puller
+keywords:
+tags: []
+sidebar: che_7_docs
+permalink: che-7/kubernetes-image-puller-overview
+folder: che-7/administration-guide
+summary:
+---
+
+A bottleneck of starting an Eclipse Che workspace can be pulling images. Pre-pulling images can greatly improve startup time. The Kubernetes Image Puller can be used to pre-pull images and speed up workspace startup time.
+
+The Kubernetes Image Puller is an additional deployment that runs alongside Eclipse Che. Given a list of images to pre-pull, the application is runs inside a cluster and creates a Daemonset that pulls the images on each node.
+
+The application can be deployed via Helm or by processing and applying OpenShift Templates.
+
+The Kubernetes Image Puller pulls its configuration from a `ConfigMap` with the following available parameters:
+
+[#configuration]
+|=========
+|Parameter	|Usage	|Default
+|`CACHING_INTERVAL_HOURS` |Interval, in hours, between checking health of daemonsets |`"1"`
+|`CACHING_MEMORY_REQUEST`	|The memory request for each cached image when the puller is running	|`10Mi`
+|`CACHING_MEMORY_LIMIT`	|The memory limit for each cached image when the puller is running	|`20Mi`
+|`DAEMONSET_NAME`	|Name of daemonset to be created	|`kubernetes-image-puller`
+|`NAMESPACE`	|Namespace where daemonset is to be created	|`k8s-image-puller`
+|`IMAGES`	|List of images to be cached, in the format `<name>=<image>;...`	|Contains a default list of images, but should be configured when deploying
+|`NODE_SELECTOR`	|Node selector applied to pods created by the daemonset	|`'{}'`
+|=========
+
+
+* link:{site-baseurl}che-7/deploy-kubernetes-image-puller-on-k8s-with-helm[Deploying the Kubernetes Image Puller on Kubernetes with Helm]
+* link:{site-baseurl}che-7/deploying-kubernetes-image-puller-on-openshift[Deploying the Kubernetes Image Puller on Openshift]
+
+:context: {parent-context-of-caching-images}
