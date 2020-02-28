@@ -1,50 +1,73 @@
----
-title: Deploying the Kubernetes Image Puller on Kubernetes with Helm
-keywords:
-tags: []
-sidebar: che_7_docs
-permalink: che-7/deploy-kubernetes-image-puller-on-k8s-with-helm
-folder: che-7/administration-guide
-summary:
----
+[id="deploying-the-kubernetes-image-puller-using-helm_{context}"]
+= Deploying the Kubernetes Image Puller using Helm
 
-The Kubernetes Image Puller can be installed via `helm`.  To install with `helm`, you need the `helm` binary, and a Kubernetes cluster to install to.  
+The Kubernetes Image Puller can be installed using Helm.
 
-The following parameters are available for configuring the `helm` installation:
+.Prerequisites
 
-|======
-|Value	|Usage	|Default
-|`appName`	|The value of `DAEMONSET_NAME` to be set in the ConfigMap	|`kubernetes-image-puller`
-|`image.repository`	|The repository to pull the image from	|`quay.io/eclpise/kubernetes-image-puller`
-|`image.tag` |The image tag to pull	|`latest`
-|`serviceAccount.name`	|The name of the ServiceAccount to create	|`k8s-image-puller`
-|`configMap.name`	|The name of the ConfigMap to create |`k8s-image-puller`
-|`configMap.cachingIntervalHours`	|The value of `CACHING_INTERVAL_HOURS` to be set in the ConfigMap |``"1"``
-|`configMap.cachingMemoryRequest`	|The value of `CACHING_MEMORY_REQUEST` to be set in the ConfigMap	|`"10Mi"`
-|`configMap.cachingMemeryLimit`	|The value of `CACHING_MEMORY_LIMIT` to be set in the ConfigMap	|`"20Mi"``
-|`configMap.nodeSelector`	|The value of `NODE_SELECTOR` to be set in the ConfigMap |`"{}"`
-|======
+* The `helm` binary
 
-=== Installation
-First, clone the `kubernetes-image-puller` repository: 
+ifeval::["{project-context}" == "che"]
+* An OpenShift or Kubernetes cluster to install to
+* The `oc` or the `kubectl` binary
++
+NOTE: In the instructions below, use the `oc` command when installing on OpenShift and the `kubectl` command for installing on Kubernetes.
+endif::[]
 
-`git clone https://github.com/che-incubator/kubernetes-image-puller && cd kubernetes-image-puller`
+ifeval::["{project-context}" != "che"]
+* An OpenShift cluster to install to
+endif::[]
 
-Then, create a namespace to deploy the puller into:
+The following parameters are available for configuring the installation with Helm:
 
-`kubectl create namespace k8s-image-puller`
+.Parameters for installing with Helm
+[options="header"]
+|===
+|Value |Usage |Default
+|`appName` |The value of `DAEMONSET_NAME` to be set in the ConfigMap |`kubernetes-image-puller`
+|`image.repository` |The repository to pull the image from |`quay.io/eclpise/kubernetes-image-puller`
+|`image.tag` |The image tag to pull |`latest`
+|`serviceAccount.name` |The name of the ServiceAccount to create |`k8s-image-puller`
+|`configMap.name` |The name of the ConfigMap to create |`k8s-image-puller`
+|`configMap.cachingIntervalHours` |The value of `CACHING_INTERVAL_HOURS` to be set in the ConfigMap |``"1"``
+|`configMap.cachingMemoryRequest` |The value of `CACHING_MEMORY_REQUEST` to be set in the ConfigMap |`"10Mi"`
+|`configMap.cachingMemeryLimit` |The value of `CACHING_MEMORY_LIMIT` to be set in the ConfigMap |`"20Mi"``
+|`configMap.nodeSelector` |The value of `NODE_SELECTOR` to be set in the ConfigMap |`"{}"`
+|===
 
-Run `helm install`:
 
-`helm install kubernetes-image-puller -n k8s-image-puller deploy/helm`
+.Procedure
 
-To set values, change `deploy/helm/values.yaml` or use `--set property.name=value`
+*Installing*
 
-=== Verify Installation
-After installation, you should see a deployment, and a `kubernetes-image-puller` deployment, and daemonset named `DAEMONSET_NAME` with a pod for each node in your cluster:
+. Clone the `kubernetes-image-puller` repository: 
++
+----
+$ git clone https://github.com/che-incubator/kubernetes-image-puller
+$ cd kubernetes-image-puller
+----
 
-```
-$ kubectl get deployment,daemonset,pod -n k8s-image-puller
+. Create a namespace to deploy the puller into:
++
+----
+$ oc create namespace k8s-image-puller
+----
+
+. Run `helm install`:
++
+----
+$ helm install kubernetes-image-puller --namespace k8s-image-puller deploy/helm
+----
++
+To set values, edit the `deploy/helm/values.yaml` file, or use the `--set property.name=__<value>__` parameter.
+
+*Verifying the installation*
+
+. Confirm that a new deployment, `kubernetes-image-puller`, and a daemonset (named based on the value of the `DAEMONSET_NAME` parameter) exist. The daemonset needs to have a pod for each node in the cluster:
++
+[source%nowrap,dummy]
+----
+$ oc get deployment,daemonset,pod --namespace k8s-image-puller
 NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
 deployment.apps/kubernetes-image-puller   1/1     1            1           4m21s
 
@@ -56,12 +79,13 @@ pod/kubernetes-image-puller-b556c8bd4-qxwwl   1/1     Running   0          4m21s
 pod/kubernetes-image-puller-glh87             3/3     Running   0          3m40s
 pod/kubernetes-image-puller-h7lxf             3/3     Running   0          3m40s
 pod/kubernetes-image-puller-nrt6p             3/3     Running   0          3m40s
-```
+----
 
-Check that the `ConfigMap` named `k8s-image-puller` has the values you specified in your `helm` configuration, or that they contain the default values:
-
-```
-$ kubectl get configmap k8s-image-puller -o yaml
+. Check that the `ConfigMap` named `k8s-image-puller` has the values specified in the Helm configuration, or that they contain the default values:
++
+[source%nowrap,dummy]
+----
+$ oc get configmap k8s-image-puller --output yaml
 apiVersion: v1
 data:
   CACHING_INTERVAL_HOURS: "1"
@@ -80,4 +104,4 @@ metadata:
   resourceVersion: "3078"
   selfLink: /api/v1/namespaces/k8s-image-puller/configmaps/k8s-image-puller
   uid: 71bc5ce4-d095-468e-ab7b-23c1e0a36638
-```
+----
