@@ -19,4 +19,4 @@
  > **Note:** For bugfix release procedure will be similar except creating new branch on first step and update version in master branch
 
 # Script
-`make-release.sh` is a script that performs these actions (currently from 1 to 3, only leaving the releasing on Nexus for manual use)
+`make-release.sh` performs the first 3 steps. Release to Nexus is still a manual process for now.
