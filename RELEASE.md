@@ -5,6 +5,7 @@
 * `git push --set-upstream origin {branchname}`
 ##### 2. Create PR for switch master to the next development version :
 * `git branch set_next_version_in_master_{next_version} #e.g 7.8.0-SNAPSHOT`
+* `mvn versions:set versions:commit -DnewVersion=${next_version}`
 * Update parent version : `mvn versions:update-parent  versions:commit -DallowSnapshots=true -DparentVersion={next_version}`
 * `git push --set-upstream origin set_next_version_in_master_{next_version}`
 * Create PR
@@ -16,3 +17,6 @@
  https://oss.sonatype.org/#stagingRepositories
 
  > **Note:** For bugfix release procedure will be similar except creating new branch on first step and update version in master branch
+
+# Script
+`make-release.sh` performs the first 3 steps. Release to Nexus is still a manual process for now.
