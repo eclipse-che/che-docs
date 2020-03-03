@@ -77,6 +77,7 @@ git fetch origin "${BASEBRANCH}":"${BASEBRANCH}"
 git checkout "${BASEBRANCH}"
 
 # create new branch off ${BASEBRANCH} (or check out latest commits if branch already exists), then push to origin
+# NOTE: cico job will automatically remove -SNAPSHOT suffix in the 7.a.x branch as part of the release to Nexus
 if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
   git branch "${BRANCH}" || git checkout "${BRANCH}" && git pull origin "${BRANCH}"
   git push origin "${BRANCH}"
