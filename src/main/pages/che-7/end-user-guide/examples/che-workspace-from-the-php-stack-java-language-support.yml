@@ -1,0 +1,25 @@
+[source,yaml]
+----
+components:
+ - id: redhat/php/latest
+   memoryLimit: 1Gi
+   type: chePlugin
+ - id: redhat/php-debugger/latest
+   memoryLimit: 256Mi
+   type: chePlugin
+ - mountSources: true
+   endpoints:
+     - name: 8080/tcp
+       port: 8080
+   memoryLimit: 512Mi
+   type: dockerimage
+   volumes:
+     - name: composer
+       containerPath: /home/user/.composer
+     - name: symfony
+       containerPath: /home/user/.symfony
+   alias: php
+   image: 'quay.io/eclipse/che-php-7:nightly'
+ - id: redhat/java8/latest
+   type: chePlugin
+----
