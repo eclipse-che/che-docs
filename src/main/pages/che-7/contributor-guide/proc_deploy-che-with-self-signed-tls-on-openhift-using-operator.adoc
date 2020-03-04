@@ -26,7 +26,7 @@ $ oc project default
 . Re-configure router with generated certificate
 
 +
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
 $ oc delete secret router-certs
 $ cat domain.crt domain.key > minishift.crt
@@ -37,7 +37,7 @@ $ oc rollout latest router
 . Pre-create namespace for {prod-short}
 
 +
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
 $ oc create namespace che
 ----
@@ -46,7 +46,7 @@ $ oc create namespace che
 . Create secret from CA certificate
 
 +
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
 $ cp rootCA.crt ca.crt
 $ oc create secret generic self-signed-certificate --from-file=ca.crt -n=che
@@ -56,7 +56,7 @@ $ oc create secret generic self-signed-certificate --from-file=ca.crt -n=che
 . Deploy {prod-short} using `{prod-cli}`
 
 +
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
 $ {prod-cli} server:start --platform=minishift --installer=operator --tls --self-signed-cert
 ----
