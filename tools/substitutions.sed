@@ -39,14 +39,15 @@ s/{prod-short} Editor/Che Editor/g
 s/\({prod-id-short}-\|{prod-short} \|{prod} \)6/\1{prod-prev-ver}/g
 s/\({prod-id-short}-\|{prod-short} \|{prod} \)7/\1{prod-ver}/g
 
-# Replace prod-cli
+# Replace with care chectl by prod-cli attribute.
 s/\bchectl\b/{prod-cli}/g
-
-# Revert back chectl in file names, attributes names
-s/\(include:[^\[]*\){prod-cli}/\1chectl/g
-s/\(name:[^\[]*\){prod-cli}/\1chectl/g
-s/\(permalink:[^\[]*\){prod-cli}/\1chectl/g
-s/\(link:[^\[]*\){prod-cli}/\1chectl/g
-s/\(title:[^\[]*\){prod-cli}/\1chectl/g
-s/\(:parent[^:]*\){prod-cli}/\1chectl/g
+s/\bchectl_/{prod-cli}_/g
+# Revert chectl in file names
+s/\(include::.*\?\){prod-cli}/\1chectl/g
+# Revert chectl in attributes names
+s/\(:parent.*\?\){prod-cli}/\1chectl/g
+s/\(:parent.*\?\){prod-cli}/\1chectl/g
 s/\({parent[^}]*\){prod-cli}/\1chectl/g
+# Revert chectl in jekyll headers
+s/\(title:[^\[]*\){prod-cli}/\1chectl/g
+s/\(permalink:[^\[]*\){prod-cli}/\1chectl/g
