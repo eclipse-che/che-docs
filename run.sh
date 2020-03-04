@@ -54,7 +54,7 @@ SRC_PATH="$(pwd)/src/main"
 # Define the run command as a function (shellcheck recommendation)
 runner() {
   # Pull the default container image, else assume the image is present.
-  [ "${IMAGE}" = "quay.io/eclipse/che-docs" ] && "${RUNNER}" pull "${IMAGE}"
+  [ "${IMAGE}" = "quay.io/eclipse/che-docs" ] # && "${RUNNER}" pull "${IMAGE}"
 
   "${RUNNER}" run --rm -v "${SRC_PATH}":/che-docs:Z "$@"
 }
