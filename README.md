@@ -23,9 +23,42 @@ Then, instead of the `run.sh` script, run Maven directly:
 $ mvn clean install -Pnative
 ```
 
+## Using the `newdoc` script to generate new pages
+
+Che documentation follows guidelines of the Modular Documentation initiative: https://redhat-documentation.github.io/modular-docs/
+
+You can use `newdoc` to generate templates for the new documentation.
+To learn more about the script: https://github.com/redhat-documentation/tools/tree/master/newdoc
+
+### Using `newdoc` from the `che-docs` container
+`newdoc` is built into the `che-docs` container.
+
+To generate new documentation module with the script, run from the `che-docs` root git directory:
+
+* Create a new assembly in <directory>, with title `your_title`
+
+```
+$ bash run.sh -newassembly <directorty> <your_title>    
+```
+
+* Create a new concept in <directory>, with title `your_title`
+```
+$ bash run.sh -newconcept  <directorty> <your_title>       
+```
+
+* Create a new procedure in <directory>, with title `your_title`
+```
+$ bash run.sh -newprocedure  <directorty> <your_title>     
+```
+
+* Create a new reference in <directory>, with title `your_title`
+```
+$ bash run.sh -newreference  <directorty> <your_title>
+```
+
 ## Adding a new page
 
-In order to add a new page, create an `.adoc` file in `src/main/pages/che-<MAJOR-VERSION>/${subdir}` (substitute `<MAJOR-VERSION>` for either `6` or `7`, depending for which version of Che your content is intended).
+To add a new page, create an `.adoc` file in `src/main/pages/che-<MAJOR-VERSION>/${subdir}` (substitute `<MAJOR-VERSION>` for either `6` or `7`, depending for which version of Che your content is intended).
 
 If there is no sub-directory that fits a new page, create one. Look at headers in existing pages to make sure the generated HTML page has the expected name, title, and keywords. For example:
 
