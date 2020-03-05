@@ -9,7 +9,7 @@ A Helm chart for the plug-in registry is available in the `/kubernetes/che-plugi
 
 . To deploy the plug-in registry using the Helm chart, run the following command:
 +
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
 NAMESPACE=__<namespace-name>__     <1>
 DOMAIN=__<kubernetes-cluster-domain>__ <2>
@@ -27,7 +27,7 @@ helm upgrade --install che-plugin-registry \
 
 . The devfile registry also has a Helm chart in the `deploy/kubernetes/che-devfile-registry/` directory of the GitHub repository. To deploy it, run the command:
 +
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
 NAMESPACE=__<namespace-name>__     <1>
 DOMAIN=__<kubernetes-cluster-domain>__ <2>
@@ -45,6 +45,7 @@ helm upgrade --install che-devfile-registry \
 
 . The Helm chart creates a pod, a service, and an Ingress. To get them, use `app=che-plugin-registry` (or `app=che-plugin-registry` for the devfile registry).
 +
+[subs="+quotes,+attributes"]
 ----
 $ kubectl get -o custom-columns=TYPE:.kind,NAME:.metadata.name \
   -l app=che-plugin-registry pod,svc,ingress
@@ -56,6 +57,7 @@ Ingress   che-plugin-registry
 
 . To verify that the new plug-in is correctly published to the plug-in registry, make a request to the registry path `/v3/plugins/index.json` (or `/devfiles/index.json` for the devfile registry).
 +
+[subs="+quotes,+attributes"]
 ----
 $ URL=$(kubectl get -o 'custom-columns=URL:.spec.rules[0].host' \
   -l app=che-plugin-registry ingress --no-headers)
@@ -87,6 +89,7 @@ $ echo $\{INDEX_JSON} | grep -A 4 -B 5 "\"name\":\"my-plug-in\""
 
 . Verify that the {prod-short} server points to the URL of the registry. To do this, compare the value of the `pass:[CHE_WORKSPACE_PLUGIN__REGISTRY__URL]` parameter in the `che` ConfigMap (or `pass:[CHE_WORKSPACE_DEVFILE__REGISTRY__URL]` for the devfile registry):
 +
+[subs="+quotes,+attributes"]
 ----
 $ kubectl get \
   -o "custom-columns=URL:.data['CHE_WORKSPACE_PLUGIN__REGISTRY__URL']" \
@@ -97,6 +100,7 @@ http://che-plugin-registry-che.192.168.99.100.nip.io/v3
 +
 with the URL of the Ingress:
 +
+[subs="+quotes,+attributes"]
 ----
 $ kubectl get -o 'custom-columns=URL:.spec.rules[0].host' \
   -l app=che-plugin-registry ingress --no-headers
@@ -105,6 +109,7 @@ che-plugin-registry-che.192.168.99.100.nip.io
 
 . If they do not match, update the ConfigMap and restart the {prod-short} server.
 +
+[subs="+quotes,+attributes"]
 ----
 $ kubectl edit cm/che
 (...)
