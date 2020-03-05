@@ -35,25 +35,25 @@ To learn more about the script: https://github.com/redhat-documentation/tools/tr
 
 To generate new documentation module with the script, run from the `che-docs` root git directory:
 
-* Create a new assembly in <directory>, with title `your_title`
+* Create a new assembly in a directory `directory_name`, with a title `your_title`
 
 ```
-$ bash run.sh -newassembly <directorty> <your_title>    
+$ bash run.sh -newassembly <directory_name> <your_title>    
 ```
 
-* Create a new concept in <directory>, with title `your_title`
+* Create a new concept in a directory `directory_name`, with a title `your_title`
 ```
-$ bash run.sh -newconcept  <directorty> <your_title>       
-```
-
-* Create a new procedure in <directory>, with title `your_title`
-```
-$ bash run.sh -newprocedure  <directorty> <your_title>     
+$ bash run.sh -newconcept  <directory_name> <your_title>       
 ```
 
-* Create a new reference in <directory>, with title `your_title`
+* Create a new procedure in a directory `directory_name`, with a title `your_title`
 ```
-$ bash run.sh -newreference  <directorty> <your_title>
+$ bash run.sh -newprocedure  <directory_name> <your_title>     
+```
+
+* Create a new reference in a directory `directory_name`, with a title `your_title`
+```
+$ bash run.sh -newreference <directory_name> <your_title>
 ```
 
 ## Adding a new page
