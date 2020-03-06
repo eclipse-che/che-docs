@@ -10,32 +10,18 @@ summary:
 
 
 [id="configuring-system-variables"]
-== Configuring system properties for {prod-short}
+= Configuring system properties for {prod-short}
 
 The following document describes all possible configuration properties of {prod-short}.
-Simplest way to override default values on operator-based deployments is to update Custom Resource of `CleCluster`
-by adding or editing `customCheProperties` field, which expects a map as in following example:
 
-.Example of changing default value of CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB to 2048:
+To override default values on operator-based deployments, update Custom Resource of `CheCluster`
+by adding or editing the `customCheProperties` field, which expects a map as in the following example:
 
-[source,yaml]
+.Example of changing the default value of `+++CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB+++` to 2048:
+
+[source,yaml,subs="+attributes"]
 ----
-apiVersion: org.eclipse.che/v1
-kind: CheCluster
-metadata:
-  name: eclipse-che
-  namespace: che
-spec:
-  server:
-    cheImageTag: ''
-    devfileRegistryImage: ''
-    pluginRegistryImage: ''
-    tlsSupport: false
-    selfSignedCert: false
-    customCheProperties:
-      CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB: "2048"
-  auth:
-...
+include::examples/changing-system-variables.yaml[]
 ----
 
 include::examples/system-variables.adoc[]
