@@ -1,55 +1,69 @@
 [id="workspaces-requirements_{context}"]
 = Workspaces Requirements
 
-As of the {prod-short} workspaces, the resources required really depend on the workspace components and on the application developed. 
+This section describes how to calculate the resources required for a workspace. It is the sum of the resources required for each component of this workspace.
 
-A workspace with 10 plugins activated will require more resources then the same workspace with half of the plugins. And a Java workspace usually requires more resources than an equivalent NodeJS workspace because running the build, running the tests and debugging the application usually requires more resources. But that depends of course and the resources required for every workspace should be carefully analysed.
+These examples demonstrate the necessity of a proper calculation:
 
-As a matter of fact we cannot figure out the compute resource requirements that will work for any arbitrary {prod-short} workspaces. But what we will do instead is providing a procedure to help determine those requirements: 
-
-1. Figure out the workspace components
-2. Determine the requirements for each component
-3. Sum all together
+* A workspace with 10 active plugins require more resources then the same workspace with half of the plugins.
+* A standard Java workspace requires more resources than a standard NodeJS workspace because running the build, running the tests and debugging the application requires more resources.
 
 .Procedure
 
-1. Figure out the workspace components
-+
-Workspace components are explicitely specified in a link:{site-baseurl}che-7/making-a-workspace-portable-using-a-devfile[devfile] `components` section. With one exception: the `cheEditor`. If a `cheEditor` is not explicitely specified in a devfile, {prod-short} implicitly loads the default one (che-theia) along with the `chePlugin` that allows commands execution (che-machine-exec-plugin):
-+
-  * eclipse/che-theia/latest
-  * eclipse/che-machine-exec-plugin/latest
-+
-For example a link:{site-baseurl}che-7/making-a-workspace-portable-using-a-devfile/#a-minimal-devfile_making-a-workspace-portable-using-a-devfile[devfile that has no components] will result in a {prod-short} workspace with one `cheEditor` che-theia and one `chePlugin` che-machine-exec-plugin. 
+. Identify the workspace components explicitly specified in the `components` section of the link:{site-baseurl}che-7/making-a-workspace-portable-using-a-devfile[devfile].
 
-2. Determine the requirements for each component
+. Identify the implicit workspace components:
+
+.. {prod-short} implicitly loads the default `cheEditor`: `che-theia`, and the `chePlugin` that allows commands execution: `che-machine-exec-plugin`. To change the default editor, add a  `cheEditor` component section in the devfile.
+
+.. When {prod-short} is running in multi-user mode, it loads the `JWT Proxy` component. The link:{site-baseurl}che-7/authenticating-users/#machine-token-validation_authenticating-in-a-che-workspace[JWT Proxy] is responsible for the authentication and authorization of the external communications of the workspace components.
+
+. Calculate the requirements for each component:
+
+.. Default values:
 +
-A workspace component can be of type `chePlugin`, `cheEditor`, `kubernetes`, `openshift` and `dockerimage`. The default requirements by component type are described in the following table:
+Following table presents the default requirements for each type of Workspace Components. It also presents the corresponding {prod-short} server property to modify the defaults cluster wide.
 +
-[cols="3,1,1", options="header"] 
-.Workspace Components
+[cols="3,2,1,1", options="header"] 
+.Default requirements by type of Workspace Components
 |===
 |Component Types
+|{prod-short} server property
 |Default Memory Limit
 |Default Memory Request
-|`chePlugin`, `cheEditor`
+
+|`chePlugin`
+| `che.workspace.sidecar.default_memory_limit_mb`
 |128Mi
 |128Mi
+
+|`cheEditor`
+| `che.workspace.sidecar.default_memory_limit_mb`
+|128Mi
+|128Mi
+
+
 |`kubernetes`, `openshift`, `dockerimage`
+| `che.workspace.default_memory_limit_mb`, `che.workspace.default_memory_request_mb`
 |1Gi
 |512Mi
+
+|`JWT Proxy`
+| `che.server.secure_exposer.jwtproxy.memory_limit`
+|128Mi
+|128Mi
 |===
+
+.. Custom requirements for `chePlugins` and `cheEditors` components
+
+... Custom memory limit and request:
 +
-These defaults values are overridden if the requirements are explicitely specified in the component definition. For example the CPU and RAM resources in a Kubernetes Pod manifest will override them. 
+If present, the `memoryLimit` attribute of the `containers` section of the `meta.yaml` file defines the memory limit of a `chePlugins` or `cheEditors` component.
+{prod-short} set automatically the memory request to match the memory limit. There is no attribute in a `meta.yaml` file to set the memory request.
 +
-The way to specify the resources used varies for every component type. Here are some guidelines:
-+
-**chePlugins and cheEditors components**
-+
-The memory limit of the `chePlugin` container is set, by default, to 128Mi. This value is too low for most of the plugins and is usually overwritten. This is done in the plugin `meta.yaml` file, in the container section.
-+
-For example, `chePlugin` `che-incubator/typescript/latest` that has the following `meta.yaml` spec section
-+
+.The `chePlugin` `che-incubator/typescript/latest`
+====
+.`meta.yaml` spec section:
 [source,yaml]
 ----
 spec:
@@ -58,19 +72,30 @@ spec:
      name: vscode-typescript
      memoryLimit: 512Mi
 ----
-+
-It's currently only possible to specifiy the memory limit in a `meta.yaml`, not the memory request. The memory request will be set automatically by {prod-short} to match the limit. The example above will result as a container with the following memory limit and request:
-+
+
+It will result as a container with the following memory limit and request:
+
 ----
 Memory Limit: 512Mi
 Memory Request: 512Mi
 ----
+====
 +
-{prod-short} does not set CPU limits and requests. If the Kubernetes namespace `LimitRange` specifies some defaults for CPU limits and requests those will be applied to the `chePlugin` container as well.
+[TIP]
+====
+.How to find the `meta.yaml` file of `chePlugin`
+
+Community plugins are available on the link:https://github.com/eclipse/che-plugin-registry[che-plugin-registry GitHub repository] in folder `v3/plugins/$\{organization}/$\{name}/$\{version}/`. +
+For non-community or customized ones the `meta.yaml` files are available on the local Kubernetes cluster at URL `$\{pluginRegistryEndpoint}/v3/plugins/$\{organization}/$\{name}/$\{version}/meta.yaml`. On a local minikube cluster for example the URL for the `che-incubator/typescript/latest meta.yaml` looks like: `http://plugin-registry-che.192.168.64.78.nip.io/v3/plugins/che-incubator/typescript/latest/meta.yaml`.
+====
+... Custom CPU limit and request:
 +
-**dockerimages components**
+{prod-short} doesn't set CPU limits and requests. The Kubernetes namespace `LimitRange` may specify some defaults for CPU limits and requests. Kubernetes apply them to the `chePlugin` container.
+
+.. Custom requirements for `dockerimage` components
 +
-The memory limit of a `dockerimage` container is set, by default, to 1Gi and the memory request to 512Mi. These values can be overridden in a devfile using the `memoryLimit` attribute:
+If present, the `memoryLimit` attribute of the devfile defines the memory limit of a `dockerimage` container. 
+{prod-short} set automatically the memory request to match the memory limit. There is no attribute in a devfile to set the memory request.
 +
 [source,yaml]
 ----
@@ -79,35 +104,9 @@ The memory limit of a `dockerimage` container is set, by default, to 1Gi and the
     image: eclipse/maven-jdk8:latest
     memoryLimit: 1536M
 ----
-+
-It's currently only possible to specifiy the memory limit in a devfile, not the memory request. The memory request will be set automatically by {prod-short} to match the limit.
-+
-**kubernetes or openshift components**
-+
-Every container of a `kubernetes` or an `openshift` component will be set with the requirements and limits specified in the referenced manifest. If there is no resources specification in the manifest {prod-short} will set the default ones: memory requests of 512Mi with a limit of 1Gi. 
 
-3. Sum all together
+.. Custom requirements for `kubernetes` or `openshift` components
 +
-This last step consists in summing the requirements of all the components that have been identified in the previous 2 steps and, in the case {prod-short} has been configured in multi-user mode, adding the JWT Proxy requirements in the final sum:
-+
-[cols="1,2,1,1", options="header"] 
-.JWT Component
-|===
-|Pod
-|Container
-|Default Memory Limit
-|Default Memory Request
-|JWT Proxy
-|verifier
-|128Mi
-|128Mi
-|===
-+
-The link:{site-baseurl}che-7/authenticating-users/#machine-token-validation_authenticating-in-a-che-workspace[JWT Proxy] is responsible for the authentication and authorization of the external communications of the workspace components.
+The referenced manifest may define the memory requirements and limits.
 
-TIP: **How to find the `meta.yaml` file of `chePlugin`** +
-Community plugins are available on the link:https://github.com/eclipse/che-plugin-registry[che-plugin-registry GitHub repository] in folder `v3/plugins/${organization}/${name}/${version}/`. +
-For non-community or customized ones the `meta.yaml` files are available on the local Kubernetes cluster at URL `${pluginRegistryEndpoint}/v3/plugins/${organization}/${name}/${version}/meta.yaml`. On a local minikube cluster for example the URL for the `che-incubator/typescript/latest meta.yaml` looks like: `http://plugin-registry-che.192.168.64.78.nip.io/v3/plugins/che-incubator/typescript/latest/meta.yaml`.
-
-TIP: **How to change the default `chePlugin` memory limit** +
-This value is controlled by the {prod-short} server property and is `che.workspace.sidecar.default_memory_limit_mb`. Its value is 128Mi but can be modified.
+. Sum all requirements previously calculated.

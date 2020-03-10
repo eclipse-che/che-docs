@@ -1,7 +1,9 @@
 [id="a-workspace-example_{context}"]
 = A Workspace Example
 
-Let’s look at an example. We are going to use a {prod-short} workspace that defined by the following devfile:
+This section describes a {prod-short} workspace example.
+
+The following devfile defines the {prod-short} workspace:
 
 [source,yaml]
 ----
@@ -25,7 +27,7 @@ components:
        args: ['infinity']
 ----
 
-The workspace components and the memory requirements are provided in the following table:
+This table provides the memory requirements for each workspace component:
 
 [cols="1,3,1,1", options="header"] 
 .Total Workspace Memory Requirement and Limit
@@ -65,11 +67,12 @@ The workspace components and the memory requirements are provided in the followi
 >s|1.75Gi
 |===
 
-The `theia-ide` and `machine-exec` components are implicitely added to the workspace, even if they do not figurein the devfile. The resources required by `machine-exec` are the default for a `chePlugin` and the resources for `theia-ide` are specifically set in the `cheEditor` `meta.yaml` to **512Mi** as memorLimit.
+The `theia-ide` and `machine-exec` components are implicitly added to the workspace, even if they don't figure in the devfile. The resources required by `machine-exec` are the default for a `chePlugin` and the resources for `theia-ide` are specifically set in the `cheEditor` `meta.yaml` to **512Mi** as memoryLimit.
 
 The typescript VS Code extension has overridden the default memory limits as well. In its `meta.yaml` file the limits are explicitly specified to **512Mi**.
 
-The `kubernetes` component references a `Deployment` manifest that has a container specification with no resources limits/requests. As a consequences the defaults for such component type are applied: a memory limit of **1Gi** and memory request of **512Mi**. 
+{prod-short} is applying the defaults for the `kubernetes` component type: a memory limit of **1Gi** and memory request of **512Mi**. 
+It does that because the `kubernetes` component references a `Deployment` manifest that has a container specification with no resources limits or requests.
 
 At last we need to consider the JWT container as well that requires **128Mi** of memory.
 
