@@ -11,9 +11,9 @@ summary:
 :parent-context-of-database-setup: {context}
 
 [id="database-setup_{context}"]
-= Database Setup
+= Database setup
 
-PostgreSQL database is used for persisting data about the state of {prod-short} and contains vital information about the user accounts, workspaces, preferences, ssh keys etc.
+You can use PostgreSQL database for persisting data about the state of {prod-short}. It contains information about the user accounts, workspaces, preferences, ssh keys, and so on.
 
 By default, {prod-short} operator creates and manages a database deployment. 
 
@@ -22,8 +22,9 @@ However, {prod-short} operator does not support the full lifecycle capabilities 
 * High Availability (HA)
 * Point In Time Recovery (PITR)
 
-External PostgreSQL instance can be set up on-premises or via cloud services like RDS, which allows deploying production databases in a Multi-Availability Zone configuration for a resilient disaster recovery strategy with both daily and on-demand snapshots.
- The recommended configuration, in this case, is the following:
+You can configure External PostgreSQL instance on-premises or using cloud services such as Amazon Relational Database Service (Amazon RDS). With Amazon RDS, you can deploy production databases in a Multi-Availability Zone configuration for a resilient disaster recovery strategy with daily and on-demand snapshots.
+
+The recommended configuration for your database, in this case, is the following:
 
 ----
 Instance class: db.t2.small
@@ -35,7 +36,7 @@ TLS: Enabled
 Automated backups: Enabled (30 Days)
 ----
 
-An external database is configured via the `externalDb: true` property in the {prod-short} Custom Resource (in this case the operator skips deploying a database, and passes connection details of existing DB to {prod-short} server using `chePostgresHostName`, `chePostgresPort`, `chePostgresUser`, `chePostgresPassword`, `chePostgresDb` parameters).
+To make the operator skip deploying a database and pass connection details of an existing DB to a {prod-short} server using `chePostgresHostName`, `chePostgresPort`, `chePostgresUser`, `chePostgresPassword`, `chePostgresDb` parameters, specify the `externalDb: true` property in the {prod-short} Custom Resource.
 
 .Additional resources
 
