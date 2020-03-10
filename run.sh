@@ -66,7 +66,7 @@ run_newdoc() {
     TITLE="${*}"
     echo "Running newdoc in ${SRC_PATH} with option ${NATURE} ${TITLE}"
     runner "${IMAGE}" \
-      bash -c "newdoc -C ${NATURE} ${TITLE}"
+      bash -c "newdoc -C \"${NATURE}\" \"${TITLE}\""
 }
 
 case "$1" in
