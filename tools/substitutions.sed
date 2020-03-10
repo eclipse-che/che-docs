@@ -34,3 +34,20 @@ s/Che Plugin metadata/{prod-short} plug-in metadata/g
 s/Che Plugin registry/{prod-short} plug-in registry/g
 #s/metadata of Che Plugin/metadata of {prod-short} plug-in/g
 s/{prod-short} Editor/Che Editor/g
+
+# Replace version numbers
+s/\({prod-id-short}-\|{prod-short} \|{prod} \)6/\1{prod-prev-ver}/g
+s/\({prod-id-short}-\|{prod-short} \|{prod} \)7/\1{prod-ver}/g
+
+# Replace with care chectl by prod-cli attribute.
+s/\bchectl\b/{prod-cli}/g
+s/\bchectl_/{prod-cli}_/g
+# Revert chectl in file names
+s/\(include::.*\?\){prod-cli}/\1chectl/g
+# Revert chectl in attributes names
+s/\(:parent.*\?\){prod-cli}/\1chectl/g
+s/\(:parent.*\?\){prod-cli}/\1chectl/g
+s/\({parent[^}]*\){prod-cli}/\1chectl/g
+# Revert chectl in jekyll headers
+s/\(title:[^\[]*\){prod-cli}/\1chectl/g
+s/\(permalink:[^\[]*\){prod-cli}/\1chectl/g

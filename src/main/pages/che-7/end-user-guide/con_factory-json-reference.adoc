@@ -5,7 +5,7 @@
 [id="factory-json-reference_{context}"]
 = Factory JSON reference
 
-A factory configuration is a JSON snippet either stored within Che or as a `.factory.json` file. You can create factories within the IDE using the Che URL syntax, within the dashboard, or on the command line with the API and CLI.
+A factory configuration is a JSON snippet either stored within {prod-short} or as a `.factory.json` file. You can create factories within the IDE using the {prod-short} URL syntax, within the dashboard, or on the command line with the API and CLI.
 
 [source,json]
 ----
@@ -18,15 +18,15 @@ factory : {
 }
 ----
 <1> Version of the configuration format.
-<2> Identical to `workspace:{}` object for Eclipse Che.
+<2> Identical to `workspace:{}` object for {prod}.
 <3> (Optional) Restrictions that limit behaviors.
 <4> (Optional) Trigger IDE UI actions tied to workspace events.
 <5> (Optional) Identifying information of author.
 
-The `factory.workspace` is identical to the `workspace:{}` object for Eclipse Che and contains the structure of the workspace.
+The `factory.workspace` is identical to the `workspace:{}` object for {prod} and contains the structure of the workspace.
 // TODO: To learn more about the workspace JSON object, see link:workspace-data-model.html[Workspace Data Model].
 
-You can export Che workspaces and then reuse the workspace definition within a factory. Che workspaces are composed of the following:
+You can export {prod-short} workspaces and then reuse the workspace definition within a factory. {prod-short} workspaces are composed of the following:
 
 * 0..n projects
 * 0..n environments that contain machines to run the code
@@ -44,7 +44,7 @@ A mixin adds additional behaviors to a project as a set of new project type attr
 |===
 |Mixin ID |Description
 |`pullrequest`
-|Enables pull request workflow where Che handles local and remote branching, forking, and pull request issuance. Pull requests generated from within Che have another factory placed into the comments of pull requests that a PR reviewer can consume. Adds contribution panel to the IDE. If this mixin is set, it uses attribute values for `project.attributes.local_branch` and `project.attributes.contribute_to_branch`
+|Enables pull request workflow where {prod-short} handles local and remote branching, forking, and pull request issuance. Pull requests generated from within {prod-short} have another factory placed into the comments of pull requests that a PR reviewer can consume. Adds contribution panel to the IDE. If this mixin is set, it uses attribute values for `project.attributes.local_branch` and `project.attributes.contribute_to_branch`
 |===
 
 * The `pullrequest` mixin requires additional configuration from the `attributes` object of the project. If present, {{ site.product_mini_name }} will use the project attributes as defined in the factory. If not provided, {{ site.product_mini_name }} will set defaults for the attributes.
@@ -56,7 +56,7 @@ A mixin adds additional behaviors to a project as a set of new project type attr
 
 Project attributes alter the behavior of the IDE or workspace.
 
-Different Eclipse Che plug-ins can add their own attributes to affect the behavior of the IDE or workspace. Attribute configuration is always optional and if not provided within a factory definition, the IDE or workspace sets it.
+Different {prod} plug-ins can add their own attributes to affect the behavior of the IDE or workspace. Attribute configuration is always optional and if not provided within a factory definition, the IDE or workspace sets it.
 
 
 [width="100%",cols="50%,50%",options="header",]
@@ -238,7 +238,7 @@ This action opens a file as a tab in the editor. You can provide this action mul
 [id="action-find-and-replace"]
 == Action: Find and Replace
 
-In projects created from a factory, Che can find and replace values in the source code after it is imported into the project tree. This lets you parameterize your source code. Find and replace can be run as a *Run Command* during `onProjectsLoaded` event. You can use `sed`, `awk`, or any other tools that are available in your workspace environment.
+In projects created from a factory, {prod-short} can find and replace values in the source code after it is imported into the project tree. This lets you parameterize your source code. Find and replace can be run as a *Run Command* during `onProjectsLoaded` event. You can use `sed`, `awk`, or any other tools that are available in your workspace environment.
 
 To define a command for your workspace in `factory.workspace.workspaceConfig.commands`:
 
