@@ -5,7 +5,7 @@ The Eclipse Che 6.18.0 release contains the following notable features:
 * Add Vue.js language support
 * Improvements for Persistent Volume Claim (PVC) handling
 * Support for mounting workspace source code in consistent location for all workspace containers
-* Improved debugging of Che server on Kubernetes and Openshift
+* Improved debugging of Che server on Kubernetes and OpenShift
 
 ---
 
@@ -83,17 +83,17 @@ during container startup and run time.
 
 ---
 
-## Improved debugging of Che server on Kubernetes and Openshift
+## Improved debugging of Che server on Kubernetes and OpenShift
 
 This is a feature aimed primarily at the developers of Che itself.
 
-The `CHE_DEBUG_SUSPEND` environment variable now also works on Kubernetes and Openshift deployments
+The `CHE_DEBUG_SUSPEND` environment variable now also works on Kubernetes and OpenShift deployments
 of Che server. Setting this flag to `true` and (re)starting a Che server deployment makes the server
 wait for a connection from a debugger on port 8000 before starting up. This is invaluable for
 debugging the server startup. 
 
 To connect your local IDE to the server, you first need to forward the port so that you can use it
-on `localhost`, e.g. on Openshift:
+on `localhost`, e.g. on OpenShift:
 
 ```bash
 oc get pods
