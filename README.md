@@ -54,7 +54,11 @@ $ bash run.sh -newreference <directory_name> <your_title>
 
 ## Placing new documentation
 
-To add a new page, create an `.adoc` file in `src/main/pages/che-<MAJOR-VERSION>/${subdir}` (substitute `<MAJOR-VERSION>` for either `6` or `7`, depending for which version of Che your content is intended).
+To add a new page, create an `.adoc` file in `src/main/pages/che-<version>/<directory_name>`<sup id="a2">[versions](#f1)<sup id="a1">[directories](#f1) 
+
+<b id="f2">Versions: </b>
+* `che-6` - Eclipse Che 6 content. Note that Che 6 is 
+8 `che-7` - Eclipse Che 7 content, including y-streams and z-streams.   
 
 <b id="f1">Available directories: </b> 
 * overview - introductory section
@@ -62,7 +66,7 @@ To add a new page, create an `.adoc` file in `src/main/pages/che-<MAJOR-VERSION>
 * installation-guide - installation guides
 * administration-guide - documentation for administrators of the clusters: configuring Che on a cluster, managing users, monitoring resources, security and data recovery 
 * contributor-guide - how to develop plug-ins for Che, add new debuggers, languages, and so on
-* extensions - documentation about extentons for Che, such as Eclipse Che4z, OpenShift Connector 
+* extensions - documentation about extensions for Che, such as Eclipse Che4z, OpenShift Connector 
 [↩](#a1)
 
 If there is no directory that fits a topic of your document, create a new one. Look at headers in existing pages to make sure the generated HTML page has the expected name, title, and keywords. For example:
