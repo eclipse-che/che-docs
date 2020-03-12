@@ -55,7 +55,9 @@ Service   che-plugin-registry
 Ingress   che-plugin-registry
 ----
 
-. To verify that the new plug-in is correctly published to the plug-in registry, make a request to the registry path `/v3/plugins/index.json` (or `/devfiles/index.json` for the devfile registry).
+. Check if the registries are deployed successfully on Kubernetes.
+
+.. To verify that the new plug-in is correctly published to the plug-in registry, make a request to the registry path `/v3/plugins/index.json` (or `/devfiles/index.json` for the devfile registry).
 +
 [subs="+quotes,+attributes"]
 ----
@@ -87,7 +89,7 @@ $ echo $\{INDEX_JSON} | grep -A 4 -B 5 "\"name\":\"my-plug-in\""
 }
 ----
 
-. Verify that the {prod-short} server points to the URL of the registry. To do this, compare the value of the `pass:[CHE_WORKSPACE_PLUGIN__REGISTRY__URL]` parameter in the `che` ConfigMap (or `pass:[CHE_WORKSPACE_DEVFILE__REGISTRY__URL]` for the devfile registry):
+.. Verify that the {prod-short} server points to the URL of the registry. To do this, compare the value of the `pass:[CHE_WORKSPACE_PLUGIN__REGISTRY__URL]` parameter in the `che` ConfigMap (or `pass:[CHE_WORKSPACE_DEVFILE__REGISTRY__URL]` for the devfile registry):
 +
 [subs="+quotes,+attributes"]
 ----
@@ -107,7 +109,7 @@ $ kubectl get -o 'custom-columns=URL:.spec.rules[0].host' \
 che-plugin-registry-che.192.168.99.100.nip.io
 ----
 
-. If they do not match, update the ConfigMap and restart the {prod-short} server.
+.. If they do not match, update the ConfigMap and restart the {prod-short} server.
 +
 [subs="+quotes,+attributes"]
 ----
