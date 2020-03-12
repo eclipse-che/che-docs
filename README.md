@@ -29,7 +29,7 @@ To learn more about the script: [`newdoc` GitHub repository](https://github.com/
 ### Using `newdoc` from the `che-docs` container
 `newdoc` is built into the `che-docs` container.
 
-To generate new documentation module with the script, run from the `che-docs` root git directory:
+To generate new documentation module with the script, execute the `run.sh` script from the `che-docs` root git directory:
 
 * Create a new assembly in a directory `directory_name` <sup id="a1">[directories](#f1)</sup>, with a title `your_title`
 
@@ -57,7 +57,7 @@ $ bash run.sh -newreference <directory_name> <your_title>
 To add a new page, create an `.adoc` file in `src/main/pages/che-<version>/<directory_name>`<sup id="a2">[versions](#f1)<sup id="a1">[directories](#f1) 
 
 <b id="f2">Versions: </b>
-* `che-6` - Eclipse Che 6 content. Note that Che 6 is 
+* `che-6` - Eclipse Che 6 content. Note that Che 6 is deprecated. 
 8 `che-7` - Eclipse Che 7 content, including y-streams and z-streams.   
 
 <b id="f1">Available directories: </b> 
@@ -69,7 +69,11 @@ To add a new page, create an `.adoc` file in `src/main/pages/che-<version>/<dire
 * extensions - documentation about extensions for Che, such as Eclipse Che4z, OpenShift Connector 
 [↩](#a1)
 
-If there is no directory that fits a topic of your document, create a new one. Look at headers in existing pages to make sure the generated HTML page has the expected name, title, and keywords. For example:
+If there is no directory that fits a topic of your document, create a new one. 
+
+## Adding Jekyll metadata
+
+Make sure to include all the necessary metadata, so that a generated HTML page has the expected name, title, and keywords. For example:
 
 ```yaml
 ---
@@ -81,72 +85,11 @@ permalink: docker-single-user.html
 folder: setup
 ---
 ```
+## Formatting in Asciidoc
+Che docs use Asciidoc for formatting. See [AsciiDoc Writer's Guide](https://asciidoctor.org/docs/asciidoc-writers-guide/) for syntax and general help with AsciiDoc.
 
-### Naming
-
-Try to use short names and titles for pages. Use dashes (`-`) in page names (`permalink` in page header).
-
-### Keywords
-
-The search script uses page titles, summary, and keywords to search for relevant results. Make sure your keywords are relevant for the page you add.
-
-### Tags
-
-To add a tag, look at available tags in `src/main/pages/che-<MAJOR-VERSION>/tags` folder. Tags should be also registered in `src/main/_data/tags.yml` - so both a tag in `tags.yml` and a respective tag page should be created.
-
-## Formatting and AsciiDoc syntax
-
-See [AsciiDoc Writer's Guide](https://asciidoctor.org/docs/asciidoc-writers-guide/) for syntax and general help with AsciiDoc.
-
-### Links
-
-To post a link to an internal page, use the following syntax:
-
-```
-This is a link:file_name.html[link to an internal page]
-```
-
-Do not use `.adoc` in the file name. Also, this file should be referenced in at least one sidebar-definition file in the `src/main/_data/sidebars/` directory.
-
-Links to anchors in internal pages:
-
-```
-link:file_name.html#tag[link to an anchor on an internal page]
-```
-
-Links to external pages:
-
-```
-This is a link:https://github.com[link to an external site]
-```
-
-### Images
-
-Images are located in the `src/main/che/docs/images/` directory. To publish an image, use the following syntax:
-
-```
-image::directory/img.png[alt text]
-```
-
-Do not add images into the root of the `images/` directory - either choose an existing sub-directory or create one if none of them fits the new image.
-
-Images are sized automatically. You can provide a URL to a full-size image, as well as a caption and alt text:
-
-```
-.Click to view a larger image
-[link=che/docs/images/devel/js_flow.png
-image::devel/js_flow.png[Alt text]
-```
-
-Do not post too many images unless it is absolutely necessary. Animated `.gif` images are preferred, especially when explaining how to use complex UI features.
-
-### Special characters
-
-To prevent special characters from being interpreted as formatting mark-up, use pass-through macros. For example, to escape underscores, asterisks, or backticks, use:
-
-```
-pass:[VARIABLE_NAME__WITH__UNDERSCORES]
-```
+### Testing with `test-adoc`  
+`test-adoc` is built into the `che-docs` container.
 
 ## How to get support
 
