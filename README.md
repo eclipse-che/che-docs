@@ -31,41 +31,41 @@ To learn more about the script: [`newdoc` GitHub repository](https://github.com/
 
 To generate new documentation module with the script, run from the `che-docs` root git directory:
 
-* Create a new assembly in a directory `directory_name` <sup id="a1">[1](#f1)</sup>, with a title `your_title`
+* Create a new assembly in a directory `directory_name` <sup id="a1">[directories](#f1)</sup>, with a title `your_title`
 
 ```
 $ bash run.sh -newassembly <directory_name> <your_title>    
 ```
 
-* Create a new concept in a directory `directory_name` <sup id="a1">[1](#f1)</sup>, with a title `your_title` 
+* Create a new concept in a directory `directory_name` <sup id="a1">[directories](#f1)</sup>, with a title `your_title` 
 ```
 $ bash run.sh -newconcept  <directory_name> <your_title>       
 ```
 
-* Create a new procedure in a directory `directory_name` <sup id="a1">[1](#f1)</sup>, with a title `your_title`
+* Create a new procedure in a directory `directory_name` <sup id="a1">[directories](#f1)</sup>, with a title `your_title`
 ```
 $ bash run.sh -newprocedure  <directory_name> <your_title>     
 ```
 
-* Create a new reference in a directory `directory_name` <sup id="a1">[1](#f1)</sup>, with a title `your_title`
+* Create a new reference in a directory `directory_name` <sup id="a1">[directories](#f1)</sup>, with a title `your_title`
 ```
 $ bash run.sh -newreference <directory_name> <your_title>
 ```
-
-<b id="f1">Available directories: </b> 
-* administration-guide
-* contributor-guide
-* end-user-guide
-* extensions
-* installation-guide
-* overview
-[↩](#a1)
 
 ## Placing new documentation
 
 To add a new page, create an `.adoc` file in `src/main/pages/che-<MAJOR-VERSION>/${subdir}` (substitute `<MAJOR-VERSION>` for either `6` or `7`, depending for which version of Che your content is intended).
 
-If there is no sub-directory that fits a new page, create one. Look at headers in existing pages to make sure the generated HTML page has the expected name, title, and keywords. For example:
+<b id="f1">Available directories: </b> 
+* overview - introductory section
+* end-user-guide - documentation for developers: navigating dashboard, working in Che-Theia, and so on 
+* installation-guide - installation guides
+* administration-guide - documentation for administrators of the clusters: configuring Che on a cluster, managing users, monitoring resources, security and data recovery 
+* contributor-guide - how to develop plug-ins for Che, add new debuggers, languages, and so on
+* extensions - documentation about extentons for Che, such as Eclipse Che4z, OpenShift Connector 
+[↩](#a1)
+
+If there is no directory that fits a topic of your document, create a new one. Look at headers in existing pages to make sure the generated HTML page has the expected name, title, and keywords. For example:
 
 ```yaml
 ---
