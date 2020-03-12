@@ -31,34 +31,35 @@ To learn more about the script: [`newdoc` GitHub repository](https://github.com/
 
 To generate new documentation module with the script, run from the `che-docs` root git directory:
 
-* Create a new assembly in a directory `directory_name`, with a title `your_title`
+* Create a new assembly in a directory `directory_name` <sup id="a1">[1](#f1)</sup>, with a title `your_title`
 
 ```
 $ bash run.sh -newassembly <directory_name> <your_title>    
 ```
 
-* Create a new concept in a directory <sup id="a1">[`directory_name`](#f1)</sup>, with a title `your_title` 
+* Create a new concept in a directory `directory_name` <sup id="a1">[1](#f1)</sup>, with a title `your_title` 
 ```
 $ bash run.sh -newconcept  <directory_name> <your_title>       
 ```
-<b id="f1">1</b> 
-    administration-guide
-    contributor-guide
-    end-user-guide
-    extensions
-    installation-guide
-    overview
-[↩](#a1)
 
-* Create a new procedure in a directory `directory_name`, with a title `your_title`
+* Create a new procedure in a directory `directory_name` <sup id="a1">[1](#f1)</sup>, with a title `your_title`
 ```
 $ bash run.sh -newprocedure  <directory_name> <your_title>     
 ```
 
-* Create a new reference in a directory `directory_name`, with a title `your_title`
+* Create a new reference in a directory `directory_name` <sup id="a1">[1](#f1)</sup>, with a title `your_title`
 ```
 $ bash run.sh -newreference <directory_name> <your_title>
 ```
+
+<b id="f1">Available directories: </b> 
+* administration-guide
+* contributor-guide
+* end-user-guide
+* extensions
+* installation-guide
+* overview
+[↩](#a1)
 
 ## Placing new documentation
 
