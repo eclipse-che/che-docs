@@ -4,31 +4,27 @@ Che docs use Jekyll to convert `.adoc` (AsciiDoc) files into HTML pages. Docs ar
 
 ## Build and preview
 
-There is a `run.sh` script in the root of the repo that runs a Docker image, mounts sources, and starts Jekyll. When running locally, docs are available at `localhost:4000`. Jekyll watches for changes in `.adoc` files and re-generates resources, so you can preview changes live.
-
 ### Building online
 [![Contribute](https://che.openshift.io/factory/resources/factory-contribute.svg)](https://che.openshift.io/f?url=https://github.com/eclipse/che-docs)
 
-### Building natively
+### Building locally
 
-To build without using Docker, [install required Jekyll dependencies](https://jekyllrb.com/docs/installation/):
+Use a `run.sh` script in the root of the repo to build using a Docker image. The scipts runs a Docker image, mounts sources, and starts Jekyll. Docs are available at `localhost:4000`. Jekyll watches for changes in `.adoc` files and re-generates resources, so you can preview changes live.
 
+To run the script:
+
+* Execute the script from the command line:
 ```
-# yum install maven ruby ruby-devel @development-tools
-```
-
-Then, instead of the `run.sh` script, run Maven directly:
-
-```
-$ mvn clean install -Pnative
+$ bash run.sh    
 ```
 
-## Using the `newdoc` script to generate new pages
+* Open `http://localhost:4000/` in your browser.
 
-Che documentation follows guidelines of the Modular Documentation initiative: https://redhat-documentation.github.io/modular-docs/
+## Adding new pages
+Che documentation follows guidelines of the [Modular Documentation initiative](https://redhat-documentation.github.io/modular-docs/)
 
-You can use `newdoc` to generate templates for the new documentation.
-To learn more about the script: https://github.com/redhat-documentation/tools/tree/master/newdoc
+Use `newdoc` to generate templates for the new documentation.
+To learn more about the script: [`newdoc` GitHub repository](https://github.com/redhat-documentation/tools/tree/master/newdoc)
 
 ### Using `newdoc` from the `che-docs` container
 `newdoc` is built into the `che-docs` container.
@@ -41,10 +37,18 @@ To generate new documentation module with the script, run from the `che-docs` ro
 $ bash run.sh -newassembly <directory_name> <your_title>    
 ```
 
-* Create a new concept in a directory `directory_name`, with a title `your_title`
+* Create a new concept in a directory <sup id="a1">[`directory_name`](#f1)</sup>, with a title `your_title` 
 ```
 $ bash run.sh -newconcept  <directory_name> <your_title>       
 ```
+<b id="f1">1</b> 
+    administration-guide
+    contributor-guide
+    end-user-guide
+    extensions
+    installation-guide
+    overview
+[↩](#a1)
 
 * Create a new procedure in a directory `directory_name`, with a title `your_title`
 ```
@@ -56,7 +60,7 @@ $ bash run.sh -newprocedure  <directory_name> <your_title>
 $ bash run.sh -newreference <directory_name> <your_title>
 ```
 
-## Adding a new page
+## Placing new documentation
 
 To add a new page, create an `.adoc` file in `src/main/pages/che-<MAJOR-VERSION>/${subdir}` (substitute `<MAJOR-VERSION>` for either `6` or `7`, depending for which version of Che your content is intended).
 
