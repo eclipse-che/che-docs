@@ -406,7 +406,9 @@ To specify a container(s) memory request for `chePlugin` or  `cheEditor`, use th
 This limit will be applied to every container of the given component.
 
 For `cheEditor` and `chePlugin` component types, RAM requests can be described in plugin descriptor file (typically, named `meta.yaml`).
+
 In this case, devfile values have precedence, i.e. value from descriptor will be overridden by devfile one.
+
 If none of them are specified, system-wide defaults will be applied (see description of CHE_WORKSPACE_SIDECAR_DEFAULT__MEMORY__REQUEST__MB system property).
 
 
@@ -505,7 +507,8 @@ The following environment variables are pre-set by the {prod-short} server:
 
 * `CHE_WORKSPACE_NAME`: The name of the current workspace.
 
-* `CHE_WORKSPACE_NAMESPACE`: The namespace of the current workspace.
+* `CHE_WORKSPACE_NAMESPACE`: The Che namespace of the current workspace. This environment variable is the name of the user or organization that the workspace belongs to. Note that this is different from
+the Kubernetes namespace or OpenShift project to which the workspace is deployed.
 
 * `CHE_MACHINE_TOKEN`: The token used to authenticate the request against the {prod-short} server.
 
@@ -568,7 +571,7 @@ components:
           public: false
 ----
 
-Here, there are two dockerimages, each defining a single endpoint. Endpoint is an accessible port that can be made accessible inside the workspace or also publicly (example, from the UI). Each endpoint has a name and port, which is the port on which certain server running inside the container is listening. The following are a few attributes that you can set on the endpoint:
+Here, there are two docker images, each defining a single endpoint. Endpoint is an accessible port that can be made accessible inside the workspace or also publicly (example, from the UI). Each endpoint has a name and port, which is the port on which certain server running inside the container is listening. The following are a few attributes that you can set on the endpoint:
 
 * `discoverable`: If an endpoint is discoverable, it means that it can be accessed using its name as the hostname within the workspace containers (in the Kubernetes parlance, a service is created for it with the provided name).
 
