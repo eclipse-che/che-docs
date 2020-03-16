@@ -8,7 +8,7 @@ This section describes how to deploy {prod-short} with self-signed TLS certifica
 == Prerequisites
 
 * A running OpenShift instance, version 3.11 or higher
-* link:{site-baseurl}che-7/setup-che-in-tls-mode-with-self-signed-certificate/#gerenating-self-signed-certificates_setup-che-in-tls-mode-with-self-signed-certificate[Have all required keys/certificates generated]
+* link:{site-baseurl}che-7/setup-che-in-tls-mode-with-self-signed-certificate/#generating-self-signed-certificates_setup-che-in-tls-mode-with-self-signed-certificate[Have all required keys/certificates generated]
 
 [discrete]
 == Procedure
@@ -26,7 +26,7 @@ $ oc project default
 . Re-configure router with generated certificate
 
 +
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
 $ oc delete secret router-certs
 $ cat domain.crt domain.key > minishift.crt
@@ -37,7 +37,7 @@ $ oc rollout latest router
 . Pre-create namespace for {prod-short}
 
 +
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
 $ oc create namespace che
 ----
@@ -46,17 +46,17 @@ $ oc create namespace che
 . Create secret from CA certificate
 
 +
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
 $ cp rootCA.crt ca.crt
 $ oc create secret generic self-signed-certificate --from-file=ca.crt -n=che
 ----
 
 
-. Deploy {prod-short} using `chectl`
+. Deploy {prod-short} using `{prod-cli}`
 
 +
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
-$ chectl server:start --platform=minishift --installer=operator --tls --self-signed-cert
+$ {prod-cli} server:start --platform=minishift --installer=operator --tls --self-signed-cert
 ----

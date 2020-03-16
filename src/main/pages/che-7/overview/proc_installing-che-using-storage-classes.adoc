@@ -1,4 +1,4 @@
-[id="proc_installing-che-using-storage-classes_{context}"]
+[id="proc_installing-{prod-id-short}-using-storage-classes_{context}"]
 
 = Installing {prod} using storage classes
 
@@ -20,18 +20,18 @@ You can define storage class name in the {prod} configuration to use storage cla
 
 == Defining storage class names with the `server:start command`
 
-* To provide storage class name for Postgres PVC, use the `chectl` `server:start` command with the `--postgres-pvc-storage-class-name` flag:
+* To provide storage class name for Postgres PVC, use the `{prod-cli}` `server:start` command with the `--postgres-pvc-storage-class-name` flag:
 +
-[source,bash]
+[subs="+quotes,+attributes"]
 ----
-$ chectl server:start -m -p minikube -a operator --postgres-pvc-storage-class-name=postgress-storage
+$ {prod-cli} server:start -m -p minikube -a operator --postgres-pvc-storage-class-name=postgress-storage
 ----
 
-* To provide storage class name for Che workspaces, use the `server:start` command with the `--workspace-pvc-storage-class-name` flag:
+* To provide storage class name for {prod-short} workspaces, use the `server:start` command with the `--workspace-pvc-storage-class-name` flag:
 +
-[source,bash]
+[subs="+quotes,+attributes"]
 ----
-$ chectl server:start -m -p minikube -a operator --workspace-pvc-storage-class-name=workspace-storage
+$ {prod-cli} server:start -m -p minikube -a operator --workspace-pvc-storage-class-name=workspace-storage
 ----
 
 For {prod} workspaces, storage class name has different behavior depending on a workspace PVC strategy.
@@ -69,9 +69,9 @@ spec:
 
 . Start the {prod-id-short} server with your custom resources:
 +
-[source,bash]
+[subs="+quotes,+attributes"]
 ----
-$ chectl server:start -m -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
+$ {prod-cli} server:start -m -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
 ----
 
 == Binding static provisined volumes
@@ -123,7 +123,7 @@ spec:
 ----
 
 . Bind the two Persisted Volumes:
-[source,bash]
+[subs="+quotes,+attributes"]
 ----
 $ kubectl apply -f che-workspace-pv.yaml -f che-postgres-pv.yaml
 ----
@@ -175,7 +175,7 @@ spec:
 
 . Start the {prod-id-short} server with your custom resources:
 +
-[source,bash]
+[subs="+quotes,+attributes"]
 ----
-$ chectl server:start -m -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
+$ {prod-cli} server:start -m -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
 ----
