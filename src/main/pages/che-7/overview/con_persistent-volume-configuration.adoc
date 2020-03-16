@@ -28,8 +28,8 @@ User-defined PVCs are created with few modifications:
 
 - they are provisioned with generated names to guarantee that it is not conflicting with other PVCs in namespace;
 
-- subpaths of mount volumes that reference user-defined PVCs are prefixed with `{workspace id}/{PVC name}`.
-It is done to have the same data structure on PV on different PVC strategies(link:#how-the-subpaths-are-used[more]);
+- sub-paths of mount volumes that reference user-defined PVCs are prefixed with `{workspace id}/{PVC name}`.
+It is done to have the same data structure on PV on different PVC strategies(link:#how-the-sub-paths-are-used[more]);
 
 [id="common-pvc-strategy_{context}"]
 == Common PVC Strategy
@@ -39,7 +39,7 @@ It is done to have the same data structure on PV on different PVC strategies(lin
 All workspaces (within one {k8s-namespace}) use the same PVC to store data in their declared volumes (projects and workspace logs by default and whatever additional volumes that a user can define.)
 
 User-defined PVCs are ignored and volumes that reference PVCs are replaced with volume that references common PVC.
-The corresponding containers volume mounts are relinked to common volume and subpaths are prefixed with `'{workspaceId}/{originalPVCName}'` (link:#how-the-subpaths-are-used[more]).
+The corresponding containers volume mounts are relinked to common volume and sub-paths are prefixed with `'{workspaceId}/{originalPVCName}'` (link:#how-the-sub-paths-are-used[more]).
 
 User-defined PVC name is used as {prod-short} Volume name. It means that if Machine is configured to use {prod-short} Volume with the same name as user-defined
 PVC has then they will use the same shared folder in common PVC.
@@ -60,8 +60,8 @@ If there are several nodes, you can use the `common` strategy, but:
 
 The `per-workspace` strategy works similarly to the `common` PVC strategy. The only difference is that all workspace volumes (but not all workspaces) use the same PVC to store data (projects and workspace logs by default and any additional volumes that a user can define).
 
-[id="how-the-subpaths-are-used_{context}"]
-== How the subpaths are used in PVCs
+[id="how-the-sub-paths-are-used_{context}"]
+== How the sub-paths are used in PVCs
 
 ----
 /pv0001
