@@ -21,7 +21,7 @@ $ STACK="new-stack"; \
 
 . If copying from an existing devfile, make changes to the devfile to suit your needs. Make sure your new devfile has a unique `displayName` and `description`.
 
-. Get the name of the pod that hosts the devfile registry container. To do this, filter the `component=devfile-registry` label:
+. Get the name of the Pod that hosts the devfile registry container. To do this, filter the `component=devfile-registry` label:
 +
 ----
 $ DEVFILE_REG_POD=$(kubectl get -o custom-columns=NAME:.metadata.name \
@@ -39,7 +39,7 @@ $ cd che-devfile-registry; \
 . Copy the new `index.json`, `devfile.yaml` and `meta.yaml` files from your new local devfile folder to the container.
 +
 ----
-$ cd che-devfile-registry; \ 
+$ cd che-devfile-registry; \
   LOCAL_FILES="$(pwd)/${STACK}/meta.yaml $(pwd)/${STACK}/devfile.yaml $(pwd)/index.json"; \
   kubectl exec ${DEVFILE_REG_POD} -i -t -- mkdir -p /var/www/html/devfiles/${STACK}; \
   for f in $LOCAL_FILES; do e=${f/$(pwd)\//}; echo "Upload ${f} -> /var/www/html/devfiles/${e}"
@@ -47,4 +47,3 @@ $ cd che-devfile-registry; \
 ----
 
 . The new devfile can now be used from the existing {prod-short} instance's devfile registry. To discover it, go to the {prod-short} dashboard, then click the `Workspaces` link. From there, click `Add Workspace` to see the updated list of available devfiles.
-

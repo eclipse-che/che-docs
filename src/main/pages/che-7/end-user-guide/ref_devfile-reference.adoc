@@ -209,7 +209,7 @@ Alternatively, to post a devfile with such components to REST API, the contents 
 
 As with the xref:component-type-dockerimage_{context}[`dockerimage` component], it is possible to override the entrypoint of the containers contained in the Kubernetes or OpenShift list using the `command` and `args` properties (as link:https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#notes[understood] by Kubernetes).
 
-There can be more containers in the list (contained in pods or pod templates of deployments). To select which containers to apply the entrypoint changes to.
+There can be more containers in the list (contained in Pods or Pod templates of deployments). To select which containers to apply the entrypoint changes to.
 
 The entrypoints can be defined as follows:
 
@@ -315,7 +315,7 @@ memoryLimit: 512Mi
 command: ['sleep', 'infinity']
 ----
 
-It specifies the type of the component, `dockerimage` and the `image` attribute names the image to be used for the component using the usual docker naming conventions, that is, the above `type` attribute is equal to `docker.io/library/golang:latest`.
+It specifies the type of the component, `dockerimage` and the `image` attribute names the image to be used for the component using the usual Docker naming conventions, that is, the above `type` attribute is equal to `docker.io/library/golang:latest`.
 
 A `dockerimage` component has many features that enable augmenting the image with additional resources and information needed for meaningful integration of the *tool* provided by the image with {prod}.
 
@@ -517,7 +517,7 @@ A devfiles may only need the `CHE_PROJECTS_ROOT` environment variable to locate 
 
 ==== Endpoints
 
-You can specify the endpoints that the docker image exposes. These endpoints can be made accessible to the users if the {prod-short} cluster is running using a Kubernetes ingress or an OpenShift route and to the other components within the workspace. You can create an endpoint for your application or database, if your application or database server is listening on a port and you want to be able to directly interact with it yourself or you want other components to interact with it.
+You can specify the endpoints that the Docker image exposes. These endpoints can be made accessible to the users if the {prod-short} cluster is running using a Kubernetes ingress or an OpenShift route and to the other components within the workspace. You can create an endpoint for your application or database, if your application or database server is listening on a port and you want to be able to directly interact with it yourself or you want other components to interact with it.
 
 Endpoints have a number of properties as shown in the following example:
 
@@ -568,15 +568,15 @@ components:
           public: false
 ----
 
-Here, there are two docker images, each defining a single endpoint. Endpoint is an accessible port that can be made accessible inside the workspace or also publicly (example, from the UI). Each endpoint has a name and port, which is the port on which certain server running inside the container is listening. The following are a few attributes that you can set on the endpoint:
+Here, there are two Docker images, each defining a single endpoint. Endpoint is an accessible port that can be made accessible inside the workspace or also publicly (example, from the UI). Each endpoint has a name and port, which is the port on which certain server running inside the container is listening. The following are a few attributes that you can set on the endpoint:
 
-* `discoverable`: If an endpoint is discoverable, it means that it can be accessed using its name as the hostname within the workspace containers (in the Kubernetes parlance, a service is created for it with the provided name).
-
+* `discoverable`: If an endpoint is discoverable, it means that it can be accessed using its name as the host name within the workspace containers (in the Kubernetes parlance, a service is created for it with the provided name).
+55
 * `public`: The endpoint will be accessible outside of the workspace, too (such endpoint can be accessed from the {prod-short} user interface). Such endpoints are publicized always on port `80` or `443` (depending on whether `tls` is enabled in {prod-short}).
 
 * `protocol`: For public endpoints the protocol is a hint to the UI on how to construct the URL for the endpoint access. Typical values are `http`, `https`, `ws`, `wss`.
 
-* `secure`: A boolean (defaulting to `false`) specifying whether the endpoint is put behind a JWT proxy requiring a JWT workspace token to grant access. The JWT proxy is deployed in the same pod as the server and assumes the server listens solely on the local loopback interface (i.e. the `127.0.0.1` address).
+* `secure`: A boolean (defaulting to `false`) specifying whether the endpoint is put behind a JWT proxy requiring a JWT workspace token to grant access. The JWT proxy is deployed in the same Pod as the server and assumes the server listens solely on the local loopback interface (i.e. the `127.0.0.1` address).
 +
 WARNING: Listening on any other interface than the local loopback poses a security risk, because such server will be accessible without the JWT authentication within the cluster network on the corresponding IP addresses.
 
