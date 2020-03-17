@@ -19,9 +19,9 @@ on Amazon Elastic Compute Cloud (Amazon EC2).
 
 . Check the `PATH` environment variable if the `aws` tool is not available.
 
-. Install Kubernetes on EC2. There are several ways to have a running Kubernetes instance on EC2. Here, the *kops* tool is used to install Kubernetes. For details, see link:https://kubernetes.io/docs/setup/production-environment/tools/kops/[Installing Kubernetes with kops].
+. Install Kubernetes on EC2. There are several ways to have a running Kubernetes instance on EC2. Here, the `kops` tool is used to install Kubernetes. For details, see link:https://kubernetes.io/docs/setup/production-environment/tools/kops/[Installing Kubernetes with `kops`].
 
-. Set up `IAM` user for *kops*. For detailed instructions, see https://github.com/kubernetes/kops/blob/master/docs/aws.md#setup-iam-user[Set up IAM user].
+. Set up `IAM` user for `kops`. For detailed instructions, see https://github.com/kubernetes/kops/blob/master/docs/aws.md#setup-iam-user[Set up IAM user].
 
 This document assumes that {prod} must be configured to run at link:http://che.aws.my-ide.cloud[{prod-short} AWS Cloud].
 
@@ -69,20 +69,20 @@ $ aws route53 create-hosted-zone --name aws.my-ide.cloud --caller-reference 1
 +
 image::installation/dns-nameservers.png[]
 
-. Create the Simple Storage Service (s3) storage to store the kops configuration.
+. Create the Simple Storage Service (s3) storage to store the `kops` configuration.
 +
 ----
 $ aws s3 mb s3://clusters.aws.my-ide.cloud
 make_bucket: clusters.aws.my-ide.cloud
 ----
 
-. Inform kops of this new service:
+. Inform `kops` of this new service:
 +
 ----
 $ export KOPS_STATE_STORE=s3://clusters.aws.my-ide.cloud
 ----
 
-. Create the kops cluster by providing the cluster zone. For example, for Europe, the zone is `eu-west-1c`.
+. Create the `kops` cluster by providing the cluster zone. For example, for Europe, the zone is `eu-west-1c`.
 +
 ----
 $ kops create cluster --zones=eu-west-1c eu.aws.my-ide.cloud
@@ -118,7 +118,7 @@ ip-172-20-60-129.eu-west-1.compute.internal  master  True
 Your cluster eu.aws.my-ide.cloud is ready
 ----
 
-. Check the cluster using the `kubectl` command. The `kubectl` context is also configured automatically by the kops tool:
+. Check the cluster using the `kubectl` command. The `kubectl` context is also configured automatically by the `kops` tool:
 +
 [subs="+quotes",options="nowrap"]
 ----
@@ -190,8 +190,8 @@ Run the following command to create the role:
 $ aws iam create-service-linked-role --aws-service-name "elasticloadbalancing.amazonaws.com"
 ----
 
-. Add hosts on route 53 with this given hostname ++https://console.aws.amazon.com/route53/home?region=eu-west-1#hosted-zones:++. Ensure that you include the colon (`:`) at the end of this URL.
-. Create the wildcard DNS `*` (for `*.aws-my-ide.cloud`) with the previous hostname and ensure to add the dot (`.`) at the end of the hostname. In the *Type* drop-down list, select *CNAME*.
+. Add hosts on route 53 with this given host name ++https://console.aws.amazon.com/route53/home?region=eu-west-1#hosted-zones:++. Ensure that you include the colon (`:`) at the end of this URL.
+. Create the wildcard DNS `*` (for `*.aws-my-ide.cloud`) with the previous host name and ensure to add the dot (`.`) at the end of the host name. In the *Type* drop-down list, select *CNAME*.
 +
 image::installation/create-record-set.png[link="{imagesdir}/installation/create-record-set.png"]
 +
