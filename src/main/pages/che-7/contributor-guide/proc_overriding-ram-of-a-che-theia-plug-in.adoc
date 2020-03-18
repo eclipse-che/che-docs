@@ -6,16 +6,16 @@ Sometimes, a plug-in consumes more memory than what has been allocated to it by 
 
 .Procedure
 
-Users can override the RAM limit and request for a particular plug-in in their workspace configuration.
+Users can override the RAM limit for a particular plug-in in their workspace configuration.
 
-* Set the `memoryLimit` and/or `memoryRequest` for devfile component  to `1000M` or `10Gi`, or any other value formatted as a number and a unit (`b, k, ki, m, mi, g, gi`). When no unit is specified, the number is in bytes.
+* Set the `memoryLimit` for devfile component  to `1000M` or `10Gi`, or any other value formatted as a number and a unit (`b, k, ki, m, mi, g, gi`). When no unit is specified, the number is in bytes.
 
 NOTE: Using this notation, units that contain the character `i`, denote a number that is of the power 2, such as 1024 (as opposed to numbers that use a power of 10, such as 1000).
 
 .Limiting RAM use for a plug-in
 [example]
 ====
-Example of an attribute that sets the RAM limit for the link:https://github.com/eclipse/che-plugin-registry/blob/master/v3/plugins/redhat/vscode-yaml/0.3.0/meta.yaml[YAML language server plug-in] to 768 mebibytes (1073741824 bytes) and RAM request to 500 megabytes:
+Example of an attribute that sets the RAM limit for the link:https://github.com/eclipse/che-plugin-registry/blob/master/v3/plugins/redhat/vscode-yaml/0.3.0/meta.yaml[YAML language server plug-in] to 768 mebibytes (1073741824 bytes):
 
 [source,yaml]
 ----
@@ -23,22 +23,6 @@ components:
   - id: redhat/vscode-yaml/0.3.0
     type: chePlugin
     memoryLimit: 768mi
-    memoryRequest: 500M
-----
-====
-
-.Limiting CPU use for a plug-in
-[example]
-====
-Example of an attribute that sets the CPU limit for the link:https://github.com/eclipse/che-plugin-registry/blob/master/v3/plugins/redhat/vscode-yaml/0.3.0/meta.yaml[YAML language server plug-in] to 1.5 cores and CPU request to 500 millicores:
-
-[source,yaml]
-----
-components:
-  - id: redhat/vscode-yaml/0.3.0
-    type: chePlugin
-    cpuLimit: 1.5
-    cpuRequest: 500m
 ----
 ====
 
