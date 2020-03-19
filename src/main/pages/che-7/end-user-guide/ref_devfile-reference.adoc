@@ -342,9 +342,11 @@ The sources is mounted on a location stored in the `CHE_PROJECTS_ROOT` environme
 
 The `command` attribute of the `dockerimage` along with other arguments, is used to modify the `entrypoint` command of the container created from the image. In {prod} the container is needed to run indefinitely so that you can connect to it and execute arbitrary commands in it at any time. Because the availability of the `sleep` command and the support for the `infinity` argument for it is different and depends on the base image used in the particular images, {prod-short} cannot insert this behavior automatically on its own. However, you can take advantage of this feature to, for example, start up necessary servers with modified configurations, etc.
 
-==== Persistent Storage
+=== Persistent Storage
 
-Docker image tools can specify the custom volumes to be mounted on specific locations within the image. Note that the volume names are shared across all components and therefore this mechanism can also be used to share file systems between components.
+`Dockerimage`, `chePlugin` and `cheEditor` type components can specify the custom volumes to be mounted on specific locations within the image. Note that the volume names are shared across all components and therefore this mechanism can also be used to share file systems between components.
+
+Example specifying volumes for `dockerimage` type:
 
 [source,yaml]
 ----
@@ -354,12 +356,30 @@ metadata:
 components:
   - type: dockerimage
     image: golang
-    memoryLimit: 512Mi
     mountSources: true
     command: ['sleep', 'infinity']
     volumes:
       - name: cache
         containerPath: /.cache
+----
+
+Example specifying volumes for `cheEditor`/`chePlugin` type:
+
+[source,yaml]
+----
+apiVersion: 1.0.0
+metadata:
+  name: MyDevfile
+components:
+  - type: cheEditor
+    alias: theia-editor
+    id: eclipse/che-theia/next
+    env:
+    - name: HOME
+      value: $(CHE_PROJECTS_ROOT)
+    volumes:
+    - name: cache
+      containerPath: /.cache
 ----
 
 === Specifying container memory limit for components
