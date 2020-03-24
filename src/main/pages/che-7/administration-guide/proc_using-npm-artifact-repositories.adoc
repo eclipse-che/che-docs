@@ -1,0 +1,53 @@
+---
+title: Using npm artifact repositories
+keywords:
+tags: []
+sidebar: che_7_docs
+permalink: che-7/using-npm-artifact-repositories/
+folder: che-7/end-user-guide
+summary:
+---
+
+:page-liquid:
+
+:parent-context-of-using-npm-artifact-repositories: {context}
+
+[id="using-npm-artifact-repositories_{context}"]
+= Using npm artifact repositories
+
+:context: using-npm-artifact-repositories
+
+npm is usually configured using the `npm config` command, writing values to the `.npmrc` files. However, configuration values can also be set using the environment variables beginning with `NPM_CONFIG_`.
+
+The Javascript/Typescript plug-in used in {prod} does not download any artifacts. It is enough to configure npm in the dev-machine component. 
+
+Use the following environment variables for configuration:
+
+* The URL for the artifact repository: `NPM_CONFIG_REGISTRY`
+* For using a certificate from a file: `NODE_EXTRA_CA_CERTS`
+
+To be able to reference the certificate in a devfile, get a copy of the certificate of the npm repository server and put it inside the `/project` folder. 
+
+. An example configuration for the use of an internal repository with a self-signed certificate:
++
+----
+  - mountSources: true
+    endpoints:
+      - name: nodejs
+        port: 3000
+    memoryLimit: 512Mi
+    type: dockerimage
+    alias: nodejs
+    image: quay.io/eclipse/che-nodejs10-ubi:nightly
+    env:
+      -name: NODE_EXTRA_CA_CERTS  
+       value: &#39;/projects/config/tls.crt&#39;
+     - name: NPM_CONFIG_REGISTRY  
+       value: &#39;https://snexus-airgap.apps.acme.com/repository/npm-proxy/&#39;
+----
+
+// .Additional resources
+// * link:
+// * link:
+
+:context: {parent-context-of-using-npm-artifact-repositories}
