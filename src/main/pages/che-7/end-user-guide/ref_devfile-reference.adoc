@@ -1,8 +1,9 @@
+// making-a-workspace-portable-using-a-devfile
+
 [id="devfile-reference_{context}"]
 = Devfile reference
 
 This section contains devfile reference and instructions on how to use the various elements that devfiles consist of.
-
 
 == Adding projects to a devfile
 
@@ -123,7 +124,8 @@ Describes plug-ins in a workspace by defining their `id`. It is allowed to have 
      id: eclipse/che-machine-exec-plugin/0.0.1
 ----
 
-Both types above use an ID, which is slash-separated publisher, name and version of plug-in from the {prod-short} Plug-in registry. +
+Both types above use an ID, which is slash-separated publisher, name and version of plug-in from the {prod-short} Plug-in registry.
+
 List of available {prod-short} plug-ins and more information about registry can be found in the link:https://github.com/eclipse/che-plugin-registry[{prod-short} plug-in registry] GitHub repository.
 
 === Specifying an alternative component registry
@@ -170,7 +172,7 @@ A chePlugin component may need to be precisely tuned, and in such case, componen
 
 A complex component type that allows to apply configuration from a list of Kubernetes or OpenShift components.
 
-The content can be provided either via the `reference` attribute, which points to the file with the component content.
+The content can be provided through the `reference` attribute, which points to the file with the component content.
 
 [source,yaml]
 ----
@@ -401,9 +403,9 @@ To specify a container(s) memory limit for `dockerimage`, `chePlugin`, `cheEdito
 
 This limit will be applied to every container of the given component.
 
-For `cheEditor` and `chePlugin` component types, RAM limits can be described in plugin descriptor file (typically, named `meta.yaml`).
-In this case, devfile values have precedence, i.e. value from descriptor will be overridden by devfile one.
-If none of them are specified, system-wide defaults will be applied (see description of CHE_WORKSPACE_SIDECAR_DEFAULT__MEMORY__LIMIT__MB system property).
+For the `cheEditor` and `chePlugin` component types, RAM limits can be described in the plug-in descriptor file, typically named `meta.yaml`.
+
+If none of them are specified, system-wide defaults will be applied (see description of `pass:[CHE_WORKSPACE_SIDECAR_DEFAULT__MEMORY__LIMIT__MB]` system property).
 
 
 === Specifying container memory request for components
@@ -426,11 +428,9 @@ To specify a container(s) memory request for `chePlugin` or  `cheEditor`, use th
 
 This limit will be applied to every container of the given component.
 
-For `cheEditor` and `chePlugin` component types, RAM requests can be described in plugin descriptor file (typically, named `meta.yaml`).
+For the `cheEditor` and `chePlugin` component types, RAM requests can be described in the plug-in descriptor file, typically named `meta.yaml`.
 
-In this case, devfile values have precedence, i.e. value from descriptor will be overridden by devfile one.
-
-If none of them are specified, system-wide defaults will be applied (see description of CHE_WORKSPACE_SIDECAR_DEFAULT__MEMORY__REQUEST__MB system property).
+If none of them are specified, system-wide defaults are applied (see description of `pass:[CHE_WORKSPACE_SIDECAR_DEFAULT__MEMORY__REQUEST__MB]` system property).
 
 
 === Specifying container CPU limit for components
@@ -451,9 +451,9 @@ To specify a container(s) CPU limit for `chePlugin` or `cheEditor`, use the `cpu
 
 This limit will be applied to every container of the given component.
 
-For `cheEditor` and `chePlugin` component types, CPU limits can be described in plugin descriptor file (typically, named `meta.yaml`).
-In this case, devfile values have precedence, i.e. value from descriptor will be overridden by devfile one.
-If none of them are specified, system-wide defaults will be applied (see description of CHE_WORKSPACE_SIDECAR_DEFAULT__CPU__LIMIT__CORES system property).
+For the `cheEditor` and `chePlugin` component types, CPU limits can be described in the plug-in descriptor file, typically named `meta.yaml`.
+
+If none of them are specified, system-wide defaults are applied (see description of `pass:[CHE_WORKSPACE_SIDECAR_DEFAULT__CPU__LIMIT__CORES]` system property).
 
 
 === Specifying container CPU request for components
@@ -476,9 +476,9 @@ To specify a container(s) CPU request for `chePlugin` or `cheEditor`, use the `c
 
 This limit will be applied to every container of the given component.
 
-For `cheEditor` and `chePlugin` component types, CPU requests can be described in plugin descriptor file (typically, named `meta.yaml`).
-In this case, devfile values have precedence, i.e. value from descriptor will be overridden by devfile one.
-If none of them are specified, system-wide defaults will be applied (see description of CHE_WORKSPACE_SIDECAR_DEFAULT__CPU__REQUEST__CORES system property).
+For the `cheEditor` and `chePlugin` component types, CPU requests can be described in the plug-in descriptor file, typically named `meta.yaml`.
+
+If none of them are specified, system-wide defaults are applied (see description of `pass:[CHE_WORKSPACE_SIDECAR_DEFAULT__CPU__REQUEST__CORES]` system property).
 
 === Environment variables
 
@@ -600,9 +600,9 @@ Here, there are two Docker images, each defining a single endpoint. Endpoint is 
 
 * `protocol`: For public endpoints the protocol is a hint to the UI on how to construct the URL for the endpoint access. Typical values are `http`, `https`, `ws`, `wss`.
 
-* `secure`: A boolean (defaulting to `false`) specifying whether the endpoint is put behind a JWT proxy requiring a JWT workspace token to grant access. The JWT proxy is deployed in the same Pod as the server and assumes the server listens solely on the local loopback interface (i.e. the `127.0.0.1` address).
+* `secure`: A boolean (defaulting to `false`) specifying whether the endpoint is put behind a JWT proxy requiring a JWT workspace token to grant access. The JWT proxy is deployed in the same Pod as the server and assumes the server listens solely on the local loopback interface, such as `127.0.0.1`.
 +
-WARNING: Listening on any other interface than the local loopback poses a security risk, because such server will be accessible without the JWT authentication within the cluster network on the corresponding IP addresses.
+WARNING: Listening on any other interface than the local loopback poses a security risk because such server is accessible without the JWT authentication within the cluster network on the corresponding IP addresses.
 
 * `path`: The URL of the endpoint
 
