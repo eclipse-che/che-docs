@@ -12,7 +12,7 @@ This section describes how to deploy {prod-short} with self-signed TLS certifica
 == Prerequisites
 
 * A running Kubernetes instance, version 1.9 or higher
-* link:{site-baseurl}che-7/setup-che-in-tls-mode-with-self-signed-certificate/#generating-self-signed-certificates_setup-che-in-tls-mode-with-self-signed-certificate[Have all required keys/certificates generated]
+* link:{site-baseurl}che-7/setup-che-in-tls-mode-with-self-signed-certificate/#generating-self-signed-certificates_setup-che-in-tls-mode[Have all required keys/certificates generated]
 
 
 [discrete]
@@ -41,7 +41,6 @@ $ kubectl create secret tls che-tls --key=domain.key --cert=domain.crt -n che
 +
 [subs="+quotes"]
 ----
-$ cp rootCA.crt ca.crt
 $ kubectl create secret generic self-signed-certificate --from-file=ca.crt -n che
 ----
 
@@ -51,5 +50,5 @@ $ kubectl create secret generic self-signed-certificate --from-file=ca.crt -n ch
 +
 [subs="+quotes,+attributes"]
 ----
-$ {prod-cli} server:start --platform=minikube --installer=helm --tls --self-signed-cert
+$ {prod-cli} server:start --platform=minikube --installer=operator --tls --self-signed-cert
 ----
