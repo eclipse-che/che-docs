@@ -1,3 +1,7 @@
+// This assembly is included in the following assemblies:
+//
+// what-is-a-che-theia-plug-in
+
 [id="che-theia-plug-in-metadata_{context}"]
 = Che-Theia plug-in metadata
 
@@ -10,97 +14,100 @@ The link:https://github.com/eclipse/che-plugin-registry/tree/master/v3/plugins[c
 .`meta.yml`
 
 :===
-`apiVersion`: API version (should be `v2`).
-`category`: Available \: `Language`, `Other`.
-`description`: Description (a phrase).
-`displayName`: Display name.
-`firstPublicationDate`: Date in the form `"YYYY-MM-DD"`. Example\: `"2019-12-02"`.
-`icon`: URL of a svg icon.
-`name`: Name (no spaces allowed).
-`publisher`: Name of the publisher.
-`repository`: URL of the source repository.
-`title`: Title (long).
-`type`: `Che Plugin`, `VS Code extension`.
-`version`: Version (example\: `7.5.1`).
-`spec`: Specifications (see underneath).
+`apiVersion`: API version (should be `v2`)
+`category`: Available \: `Language`, `Other`
+`description`: Description (a phrase)
+`displayName`: Display name
+`firstPublicationDate`: Date in the form `"YYYY-MM-DD"` Example\: `"2019-12-02"`
+`icon`: URL of a svg icon
+`name`: Name (no spaces allowed)
+`publisher`: Name of the publisher
+`repository`: URL of the source repository
+`title`: Title (long)
+`type`: `Che Plugin`, `VS Code extension`
+`version`: Version information, for example\: `7.5.1`
+`spec`: Specifications (see underneath)
 :===
 
 .`spec` attributes
 :===
-`endpoints`: plugin endpoints
-`containers`: sidecar containers for plug-in. `Che Plugin` and `VS Code extension` supports only one container.
-`initContainers`: sidecar init containers for plugin
-`workspaceEnv`: environment variables for the workspace.
-`extensions`: For a VisualStudio Code Extension, list of U4`image`: URI of the container image
+`endpoints`: Plug-in endpoints
+`containers`: Sidecar containers for the plug-in. `Che Plugin` and `VS Code extension` supports only one container
+`initContainers`: Sidecar init containers for the plug-in
+`workspaceEnv`: Environment variables for the workspace
+`extensions`: Optional attribute required for VS Code and Che-Theia plug-ins. A list of URLs to plug-in artefacts, such as `.vsix` or `.theia` files
 :===
 
 .`spec.containers`. Notice: `spec.initContainers` has absolutely the same container definition.
 :===
-`name`: sidecar container name
-`image`: container image
-`memorylimit`: Kubernetes/OpenShift-spec memory limit string (e.g. "512Mi")
-`env`: list of environment variables to set in sidecar
-`command`: string array definition of the root process command inside container.
-`args`: string array arguments for the root process command inside container
-`volumes`: volumes required by plugin
-`ports`: ports exposed by plugin (on the container)
-`commands`: development commands available to plugin container
-`mountSources`: boolean flag to bound volume with source code `/projects` to the plugin container.
+`name`: Sidecar container name
+`image`: Absolute or relative container image URL 
+`memoryLimit`: Kubernetes or OpenShift memory limit string, for example `512Mi`
+`memoryRequest`: Kubernetes or OpenShift memory request string, for example `512Mi`
+`cpuLimit`: Kubernetes or OpenShift CPU limit string, for example `2500m`
+`cpuRequest`: Kubernetes or OpenShift CPU request string, for example `125m`
+`env`: List of environment variables to set in the sidecar
+`command`: String array definition of the root process command in the container
+`args`: String array arguments for the root process command in the container
+`volumes`: Volumes required by the plug-in
+`ports`: Ports exposed by the plug-in (on the container)
+`commands`: Development commands available to the plug-in container
+`mountSources`: Boolean flag to bound volume with source code `/projects` to the plug-in container
 :===
 
 .`spec.containers.env` (and `spec.initContainers.env`) attributes. Notice: `workspaceEnv` has absolutely the same attributes
 :===
-`name`: env variable name
-`value`: env variable value
+`name`: Environment variable name
+`value`: Environment variable value
 :===
 
 .`spec.containers.volumes` (and `spec.initContainers.volumes`) attributes
 :===
-`mountPath`: path to the volume in the container
-`name`: volume name
-`ephemeral`: if true volume will be ephemeral, otherwise volume will be persisted
+`mountPath`: Path to the volume in the container
+`name`: Volume name
+`ephemeral`: If true, the volume is ephemeral, otherwise the volume is persisted
 :===
 
 .`spec.containers.ports` (and `spec.initContainers.ports`) attributes
 :===
-`exposedPort`: Exposed port.
+`exposedPort`: Exposed port
 :===
 
 .`spec.containers.commands` (and `spec.initContainers.commands`) attributes
 :===
-`name`: command name
-`workingDir`: command working directory
-`command`: string array which define development command
+`name`: Command name
+`workingDir`: Command working directory
+`command`: String array that defines the development command
 :===
 
 .`spec.endpoints` attributes
 :===
-`name`: Name (no spaces allowed).
+`name`: Name (no spaces allowed)
 `public`: `true`, `false`
-`targetPort`: Target port.
-`attributes`: Endpoint attributes.
+`targetPort`: Target port
+`attributes`: Endpoint attributes
 :===
 
 .`spec.endpoints.attributes` attributes
 :===
-`protocol`: Protocol, example: `ws`
+`protocol`: Protocol, example\: `ws`
 `type`: `ide`, `ide-dev`
 `discoverable`: `true`, `false`
-`secure`: `true`, `false`
+`secure`: `true`, `false`. If `true`, then the endpoint is assumed to listen solely on `127.0.0.1` and is exposed using a JWT proxy
 `cookiesAuthEnabled`: `true`, `false`
 :===
 
 
 .Example `meta.yaml` for a Che-Theia plug-in: the {prod-short} machine-exec Service
-[source,yaml]
+[source,yaml,subs="+quotes,+attributes"]
 ----
 apiVersion: v2
 category: Other
-description: Che Plugin with che-machine-exec service to provide creation terminal or tasks for {prod} workspace containers.
+description: Che Plugin with che-machine-exec service to provide creation terminal or tasks for {prod} workspace containers
 displayName: {prod-short} machine-exec Service
 firstPublicationDate: "2019-12-02"
 icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
-name: che-machine-exec-plugin
+name: che-machine-exec-plug-in
 publisher: eclipse
 repository: https://github.com/eclipse/che-machine-exec/
 title: Che machine-exec Service Plugin
@@ -129,14 +136,14 @@ spec:
 ----
 apiVersion: v2
 category: Language
-description: This extension provides a live preview, syntax highlighting and snippets for the AsciiDoc format using Asciidoctor flavor.
+description: This extension provides a live preview, syntax highlighting and snippets for the AsciiDoc format using Asciidoctor flavor
 displayName: AsciiDoc support
 firstPublicationDate: "2019-12-02"
 icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
 name: vscode-asciidoctor
 publisher: joaompinto
 repository: https://github.com/asciidoctor/asciidoctor-vscode
-title: AsciiDoctor Plugin.
+title: AsciiDoctor Plug-in
 type: VS Code extension
 version: 2.7.7
 spec:

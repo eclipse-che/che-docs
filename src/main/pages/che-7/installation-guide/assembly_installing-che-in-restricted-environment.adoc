@@ -1,16 +1,17 @@
 ---
 title: Installing Che in restricted environment
 keywords: air-gap, airgap, offline
-tags: 
+tags:
 sidebar: che_7_docs
 permalink: che-7/installing-che-in-restricted-environment/
 folder: che-7/installation-guide
 summary:
 ---
 
+:page-liquid:
 :parent-context-of-installing-che-in-restricted-environment: {context}
 
-[id='installing-{prod-id-short}-in-restricted-environment_{context}']
+[id="installing-{prod-id-short}-in-restricted-environment_{context}"]
 = Installing {prod-short} in offline mode
 
 :context: installing-{prod-id-short}-in-restricted-environment
@@ -31,9 +32,9 @@ To deploy {prod-short} in an environment where these external resources are not 
 
 == Notes on network connectivity in restricted environments
 
-Restricted network environments range from a private subnet in a cloud provider to a separate network owned by a company, disconnected from the public Internet. Regardless of the network configuration, {prod-short} works *provided that the Ingress and Routes that are created for {prod-short} components ({prod-id-short}-server, keycloak, devfile-registry, plugin-registry) are accessible from inside the Kubernetes or OpenShift cluster.*
+Restricted network environments range from a private subnetwork in a cloud provider to a separate network owned by a company, disconnected from the public Internet. Regardless of the network configuration, {prod-short} works *provided that the Ingress and Routes that are created for {prod-short} components ({prod-id-short}-server, keycloak, devfile-registry, plugin-registry) are accessible from inside the Kubernetes or OpenShift cluster.*
 
-Take into account the network topology of the environment to determine how best to accomplish this. For example, on a network owned by a company or an organization, the network administrators must ensure that traffic bound from the cluster can be routed to Ingress and Route hostnames. In other cases, for example, on AWS, create a proxy configuration allowing the traffic to leave the node to reach an external-facing Load Balancer.
+Consider the network topology of the environment to determine how best to accomplish this. For example, on a network owned by a company or an organization, the network administrators must ensure that traffic bound from the cluster can be routed to Ingress and Route host names. In other cases, for example, on AWS, create a proxy configuration allowing the traffic to leave the node to reach an external-facing Load Balancer.
 
 [id="building-offline-versions-of-the-plug-in-and-devfile-registry_{context}"]
 == Building offline versions of the plug-in and devfile registry
@@ -125,7 +126,7 @@ The images _essential_ to starting a workspace are infrastructure images that ar
 | The database used by {prod-short}
 
 | `docker.io/eclipse/che-keycloak`
-| Keycloak pod for user authentication
+| Keycloak Pod for user authentication
 
 | `quay.io/eclipse/che-jwtproxy`
 | JWT proxy image for enabling authentication between services. See link:{site-baseurl}che-7/che-workspaces-architecture/#che-workspace-jwt-proxy_che-workspace-components[{prod-short} workspace JWT proxy].
@@ -193,7 +194,7 @@ This procedure uses the following placeholders:
 [cols="1,2"]
 |===
 | `<my-internal-registry>`
-| hostname of the container-image registry (which is accessible in the restricted environment, see xref:pulling-images-used-by-{prod-id-short}-to-a-private-registry_{context}[])
+| a host name of the container-image registry (which is accessible in the restricted environment, see xref:pulling-images-used-by-{prod-id-short}-to-a-private-registry_{context}[])
 
 | `<my-organization>`
 | organization of the container-image registry

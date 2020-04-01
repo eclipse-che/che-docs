@@ -1,3 +1,7 @@
+// Module included in the following assemblies:
+//
+// running-{prod-id-short}-locally
+
 [id="using-minikube-to-set-up-kubernetes_{context}"]
 = Using Minikube to set up Kubernetes
 
@@ -23,7 +27,7 @@ This section describes how to properly configure an LXC container to set up Mini
 
 [discrete]
 === Background
-The `chectl` command-line tool requires the Minikube Ingress plug-in to be enabled in Minikube. At the same time, the Minikube Ingress plug-in requires the Docker daemon to be running with the overlay filesystem driver. 
+The `{prod-cli}` command-line tool requires the Minikube Ingress plug-in to be enabled in Minikube. At the same time, the Minikube Ingress plug-in requires the Docker daemon to be running with the overlay filesystem driver.
 
 [discrete]
 === Problem
@@ -31,7 +35,7 @@ According to link:https://docs.docker.com/storage/storagedriver/select-storage-d
 
 [discrete]
 === Solution
-The solution is to create a virtual block device inside a volume, which in the case of BTRFS is not possible and will require to use a file as the virtual block device.
+The solution is to create a virtual block device inside a volume, which in the case of BTRFS is impossible and will require to use a file as the virtual block device.
 
 .Procedure
 
@@ -114,5 +118,5 @@ name: minikube
 . After starting and setting up networking and the Docker service inside the container, start Minikube:
 +
 ----
-$ minikube start --vm-driver=none --extra-config kubeadm.ignore-preflight-errors=SystemVerification 
+$ minikube start --vm-driver=none --extra-config kubeadm.ignore-preflight-errors=SystemVerification
 ----

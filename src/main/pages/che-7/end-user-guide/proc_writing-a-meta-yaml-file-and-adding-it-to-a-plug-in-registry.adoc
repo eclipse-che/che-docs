@@ -1,3 +1,7 @@
+// Module included in the following assemblies:
+//
+// publishing-a-vs-code-extension-into-the-{prod-id-short}-plug-in-registry
+
 [id="proc_writing-a-meta-yaml-file-and-adding-it-to-a-plug-in-registry_{context}"]
 = Writing a meta.yaml file and adding it to a plug-in registry
 
@@ -28,7 +32,10 @@ spec:
   containers:                                                   <12>
     - image:                                                    <13>
       memoryLimit:                                              <14>
-  extensions:                                                   <15>
+      memoryRequest:                                            <15>
+      cpuLimit:                                                 <16>
+      cpuRequest:                                               <17>
+  extensions:                                                   <18>
     - https://github.com/redhat-developer/vscode-yaml/releases/download/0.4.0/redhat.vscode-yaml-0.4.0.vsix
     - vscode:extension/SonarSource.sonarlint-vscode
 ----
@@ -45,5 +52,8 @@ spec:
 <11> Defines the category that this plug-in belongs to. Should be one of the following: `Editor`, `Debugger`, `Formatter`, `Language`, `Linter`, `Snippet`, `Theme`, or `Other`.
 <12> If this section is omitted, the VS Code extension is added into the Che-Theia IDE container.
 <13> The Docker image from which the sidecar container will be started. Example: `eclipse/che-theia-endpoint-runtime:next`.
-<14> The RAM which is given for the sidecar container by default. Example: "256Mi". This value might be overridden by the user in the component configuration.
-<15> A list of VS Code extensions that should be run in this sidecar container.
+<14> The maximum RAM which is available for the sidecar container. Example: "512Mi". This value might be overridden by the user in the component configuration.
+<15> The RAM which is given for the sidecar container by default. Example: "256Mi". This value might be overridden by the user in the component configuration.
+<16> The maximum CPU amount in cores or millicores (suffixed with "m") which is available for the sidecar container. Examples: "500m", "2". This value might be overridden by the user in the component configuration.
+<17> The CPU amount in cores or millicores (suffixed with "m") which is given for the sidecar container by default. Example: "125m". This value might be overridden by the user in the component configuration.
+<18> A list of VS Code extensions that should be run in this sidecar container.

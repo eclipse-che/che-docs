@@ -76,7 +76,7 @@ parse_content() {
       BUFF="$BUFF $ENV,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
     fi
   done <<< "$RAW_CONTENT"
-  BUFF="$BUFF $TABLE_FOOTER"                            # close last table
+  BUFF="$BUFF$TABLE_FOOTER"                             # close last table
   echo "$BUFF" > $OUTPUT_PATH                           # flush buffer into file
   echo "Processing done. Output file is $OUTPUT_PATH" >&2
 }

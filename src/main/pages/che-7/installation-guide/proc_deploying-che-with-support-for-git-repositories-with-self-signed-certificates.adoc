@@ -1,3 +1,7 @@
+// Module included in the following assemblies:
+//
+// advanced-configuration-options
+
 [id="deploying-{prod-id-short}-with-support-for-git-repositories-with-self-signed-certificates_{context}"]
 = Deploying {prod-short} with support for Git repositories with self-signed certificates
 
@@ -5,7 +9,8 @@ This procedure describes how to configure {prod-short} for deployment with suppo
 
 .Prerequisites
 
-* Git version 2 or later.
+* Git version 2 or later
+* link:https://helm.sh/[Helm] version 2.15 or higher
 
 .Procedure
 
@@ -32,9 +37,11 @@ NOTE: The certificate file must be named `ca.crt`.
 . Go to `deploy/kubernetes/helm/che` directory
 . Update the `global.useGitSelfSignedCerts` property. To do that, add the following option to the `helm upgrade` command:
 +
+[subs="+quotes"]
 ----
-$ helm upgrade che --set global.useGitSelfSignedCerts=true --set global.ingressDomain=$(minikube ip).nip.io .
+$ helm upgrade che -n che --set global.useGitSelfSignedCerts=true --set global.ingressDomain=__<kubernetes-cluster-domain>__ .
 ----
+<kubernetes-cluster-domain> On Minikube, use `$(minikube ip).nip.io`
 =====
 +
 ====

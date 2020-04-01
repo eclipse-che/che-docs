@@ -1,12 +1,15 @@
+// Module included in the following assemblies:
+//
+// making-a-workspace-portable-using-a-devfile
+
 [id="devfile-reference_{context}"]
 = Devfile reference
 
 This section contains devfile reference and instructions on how to use the various elements that devfiles consist of.
 
-
 == Adding projects to a devfile
 
-In most cases, a devfile contains one or more projects. A workspace is created to develop those projects. Projects are added in the `projects` section of devfiles.
+Usually a devfile contains one or more projects. A workspace is created to develop those projects. Projects are added in the `projects` section of devfiles.
 
 Each project in a single devfile must have:
 
@@ -90,9 +93,6 @@ projects:
       branch: develop
 ----
 
-See <<adding-components-to-a-devfile_{context}>> for instructions on how to add tooling to a devfile.
-
-
 [id="adding-components-to-a-devfile_{context}"]
 == Adding components to a devfile
 
@@ -126,7 +126,8 @@ Describes plug-ins in a workspace by defining their `id`. It is allowed to have 
      id: eclipse/che-machine-exec-plugin/0.0.1
 ----
 
-Both types above use an ID, which is slash-separated publisher, name and version of plug-in from the {prod-short} Plug-in registry. +
+Both types above use an ID, which is slash-separated publisher, name and version of plug-in from the {prod-short} Plug-in registry.
+
 List of available {prod-short} plug-ins and more information about registry can be found in the link:https://github.com/eclipse/che-plugin-registry[{prod-short} plug-in registry] GitHub repository.
 
 === Specifying an alternative component registry
@@ -154,7 +155,7 @@ An alternative way of specifying `cheEditor` or `chePlugin`, instead of using th
      reference: https://raw.githubusercontent.com.../plugin/1.0.1/meta.yaml
 ----
 
-NOTE: It is not possible to mix the `id` and `reference` fields in a single component definition; they are mutually exclusive.
+NOTE: It is impossible to mix the `id` and `reference` fields in a single component definition; they are mutually exclusive.
 
 === Tuning chePlugin component configuration
 
@@ -173,7 +174,7 @@ A chePlugin component may need to be precisely tuned, and in such case, componen
 
 A complex component type that allows to apply configuration from a list of Kubernetes or OpenShift components.
 
-The content can be provided either via the `reference` attribute, which points to the file with the component content.
+The content can be provided through the `reference` attribute, which points to the file with the component content.
 
 [source,yaml]
 ----
@@ -212,7 +213,7 @@ Alternatively, to post a devfile with such components to REST API, the contents 
 
 As with the xref:component-type-dockerimage_{context}[`dockerimage` component], it is possible to override the entrypoint of the containers contained in the Kubernetes or OpenShift list using the `command` and `args` properties (as link:https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#notes[understood] by Kubernetes).
 
-There can be more containers in the list (contained in pods or pod templates of deployments). To select which containers to apply the entrypoint changes to.
+There can be more containers in the list (contained in Pods or Pod templates of deployments). To select which containers to apply the entrypoint changes to.
 
 The entrypoints can be defined as follows:
 
@@ -318,7 +319,7 @@ memoryLimit: 512Mi
 command: ['sleep', 'infinity']
 ----
 
-It specifies the type of the component, `dockerimage` and the `image` attribute names the image to be used for the component using the usual docker naming conventions, that is, the above `type` attribute is equal to `docker.io/library/golang:latest`.
+It specifies the type of the component, `dockerimage` and the `image` attribute names the image to be used for the component using the usual Docker naming conventions, that is, the above `type` attribute is equal to `docker.io/library/golang:latest`.
 
 A `dockerimage` component has many features that enable augmenting the image with additional resources and information needed for meaningful integration of the *tool* provided by the image with {prod}.
 
@@ -345,9 +346,11 @@ The sources is mounted on a location stored in the `CHE_PROJECTS_ROOT` environme
 
 The `command` attribute of the `dockerimage` along with other arguments, is used to modify the `entrypoint` command of the container created from the image. In {prod} the container is needed to run indefinitely so that you can connect to it and execute arbitrary commands in it at any time. Because the availability of the `sleep` command and the support for the `infinity` argument for it is different and depends on the base image used in the particular images, {prod-short} cannot insert this behavior automatically on its own. However, you can take advantage of this feature to, for example, start up necessary servers with modified configurations, etc.
 
-==== Persistent Storage
+=== Persistent Storage
 
-Docker image tools can specify the custom volumes to be mounted on specific locations within the image. Note that the volume names are shared across all components and therefore this mechanism can also be used to share file systems between components.
+`Dockerimage`, `chePlugin` and `cheEditor` type components can specify the custom volumes to be mounted on specific locations within the image. Note that the volume names are shared across all components and therefore this mechanism can also be used to share file systems between components.
+
+Example specifying volumes for `dockerimage` type:
 
 [source,yaml]
 ----
@@ -365,9 +368,28 @@ components:
         containerPath: /.cache
 ----
 
+Example specifying volumes for `cheEditor`/`chePlugin` type:
+
+[source,yaml]
+----
+apiVersion: 1.0.0
+metadata:
+  name: MyDevfile
+components:
+  - type: cheEditor
+    alias: theia-editor
+    id: eclipse/che-theia/next
+    env:
+    - name: HOME
+      value: $(CHE_PROJECTS_ROOT)
+    volumes:
+    - name: cache
+      containerPath: /.cache
+----
+
 === Specifying container memory limit for components
 
-To specify a container(s) memory limit for `dockerimage`, `chePlugin`, `cheEditor`, `kubernetes`, `openshift`, use the `memoryLimit` parameter:
+To specify a container(s) memory limit for `dockerimage`, `chePlugin`, `cheEditor`, use the `memoryLimit` parameter:
 
 [source,yaml]
 ----
@@ -376,12 +398,89 @@ To specify a container(s) memory limit for `dockerimage`, `chePlugin`, `cheEdito
      type: chePlugin
      id: eclipse/che-machine-exec-plugin/0.0.1
      memoryLimit: 1Gi
-   - type: kubernetes
-     reference: ../relative/path/postgres.yaml
+   - type: dockerimage
+     image: eclipe/maven-jdk8:latest
      memoryLimit: 512M
 ----
 
 This limit will be applied to every container of the given component.
+
+For the `cheEditor` and `chePlugin` component types, RAM limits can be described in the plug-in descriptor file, typically named `meta.yaml`.
+
+If none of them are specified, system-wide defaults will be applied (see description of `pass:[CHE_WORKSPACE_SIDECAR_DEFAULT__MEMORY__LIMIT__MB]` system property).
+
+
+=== Specifying container memory request for components
+
+To specify a container(s) memory request for `chePlugin` or  `cheEditor`, use the `memoryRequest` parameter:
+
+[source,yaml]
+----
+  components:
+   - alias: exec-plugin
+     type: chePlugin
+     id: eclipse/che-machine-exec-plugin/0.0.1
+     memoryLimit: 1Gi
+     memoryRequest: 512M
+   - type: dockerimage
+     image: eclipe/maven-jdk8:latest
+     memoryLimit: 512M
+     memoryRequest: 256M
+----
+
+This limit will be applied to every container of the given component.
+
+For the `cheEditor` and `chePlugin` component types, RAM requests can be described in the plug-in descriptor file, typically named `meta.yaml`.
+
+If none of them are specified, system-wide defaults are applied (see description of `pass:[CHE_WORKSPACE_SIDECAR_DEFAULT__MEMORY__REQUEST__MB]` system property).
+
+
+=== Specifying container CPU limit for components
+
+To specify a container(s) CPU limit for `chePlugin` or `cheEditor`, use the `cpuLimit` parameter:
+
+[source,yaml]
+----
+  components:
+   - alias: exec-plugin
+     type: chePlugin
+     id: eclipse/che-machine-exec-plugin/0.0.1
+     cpuLimit: 1.5
+   - type: dockerimage
+     image: eclipe/maven-jdk8:latest
+     cpuLimit: 750m
+----
+
+This limit will be applied to every container of the given component.
+
+For the `cheEditor` and `chePlugin` component types, CPU limits can be described in the plug-in descriptor file, typically named `meta.yaml`.
+
+If none of them are specified, system-wide defaults are applied (see description of `pass:[CHE_WORKSPACE_SIDECAR_DEFAULT__CPU__LIMIT__CORES]` system property).
+
+
+=== Specifying container CPU request for components
+
+To specify a container(s) CPU request for `chePlugin` or `cheEditor`, use the `cpuRequest` parameter:
+
+[source,yaml]
+----
+  components:
+   - alias: exec-plugin
+     type: chePlugin
+     id: eclipse/che-machine-exec-plugin/0.0.1
+     cpuLimit: 1.5
+     cpuRequest: 0.225
+   - type: dockerimage
+     image: eclipe/maven-jdk8:latest
+     cpuLimit: 750m
+     cpuRequest: 450m
+----
+
+This limit will be applied to every container of the given component.
+
+For the `cheEditor` and `chePlugin` component types, CPU requests can be described in the plug-in descriptor file, typically named `meta.yaml`.
+
+If none of them are specified, system-wide defaults are applied (see description of `pass:[CHE_WORKSPACE_SIDECAR_DEFAULT__CPU__REQUEST__CORES]` system property).
 
 === Environment variables
 
@@ -431,7 +530,8 @@ The following environment variables are pre-set by the {prod-short} server:
 
 * `CHE_WORKSPACE_NAME`: The name of the current workspace.
 
-* `CHE_WORKSPACE_NAMESPACE`: The namespace of the current workspace.
+* `CHE_WORKSPACE_NAMESPACE`: The Che namespace of the current workspace. This environment variable is the name of the user or organization that the workspace belongs to. Note that this is different from
+the Kubernetes namespace or OpenShift project to which the workspace is deployed.
 
 * `CHE_MACHINE_TOKEN`: The token used to authenticate the request against the {prod-short} server.
 
@@ -443,7 +543,7 @@ A devfiles may only need the `CHE_PROJECTS_ROOT` environment variable to locate 
 
 ==== Endpoints
 
-You can specify the endpoints that the docker image exposes. These endpoints can be made accessible to the users if the {prod-short} cluster is running using a Kubernetes ingress or an OpenShift route and to the other components within the workspace. You can create an endpoint for your application or database, if your application or database server is listening on a port and you want to be able to directly interact with it yourself or you want other components to interact with it.
+You can specify the endpoints that the Docker image exposes. These endpoints can be made accessible to the users if the {prod-short} cluster is running using a Kubernetes ingress or an OpenShift route and to the other components within the workspace. You can create an endpoint for your application or database, if your application or database server is listening on a port and you want to be able to directly interact with it yourself or you want other components to interact with it.
 
 Endpoints have a number of properties as shown in the following example:
 
@@ -494,15 +594,17 @@ components:
           public: false
 ----
 
-Here, there are two dockerimages, each defining a single endpoint. Endpoint is an accessible port that can be made accessible inside the workspace or also publicly (example, from the UI). Each endpoint has a name and port, which is the port on which certain server running inside the container is listening. The following are a few attributes that you can set on the endpoint:
+Here, there are two Docker images, each defining a single endpoint. Endpoint is an accessible port that can be made accessible inside the workspace or also publicly (example, from the UI). Each endpoint has a name and port, which is the port on which certain server running inside the container is listening. The following are a few attributes that you can set on the endpoint:
 
-* `discoverable`: If an endpoint is discoverable, it means that it can be accessed using its name as the hostname within the workspace containers (in the Kubernetes parlance, a service is created for it with the provided name).
-
+* `discoverable`: If an endpoint is discoverable, it means that it can be accessed using its name as the host name within the workspace containers (in the Kubernetes parlance, a service is created for it with the provided name).
+55
 * `public`: The endpoint will be accessible outside of the workspace, too (such endpoint can be accessed from the {prod-short} user interface). Such endpoints are publicized always on port `80` or `443` (depending on whether `tls` is enabled in {prod-short}).
 
 * `protocol`: For public endpoints the protocol is a hint to the UI on how to construct the URL for the endpoint access. Typical values are `http`, `https`, `ws`, `wss`.
 
-* `secure`: A boolean (defaulting to `false`) specifying whether the endpoint is put behind a JWT proxy requiring a JWT workspace token to grant access.
+* `secure`: A boolean (defaulting to `false`) specifying whether the endpoint is put behind a JWT proxy requiring a JWT workspace token to grant access. The JWT proxy is deployed in the same Pod as the server and assumes the server listens solely on the local loopback interface, such as `127.0.0.1`.
++
+WARNING: Listening on any other interface than the local loopback poses a security risk because such server is accessible without the JWT authentication within the cluster network on the corresponding IP addresses.
 
 * `path`: The URL of the endpoint
 

@@ -1,0 +1,71 @@
+// Module included in the following assemblies:
+//
+// adding-tools-to-{prod-id-short}-after-creating-a-workspace
+
+[id="adding-language-support-plug-in-to-the-{prod-id-short}-workspace_{context}"]
+= Adding language support plug-in to the {prod-short} workspace
+
+This procedure describes adding a tool to an already existing workspace, by enabling a dedicated plug-in from the Dashboard.
+
+To add tools that are available as plug-ins into a {prod-short} workspace, use one of the following methods:
+
+* xref:installing-the-plug-in-from-the-plugin-tab_{context}[Enable the plug-in from the Dashboard *Plugin* tab.]
+* xref:installing-the-plug-in-by-adding-content-to-the-devfile_{context}[Edit the workspace devfile from the Dashboard *Devfile* tab.]
+
+This procedure uses the *Java language support* plug-in as an example.
+
+.Prerequisites
+
+* A running instance of {prod}. To install an instance of {prod}, see link:{site-baseurl}che-7/che-quick-starts/[{prod-short} 'quick-starts'].
+
+* An existing workspace defined in this instance of {prod}; see:
+** link:{site-baseurl}che-7/creating-and-configuring-a-new-che-7-workspace/[Creating and configuring a new {prod-short} workspace]
+** link:{site-baseurl}che-7/creating-a-workspace-from-code-sample/#creating-a-workspace-from-user-dashboard_creating-a-workspace-from-code-sample[Creating a workspace from User Dashboard]
+
+ * The workspace must be in a `stopped` state. To do so:
+
+.. Navigate to the {prod-short} Dashboard. See link:{site-baseurl}che-7/navigating-che-using-the-dashboard/[Navigating {prod-short} using the Dashboard].
+
+.. In the *Dashboard*, click the *Workspaces* menu to open the workspaces list and locate the workspace.
+
+.. On the same row with the displayed workspace, on the right side of the screen, click the btn:[Stop] button to stop the workspace.
+
+.. Wait a few seconds for the workspace to stop, then configure the workspace by clicking on it.
+
+.Procedure
+
+To add the plug-in from the Plug-in registry to an already existing {prod-short} workspace, use one of the following methods:
+
+[id=installing-the-plug-in-from-the-plugin-tab_{context}]
+
+//<<installing-the-plug-in-from-the-plugin-tab_{context}>>
+
+** Installing the plug-in from the *Plugin* tab.
+. Navigate to the *Plugin* tab.
++
+The list of plug-ins, installed or possible to install, is displayed.
+. Enable the desired plug-in, for example, the Language Support for Java 11, by using the * Enable* slide-toggle.
++
+The plug-in source code is added to the workspace devfile, and the plug-in is now enabled.
+. On the bottom right side of the screen, save the changes by clicking the btn:[Save] button.
++ Once the changes are saved, the workspace is restarted.
+
+[id=installing-the-plug-in-by-adding-content-to-the-devfile_{context}]
+
+//<<installing-the-plug-in-by-adding-content-to-the-devfile_{context}>>
+
+** Installing the plug-in by adding content to the devfile.
+. Navigate to the *Devfile* tab.
++
+The devfile structure is displayed.
+. Locate the `component` section of the devfile and add the following lines to add the Java language v8 in to the workspace:
++
+include::examples/{project-context}-java-language-support.adoc[]
++
+See the example of the final result:
++
+include::examples/{project-context}-workspace-from-the-php-stack-java-language-support.adoc[]
+
+.Additional resources
+
+* link:https://redhat-developer.github.io/devfile/devfile[Devfile specifications]

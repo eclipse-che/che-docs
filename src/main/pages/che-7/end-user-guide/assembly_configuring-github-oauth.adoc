@@ -1,0 +1,50 @@
+---
+title: Configuring GitHub OAuth
+keywords:
+tags: []
+sidebar: che_7_docs
+permalink: che-7/configuring-github-oauth/
+folder: che-7/end-user-guide
+summary:
+---
+
+:page-liquid:
+
+[id="configuring-github-oauth_{context}"]
+= Configuring GitHub OAuth
+
+OAuth for GitHub allows users to clone projects using SSH addresses (git@) and push to repositories.
+
+.Procedure
+
+To enable automatic SSH key upload to GitHub for users:
+
+. On *github.com*, click your user icon (top right).
+. Go to *Settings* > *Developer settings* > *OAuth Apps*.
+. Click the btn:[Register a new application] button.
+. In the *Application name* field, enter, for example, `{prod}`.
+. In the *Homepage URL* field, enter `{prod-url}`.
+. In the *Authorization callback URL* field, enter `{prod-url}/api/oauth/callback`.
++
+image::git/github_oauth.png[]
+
+ifeval::["{project-context}" == "che"]
+. On OpenShift or Kubernetes, update the deployment configuration (see link:{site-baseurl}che-7/openshift-config.html[OpenShift configuration]).
++
+[subs=+quotes]
+----
+CHE_OAUTH_GITHUB_CLIENTID=__<your-github-client-id>__
+CHE_OAUTH_GITHUB_CLIENTSECRET=__<your-github-secret>__
+----
+endif::[]
+
+[NOTE]
+====
+* Substitute `{prod-url}` with the URL and port of your {prod-short} installation.
+
+* Substitute `_<your-github-client-id>_` and `_<your-github-secret>_` with your GitHub client ID and secret.
+
+ifeval::["{project-context}" == "che"]
+* This configuration only applies to single-user deployments of {prod-short}.
+endif::[]
+====

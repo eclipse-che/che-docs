@@ -1,37 +1,39 @@
-:page-liquid:
-
+// Module included in the following assemblies:
+//
 // importing-a-kubernetes-application-into-a-che-workspace
+
+:page-liquid:
 
 [id="generating-a-devfile-from-an-existing-kubernetes-application_{context}"]
 = Generating a devfile from an existing Kubernetes application
 
-This procedure demonstrates how to generate a devfile from an existing Kubernetes application using the `chectl` tool.
+This procedure demonstrates how to generate a devfile from an existing Kubernetes application using the `{prod-cli}` tool.
 
 .Prerequisites
 
 * A running instance of {prod}. To install an instance of {prod}, see link:{site-baseurl}che-7/che-quick-starts/[{prod-short} 'quick-starts'].
 
-* `chectl` management tool is installed. See link:{site-baseurl}che-7/installing-the-chectl-management-tool/[Installing the `chectl` management tool]
+* `{prod-cli}` management tool is installed. See link:{site-baseurl}che-7/installing-the-{prod-cli}-management-tool/[Installing the `{prod-cli}` management tool]
 
 .Procedure
 
-. Use the `chectl devfile:generate` command to generate a devfile:
+. Use the `{prod-cli} devfile:generate` command to generate a devfile:
 +
 [subs="+attributes"]
 ----
-$ chectl devfile:generate
+$ {prod-cli} devfile:generate
 ----
 
-* The user can also use the `chectl devfile:generate` command to generate a devfile from, for example, the `NodeJS-MongoDB` application.
+* The user can also use the `{prod-cli} devfile:generate` command to generate a devfile from, for example, the `NodeJS-MongoDB` application.
 +
 The following example generates a devfile that includes the `NodeJS` component:
 +
 [subs="+attributes"]
 ----
-$ chectl devfile:generate --selector="app=nodejs"
+$ {prod-cli} devfile:generate --selector="app=nodejs"
 apiVersion: 1.0.0
 metadata:
-  name: chectl-generated
+  name: {prod-cli}-generated
 components:
   - type: kubernetes
     alias: app=nodejs
@@ -50,16 +52,16 @@ components:
 (...)
 ----
 +
-The NodeJS application YAML definition is included in the devfile, inline, using the `referenceContent` attribute.
+The Node.js application YAML definition is included in the devfile, inline, using the `referenceContent` attribute.
 
 * To include support for a language, use the `--language` parameter:
 +
 [subs="+attributes"]
 ----
-$ chectl devfile:generate --selector="app=nodejs" --language="typescript"
+$ {prod-cli} devfile:generate --selector="app=nodejs" --language="typescript"
 apiVersion: 1.0.0
 metadata:
-  name: chectl-generated
+  name: {prod-cli}-generated
 components:
   - type: kubernetes
     alias: app=nodejs
@@ -72,4 +74,4 @@ components:
     id: che-incubator/typescript/latest
 ----
 
-. Use the generated devfile to start a {prod-short} workspace with `chectl`.
+. Use the generated devfile to start a {prod-short} workspace with `{prod-cli}`.

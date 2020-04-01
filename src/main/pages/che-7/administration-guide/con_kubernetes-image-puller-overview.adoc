@@ -1,0 +1,32 @@
+// caching-images-for-faster-workspace-start
+
+[id="kubernetes-image-puller-overview_{context}"]
+= Kubernetes Image Puller overview
+
+Slow starts of {prod} workspaces may be caused by waiting for the underlying cluster to pull images used in workspaces from remote registries. As such, pre-pulling images can improve start times significantly. The _Kubernetes Image Puller_ can be used to pre-pull images and shorten workspace start times.
+
+The Kubernetes Image Puller is an additional deployment that runs alongside {prod}. Given a list of images to pre-pull, the application runs inside a cluster and creates a _DaemonSet_ that pulls the images on each node.
+
+The application can be deployed via Helm or by processing and applying OpenShift templates.
+
+The Kubernetes Image Puller pulls its configuration from a `ConfigMap` with the following available parameters:
+
+[id="kubernetes-image-puller-configuration"]
+.Kubernetes Image Puller parameters
+[options="header"]
+|===
+|Parameter |Usage |Default
+|`CACHING_INTERVAL_HOURS` |Interval, in hours, between checking health of DaemonSets |`"1"`
+|`CACHING_MEMORY_REQUEST` |The memory request for each cached image when the puller is running |`10Mi`
+|`CACHING_MEMORY_LIMIT` |The memory limit for each cached image when the puller is running |`20Mi`
+|`DAEMONSET_NAME` |Name of DaemonSet to be created |`kubernetes-image-puller`
+|`NAMESPACE` |Namespace where DaemonSet is to be created |`k8s-image-puller`
+|`IMAGES` |List of images to be cached, in the format `<name>=<image>;...` |Contains a default list of images, but should be configured when deploying
+|`NODE_SELECTOR` |Node selector applied to the Pods created by the DaemonSet |`'{}'`
+|===
+
+The default memory requests and limits ensure that the container has enough memory to start. When changing `CACHING_MEMORY_REQUEST` or `CACHING_MEMORY_LIMIT`, you will need to consider the total memory allocated to the DaemonSet Pods in the cluster:
+
+`(memory limit) * (number of images) * (number of nodes in the cluster)`
+
+For example, running the image puller that caches 5 images on 20 nodes, with a container memory limit of `20Mi` requires `2000Mi` of memory.
