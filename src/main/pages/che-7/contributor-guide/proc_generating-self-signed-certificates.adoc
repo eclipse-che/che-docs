@@ -26,13 +26,16 @@ $( minikube ip ).nip.io
 apps-crc.testing
 ----
 
-* Find out `openssl.cnf` file location on target machine
+* Find out `openssl.cnf` file location on target machine.
+  Usual openssl configuration file location is given below.
 
 +
 [subs="+quotes"]
 ----
-# Fedora 31
+# Fedora, Red Hat, CentOS
 /etc/pki/tls/openssl.cnf
+# Debian, Ubuntu, Mint, Arch
+/etc/ssl/openssl.cnf
 ----
 
 [discrete]
@@ -43,7 +46,7 @@ apps-crc.testing
 +
 [subs="+quotes"]
 ----
-$ CA_CN=eclipse-che-signer
+$ CA_CN="Local Eclipse Che Signer"
 $ DOMAIN=*.<expected.domain.com>
 $ OPENSSL_CNF=<path_to_openssl.cnf>
 ----
@@ -52,12 +55,12 @@ $ OPENSSL_CNF=<path_to_openssl.cnf>
 [subs="+quotes"]
 ----
 # Example with minikube on Fedora 31
-$ CA_CN=eclipse-che-signer
+$ CA_CN="Local Eclipse Che Signer"
 $ DOMAIN=\*.$( minikube ip ).nip.io
 $ OPENSSL_CNF=/etc/pki/tls/openssl.cnf
 
 # Example with crc on OSX
-$ export CA_CN=eclipse-che-signer
+$ export CA_CN="Local Eclipse Che Signer"
 $ export DOMAIN=*.apps-crc.testing
 $ export OPENSSL_CNF=/System/Library/OpenSSL/openssl.cnf
 ----
@@ -67,27 +70,26 @@ $ export OPENSSL_CNF=/System/Library/OpenSSL/openssl.cnf
 +
 [subs="+quotes"]
 ----
-$ openssl genrsa -out rootCA.key 4096
+$ openssl genrsa -out ca.key 4096
 ----
 
 
-. Generate root certificate.
+. Generate root CA certificate.
 
 +
 [subs="+quotes"]
 ----
 $ openssl req -x509 \
   -new -nodes \
-  -key rootCA.key \
+  -key ca.key \
   -sha256 \
   -days 1024 \
-  -out rootCA.crt \
-  -subj /CN=${CA_CN} \
+  -out ca.crt \
+  -subj /CN="${CA_CN}" \
   -reqexts SAN \
   -extensions SAN \
   -config <(cat ${OPENSSL_CNF} \
-      <(printf '[SAN]\nbasicConstraints=critical, CA:TRUE\nkeyUsage=keyCertSign, cRLSign, digitalSignature, keyEncipherment'))
-
+      <(printf '[SAN]\nbasicConstraints=critical, CA:TRUE\nkeyUsage=keyCertSign, cRLSign, digitalSignature'))
 ----
 
 
@@ -99,17 +101,17 @@ $ openssl req -x509 \
 $ openssl genrsa -out domain.key 2048
 ----
 
-. Generate domain csr.
+. Generate certificate signing request for the domain.
 
 +
 [subs="+quotes"]
 ----
 $ openssl req -new -sha256 \
     -key domain.key \
-    -subj "/O=EclipseChe/CN=${DOMAIN}" \
+    -subj "/O=Local Eclipse Che/CN=${DOMAIN}" \
     -reqexts SAN \
     -config <(cat ${OPENSSL_CNF} \
-        <(printf "\n[SAN]\nsubjectAltName=DNS:${DOMAIN}\nbasicConstraints=critical, CA:FALSE\nkeyUsage=keyCertSign, digitalSignature, keyEncipherment\nextendedKeyUsage=serverAuth")) \
+        <(printf "\n[SAN]\nsubjectAltName=DNS:${DOMAIN}\nbasicConstraints=critical, CA:FALSE\nkeyUsage=digitalSignature, keyEncipherment, keyAgreement, dataEncipherment\nextendedKeyUsage=serverAuth")) \
     -out domain.csr
 ----
 
@@ -120,16 +122,16 @@ $ openssl req -new -sha256 \
 [subs="+quotes"]
 ----
 $ openssl x509 \
--req \
--sha256 \
--extfile <(printf "subjectAltName=DNS:${DOMAIN}\nbasicConstraints=critical, CA:FALSE\nkeyUsage=keyCertSign,                       digitalSignature, keyEncipherment\nextendedKeyUsage=serverAuth") \
--days 365 \ 
--in domain.csr \
--CA rootCA.crt \
--CAkey rootCA.key \
--CAcreateserial -out domain.crt
+    -req \
+    -sha256 \
+    -extfile <(printf "subjectAltName=DNS:${DOMAIN}\nbasicConstraints=critical, CA:FALSE\nkeyUsage=digitalSignature, keyEncipherment, keyAgreement, dataEncipherment\nextendedKeyUsage=serverAuth") \
+    -days 365 \
+    -in domain.csr \
+    -CA ca.crt \
+    -CAkey ca.key \
+    -CAcreateserial -out domain.crt
 ----
 
 
 After executing those steps, it will be possible to use domain.crt and domain.key for Route/Ingress TLS
-and link:{site-baseurl}che-7/setup-che-in-tls-mode-with-self-signed-certificate/#che-usage-with-tls_setup-che-in-tls-mode-with-self-signed-certificate[rootCA.crt for importing into browsers].
+and link:{site-baseurl}che-7/setup-che-in-tls-mode-with-self-signed-certificate/#che-usage-with-tls_setup-che-in-tls-mode-with-self-signed-certificate[ca.crt for importing into browsers].
