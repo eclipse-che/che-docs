@@ -8,74 +8,64 @@
 This section describes how to prepare self-signed TLS certificates to use with {prod-short} on different platforms.
 
 
-[discrete]
-== Prerequisites
+.Prerequisites
 
-* Find out expected domain name where {prod-short} deployment is planned
-
+* The expected domain name where {prod-short} deployment is planned:
 +
-[subs="+quotes"]
-----
-# default for minishift
-$( minishift ip ).nip.io
+.Expected (default) domain names
+[options="header"]
+|===
+| Platform | Default domain
+| Minishift | `$( minishift ip ).nip.io`
+| Minikube | `$( minikube ip ).nip.io`
+| CodeReady Containers | `apps-crc.testing`
+|===
 
-# default for minikube
-$( minikube ip ).nip.io
-
-# default for crc
-apps-crc.testing
-----
-
-* Find out `openssl.cnf` file location on target machine.
-  Usual openssl configuration file location is given below.
-
+* The location of the `openssl.cnf` file on the target machine:
 +
-[subs="+quotes"]
-----
-# Fedora, Red Hat, CentOS
-/etc/pki/tls/openssl.cnf
-# Debian, Ubuntu, Mint, Arch
-/etc/ssl/openssl.cnf
-----
+.Usual OpenSSL configuration file locations
+[options="header"]
+|===
+| Linux distribution | File location
+| Fedora, Red Hat Enterprise Linux, CentOS | `/etc/pki/tls/openssl.cnf`
+| Debian, Ubuntu, Mint, Arch Linux | `/etc/ssl/openssl.cnf`
+|===
 
-[discrete]
-== Procedure
+.Procedure
 
-. Set necessary environment variables
-
+. Set the necessary environment variables:
 +
 [subs="+quotes"]
 ----
 $ CA_CN="Local Eclipse Che Signer"
-$ DOMAIN=*.<expected.domain.com>
-$ OPENSSL_CNF=<path_to_openssl.cnf>
+$ DOMAIN=*.__<expected.domain.com>__
+$ OPENSSL_CNF=__<path_to_openssl.cnf>__
 ----
-
 +
+.Example with Minikube on Fedora 31
 [subs="+quotes"]
 ----
-# Example with minikube on Fedora 31
 $ CA_CN="Local Eclipse Che Signer"
 $ DOMAIN=\*.$( minikube ip ).nip.io
 $ OPENSSL_CNF=/etc/pki/tls/openssl.cnf
-
-# Example with crc on OSX
+----
++
+.Example with crc on OSX
+[subs="+quotes"]
+----
 $ export CA_CN="Local Eclipse Che Signer"
 $ export DOMAIN=*.apps-crc.testing
 $ export OPENSSL_CNF=/System/Library/OpenSSL/openssl.cnf
 ----
 
-. Generate root CA key. Add `-des3` parameter if passphrase is needed
-
+. Generate the root CA key. Add the `-des3` parameter to use a passphrase:
 +
 [subs="+quotes"]
 ----
 $ openssl genrsa -out ca.key 4096
 ----
 
-
-. Generate root CA certificate.
-
+. Generate the root CA certificate:
 +
 [subs="+quotes"]
 ----
@@ -92,17 +82,14 @@ $ openssl req -x509 \
       <(printf '[SAN]\nbasicConstraints=critical, CA:TRUE\nkeyUsage=keyCertSign, cRLSign, digitalSignature'))
 ----
 
-
-. Generate domain key.
-
+. Generate the domain key:
 +
 [subs="+quotes"]
 ----
 $ openssl genrsa -out domain.key 2048
 ----
 
-. Generate certificate signing request for the domain.
-
+. Generate the certificate signing request for the domain:
 +
 [subs="+quotes"]
 ----
@@ -115,9 +102,7 @@ $ openssl req -new -sha256 \
     -out domain.csr
 ----
 
-
-. Generate domain certificate.
-
+. Generate the domain certificate:
 +
 [subs="+quotes"]
 ----
@@ -132,6 +117,4 @@ $ openssl x509 \
     -CAcreateserial -out domain.crt
 ----
 
-
-After executing those steps, it will be possible to use domain.crt and domain.key for Route/Ingress TLS
-and link:{site-baseurl}che-7/setup-che-in-tls-mode-with-self-signed-certificate/#che-usage-with-tls_setup-che-in-tls-mode-with-self-signed-certificate[ca.crt for importing into browsers].
+This procedure allows to use `domain.crt` and `domain.key` for TLS Route and Ingress, and link:{site-baseurl}che-7/installing-che-in-tls-mode-with-self-signed-certificates/#using-che-with-tls_setup-che-in-tls-mode-with-self-signed-certificate[`ca.crt` for importing into browsers].
