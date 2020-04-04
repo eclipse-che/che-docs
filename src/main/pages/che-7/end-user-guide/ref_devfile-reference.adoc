@@ -348,7 +348,7 @@ The `command` attribute of the `dockerimage` along with other arguments, is used
 
 === Persistent Storage
 
-`Dockerimage`, `chePlugin` and `cheEditor` type components can specify the custom volumes to be mounted on specific locations within the image. Note that the volume names are shared across all components and therefore this mechanism can also be used to share file systems between components.
+Components of any type can specify the custom volumes to be mounted on specific locations within the image. Note that the volume names are shared across all components and therefore this mechanism can also be used to share file systems between components.
 
 Example specifying volumes for `dockerimage` type:
 
@@ -385,6 +385,22 @@ components:
     volumes:
     - name: cache
       containerPath: /.cache
+----
+
+Example specifying volumes for `kubernetes`/`openshift` type:
+
+[source,yaml]
+----
+apiVersion: 1.0.0
+metadata:
+  name: MyDevfile
+components:
+  - type: openshift
+    alias: mongo
+    reference: mongo-db.yaml
+    volumes:
+    - name: mongo-persistent-storage
+      containerPath: /data/db
 ----
 
 === Specifying container memory limit for components
