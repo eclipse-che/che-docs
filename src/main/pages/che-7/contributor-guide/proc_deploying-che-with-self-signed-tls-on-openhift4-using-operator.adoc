@@ -1,0 +1,56 @@
+// Module included in the following assemblies:
+//
+// setup-{prod-id-short}-in-tls-mode
+
+[id="deploying-{prod-id-short}-with-self-signed-tls-on-openshift4-using-operator_{context}"]
+= Deploying {prod-short} with self-signed TLS certificates on OpenShift 4 using Operator
+
+This section describes how to deploy {prod-short} with self-signed TLS certificates on OpenShift Container Platform 4. To do that:
+
+. Generate an OpenShift certificate.
+. Use it when deploying {prod-short}.
+. Import it into a browser.
+
+
+.Prerequisites
+
+* A running OpenShift instance, version 4 or higher
+* link:{site-baseurl}che-7/installing-che-in-tls-mode-with-self-signed-certificates/#generating-self-signed-certificates_installing-{prod-id-short}-in-tls-mode-with-self-signed-certificates[Have all required keys and certificates generated]
+
+.Procedure
+
+. Log in to the default OpenShift project:
++
+[subs="+quotes"]
+----
+$ oc login -u kubeadmin -p _<password>_
+----
+
+. Get the OpenShift 4 self-signed certificate:
++
+[subs="+quotes"]
+----
+$ oc get secret router-ca -n openshift-ingress-operator -o jsonpath="{.data.tls\.crt}" | \
+  base64 -d > ca.crt
+----
+
+. Pre-create a namespace for {prod-short}:
++
+[subs="+quotes"]
+----
+$ oc create namespace che
+----
+
+. Create a secret from the CA certificate:
++
+[subs="+quotes"]
+----
+$ oc create secret generic self-signed-certificate --from-file=ca.crt -n=che
+----
+
+. Deploy {prod-short} using `{prod-cli}`:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:start --platform=crc --installer=operator --tls --self-signed-cert
+----
