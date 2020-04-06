@@ -1,0 +1,42 @@
+// {prod-id-short}-compute-resources-requirements
+
+[id="controller-requirements_{context}"]
+= Controller requirements
+
+The Workspace Controller consists of a set of five services running in five distinct containers. The following table presents the default resource requirements of each of these services.
+
+[cols="2,2,1,1", options="header"]
+.ControllerServices
+|===
+|Pod
+|Container name
+|Default memory limit
+|Default memory request
+
+|{prod-short}
+|che
+|1 GiB
+|512 MiB
+
+|PostgreSQL
+|postgres
+|1 GiB
+|512 MiB
+
+|Keycloak
+|keycloak
+|2 GiB
+|512 MiB
+
+|Devfile registry
+|che-devfile-registry
+|256 MiB
+|16 MiB
+
+|Plug-in registry
+|che-plugin-registry
+|256 MiB
+|16 MiB
+|===
+
+These default values are sufficient when the {prod-short} Workspace Controller manages a small amount of {prod-short} workspaces. For bigger deployments, increase the memory limit. See the link:{site-baseurl}che-7/advanced-configuration-options[Advanced configurations options] article for instructions on how to override the default requests and limits. For example, the hosted version of {prod-short} that runs on link:https://che.openshift.io[che.openshift.io] uses 4{nbsp}GiB.

@@ -1,15 +1,19 @@
+// Module included in the following assemblies:
+//
+// {prod-id-short}-workspace-configuration
+
 [id="storage-strategies-for-{prod-id-short}-workspaces_{context}"]
 = Storage strategies for {prod-short} workspaces
 
-Workspace pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode].
+Workspace Pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode].
 The way how {prod-short} server uses PVCs for workspaces is configurable and it's called PVC strategy:
 
 [width="100%",cols="25%,25%,25%,25%",options="header",]
 |===
 |strategy |details |pros |cons
 |*unique* | One PVC per workspace volume or user-defined PVC | Storage isolation | An undefined number of PVs is required
-|*per-workspace* | One PVC for one workspace | Easier to manage and control storage compared to unique stategy  | PV count still is not known and depends on workspaces number
-|*common (default)* | One PVC for all workspaces in one kubernetes namespace | Easy to manage and control storage | If PV does not support ReadWriteMany (RWX) access mode then workspaces must be in a separate kubernetes namespaces
+|*per-workspace* | One PVC for one workspace | Easier to manage and control storage compared to unique strategy  | PV count still is not known and depends on workspaces number
+|*common (default)* | One PVC for all workspaces in one Kubernetes namespace | Easy to manage and control storage | If PV does not support ReadWriteMany (RWX) access mode then workspaces must be in a separate Kubernetes namespaces
 
 Or there must not be more than 1 running workspace per namespace at the same time
 
@@ -28,8 +32,8 @@ User-defined PVCs are created with few modifications:
 
 - they are provisioned with generated names to guarantee that it is not conflicting with other PVCs in namespace;
 
-- subpaths of mount volumes that reference user-defined PVCs are prefixed with `{workspace id}/{PVC name}`.
-It is done to have the same data structure on PV on different PVC strategies(link:#how-the-subpaths-are-used[more]);
+- sub-paths of mount volumes that reference user-defined PVCs are prefixed with `{workspace id}/{PVC name}`.
+It is done to have the same data structure on PV on different PVC strategies(link:#how-the-sub-paths-are-used[more]);
 
 [id="common-pvc-strategy_{context}"]
 == Common PVC Strategy
@@ -39,7 +43,7 @@ It is done to have the same data structure on PV on different PVC strategies(lin
 All workspaces (within one {k8s-namespace}) use the same PVC to store data in their declared volumes (projects and workspace logs by default and whatever additional volumes that a user can define.)
 
 User-defined PVCs are ignored and volumes that reference PVCs are replaced with volume that references common PVC.
-The corresponding containers volume mounts are relinked to common volume and subpaths are prefixed with `'{workspaceId}/{originalPVCName}'` (link:#how-the-subpaths-are-used[more]).
+The corresponding containers volume mounts are relinked to common volume and sub-paths are prefixed with `'{workspaceId}/{originalPVCName}'` (link:#how-the-sub-paths-are-used[more]).
 
 User-defined PVC name is used as {prod-short} Volume name. It means that if Machine is configured to use {prod-short} Volume with the same name as user-defined
 PVC has then they will use the same shared folder in common PVC.
@@ -60,8 +64,8 @@ If there are several nodes, you can use the `common` strategy, but:
 
 The `per-workspace` strategy works similarly to the `common` PVC strategy. The only difference is that all workspace volumes (but not all workspaces) use the same PVC to store data (projects and workspace logs by default and any additional volumes that a user can define).
 
-[id="how-the-subpaths-are-used_{context}"]
-== How the subpaths are used in PVCs
+[id="how-the-sub-paths-are-used_{context}"]
+== How the sub-paths are used in PVCs
 
 ----
 /pv0001
@@ -76,7 +80,7 @@ The `per-workspace` strategy works similarly to the `common` PVC strategy. The o
     ...
 ----
 
-Volumes can be anything that a user defines as volumes for workspace machines.  The volume name is equal to the directory name in `${PV}/${ws-id}`.
+Volumes can be anything that a user defines as volumes for workspace machines. The volume name is equal to the directory name in `${PV}/${ws-id}`.
 
 
 [id="configuring-a-needed-workspace-strategy-using-the-helm-chart_{context}"]

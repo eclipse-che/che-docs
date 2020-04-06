@@ -1,3 +1,6 @@
+// editing-a-devfile-and-plug-in-at-runtime
+// modifying-the-registries
+
 [id="adding-a-plug-in-at-runtime_{context}"]
 = Adding a plug-in at runtime
 
@@ -20,7 +23,7 @@ $ PLUGIN="v3/plugins/new-org/new-plugin/0.0.1"; \
   echo "${PLUGIN##*/}" > ${PLUGIN}/../latest.txt
 ----
 
-. If copying from an existing plug-in, make changes to the `meta.yaml` file to suit your needs. Make sure your new plug-in has a unique `title`, `displayName` and `description`. Update the `firstPublicationDate` to today's date. 
+. If copying from an existing plug-in, make changes to the `meta.yaml` file to suit your needs. Make sure your new plug-in has a unique `title`, `displayName` and `description`. Update the `firstPublicationDate` to today's date.
 
 . These fields in `meta.yaml` must match the path defined in `PLUGIN` above.
 +
@@ -30,7 +33,7 @@ name: new-plugin
 version: 0.0.1
 ----
 
-. Get the name of the pod that hosts the plug-in registry container. To do this, filter the `component=plugin-registry` label:
+. Get the name of the Pod that hosts the plug-in registry container. To do this, filter the `component=plugin-registry` label:
 +
 ----
 $ PLUGIN_REG_POD=$(kubectl get -o custom-columns=NAME:.metadata.name \
@@ -51,7 +54,7 @@ $ cd che-plugin-registry; \
 . Copy the new `index.json` and `meta.yaml` files from your new local plug-in folder to the container.
 +
 ----
-$ cd che-plugin-registry; \ 
+$ cd che-plugin-registry; \
   LOCAL_FILES="$(pwd)/${PLUGIN}/meta.yaml $(pwd)/v3/plugins/index.json"; \
   kubectl exec ${PLUGIN_REG_POD} -i -t -- mkdir -p /var/www/html/${PLUGIN}; \
   for f in $LOCAL_FILES; do e=${f/$(pwd)\//}; echo "Upload ${f} -> /var/www/html/${e}"; \
@@ -59,4 +62,3 @@ $ cd che-plugin-registry; \
 ----
 
 . The new plug-in can now be used from the existing {prod-short} instance's plug-in registry. To discover it, go to the {prod-short} dashboard, then click the `Workspaces` link. From there, click the gear icon to configure one of your workspaces. Select the `Plugins` tab to see the updated list of available plug-ins.
-

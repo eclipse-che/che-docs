@@ -1,16 +1,18 @@
 // This module is included in
 //
-// assembly_che-theia-remote-plugin-image.adoc
+// remote-plug-in-endpoint
 
 [id="defining-a-launch-remote-plug-in-endpoint-using-dockerfile_{context}"]
 = Defining a launch remote plug-in endpoint using Dockerfile
 
-To start a remote plug-in endpoint, use the `PLUGIN_REMOTE_ENDPOINT_EXECUTABLE` environment variable in the Dockerfile.
+To start a remote plug-in endpoint, use the `+PLUGIN_REMOTE_ENDPOINT_EXECUTABLE+` environment variable in the Dockerfile.
 
 .Procedure
 
 * Start a remote plug-in endpoint using the `CMD` command in the Dockerfile:
 +
+.Dockerfile example
+[source]
 ----
 FROM fedora:30
 
@@ -29,6 +31,8 @@ CMD ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
 
 * Start a remote plug-in endpoint using the `ENTRYPOINT` command in the Dockerfile:
 +
+.Dockerfile example
+[source]
 ----
 FROM fedora:30
 
@@ -76,6 +80,8 @@ exec "$@"
 
 * Example of a Dockerfile with a wrapper script:
 +
+.Dockefile example
+[source]
 ----
 FROM alpine:3.10.2
 
@@ -94,4 +100,4 @@ ENTRYPOINT [ "/entrypoint.sh" ]
 CMD ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
 ----
 +
-In this example, the container launches the `/entrypoint.sh` script defined in the `ENTRYPOINT` command of the Dockerfile. The script configures the permissions and executes the command using `exec $@`. `CMD` is the argument for `ENTRYPOINT`, and the `exec $@` command calls `${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}`. A remote plug-in endpoint then starts in the container after permission configuration.
+In this example, the container launches the `/entrypoint.sh` script defined in the `ENTRYPOINT` command of the Dockerfile. The script configures the permissions and executes the command using `exec $@`. `CMD` is the argument for `ENTRYPOINT`, and the `exec $@` command calls `+${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}+`. A remote plug-in endpoint then starts in the container after permission configuration.
