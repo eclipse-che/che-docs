@@ -73,6 +73,9 @@ parse_content() {
       ENV=${KEY^^}                                      # capitalize property name
       ENV="+${ENV//_/__}+"                              # replace single underscores with double
       ENV=${ENV//./_}                                   # replace dots with single underscore
+      VALUE="${VALUE//\$\{/\$\\\{}"                     # make sure asciidoc doesn't mix it up with attributes
+      DESCR_BUFF="${DESCR_BUFF// \{/ \\\{}"             # make sure asciidoc doesn't mix it up with attributes
+      DESCR_BUFF="${DESCR_BUFF//\$\{/\$\\\{}"           # make sure asciidoc doesn't mix it up with attributes
       BUFF="$BUFF $ENV,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
     fi
   done <<< "$RAW_CONTENT"

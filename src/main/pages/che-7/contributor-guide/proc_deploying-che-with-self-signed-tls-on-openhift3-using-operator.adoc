@@ -1,0 +1,55 @@
+// Module included in the following assemblies:
+//
+// setup-{prod-id-short}-in-tls-mode
+
+[id="deploying-{prod-id-short}-with-self-signed-tls-on-openshift3-using-operator_{context}"]
+= Deploying {prod-short} with self-signed TLS certificates on OpenShift 3 using Operator
+
+This section describes how to deploy {prod-short} with self-signed TLS certificates on the OpenShift 3 platform.
+
+
+.Prerequisites
+
+* A running OpenShift instance, version 3.11 or higher
+* link:{site-baseurl}che-7/installing-che-in-tls-mode-with-self-signed-certificates/#generating-self-signed-certificates_installing-{prod-id-short}-in-tls-mode-with-self-signed-certificates[Have all required keys and certificates generated]
+
+.Procedure
+
+. Log in to the default OpenShift project:
++
+[subs="+quotes"]
+----
+$ oc login -u system:admin --insecure-skip-tls-verify=true
+$ oc project default
+----
+
+. Re-configure the router with the generated certificate:
++
+[subs="+quotes,+attributes"]
+----
+$ oc delete secret router-certs
+$ cat domain.crt domain.key > minishift.crt
+$ oc create secret tls router-certs --key=domain.key --cert=minishift.crt
+$ oc rollout latest router
+----
+
+. Pre-create a namespace for {prod-short}:
++
+[subs="+quotes,+attributes"]
+----
+$ oc create namespace che
+----
+
+. Create a secret from the CA certificate:
++
+[subs="+quotes,+attributes"]
+----
+$ oc create secret generic self-signed-certificate --from-file=ca.crt -n=che
+----
+
+. Deploy {prod-short} using `{prod-cli}`:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:start --platform=minishift --installer=operator --tls --self-signed-cert
+----

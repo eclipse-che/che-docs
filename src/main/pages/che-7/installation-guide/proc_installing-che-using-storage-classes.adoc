@@ -1,0 +1,201 @@
+// Module included in the following assemblies:
+//
+// advanced-configuration-options
+
+[id="installing-{prod-id-short}-using-storage-classes_{context}"]
+= Installing {prod-short} using storage classes
+ 
+To configure {prod-short} to use a configured infrastructure storage, install {prod-short} using storage classes. This is especially useful when a user wants to bind a persistent volume provided by a non-default provisioner. To do so, a user binds this storage for the {prod-short} data saving and sets the parameters for that storage. These parameters can determine the following:
+ 
+* A special host path
+* A storage capacity
+* A volume mod
+* Mount options
+* A file system
+* An access mode
+* A storage type
+* And many others
+
+{prod-short} has two components that require persistent volumes to store data:
+ 
+ * A PostgreSQL database.
+ * A {prod-short} workspaces. {prod-short} workspaces store source code using volumes, for example `/projects` volume.
+ 
+[NOTE]
+====
+{prod-short} workspaces source code is stored in the persistent volume only if a workspace is not ephemeral.
+====
+ 
+.Persistent volume claims facts:
+ 
+* {prod-short} does not create persistent volumes in the infrastructure.
+* {prod-short} uses persistent volume claims (PVC) to mount persistent volumes.
+* The {prod-short} server creates  persistent volume claims.
++
+A user defines a storage class name in the {prod-short} configuration to use the storage classes feature in the {prod-short} PVC. With storage classes, a user configures infrastructure storage in a flexible way with additional storage parameters. It is also possible to bind a static provisioned persistent volumes to the {prod-short} PVC using the class name.
+ 
+.Procedure
+ 
+Use CheCluster custom resource definition to define storage classes:
+ 
+. Define storage class names 
++
+To do so, use one of the following methods:
+ 
+** *Use arguments for the `server:start` command*
+
+... Provide the storage class name for the PostgreSQL PVC
++
+Use the `{prod-cli}` `server:start` command with the `--postgres-pvc-storage-class-name` flag:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:start -m -p minikube -a operator --postgres-pvc-storage-class-name=postgress-storage
+----
+ 
+... Provide the storage class name for the {prod-short} workspaces
++ 
+Use the `server:start` command with the `--workspace-pvc-storage-class-name` flag:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:start -m -p minikube -a operator --workspace-pvc-storage-class-name=workspace-storage
+----
++
+For  {prod-short} workspaces, the storage class name has different behavior depending on the workspace PVC strategy.
++
+[NOTE]
+====
+`postgres-pvc-storage-class-name=postgress-storage` and `workspace-pvc-storage-class-name` work for the Operator installer and the Helm installer.
+====
+ 
+ 
+** *Define storage class names using a custom resources YAML file:*
+ 
+...  Create a YAML file with custom resources defined for the {prod-short} installation.
+ 
+...  Define fields: `spec#storage#postgresPVCStorageClassName` and `spec#storage#workspacePVCStorageClassName`.
++
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  name: eclipse-che
+spec:
+  # ...
+  storage:
+    # ...
+    # keep blank unless you need to use a non default storage class for PostgreSQL PVC
+    postgresPVCStorageClassName: 'postgres-storage'
+    # ...
+    # keep blank unless you need to use a non default storage class for workspace PVC(s)
+    workspacePVCStorageClassName: 'workspace-storage'
+    # ...
+----
+ 
+... Start the {prod-id-short} server with your custom resources:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:start -m -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
+----
+ 
+. Configure {prod-short} to store workspaces in one persistent volume and postrges in the second one:
+ 
+.. Modify your custom resources YAML file:
+ 
+* Set `pvcStrategy` as `common`.
+ 
+* Configure {prod-short} to start workspaces in a single namespace.
+ 
+* Define storage class names for `postgresPVCStorageClassName` and `workspacePVCStorageClassName`.
+ 
+* Example of the YAML file:
++
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  name: eclipse-che
+spec:
+  server:
+    # ...
+    workspaceNamespaceDefault: 'che'
+    # ...
+  storage:
+    # ...
+    # Defaults to common
+    pvcStrategy: 'common'
+    # ...
+    # keep blank unless you need to use a non default storage class for PostgreSQL PVC
+    postgresPVCStorageClassName: 'postgres-storage'
+    # ...
+    # keep blank unless you need to use a non default storage class for workspace PVC(s)
+    workspacePVCStorageClassName: 'workspace-storage'
+    # ...
+----
+ 
+.. Start the {prod-id-short} server with your custom resources:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:start -m -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
+----
+ 
+. Bind static provisioned volumes using class names:
+ 
+.. Define the persistent volume for a PostgreSQL database:
++
+[source,yaml]
+----
+# che-postgres-pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: postgres-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/che/postgres"
+----
+ 
+.. Define the persistent volume for a {prod-short} workspace:
++
+[source,yaml]
+----
+# che-workspace-pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: workspace-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: workspace-storage
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/che/workspace"
+----
+ 
+.. Bind the two persistent volumes:
+[subs="+quotes,+attributes"]
+----
+$ kubectl apply -f che-workspace-pv.yaml -f che-postgres-pv.yaml
+----
+ 
+[NOTE]
+====
+You must provide valid file permissions for volumes. You can do it using storage class configuration or manually. To manually define permissions, define `storageClass#mountOptions` `uid` and `gid`. PostgreSQL volume requires `uid=26` and `gid=26`.
+====
+
