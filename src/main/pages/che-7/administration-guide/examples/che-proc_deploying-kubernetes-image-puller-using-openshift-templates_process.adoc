@@ -1,0 +1,20 @@
+[subs="+attributes,+quotes"]
+----
+$ for template in $(ls deploy/openshift); \
+  do oc process -f deploy/openshift/$template | oc apply -f -; done
+deployment.apps/kubernetes-image-puller created
+configmap/k8s-image-puller created
+role.rbac.authorization.k8s.io/create-daemonset created
+rolebinding.rbac.authorization.k8s.io/create-daemonset created
+serviceaccount/k8s-image-puller created
+----
++
+[NOTE]
+====
+To set different values than the defaults, use:
+
+[subs="+quotes"]
+----
+$ oc process -p __<parameterName>__=__<value>__ -f deploy/openshift/__<template>__ | oc apply -f -
+----
+====
