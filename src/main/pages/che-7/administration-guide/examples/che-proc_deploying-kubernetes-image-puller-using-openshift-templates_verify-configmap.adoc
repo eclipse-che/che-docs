@@ -1,0 +1,27 @@
+[source%nowrap,dummy]
+----
+$ oc get configmap k8s-image-puller --output yaml
+apiVersion: v1
+data:
+  CACHING_INTERVAL_HOURS: "1"
+  CACHING_MEMORY_LIMIT: 20Mi
+  CACHING_MEMORY_REQUEST: 10Mi
+  DAEMONSET_NAME: kubernetes-image-puller
+  IMAGES: |
+    java11-maven=quay.io/eclipse/che-java11-maven:nightly; che-theia=eclipse/che-theia:next; java-plugin-runner=eclipse/che-remote-plugin-runner-java8:latest;
+  NAMESPACE: k8s-image-puller
+  NODE_SELECTOR: '{}'
+kind: ConfigMap
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","data":{"CACHING_INTERVAL_HOURS":"1","CACHING_MEMORY_LIMIT":"20Mi","CACHING_MEMORY_REQUEST":"10Mi","DAEMONSET_NAME":"kubernetes-image-puller","IMAGES":"java11-maven=quay.io/eclipse/che-java11-maven:nightly; che-th
+eia=eclipse/che-theia:next; java-plugin-runner=eclipse/che-remote-plugin-runner-java8:latest;\n","NAMESPACE":"k8s-image-puller","NODE_SELECTOR":"{}"},"kind":"ConfigMap","metadata":{"annotations":{},"name":"k8s-image-puller","namespace":"k
+8s-image-puller"},"type":"Opaque"}
+  creationTimestamp: 2020-02-17T22:40:13Z
+  name: k8s-image-puller
+  namespace: k8s-image-puller
+  resourceVersion: "72250"
+  selfLink: /api/v1/namespaces/k8s-image-puller/configmaps/k8s-image-puller
+  uid: 76430ed6-51d6-11ea-9c19-52fdfc072182
+----
