@@ -1,0 +1,30 @@
+// Module included in the following assemblies:
+//
+// using-python-artifact-repositories
+
+[id="configuring-python-to-use-a-non-standard-registry_{context}"]
+= Configuring Python to use a non-standard registry
+
+To specify a non-standard repository for use by the Python pip tool, set the `PIP_INDEX_URL` environment variable.
+
+.Procedure
+
+* In your devfile, configure the `PIP_INDEX_URL` environment variable for both the language support and the development container components:
++
+[source,yaml]
+----
+  - id: ms-python/python/latest
+    memoryLimit: 512Mi
+    type: chePlugin
+    env:
+      - name: 'PIP_INDEX_URL'
+        value: 'https://<username>:<password>@pypi.company.com/simple'
+  - mountSources: true
+    memoryLimit: 512Mi
+    type: dockerimage
+    alias: python
+    image: 'quay.io/eclipse/che-python-3.7:nightly'
+    env:
+      - name: 'PIP_INDEX_URL'
+        value: 'https://<username>:<password>@pypi.company.com/simple'
+----

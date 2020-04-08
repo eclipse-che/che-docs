@@ -1,0 +1,29 @@
+// Module included in the following assemblies:
+//
+// using-nuget-artifact-repositories
+
+[id="configuring-nuget-to-use-a-non-standard-registry_{context}"]
+= Configuring NuGet to use a non-standard artifact repository
+
+NuGet searches for configuration files anywhere between the solution directory and the driver root directory. If you put the `nuget.config` file in the `/projects` directory, the `nuget.config` file defines NuGet behavior for all projects in `/projects`.
+
+.Procedure
+
+* Create and place the `nuget.config` file in the `/projects` directory.
++
+.Example `nuget.config` with a Nexus repository hosted at `nexus.example.org`:
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <packageSources>
+    <add key="nexus2" value="https://nexus.example.org/repository/nuget-hosted/"/>
+  </packageSources>
+  <packageSourceCredentials>
+    <nexus2>
+        <add key="Username" value="user" />
+        <add key="Password" value="..." />
+    </nexus2>
+  </packageSourceCredentials>
+</configuration>
+----
