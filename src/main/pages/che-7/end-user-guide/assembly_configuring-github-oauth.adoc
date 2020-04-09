@@ -13,23 +13,26 @@ summary:
 [id="configuring-github-oauth_{context}"]
 = Configuring GitHub OAuth
 
-OAuth for GitHub allows users to clone projects using SSH addresses (git@) and push to repositories.
+OAuth for GitHub allows for automatic SSH key upload to GitHub.
 
 .Procedure
 
-To enable automatic SSH key upload to GitHub for users:
+* Set up the link:https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app[GitHub OAuth client]. The *Authorization callback URL* is filled in the next steps.
 
-. On *github.com*, click your user icon (top right).
-. Go to *Settings* > *Developer settings* > *OAuth Apps*.
-. Click the btn:[Register a new application] button.
-. In the *Application name* field, enter, for example, `{prod}`.
-. In the *Homepage URL* field, enter `{prod-url}`.
-. In the *Authorization callback URL* field, enter `{prod-url}/api/oauth/callback`.
+* For {prod-short} deployed in link:{site-baseurl}/che-7/running-che-locally/#deploying-multi-user-che-in-multi-user-mode[multi-user mode]:
+. Go to the Keycloak administration console and select the *Identity Providers* tab.
+. Select the *GitHub* identity provider in the drop-down list.
+. Paste the *Redirect URI* to the *Authorization callback URL* of the GitHub OAuth application.
+. Fill the *Client ID* and *Client Secret* from the GitHub oauth app.
+. Enable *Store Tokens*.
+. Save the changes of the Github Identity provider and click *Register application* in the GitHub oauth app page.
 +
-image::git/github_oauth.png[]
+image::git/github-keycloak-setup.png[]
 
+* If {prod-short} is deployed in single-user mode
 ifeval::["{project-context}" == "che"]
-. On OpenShift or Kubernetes, update the deployment configuration (see link:{site-baseurl}che-7/openshift-config.html[OpenShift configuration]).
+. On OpenShift or Kubernetes, update the deployment configuration (see link:{site-baseurl}che-7/advanced-configuration-options/#che-configmaps-and-their-behavior_advanced-configuration-options[{prod-short} configMaps and their behavior],
+link:{site-baseurl}che-7/advanced-configuration-options/#che-installed-using-a-helm-chart[{prod-short} installed using a Helm Chart]).
 +
 [subs=+quotes]
 ----
@@ -37,10 +40,11 @@ CHE_OAUTH_GITHUB_CLIENTID=__<your-github-client-id>__
 CHE_OAUTH_GITHUB_CLIENTSECRET=__<your-github-secret>__
 ----
 endif::[]
-
+. In the *Authorization callback URL* field of the GitHub OAuth application, enter `__<prod-url__/api/oauth/callback`.
++
 [NOTE]
 ====
-* Substitute `{prod-url}` with the URL and port of your {prod-short} installation.
+* Substitute `_<prod-url>_` with the URL and port of the {prod-short} installation.
 
 * Substitute `_<your-github-client-id>_` and `_<your-github-secret>_` with your GitHub client ID and secret.
 
