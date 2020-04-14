@@ -5,13 +5,13 @@
 
 OpenID authentication on the {prod-short} server implies the presence of an external OpenID Connect provider and has the following main steps:
 
-* Authenticate the user through a JWT token that is retrieved from an HTTP request or, in case of a missing or invalid token, redirect the user to the Keycloak login page.
+* Authenticate the user through a JWT token that is retrieved from an HTTP request or, in case of a missing or invalid token, redirect the user to the {identity-provider} login page.
 
 * Send authentication tokens in an *Authorization* header. In limited cases, when it is impossible to use the *Authorization* header, the token can be sent in the token query parameter. Example: OAuth authentication initialization.
 
 * Compose an internal `subject` object that represents the current user inside the {prod-short} server code.
 
-NOTE: The only supported and tested OpenID provider is Keycloak.
+NOTE: The only supported and tested OpenID provider is {identity-provider}.
 
 
 .Procedure
@@ -59,14 +59,14 @@ If the request was made using only a machine token, the following single authent
 ====
 .Providing user-specific data
 
-Since Keycloak may store user-specific information (first and last name, phone number, job title), there is a special implementation of the *ProfileDao* that can provide this data to consumers. The implementation is read-only, so users cannot perform create and update operations.
+Since {identity-provider} may store user-specific information (first and last name, phone number, job title), there is a special implementation of the *ProfileDao* that can provide this data to consumers. The implementation is read-only, so users cannot perform create and update operations.
 ====
 
 
 [id="obtaining-the-token-from-keycloak_{context}"]
-== Obtaining the token from credentials through Keycloak
+== Obtaining the token from credentials through {identity-provider}
 
-Clients that cannot run JavaScript or other clients (such as command-line clients or Selenium tests) must request the authorization token directly from Keycloak.
+Clients that cannot run JavaScript or other clients (such as command-line clients or Selenium tests) must request the authorization token directly from {identity-provider}.
 
 To obtain the token, send a request to the token endpoint with the username and password credentials. This request can be schematically described as the following cURL request:
 
@@ -76,13 +76,13 @@ $ curl --data "grant_type=password&client_id=__<client_name>__&username=__<usern
   http://<keyckloak_host>:5050/auth/realms/__<realm_name>__/protocol/openid-connect/token
 ----
 
-The {prod-short} dashboard uses a customized Keycloak login page and an authentication mechanism based on `grant_type=authorization_code`. It is a two-step authentication process:
+The {prod-short} dashboard uses a customized {identity-provider} login page and an authentication mechanism based on `grant_type=authorization_code`. It is a two-step authentication process:
 
 . Logging in and obtaining the authorization code.
 . Obtaining the token using this authorization code.
 
 [id="obtaining-the-token-from-openshift-token-through-keycloak_{context}"]
-== Obtaining the token from the OpenShift token through Keycloak
+== Obtaining the token from the OpenShift token through {identity-provider}
 
 When {prod-short} has been installed on OpenShift using the Operator, and the OpenShift OAuth integration has been enabled (it is by default),
 then the {prod-short} authentication token of a user can also be retrieved from the user OpenShift token.
@@ -110,4 +110,4 @@ The default values for `_<openshift_identity_provider_name>_` are:
 $ oc whoami --show-token
 ----
 
-WARNING: Before using this token exchange feature for an end user, the end user should have logged in at least once interactively to the {prod-short} Dashboard through the OpenShift login page. This is required to properly link OpenShift and Keycloak user accounts, and set the required user profile information (email, first and last names).
+WARNING: Before using this token exchange feature for an end user, the end user should have logged in at least once interactively to the {prod-short} Dashboard through the OpenShift login page. This is required to properly link OpenShift and {identity-provider} user accounts, and set the required user profile information (email, first and last names).
