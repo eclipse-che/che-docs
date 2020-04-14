@@ -275,17 +275,17 @@
 ,=== 
  Environment Variable Name,Default value, Description 
  
- +CHE_INFRA_OPENSHIFT_OAUTH__IDENTITY__PROVIDER+,"NULL","Alias of the Openshift identity provider registered in Keycloak,that should be used to create workspace OpenShift resources inOpenshift namespaces owned by the current Che user.Should be set to NULL if `che.infra.openshift.project`is set to a non-empty value.For more information see the following documentation:https://www.keycloak.org/docs/3.3/server_admin/topics/identity-broker/social/openshift.html" 
+ +CHE_INFRA_OPENSHIFT_OAUTH__IDENTITY__PROVIDER+,"NULL","Alias of the Openshift identity provider registered in {identity-provider},that should be used to create workspace OpenShift resources inOpenshift namespaces owned by the current Che user.Should be set to NULL if `che.infra.openshift.project`is set to a non-empty value.For more information see the following documentation:https://www.keycloak.org/docs/3.3/server_admin/topics/identity-broker/social/openshift.html" 
 ,=== 
 
-.Keycloak configuration 
+.{identity-provider} configuration 
 
 ,=== 
  Environment Variable Name,Default value, Description 
  
  +CHE_KEYCLOAK_AUTH__SERVER__URL+,"http://${CHE_HOST}:5050/auth","Url to keycloak identity provider serverCan be set to NULL only if `che.keycloak.oidcProvider`is used" 
- +CHE_KEYCLOAK_REALM+,"che","Keycloak realm is used to authenticate usersCan be set to NULL only if `che.keycloak.oidcProvider`is used" 
- +CHE_KEYCLOAK_CLIENT__ID+,"che-public","Keycloak client id in che.keycloak.realm that is used by dashboard, ide and cli to authenticate users" 
+ +CHE_KEYCLOAK_REALM+,"che","{identity-provider} realm is used to authenticate usersCan be set to NULL only if `che.keycloak.oidcProvider`is used" 
+ +CHE_KEYCLOAK_CLIENT__ID+,"che-public","{identity-provider} client id in che.keycloak.realm that is used by dashboard, ide and cli to authenticate users" 
 ,=== 
 
 .RedHat Che specific configuration 
@@ -301,5 +301,5 @@
  +CHE_KEYCLOAK_OIDC__PROVIDER+,"NULL","Base URL of an alternate OIDC provider that providesa discovery endpoint as detailed in the following specificationhttps://openid.net/specs/openid-connect-discovery-1_0.htmlProviderConfig" 
  +CHE_KEYCLOAK_USE__FIXED__REDIRECT__URLS+,"false","Set to true when using an alternate OIDC provider thatonly supports fixed redirect UrlsThis property is ignored when `che.keycloak.oidc_provider` is NULL" 
  +CHE_KEYCLOAK_USERNAME__CLAIM+,"NULL","Username claim to be used as user display namewhen parsing JWT tokenif not defined the fallback value is 'preferred_username'" 
- +CHE_OAUTH_SERVICE__MODE+,"embedded","Configuration of OAuth Authentication Service that can be used in 'embedded' or 'delegated' mode.If set to 'embedded', then the service work as a wrapper to Che's OAuthAuthenticator ( as in Single User mode).If set to 'delegated', then the service will use Keycloak IdentityProvider mechanism.Runtime Exception wii be thrown, in case if this property is not set properly." 
+ +CHE_OAUTH_SERVICE__MODE+,"embedded","Configuration of OAuth Authentication Service that can be used in 'embedded' or 'delegated' mode.If set to 'embedded', then the service work as a wrapper to Che's OAuthAuthenticator ( as in Single User mode).If set to 'delegated', then the service will use {identity-provider} IdentityProvider mechanism.Runtime Exception wii be thrown, in case if this property is not set properly." 
 ,=== 
