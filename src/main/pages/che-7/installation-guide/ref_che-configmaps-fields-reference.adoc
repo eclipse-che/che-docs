@@ -30,7 +30,7 @@ Property: Default value: Description
 `devfileRegistryUrl`: The Operator automatically sets the value.: Public URL of the Devfile registry that serves sample, ready-to-use devfiles. Set it if you use an external devfile registry (see the `externalDevfileRegistry` field).
 `externalDevfileRegistry`: `false`: Instructs the Operator to deploy a dedicated Devfile registry server. By default a dedicated devfile registry server is started. If `externalDevfileRegistry` set to `true`, the Operator does not start a dedicated registry server automatically and you need to set the `devfileRegistryUrl` field manually.
 `externalPluginRegistry`: `false`: Instructs the Operator to deploy a dedicated Plugin registry server. By default, a dedicated plug-in registry server is started. If `externalPluginRegistry` set to `true`, the Operator does not deploy a dedicated server automatically and you need to set the `pluginRegistryUrl` field manually.
-`nonProxyHosts`: omit: List of hosts that should not use the configured proxy. Use `|`` as delimiter, for example `localhost|my.host.com|123.42.12.32` Only use when configuring a proxy is required (see also the `proxyURL` field).
+`nonProxyHosts`: omit: List of hosts that will not use the configured proxy. Use `|`` as delimiter, for example `localhost|my.host.com|123.42.12.32` Only use when configuring a proxy is required (see also the `proxyURL` field).
 `pluginRegistryImage`: omit: Overrides the container image used in the Plugin registry deployment. This includes the image tag. Omit it or leave it empty to use the default container image provided by the Operator.
 `pluginRegistryMemoryLimit`: `256Mi`: Overrides the memory limit used in the Plugin registry deployment.
 `pluginRegistryMemoryRequest`: `16Mi`: Overrides the memory request used in the Plugin registry deployment.
@@ -70,7 +70,7 @@ Property: Default value: Description
 
 `externalIdentityProvider`: `false`: By default, a dedicated Identity Provider server is deployed as part of the {prod-short} installation. But if `externalIdentityProvider` is `true`, then no dedicated identity provider will be deployed by the Operator and you might need to provide details about the external identity provider you want to use. See also all the other fields starting with\: `identityProvider`.
 `identityProviderAdminUserName`:`admin`:  Overrides the name of the Identity Provider admin user.
-`identityProviderClientId`: omit: Name of an Identity provider (Keycloak / RH SSO) `client-id` that should be used for {prod-short}. This is useful to override it ONLY if you use an external Identity Provider (see the `externalIdentityProvider` field). If omitted or left blank, it will be set to the value of the `flavor` field suffixed with `-public`.
+`identityProviderClientId`: omit: Name of an Identity provider (Keycloak / RH SSO) `client-id` that must be used for {prod-short}. This is useful to override it ONLY if you use an external Identity Provider (see the `externalIdentityProvider` field). If omitted or left blank, it will be set to the value of the `flavor` field suffixed with `-public`.
 `identityProviderImagePullPolicy`: `Always` for `nightly` or `latest` images, and `IfNotPresent` in other cases: Overrides the image pull policy used in the Identity Provider (Keycloak / RH SSO) deployment.
 `identityProviderImage`: omit: Overrides the container image used in the Identity Provider (Keycloak / RH SSO) deployment. This includes the image tag. Omit it or leave it empty to use the default container image provided by the Operator.
 `identityProviderPassword`: omit: Overrides the password of Keycloak admin user. Override it only when using an external Identity Provider (see the `externalIdentityProvider` field). Omit or leave empty to set an auto-generated password.
@@ -108,8 +108,8 @@ Property: Default value: Description
 `ingressClass`: `nginx`: Ingress class that defines which controller manages ingresses.
 `ingressDomain`: omit: Global ingress domain for a K8S cluster. This field must be explicitly specified. This drives the `is kubernetes.io/ingress.class` annotation on {prod-short}-related ingresses.
 `ingressStrategy`: `multi-host`: Strategy for ingress creation. This can be `multi-host` (host is explicitly provided in ingress), `single-host` (host is provided, path-based rules) and `default-host.*`(no host is provided, path-based rules).
-`securityContextFsGroup,omitempty`: `1724`: FSGroup the {prod-short} Pod and Workspace Pods containers should run in.
-`securityContextRunAsUser`: `1724`: ID of the user the {prod-short} Pod and Workspace Pods containers should run as.
+`securityContextFsGroup,omitempty`: `1724`: FSGroup the {prod-short} Pod and Workspace Pods containers run in.
+`securityContextRunAsUser`: `1724`: ID of the user the {prod-short} Pod and Workspace Pods containers run as.
 `tlsSecretName`: omit: Name of a secret that is used to set ingress TLS termination if TLS is enabled. See also the `tlsSupport` field.
 :===
 

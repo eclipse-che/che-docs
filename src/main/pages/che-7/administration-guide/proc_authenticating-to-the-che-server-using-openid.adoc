@@ -13,7 +13,6 @@ OpenID authentication on the {prod-short} server implies the presence of an exte
 
 NOTE: The only supported and tested OpenID provider is {identity-provider}.
 
-
 .Procedure
 
 To authenticate to the {prod-short} server using OpenID authentication:
@@ -45,7 +44,7 @@ The service allows downloading the JavaScript client library to interact with th
 
 The verification of the token signature occurs in two main steps:
 
-. Authentication: The token is extracted from the *Authorization* header or from the `token` query parameter and is parsed using the public key retrieved from the provider. In case of expired, invalid, or malformed tokens, a `403` error is sent to the user. The use of the query parameter should be minimised because its support may be limited or removed in future versions.
+. Authentication: The token is extracted from the *Authorization* header or from the `token` query parameter and is parsed using the public key retrieved from the provider. In case of expired, invalid, or malformed tokens, a `403` error is sent to the user. The minimal use of the query parameter is recommended, due to its support limitations or complete removal in upcoming versions. 
 +
 If the validation is successful, the parsed form of the token is passed to the environment initialization step:
 
@@ -84,10 +83,10 @@ The {prod-short} dashboard uses a customized {identity-provider} login page and 
 [id="obtaining-the-token-from-openshift-token-through-keycloak_{context}"]
 == Obtaining the token from the OpenShift token through {identity-provider}
 
-When {prod-short} has been installed on OpenShift using the Operator, and the OpenShift OAuth integration has been enabled (it is by default),
-then the {prod-short} authentication token of a user can also be retrieved from the user OpenShift token.
+When {prod-short} is installed on OpenShift using the Operator, and the OpenShift OAuth integration is enabled, as it is by default,
+the user's {prod-short} authentication token can be retrieved from the user's OpenShift token.
 
-To do this, send a request to the token endpoint that can be schematically described as the following cURL request:
+To retrieve the authentication token from the OpenShift token, send a schematically described cURL request to the OpenShift token endpoint:
 
 [subs="+quotes"]
 ----
@@ -110,4 +109,4 @@ The default values for `_<openshift_identity_provider_name>_` are:
 $ oc whoami --show-token
 ----
 
-WARNING: Before using this token exchange feature for an end user, the end user should have logged in at least once interactively to the {prod-short} Dashboard through the OpenShift login page. This is required to properly link OpenShift and {identity-provider} user accounts, and set the required user profile information (email, first and last names).
+WARNING: Before using this token exchange feature, it is required for an end user to be interactively logged in at least once to the {prod-short} Dashboard using the OpenShift login page. This step is needed to link the OpenShift and {identity-provider} user accounts properly and set the required user profile information.

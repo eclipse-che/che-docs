@@ -37,7 +37,7 @@ This section provides syntax highlight rules for specified file types. To add sy
   }
 ]
 ----
-<1> Specifies the language to which this syntax highlighting should be applied.
+<1> Specifies the target language for syntax highlighting.
 <2> TextMate scope name and grammar.
 <3> Syntax-highlighting rules.
 
@@ -152,10 +152,9 @@ Note that a view container is only useful with views in it. See a full example a
 
 [id="views_{context}"]
 == Views
+A *view* is a visual component, designed be placed into a xref:view-containers_che-extensibility-reference[view container]. 
 
-A *view* is a visual component that should be placed into a xref:view-containers_che-extensibility-reference[view container].
-
-To add a view into Che-Theia, add an appropriate record into the `contributes.views` object of a plug-in `package.json` file. Each view is defined by an object with two name:value pairs. Each view description should be included in an array within the `views` object, and the array name should be the same as the `view-container-id` value:
+To add a view into Che-Theia, add an appropriate record into the `contributes.views` object of a plug-in `package.json` file. Each view is defined by an object with two name:value pairs. Additionally, each view description must be included in an array within the `views` object, with array name matching the `view-container-id` value:
 
 .Example of a view definition
 [source,json]
@@ -252,7 +251,7 @@ Plug-ins can add new *keyboard shortcuts* or redefine existing ones. To describe
 ]
 ----
 <1> Defines the key combination for this shortcut. link:https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-rules[Rules for defining key combinations] are the same as for VS Code.
-<2> The identifier of the command, which should be invoked when the shortcut is pressed.
+<2> The identifier of the command invoked when the shortcut is pressed.
 <3> (optional) The condition that defines when this shortcut is available. When omitted, the shortcut is always available. The condition format is the same as in the link:https://code.visualstudio.com/docs/getstarted/keybindings#_when-clause-contexts[VS Code when clause].
 
 Note that kbd:[Ctrl+f] kbd:[Alt+b] defines a _chord_: the command is invoked after pressing both kbd:[Ctrl+f] and kbd:[Alt+b] one after the other.
@@ -311,7 +310,7 @@ theia.languageServer.registerLanguageServerProvider(xLanguageServerInfo);
 Where `xLanguageServerInfo` is an object of `theia.LanguageServerInfo` and has to contain the following fields:
 +
 |===
-| `id` | Language ID; should be the same as `id` in the configuration JSON file
+| `id` | Language ID; it has to be the same as the `id` in the configuration JSON file
 | `name` | Human-readable name of the language server
 | `globPatterns` | File pattern that specifies files for which this language server is added
 | `command` | The language server start executable

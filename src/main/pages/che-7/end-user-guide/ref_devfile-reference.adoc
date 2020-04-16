@@ -52,7 +52,7 @@ source:
 
 * Omit the leading slash (`my-module/`) to create all `my-module` directories that exist in the project. Including, for example, `/addons/my-module/`.
 +
-The trailing slash indicates that only directories with the given name (including their content) should be created.
+The trailing slash indicates that only directories with the given name (including their content) are created.
 
 * Use wildcards to specify more than one directory name. For example, setting `module-*` checks out all directories of the given project that start with `module-`.
 ====
@@ -278,7 +278,7 @@ This parameter is also applicable for `chePlugin` type components.
 [id="component-type-dockerimage_{context}"]
 === Component type: dockerimage
 
-A component type that allows to define a container image-based configuration of a container in a workspace. A devfile can only contain one component of the `dockerimage` type. The `dockerimage` type of component brings in custom tooling into the workspace. The component is identified by its image.
+A component type that allows to define a container image-based configuration of a container in a workspace. A devfile can only contain one component of the `dockerimage` type. The `dockerimage` type of component brings in custom tools into the workspace. The component is identified by its image.
 
 [source,yaml]
 ----
@@ -622,9 +622,9 @@ Here, there are two Docker images, each defining a single endpoint. Endpoint is 
 +
 WARNING: Listening on any other interface than the local loopback poses a security risk because such server is accessible without the JWT authentication within the cluster network on the corresponding IP addresses.
 
-* `path`: The URL of the endpoint
+* `path`: The URL of the endpoint.
 
-* `unsecuredPaths`: A comma-separated list of paths in the endpoint that should not be secured, even if the `secure` attribute is set to `true`
+* `unsecuredPaths`: A comma-separated list of endpoint paths that are to stay unsecured even if the `secure` attribute is set to `true`.
 
 * `cookiesAuthEnabled`: When set to `true` (the default is `false`), the JWT workspace token is automatically fetched and included in a workspace-specific cookie to allow requests to pass through the JWT proxy.
 +
@@ -777,7 +777,12 @@ The following are two kinds of commands:
 
 === {prod-short}-specific commands
 
-Each che-specific command has an *action* attribute that is a command to execute and a *component* attribute that specifies the container in which the command should be executed. The commands are run using the default shell in the container.
+Each {prod-short}-specific command features:
+
+ * An `action` attribute that is a command to execute.
+ * A `component` attribute that specifies the container in which to execute the command.
+ 
+ The commands are run using the default shell in the container.
 
 [source,yaml]
 ----
@@ -878,13 +883,15 @@ The example above opens `++http://__<server-domain>__/myweb++`, where `_<server-
 
 ==== Setting the default way of opening preview URLs
 
-By default, a notification is displayed to ask the user how the URL should be opened. To specify the preferred way of previewing a service URL, use preferences.
+By default, a notification that asks the user about the URL opening preference is displayed. 
+
+To specify the preferred way of previewing a service URL:
 
 . Open {prod-short} preferences in *File -> Settings -> Open Preferences* and find `che.task.preview.notifications` in the *{prod-short}* section.
 
 . Choose from the list of possible values:
 +
-* `on` -- enables a notification to ask the user how the URL should be opened
+* `on` -- enables a notification for asking the user about the URL opening preferences
 * `alwaysPreview` -- the preview URL opens automatically in the *Preview* panel as soon as a task is running
 * `alwaysGoTo` -- the preview URL opens automatically in a separate browser tab as soon as a task is running
 * `off` -- disables opening the preview URL (automatically and with a notification)
@@ -897,7 +904,7 @@ Devfile attributes can be used to configure various features.
 [id="attribute-editorfree_{context}"]
 === Attribute: editorFree
 
-When an editor is not specified in a devfile, a default is provided. When no editor is needed, the `editorFree` attribute should be used. The default value is `false`, and it means that the devfile needs the default editor to be provisioned.
+When an editor is not specified in a devfile, a default is provided. When no editor is needed, use the `editorFree` attribute. The default value of `false` means that the devfile requests the provisioning of the default editor.
 
 .Example of a devfile without an editor
 [source,yaml]
@@ -915,7 +922,7 @@ attributes:
 
 === Attribute: persistVolumes (ephemeral mode)
 
-By default, volumes and PVCs specified in a devfile are bound to a host folder to persist data even after a container restart. Sometimes, it may be necessary to disable data persistence, such as when volume back end is slow, and it is needed to make workspace faster. To achieve it, the `persistVolumes` devfile attribute should be used. The default value is `true`, and in case of `false`, `emptyDir` volumes will be used for configured volumes and PVC.
+By default, volumes and PVCs specified in a devfile are bound to a host folder to persist data even after a container restart. To disable data persistence to make the workspace faster, such as when the volume back end is slow, modify the `persistVolumes` attribute in the devfile. The default value is `true`. Set to `false` to use `emptyDir` for configured volumes and PVC.
 
 .Example of a devfile with ephemeral mode enabled
 [source,yaml]
