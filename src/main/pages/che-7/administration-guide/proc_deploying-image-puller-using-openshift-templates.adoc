@@ -1,7 +1,7 @@
 // caching-images-for-faster-workspace-start
 
-[id="deploying-the-kubernetes-image-puller-using-openshift-templates_{context}"]
-= Deploying the Kubernetes Image Puller using OpenShift templates
+[id="deploying-image-puller-using-openshift-templates_{context}"]
+= Deploying Image Puller using OpenShift templates
 
 The Kubernetes Image Puller repository contains OpenShift templates for deploying on OpenShift.
 
@@ -16,21 +16,7 @@ endif::[]
 
 The following parameters are available to further configure the OpenShift templates:
 
-.Parameters for installing with OpenShift templates
-[options="header"]
-|===
-|Value |Usage |Default
-|`DAEMONSET_NAME` |The value of `DAEMONSET_NAME` to set in the ConfigMap |`kubernetes-image-puller`
-|`IMAGE` |Image used for the `kubernetes-image-puller` deployment |`quay.io/eclipse/kubernetes-image-puller`
-|`IMAGE_TAG` |The image tag to pull |`latest`
-|`SERVICEACCOUNT_NAME` |The name of the ServiceAccount used by the deployment (created as part of installation) |`k8s-image-puller`
-|`CACHING_INTERVAL_HOURS` |The value of `CACHING_INTERVAL_HOURS` to set in the ConfigMap |``"1"``
-|`CACHING_INTERVAL_REQUEST` |The value of `CACHING_MEMORY_REQUEST` to set in the ConfigMap |`"10Mi"`
-|`CACHING_INTERVAL_LIMIT` |The value of `CACHING_MEMORY_LIMIT` to set in the ConfigMap |`"20Mi"``
-|`NODE_SELECTOR` |The value of `NODE_SELECTOR` to set in the ConfigMap |`"{}"`
-|===
-
-See xref:kubernetes-image-puller-configuration[] for more information about configuration values, such as `DAEMONSET_NAME`, `CACHING_INTERVAL_HOURS`, and `CACHING_MEMORY_REQUEST`.
+include::examples/{project-context}-deploying-image-puller-using-openshift-templates_parameters.adoc[]
 
 .Procedure
 
@@ -45,11 +31,11 @@ $ cd kubernetes-image-puller
 
 . Create a new OpenShift project to deploy the puller into:
 +
-include::examples/{project-context}-proc_deploying-kubernetes-image-puller-using-openshift-templates_prepare.adoc[]
+include::examples/{project-context}-deploying-image-puller-using-openshift-templates_prepare.adoc[]
 
 . Process and apply the templates to deploy the puller:
 +
-include::examples/{project-context}-proc_deploying-kubernetes-image-puller-using-openshift-templates_process.adoc[]
+include::examples/{project-context}-deploying-image-puller-using-openshift-templates_process.adoc[]
 
 *Verifying the installation*
 
