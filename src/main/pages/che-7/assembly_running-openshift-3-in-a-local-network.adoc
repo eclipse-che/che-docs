@@ -1,0 +1,85 @@
+
+= Running {prod} on Openshift 3.11 in a local network 
+
+.Prerequisites
+
+* A running server with a local IP
+* Docker is installed on the server.
+* The `oc` CLI tool is installed on the server. To learn more, see 
+ link:https://docs.okd.io/latest/cli_reference/openshift_cli/getting-started-cli.html#installing-the-cli[Getting started with the CLI]. 
+ * The `chectl` is installed on the server. To learn more, see link:
+ * A dedicated directory on the server for storing cluster data, for example `~/openshift-origin-3.11`.
+ 
+
+== Configuring the DNS record for {prod} domain.
+
+. Make the {prod-chort} local domain resolvable in the local network.
+    Say, we want Che to be accessible in the local network by che.local.net domain. Then each host in the local network from which Che should be accessible should be able to resolve che.local.net to the server (from step 1) IP.
+    To reach that, I setup new DNS server which can resolve only one record: che.local.net to the server IP. To make things simpler, we may assign static IP to the server in the local network and just configure static resolution in our new DNS. Then add this new DNS to the main DNS in local network (I added it into my router configuration).
+    To check if this works, one may run host che.local.net command from terminal. Note, that all subdomains of che.local.net should be resolvable as well, i.e. host route.che.local.net should also point to the server IP.
+
+. Add the new DNS to Docker configuration on the server. This supposes to add IP address of our new DNS into dns section of docker config file (do not forget comma if you have other records there, it's json). In my case, new DNS server resolves only Che domain, so I have to add second value which points to local DNS or 8.8.8.8.
+
+. Restart docker service:
++
+----
+$ sudo systemctl restart docker
+----
+
+. Navigate to the cluster directory and start the cluster:
++
+----
+$ cd ~/openshift-origin-3.11
+$ oc cluster up --public-hostname=che.local.net --routing-suffix=che.local.net
+----
+
+include::contributor-guide/proc_generating-self-signed-certificates.adoc[leveloffset=+1]
+
+[NOTE]
+====
+On Fedora `OPENSSL_CNF` should be set to `/etc/pki/tls/openssl.cnf`
+====
+
+== Adding a self-signed certificate to the  {prod-short} namespace.    
+. Pre-create self-signed secret in the {prod-short} namespace. , that Che is going to be deployed into che namespace:
++
+----
+$ oc login -u system:admin --insecure-skip-tls-verify=true
+$ oc project default
+$ oc delete secret router-certs
+$ cat domain.crt domain.key > minishift.crt
+$ oc create secret tls router-certs --key=domain.key --cert=minishift.crt
+$ oc rollout latest router
+$ oc create namespace che
+$ oc create secret generic self-signed-certificate --from-file=ca.crt -n=che
+----
+
+. Run {prod-short}:
++
+----
+$ chectl server:start --platform=openshift --installer=operator --multiuser --self-signed-cert -n che
+----
+
+include::contributor-guide/proc_using-che-with-tls.adoc[leveloffset=+1]
+
+.  Verification step. From the browser with ca.crt imported open Che url which chectl printed (should look like: https://che-che.che.local.net/ (in che pod, che server under che.local.net domain) ).
+
+[NOTE]
+====
+link:https://github.com/openshift/origin/issues/20726[The bug] nay occur. Workaround: go to ~/openshift-origin-3.11 directory in our case, delete Che namespace with
+
+----
+oc delete namespace che
+----
+
+stop the cluster with
+----
+oc cluster down
+----
+edit config and run the cluster again, so go to step 6 (steps 7 and 9 don't have to be run twice).
+====
+////
+Also it is possible to configure DNS in a different way as @ultrafab suggested.
+Then one doesn't have to edit local network settings, but instead should edit network configuration (by adding our new DNS) of each host which should access Che. Also, before starting Openshift cluster, it is required to add new DNS in the server's (from step 1) resolv.conf (please note, that on most systems it is auto generated and will be rewritten, so make sure that the record is permanent).
+@ultrafab please correct me if I misunderstood or miss something in your way of resolving Che domain.
+////
