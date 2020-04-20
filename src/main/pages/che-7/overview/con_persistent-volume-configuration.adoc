@@ -3,14 +3,8 @@
 
 Workspace Pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode]. The way how {prod-short} server uses PVCs for workspaces is configurable, and it is called PVC strategy:
 
-[width="100%",cols="10%,25%,25%,40%",options="header"]
-|===
-|Strategy |Details |Pros |Cons
-|*unique* | One PVC per workspace volume or user-defined PVC | Storage isolation | An undefined number of PVs is required
-|*per-workspace* | One PVC for one workspace | Easier to manage and control storage compared to unique strategy  | PV count still is not known and depends on workspaces number
-|*common (default)* | One PVC for all workspaces in one Kubernetes namespace | Easy to manage and control storage | If PV does not support `ReadWriteMany` (RWX) access mode, workspaces must be in separate Kubernetes namespaces. Or there must not be more than 1 running workspace per namespace at the same time. See link:{site-baseurl}che-7/advanced-configuration-options/#configuring-namespace-strategies_advanced-configuration-options[Configuring namespace strategies].
-|===
 
+include::examples/{project-context}-pvc-strategies.adoc[]
 
 [id="unique-pvc-strategy_{context}"]
 == Unique PVC strategy
