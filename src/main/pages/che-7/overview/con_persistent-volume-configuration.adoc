@@ -1,25 +1,16 @@
-// Module included in the following assemblies:
-//
-// {prod-id-short}-workspace-configuration
-
 [id="storage-strategies-for-{prod-id-short}-workspaces_{context}"]
 = Storage strategies for {prod-short} workspaces
 
-Workspace Pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode].
-The way how {prod-short} server uses PVCs for workspaces is configurable and it's called PVC strategy:
+Workspace Pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode]. The way how {prod-short} server uses PVCs for workspaces is configurable, and it is called PVC strategy:
 
-[width="100%",cols="25%,25%,25%,25%",options="header",]
+[width="100%",cols="10%,25%,25%,40%",options="header"]
 |===
-|strategy |details |pros |cons
+|Strategy |Details |Pros |Cons
 |*unique* | One PVC per workspace volume or user-defined PVC | Storage isolation | An undefined number of PVs is required
 |*per-workspace* | One PVC for one workspace | Easier to manage and control storage compared to unique strategy  | PV count still is not known and depends on workspaces number
-|*common (default)* | One PVC for all workspaces in one Kubernetes namespace | Easy to manage and control storage | If PV does not support ReadWriteMany (RWX) access mode then workspaces must be in a separate Kubernetes namespaces
-
-Or there must not be more than 1 running workspace per namespace at the same time
-
-See how to configure link:#workspace-namespaces-configuration_che-workspace-configuration[namespace strategy] |
-
+|*common (default)* | One PVC for all workspaces in one Kubernetes namespace | Easy to manage and control storage | If PV does not support `ReadWriteMany` (RWX) access mode, workspaces must be in separate Kubernetes namespaces. Or there must not be more than 1 running workspace per namespace at the same time. See link:{site-baseurl}che-7/advanced-configuration-options/#configuring-namespace-strategies_advanced-configuration-options[Configuring namespace strategies].
 |===
+
 
 [id="unique-pvc-strategy_{context}"]
 == Unique PVC strategy
@@ -30,10 +21,11 @@ Every {prod-short} Volume of workspace gets its own PVC, which means workspace P
 
 User-defined PVCs are created with few modifications:
 
-- they are provisioned with generated names to guarantee that it is not conflicting with other PVCs in namespace;
+* They are provisioned with generated names to guarantee that it is not conflicting with other PVCs in namespace.
 
-- sub-paths of mount volumes that reference user-defined PVCs are prefixed with `{workspace id}/{PVC name}`.
-It is done to have the same data structure on PV on different PVC strategies(link:#how-the-sub-paths-are-used[more]);
+* Subpaths of mount volumes that reference user-defined PVCs are prefixed with `{workspace id}/{PVC name}`.
+It is done to have the same data structure on PV on different PVC strategies (see xref:how-the-subpaths-are-used_{context}[]).
+
 
 [id="common-pvc-strategy_{context}"]
 == Common PVC Strategy
@@ -43,7 +35,8 @@ It is done to have the same data structure on PV on different PVC strategies(lin
 All workspaces (within one {k8s-namespace}) use the same PVC to store data in their declared volumes (projects and workspace logs by default and whatever additional volumes that a user can define.)
 
 User-defined PVCs are ignored and volumes that reference PVCs are replaced with volume that references common PVC.
-The corresponding containers volume mounts are relinked to common volume and sub-paths are prefixed with `'{workspaceID}/{originalPVCName}'` (link:#how-the-sub-paths-are-used[more]).
+
+The corresponding containers volume mounts are relinked to common volume and sub-paths are prefixed with `'{workspaceID}/{originalPVCName}'` (see xref:how-the-subpaths-are-used_{context}[]).
 
 User-defined PVC name is used as {prod-short} Volume name. It means that if Machine is configured to use {prod-short} Volume with the same name as user-defined
 PVC has then they will use the same shared folder in common PVC.
@@ -53,19 +46,24 @@ When a workspace is deleted, a corresponding subdirectory (`${ws-id}`) is delete
 .Restrictions on using the common PVC strategy
 
 When the `common` strategy is used and a workspace PVC access mode is ReadWriteOnce (RWO), only one {admin-context} node can simultaneously use the PVC.
+
 If there are several nodes, you can use the `common` strategy, but:
-- the workspace PVC access mode must be reconfigured to ReadWriteMany (RWM), so multiple nodes can use this PVC simultaneously.
-- the only one workspace in the same namespace may be running. See how to configure link:#workspace-namespaces-configuration_che-workspace-configuration[namespace strategy] and link:#TODO[running workspace count]
+
+* The workspace PVC access mode must be reconfigured to `ReadWriteMany` (RWM), so multiple nodes can use this PVC simultaneously.
+
+* Only one workspace in the same namespace may be running. See link:{site-baseurl}che-7/advanced-configuration-options/#configuring-namespace-strategies_advanced-configuration-options[Configuring namespace strategies].
+
 
 [id="per-workspace-pvc-strategy_{context}"]
-== Per workspace PVC strategy
+== Per-workspace PVC strategy
 
 .How the per-workspace PVC strategy works
 
 The `per-workspace` strategy works similarly to the `common` PVC strategy. The only difference is that all workspace volumes (but not all workspaces) use the same PVC to store data (projects and workspace logs by default and any additional volumes that a user can define).
 
-[id="how-the-sub-paths-are-used_{context}"]
-== How the sub-paths are used in PVCs
+
+[id="how-the-subpaths-are-used_{context}"]
+== How the subpaths are used in PVCs
 
 ----
 /pv0001
@@ -82,6 +80,8 @@ The `per-workspace` strategy works similarly to the `common` PVC strategy. The o
 
 Volumes can be anything that a user defines as volumes for workspace machines. The volume name is equal to the directory name in `${PV}/${ws-id}`.
 
+
+ifeval::["{project-context}" == "che"]
 
 [id="configuring-a-needed-workspace-strategy-using-the-helm-chart_{context}"]
 == Configuring a per-workspace strategy using the Helm chart
@@ -108,17 +108,19 @@ $ helm upgrade --set global.pvcStrategy=__<common>__
 
 Depending on the strategy used, replace the `_<common>_` option in the above example with `unique` or `per-workspace`.
 
+endif::[]
+
 
 [id="configuring-a-needed-workspace-strategy-using-the-operator_{context}"]
 == Configuring a per-workspace strategy using the Operator
 
 The following section describes how to configure workspace PVCs strategies of a {prod-short} server using the Operator.
 
-Note: it's not recommended to reconfigure PVC strategies on an existing {prod-short} cluster with existing workspaces. After that workspaces will lost their data.
+NOTE: It is not recommended to reconfigure PVC strategies on an existing {prod-short} cluster with existing workspaces. After that workspaces lose their data.
 
-link:https://docs.openshift.com/container-platform/latest/applications/operators/olm-what-operators-are.html[Operators] are software extensions to Kubernetes that use link:https://docs.openshift.com/container-platform/latest/applications/crds/crd-managing-resources-from-crds.html[custom resources] to manage applications and their components.
+link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators] are software extensions to Kubernetes that use link:https://docs.openshift.com/container-platform/latest/operators/crds/crd-managing-resources-from-crds.html[custom resources] to manage applications and their components.
 
-When deploying {prod-short} using the Operator, configure the intended strategy by modifying the `spec.storage.pvcStrategy` property of the CheCluster custom resource object YAML file.
+When deploying {prod-short} using the Operator, configure the intended strategy by modifying the `spec.storage.pvcStrategy` property of the CheCluster Custom Resource object YAML file.
 To activate changes done to CheCluster YAML file, do one of the following:
 
 * Create a new cluster by executing the `kubectl apply` command. For example:
@@ -132,7 +134,8 @@ $ kubectl apply -f _<my-cluster.yaml>_
 +
 [subs="+quotes"]
 ----
-$ kubectl patch checluster eclipse-che --type=json -p '[{"op": "replace", "path": "/spec/storage/pvcStrategy", "value": "__common__"}]'
+$ kubectl patch checluster eclipse-che --type=json \
+  -p '[{"op": "replace", "path": "/spec/storage/pvcStrategy", "value": "__<common>__"}]'
 ----
 
 Depending on the strategy used, replace the `_<common>_` option in the above example with `unique` or `per-workspace`.
