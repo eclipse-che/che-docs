@@ -559,7 +559,7 @@ A devfiles may only need the `CHE_PROJECTS_ROOT` environment variable to locate 
 
 === Endpoints
 
-For the `dockerimage`, `kubernetes` and `openshift` component types, you can specify the endpoints that the Docker image exposes. These endpoints can be made accessible to the users if the {prod-short} cluster is running using a Kubernetes ingress or an OpenShift route and to the other components within the workspace. You can create an endpoint for your application or database, if your application or database server is listening on a port and you want to be able to directly interact with it yourself or you want other components to interact with it.
+Components of any type can specify the endpoints that the Docker image exposes. These endpoints can be made accessible to the users if the {prod-short} cluster is running using a Kubernetes ingress or an OpenShift route and to the other components within the workspace. You can create an endpoint for your application or database, if your application or database server is listening on a port and you want to be able to directly interact with it yourself or you want other components to interact with it.
 
 Endpoints have a number of properties as shown in the following example:
 
@@ -632,7 +632,7 @@ WARNING: This setting potentially allows a link:https://en.wikipedia.org/wiki/Cr
 
 When starting a new server within a component, {prod-short} autodetects this, and the UI offers to automatically expose this port as a `public` port. This is useful for debugging a web application, for example. It is not possible to do this for servers that autostart with the container (for example, a database server). For such components, specify the endpoints explicitly.
 
-Example specifying endpoints for `kubernetes`/`openshift` type:
+Example specifying endpoints for `kubernetes`/`openshift` and `chePlugin`/`cheEditor` types:
 
 [source,yaml]
 ----
@@ -640,6 +640,33 @@ apiVersion: 1.0.0
 metadata:
   name: MyDevfile
 components:
+  - type: cheEditor
+    alias: theia-editor
+    id: eclipse/che-theia/next
+    endpoints:
+    - name: 'theia-extra-endpoint'
+      port: 8880
+      attributes:
+        discoverable: true
+        public: true
+
+  - type: chePlugin
+    id: redhat/php/latest
+    memoryLimit: 1Gi
+    endpoints:
+    - name: 'php-endpoint'
+      port: 7777
+
+  - type: chePlugin
+    alias: theia-editor
+    id: eclipse/che-theia/next
+    endpoints:
+    - name: 'theia-extra-endpoint'
+      port: 8880
+      attributes:
+        discoverable: true
+        public: true
+
   - type: openshift
     alias: webapp
     reference: webapp.yaml
@@ -650,6 +677,7 @@ components:
         discoverable: false
         public: true
         protocol: http
+
   - type: openshift
     alias: mongo
     reference: mongo-db.yaml
