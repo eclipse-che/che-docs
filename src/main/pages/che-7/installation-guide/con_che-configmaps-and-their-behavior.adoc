@@ -24,8 +24,7 @@ To add custom properties to the {prod-short} server, such as environment variabl
 
 For example, to override the default memory limit for workspaces, add the `CHE_WORKSPACE_DEFAULT\__MEMORY__LIMIT__MB` property to `customCheProperties`:
 
-[subs="+attributes"]
-[source,yaml]
+[source,yaml,subs="+attributes"]
 ----
 apiVersion: org.eclipse.che/v1
 kind: CheCluster
@@ -42,10 +41,13 @@ spec:
     customCheProperties:
       CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB: "2048"
   auth:
-...
+# [...]
 ----
 
 Previous versions of the {prod-short} Operator had a configMap named `custom` to fulfill this role. If the {prod-short} Operator finds a `configMap` with the name `custom`, it adds the data it contains into the `customCheProperties` field, redeploys {prod-short}, and deletes the `custom` `configMap`.
+
+See link:{site-baseurl}che-7/configuring-system-variables/[Configuring system variables] for a list of all available parameters.
+
 
 ifeval::["{project-context}" == "che"]
 == {prod-short} installed using a Helm Chart
