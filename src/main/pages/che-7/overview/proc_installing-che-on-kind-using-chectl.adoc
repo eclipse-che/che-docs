@@ -3,44 +3,46 @@
 // running-{prod-id-short}-locally
 
 [id="installing-{prod-id-short}-on-kind-using-{prod-cli}_{context}"]
-= Installing che on kind using {prod-cli}
+= Installing {prod-short} on kind using {prod-cli}
 
-This section describes how to install {prod-short} on https://github.com/kubernetes-sigs/kind[kind] using {prod-cli}. Kind is a tool for running local Kubernetes clusters using Docker containers as nodes. It is useful for quickly creating ephemeral clusters, and is used as part of the test infrastructure of the Kubernetes project. Running {prod-short} in Kind is a great way to try it out, or for a contributor to test out their change quickly with a real cluster.
+This section describes how to install {prod-short} on https://github.com/kubernetes-sigs/kind[kind] using {prod-cli}. kind is a tool for running local Kubernetes clusters using Docker-formatted containers as nodes. It is useful for quickly creating ephemeral clusters, and is used as part of the test infrastructure of the Kubernetes project. Running {prod-short} in kind is a way to try the application, or for a contributor to test their change quickly with a real cluster.
 
 .Prerequisites
 
 * `{prod-cli}` management tool is installed. See link:{site-baseurl}che-7/installing-the-{prod-cli}-management-tool/[Installing the `{prod-cli}` management tool].
 
-* A running Kind cluster. See link:https://kind.sigs.k8s.io/#installation-and-usage[here] for Kind installation instructions.
+* A running kind cluster. See link:https://kind.sigs.k8s.io/#installation-and-usage[kind installation and usage] documentation.
 
 .Procedure
 
-. Install https://github.com/kubernetes-csi/csi-driver-host-path[csi-driver-host-path] in the Kind cluster.
+. Install https://github.com/kubernetes-csi/csi-driver-host-path[csi-driver-host-path] in the kind cluster:
 +
+[subs="+quotes"]
 ----
 $ git clone https://github.com/kubernetes-csi/csi-driver-host-path && cd csi-driver-host-path
-$ ./deploy/kubernetes-1.16/deploy-hostpath.sh
+$ ./deploy/kubernetes-__<version>__/deploy-hostpath.sh
 $ kubectl apply -f examples/csi-storageclass.yaml
 ----
 
-. Set `csi-hostpath-sc` as the default `StorageClass`.
+. Set `csi-hostpath-sc` as the default `StorageClass`:
 +
 ----
 $ kubectl patch storageclass csi-hostpath-sc -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "true"}}}'
 $ kubectl patch storageclass standard -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "false"}}}'
 ----
 
-. Install the https://kubernetes.github.io/ingress-nginx/deploy/[NGINX Ingress Controller]
+. Install the https://kubernetes.github.io/ingress-nginx/deploy/[NGINX Ingress Controller]:
 +
 ----
 $ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
 $ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud-generic.yaml
 ----
 
-. Install https://metallb.universe.tf/[MetalLB].
+. Install the https://metallb.universe.tf/[MetalLB] load balancer:
 +
+[subs="+quotes"]
 ----
-$ kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.3/manifests/metallb.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/google/metallb/v__<version>__/manifests/metallb.yaml
 ----
 +
 [NOTE]
@@ -48,7 +50,7 @@ $ kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.3/manif
 The above command may apply to an out-of-date version of MetalLB Kubernetes manifests. See https://metallb.universe.tf/installation/[the installation instructions] for the most up-to-date command.
 ====
 
-. Determine an IP range to allocate to MetalLB from the `docker` bridge network.
+. Determine an IP range to allocate to MetalLB from the `docker` bridge network:
 +
 ----
 $ docker inspect bridge | grep -C 5 Subnet
@@ -64,9 +66,10 @@ $ docker inspect bridge | grep -C 5 Subnet
         },
         "Internal": false,
 ----
-In this case, we have a /16 subnet range to allocate, so we will choose a section in the `172.17.250.0` range.
++
+In this case, there is a `/16` subnet range to allocate. Choose a section in the `172.17.250.0` range.
 
-. Create a `ConfigMap` for MetalLB specifying the IP range to expose.
+. Create a `ConfigMap` for MetalLB specifying the IP range to expose:
 +
 ----
 $ cat << EOF > metallb-config.yaml
@@ -86,7 +89,7 @@ EOF
 $ kubectl apply -f metallb-config.yaml
 ----
 
-. The `ingress-nginx` service now has an external IP.
+. The `ingress-nginx` service now has an external IP:
 +
 ----
 $ kubectl get svc -n ingress-nginx
@@ -94,9 +97,10 @@ NAME            TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)           
 ingress-nginx   LoadBalancer   10.107.194.26   172.17.255.1   80:32033/TCP,443:30428/TCP   19h
 ----
 
-. Run `{prod-cli}`, using the external IP of the `ingress-nginx` Service, as an https://nip.io[nip.io] URL.
+. Run `{prod-cli}`, using the external IP of the `ingress-nginx` Service as an https://nip.io[nip.io] URL:
 +
 [subs="+quotes,+attributes"]
 ----
 $ {prod-cli} server:start --installer operator --platform k8s --domain 172.17.250.1.nip.io
 ----
+
