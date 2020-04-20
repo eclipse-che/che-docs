@@ -557,9 +557,9 @@ the Kubernetes namespace or OpenShift project to which the workspace is deployed
 
 A devfiles may only need the `CHE_PROJECTS_ROOT` environment variable to locate the cloned projects in the component's container. More advanced devfiles might use the `CHE_WORKSPACE_LOGS_ROOT__DIR` environment variable to read the logs (for example as part of a devfile command). The environment variables used to securely access the {prod-short} server are mostly out of scope for devfiles and are present only for advanced use cases that are usually handled by the {prod-short} plug-ins.
 
-==== Endpoints
+=== Endpoints
 
-You can specify the endpoints that the Docker image exposes. These endpoints can be made accessible to the users if the {prod-short} cluster is running using a Kubernetes ingress or an OpenShift route and to the other components within the workspace. You can create an endpoint for your application or database, if your application or database server is listening on a port and you want to be able to directly interact with it yourself or you want other components to interact with it.
+For the `dockerimage`, `kubernetes` and `openshift` component types, you can specify the endpoints that the Docker image exposes. These endpoints can be made accessible to the users if the {prod-short} cluster is running using a Kubernetes ingress or an OpenShift route and to the other components within the workspace. You can create an endpoint for your application or database, if your application or database server is listening on a port and you want to be able to directly interact with it yourself or you want other components to interact with it.
 
 Endpoints have a number of properties as shown in the following example:
 
@@ -632,7 +632,36 @@ WARNING: This setting potentially allows a link:https://en.wikipedia.org/wiki/Cr
 
 When starting a new server within a component, {prod-short} autodetects this, and the UI offers to automatically expose this port as a `public` port. This is useful for debugging a web application, for example. It is not possible to do this for servers that autostart with the container (for example, a database server). For such components, specify the endpoints explicitly.
 
-==== Kubernetes and OpenShift resources
+Example specifying endpoints for `kubernetes`/`openshift` type:
+
+[source,yaml]
+----
+apiVersion: 1.0.0
+metadata:
+  name: MyDevfile
+components:
+  - type: openshift
+    alias: webapp
+    reference: webapp.yaml
+    endpoints:
+    - name: 'web'
+      port: 8080
+      attributes:
+        discoverable: false
+        public: true
+        protocol: http
+  - type: openshift
+    alias: mongo
+    reference: mongo-db.yaml
+    endpoints:
+    - name: 'mongo-db'
+      port: 27017
+      attributes:
+        discoverable: true
+        public: false
+----
+
+=== Kubernetes and OpenShift resources
 
 Complex deployments can be described using Kubernetes or OpenShift resource lists that can be referenced in the devfile. This makes them a part of the workspace.
 
