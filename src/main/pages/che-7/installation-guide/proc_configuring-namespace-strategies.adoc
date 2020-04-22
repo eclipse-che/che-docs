@@ -77,14 +77,21 @@ To limit the number of concurrently running workspaces per user to one (1):
 * For Operator deployments: set the `spec.server.cheCustomProperties.CHE_LIMITS_USER_WORKSPACE_RUN_COUNT` variable of the CheCluster Custom Resource (CR) to `1`.
 ====
 
-ifeval::["{project-context}" == "che"]
 == Allowing user-defined workspace namespaces
 
-{prod-short} server can be configured to honor the user selection of a namespace when a workspace is created. This feature is
-disabled by default. To allow user-defined workspace namespaces, set:
+{prod-short} server can be configured to honor the user selection of a namespace when a workspace is created. This feature is disabled by default. To allow user-defined workspace namespaces:
 
+ifeval::["{project-context}" == "che"]
+* For Helm Chart deployments, set the following environment variable in the Che config map:
++
 ----
 CHE_INFRA_KUBERNETES_NAMESPACE_ALLOW__USER__DEFINED=true
 ----
 endif::[]
+
+* For Operator deployments, set the following field in the CheCluster Custom Resource:
++
+----
+allowUserDefinedWorkspaceNamespaces
+----
 
