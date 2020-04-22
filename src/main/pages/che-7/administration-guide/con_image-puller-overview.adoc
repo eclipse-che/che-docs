@@ -7,6 +7,8 @@ Slow starts of {prod} workspaces may be caused by waiting for the underlying clu
 
 The Image Puller is an additional deployment that runs alongside {prod}. Given a list of images to pre-pull, the application runs inside a cluster and creates a _DaemonSet_ that pulls the images on each node.
 
+NOTE: The minimal requirement for an image to be pre-pulled is the availability of the `sleep` command, which means that `FROM scratch` images (for example, 'che-machine-exec') are currently not supported.
+
 The application can be deployed via Helm or by processing and applying OpenShift templates.
 
 The Kubernetes Image Puller pulls its configuration from a `ConfigMap` with the following available parameters:
