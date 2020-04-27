@@ -5,6 +5,8 @@
 [id="using-kubespray-to-set-up-kubernetes_{context}"]
 = Set up Kubernetes using Kubespray
 
+Commands are given for bash on Ubuntu.
+
 .System update
 
 Start with a system update before installing new packages.
@@ -20,7 +22,7 @@ NOTE: This step is only required on the machine used to run Kubespray. Kubespray
 
 * Install SSH server
 +
-If a node does not have SSH server installed by default, you have to install it to remotely connect this machine. Ubuntu server O/Ss already have SSH a server installed.
+If a node does not have SSH server installed by default, you have to install it to remotely control this machine.
 +
 ----
 $ sudo apt-get install openssh-server
@@ -152,25 +154,6 @@ keep the current hostnames
 +
 ----
 echo "override_system_hostname: false" >>  inventory/mycluster/group_vars/all/all.yml
-----
-
-. Set Docker version to 19.03
-+
-The 18.09 version of Docker seems to be not available in apt sources, prefer the 19.03.
-+
-----
-echo "docker_version: 19.03"  >> inventory/mycluster/group_vars/all/docker.yml
-----
-
-. Set resolv.conf
-+
-There is more than one resolv.conf file on your Ubuntu 18+ O/S, use the right one!
-+
-
-NOTE: A fix for Ubuntu 18.* has been merged in Kubespray, but it does not apply on the not supported 19.* versions.
-+
-----
-echo 'kube_resolv_conf: "/run/systemd/resolve/resolv.conf"' >> inventory/mycluster/group_vars/all/all.yml
 ----
 
 . Check localhost vs nodes usernames
