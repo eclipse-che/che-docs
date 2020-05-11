@@ -1,0 +1,60 @@
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  creationTimestamp: '2020-05-14T13:21:51Z'
+  finalizers:
+    - oauthclients.finalizers.che.eclipse.org
+  generation: 18
+  name: eclipse-che
+  namespace: che
+  resourceVersion: '5108404'
+  selfLink: /apis/org.eclipse.che/v1/namespaces/che/checlusters/eclipse-che
+  uid: bae08db2-104d-4e44-a001-c9affc07528d
+spec:
+  auth:
+    identityProviderURL: 'https://keycloak-che.apps-crc.testing'
+    identityProviderRealm: che
+    updateAdminPassword: false
+    oAuthSecret: ZMmNPRbgOJJQ
+    oAuthClientName: eclipse-che-openshift-identity-provider-yrlcxs
+    identityProviderClientId: che-public
+    identityProviderPostgresSecret: che-identity-postgres-secret
+    externalIdentityProvider: false
+    identityProviderSecret: che-identity-secret
+    openShiftoAuth: true
+  database:
+    chePostgresDb: dbche
+    chePostgresHostName: postgres
+    chePostgresPort: '5432'
+    chePostgresSecret: che-postgres-secret
+    externalDb: false
+  k8s: {}
+  metrics:
+    enable: false
+  server:
+    cheLogLevel: INFO
+    customCheProperties:
+      CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR_PLUGINS: 'http://apache-che.apps-crc.testing/meta.yaml'
+    externalDevfileRegistry: false
+    cheHost: che-che.apps-crc.testing
+    selfSignedCert: true
+    cheDebug: 'false'
+    tlsSupport: true
+    allowUserDefinedWorkspaceNamespaces: false
+    externalPluginRegistry: false
+    gitSelfSignedCert: false
+    cheFlavor: che
+  storage:
+    preCreateSubPaths: true
+    pvcClaimSize: 1Gi
+    pvcStrategy: per-workspace
+status:
+  devfileRegistryURL: 'https://devfile-registry-che.apps-crc.testing'
+  keycloakProvisioned: true
+  cheClusterRunning: Available
+  cheURL: 'https://che-che.apps-crc.testing'
+  openShiftoAuthProvisioned: true
+  dbProvisioned: true
+  cheVersion: 7.13.1
+  keycloakURL: 'https://keycloak-che.apps-crc.testing'
+  pluginRegistryURL: 'https://plugin-registry-che.apps-crc.testing/v3'
