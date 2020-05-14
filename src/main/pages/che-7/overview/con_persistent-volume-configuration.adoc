@@ -1,8 +1,11 @@
+// Module included in the following assemblies:
+//
+// {prod-id-short}-workspace-configuration
+
 [id="storage-strategies-for-{prod-id-short}-workspaces_{context}"]
 = Storage strategies for {prod-short} workspaces
 
 Workspace Pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode]. The way how {prod-short} server uses PVCs for workspaces is configurable, and it is called PVC strategy:
-
 
 include::examples/{project-context}-pvc-strategies.adoc[]
 
@@ -73,63 +76,3 @@ The `per-workspace` strategy works similarly to the `common` PVC strategy. The o
 ----
 
 Volumes can be anything that a user defines as volumes for workspace machines. The volume name is equal to the directory name in `${PV}/${ws-id}`.
-
-
-ifeval::["{project-context}" == "che"]
-
-[id="configuring-a-needed-workspace-strategy-using-the-helm-chart_{context}"]
-== Configuring a per-workspace strategy using the Helm chart
-
-The following section describes how to configure workspace PVCs strategies of a {prod-short} server using the Helm chart.
-
-Note: it's not recommended to reconfigure PVC strategies on an existing {prod-short} cluster with existing workspaces. After that workspaces will lost their data.
-
-A link:https://helm.sh/[Helm Chart] is a Kubernetes extension for defining, installing, and upgrading Kubernetes applications.
-
-When deploying {prod-short} using the Helm chart, configure the workspace PVC strategy by setting values for `global.pvcStrategy`. To do so, add the following option to the `helm install` or `helm upgrade` command:
-
-[subs="+quotes"]
-----
-$ helm install --set global.pvcStrategy=__<common>__
-----
-
-or:
-
-[subs="+quotes"]
-----
-$ helm upgrade --set global.pvcStrategy=__<common>__
-----
-
-Depending on the strategy used, replace the `_<common>_` option in the above example with `unique` or `per-workspace`.
-
-endif::[]
-
-
-[id="configuring-a-needed-workspace-strategy-using-the-operator_{context}"]
-== Configuring a per-workspace strategy using the Operator
-
-The following section describes how to configure workspace PVCs strategies of a {prod-short} server using the Operator.
-
-NOTE: It is not recommended to reconfigure PVC strategies on an existing {prod-short} cluster with existing workspaces. After that workspaces lose their data.
-
-link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators] are software extensions to Kubernetes that use link:https://docs.openshift.com/container-platform/latest/operators/crds/crd-managing-resources-from-crds.html[custom resources] to manage applications and their components.
-
-When deploying {prod-short} using the Operator, configure the intended strategy by modifying the `spec.storage.pvcStrategy` property of the CheCluster Custom Resource object YAML file.
-To activate changes done to CheCluster YAML file, do one of the following:
-
-* Create a new cluster by executing the `kubectl apply` command. For example:
-+
-[subs="+quotes"]
-----
-$ kubectl apply -f _<my-cluster.yaml>_
-----
-
-* Update the YAML file properties of an already running cluster by executing the `kubectl patch` command. For example:
-+
-[subs="+quotes"]
-----
-$ kubectl patch checluster eclipse-che --type=json \
-  -p '[{"op": "replace", "path": "/spec/storage/pvcStrategy", "value": "__<common>__"}]'
-----
-
-Depending on the strategy used, replace the `_<common>_` option in the above example with `unique` or `per-workspace`.
