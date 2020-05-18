@@ -19,7 +19,9 @@ OAuth for GitHub allows for automatic SSH key upload to GitHub.
 
 * Set up the link:https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app[GitHub OAuth client]. The *Authorization callback URL* is filled in the next steps.
 
-* For {prod-short} deployed in link:{site-baseurl}/che-7/running-che-locally/#deploying-multi-user-che-in-multi-user-mode[multi-user mode]:
+ifeval::["{project-context}" == "che"]
+* For {prod-short} deployed in link:{site-baseurl}/che-7/running-che-locally/#deploying-multi-user-che-in-multiuser-mode[multiuser mode]:
+endif::[]
 . Go to the {identity-provider} administration console and select the *Identity Providers* tab.
 . Select the *GitHub* identity provider in the drop-down list.
 . Paste the *Redirect URI* to the *Authorization callback URL* of the GitHub OAuth application.
@@ -29,8 +31,8 @@ OAuth for GitHub allows for automatic SSH key upload to GitHub.
 +
 image::git/github-keycloak-setup.png[]
 
-* If {prod-short} is deployed in single-user mode
 ifeval::["{project-context}" == "che"]
+* For {prod-short} deployed in single-user mode:
 . On OpenShift or Kubernetes, update the deployment configuration (see link:{site-baseurl}che-7/advanced-configuration-options/#che-configmaps-and-their-behavior_advanced-configuration-options[{prod-short} configMaps and their behavior],
 link:{site-baseurl}che-7/advanced-configuration-options/#che-installed-using-a-helm-chart[{prod-short} installed using a Helm Chart]).
 +
@@ -39,16 +41,13 @@ link:{site-baseurl}che-7/advanced-configuration-options/#che-installed-using-a-h
 CHE_OAUTH_GITHUB_CLIENTID=__<your-github-client-ID>__
 CHE_OAUTH_GITHUB_CLIENTSECRET=__<your-github-secret>__
 ----
-endif::[]
+
 . In the *Authorization callback URL* field of the GitHub OAuth application, enter `__<prod-url__/api/oauth/callback`.
 +
 [NOTE]
 ====
 * Substitute `_<prod-url>_` with the URL and port of the {prod-short} installation.
-
 * Substitute `_<your-github-client-ID>_` and `_<your-github-secret>_` with your GitHub client ID and secret.
-
-ifeval::["{project-context}" == "che"]
 * This configuration only applies to single-user deployments of {prod-short}.
-endif::[]
 ====
+endif::[]

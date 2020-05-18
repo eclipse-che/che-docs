@@ -35,7 +35,7 @@ You can export {prod-short} workspaces and then reuse the workspace definition w
 
 The `factory.policies`, `factory.ide`, and `factory.creator` objects are unique to factories. They provide meta information to the automation engine that alter the presentation of the factory URL or the behavior of the provisioning.
 
-[id="mixins"]
+[id="mixins_{context}"]
 == Mixins
 
 A mixin adds additional behaviors to a project as a set of new project type attributes. Mixins are reusable across any project type. To define the mixins to add to a project, specify an array of strings, with each string containing the identifier for the mixin. For example, `"mixins" : [ "pullrequest" ]`.
@@ -49,9 +49,9 @@ A mixin adds additional behaviors to a project as a set of new project type attr
 
 * The `pullrequest` mixin requires additional configuration from the `attributes` object of the project. If present, {{ site.product_mini_name }} will use the project attributes as defined in the factory. If not provided, {{ site.product_mini_name }} will set defaults for the attributes.
 
-* Learn more about other link:TODO: link to project API docs[mixins]
+//* Learn more about other link:TODO: link to project API docs[mixins]
 
-[id="pull-request-mixin-attributes"]
+[id="pull-request-mixin-attributes_{context}"]
 == Pull Request mixin attributes
 
 Project attributes alter the behavior of the IDE or workspace.
@@ -88,7 +88,7 @@ factory.workspace.project : {
 }
 ----
 
-[id="policies"]
+[id="policies_{context}"]
 == Policies
 
 Following is an example of a factory policy.
@@ -107,17 +107,17 @@ factory.policies : {
 <3> Factory works only before this date.
 <4> Create one workspace per click, user, or account.
 
-[id="factories_json_reference-limitations"]
+[id="factories_json_reference-limitations_{context}"]
 == Limitations
 
 You can use `since : EPOCHTIME`, `until : EPOCHTIME`, and `referer` as a way to prevent the factory from executing under certain conditions. `since` and `until` represent a valid time window that allows the factory to activate. The `referrer` checks the host name of the acceptor and only allows the factory to execute if there is a match.
 
-[id="factories_json_reference-multiplicity"]
+[id="factories_json_reference-multiplicity_{context}"]
 == Multiplicity
 
 Using `create : perClick` causes every click of the factory URL to generate a new workspace, each with its own identifier, name, and resources. Using `create : perUser` causes only one workspace to be generated for each unique user that clicks on the factory URL. If the workspace has previously been generated, the existing workspace is reopened.
 
-[id="factories_json_reference-ide-customization"]
+[id="factories_json_reference-ide-customization_{context}"]
 == Customizing the IDE
 
 [source,json]
@@ -219,7 +219,7 @@ Each event type has a set of actions that can be triggered. There is no ordering
 |`warnOnClose` |No |Opens a warning pop-up window when the user closes the browser tab with a project that has uncommitted changes. Requires `project.parameters.keepVcs` to be `true`.
 |===
 
-[id="action-open-file"]
+[id="action-open-file_{context}"]
 == Action: Open File
 
 This action opens a file as a tab in the editor. You can provide this action multiple times to have multiple files open. The file property is a relative reference to a file in the project source tree. The `file` parameter is the relative path within the workspace to the file that is opened by the editor. The `line` parameter is optional and can be used to move the editor cursor to a specific line when the file is opened. Projects are located in the `/projects/` directory of a workspace.
@@ -235,7 +235,7 @@ This action opens a file as a tab in the editor. You can provide this action mul
 }
 ----
 
-[id="action-find-and-replace"]
+[id="action-find-and-replace_{context}"]
 == Action: Find and Replace
 
 In projects created from a factory, {prod-short} can find and replace values in the source code after it is imported into the project tree. This lets you parameterize your source code. Find and replace can be run as a *Run Command* during `onProjectsLoaded` event. You can use `sed`, `awk`, or any other tools that are available in your workspace environment.
@@ -275,7 +275,7 @@ Then register this command to the execution list linked to the `onProjectsLoaded
 
 Use https://www.gnu.org/software/sed/manual/html_node/Regular-Expressions.html[regular expressions] in `sed`, both in find-replace and file-file type patterns.
 
-[id="creator"]
+[id="creator_{context}"]
 == Creator
 
 This object has meta information that you can embed within the factory. These attributes do not affect the automation behavior or the behavior of the generated workspace.

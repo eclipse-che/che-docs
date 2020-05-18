@@ -9,11 +9,16 @@ The Image Puller is an additional deployment that runs alongside {prod}. Given a
 
 NOTE: The minimal requirement for an image to be pre-pulled is the availability of the `sleep` command, which means that `FROM scratch` images (for example, 'che-machine-exec') are currently not supported. Also, images that mount volumes in the dockerfile are not supported for pre-pulling on OpenShift.
 
-The application can be deployed via Helm or by processing and applying OpenShift templates.
+The application can be deployed:
 
-The Kubernetes Image Puller pulls its configuration from a `ConfigMap` with the following available parameters:
+ifeval::["{project-context}" == "che"]
+* using Helm
+endif::[]
+* by processing and applying OpenShift templates.
 
-[id="image-puller-configuration"]
+The Image Puller pulls its configuration from a `ConfigMap` with the following available parameters:
+
+[id="image-puller-configuration_{context}"]
 .Image Puller default parameters
 [options="header"]
 |===

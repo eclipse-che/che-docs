@@ -16,9 +16,14 @@ summary:
 OAuth for OpenShift allows to authenticate the link:{site-baseurl}/che-7/openshift-connector-overview/[OpenShift connector plugin] in {prod-short}.
 
 .Procedure
-* For {prod-short} deployed in link:{site-baseurl}/che-7/running-che-locally/#deploying-multi-user-che-in-multi-user-mode[multi-user mode]:
+
+ifeval::["{project-context}" == "che"]
+* For {prod-short} deployed in link:{site-baseurl}/che-7/running-che-locally/#deploying-multi-user-che-in-multiuser-mode[multiuser mode]:
 +
-To enable OpenShift OAuth automatically, {prod-short} should be deployed with the `--os-oauth` option (see link:https://github.com/che-incubator/chectl#chectl-serverstart[chectl server:start specification]).
+endif::[]
+To enable OpenShift OAuth automatically, {prod-short} should be deployed with the `--os-oauth` option (see link:{link-cli-github}#{prod-cli}-serverstart[`{prod-cli} server:start` specification]).
+
+ifeval::["{project-context}" == "che"]
 * For {prod-short} deployed in single-user mode:
 . Register {prod-short} OAuth client in OpenShift (see link:https://docs.openshift.com/container-platform/4.3/authentication/configuring-internal-oauth.html#oauth-register-additional-client_configuring-internal-oauth[Register an OAuth client in OpenShift]).
 +
@@ -51,9 +56,10 @@ pass:[CHE_OAUTH_OPENSHIFT_OAUTH__ENDPOINT]: _<oauth-endpoint>_
 pass:[CHE_OAUTH_OPENSHIFT_VERIFY__TOKEN__URL]: _<verify-token-url>_
 ----
 ====
-* _<client-ID>_ a name specified in the OpenShift OAuthClient.
-* _<openshift-secret>_ a secret specified in the OpenShift OAuthClient.
-* _<oauth-endpoint>_ the URL of the OpenShift OAuth service:
+* `_<client-ID>_` a name specified in the OpenShift OAuthClient.
+* `_<openshift-secret>_` a secret specified in the OpenShift OAuthClient.
+* `_<oauth-endpoint>_` the URL of the OpenShift OAuth service:
 ** For OpenShift 3 specify the OpenShift master URL.
 ** For OpenShift 4 specify the `oauth-openshift` route.
-* _<verify-token-url>_ request URL that is used to verify the token. `<OpenShift master url>/api` can be used for OpenShift 3 and 4.
+* `_<verify-token-url>_` request URL that is used to verify the token. `<OpenShift master url>/api` can be used for OpenShift 3 and 4.
+endif::[]
