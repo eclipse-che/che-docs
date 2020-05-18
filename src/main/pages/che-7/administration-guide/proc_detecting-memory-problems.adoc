@@ -6,9 +6,9 @@
 This section describes how to detect memory problems related to a plug-in running out of memory. The following are the two most common problems related to a plug-in running out of memory:
 
 The plug-in container runs out of memory::
-This can happen during plug-in initialization when the container does not have enough RAM to execute the entrypoint of the image. The user can detect this in the logs of the plug-in container. In this case, the logs should contain `OOMKilled`, which implies that the processes in the container requested more memory than is available in the container.
+This can happen during plug-in initialization when the container does not have enough RAM to execute the entrypoint of the image. The user can detect this in the logs of the plug-in container. In this case, the logs contain `OOMKilled`, which implies that the processes in the container requested more memory than is available in the container.
 
 A process inside the container runs out of memory without the container noticing this::
 For example, the Java language server (Eclipse JDT Language Server, started by the vscode-java extension) throws an **OutOfMemoryException**. This can happen any time after the container is initialized, for example, when a plug-in starts a language server or when a process runs out of memory because of the size of the project it has to handle.
 +
-To detect this problem, check the logs of the main process, which should run in the container. For example, to check the log file of Eclipse JDT Language Server for details, see the relevant plug-in-specific sections.
+To detect this problem, check the logs of the primary process running in the container. For example, to check the log file of Eclipse JDT Language Server for details, see the relevant plug-in-specific sections.
