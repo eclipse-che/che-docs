@@ -4,8 +4,6 @@ Table of Contents
   * [Our Pledge](#our-pledge)
   * [Our Standards](#our-standards)
   * [Attribution](#attribution)
-* [Pull Request Process](#pull-request-process)
-   * [Release branches](#release-branches)
 * [Creating documentation](#creating-documentation)
    * [AsciiDoc Formatting](#asciidoc-formatting)
       * [Using test-adoc for AsciiDoc syntax verification](#using-test-adoc-for-asciidoc-syntax-verification)
@@ -16,6 +14,7 @@ Table of Contents
       * [Using vale to check the style](#using-vale-to-check-the-style)
       * [Adding Images](#adding-images)
    * [Building Documentation](#building-documentation)
+   * [Pull Request Process](#pull-request-process)
    * [Publishing documentation](#publishing-documentation)
 * [Getting Support](#getting-support)
 
@@ -24,8 +23,7 @@ Table of Contents
 
 ### Our Pledge
 
-In the interest of fostering an open and welcoming environment, we as contributors and maintainers pledge to making participation in our project and our community a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience,
-nationality, personal appearance, race, religion, or sexual identity and orientation.
+In the interest of fostering an open and welcoming environment, we as contributors and maintainers pledge to make participation in our project and our community a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
 
 ### Our Standards
 
@@ -40,39 +38,27 @@ include:
 
 Examples of unacceptable behavior by participants include:
 
-* The use of sexualized language or imagery and unwelcome sexual attention or
-advances
-* Trolling, insulting/derogatory comments, and personal or political attacks
+* The use of sexualized language or imagery and unwelcome sexual attention or advances
+* Trolling, insulting or derogatory comments, and personal or political attacks
 * Public or private harassment
-* Publishing others' private information, such as a physical or electronic
-  address, without explicit permission
+* Publishing others' private information, such as a physical or electronic address, without explicit permission
 * Other conduct which could reasonably be considered inappropriate in a professional setting
 
 ### Attribution
 
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
-available at [http://contributor-covenant.org/version/1/4][version]
+This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4, available at [http://contributor-covenant.org/version/1/4][version]
 
 [homepage]: http://contributor-covenant.org
 [version]: http://contributor-covenant.org/version/1/4/
 
-## Pull Request Process 
-
-1. Eclipse Che documentation project follows forking workflow. To learn more, read [Atlassian Git Tutorial, Forking Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow). Before you start working, fork the repository, make sure you create all branches in your own fork.
-2. `master`  is the default working branch. Unless your change is intended for a specific version, send the PR against a `master`. See the Release branches to learn more.
-3. Specify as much information as possible in the PR template. 
-
-### Release branches
-[WIP]
-
 ## Creating documentation
 
 ### AsciiDoc Formatting
-Eclipse Che documentation use AsciiDoc for formatting. See [AsciiDoc Writer's Guide](https://asciidoctor.org/docs/asciidoc-writers-guide/) for syntax and general help with AsciiDoc.
+Eclipse Che documentation uses AsciiDoc for markup. See [AsciiDoc Writer's Guide](https://asciidoctor.org/docs/asciidoc-writers-guide/) for syntax and general help with AsciiDoc.
 
 #### Using `test-adoc` for AsciiDoc syntax verification
-To verify that the syntax of your document is correct, use [`test-adoc`](https://github.com/jhradilek/check-links) script. 
-`test-adoc.sh` is integrated into the `run.sh` script in the root directory of the project.
+To verify that the syntax of your document is correct, use the [`test-adoc`](https://github.com/jhradilek/check-links) script. 
+`test-adoc` is integrated into the `run.sh` script in the root directory of the project.
  
 To run `test-adoc`, execute from the root directory of the project: 
 ```
@@ -80,9 +66,9 @@ $ bash run.sh -test-adoc <PATH_TO_THE_FILE>
 ```
 
 ### Documentation Structure
-Eclipse Che documentation follow [Modular Documentation initiative](https://redhat-documentation.github.io/modular-docs/). Use templates provided in the [Modular Documentation Reference](https://redhat-documentation.github.io/modular-docs/#creating-modules) to create new user stories.
+The Eclipse Che documentation project follows guidelines from the [modular documentation initiative](https://redhat-documentation.github.io/modular-docs/). Use templates provided in the [Modular Documentation Reference](https://redhat-documentation.github.io/modular-docs/#creating-modules) to create new user stories.
 
-To add a new page, create an `.adoc` file in `src/main/pages/che-<version>/<directory_name>` 
+To add a new page, create a `.adoc` file in `src/main/pages/che-<version>/<directory_name>` 
 
 <b id="f2">Versions: </b>
 * `che-6` - Eclipse Che 6 content. Note that Che 6 is deprecated. 
@@ -98,7 +84,7 @@ To add a new page, create an `.adoc` file in `src/main/pages/che-<version>/<dire
 
 #### Using `newdoc` to create templates for new documents
 
-With a [`newdoc`](https://github.com/redhat-documentation/tools/tree/master/newdoc) script, you can generate empty modular templates for your new user story.  
+With the [`newdoc`](https://github.com/redhat-documentation/tools/tree/master/newdoc) script, you can generate empty modular templates for your new user story.  
 `newdoc` is integrated into a `run.sh` script in the root directory of the project.
 
 To run `newdoc`, execute from the root directory of the project:  
@@ -108,11 +94,10 @@ $ bash run.sh -newdoc --procedure "Title of your new procedure file"
 
 ### Writing documentation
 #### Style
-Eclipse Che documentation follows the The IBM Style Guide. If you do not have a paper copy of the styleguide, you can refer to  
-[developerWorks editorial style guide](https://www.ibm.com/developerworks/library/styleguidelines/index.html) on the IBM website. While `developerWorks` is not longer supported, it still provides useful reference information. 
+Eclipse Che documentation follows the IBM Style Guide. If you do not have a paper copy of the styleguide, you can refer to [developerWorks editorial style guide](https://www.ibm.com/developerworks/library/styleguidelines/index.html) on the IBM website. While `developerWorks` is not longer supported, it still provides useful reference information. 
 
 #### Using `vale` to check the style
-[`vale`](https://errata-ai.gitbook.io/vale/) is a command-line linter. With `vale`, you can check if the style of your documentation follows [the language rules and recommendations defined in Eclipse Che project](https://github.com/eclipse/che-docs/tree/master/.ci/vale/styles).
+[`vale`](https://errata-ai.gitbook.io/vale/) is a command-line linter. With `vale`, you can check if the style of your documentation follows [the language rules and recommendations defined in the Eclipse Che documentation project](https://github.com/eclipse/che-docs/tree/master/.ci/vale/styles).
 
 `vale` is integrated into a `run.sh` script in the root directory of the project.
 
@@ -149,6 +134,14 @@ There is a `run.sh` script in the root of the repository that runs a Docker imag
 $ bash run.sh
 ```
 2. Go to `localhost:4000` in your browser.
+
+### Pull Request Process 
+
+1. Eclipse Che documentation project follows a forking workflow. To learn more, read [Atlassian Git Tutorial, Forking Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow). Fork the repository and ensure you create all branches in your own fork before you start working.
+2. `master`  is the default working branch. Unless your change is intended for a specific version, submit the PR against the `master` branch. 
+3. Specify as much information as possible in the PR template. 
+
+//### Release branches
 
 ### Publishing documentation
 Che docs use Jekyll to convert `.adoc` (AsciiDoc) files into HTML pages. Docs are published at [https://www.eclipse.org/che/docs](https://www.eclipse.org/che/docs/). Updates are synced with a release cycle.
