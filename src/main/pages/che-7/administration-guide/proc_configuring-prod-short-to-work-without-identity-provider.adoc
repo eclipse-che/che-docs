@@ -1,0 +1,64 @@
+// Module included in the following assemblies:
+//
+// configuring-authorization
+
+[id="configuring-prod-short-to-work-without-identity-provider_{context}"]
+= Configuring {prod-short} to work without {identity-provider}
+
+By default, {prod-short} is deployed in multiuser mode where {identity-provider} and PostgreSQL are enabled by default. However, it is possible to deploy it in the single-user mode too, by changing the `CHE_MULTIUSER` value to `false`. In that case, neither {identity-provider} nor PostgreSQL is installed.
+
+
+.Prerequisites
+
+*  The {prod} command-line management tool, `{prod-cli}`, is installed. See the link:{site-baseurl}che-7/installing-the-chectl-management-tool/[Installing the {prod-cli} management tool] section. Alternatively, the OpenShift command line tool, `oc`, can be used.
+* 
+
+.Procedure
+
+. Prepare the `cr-patch.yaml` file with the following content:
++
+[source,yaml]
+----
+spec:
+  server:
+      customCheProperties:
+        CHE_MULTIUSER: false
+----
+
+. Install {prod-short} in the single-user mode:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:start --platform __<platform>__ --installer operator  --che-operator-cr-patch-yaml cr-patch.yaml
+----
++
+Depending on the strategy used, replace the `_<platform>_` option in the above example with `crc`, `minishift`, or `openshift`. 
+ifeval::["{project-context}" == "che"]
+Kubernetes-native platforms such as `minikube`, `microk8s`, `k8s`, and `docker-desktop` are also available.
+endif::[]
+
+.Verification
+
+. Wait for the console log output to display the `Command server:start has completed successfully.` message:
++
+----
+✔ Retrieving Eclipse Che server URL...<ECLIPSE_CHE_URL>
+   ✔ Eclipse Che status check
+Command server:start has completed successfully.
+----
+
+. Use the following command for correct boolean verification:
++
+[subs="+quotes"]
+----
+$ {prod-cli} get checluster -o=jsonpath='{.items[0].spec.server.customCheProperties.CHE_MULTIUSER}'
+----
++
+If the output of the command is `false`, {prod-short} has been successfully configured in single-user mode.
+
+
+////
+.Additional resources
+
+* TBD
+////

@@ -1,0 +1,137 @@
+// Module included in the following assemblies:
+//
+// {prod-id-short}-workspace-configuration
+
+[id="configuring-a-che-workspace-with-a-persistent-volume-strategy_{context}"]
+= Configuring a {prod-short} workspace with a persistent volume strategy
+
+A persistent volume (PV) acts as a virtual storage instance that adds a volume to a cluster. 
+
+A persistent volume claim (PVC) is a request to provision persistent storage of a specific type and configuration, available in the following {prod-short} storage configuration strategies:
+
+* Common
+* Per-workspace
+* Unique
+
+The mounted PVC is displayed as a folder in a container file system.
+
+ifeval::["{project-context}" == "che"]
+
+[id="configuring-a-pvc-strategy-using-the-helm-chart_{context}"]
+== Configuring a PVC strategy using the Helm chart
+
+The following section describes how to configure workspace persistent volume claim (PVC) strategies of a {prod-short} server using the Helm chart.
+
+WARNING: It is not recommended to reconfigure PVC strategies on an existing {prod-short} cluster with existing workspaces. Doing so causes data loss.
+
+.Prerequisites
+
+* Helm Chart is installed. A link:https://helm.sh/[Helm Chart] is a Kubernetes extension for defining, installing, and upgrading Kubernetes applications.
+
+.Procedure
+
+When deploying {prod-short} using Helm Chart, configure the workspace PVC strategy by setting values for the `global.pvcStrategy` option. 
+
+* For a new installation, use the `helm install` command with the `global.pvcStrategy` option:
++
+[subs="+quotes"]
+----
+$ helm install --set global.pvcStrategy=__<per-workspace>__
+----
+
+* For an already installed instance, use the `helm upgrade` command with the `global.pvcStrategy` option:
++
+[subs="+quotes"]
+----
+$ helm upgrade --set global.pvcStrategy=__<per-workspace>__
+----
+
+Depending on the strategy used, replace the `_<per-workspace>_` option in the above examples with `unique` or `common`.
+
+[id="configuring-a-pvc-strategy-by-editing-a-configmap_{context}"]
+== Configuring a PVC strategy strategy by editing a configMap
+
+Based on the {prod-short} installation method, configMaps can be used to customize the working environment. A configMap is provided as an editable file that lists options to customize the {prod-short} environment. This method of configuring a persistent volume claim (PVC) strategy for a {prod-short} workspace is available only for the Helm installation.
+
+Changes to a configMap created during Operator installation are not permanent because the Operator overwrites them back to default.
+
+.Prerequisites
+
+* {prod-short} is installed using the Helm Chart.
+* A Kubernetes orchestration tool, the OpenShift command-line tool, `oc`, or the Kubernetes clusters controlling command-line tool, `kubectl`, is installed.
+
+.Procedure
+
+. Set the configMap variable to reflect the requested PVC strategy:
++
+[subs="+quotes"]
+----
+CHE_INFRA_KUBERNETES_PVC_STRATEGY=__<per-workspace>__
+----
++
+Depending on the strategy used, replace the `_<per-workspace>_` option in the above example with `unique` or `common`.
+
+. Restart {prod-short} by scaling the deployment to zero and then back to one again:
++
+[subs="+quotes"]
+----
+$ oc scale --replicas=0 deployment {prod-deployment}
+$ oc scale --replicas=1 deployment {prod-deployment}
+----
+
+. Restart the workspace for the changes to take effect.
+endif::[]
+
+
+[id="configuring-a-pvc-strategy-using-the-operator_{context}"]
+== Configuring a PVC strategy using the Operator
+
+The following section describes how to configure workspace persistent volume claim (PVC) strategies of a {prod-short} server using the Operator.
+
+WARNING: It is not recommended to reconfigure PVC strategies on an existing {prod-short} cluster with existing workspaces. Doing so causes data loss.
+
+link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators] are software extensions to Kubernetes that use link:https://docs.openshift.com/container-platform/latest/operators/crds/crd-managing-resources-from-crds.html[custom resources] to manage applications and their components.
+
+When deploying {prod-short} using the Operator, configure the intended strategy by modifying the `spec.storage.pvcStrategy` property of the CheCluster Custom Resource object YAML file.
+
+.Prerequisites
+
+* A Kubernetes orchestration tool, the OpenShift command-line tool, `oc`,
+ifeval::["{project-context}" == "che"]
+or the Kubernetes clusters controlling command-line tool, `kubectl`,
+endif::[]
+is installed.
+
+.Procedure
+
+The following procedure steps are available for:
+
+* OpenShift command-line tool, `oc`
+ifeval::["{project-context}" == "che"]
+* Kubernetes clusters controlling command-line tool, `kubectl` 
+endif::[]
+
+To do changes to the CheCluster YAML file, choose one of the following:
+
+* Create a new cluster by executing the `{orch-cli} apply` command. For example:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f _<my-cluster.yaml>_
+----
+
+* Update the YAML file properties of an already running cluster by executing the `{orch-cli} patch` command. For example:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch checluster {prod-checluster} --type=json \
+  -p '[{"op": "replace", "path": "/spec/storage/pvcStrategy", "value": "__<per-workspace>__"}]'
+----
+
+Depending on the strategy used, replace the `_<per-workspace>_` option in the above example with `unique` or `common`.
+
+////
+.Additional resources
+
+* TBD
+////
