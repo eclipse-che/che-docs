@@ -1,13 +1,33 @@
 // Module included in the following assemblies:
 //
-// advanced-configuration-options
+// configuring-the-{prod-id-short}-installation
 
-[id="{prod-id-short}-configmaps-fields-reference_{context}"]
+[id="checluster-custom-resources-fields-reference_{context}"]
+= `CheCluster` Custom Resource fields reference
 
-= {prod-short} configMaps fields reference
+This section describes all fields available to customize the `CheCluster` Custom Resource.
 
-== `server` settings related to the {prod-short} server
+* xref:a-minimal-checluster-custom-resource-example_{context}[]
+* xref:checluster-custom-resource-auth-settings_{context}[]
+* xref:checluster-custom-resource-database-settings_{context}[]
+* xref:checluster-custom-resource-server-settings_{context}[]
+* xref:checluster-custom-resource-storage-settings_{context}[]
+* xref:checluster-custom-resource-k8s-settings_{context}[]
+* xref:checluster-custom-resource-installation-settings_{context}[]
 
+[id="a-minimal-checluster-custom-resource-example_{context}"]
+.A minimal `CheCluster` Custom Resource example.
+====
+[source,yaml]
+----
+include::examples/checluster-custom-resource.yaml[]
+----
+====
+
+
+
+[id="checluster-custom-resource-server-settings_{context}"]
+.`CheCluster` Custom Resource `server` settings, related to the {prod-short} server component.
 [cols="1,1,3", options="header"]
 :===
 Property: Default value: Description
@@ -46,8 +66,8 @@ Property: Default value: Description
 `tlsSupport`: `false`: Instructs the Operator to deploy {prod-short} in TLS mode. Enabling TLS requires enabling the `selfSignedCert` field.
 :===
 
-== `database` configuration settings related to the database used by {prod-short}
-
+[id="checluster-custom-resource-database-settings_{context}"]
+.`CheCluster` Custom Resource `database` configuration settings related to the database used by {prod-short}
 [cols="1,1,3", options="header"]
 :===
 Property: Default value: Description
@@ -62,8 +82,8 @@ Property: Default value: Description
 `postgresImage`: omit: Overrides the container image used in the PostgreSQL database deployment. This includes the image tag. Omit it or leave it empty to use the default container image provided by the Operator.
 :===
 
-== `auth` configuration settings related to authentication used by {prod-short} installation
-
+[id="checluster-custom-resource-auth-settings_{context}"]
+.`CheCluster` Custom Resource `auth` configuration settings related to authentication used by {prod-short} installation
 [cols="1,1,3", options="header"]
 :===
 Property: Default value: Description
@@ -83,9 +103,8 @@ Property: Default value: Description
 `updateAdminPassword`: `false`: Forces the default `admin` {prod-short} user to update password on first login.
 :===
 
-== `storage` configuration settings related to persistent storage used by {prod-short}
-
-
+[id="checluster-custom-resource-storage-settings_{context}"]
+.`CheCluster` Custom Resource `storage` configuration settings related to persistent storage used by {prod-short}
 [cols="1,1,3", options="header"]
 :===
 Property: Default value: Description
@@ -99,8 +118,8 @@ Property: Default value: Description
 :===
 
 
-== `k8s` configuration settings specific to {prod-short} installations on Kubernetes
-
+[id="checluster-custom-resource-k8s-settings_{context}"]
+.`CheCluster` Custom Resource `k8s` configuration settings specific to {prod-short} installations on Kubernetes
 [cols="1,1,3", options="header"]
 :===
 Property: Default value: Description
@@ -113,8 +132,8 @@ Property: Default value: Description
 `tlsSecretName`: omit: Name of a secret that is used to set ingress TLS termination if TLS is enabled. See also the `tlsSupport` field.
 :===
 
-== `installation` defines the observed state of {prod-short} installation
-
+[id="checluster-custom-resource-installation-settings_{context}"]
+.`CheCluster` Custom Resource `status` defines the observed state of {prod-short} installation
 [cols="1,3", options="header"]
 :===
 Property: Description
@@ -131,38 +150,4 @@ Property: Description
 `openShiftoAuthProvisioned`: Indicates whether an Identity Provider instance (Keycloak / RH SSO) has been configured to integrate with the OpenShift OAuth.
 `pluginRegistryURL`: Public URL to the Plugin registry.
 `reason`: A brief CamelCase message with details about why the Pod is in this state.
-:===
-
-== Limits for workspaces
-
-[cols="1,1,3", options="header"]
-:===
-Property: Default value: Description
-
-`che.limits.workspace.env.ram`: `16gb`: The maximum amount of RAM that a user can allocate to a workspace when they create a new workspace. The RAM slider is adjusted to this maximum value.
-`che.limits.workspace.idle.timeout`: `1800000`: The length of time that a user is idle with their workspace when the system will suspend the workspace and then stopping it. Idleness is the length of time that the user has not interacted with the workspace, meaning that one of our agents has not received interaction. Leaving a browser window open counts toward idleness.
-:===
-
-== Limits for the workspaces of an user
-
-[cols="1,1,3", options="header"]
-:===
-Property: Default value: Description
-
-`che.limits.user.workspaces.ram`: `16gb`: he total amount of RAM that a single user is allowed to allocate to running workspaces. A user can allocate this RAM to a single workspace or spread it across multiple workspaces.
-`che.limits.user.workspaces.count`: `1800000`: The maximum number of workspaces that a user is allowed to create. The user will be presented with an error message if they try to create additional workspaces. This applies to the total number of both running and stopped workspaces.
-`che.limits.user.workspaces.run.count`: `1`: The maximum number of running workspaces that a single user is allowed to have. If the user has reached this threshold and they try to start an additional workspace, they will be prompted with an error message. The user will need to stop a running workspace to activate another.
-:===
-
-== Limits for the workspaces of an organization
-
-
-[cols="1,1,3", options="header"]
-:===
-Property: Default value: Description
-
-`che.limits.organization.workspaces.ram`: `-1`: The total amount of RAM that a single organization (team) is allowed to allocate to running workspaces. An organization owner can allocate this RAM however they see fit across the team's workspaces.
-`che.limits.organization.workspaces.count`: `-1`: The maximum number of workspaces that a organization is allowed to own. The organization will be presented an error message if they try to create additional workspaces. This applies to the total number of both running and stopped workspaces.
-`che.limits.organization.workspaces.run.count`: `-1`: The maximum number of running workspaces that a single organization is allowed. If the organization has reached this threshold and they try to start an additional workspace, they will be prompted with an error message. The organization will need to stop a running workspace to activate another.
-
 :===
