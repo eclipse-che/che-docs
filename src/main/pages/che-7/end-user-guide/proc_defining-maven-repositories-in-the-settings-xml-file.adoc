@@ -8,9 +8,23 @@
 To specify your own artifact repositories at `example.server.org`, use the `settings.xml` file.
 To do that, ensure, that `settings.xml` is present in all the containers that use Maven tools, in particular the Maven container and the Java plug-in container.
 
-By default, `settings.xml` is located at the `__<home dir>__/.m2` directory. Because the user home directory is not on a persistent volume, you must re-create the file each time you restart the workspace. This is a known issue, see link:https://github.com/eclipse/che/issues/13318[the issue on GitHub].
+By default, `settings.xml` is located at the `__<home dir>__/.m2` directory which is already on persistent volume in Maven and Java plug-in containers and you don't need to re-create the file each time you restart the workspace if it isn't in ephemeral mode.
 
-A workaround is to make the file persist between the restarts of the workspace, create a directory `/projects/maven/.m2`, and move the `settings.xml` file in it. Then set the value of the `user.home` Java system property to `/projects/maven` in all your Maven containers.
+In case you have another container that uses Maven tools and you want to share `<home dir>/.m2` folder with this container, you have to specify the custom volume for this specific component in the devfile:
+
+[source,yaml]
+----
+apiVersion: 1.0.0
+metadata:
+  name: MyDevfile
+components:
+  - type: chePlugin
+    alias: maven-tool
+    id: plugin/id
+    volumes:
+    - name: m2
+      containerPath: <home dir>/.m2
+----
 
 .Procedure
 
@@ -72,33 +86,4 @@ A workaround is to make the file persist between the restarts of the workspace, 
     <activeProfile>my-nexus</activeProfile>
   </activeProfiles>
 </settings>
-----
-
-. Configure the devfile to use the `/projects/maven` value for the `user.home` Java system property.
-
-.. For the Java plug-in container, configure the language server start arguments preference:
-+
-[source,yaml]
-----
-components:
-  - id: redhat/java11/latest
-    type: chePlugin
-    preferences:
-      java.jdt.ls.vmargs: >-
-        -noverify -Xmx1G -XX:+UseG1GC -XX:+UseStringDeduplication
-        -Duser.home=/projects/maven
-----
-
-.. For the Maven container, configure the `MAVEN_OPTS` environment variable:
-+
-[source,yaml]
-----
-mountSources: true
-    alias: maven
-    type: dockerimage
-    ...
-    env:
-       -name: MAVEN_OPTS
-        value: >-
-          -Duser.home=/projects/maven
 ----
