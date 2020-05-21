@@ -1,0 +1,36 @@
+// Module included in the following assemblies:
+//
+// using-go-artifact-repositories
+
+[id="using-self-signed-certificates-in-go-projects_{context}"]
+= Using self-signed certificates in Go projects
+
+Internal artifact repositories often do not have a self-signed (SSL) certificate signed by an authority that is trusted by default. They are usually signed by an internal company authority or are self-signed. Configure your tools to accept these certificates.
+
+Go uses certificates from a file defined in the `SSL_CERT_FILE` environment variable.
+
+.Procedure
+
+. Obtain the certificate used by the Athens server in the Privacy-Enhanced Mail (PEM) format and place it in the `/projects/ssl` file to make it accessible from all your containers.
+
+. Right-click the project explorer and select *Upload files* to upload the `rootCA.crt` certificate file to your {prod} workspace.
+
+. Add the appropriate environment variables to your devfile:
++
+[source,yaml]
+----
+components:
+- mountSources: true
+  type: dockerimage
+  alias: go-cli
+  image: 'quay.io/eclipse/che-golang-1.12:7.7.0'
+  ...
+  - value: /tmp/.cache
+    name: GOCACHE
+  - value: 'http://your.athens.host'
+    name: GOPROXY
+  - value: 'on'
+    name: GO111MODULE
+  - value: '/projects/ssl/rootCA.crt'
+    name: SSL_CERT_FILE
+----

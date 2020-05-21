@@ -11,7 +11,7 @@ summary:
 
 :page-liquid:
 
-[id="authenticating-with-openshift-connector-from-eclipse-che_{context}"]
+[id="authenticating-with-openshift-connector-from-{prod-id-short}_{context}"]
 
 = Authenticating with OpenShift Connector from {prod-short}
 
@@ -19,8 +19,21 @@ Before the user can develop and push Components from {prod-short}, they need to 
 
 OpenShift Connector offers the following methods for logging in to the OpenShift Cluster from the {prod-short} instance:
 
+* Using the notification that asks to log in to the OpenShift cluster where {prod-short} is deployed to.
 * Using the btn:[Log in to the cluster] button.
 * Using the Command Palette.
+
+[NOTE]
+====
+.In {prod-short} {prod-ver}, Openshift Connector plug-in requires manual connecting to the target cluster
+
+By default, the Openshift Connector plug-in logs into the cluster as `inClusterUser`, which may not have the manage project permission. This causes an error message to be displayed when a new project is being created using Openshift Application Explorer:
+----
+Failed to create Project with error 'Error: Command failed: "/tmp/vscode-unpacked/redhat.vscode-openshift -connector.latest.qvkozqtkba.openshift-connector-0.1.4-523.vsix/extension/out/tools/linux/odo" project create test-project ✗ projectrequests.project.openshift.io is forbidden
+----
+
+To work around this temporary issue, log out from the local cluster and relog in to OpenShift cluster using the OpenShift user's credentials.
+====
 
 When using a local instance of OpenShift (such as CodeReady Containers or Minishift), the user’s credentials are stored in the workspace `~/.kube/config` file, and may be used for automatic authentication in subsequent logins. In the context of {prod-short}, the `~/.kube/config` is stored as a part of the plug-in sidecar container.
 
@@ -28,6 +41,7 @@ When using a local instance of OpenShift (such as CodeReady Containers or Minish
 * A running instance of {prod-short}. To install an instance of {prod-short}, see link:{site-baseurl}che-7/che-quick-starts/[{prod-short} quick-starts].
 * A {prod-short} workspace has been created.
 * The OpenShift Connector plug-in is installed.
+* The OpenShift OAuth provider is configured (only for the auto-login to the OpenShift cluster where {prod-short} is deployed. See link:{site-baseurl}/che-7/configuring-openshift-oauth/[Configuring OpenShift OAuth]).
 
 .Procedure
 
