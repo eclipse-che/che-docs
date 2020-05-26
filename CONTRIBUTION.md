@@ -149,8 +149,6 @@ $ bash run.sh
 2. `master`  is the default working branch. Unless your change is intended for a specific version, submit the PR against the `master` branch. 
 3. Specify as much information as possible in the PR template. 
 
-# ### Release branches
-
 ### Publishing documentation
 Che docs use Jekyll to convert `.adoc` (AsciiDoc) files into HTML pages. Docs are published at [https://www.eclipse.org/che/docs](https://www.eclipse.org/che/docs/). Updates are synced with a release cycle.
 
