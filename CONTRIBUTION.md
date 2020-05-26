@@ -13,6 +13,7 @@ Table of Contents
       * [Style](#style)
       * [Using vale to check the style](#using-vale-to-check-the-style)
       * [Adding Images](#adding-images)
+      * [Using special characters](#using-special-characters)
    * [Building Documentation](#building-documentation)
    * [Pull Request Process](#pull-request-process)
    * [Publishing documentation](#publishing-documentation)
@@ -53,7 +54,7 @@ This Code of Conduct is adapted from the [Contributor Covenant][homepage], versi
 
 ## Creating documentation
 
-### AsciiDoc Formatting
+### AsciiDoc formatting
 Eclipse Che documentation uses AsciiDoc for markup. See [AsciiDoc Writer's Guide](https://asciidoctor.org/docs/asciidoc-writers-guide/) for syntax and general help with AsciiDoc.
 
 #### Using `test-adoc` for AsciiDoc syntax verification
@@ -65,13 +66,12 @@ To run `test-adoc`, execute from the root directory of the project:
 $ bash run.sh -test-adoc <PATH_TO_THE_FILE>
 ```
 
-### Documentation Structure
+### Documentation structure
 The Eclipse Che documentation project follows guidelines from the [modular documentation initiative](https://redhat-documentation.github.io/modular-docs/). Use templates provided in the [Modular Documentation Reference](https://redhat-documentation.github.io/modular-docs/#creating-modules) to create new user stories.
 
 To add a new page, create a `.adoc` file in `src/main/pages/che-<version>/<directory_name>` 
 
 <b id="f2">Versions: </b>
-* `che-6` - Eclipse Che 6 content. Note that Che 6 is deprecated. 
 * `che-7` - Eclipse Che 7 content, including y-streams and z-streams.   
 
 <b id="f1">Available directories: </b> 
@@ -106,7 +106,7 @@ To run `vale`, execute from the root directory of the project:
 $ bash run.sh -vale <PATH_TO_THE_FILE>"
 ```
 
-### Adding Images
+### Adding images
 
 Images are located in the `src/main/che/docs/images/` directory. To publish an image, use the following syntax:
 
@@ -126,6 +126,14 @@ image::devel/js_flow.png[Alt text]
 
 Do not post too many images unless it is absolutely necessary. Animated `.gif` images are preferred, especially when explaining how to use complex UI features.
 
+### Using special characters
+
+To prevent special characters from being interpreted as formatting mark-up, use pass-through macros. For example, to escape underscores, asterisks, or backticks, use:
+
+```
+pass:[VARIABLE_NAME__WITH__UNDERSCORES]
+```
+
 ### Building Documentation
 There is a `run.sh` script in the root of the repository that runs a Docker image, mounts sources, and starts Jekyll. When running locally, docs are available at `localhost:4000`. Jekyll watches for changes in `.adoc` files and re-generates resources, so you can preview changes live.
 
@@ -135,20 +143,21 @@ $ bash run.sh
 ```
 2. Go to `localhost:4000` in your browser.
 
-### Pull Request Process 
+### Pull Request process
 
 1. Eclipse Che documentation project follows a forking workflow. To learn more, read [Atlassian Git Tutorial, Forking Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow). Fork the repository and ensure you create all branches in your own fork before you start working.
 2. `master`  is the default working branch. Unless your change is intended for a specific version, submit the PR against the `master` branch. 
 3. Specify as much information as possible in the PR template. 
 
-//### Release branches
+# ### Release branches
 
 ### Publishing documentation
 Che docs use Jekyll to convert `.adoc` (AsciiDoc) files into HTML pages. Docs are published at [https://www.eclipse.org/che/docs](https://www.eclipse.org/che/docs/). Updates are synced with a release cycle.
 
-### Getting Support
+### Getting support
 
 * **GitHub issue:** [![New questions](https://img.shields.io/badge/New-question-blue.svg?style=flat-curved)](https://github.com/eclipse/che/issues/new?labels=area/doc,kind/question)
 [![New bug](https://img.shields.io/badge/New-bug-red.svg?style=flat-curved)](https://github.com/eclipse/che/issues/new?labels=area/doc,kind/bug)
 
 * **Public Chat:** Join the public [eclipse-che](https://mattermost.eclipse.org/eclipse/channels/eclipse-che) Mattermost channel to talk to the community and contributors.
+
