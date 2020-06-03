@@ -60,7 +60,7 @@ The following table presents the default requirements for all workspace componen
 +
 ... Custom memory limit and request:
 +
-If present, the `memoryLimit` attribute of the `containers` section of the `meta.yaml` file defines the memory limit of a `chePlugins` or `cheEditors` component. {prod-short} automatically sets the memory request to match the memory limit. There is no attribute in a `meta.yaml` file to set the memory request.
+If present, the `memoryLimit` and `memoryRequest` attributes of the `containers` section of the `meta.yaml` file define the memory limit of the `chePlugins` or `cheEditors` components. {prod-short} automatically sets the memory request to match the memory limit in case it is not specified explicitly.
 +
 .The `chePlugin` `che-incubator/typescript/latest`
 ====
@@ -72,13 +72,14 @@ spec:
    - image: docker.io/eclipse/che-remote-plugin-node:next
      name: vscode-typescript
      memoryLimit: 512Mi
+     memoryRequest: 256Mi
 ----
 
 It results in a container with the following memory limit and request:
 
 |===
 |Memory limit | 512 MiB
-|Memory request | 512 MiB
+|Memory request | 256 MiB
 |===
 ====
 +
@@ -95,11 +96,44 @@ For example, on a local Minikube cluster, the URL for the `che-incubator/typescr
 
 ... Custom CPU limit and request:
 +
-{prod-short} does not set CPU limits and requests. The `LimitRange` Kubernetes namespace may specify some defaults for CPU limits and requests. Kubernetes apply them to the `chePlugin` container.
+{prod-short} does not set CPU limits and requests by default. However, it is possible to configure CPU limits
+for the `chePlugin` and `cheEditor` types in the `meta.yaml` file or in the devfile in the same way as it done for memory limits.
++
+.The `chePlugin` `che-incubator/typescript/latest`
+====
+.`meta.yaml` spec section:
+[source,yaml]
+----
+spec:
+ containers:
+   - image: docker.io/eclipse/che-remote-plugin-node:next
+     name: vscode-typescript
+     cpuLimit: 2000m
+     cpuRequest: 500m
+----
+
+It results in a container with the following CPU limit and request:
+
+|===
+|CPU limit | 2 cores
+|CPU request | 0.5 cores
+|===
+====
+
+To set CPU limits and requests globally, use the following dedicated environment variables:
+|===
+| `CPU Limit` | `+CHE_WORKSPACE_SIDECAR_DEFAULT__CPU__LIMIT__CORES+`
+| `CPU Request` | `+CHE_WORKSPACE_SIDECAR_DEFAULT__CPU__REQUEST__CORES+`
+|===
+
+See also link:https://www.eclipse.org/che/docs/che-7/advanced-configuration-options-for-the-che-server-component/[Advanced configuration options for the {prod-short} server component].
+
+Note that the `LimitRange` object of the Kubernetes namespace may specify defaults for CPU limits and requests set by cluster administrators. To prevent start errors due to resources overrun, limits on application or workspace levels must comply with those settings.
+
 
 .. Custom requirements for `dockerimage` components
 +
-If present, the `memoryLimit` attribute of the devfile defines the memory limit of a `dockerimage` container. {prod-short} set automatically the memory request to match the memory limit. There is no attribute in a devfile to set the memory request.
+If present, the `memoryLimit` and `memoryRequest` attributes of the devfile define the memory limit of a `dockerimage` container. {prod-short} automatically sets the memory request to match the memory limit in case it is not specified explicitly.
 +
 [source,yaml]
 ----
