@@ -1,0 +1,33 @@
+// Module included in the following assemblies:
+//
+// hosted-{prod-id-short}
+:page-liquid:
+
+[id="hosted-che-faq-and-troubleshooting_{context}"]
+= Frequently Asked Questions (FAQs) and Troubleshooting
+
+== FAQs
+
+**Q**: Where can I see the up-to-date status of the Eclipse Che hosted by Red Hat?
+
+**A**: There is a dedicated status page - https://che.statuspage.io/
+
+== Troubleshooting
+
+=== Cannot log into the Hosted Che - Authorization token is missed
+
+To authenticate to https://che.openshift.io, one needs to allow cookies from the `static.developers.redhat.com`.
+In case these cookies are blocked (by a browser extension like https://www.eff.org/privacybadger[Privacy Badger]),
+authentication fails with the following error:
+
+----
+Authorization token is missing
+Click here to reload page.
+----
+
+Also, note that telemetry is enabled in Hosted Che so Woopra / Segment tracking scripts must be explicitly allowed in case being blocked by a browser extension:
+
+- https://api.segment.io/v1/t 
+- https://static.woopra.com/js/w.js
+
+Otherwise, the workspace startup will fail.
