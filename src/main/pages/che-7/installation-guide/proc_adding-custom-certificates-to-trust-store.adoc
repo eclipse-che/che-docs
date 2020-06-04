@@ -13,6 +13,7 @@ $ kubectl create configmap <config-map name> --from-file=<certificate file path>
 ----
 To apply more then one certificate, add `--from-file=<certificate file path>` key to the command.
 . Define the certificates config-map name.
+ifeval::["{project-context}" == "che"]
 +
 =====
 .If {prod-short} is deployed using a link:https://helm.sh/[Helm Chart]
@@ -26,6 +27,7 @@ $ helm upgrade che -n che --set global.tls.serverTrustStoreConfigMapName=<config
 ----
 <kubernetes-cluster-domain> On Minikube, use `$(minikube ip).nip.io`
 =====
+endif::[]
 +
 ====
 .If {prod-short} is deployed using link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators]
