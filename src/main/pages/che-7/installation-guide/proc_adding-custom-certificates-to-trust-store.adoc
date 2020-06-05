@@ -1,49 +1,72 @@
 ---
-title: Adding custom public SSL certificates to Che trust-store
+title: Adding self-signed SSL certificates to Che
 keywords:
 tags: []
 sidebar: che_7_docs
-permalink: che-7/adding-custom-certificates-to-trust-store/
+permalink: che-7/adding-self-signed-SSL-certificates-to-{prod-short}/
 folder: che-7/installation-guide
 summary:
 ---
+:page-liquid:
 
-[id="adding-custom-certificates-to-trust-store_{context}"]
-= Adding custom public SSL certificates to {prod-short} trust-store
+[id="adding-self-signed-SSL-certificates-to-{prod-short}_{context}"]
+= Adding self-signed SSL certificates to {prod-short}
 
-This procedure describes how to configure {prod-short} to be able to perform HTTP requests to unrecognized resources.
+The following procedure describes how to configure {prod-short} to authorize HTTPS communication with various components, such as identity and git servers, by adding information about self-signed SSL certificates to a {prod-short} configuration.
+
+.Prerequisites
+
+* A Kubernetes orchestration tool, the OpenShift command-line tool, `oc`,
+ifeval::["{project-context}" == "che"]
+or the Kubernetes clusters controlling command-line tool, `kubectl`,
+endif::[]
+is installed.
 
 .Procedure
-. Save the public certificate(s) that you want to apply.
-. Create a new *configMap* with the certificate(s):
+
+. Save the desired self-signed certificates to a local file system.
+
+. Create a new *configMap* that will contain the desired self-signed SSL certificates:
 +
-[subs="+quotes"]
+[subs="+attributes,+quotes"]
 ----
-$ kubectl create configmap <config-map name> --from-file=<certificate file path> -n=che
+$ {orch-cli} create configmap __<configMap-name>__ --from-file=__<certificate-file-path>__ -n=__<che-namespace-name>__
 ----
-To apply more then one certificate, add `--from-file=<certificate file path>` key to the command.
-. Define the certificates config-map name.
++
+To apply more than one certificate, add another `--from-file=_<certificate-file-path>_` option to the above command.
+
+. Define a name for the newly created configMap.
++
+NOTE: The belove-mentioned steps are for an already exiting instances of {prod-short}. When a user wants to do a new installation of {prod-short} with self-signes SSL certificates, a creation of a new Che CustomResource or Helm Chart property, based on the installation method selected, is needed rather than updating the already existing configuration.
+
+====
+** For a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators] deployment :
+
+* Define a name for the newly created configMap by editing of the `spec.server.ServerTrustStoreConfigMapName` Che CustomResource property, to match the previously created configMap:
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+$ {orch-cli} patch checluster eclipse-che -n che --type=json -p '[{"op": "replace", "path": "/spec/server/serverTrustStoreConfigMapName", "value": "__<config-map-name>__"}]'
+----
+====
+
 ifeval::["{project-context}" == "che"]
+====
+** For a {prod-short} link:https://helm.sh/[Helm Chart] deployment: 
 +
-=====
-.If {prod-short} is deployed using a link:https://helm.sh/[Helm Chart]
 . Clone the https://github.com/eclipse/che[che] project
-. Go to `deploy/kubernetes/helm/che` directory
-. Set the `global.tls.serverTrustStoreConfigMapName` property to previously created config-map name. To do that, add the following option to the `helm upgrade` command:
+. Move to the `deploy/kubernetes/helm/che` directory
+. Define a name for the newly created configMap by editing of the `global.tls.serverTrustStoreConfigMapName` Helm Chart property, to match the previously created configMap:
 +
-[subs="+quotes"]
+[subs="+quotes",options="nowrap",role=white-space-pre]
 ----
 $ helm upgrade che -n che --set global.tls.serverTrustStoreConfigMapName=<config-map name> --set global.ingressDomain=__<kubernetes-cluster-domain>__ .
 ----
-<kubernetes-cluster-domain> On Minikube, use `$(minikube ip).nip.io`
-=====
-endif::[]
 +
+Minikube users can obtain the _<kubernetes-cluster-domain>_ value by using `$(minikube ip).nip.io`.
 ====
-.If {prod-short} is deployed using link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators]
-Set the `serverTrustStoreConfigMapName` property to previously created config-map name. To do that, execute:
+endif::[]
 
-----
-$ kubectl patch checluster eclipse-che -n che --type=json -p '[{"op": "replace", "path": "/spec/server/serverTrustStoreConfigMapName", "value": "<config-map name>"}]'
-----
-====
+.Verification
+
+If the certificates were added correctly, the {identity-provider} that uses OpenShift OAuth, does not fail during the authentication.
