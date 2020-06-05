@@ -38,7 +38,7 @@ To apply more than one certificate, add another `--from-file=_<certificate-file-
 . Define a name for the newly created configMap.
 +
 NOTE: Use these steps with existing instances of {prod-short}. To install a new instance of {prod-short} with self-signed SSL certificates, create a new Che Custom Resource or Helm Chart property, based on the installation method selected, instead of updating the existing configuration.
-
++
 ====
 ** For a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators] deployment :
 
@@ -49,7 +49,7 @@ NOTE: Use these steps with existing instances of {prod-short}. To install a new 
 $ {orch-cli} patch checluster eclipse-che -n che --type=json -p '[{"op": "replace", "path": "/spec/server/serverTrustStoreConfigMapName", "value": "__<config-map-name>__"}]'
 ----
 ====
-
++
 ifeval::["{project-context}" == "che"]
 ====
 ** For a {prod-short} link:https://helm.sh/[Helm Chart] deployment: 
@@ -69,4 +69,4 @@ endif::[]
 
 .Verification
 
-If the certificates were added correctly, the {identity-provider} that uses OpenShift OAuth, does not fail during the authentication.
+If the certificates have been added correctly, using OpenShift OAuth for {identity-provider} authentication succeeds.
