@@ -14,13 +14,13 @@ summary:
 
 When a {prod-short} user attempts to authenticate with {identity-provider} that is using OpenShift OAuth, the authentication fails if the {identity-provider} does not know the certificates needed for authorization.
 
-To fix this problem, configure {prod-short} to authorize HTTPS communication with various components, such as identity and Git servers, by adding information about self-signed SSL certificates to a {prod-short} configuration.
+To fix this problem, configure {prod-short} to authorize HTTPS communication with various components, such as identity and Git servers, by adding information about the self-signed SSL certificates to the {prod-short} configuration.
 
 .Prerequisites
 
-* A Kubernetes orchestration tool, the OpenShift command-line tool, `oc`,
+* The OpenShift command-line tool, `oc`
 ifeval::["{project-context}" == "che"]
-or the Kubernetes clusters controlling command-line tool, `kubectl`,
+or the Kubernetes command-line tool, `kubectl`,
 endif::[]
 is installed.
 
@@ -28,7 +28,7 @@ is installed.
 
 . Save the desired self-signed certificates to a local file system.
 
-. Create a new configMap that will contain the desired self-signed SSL certificates:
+. Create a new configMap with the required self-signed SSL certificates:
 +
 [subs="+attributes,+quotes"]
 ----
@@ -42,9 +42,9 @@ To apply more than one certificate, add another `--from-file=_<certificate-file-
 NOTE: Use these steps with existing instances of {prod-short}. To install a new instance of {prod-short} with self-signed SSL certificates, create a new Che Custom Resource or Helm Chart property, based on the installation method selected, instead of updating the existing configuration.
 +
 ====
-** For a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators] deployment :
+** For a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators] deployment:
 
-* Define a name for the newly created configMap by editing the `spec.server.ServerTrustStoreConfigMapName` Che CustomResource property, to match the previously created configMap:
+* Define a name for the newly created configMap by editing the `spec.server.ServerTrustStoreConfigMapName` Che Custom Resource property to match the previously created configMap:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -56,16 +56,17 @@ ifeval::["{project-context}" == "che"]
 ====
 ** For a {prod-short} link:https://helm.sh/[Helm Chart] deployment: 
 +
-. Clone the https://github.com/eclipse/che[che] project
-. Go to the `deploy/kubernetes/helm/che` directory
-. Define a name for the newly created configMap by editing the `global.tls.serverTrustStoreConfigMapName` Helm Chart property, to match the previously created configMap:
+. Clone the https://github.com/eclipse/che[che] project.
+. Go to the `deploy/kubernetes/helm/che` directory.
+. Define a name for the newly created configMap by editing the `global.tls.serverTrustStoreConfigMapName` Helm Chart property to match the previously created configMap:
 +
 [subs="+quotes",options="nowrap",role=white-space-pre]
 ----
-$ helm upgrade che -n che --set global.tls.serverTrustStoreConfigMapName=<config-map name> --set global.ingressDomain=__<kubernetes-cluster-domain>__ .
+$ helm upgrade che -n che --set global.tls.serverTrustStoreConfigMapName=__<config-map name>__ \
+   --set global.ingressDomain=__<kubernetes-cluster-domain>__ .
 ----
 +
-Minikube users can obtain the _<kubernetes-cluster-domain>_ value by using `$(minikube ip).nip.io`.
+When using Minikube to run {prod-short}, substitute _<kubernetes-cluster-domain>_ with `$(minikube ip).nip.io`.
 ====
 endif::[]
 
@@ -73,6 +74,6 @@ endif::[]
 
 If the certificates have been added correctly, the {prod-short} server starts and obtains {identity-provider} configuration over HTTPS with a self-signed SSL certificate, allowing user to:
 
-* access the {prod-short} server
-* log in using OpenShift OAuth
-* clone over HTTPS from a Git repository that has a custom self-signed SSL  certificate
+* Access the {prod-short} server.
+* Log in using OpenShift OAuth.
+* Clone from a Git repository that has a custom self-signed SSL certificate over HTTPS.
