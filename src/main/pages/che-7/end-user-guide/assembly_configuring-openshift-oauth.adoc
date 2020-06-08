@@ -23,7 +23,6 @@ ifeval::["{project-context}" == "che"]
 endif::[]
 To enable OpenShift OAuth automatically, {prod-short} should be deployed with the `--os-oauth` option (see link:{link-cli-github}#{prod-cli}-serverstart[`{prod-cli} server:start` specification]).
 
-ifeval::["{project-context}" == "che"]
 * For {prod-short} deployed in single-user mode:
 . Register {prod-short} OAuth client in OpenShift (see link:https://docs.openshift.com/container-platform/4.3/authentication/configuring-internal-oauth.html#oauth-register-additional-client_configuring-internal-oauth[Register an OAuth client in OpenShift]).
 +
@@ -41,11 +40,15 @@ grantMethod: prompt
 ')
 ----
 . Add the OpenShift SSL certificate to the {prod-short} Java trust store.
-//TODO yhontyk to uncomment later. For now it turns into an xref that breaks the bccutil build :( 
-//See link:{site-baseurl}che-7/advanced-configuration-options/#adding-self-signed-SSL-certificates-to-{prod-short}_advanced-configuration-options[Adding self-signed SSL certificates to {prod-short}]
-. Update the OpenShift deployment configuration
-(see link:{site-baseurl}che-7/advanced-configuration-options/#che-configmaps-and-their-behavior_advanced-configuration-options[{prod-short} configMaps and their behavior],
-link:{site-baseurl}che-7/advanced-configuration-options/#che-installed-using-a-helm-chart[{prod-short} installed using a Helm Chart]).
++
+* See link:{site-baseurl}che-7/advanced-configuration-options/#adding-self-signed-SSL-certificates-to-che_advanced-configuration-options[Adding self-signed SSL certificates to {prod-short}]
+
+. Update the OpenShift deployment configuration.
++
+* See link:{site-baseurl}che-7/advanced-configuration-options/#che-configmaps-and-their-behavior_advanced-configuration-options[{prod-short} configMaps and their behavior],
+ifeval::["{project-context}" == "che"]
+link:{site-baseurl}che-7/advanced-configuration-options/#che-installed-using-a-helm-chart[{prod-short} installed using a Helm Chart].
+endif::[]
 +
 ====
 [subs="+quotes,macros"]
@@ -62,4 +65,4 @@ pass:[CHE_OAUTH_OPENSHIFT_VERIFY__TOKEN__URL]: _<verify-token-url>_
 ** For OpenShift 3 specify the OpenShift master URL.
 ** For OpenShift 4 specify the `oauth-openshift` route.
 * `_<verify-token-url>_` request URL that is used to verify the token. `<OpenShift master url>/api` can be used for OpenShift 3 and 4.
-endif::[]
+
