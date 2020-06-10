@@ -114,6 +114,13 @@ spec:
       }
     }
   }
+
+  post {
+    always {
+      archiveArtifacts artifacts: 'build/**', fingerprint: true
+    }
+  }
+
 }
 
 
