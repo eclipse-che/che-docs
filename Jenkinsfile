@@ -117,7 +117,7 @@ spec:
 
   post {
     always {
-      archiveArtifacts artifacts: 'build/**', fingerprint: true
+      archiveArtifacts artifacts: 'che-docs/build/**', fingerprint: true
     }
   }
 
