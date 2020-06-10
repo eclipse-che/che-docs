@@ -114,6 +114,13 @@ spec:
       }
     }
   }
+
+  post {
+    always {
+      archiveArtifacts artifacts: 'che-docs/src/main/_site/**', fingerprint: true
+    }
+  }
+
 }
 
 
