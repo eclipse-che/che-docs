@@ -7,7 +7,7 @@
 
 Self-signed certificates are certificates that are not signed by a certificate authority (CA), and they do not provide all of the security properties that certificates signed by a CA aim to provide. For instance, when a website owner uses a self-signed certificate to provide HTTPS services, users who visit that website will see a warning in their browser.
 
-After installing {prod-short} on {ocp} with TLS support and a self-signed certificate, a user has to add a self-signed TLS certificate to the browser for each route exposed in {prod-short}. If they do not, the login process will be blocked by the *Authorization token is missed. Click here to reload page* error message.
+After installing {prod-short} on {ocp} with TLS support and a self-signed certificate, a user has to add a self-signed TLS certificate to the browser for each route exposed in {prod-short}. If they do not, the error message: *Authorization token is missing. Click here to reload page* will block the login process.
 
 This section describes how to import a root certificate authority into the browser to use {prod-short} with self-signed TLS certificates.
 
@@ -15,15 +15,15 @@ This section describes how to import a root certificate authority into the brows
 
 .Procedure
 
-. On the left side of the Chrome browser URL address bar panel, click the icon of the `Lock`, which represents the SSL/TLS status.
+. On the left side of the Chrome browser URL address bar panel, click the `Lock` icon, which represents the SSL/TLS status.
++
+This will indicate information about your current connection.
 
-. The information about your connection is displayed. Click *Certificates*.
-
-. Navigate to the *Details* tab.
+. Click *Certificates* and navigate to the *Details* tab.
 
 . Select the certificate you want to use and export it out using the btn:[Export] button.
 +
-NOTE: Depending on the user’s OS, the *Export* (Linux-based OS) or *Save to File* (Windows-based OS) should be used.
+NOTE: Depending on the OS, use the *Export* option for Linux or the *Save to File* option for Windows.
 
 .  On the right side of the browser click the *Customize and control Google Chrome* drop-down menu and navigate to *Settings*.
 
@@ -38,11 +38,13 @@ NOTE: Depending on the user’s OS, the *Export* (Linux-based OS) or *Save to Fi
 
 .Procedure
 
-. On the left side of the Chrome browser URL address bar panel, click the icon of the `Lock`, which represents the SSL/TLS status.
+. On the left side of the Chrome browser URL address bar panel, click the `Lock` icon, which represents the SSL/TLS status.
++
+This will indicate information about your current connection.
 
-. The information about your connection is displayed. Click *Certificates*.
+. Click *Certificates*.
 
-. Select the certificate you want to use and then `drag and drop` its displayed bigger icon to the desktop.
+. Select the certificate you want to use and then `drag and drop` its displayed larger icon to the desktop.
 +
 image::contributor/macOS-adding-certificate.png[]
 
@@ -60,7 +62,7 @@ image::contributor/che-tls-chrome-import_1.png[link="{imagesdir}/contributor/che
 +
 image::contributor/che-tls-chrome-import_2.png[link="{imagesdir}/contributor/che-tls-chrome-import_2.png"]
 
-. After adding the {prod-short} certificate to the browser, the icon of `lock` is display next to the domain URL and browser reports a secure connection.
+. After adding the {prod-short} certificate to the browser, the address bar displays the `lock` icon next to the URL, indicating a secure connection.
 +
 ifeval::["{project-context}" == "che"]
 image::contributor/che-tls-chrome-import_3.png[link="{imagesdir}/contributor/che-tls-chrome-import_3.png"]
@@ -79,19 +81,18 @@ image::contributor/che-tls-firefox-import_2.png[link="{imagesdir}/contributor/ch
 +
 image::contributor/che-tls-firefox-import_3.png[link="{imagesdir}/contributor/che-tls-firefox-import_3.png"]
 
-. After adding the {prod-short} certificate to the browser, the icon of `lock` is display next to the domain URL and browser reports a secure connection.
+. After adding the {prod-short} certificate to the browser, the address bar displays the `lock` icon next to the URL, indicating a secure connection.
 +
 ifeval::["{project-context}" == "che"]
 image::contributor/che-tls-firefox-import_4.png[link="{imagesdir}/contributor/che-tls-firefox-import_4.png"]
 endif::[]
 
-
 .macOS Keychain
 
 . Open *Keychain Access*.
 
-. Select the *System* keychain and drag & drop the `rootCA.crt` (or `ca.crt` for OpenShift 4) file there.
+. Select the *System* keychain and drag & drop the `rootCA.crt`, or `ca.crt` for OpenShift 4, file there.
 
-. Double-click the imported CA, go to *Trust*, and select *When using this certificate*: *Always Trust*.
+. Double-click the imported CA, then go to *Trust*, and select *When using this certificate*: *Always Trust*.
 
-. If the browser still reports an invalid certificate, restart the browser.
+. Restart the browser for the added certificated to take effect.
