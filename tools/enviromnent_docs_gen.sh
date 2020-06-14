@@ -73,6 +73,7 @@ parse_content() {
       ENV=${KEY^^}                                      # capitalize property name
       ENV="\`+${ENV//_/__}+\`"                          # replace single underscores with double
       ENV=${ENV//./_}                                   # replace dots with single underscore
+      VALUE="${VALUE/ }"                                # trim first space
       VALUE="\`+${VALUE}+\`"                            # make sure asciidoc doesn't mix it up with attributes
       DESCR_BUFF="$(sed 's| {\([^}]*\)}| `+{\1}+`|g' <<< $DESCR_BUFF)"    # make sure asciidoc doesn't mix it up with attributes
       DESCR_BUFF="$(sed 's|\${\([^}]*\)}|$++{\1}++|g' <<< $DESCR_BUFF)"   # make sure asciidoc doesn't mix it up with attributes
