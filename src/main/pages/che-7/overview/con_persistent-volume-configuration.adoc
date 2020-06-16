@@ -23,7 +23,7 @@ All workspaces inside a Kubernetes-native namespace use the same Persistent Volu
 When the `common` PVC strategy is in use,  user-defined PVCs are ignored and volumes that refer to these user-defined PVCs are replaced with a volume that refers to the common PVC.
 In this strategy, all {prod-short) workspaces use the same PVC. When the user runs one workspace, it only binds to one node in the cluster at a time.
 
-The corresponding containers volume mounts link to a common volume, and sub-paths are prefixed with `'{workspaceID}/{originalPVCName}'` . For more details, see xref:how-the-subpaths-are-used_{context}[].
+The corresponding containers volume mounts link to a common volume, and sub-paths are prefixed with `'{workspaceID}/{originalPVCName}'`. For more details, see xref:how-subpaths-are-used-in-pvcs_{context}[].
 
 The {prod-short} Volume name is identical to the name of the user-defined PVC. It means that if a machine is configured to use a {prod-short} volume with the same name as the user-defined
 PVC has, they will use the same shared folder in the common PVC.
@@ -67,7 +67,7 @@ User-defined PVCs are created with the following specifics:
 
 * They are provisioned with generated names to prevent naming conflicts with other PVCs in a namespace.
 
-*  Subpaths of the mounted Physical persistent volumes that reference user-defined PVCs are prefixed with `{workspace id}/{PVC name}`. This ensures that the same PV data structure is set up with different PVC strategies. For details, see xref:how-the-subpaths-are-used_{context}[].
+*  Subpaths of the mounted Physical persistent volumes that reference user-defined PVCs are prefixed with `{workspace id}/{PVC name}`. This ensures that the same PV data structure is set up with different PVC strategies. For details, see xref:how-subpaths-are-used-in-pvcs_{context}[].
 
 The `unique` PVC strategy is suitable for larger multi-node clusters with a lesser amount of users. Since this strategy operates with separate PVCs for each volume in a workspace, vastly more PVCs are created.
 
