@@ -5,56 +5,58 @@
 [id="using-{prod-id-short}-with-tls_{context}"]
 = Using {prod-short} with TLS
 
-Self-signed certificates are certificates that are not signed by a certificate authority (CA), and they do not provide all of the security properties that certificates signed by a CA aim to provide. For instance, when a website owner uses a self-signed certificate to provide HTTPS services, users who visit that website will see a warning in their browser.
+Self-signed certificates are certificates that are not signed by a certificate authority (CA). Self-signed certificates do not provide all of the security properties that certificates signed by a CA aim to provide. For example, when a website owner uses a self-signed certificate to provide HTTPS services, users who visit that website will see a warning in their browser.
 
 After installing {prod-short} on {ocp} with TLS support and a self-signed certificate, a user has to add a self-signed TLS certificate to the browser for each route exposed in {prod-short}. If they do not, the error message: *Authorization token is missing. Click here to reload page* will block the login process.
 
 This section describes how to import a root certificate authority into the browser to use {prod-short} with self-signed TLS certificates.
 
-== Adding Self-Signed Certificates to Chrome Browser using Linux and Windows OS
+== Adding Self-signed Certificates to Google Chrome on Linux or Windows OS
 
 .Procedure
 
-. On the left side of the Chrome browser URL address bar panel, click the `Lock` icon, which represents the SSL/TLS status.
+. On the left side of the Chrome browser URL address bar panel, click the `lock` icon, which represents the SSL/TLS status.
 +
 This will indicate information about your current connection.
 
 . Click *Certificates* and navigate to the *Details* tab.
 
-. Select the certificate you want to use and export it out using the btn:[Export] button.
+. Select the certificate you want to use and export it:
 +
-NOTE: Depending on the OS, use the *Export* option for Linux or the *Save to File* option for Windows.
+* On a Linux OS, click btn:[Export].
+* On a Windows-based OS, click btn:[Save to file]
 
-.  On the right side of the browser click the *Customize and control Google Chrome* drop-down menu and navigate to *Settings*.
+.  On the right side of the browser, click the *Customize and control Google Chrome* drop-down menu and navigate to *Settings*.
 
 . In the left panel, select *Advanced* and continue to *Privacy and security*.
 
-. In the middle of the screen, click *Manage certificates* and navigate to *Authorities* tab.
+. At the center of the screen, click *Manage certificates* and navigate to *Authorities* tab.
 
 . Add your certificate in the profile using the btn:[Import] button.
 
 
-== Adding Self-Signed Certificates to Chrome Browser using Mac OS
+== Adding Self-signed Certificates to Google Chrome on Mac OS
 
 .Procedure
 
-. On the left side of the Chrome browser URL address bar panel, click the `Lock` icon, which represents the SSL/TLS status.
+. On the left side of the Chrome browser URL address bar panel, click the `lock` icon, which represents the SSL/TLS status.
 +
 This will indicate information about your current connection.
 
 . Click *Certificates*.
 
-. Select the certificate you want to use and then `drag and drop` its displayed larger icon to the desktop.
+. Select the certificate you want to use and then drag and drop its displayed larger icon to the desktop.
 +
 image::contributor/macOS-adding-certificate.png[]
 
-. Double click on the exported certificate for importing into Chrome.
+. Double click the exported certificate to import it into Google Chrome.
 
 [discrete]
 == Examples
 
 .Google Chrome
-. Go to `chrome://settings/certificates`, the *Authorities* tab, click *Import*, and find the generated `rootCA.crt` (or `ca.crt` for OpenShift 4) file.
+. Go to link:chrome://settings/certificates[Google Chrome Settings], then to the *Authorities* tab 
+. Click *Import* and find the generated `rootCA.crt` or `ca.crt` file.
 +
 image::contributor/che-tls-chrome-import_1.png[link="{imagesdir}/contributor/che-tls-chrome-import_1.png"]
 
@@ -73,7 +75,7 @@ endif::[]
 +
 image::contributor/che-tls-firefox-import_1.png[link="{imagesdir}/contributor/che-tls-firefox-import_1.png"]
 
-. Go to the *Authorities* tab, click *Import*, and find the generated `rootCA.crt` (or `ca.crt` for OpenShift 4) file.
+. Go to the *Authorities* tab, click *Import*, and find the generated `rootCA.crt` or `ca.crt` file.
 +
 image::contributor/che-tls-firefox-import_2.png[link="{imagesdir}/contributor/che-tls-firefox-import_2.png"]
 
@@ -91,7 +93,7 @@ endif::[]
 
 . Open *Keychain Access*.
 
-. Select the *System* keychain and drag & drop the `rootCA.crt`, or `ca.crt` for OpenShift 4, file there.
+. Select the *System* keychain and drag & drop the generated `rootCA.crt` or `ca.crt` file.
 
 . Double-click the imported CA, then go to *Trust*, and select *When using this certificate*: *Always Trust*.
 
