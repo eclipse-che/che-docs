@@ -22,8 +22,8 @@ This section describes how to modify a plug-in `meta.yaml` file to point to a lo
 
 .Prerequisites
 
+* {prod-short} is installed.
 * The OpenShift command-line tool, `oc`, is installed.
-* {Prod-short} is installed.
 
 .Procedure
 
@@ -49,17 +49,29 @@ $ curl -sSL -o ./che-plugin-registry/v3/plugins/$\{ORG}/$\{NAME}/$\{VERSION}/$\{
 ** For an Operator installation:
 +
 ----
+<<<<<<< HEAD
 $ oc get checluster ${CHECLUSTER_NAME} -o jsonpath='{.status.pluginRegistryURL}' -n ${CHE_NAMESPACE}
+=======
+oc get checluster ${CHECLUSTER_NAME} -o jsonpath='{.status.pluginRegistryURL}' -n ${CHE_NAMESPACE}
+>>>>>>> Chapter 1 fixes
 ----
 ifeval::["{project-context}" == "che"]
 ** For a Helm installation:
 +
 ----
+<<<<<<< HEAD
 $ oc get route che-plugin-registry -n ${CHE_NAMESPACE} -o jsonpath='{.spec.host}'
 ----
 endif::[]
 +
 Note that the obtained URL is without the `http` or `https` prefix.
+=======
+oc get route che-plugin-registry -n ${CHE_NAMESPACE} -o jsonpath='{.spec.host}'
+----
+endif::[]
++
+Note that the obtained URL is without `http` or `https` prefix.
+>>>>>>> Chapter 1 fixes
 
 . Update the URLs in the `meta.yaml` file, so that they point to the VS Code extension binaries that are saved in the registry container:
 +
