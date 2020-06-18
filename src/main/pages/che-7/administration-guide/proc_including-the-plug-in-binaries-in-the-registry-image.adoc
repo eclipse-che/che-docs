@@ -49,17 +49,17 @@ $ curl -sSL -o ./che-plugin-registry/v3/plugins/$\{ORG}/$\{NAME}/$\{VERSION}/$\{
 ** For an Operator installation:
 +
 ----
-oc get checluster ${CHECLUSTER_NAME} -o jsonpath='{.status.pluginRegistryURL}' -n ${CHE_NAMESPACE}
+$ oc get checluster ${CHECLUSTER_NAME} -o jsonpath='{.status.pluginRegistryURL}' -n ${CHE_NAMESPACE}
 ----
 ifeval::["{project-context}" == "che"]
 ** For a Helm installation:
 +
 ----
-oc get route che-plugin-registry -n ${CHE_NAMESPACE} -o jsonpath='{.spec.host}'
+$ oc get route che-plugin-registry -n ${CHE_NAMESPACE} -o jsonpath='{.spec.host}'
 ----
 endif::[]
 +
-Note that the obtained URL is without `http` or `https` prefix.
+Note that the obtained URL is without the `http` or `https` prefix.
 
 . Update the URLs in the `meta.yaml` file, so that they point to the VS Code extension binaries that are saved in the registry container:
 +
