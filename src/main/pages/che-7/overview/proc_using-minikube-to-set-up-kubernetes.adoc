@@ -5,12 +5,11 @@
 [id="using-minikube-to-set-up-kubernetes_{context}"]
 = Using Minikube to set up Kubernetes
 
-This section describes how to use Minikube to set up Kubernetes.
+This section describes how to use Minikube to set up a local single-node Kubernetes cluster.
 
 .Prerequisites
 
 * An installation of `kubectl`. See link:https://kubernetes.io/docs/tasks/tools/install-kubectl/[Installing and Setting Up kubectl].
-
 * An installation of Minikube with Kubernetes version `1.9` or higher. See link:https://kubernetes.io/docs/tasks/tools/install-minikube/[Installing Minikube].
 
 .Procedure
@@ -25,17 +24,20 @@ $ minikube start --memory=4096
 
 This section describes how to properly configure an LXC container to set up Minikube when the hypervisor uses ZFS, Btrfs, or LVM to provision the containers storage.
 
-[discrete]
-=== Background
+[NOTE]
+====
+.Background
+
 The `{prod-cli}` command-line tool requires the Minikube Ingress plug-in to be enabled in Minikube. At the same time, the Minikube Ingress plug-in requires the Docker daemon to be running with the overlay filesystem driver.
 
-[discrete]
-=== Problem
+.Problem
+
 According to link:https://docs.docker.com/storage/storagedriver/select-storage-driver/[Docker storage drivers], the Docker overlay2 driver is only supported with the Ext4 and XFS file systems (with `ftype=1`).
 
-[discrete]
-=== Solution
-The solution is to create a virtual block device inside a volume, which in the case of BTRFS is impossible and will require to use a file as the virtual block device.
+.Solution
+
+create a virtual block device inside a volume, which in the case of Btrfs is impossible and requires to use a file as the virtual block device.
+====
 
 .Procedure
 
@@ -86,7 +88,7 @@ Check the filesystem inside the container using the `df` command:
 $ df -T /var/lib/docker
 ----
 
-. Use the following LXC configuration profile in the LXC container to allow it running Minikube:
+. Use the following LXC configuration profile in the LXC container to allow it to run Minikube:
 +
 ----
 config:

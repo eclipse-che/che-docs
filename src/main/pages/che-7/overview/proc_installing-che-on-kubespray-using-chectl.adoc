@@ -5,39 +5,36 @@
 [id="installing-{prod-id-short}-on-kubespray-using-{prod-cli}_{context}"]
 = Installing che on Kubespray using {prod-cli}
 
+This section describes how to install {prod-short} on Kubernetes provisioned by Kubespray.
+
 .Prerequisites
 
-* A running Kubernetes cluster set up with Kubespray on bare metal. See xref:using-kubespray-to-set-up-kubernetes_{context}[].
-* A load balancer is running on your cluster. See link:{site-baseurl}che-7/installing-load-balancer-on-a-bare-metal-cluster[this article].
-* A storage is defined with a provisioner. See link:{site-baseurl}che-7/installing-storage-on-a-bare-metal-cluster[this article].
-* `{prod-cli}` management tool is installed. See link:{site-baseurl}che-7/installing-chectl[this article].
+* A running Kubernetes cluster deployed using Kubespray on bare metal. See xref:using-kubespray-to-set-up-kubernetes_{context}[].
+* A load balancer is running on your cluster. See xref:configuring-the-metallb-load-balancer-on-kubernetes_{context}[]
+* A storage is defined with a provisioner. See xref:installing-storage-for-kubernetes_{context}[].
+* The `{prod-cli}` management tool is installed. See link:{site-baseurl}che-7/using-the-chectl-management-tool/[Installing the `{prod-cli}` management tool].
 
 .Procedure
 
-* Deploy an ingress controller
-+
-We will use nginx for that, get the __cloud__ deployment since you have configured a load balancer!
+. Deploy an Ingress controller (using Nginx, the `cloud` deployment because a load balancer is used):
 +
 ----
 $ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud/deploy.yaml
 ----
 
-* Get the IP attributed by the load balancer
+. Get the IP attributed by the load balancer:
 +
 ----
 $ kubectl get svc -n ingress-nginx
 ----
 +
-It corresponds to the `EXTERNAL-IP` of the `ingress-nginx-controller` service. We will refer it as <ip-from-load-balancer>.
+It corresponds to the `EXTERNAL-IP` of the `ingress-nginx-controller` service. Use it as `_<ip-from-load-balancer>_` in the following step.
 
-* Run the following command:
+* Deploy {prod-short}:
 +
-[subs="+attributes"]
+[subs="+attributes,quotes"]
 ----
-$ {prod-cli} server:start --platform k8s --domain <ip-from-load-balancer>.nip.io --self-signed-cert
+$ {prod-cli} server:start --platform k8s --domain _<ip-from-load-balancer>_.nip.io --self-signed-cert
 ----
 +
-[TIP]
-====
-Unless you provide a certificate, don't forget the __self-signed-cert__ flag
-====
+NOTE: Unless providing a certificate, use the `--self-signed-cert` flag.
