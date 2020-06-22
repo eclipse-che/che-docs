@@ -1,0 +1,64 @@
+// Module included in the following assemblies:
+//
+// using-maven-artifact-repositories
+
+[id="proc_defining-maven-settings-xml-file-across-workspaces_{context}"]
+= Defining Maven `settings.xml` file across workspaces
+
+To use your own `settings.xml` file across all your workspaces, create a Secret object (with a name of your choice) in the same namespace as the workspace. Put the contents of the required `settings.xml` in the data section of the Secret (possibly along with other files that should reside in the same directory). Labelling and annotating this Secret according to link:{site-baseurl}che-7/mounting-a-secret-as-a-file-or-an-environment-variable-into-a-workspace-container/#mounting-a-secret-as-a-file-into-a-workspace-container_mounting-a-secret-as-a-file-or-an-environment-variable-into-a-workspace-container[Mounting a secret as a file or an environment variable into a workspace container] ensures that the contents of the Secret is mounted into the workspace Pod. Note that you need to restart any previously running workspaces for them to use this Secret.
+
+.Prerequisites
+
+This is required to set your private credentials to a Maven repository (see Maven documentation link:https://maven.apache.org/settings.html#servers[Settings.xml#Servers]).
+
+To mount this `settings.xml`:
+
+[source,xml]
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                              https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <servers>
+    <server>
+      <id>repository-id</id>
+      <username>username</username>
+      <password>password123</password>
+    </server>
+  </servers>
+</settings>
+
+.Procedure
+
+. Convert `settings.xml` to base64:
++
+----
+$ cat settings.xml | base64
+----
+
+. Copy the output to a new file, `secret.yaml`, which also defines needed annotations and labels:
++
+[source,yaml]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: maven-settings-secret
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspace-secret
+  annotations:
+    che.eclipse.org/target-container: maven
+    che.eclipse.org/mount-path: /home/user/.m2
+    che.eclipse.org/mount-as: file
+type: Opaque
+data:
+  settings.xml: PHNldHRpbmdzIHhtbG5zPSJodHRwOi8vbWF2ZW4uYXBhY2hlLm9yZy9TRVRUSU5HUy8xLjAuMCIKICAgICAgICAgIHhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiCiAgICAgICAgICB4c2k6c2NoZW1hTG9jYXRpb249Imh0dHA6Ly9tYXZlbi5hcGFjaGUub3JnL1NFVFRJTkdTLzEuMC4wCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGh0dHBzOi8vbWF2ZW4uYXBhY2hlLm9yZy94c2Qvc2V0dGluZ3MtMS4wLjAueHNkIj4KICA8c2VydmVycz4KICAgIDxzZXJ2ZXI+CiAgICAgIDxpZD5yZXBvc2l0b3J5LWlkPC9pZD4KICAgICAgPHVzZXJuYW1lPnVzZXJuYW1lPC91c2VybmFtZT4KICAgICAgPHBhc3N3b3JkPnBhc3N3b3JkMTIzPC9wYXNzd29yZD4KICAgIDwvc2VydmVyPgogIDwvc2VydmVycz4KPC9zZXR0aW5ncz4K
+----
+
+. Create this secret in your cluster:
++
+----
+$ kubectl apply -f secret.yaml
+----
+
+. Start a new workspace. You will see `/home/user/.m2/settings.xml` with your original content in the `maven` container.
