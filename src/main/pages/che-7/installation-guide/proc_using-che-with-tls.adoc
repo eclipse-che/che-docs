@@ -5,9 +5,9 @@
 [id="using-{prod-id-short}-with-tls_{context}"]
 = Using {prod-short} with TLS
 
-Self-signed certificates are certificates that are not signed by a certificate authority (CA). Self-signed certificates do not provide all of the security properties that certificates signed by a CA aim to provide. For example, when a website owner uses a self-signed certificate to provide HTTPS services, users who visit that website will see a warning in their browser.
+Self-signed certificates are certificates that are not signed by a commonly trusted certificate authority (CA), but instead signed by locally created CA. Self-signed certificates are not trusted by default. For example, when a website owner uses a self-signed certificate to provide HTTPS services, users who visit that website will see a warning in their browser.
 
-After installing {prod-short} on {ocp} with TLS support and a self-signed certificate, a user has to add a self-signed TLS certificate to the browser for each route exposed in {prod-short}. If they do not, the error message: *Authorization token is missing. Click here to reload page* will block the login process.
+After installing {prod-short} on {ocp} with TLS support and a self-signed certificate, a user has to add public part of self-signed CA certificate into the browser. Also it is possible to add an exception for each route exposed in {prod-short}, but practically this could be used only in single host mode. If a TLS certificate isn't trusted, the error message: *Authorization token is missing. Click here to reload page* will block the login process.
 
 This section describes how to import a root certificate authority into the browser to use {prod-short} with self-signed TLS certificates.
 
@@ -55,7 +55,7 @@ image::contributor/macOS-adding-certificate.png[]
 == Examples
 
 .Google Chrome
-. Go to link:chrome://settings/certificates[Google Chrome Settings], then to the *Authorities* tab 
+. Go to link:chrome://settings/certificates[Google Chrome Settings], then to the *Authorities* tab
 . Click *Import* and find the generated `rootCA.crt` or `ca.crt` file.
 +
 image::contributor/che-tls-chrome-import_1.png[link="{imagesdir}/contributor/che-tls-chrome-import_1.png"]
