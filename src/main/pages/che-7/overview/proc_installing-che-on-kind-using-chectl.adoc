@@ -9,13 +9,12 @@ This section describes how to install {prod-short} on https://github.com/kuberne
 
 .Prerequisites
 
-* `{prod-cli}` management tool is installed. See link:{site-baseurl}che-7/installing-the-{prod-cli}-management-tool/[Installing the `{prod-cli}` management tool].
-
-* A running kind cluster. See link:https://kind.sigs.k8s.io/#installation-and-usage[kind installation and usage] documentation.
+* The `{prod-cli}` management tool is installed. See link:{site-baseurl}che-7/using-the-chectl-management-tool/[Installing the `{prod-cli}` management tool].
+* A running kind cluster. See link:https://kind.sigs.k8s.io/#installation-and-usage[kind installation and usage documentation].
 
 .Procedure
 
-For Eclipse Che installation, Kind cluster should have ingress backend and persitent volumes storage backend. If these requirements are met, one may go directly to step `8`.
+For {prod-short} installation, kind cluster should have an Ingress backend and a persitent volumes storage backend. If these requirements are met, go directly to xref:run-{prod-cli}-on-kind[deploying {prod-short}].
 
 Following instruction is a way of configuring Kind cluster to have all needed for Eclipse Che components:
 
@@ -124,6 +123,7 @@ NAME            TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)           
 ingress-nginx   LoadBalancer   10.107.194.26   172.17.250.1   80:32033/TCP,443:30428/TCP   19h
 ----
 
+[id="run-{prod-cli}-on-kind"]
 . Run `{prod-cli}`, using the external IP of the `ingress-nginx` Service as an https://nip.io[nip.io] URL:
 +
 [subs="+quotes,+attributes"]
@@ -133,5 +133,5 @@ $ {prod-cli} server:start --installer operator --platform k8s --domain 172.17.25
 +
 [NOTE]
 ====
-In some cases, after all the steps above, it is still not possible to reach Eclipse Che from host machine. If you encounter such problem please refer to Kind cluster docs or forums on how to make an endpoint available outside Kind cluster for your system and/or network configuration.
+In some cases, after all the steps above, it is still not possible to reach {prod-short} from the host machine. If you encounter such problem, refer to kind cluster documentation or forums on how to make an endpoint available outside the kind cluster for your system and network configuration.
 ====

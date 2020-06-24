@@ -1,0 +1,117 @@
+[id="installing-storage-for-kubernetes_{context}"]
+= Installing storage for Kubernetes
+
+This section describes how to enable persistent storage for Kubernetes using NFS.
+
+.Procedure
+
+. Install the NFS server on a machine on the same network as your cluster nodes:
++
+----
+# apt-get install -y nfs-kernel-server
+----
+
+. Create the export directory:
++
+----
+# mkdir -p /mnt/my-nfs
+----
++
+Change its permissions:
++
+----
+# chown nobody:nogroup /mnt/my-nfs
+# chmod 777 /mnt/my-nfs
+----
+
+. Start the NFS export:
++
+[subs="+quotes"]
+----
+# echo "__<mount-path>__ __<subnet>__(rw,sync,no_subtree_check)" | tee /etc/exports
+# exportfs -a
+# systemctl restart nfs-kernel-server
+----
++
+NOTE: Replace `_<subnet>_` and `_<mount-path>_` with your `nfs` settings.
+
+. Define the `StorageClass` settings and the provisioner (using the link:https://github.com/kubernetes-incubator/external-storage[external-storage] template):
++
+----
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes-incubator/external-storage/master/nfs-client/deploy/rbac.yaml
+----
+
+. Set `StorageClass`:
++
+----
+$ cat << EOF | kubectl apply -f -
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: managed-nfs-storage
+  annotations: 
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: nfs-provisioner
+parameters:
+  archiveOnDelete: "false"
+EOF
+----
++
+Declare `StorageClass` as the default one to be automatically selected by PVCs.
+
+. Set the provisioner:
++
+[subs="+quotes"]
+----
+$ cat << EOF | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-client-provisioner
+  labels:
+    app: nfs-client-provisioner
+  # replace with namespace where provisioner is deployed
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nfs-client-provisioner
+  template:
+    metadata:
+      labels:
+        app: nfs-client-provisioner
+    spec:
+      serviceAccountName: nfs-client-provisioner
+      containers:
+        - name: nfs-client-provisioner
+          image: quay.io/external_storage/nfs-client-provisioner:latest
+          volumeMounts:
+            - name: nfs-client-root
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              value: nfs-provisioner
+            - name: NFS_SERVER
+              value: _<nfs-server-ip>_
+            - name: NFS_PATH
+              value: _<mount-path>_
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            server: _<nfs-server-ip>_
+            path: _<mount-path>_
+EOF
+----
++
+NOTE: Replace `_<subnet>_` and `_<mount-path>_` with your `nfs` settings.
+
+. Verify the configuration:
++
+----
+$ kubectl get deployments.apps,pods,sc -n default
+----
++
+You should see the `Deployment` of the provisioner, the corresponding `Pod` and also the `StorageClass` as the default one.
