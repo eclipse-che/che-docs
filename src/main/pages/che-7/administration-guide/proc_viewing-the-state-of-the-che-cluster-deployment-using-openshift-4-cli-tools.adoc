@@ -1,3 +1,13 @@
+---
+title: Viewing the Che Operator events on OpenShift
+keywords:
+tags: []
+sidebar: che_7_docs
+permalink: che-7/viewing-operator-events/
+folder: che-7/administration-guide
+summary:
+---
+
 // Module included in the following assemblies:
 //
 // installing-{prod-id-short}-on-openshift-4-from-operatorhub
@@ -9,7 +19,9 @@ This section describes how to view the state of the {prod-short} cluster deploym
 
 .Prerequisites
 
-* An installation of an {prod} cluster. See xref:installing-{prod-id-short}-using-the-{prod-id-short}-operator-in-openshift-4-web-console_{context}[].
+* An instance of {prod} running on OpenShift.
+* An installation of the OpenShift command-line tool, `oc`.
+
 
 .Procedure
 
@@ -28,6 +40,8 @@ $ oc get pods
 
 . Check that the status of all the Pods is `Running`.
 +
+.Pods with status `Running`
+====
 [subs="+attributes",options="nowrap",role=white-space-pre]
 ----
 NAME                            READY     STATUS    RESTARTS   AGE
@@ -36,6 +50,7 @@ NAME                            READY     STATUS    RESTARTS   AGE
 keycloak-74fbfb9654-g9vp5       1/1       Running   0          4m32s
 postgres-5d579c6847-w6wx5       1/1       Running   0          5m14s
 ----
+====
 
 . To see the state of the {prod-short} cluster deployment, run:
 +
@@ -44,9 +59,10 @@ postgres-5d579c6847-w6wx5       1/1       Running   0          5m14s
 $ oc logs --tail=10 -f `(oc get pods -o name | grep operator)`
 ----
 +
-Example output of the command:
-+
+.Logs of the Operator:
+====
 [options="nowrap",role="white-space-pre",subs="+quotes,+attributes"]
 ----
 include::examples/{project-context}-cluster-deployment-openshift-logs.adoc[]
 ----
+====
