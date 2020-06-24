@@ -1,39 +1,45 @@
+apiVersion: 1.0.0
 metadata:
-  name: che-docs-in-che
+  generateName: che-docs-
+
+projects:
+  - name: che-docs
+    source:
+      location: 'https://github.com/eclipse/che-docs.git'
+      type: github
+      branch: master
+
 components:
   - mountSources: true
     endpoints:
-      - name: che-docs-web-server
-        attributes:
-          public: 'true'
-          protocol: http
-          path: /
-        port: 4000
       - name: che-docs-livereload-server
-        attributes:
-          public: 'true'
-          protocol: http
-          path: /
         port: 35729
+      - name: che-docs-web-server
+        port: 4000
+        attributes:
+          path: /che-7/introduction-to-eclipse-che/
+    args: ['sleep', 'infinity']
     memoryLimit: 1Gi
     type: dockerimage
     image: 'quay.io/eclipse/che-docs:latest'
     alias: che-docs-dev
   - id: joaompinto/vscode-asciidoctor/latest
     type: chePlugin
-apiVersion: 1.0.0
+  - id: ms-vscode/vscode-github-pullrequest/latest
+    type: chePlugin
+
 commands:
   - name: build che-docs
     actions:
       - workdir: /projects/che-docs/src/main
         type: exec
-        command: 'mkdir -p _site && jekyll build --config _config.yml,_config-war.yml'
+        command: 'mkdir -p _site && jekyll clean && jekyll build --config _config.yml,_config-war.yml'
         component: che-docs-dev
   - name: serve che-docs
     actions:
       - workdir: /projects/che-docs/src/main
         type: exec
-        command: 'jekyll serve --incremental --livereload -H 0.0.0.0'
+        command: 'jekyll clean && jekyll serve --incremental --livereload -H 0.0.0.0'
         component: che-docs-dev
   - name: killall ruby
     actions:

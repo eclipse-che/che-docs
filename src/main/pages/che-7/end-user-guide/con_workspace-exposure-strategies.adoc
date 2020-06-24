@@ -10,8 +10,10 @@ Specific components of workspaces need to be made accessible outside of the Kube
 {prod-short} supports three ways to make workspace components available to the users, also referred to as _strategies_:
 
 * multi-host strategy
+ifeval::["{project-context}" == "che"]
 * single-host strategy
 * default-host strategy
+endif::[]
 
 The strategies define whether new subdomains are created for components of the workspace, and what hosts these components are available on.
 
@@ -23,6 +25,7 @@ This strategy is the easiest to understand from the perspective of component dep
 
 On a {prod-short} server secured using the Transport Layer Security (TLS) protocol, creating new subdomains for each component of each workspace requires a wildcard certificate to be available for all such subdomains for the {prod-short} deployment to be practical.
 
+ifeval::["{project-context}" == "che"]
 == Single-host strategy
 
 This strategy is available on Kubernetes, but not on OpenShift. When it is used, all workspaces are deployed to sub-paths of the main {prod-short} server domain.
@@ -35,6 +38,8 @@ For example, when the user accesses the hypothetical `{prod-url}/component-prefi
 
 Therefore, only applications that use relative URLs in their UI work with the single-host workspace exposure strategy.
 
+
 == Default-host strategy
 
 This strategy exposes the components to the outside world on the sub-paths of the default host of the cluster. It is similar to the single-host strategy. All the limitations and advantages of the single-host strategy applying to this strategy as well.
+endif::[]
