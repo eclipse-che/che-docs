@@ -1,6 +1,12 @@
-// Module included in the following assemblies:
-//
-// installing-{prod-id-short}-on-openshift-4-from-operatorhub
+---
+title: Installing Che on OpenShift 4 from OperatorHub
+keywords:
+tags: []
+sidebar: che_7_docs
+permalink: che-7/installing-che-on-openshift-4-using-operatorhub/
+folder: che-7/overview
+summary:
+---
 
 [id="installing-{prod-id-short}-using-the-{prod-id-short}-operator-in-openshift-4-web-console_{context}"]
 = Installing {prod-short} using the {prod-short} Operator in OpenShift 4 web console
@@ -8,29 +14,113 @@
 This section describes how to install {prod-short} using the {prod-short} Operator in OpenShift 4 web console.
 
 
+Operators are a method of packaging, deploying, and managing a Kubernetes application which also provide the following:
+
+* Repeatability of installation and upgrade.
+
+* Constant health checks of every system component.
+
+* Over-the-air (OTA) updates for OpenShift components and independent software vendor (ISV) content.
+
+* A place to encapsulate knowledge from field engineers and spread it to all users.
+
+On OpenShift, {prod} can be installed using the OperatorHub Catalog present in the OpenShift web console.
+
+[NOTE]
+====
+It is possible to use the `{prod-cli}` utility script for deploying {prod-short} on {ocp} and {osd} versions {oc4-ver}. This method is considered unofficial and serves as a backup installation method for situations where the installation method using OperatorHub is not available.
+
+For information about how to use the `{prod-cli}` utility script for deploying {prod-short} on OpenShift, see the
+{link-installing-on-openShift-3-using-the-operator} section.
+====
+
+
 .Prerequisites
 
 * An administrator account on a running instance of OpenShift 4.
-
 * At least one OAuth user provisioned on this instance of OpenShift 4.
-
 * The {prod-short} Operator is installed on this instance of OpenShift 4. See xref:installing-the-{prod-id-short}-operator-in-openshift-4-web-console_{context}[].
 
 .Procedure
 
 . Open the OpenShift web console.
 
-. Navigate to the *Operators* -> *Installed Operators* section.
+. To create the `{prod}` project, in the left panel, navigate to the *Home* -> *Projects* section.
 
-. Click *{prod}* in the list of installed operators.
+. Click the btn:[Create Project] button.
 
-. Click the *Create Instance* link in *Provided APIs* section.
-
-. The *Create CheCluster* page contains the configuration of the overall {prod-short} installation to create. It is a YAML fragment describing the `CheCluster` Custom Resource to create. For an installation using the default configuration, keep the default values.
-To modify the configuration, see link:{site-baseurl}che-7/configuring-the-che-installation[Configuring the {prod-short} installation].
-
-. Click the btn:[Create] button in the lower left corner of the window.
-
-. The `eclipse-che` cluster is created.
+. In the *Create Project* pop-up window, enter the project details and validate.
 +
-image::installation/eclipse-che-cluster-create-che-cluster.png[link="{imagesdir}/installation/eclipse-che-cluster-create-che-cluster.png"]
+* *Name*: `{prod-short}`.
+* *Display Name*: `{prod}`.
+* *Description*: `{prod}`.
+
+. To install the *{prod}* Operator, in the left panel, navigate to the *Operators* -> *OperatorHub* section.
+
+. In the *Filter by keyword* field, type `{prod}`.
+
+. Click the *{prod}* tile.
+
+. In the *{prod}* pop-up window, click the btn:[Install] button .
+
+. On the *Install Operator* screen, choose following options and validate:
++
+* *Installation mode*: *A specific namespace on the cluster*.
+* *Installed Namespace*: `{prod-short}`.
+
+. To create an instance of the *{prod}* Operator, in the left panel, navigate to the *Operators* -> *Installed Operators* section.
+
+. In the *Installed operators* screen, click the *{prod}* name.
+
+. In the *Operator Details* screen, in the *Details* tab, inside of the *Provided APIs* section, click the *Create Instance* link.
+
+. The *Create CheCluster* page contains the configuration of the overall {prod-short} instance to create. It is defined as the `CheCluster` Custom Resource. For an installation using the default configuration, keep the default values.
+To modify the configuration, see link:{site-baseurl}che-7/configuring-the-che-installation[Configuring the {prod-short} installation]. It is necessary to modify the configuration to use self-signed certificates. See link:{site-baseurl}che-7/installing-che-in-tls-mode-with-self-signed-certificates/[Installing [prod-short} in TLS mode with self-signed certificates].
+
+. To create the *{prod-checluster}* cluster, click the btn:[Create] button in the lower left corner of the window.
+
+. On the *Operator Details* screen, in the *{prod} Cluster* tab, click on the *{prod-checluster}* link.
+
+. To navigate to the *{prod-checluster}* instance, click the link under *{prod} URL*.
+
+.Validation steps
+
+. To validate the installation of the *{prod}* Operator, in the left panel, navigate to the *Operators* -> *Installed Operators* section.
+
+. In the *Installed operators* screen, click on the *{prod}* name.
+
+. Navigate to the *Details* tab.
+
+. In the *CLusterServiceVersion Details* section at the bottom of the page, wait for these messages:
++
++
+* *Status*: `Succeeded`.
+* *Status Reason*: `install strategy completed with no errors`.
+
+. Navigate to the *Events* tab.
+
+. Wait for this message: `install strategy completed with no errors`.
+
+. To validate the installation of the *{prod}* instance, navigate to the *{prod2} Cluster* tab.
+
+. The *CheClusters* screen displays the list of *{prod}* instances and their status.
+
+. Click *{prod-checluster}* `CheCluster` in the table.
+
+. Navigate to the *Details* tab.
+
+. Watch the content of following fields:
++
+* *Message*: the field contains error messages, if any. The expected content is `None`.
+* *Eclipse Che URL*: displays the URL of the *{prod}* instance, once the deployment is successful. An empty field means the deployment has not succeeded.
+
+. Navigate to the *Resources* tab.
+
+. The screen displays the list of the resources assigned to the {prod-short} deployment.
+
+. To see more details about the state of a resource, click its name and inspect the content of the available tabs.
+
+.Additional resources
+
+* link:{site-baseurl}che-7/navigating-{prod-id-short}-using-the-dashboard[Navigating {prod} using the Dashboard].
+* link:{site-baseurl}che-7/viewing-operator-events[Viewing {prod} Operator events].
