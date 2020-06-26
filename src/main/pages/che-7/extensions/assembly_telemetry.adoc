@@ -35,7 +35,7 @@ If the {prod-short} workspace has a telemetry back-end container running, and it
 
 image::telemetry/telemetry_diagram.png[]
 
-This section shows how to create an `AnalyticsManager` class that extends link:https://github.com/che-incubator/che-workspace-telemetry-client/blob/master/back-end-base/src/main/java/org/eclipse/che/incubator/workspace/telemetry/base/AbstractAnalyticsManager.java[`AbstractAnalyticsManager`] and implements the following methods:
+This section shows how to create an `AnalyticsManager` class that extends link:https://github.com/che-incubator/che-workspace-telemetry-client/blob/master/backend-base/src/main/java/org/eclipse/che/incubator/workspace/telemetry/base/AbstractAnalyticsManager.java[`AbstractAnalyticsManager`] and implements the following methods:
 
 * `isEnabled()` - determines whether or not the telemetry back-end is functioning correctly. This can mean always returning `true`, or have more complex checks, for example, returning `false` when a connection property is missing.
 * `destroy()` - cleaning method that is run before shutting down the telemetry back-end. This method sends the `WORKSPACE_STOPPED` event.
@@ -170,7 +170,7 @@ For the purposes of the example, this method just returns `true` whenever it is 
 include::examples/telemetry/isEnabled.java[]
 ----
 
-It is possible to put more a complex login in `isEnabled()`. For example, the service should not be considered operational in certain cases. The link:https://github.com/redhat-developer/che-workspace-telemetry-woopra-back-end/blob/master/src/main/java/com/redhat/che/workspace/services/telemetry/woopra/AnalyticsManager.java#L174[hosted {prod-short} woopra back-end] checks that a configuration property exists before determining if the back-end is enabled.
+It is possible to put more a complex login in `isEnabled()`. For example, the service should not be considered operational in certain cases. The link:https://github.com/redhat-developer/che-workspace-telemetry-woopra-backend/blob/master/src/main/java/com/redhat/che/workspace/services/telemetry/woopra/AnalyticsManager.java[hosted {prod-short} woopra back-end] checks that a configuration property exists before determining if the back-end is enabled.
 
 == Implementing `onEvent()`
 
