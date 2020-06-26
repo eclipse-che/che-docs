@@ -2,35 +2,12 @@
 //
 // configuring-workspace-exposure-strategies
 
-[id="configuring-workspace-exposure-strategies-using-a-helm-chart-and-a-operator_{context}"]
-= Configuring workspace exposure strategies using a Helm chart and an Operator
-The following section describes how to configure workspace exposure strategies of a {prod-short} server using the Helm chart and the Operator.
-
-
-== Using a Helm chart
-
-A link:https://helm.sh/[Helm Chart] is a Kubernetes extension for defining, installing, and upgrading Kubernetes applications.
-
-When deploying {prod-short} using the Helm chart, configure the workspace exposure strategy using the `global.serverStrategy` property. To do so, add the following option to the `helm install` or `helm upgrade` command:
-
-[subs="+quotes"]
-----
-$ helm install --set global.serverStrategy=__<single-host>__
-----
-
-or:
-
-[subs="+quotes"]
-----
-$ helm upgrade --set global.serverStrategy=__<single-host>__
-----
-
-Depending on the strategy used, replace the `_<single-host>_` option in the above example with `multi-host` or `default-host`.
-
-
-== Using an Operator
+[id="configuring-workspace-exposure-strategies-using-an-operator_{context}"]
+= Configuring workspace exposure strategies using an Operator
 
 link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators] are software extensions to Kubernetes that use link:https://docs.openshift.com/container-platform/latest/operators/crds/crd-managing-resources-from-crds.html[custom resources] to manage applications and their components.
+
+.Procedure
 
 When deploying {prod-short} using the Operator, configure the intended strategy by modifying the `spec.k8s.ingressStrategy` property of the CheCluster custom resource object YAML file.
 To activate changes done to CheCluster YAML file, do one of the following:
