@@ -1,0 +1,180 @@
+// Module included in the following assemblies:
+//
+// converting-a-{prod-id-short}-{prod-prev-ver-major}-workspace-to-a-devfile
+
+[id="comparing-{prod-id-short}-{prod-prev-ver-major}-workspace-configuration-to-a-devfile_{context}"]
+= Comparing {prod-short} {prod-prev-ver-major} workspace configuration to a devfile
+
+Below, there is a comparison of a *{prod-short} {prod-prev-ver-major} workspace configuration* and a *{prod-short} {prod-ver-major} devfile*. Both are *Java Vert.x* stacks with a default project and default settings:
+
+.{prod-short} {prod-prev-ver-major} configuration file
+[source,json]
+----
+{
+  "defaultEnv": "default",
+  "environments": {
+    "default": {
+      "machines": {
+        "dev-machine": {
+          "attributes": {
+            "memoryLimitBytes": "2147483648"
+          },
+          "servers": {
+            "8080/tcp": {
+              "attributes": {},
+              "port": "8080",
+              "protocol": "http"
+            }
+          },
+          "volumes": {},
+          "installers": [
+            "com.redhat.oc-login",
+            "com.redhat.bayesian.lsp",
+            "org.eclipse.che.ls.java",
+            "org.eclipse.che.ws-agent",
+            "org.eclipse.che.exec",
+            "org.eclipse.che.terminal"
+          ],
+          "env": {}
+        }
+      },
+      "recipe": {
+        "type": "dockerimage",
+        "content": "quay.io/openshiftio/che-vertx"
+      }
+    }
+  },
+  "projects": [
+    {
+      "links": [],
+      "name": "vertx-http-booster",
+      "attributes": {
+        "language": [
+          "java"
+        ]
+      },
+      "type": "maven",
+      "source": {
+        "location": "https://github.com/openshiftio-vertx-boosters/vertx-http-booster",
+        "type": "git",
+        "parameters": {}
+      },
+      "path": "/vertx-http-booster",
+      "description": "HTTP Vert.x Booster",
+      "problems": [],
+      "mixins": []
+    }
+  ],
+  "name": "wksp-jhwp",
+  "commands": [
+    {
+      "commandLine": "scl enable rh-maven33 'mvn compile vertx:debug -f ${current.project.path} -Dvertx.disableDnsResolver=true'",
+      "name": "debug",
+      "attributes": {
+        "goal": "Debug",
+        "previewUrl": "${server.8080/tcp}"
+      },
+      "type": "custom"
+    },
+    {
+      "commandLine": "scl enable rh-maven33 'mvn compile vertx:run -f ${current.project.path} -Dvertx.disableDnsResolver=true'",
+      "name": "run",
+      "attributes": {
+        "goal": "Run",
+        "previewUrl": "${server.8080/tcp}"
+      },
+      "type": "custom"
+    },
+    {
+      "commandLine": "scl enable rh-maven33 'mvn clean install -f ${current.project.path}'",
+      "name": "build",
+      "attributes": {
+        "goal": "Build",
+        "previewUrl": ""
+      },
+      "type": "mvn"
+    },
+    {
+      "commandLine": "mvn -Duser.home=${HOME} -f ${CHE_PROJECTS_ROOT}/vertx-http-booster clean package",
+      "name": "vertx-http-booster:build",
+      "attributes": {
+        "goal": "Build",
+        "previewUrl": ""
+      },
+      "type": "mvn"
+    },
+    {
+      "commandLine": "mvn -Duser.home=${HOME} -f ${CHE_PROJECTS_ROOT}/vertx-http-booster vertx:run",
+      "name": "vertx-http-booster:run",
+      "attributes": {
+        "goal": "Run",
+        "previewUrl": "${server.8080/tcp}"
+      },
+      "type": "mvn"
+    }
+  ],
+  "links": []
+}
+----
+
+.{prod-short} {prod-ver-major} devfile
+[source,yaml]
+----
+metadata:
+  name: testing-workspace
+projects:
+  - name: java-web-vertx
+    source:
+      location: 'https://github.com/che-samples/web-java-vertx'
+      type: git
+components:
+  - id: redhat/java/latest
+    type: chePlugin
+  - mountSources: true
+    endpoints:
+      - name: 8080/tcp
+        port: 8080
+    memoryLimit: 512Mi
+    type: dockerimage
+    volumes:
+      - name: m2
+        containerPath: /home/user/.m2
+    alias: maven
+    image: 'quay.io/eclipse/che-java8-maven:nightly'
+apiVersion: 1.0.0
+commands:
+  - name: maven build
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/java-web-vertx'
+        type: exec
+        command: 'mvn -Duser.home=${HOME} clean install'
+        component: maven
+  - name: run app
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/java-web-vertx'
+        type: exec
+        command: >
+          JDBC_URL=jdbc:h2:/tmp/db \
+
+          java -jar -Xdebug
+          -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 \
+
+          ./target/*fat.jar
+        component: maven
+  - name: Debug remote java application
+    actions:
+      - referenceContent: |
+          {
+          "version": "0.2.0",
+          "configurations": [
+            {
+              "type": "java",
+              "name": "Debug (Attach) - Remote",
+              "request": "attach",
+              "hostName": "localhost",
+              "port": 5005
+            }]
+          }
+        type: vscode-launch
+
+----
