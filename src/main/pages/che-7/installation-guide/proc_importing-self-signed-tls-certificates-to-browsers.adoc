@@ -1,0 +1,98 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-in-tls-mode-with-self-signed-certificates
+
+[id="importing-self-signed-tls-certificates-to-browsers_{context}"]
+= Importing self-signed TLS certificates to browsers
+
+This section describes how to import a root certificate authority into a web browser to use {prod-short} with self-signed TLS certificates.
+
+When a TLS certificate is not trusted, the error message *Authorization token is missing. Click here to reload page* blocks the login process. To prevent this, add the public part of the self-signed CA certificate into the browser after installing {prod-short}.
+
+
+== Getting the self-signed CA certificate from {prod-short} deployment
+
+When `{prod-cli}` is used to deploy {prod-short}, it exports a self-signed CA certificate into a `cheCA.crt` file to the current user home directory. To get the certificate, use one of the following two methods:
+
+* Exporty the certificate using the {prod-cli} command:
++
+[subs="+quotes,attributes"]
+----
+$ {prod-cli} cacert:export
+----
+
+* Read the `self-signed-certificate` secret from the {prod-short} namespace:
++
+[subs="+quotes,attributes"]
+----
+$ oc get secret self-signed-certificate -n {prod-namespace}
+----
+ifeval::["{project-context}" == "che"]
++
+When using Kubernetes, substitute `oc` in the above command with `kubectl`.
+endif::[]
+
+
+== Adding certificates to Google Chrome on Linux or Windows
+
+.Procedure
+
+. Navigate to URL where {prod-short} is deployed.
+. Save the certificate:
+.. Click the lock icon on the left of the address bar.
+.. Click *Certificates* and navigate to the *Details* tab.
+.. Select the certificate to use and export it:
++
+* On Linux, click the btn:[Export] button.
+* On Windows, click the btn:[Save to file] button.
+
+. Go to link:chrome://settings/certificates[Google Chrome Settings], then to the *Authorities* tab
+. In the left panel, select *Advanced* and continue to *Privacy and security*.
+. At the center of the screen, click *Manage certificates* and navigate to *Authorities* tab.
+. Click the btn:[Import] button and open the saved certificate file.
+. Select *Trust this certificate for identifying websites* and click the btn:[OK] button.
+. After adding the {prod-short} certificate to the browser, the address bar displays the closed lock icon next to the URL, indicating a secure connection.
+
+
+== Adding certificates to Google Chrome on macOS
+
+.Procedure
+
+. Navigate to URL where {prod-short} is deployed.
+. Save the certificate:
+.. Click the lock icon on the left of the address bar.
+.. Click *Certificates*.
+.. Select the certificate to use and drag and drop its displayed large icon to the desktop.
+. Double-click the exported certificate to import it into Google Chrome.
+
+
+== Adding certificates to Keychain Access for use with Safari on macOS
+
+.Procedure
+
+. Navigate to URL where {prod-short} is deployed.
+. Save the certificate:
+.. Click the lock icon on the right of the window title bar.
+.. Select the certificate to use and drag and drop its displayed large icon to the desktop.
+. Open the *Keychain Access* application.
+. Select the *System* keychain and drag and drop the saved certificate file to it.
+. Double-click the imported CA, then go to *Trust* and select *When using this certificate*: *Always Trust*.
+. Restart Safari for the added certificated to take effect.
+
+
+== Adding certificates to Firefox
+
+.Procedure
+
+. Navigate to URL where {prod-short} is deployed.
+. Save the certificate:
+.. Click the lock icon on the left of the address bar.
+.. Click the btn:[>] button next to the *Connection not secure* warning.
+.. Click the btn:[More information] button.
+.. Click the btn:[View Certificate] button on the *Security* tab.
+.. Click the *PEM (cert)* link and save the certificate.
+. Navigate to link:about:preferences[about:preferences], search for `certificates`, and click *View Certificates*.
+. Go to the *Authorities* tab, click the btn:[Import] button, and open the saved certificate file.
+. Check *Trust this CA to identify websites* and click btn:[OK].
+. Restart Firefox for the added certificated to take effect.
+. After adding the {prod-short} certificate to the browser, the address bar displays the closed lock icon next to the URL, indicating a secure connection.
