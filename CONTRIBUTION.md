@@ -62,13 +62,13 @@ This Code of Conduct is adapted from the [Contributor Covenant][homepage], versi
 
 ### Understanding Che Documentation ecosystem
 
-* Eclipse Che documentation follows the IBM Style Guide. If you do not have a paper copy of the styleguide, you can refer to [developerWorks editorial style guide](https://www.ibm.com/developerworks/library/styleguidelines/index.html) on the IBM website. While `developerWorks` is not longer supported, it still provides useful reference information. 
+* Eclipse Che documentation follows the _IBM Style Guide_. If you do not have a paper copy of the styleguide, see the [developerWorks editorial style guide](https://www.ibm.com/developerworks/library/styleguidelines/index.html) on the IBM website. While developerWorks is no longer maintained, it still provides useful reference information. 
 
 * To learn more about the tool validating the style, see the [`vale` documentation](https://errata-ai.gitbook.io/vale/).
 
-* Eclipse Che documentation uses AsciiDoc for markup. To learn more about Asciidoc syntax, see the [AsciiDoc Writer's Guide](https://asciidoctor.org/docs/asciidoc-writers-guide/).
+* Eclipse Che documentation uses AsciiDoc for markup. To learn more about AsciiDoc syntax, see the [AsciiDoc Writer's Guide](https://asciidoctor.org/docs/asciidoc-writers-guide/).
 
-* The Eclipse Che documentation project follows guidelines from the [Modular Documentation Initiative](https://redhat-documentation.github.io/modular-docs/). As Antora is using the term of `module` with a different acceptation, this project is refering to them as `topics`. To understand the nature of topics, see the [Appendix A: Modular Documentation Terms and Definitions](https://redhat-documentation.github.io/modular-docs/#modular-docs-terms-definitions).
+* The Eclipse Che documentation project follows guidelines from the [Modular Documentation Initiative](https://redhat-documentation.github.io/modular-docs/). As Antora is using the term of _module_ with a different acceptation, this project is refering to them as _topics_. To understand the nature of topics, see the [Appendix A: Modular Documentation Terms and Definitions](https://redhat-documentation.github.io/modular-docs/#modular-docs-terms-definitions).
 
 * Eclipse Che documentation uses Jekyll to build the documentation.
 
