@@ -16,30 +16,27 @@ summary:
 
 :context: installing-{prod-id-short}-in-tls-mode-with-self-signed-certificates
 
-WARNING: This guide is for development only. Do not use self-signed certificates in production.
+The following section describes the deployment and configuration of {prod-short} with self-signed certificates. Self-signed certificates are certificates that are not signed by a commonly trusted certificate authority (CA), but instead signed by a locally created CA. Self-signed certificates are not trusted by default. For example, when a website owner uses a self-signed certificate to provide HTTPS services, users who visit that website see a warning in their browser.
 
-The following section describes the deployment and configuration of {prod} for use in TLS mode with self-signed certificates. It consists of following steps:
+WARNING: Self-signed certificates are usually used in development and evaluation environments. Use in production environments is not recommended.
 
-. link:{site-baseurl}che-7/installing-che-in-tls-mode-with-self-signed-certificates/#generating-self-signed-certificates_installing-che-in-tls-mode-with-self-signed-certificates[Generate needed keys and certificates if needed]
+ifeval::["{project-context}" == "che"]
+{prod-short} can be deployed on:
 
-. Prepare target deployment environment (one of the following):
-+
-* link:{site-baseurl}che-7/installing-che-in-tls-mode-with-self-signed-certificates/#deploying-{prod-id-short}-with-self-signed-tls-on-kubernetes_installing-{prod-id-short}-in-tls-mode-with-self-signed-certificates[Minikube] (Kubernetes)
+ * Kubernetes-family infrastructures
+ * OpenShift-family infrastructures
+endif::[]
 
-* link:{site-baseurl}che-7/installing-{prod-id-short}-in-tls-mode-with-self-signed-certificates/#deploying-{prod-id-short}-with-self-signed-tls-on-openshift3-using-operator_installing-{prod-id-short}-in-tls-mode-with-self-signed-certificates[Minishift] (OpenShift 3)
+include::proc_generating-self-signed-tls-certificates.adoc[leveloffset=+1]
 
-* link:{site-baseurl}che-7/installing-che-in-tls-mode-with-self-signed-certificates/#deploying-{prod-id-short}-with-self-signed-tls-on-openshift4-using-operator_installing-{prod-id-short}-in-tls-mode-with-self-signed-certificates[CodeReady Containers] (OpenShift 4)
+ifeval::["{project-context}" == "che"]
+include::proc_deploying-che-with-self-signed-tls-certificates-on-kubernetes.adoc[leveloffset=+1]
+endif::[]
 
-. link:{site-baseurl}che-7/installing-che-in-tls-mode-with-self-signed-certificates/#using-{prod-id-short}-with-tls_installing-{prod-id-short}-in-tls-mode-with-self-signed-certificates[Configure the browser]
+include::proc_deploying-che-with-self-signed-tls-certificates-on-openhift-4.adoc[leveloffset=+1]
 
-include::proc_deploying-che-with-self-signed-tls-on-openhift4-using-operator.adoc[leveloffset=+1]
+include::proc_deploying-che-with-self-signed-tls-certificates-on-openhift-3.adoc[leveloffset=+1]
 
-include::proc_deploying-che-with-self-signed-tls-on-kubernetes.adoc[leveloffset=+1]
-
-include::proc_deploying-che-with-self-signed-tls-on-openhift3-using-operator.adoc[leveloffset=+1]
-
-include::proc_generating-self-signed-certificates.adoc[leveloffset=+1]
-
-include::proc_using-che-with-tls.adoc[leveloffset=+1]
+include::proc_importing-self-signed-tls-certificates-to-browsers.adoc[leveloffset=+1]
 
 :context: {parent-context-of-installing-che-in-tls-mode-with-self-signed-certificates}

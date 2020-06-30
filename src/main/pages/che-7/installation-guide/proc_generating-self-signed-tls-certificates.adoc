@@ -1,8 +1,8 @@
 // Module included in the following assemblies:
 //
-// setup-{prod-id-short}-in-tls-mode
+// installing-{prod-id-short}-in-tls-mode-with-self-signed-certificates
 
-[id="generating-self-signed-certificates_{context}"]
+[id="generating-self-signed-tls-certificates_{context}"]
 = Generating self-signed TLS certificates
 
 This section describes how to prepare self-signed TLS certificates to use with {prod-short} on different platforms.
@@ -10,18 +10,20 @@ This section describes how to prepare self-signed TLS certificates to use with {
 
 .Prerequisites
 
-* The expected domain name where {prod-short} deployment is planned:
+* The expected domain name where the {prod-short} deployment is planned.
+ifeval::["{project-context}" == "che"]
 +
 .Expected (default) domain names
 [options="header"]
 |===
 | Platform | Default domain
-| Minishift | `$( minishift ip ).nip.io`
-| Minikube | `$( minikube ip ).nip.io`
+| Minishift | `$(minishift ip).nip.io`
+| Minikube | `$(minikube ip).nip.io`
 | CodeReady Containers | `apps-crc.testing`
 |===
+endif::[]
 
-* The location of the `openssl.cnf` file on the target machine:
+* The location of the `openssl.cnf` file on the target machine.
 +
 .Usual OpenSSL configuration file locations
 [options="header"]
@@ -35,30 +37,32 @@ This section describes how to prepare self-signed TLS certificates to use with {
 
 . Set the necessary environment variables:
 +
-[subs="+attributes,+quotes"]
+[subs="+attributes,quotes"]
 ----
 $ CA_CN="Local {prod} Signer"
 $ DOMAIN=*.__<expected.domain.com>__
 $ OPENSSL_CNF=__<path_to_openssl.cnf>__
 ----
+ifeval::["{project-context}" == "che"]
 +
-.Example with Minikube on Fedora 31
-[subs="+attributes,+quotes"]
+.Example with Minikube on Fedora
+[subs="+attributes,quotes"]
 ----
 $ CA_CN="Local {prod} Signer"
 $ DOMAIN=\*.$( minikube ip ).nip.io
 $ OPENSSL_CNF=/etc/pki/tls/openssl.cnf
 ----
 +
-.Example with crc on OSX
+.Example with CodeReady Containers on macOS
 [subs="+attributes,quotes"]
 ----
 $ export CA_CN="Local {prod} Signer"
 $ export DOMAIN=*.apps-crc.testing
 $ export OPENSSL_CNF=/System/Library/OpenSSL/openssl.cnf
 ----
+endif::[]
 
-. Generate the root CA key. Add the `-des3` parameter to use a passphrase:
+. Generate the root Certificate Authority (CA) key. Add the `-des3` parameter to use a passphrase:
 +
 [subs="+quotes"]
 ----
@@ -91,7 +95,7 @@ $ openssl genrsa -out domain.key 2048
 
 . Generate the certificate signing request for the domain:
 +
-[subs="+quotes"]
+[subs="+attributes,quotes"]
 ----
 $ openssl req -new -sha256 \
     -key domain.key \
@@ -117,5 +121,8 @@ $ openssl x509 \
     -CAcreateserial -out domain.crt
 ----
 
-This procedure allows to use `domain.crt` and `domain.key` for TLS Route and Ingress, and link:{site-baseurl}che-7/installing-che-in-tls-mode-with-self-signed-certificates/#using-che-with-tls_{context}[`ca.crt` for importing into browsers].
+This procedure allows to use `domain.crt` and `domain.key` for TLS Route and Ingress, and `ca.crt` for importing into browsers.
 
+.Additional resources
+
+* xref:importing-self-signed-tls-certificates-to-browsers_{context}[]
