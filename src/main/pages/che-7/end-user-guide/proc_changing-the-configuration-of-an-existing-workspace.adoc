@@ -1,0 +1,88 @@
+// Module included in the following assemblies:
+//
+// creating-a-workspace-from-code-sample
+
+[id="changing-the-configuration-of-an-existing-workspace_{context}"]
+= Changing the configuration of an existing workspace
+
+This section describes how to change the configuration of an existing workspace from the User Dashboard.
+
+.Prerequisites
+
+* A running instance of {prod}. To install an instance of {prod}, see link:{site-baseurl}che-7/che-quick-starts/[{prod-short} 'quick-starts'].
+
+* An existing workspace defined on this instance of {prod} link:{site-baseurl}che-7/creating-and-configuring-a-new-che-7-workspace/[Creating a workspace from user dashboard].
+
+.Procedure
+
+. Navigate to the {prod-short} Dashboard. See link:{site-baseurl}che-7/navigating-che-using-the-dashboard/[Navigating {prod-short} using the dashboard].
+
+. In the left navigation panel, go to  *Workspaces*.
+
+. Click the name of a workspace to navigate to the configuration overview page.
+
+. Click the *Overview* tab and execute following actions:
+
+** Change the *Workspace name*.
+
+** Toggle *Ephemeral mode*.
+
+** *Export* the workspace configuration to a file or private cloud.
+
+** *Delete* the workspace.
++
+image::workspaces/workspace-config-overview.png[Workspace configuration overview,link="{imagesdir}/workspaces/workspace-config-overview.png"]
+
+. In the *Projects* section, choose the projects to integrate in the workspace.
+
+.. Click the btn:[Add Project] button and do one of the following:
+
+... Enter the project Git repository URL to integrate in the workspace:
++
+image::workspaces/che-config-projects-add-git.png[Add project by URL to workspace,link="{imagesdir}/workspaces/che-config-projects-add-git.png"]
+
+... Connect your GitHub account and select projects to integrate:
++
+image::workspaces/che-config-projects-add-github.png[Add project from GitHub to workspace,link="{imagesdir}/workspaces/che-config-projects-add-github.png"]
+
+.. Click the btn:[Add] button.
+
+. In the *Plugins* section, choose the plug-ins to integrate in the workspace.
++
+[TIP]
+.Example
+====
+Start with a generic Java-based stack, then add support for Node.js or Python.
+====
+
+. In the *Editors* section, choose the editors to integrate in the workspace. The {prod-short} {prod-ver} editor is based on Che-Theia.
++
+[TIP]
+.Example: Switch to the {prod-short} {prod-prev-ver-major} editor
+====
+To switch to the {prod-short} {prod-prev-ver-major} editor, select the GWT IDE.
+====
++
+[id="configure-devfile_{context}"]
+. From the *Devfile* tab, edit YAML configuration of the workspace. See the link:{site-baseurl}che-7/making-a-workspace-portable-using-a-devfile/#devfile-reference_making-a-workspace-portable-using-a-devfile[Devfile reference].
++
+[TIP]
+.Example: add commands
+====
+image::workspaces/workspace-config-yaml.png[YAML configuration,link="{imagesdir}/workspaces/workspace-config-yaml.png"]
+====
++
+[TIP]
+.Example: add a project
+====
+To add a project into the workspace, add or edit the following section:
+
+[source,yaml]
+----
+projects:
+  - name: che
+    source:
+      type: git
+      location: 'https://github.com/eclipse/che.git'
+----
+====
