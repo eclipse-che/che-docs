@@ -52,59 +52,82 @@ This Code of Conduct is adapted from the [Contributor Covenant][homepage], versi
 [homepage]: http://contributor-covenant.org
 [version]: http://contributor-covenant.org/version/1/4/
 
-## Creating documentation
+## Contributing to the documentation
 
-### AsciiDoc formatting
-Eclipse Che documentation uses AsciiDoc for markup. See [AsciiDoc Writer's Guide](https://asciidoctor.org/docs/asciidoc-writers-guide/) for syntax and general help with AsciiDoc.
+### Pull Request process
 
-#### Using `test-adoc` for AsciiDoc syntax verification
-To verify that the syntax of your document is correct, use the [`test-adoc`](https://github.com/jhradilek/check-links) script. 
-`test-adoc` is integrated into the `run.sh` script in the root directory of the project.
- 
-To run `test-adoc`, execute from the root directory of the project: 
-```
-$ bash run.sh -test-adoc <PATH_TO_THE_FILE>
-```
+1. Eclipse Che documentation project follows a forking workflow. To learn more, read [Atlassian Git Tutorial, Forking Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow). Fork the repository and ensure you create all branches in your own fork before you start working.
+2. The default publication branch is `master`. Unless your change is intended for a specific version, submit the PR against the `master` branch. 
+3. Specify as much information as possible in the PR template. 
 
-### Documentation structure
-The Eclipse Che documentation project follows guidelines from the [modular documentation initiative](https://redhat-documentation.github.io/modular-docs/). Use templates provided in the [Modular Documentation Reference](https://redhat-documentation.github.io/modular-docs/#creating-modules) to create new user stories.
+### Understanding Che Documentation ecosystem
 
-To add a new page, create a `.adoc` file in `src/main/pages/che-<version>/<directory_name>` 
+* Eclipse Che documentation follows the IBM Style Guide. If you do not have a paper copy of the styleguide, you can refer to [developerWorks editorial style guide](https://www.ibm.com/developerworks/library/styleguidelines/index.html) on the IBM website. While `developerWorks` is not longer supported, it still provides useful reference information. 
 
-<b id="f2">Versions: </b>
-* `che-7` - Eclipse Che 7 content, including y-streams and z-streams.   
+* To learn more about the tool validating the style, see the [`vale` documentation](https://errata-ai.gitbook.io/vale/).
 
-<b id="f1">Available directories: </b> 
-* `overview` - introductory section
-* `end-user-guide` - documentation for developers: navigating dashboard, working in Che-Theia, and so on 
-* `installation-guide` - installation guides
-* `administration-guide` - documentation for administrators of the clusters: configuring Che on a cluster, managing users, monitoring resources, security and data recovery 
-* `contributor-guide` - how to develop plug-ins for Che, add new debuggers, languages, and so on
-* `extensions` - documentation about extensions for Che, such as Eclipse Che4z, OpenShift Connector 
+* Eclipse Che documentation uses AsciiDoc for markup. To learn more about Asciidoc syntax, see the [AsciiDoc Writer's Guide](https://asciidoctor.org/docs/asciidoc-writers-guide/).
 
-#### Using `newdoc` to create templates for new documents
+* The Eclipse Che documentation project follows guidelines from the [Modular Documentation Initiative](https://redhat-documentation.github.io/modular-docs/). As Antora is using the term of `module` with a different acceptation, this project is refering to them as `topics`. To understand the nature of topics, see the [Appendix A: Modular Documentation Terms and Definitions](https://redhat-documentation.github.io/modular-docs/#modular-docs-terms-definitions).
 
-With the [`newdoc`](https://github.com/redhat-documentation/tools/tree/master/newdoc) script, you can generate empty modular templates for your new user story.  
-`newdoc` is integrated into a `run.sh` script in the root directory of the project.
+* Eclipse Che documentation uses Jekyll to build the documentation.
 
-To run `newdoc`, execute from the root directory of the project:  
-```
-$ bash run.sh -newdoc --procedure "Title of your new procedure file"
-```
+* To learn more about the `newdoc` tool generating the topic templates, see [`newdoc` documentation](https://github.com/redhat-documentation/tools/tree/master/newdoc).
 
-### Writing documentation
-#### Style
-Eclipse Che documentation follows the IBM Style Guide. If you do not have a paper copy of the styleguide, you can refer to [developerWorks editorial style guide](https://www.ibm.com/developerworks/library/styleguidelines/index.html) on the IBM website. While `developerWorks` is not longer supported, it still provides useful reference information. 
+* To learn more about the `test-adoc` tool validating the topic files, see the [`test-adoc` documentation](https://github.com/jhradilek/check-links).
 
-#### Using `vale` to check the style
-[`vale`](https://errata-ai.gitbook.io/vale/) is a command-line linter. With `vale`, you can check if the style of your documentation follows [the language rules and recommendations defined in the Eclipse Che documentation project](https://github.com/eclipse/che-docs/tree/master/.ci/vale/styles).
+### Editing and building the documentation using Che
 
-`vale` is integrated into a `run.sh` script in the root directory of the project.
+To edit the Eclipse Che documentation using Hosted Che:
 
-To run `vale`, execute from the root directory of the project:
-```
-$ bash run.sh -vale <PATH_TO_THE_FILE>"
-```
+1. Fork the https://github.com/eclipse/che-docs/ project. See [Fork a repo](https://help.github.com/en/github/getting-started-with-github/fork-a-repo)
+2. The fork is now accessible at following URL, where `<github-handle>` is your GitHub handle: https://github.com/<github-handle>/che-docs/
+2. Create a branch `<branch-name>` for your work.
+4. The fork is now accessible at following URL: https://github.com/<github-handle>/che-docs/tree/<branch-name>
+5. Use following factory to open the branch in a workspace running on Hosted Che: https://che.openshift.io/factory?url=https://github.com/<github-handle>/che-docs/tree/<branch-name>
+6. Open *My Workspace*.
+7. Open *User Runtimes / Tools / Generate reference tables*.
+8. Open *User Runtimes / Antora / Preview server*.
+
+* To learn more about Hosted Che, see the [Hosted Che documentation](https://www.eclipse.org/che/docs/che-7/hosted-che/).
+
+### Creating a new topic using Che
+
+To create a new topic using a Che workspace:
+
+1. Open *My Workspace*. 
+2. Open *User Runtimes / tools / Create a new topic*.
+3. Choose the target guide among the available guides:
+* `overview`: introductory section
+* `end-user-guide`: documentation for developers: navigating dashboard, working in Che-Theia, and so on 
+* `installation-guide`: installation guides
+* `administration-guide`: documentation for administrators of the clusters: configuring Che on a cluster, managing users, monitoring resources, security and data recovery 
+* `contributor-guide`: how to develop plug-ins for Che, add new debuggers, languages, and so on
+* `extensions`: documentation about extensions for Che, such as Eclipse Che4z, OpenShift Connector.
+4. Choose the topic nature:
+* `assembly` 
+* `concept`
+* `procedure` 
+* `reference`
+5. Enter the title for the new topic.
+6. The file is generated in the `src/main/pages-che-7/<guide_name>/` directory and the script displays related information.
+
+### Validating an asciidoc file using Che
+
+To validate the compliance of an asciidoc file with Modular Documentation standards from a Che workspace:
+
+1. Open *My Workspace*.
+2. Open *User Runtimes / tools / Test-adoc*.
+2. Enter the relative path of the file to check.
+3. The tool `test-adoc` tests the file and produces some output.
+
+### Validating content style using Che
+
+To view `vale` suggestions, from a Che workspace:
+
+* Open the file to check.
+* Look at the *Problems* panel in the *Bottom Panel*.
+* To toggle the view of this panel use the *View > Problems* menu entry.
 
 ### Adding images
 
@@ -134,8 +157,15 @@ To prevent special characters from being interpreted as formatting mark-up, use 
 pass:[VARIABLE_NAME__WITH__UNDERSCORES]
 ```
 
-### Building Documentation
-There is a `run.sh` script in the root of the repository that runs a Docker image, mounts sources, and starts Jekyll. When running locally, docs are available at `localhost:4000`. Jekyll watches for changes in `.adoc` files and re-generates resources, so you can preview changes live.
+### Building Documentation on a local environment
+
+To build documentation locally:
+
+#### Prerequisites:
+
+* A running installation of `podman` or `docker`.
+
+#### Procedure
 
 1. To build documentation locally, run:
 ```
@@ -143,14 +173,59 @@ $ bash run.sh
 ```
 2. Go to `localhost:4000` in your browser.
 
-### Pull Request process
+### Creating a new topic using a local environment
 
-1. Eclipse Che documentation project follows a forking workflow. To learn more, read [Atlassian Git Tutorial, Forking Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow). Fork the repository and ensure you create all branches in your own fork before you start working.
-2. `master`  is the default working branch. Unless your change is intended for a specific version, submit the PR against the `master` branch. 
-3. Specify as much information as possible in the PR template. 
+To create a new topic using a local IDE.
+
+1. Install newdoc and follow the previous procedure:
+```
+$ pip install --user newdoc
+```
+2. Run following command:
+```
+./tools/newtopic.sh
+```
+
+
+### Validating an asciidoc file using a local environment
+
+To validate the compliance of an asciidoc file with Modular Documentation standards on a local environment:
+
+1. Open a `bash` terminal.
+2. Run the following command:  
+```
+$ ./tools/test-adoc.sh <PATH_TO_THE_FILE>
+```
+3. The tool `test-adoc` tests the file and produces some output.
+
+
+### Validating content style using a local environment
+
+To run `vale` from a local environment:
+
+1. Install `vale` following the https://errata-ai.gitbook.io/vale/getting-started/installation[Installing `vale` documentation].
+2. To run `vale`, execute from the root directory of the project:
+```
+$ vale <PATH_TO_THE_FILE>"
+```
+
+### Validating links using a local environment
+
+To run `linkchecker` from a local environment:
+
+1. Install `linkchecker` following the https://github.com/linkchecker/linkchecker[Installing `linkchecker` documentation].
+```
+$ pip3 install --user git+https://github.com/linkchecker/linkchecker.git
+```
+2. To run `vale`, execute from the root directory of the project:
+```
+$ linkchecker -f linkcheckerrc  http://0.0.0.0:4000/
+```
+
 
 ### Publishing documentation
-Che docs use Jekyll to convert `.adoc` (AsciiDoc) files into HTML pages. Docs are published at [https://www.eclipse.org/che/docs](https://www.eclipse.org/che/docs/). Updates are synced with a release cycle.
+
+The publication URL of Eclipse Che Documentation is [https://www.eclipse.org/che/docs](https://www.eclipse.org/che/docs/). Updates are synced with a release cycle.
 
 ### Getting support
 
