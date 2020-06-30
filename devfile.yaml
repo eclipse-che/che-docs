@@ -2,15 +2,12 @@ apiVersion: 1.0.0
 metadata:
   generateName: che-docs-
 
-projects:
-  - name: che-docs
-    source:
-      location: 'https://github.com/eclipse/che-docs.git'
-      type: github
-      branch: master
-
 components:
-  - mountSources: true
+  - alias: che-docs-dev
+    type: dockerimage
+    image: 'quay.io/eclipse/che-docs:latest'
+    memoryLimit: 1Gi
+    mountSources: true
     endpoints:
       - name: che-docs-livereload-server
         port: 35729
@@ -19,30 +16,80 @@ components:
         attributes:
           path: /che-7/introduction-to-eclipse-che/
     args: ['sleep', 'infinity']
-    memoryLimit: 1Gi
+  - alias: bash-curl
     type: dockerimage
-    image: 'quay.io/eclipse/che-docs:latest'
-    alias: che-docs-dev
+    image: 'docker.io/cosmintitei/bash-curl'
+    memoryLimit: 512M
+    mountSources: true
+    command:
+      - tail
+    args:
+      - '-f'
+      - /dev/null
+  - alias: linkchecker
+    type: dockerimage
+    image: 'docker.io/linkchecker/linkchecker:latest'
+    memoryLimit: 512M
+    mountSources: true
+    command:
+      - tail
+    args:
+      - '-f'
+      - /dev/null
+    volumes:
+      - name: mnt
+        containerPath: /mnt
+  - alias: newdoc
+    type: dockerimage
+    image: 'docker.io/mrksu/newdoc'
+    memoryLimit: 512M
+    mountSources: true
+    command:
+      - tail
+    args:
+      - '-f'
+      - /dev/null
   - id: joaompinto/vscode-asciidoctor/latest
     type: chePlugin
   - id: ms-vscode/vscode-github-pullrequest/latest
     type: chePlugin
 
 commands:
-  - name: build che-docs
+  - name: Generate reference tables
     actions:
-      - workdir: /projects/che-docs/src/main
-        type: exec
-        command: 'mkdir -p _site && jekyll clean && jekyll build --config _config.yml,_config-war.yml'
-        component: che-docs-dev
-  - name: serve che-docs
+      - type: exec
+        component: bash-curl
+        workdir: /projects/che-docs
+        command: bash tools/environment_docs_gen.sh
+  - name: Launch preview server
     actions:
       - workdir: /projects/che-docs/src/main
         type: exec
         command: 'jekyll clean && jekyll serve --incremental --livereload -H 0.0.0.0'
         component: che-docs-dev
-  - name: killall ruby
+  - name: Kill preview server
     actions:
       - type: exec
         command: killall ruby
         component: che-docs-dev
+  - name: Create a new topic
+    actions:
+      - type: exec
+        component: newdoc
+        workdir: /projects/che-docs
+        command: bash tools/newtopic.sh
+  - name: Test-adoc
+    actions:
+      - type: exec
+        component: bash-curl
+        workdir: /projects/che-docs
+        command: >-
+          echo 'Enter path to the file to validate';
+          read file;
+          bash tools/test-adoc.sh $file;
+  - name: Check links
+    actions:
+      - type: exec
+        component: linkchecker
+        workdir: /projects/che-docs
+        command: linkchecker -f linkcheckerrc http://0.0.0.0:4000
