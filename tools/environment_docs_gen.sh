@@ -82,7 +82,8 @@ parse_content() {
       DESCR_BUFF="$(sed 's| {\([^}]*\)}| `+{\1}+`|g' <<< $DESCR_BUFF)"    # make sure asciidoc doesn't mix it up with attributes
       DESCR_BUFF="$(sed 's|\${\([^}]*\)}|$++{\1}++|g' <<< $DESCR_BUFF)"   # make sure asciidoc doesn't mix it up with attributes
       DESCR_BUFF="$(sed 's|\(Eclipse \)\?\bChe\b|{prod-short}|g' <<< $DESCR_BUFF)"   # (Eclipse) Che -> {prod-short}
-      DESCR_BUFF="$(sed -E 's|`(http.?*)`|`+\1+`|g' <<< $DESCR_BUFF)"   # (Eclipse) Che -> {prod-short}
+      DESCR_BUFF="$(sed -E 's|`(http.?*)`|`+\1+`|g' <<< $DESCR_BUFF)"   # Deactivate http links
+      DESCR_BUFF="$(sed -E 's|(Example: http.?*io)|`+\1+`|g' <<< $DESCR_BUFF)"   # Deactivate http links
 
       DESCR_BUFF="${DESCR_BUFF/ }"                      # trim first space
       BUFF="$BUFF $ENV,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
