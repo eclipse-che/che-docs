@@ -86,6 +86,7 @@ parse_content() {
       DESCR_BUFF="$(sed -E 's|(Example: http.?*io)|`+\1+`|g' <<< $DESCR_BUFF)"   # Deactivate http links
       DESCR_BUFF="$(sed -E 's|https://docs.openshift.com/container-platform/latest/architecture/additional_concepts/storage.html#pv-access-modes|https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html|' <<< $DESCR_BUFF)"   # Fix broken link
       DESCR_BUFF="$(sed -E 's|https://docs.openshift.com/container-platform/latest/dev_guide/compute_resources.html#dev-compute-resources|https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html|' <<< $DESCR_BUFF)"   # Fix broken link
+      DESCR_BUFF="$(sed -E 's|https://www.keycloak.org/docs/3.3/server_admin/topics/identity-broker/social/openshift.html|https://www.keycloak.org/docs/latest/server_admin/index.html#openshift-4|' <<< $DESCR_BUFF)"   # Fix broken link
 
       DESCR_BUFF="${DESCR_BUFF/ }"                      # trim first space
       BUFF="$BUFF $ENV,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
