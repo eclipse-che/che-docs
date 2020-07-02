@@ -34,7 +34,7 @@ is installed.
 +
 [subs="+attributes,+quotes"]
 ----
-$ {orch-cli} create configmap __<configMap-name>__ --from-file=__<certificate-file-path>__ -n=__<che-namespace-name>__
+$ {orch-cli} create configmap __<configMap-name>__ --from-file=__<certificate-file-path>__ -n=__<{project-context}-namespace-name>__
 ----
 +
 To apply more than one certificate, add another `--from-file=_<certificate-file-path>_` option to the above command.
@@ -50,7 +50,7 @@ NOTE: Use these steps with existing instances of {prod-short}. To install a new 
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} patch checluster eclipse-che -n che --type=json -p '[{"op": "replace", "path": "/spec/server/serverTrustStoreConfigMapName", "value": "__<config-map-name>__"}]'
+$ {orch-cli} patch checluster {prod-checluster} -n che --type=json -p '[{"op": "replace", "path": "/spec/server/serverTrustStoreConfigMapName", "value": "__<config-map-name>__"}]'
 ----
 ====
 +

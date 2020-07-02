@@ -7,23 +7,31 @@
 
 link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators] are software extensions to Kubernetes that use link:https://docs.openshift.com/container-platform/latest/operators/crds/crd-managing-resources-from-crds.html[custom resources] to manage applications and their components.
 
+.Prerequisites
+
+* The OpenShift command-line tool, `oc`
+ifeval::["{project-context}" == "che"]
+or the Kubernetes command-line tool, `kubectl`,
+endif::[]
+is installed.
+
 .Procedure
 
 When deploying {prod-short} using the Operator, configure the intended strategy by modifying the `spec.k8s.ingressStrategy` property of the CheCluster custom resource object YAML file.
 To activate changes done to CheCluster YAML file, do one of the following:
 
-* Create a new cluster by executing the `kubectl apply` command. For example:
+* Create a new cluster by executing the `{orch-cli} apply` command. For example:
 +
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
-$ kubectl apply -f _<my-cluster.yaml>_
+$ {orch-cli} apply -f _<my-cluster.yaml>_
 ----
 
-* Update the YAML file properties of an already running cluster by executing the `kubectl patch` command. For example:
+* Update the YAML file properties of an already running cluster by executing the `{orch-cli} patch` command. For example:
 +
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
-$ kubectl patch checluster eclipse-che --type=json -p '[{"op": "replace", "path": "/spec/k8s/ingressStrategy", "value": "__single-host__"}]'
+$ {orch-cli} patch checluster {prod-checluster} --type=json -p '[{"op": "replace", "path": "/spec/k8s/ingressStrategy", "value": "__single-host__"}]'
 ----
 
 Depending on the strategy used, replace the `_single-host_` option in the above example with `multi-host` or `default-host`.
