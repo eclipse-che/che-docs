@@ -27,6 +27,9 @@ s/{site-baseurl}{prod-id-short}-{prod-ver}/{site-baseurl}che-7/g
 s/{prod-short}-Theia/Che-Theia/g
 s/{prod-id-short}-theia/che-theia/g
 
+# Revert back Hosted Che
+s/Hosted {prod-short}/Hosted Che/g
+
 # Revert back {prod-short} plug-ins types: `type: Che Plugin` `Che Editor`
 s/{prod-short} Plugin/Che Plugin/g
 s/Che Plugin metadata/{prod-short} plug-in metadata/g
