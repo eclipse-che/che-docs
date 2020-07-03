@@ -28,8 +28,7 @@ s/{prod-short}-Theia/Che-Theia/g
 s/{prod-id-short}-theia/che-theia/g
 
 # Revert back {prod-short} plug-ins types: `type: Che Plugin` `Che Editor`
-s/{prod-short} plug-in\b/Che Plugin/g
-s/{prod-short} Plugin\b/Che Plugin/g
+s/{prod-short} Plugin/Che Plugin/g
 s/Che Plugin metadata/{prod-short} plug-in metadata/g
 s/Che Plugin registry/{prod-short} plug-in registry/g
 #s/metadata of Che Plugin/metadata of {prod-short} plug-in/g
