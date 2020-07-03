@@ -15,14 +15,41 @@
 
 To add a project to your workspace:
 
-. Click the *Projects* tab, and then click the btn:[Add Project] button.
-. Select the type of the project. Choose from: *Samples*, *Blank*, *Git*, *GitHub*, or *Zip*.
-. Specify the required details for the project type that you selected, and click the btn:[Add] button.
+. Navigate to *Workspaces* page and click the workspace you want to update.
 +
-image::workspaces/projects-add-project.png[link="{imagesdir}/workspaces/projects-add-project.png"]
+Here you have two ways to add a project to your workspace:
 
-. To add another project to the workspace, click the btn:[Add Project] button.
+. From the *Projects* tab.
+
+.. Open the *Projects* tab, and then click the btn:[Add Project] button.
+
+.. Choose if you want to import the project by Git URL or from your GitHub account.
 +
-. After configuring the project for the workspace, check the change in the devfile, which is the configuration file of the workspace, by opening the *Devfile* tab.
+image::workspaces/che-config-projects-add-git.png[Add Git Project, link="{imagesdir}/workspaces/che-config-projects-add-git.png"]
+
+. From the *Devfile* tab.
+
+.. Open the *Devfile* tab.
+
+.. In the *Devfile editor*, add `projects` section with desired project.
 +
-image::workspaces/devfile-tab-to-view.png[link="{imagesdir}/workspaces/devfile-tab-to-view.png"]
+image::workspaces/workspace-devfile-editor.png[Edit Devfile Content, link="{imagesdir}/workspaces/workspace-devfile-editor.png"]
++
+[TIP]
+.Example: add a project
+====
+To add a project into the workspace, add or edit the following section:
+[source,yaml]
+----
+projects:
+  - name: che
+    source:
+      type: git
+      location: 'https://github.com/eclipse/che.git'
+----
+See the link:{site-baseurl}che-7/making-a-workspace-portable-using-a-devfile/#devfile-reference_making-a-workspace-portable-using-a-devfile[Devfile reference].
+====
+
+. Once the project is added, click btn:[Save] button to save this workspace configuration, or click btn:[Apply] button to apply changes to the running workspace.
++
+image::workspaces/workspace-save-apply-cancel.png[Save Workspace Configuration]
