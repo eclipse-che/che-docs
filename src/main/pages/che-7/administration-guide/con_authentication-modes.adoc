@@ -23,9 +23,9 @@ Usually, in `singleuser` mode {prod-short} has protection by third party service
 ["changing-the-authentication-mode_{context}"]
 == Changing the authentication mode
  
-By default, the Che operator deploys {prod-short} in `multiuser` mode. To change that: 
+By default, the {prod-short} Operator deploys {prod-short} in `multiuser` mode. To change that: 
 
-. Update the Che custom resource (CR) `CHE_MULTIUSER` property to `false`:
+. Update the `CheCluster` Custom Resource (CR) to set the`CHE_MULTIUSER` property to `false`:
 +
 [source, yaml]
 ----
@@ -41,16 +41,18 @@ If {prod-short} is deployed via Helm installer, it defaults to `singleuser` mode
 
 . Set the `multiuser` Helm chart field to `true`:
 +
+[subs="+quotes,+attributes"]
 ----
-$ helm upgrade --install che --force --namespace che --set global.cheDomain=__<Che-domain-address>__  -f multi-user.yaml
+$ helm upgrade --install che --force --namespace che --set global.cheDomain=__<{prod-host}>__  -f multi-user.yaml
 ----
 
 ** To deploy {prod-short} in `multiuser` mode with {prod-cli}:
  
-. Use `--multiuser` flag, or `-m` option to `chectl server:start` command:
+. Use `--multiuser` flag, or `-m` option to `{prod-cli} server:start` command:
 +
+[subs="+quotes,+attributes"]
 ----
-$ chectl server:start --platfrom=minikube --installer=helm --multiuser
+$ {prod-cli} server:start --platfrom=minikube --installer=helm --multiuser
 ----
 
 ////

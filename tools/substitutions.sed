@@ -27,9 +27,14 @@ s/{site-baseurl}{prod-id-short}-{prod-ver}/{site-baseurl}che-7/g
 s/{prod-short}-Theia/Che-Theia/g
 s/{prod-id-short}-theia/che-theia/g
 
+# Revert back Hosted Che
+s/Hosted {prod-short}/Hosted Che/g
+s/hosted-{prod-id-short}/hosted-che/g
+s/{prod} hosted by Red Hat/Eclipse Che hosted by Red Hat/
+
 # Revert back {prod-short} plug-ins types: `type: Che Plugin` `Che Editor`
-s/{prod-short} plug-in\b/Che Plugin/g
-s/{prod-short} Plugin\b/Che Plugin/g
+s/{prod-short} Plugin/Che Plugin/g
+s/\*Che Plugins\* panel/*{prod-short} Plugins* panel/g
 s/Che Plugin metadata/{prod-short} plug-in metadata/g
 s/Che Plugin registry/{prod-short} plug-in registry/g
 #s/metadata of Che Plugin/metadata of {prod-short} plug-in/g
@@ -51,3 +56,8 @@ s/\({parent[^}]*\){prod-cli}/\1chectl/g
 # Revert chectl in jekyll headers
 s/\(title:[^\[]*\){prod-cli}/\1chectl/g
 s/\(permalink:[^\[]*\){prod-cli}/\1chectl/g
+
+s/config map/ConfigMap/g
+s/custom resource/Custom Resource/g
+s/the operator/the Operator/
+s/the {prod-short} operator/the {prod-short} Operator/
