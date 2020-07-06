@@ -55,3 +55,7 @@ s/\({parent[^}]*\){prod-cli}/\1chectl/g
 # Revert chectl in jekyll headers
 s/\(title:[^\[]*\){prod-cli}/\1chectl/g
 s/\(permalink:[^\[]*\){prod-cli}/\1chectl/g
+
+s/config map/ConfigMap/g
+s/custom resource/Custom Resource/g
+s/the operator/the Operator/
