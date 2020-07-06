@@ -59,3 +59,4 @@ s/\(permalink:[^\[]*\){prod-cli}/\1chectl/g
 s/config map/ConfigMap/g
 s/custom resource/Custom Resource/g
 s/the operator/the Operator/
+s/the {prod-short} operator/the {prod-short} Operator/
