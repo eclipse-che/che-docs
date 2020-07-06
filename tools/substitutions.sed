@@ -34,6 +34,7 @@ s/{prod} hosted by Red Hat/Eclipse Che hosted by Red Hat/
 
 # Revert back {prod-short} plug-ins types: `type: Che Plugin` `Che Editor`
 s/{prod-short} Plugin/Che Plugin/g
+s/\*Che Plugins\* panel/*{prod-short} Plugins* panel/g
 s/Che Plugin metadata/{prod-short} plug-in metadata/g
 s/Che Plugin registry/{prod-short} plug-in registry/g
 #s/metadata of Che Plugin/metadata of {prod-short} plug-in/g
