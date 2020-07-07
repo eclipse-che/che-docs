@@ -61,3 +61,16 @@ s/config map/ConfigMap/g
 s/custom resource/Custom Resource/g
 s/the operator/the Operator/
 s/the {prod-short} operator/the {prod-short} Operator/
+
+s/ namespace / {orch-namespace} /g
+s/ namespace\./ {orch-namespace}./g
+s/ namespace,/ {orch-namespace},/g
+s/ namespaces/ {orch-namespace}s/g
+s/oc create {orch-namespace}/oc create namespace/g
+s/oc label {orch-namespace}/oc label namespace/g
+s/kubectl create {orch-namespace}/kubectl create namespace/g
+s/kubectl label {orch-namespace}/kubectl label namespace/g
+s/\(API.*\?\){orch-namespace}/\1namespace/g
+s/{orch-namespace}\(.*\?API\)/namespace\1/g
+s/\(theia.*\?\){orch-namespace}/\1namespace/g
+s/\(^title:.*\?\){orch-namespace}/\1namespace/g
