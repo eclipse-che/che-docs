@@ -9,12 +9,12 @@ Workspace Pods use Persistent Volume Claims (PVCs), which are bound to the physi
 
 include::examples/{project-context}-pvc-strategies.adoc[]
 
-{prod} uses the `common` PVC strategy in combination with the "one namespace per user" namespace strategy when all {prod-short} workspaces operate in the user's namespace, sharing one PVC.
+{prod} uses the `common` PVC strategy in combination with the "one {orch-namespace} per user" {orch-namespace} strategy when all {prod-short} workspaces operate in the user's {orch-namespace}, sharing one PVC.
 
 [id="the-common-pvc-strategy_{context}"]
 == The `common` PVC strategy
 
-All workspaces inside a Kubernetes-native namespace use the same Persistent Volume Claim (PVC) as the default data storage when storing data such as the following in their declared volumes: 
+All workspaces inside a Kubernetes-native {orch-namespace} use the same Persistent Volume Claim (PVC) as the default data storage when storing data such as the following in their declared volumes: 
 
 * projects
 * workspace logs
@@ -38,9 +38,9 @@ If there are several nodes, you can use the `common` strategy, but:
 
 * The workspace PVC access mode must be reconfigured to `ReadWriteMany` (RWM), so multiple nodes can use this PVC simultaneously.
 
-* Only one workspace in the same namespace may be running. See link:{site-baseurl}che-7/configuring-namespace-strategies[Configuring namespace strategies].
+* Only one workspace in the same {orch-namespace} may be running. See link:{site-baseurl}che-7/configuring-namespace-strategies[Configuring {orch-namespace} strategies].
 
-The `common` PVC strategy is not suitable for large multi-node clusters. Therefore, it is best to use it in single-node clusters. However, in combination with `per-workspace` namespace strategy, the `common` PVC strategy is usable for clusters with around 75 nodes. The PVC used in this strategy must be large enough to accommodate all projects since there is a risk of the event, in which one project depletes the resources of others. 
+The `common` PVC strategy is not suitable for large multi-node clusters. Therefore, it is best to use it in single-node clusters. However, in combination with `per-workspace` {orch-namespace} strategy, the `common` PVC strategy is usable for clusters with around 75 nodes. The PVC used in this strategy must be large enough to accommodate all projects since there is a risk of the event, in which one project depletes the resources of others. 
 
 [id="the-per-workspace-pvc-strategy_{context}"]
 == The `per-workspace` PVC strategy
@@ -65,7 +65,7 @@ Deleted when a corresponding workspace is deleted.
 
 User-defined PVCs are created with the following specifics:
 
-* They are provisioned with generated names to prevent naming conflicts with other PVCs in a namespace.
+* They are provisioned with generated names to prevent naming conflicts with other PVCs in a {orch-namespace}.
 
 *  Subpaths of the mounted Physical persistent volumes that reference user-defined PVCs are prefixed with `_<workspace-ID>_` or `__<PVC-name>__`. This ensures that the same PV data structure is set up with different PVC strategies. For details, see xref:how-subpaths-are-used-in-pvcs_{context}[].
 
