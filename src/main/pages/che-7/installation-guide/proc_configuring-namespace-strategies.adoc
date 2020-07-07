@@ -9,23 +9,25 @@ summary:
 ---
 
 [id="configuring-namespace-strategies_{context}"]
-= Configuring namespace strategies
+= Configuring {orch-namespace} strategies
 
-NOTE: The term _namespace_ (Kubernetes) is used interchangeably with _project_ (OpenShift).
+ifeval::["{project-context}" == "che"]
+NOTE: The term _{orch-namespace}_ (Kubernetes) is used interchangeably with _project_ (OpenShift).
+endif::[]
 
-The namespace strategies are configured using the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` environment variable.
+The {orch-namespace} strategies are configured using the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` environment variable.
 
 WARNING: `CHE_INFRA_KUBERNETES_NAMESPACE` and `CHE_INFRA_OPENSHIFT_PROJECT` are legacy variables. Keep these variables unset for a new installations. Changing these variables during an update can lead to data loss.
 
-== One namespace per workspace strategy
+== One {orch-namespace} per workspace strategy
 
-The strategy creates a new namespace for each new workspace.
+The strategy creates a new {orch-namespace} for each new workspace.
 
 To use the strategy, the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable value must contain the `_<workspaceID>_` identifier. It can be used alone or combined with other identifiers or any string.
 
-.One namespace per workspace
+.One {orch-namespace} per workspace
 ====
-To assign namespace names composed of a `che-ws` prefix and workspace id, set:
+To assign {orch-namespace} names composed of a `che-ws` prefix and workspace id, set:
 
 [subs="+quotes"]
 ----
@@ -33,15 +35,15 @@ CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=che-ws-__<workspaceID>__
 ----
 ====
 
-== One namespace for all workspaces strategy
+== One {orch-namespace} for all workspaces strategy
 
-The strategy uses one predefined namespace for all workspaces.
+The strategy uses one predefined {orch-namespace} for all workspaces.
 
-To use the strategy, the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable value must be the name of the desired namespace to use.
+To use the strategy, the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable value must be the name of the desired {orch-namespace} to use.
 
-.One namespace for all workspaces
+.One {orch-namespace} for all workspaces
 ====
-To have all workspaces created in `che-workspaces` namespace, set:
+To have all workspaces created in `che-workspaces` {orch-namespace}, set:
 
 [subs="+quotes"]
 ----
@@ -51,15 +53,15 @@ CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=che-workspaces
 
 IMPORTANT: To run more than one workspace at a time when using this strategy together with the `common` PVC strategy, configure persistent volumes to use `ReadWriteMany` access mode.
 
-== One namespace per user strategy
+== One {orch-namespace} per user strategy
 
-The strategy isolates each user in their own namespace.
+The strategy isolates each user in their own {orch-namespace}.
 
 To use the strategy, the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable value must contain one or more user identifiers. Currently supported identifiers are `_<username>_` and `_<userId>_`.
 
-.One namespace per user
+.One {orch-namespace} per user
 ====
-To assign namespace names composed of a `che-ws` prefix and individual usernames (`che-ws-user1`, `che-ws-user2`), set:
+To assign {orch-namespace} names composed of a `che-ws` prefix and individual usernames (`che-ws-user1`, `che-ws-user2`), set:
 
 [subs="+quotes"]
 ----
@@ -84,9 +86,9 @@ endif::[]
 * For Operator deployments: set the `spec.server.cheCustomProperties.CHE_LIMITS_USER_WORKSPACE_RUN_COUNT` variable of the CheCluster Custom Resource (CR) to `1`.
 ====
 
-== Allowing user-defined workspace namespaces
+== Allowing user-defined workspace {orch-namespace}s
 
-{prod-short} server can be configured to honor the user selection of a namespace when a workspace is created. This feature is disabled by default. To allow user-defined workspace namespaces:
+{prod-short} server can be configured to honor the user selection of a {orch-namespace} when a workspace is created. This feature is disabled by default. To allow user-defined workspace {orch-namespace}s:
 
 ifeval::["{project-context}" == "che"]
 * For Helm Chart deployments, set the following environment variable in the {prod-short} ConfigMap:
