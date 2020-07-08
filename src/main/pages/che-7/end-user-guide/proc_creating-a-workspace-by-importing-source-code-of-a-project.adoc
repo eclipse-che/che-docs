@@ -26,7 +26,7 @@ This section describes how to create a new workspace to edit an existing codebas
 
 There are two ways to do that *before* starting a workspace:
 
-* xref:#importing-from-the-dashboard-into-an-existing-workspace_{context}[Select a stack from the *Dashboard*, then change the devfile to include your project]
+* xref:#creating-a-custom-workspace-from-the-dashboard[Select a sample from the Dashboard, then change the devfile to include your project]
 * link:{site-baseurl}che-7/configuring-a-workspace-using-a-devfile[Add a devfile to a git repository and start the workspace using {prod-cli} or a factory]
 
 To create a new workspace to edit an existing codebase, use one of the following three methods *after* you have started the workspace:
@@ -34,6 +34,39 @@ To create a new workspace to edit an existing codebase, use one of the following
 * xref:#importing-from-the-dashboard-into-an-existing-workspace_{context}[Import from the *Dashboard* into an existing workspace]
 * xref:#importing-to-a-running-workspace-using-the-git-clone-command_{context}[Import to a running workspace using the `git clone` command]
 * xref:#importing-to-a-running-workspace-with-git-clone-in-a-terminal_{context}[Import to a running workspace using `git clone` in a terminal]
+
+[id="creating-a-custom-workspace-from-the-dashboard"]
+== Select a sample from the Dashboard, then change the devfile to include your project
+
+* In the left navigation panel, go to *Get Started*.
+
+* Click the *Custom Workspace* tab if it's not already selected.
+
+* In the *Devfile* section, select the devfile template that will be used to build and run projects.
++
+image::workspaces/{project-context}-select-devfile.png[Select a devfile from the list]
+
+* In the *Devfile editor*, update `projects` section:
++
+image::workspaces/devfile-projects.png[Update projects section of the devfile]
++
+[TIP]
+.Example: add a project
+====
+To add a project into the workspace, add or edit the following section:
+
+[source,yaml]
+----
+projects:
+  - name: che
+    source:
+      type: git
+      location: 'https://github.com/eclipse/che.git'
+----
+See the link:{site-baseurl}che-7/making-a-workspace-portable-using-a-devfile/#devfile-reference_making-a-workspace-portable-using-a-devfile[Devfile reference].
+====
+
+* To open the workspace, click the btn:[Create & Open] button.
 
 [id="importing-from-the-dashboard-into-an-existing-workspace_{context}"]
 == Importing from the Dashboard into an existing workspace
@@ -53,17 +86,6 @@ image::workspaces/che-config-projects-add-git.png[Add projects to workspace]
 ====
 You can add a project to a non-running workspace, but you must start the workspace to delete it.
 ====
-
-=== Editing an existing repository
-
-To edit an existing repository:
-
-. Choose the Git project or zip file, and {prod-short} will load it into your workspace.
-+
-image::workspaces/add-git-project.png[Add an existing Git project]
-+
-. To open the workspace, click the btn:[Open] button.
-
 
 === Editing the commands after importing a project
 
