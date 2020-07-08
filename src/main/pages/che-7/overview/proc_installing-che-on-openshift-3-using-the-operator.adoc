@@ -38,6 +38,8 @@ This approach is only supported for use with {ocp} and {osd} version 3.11, but a
 
 * To apply settings that the main {prod-cli} command-line parameters cannot set, prepare a configuration file `operator-cr-patch.yaml` that will override the default values in the `CheCluster` Custom Resource used by the Operator. See link:{site-baseurl}che-7/configuring-the-{prod-id-short}-installation[Configuring the {prod-short} installation].
 
+* __<{prod-namespace}>__ represents the project of the target installation.
+
 .Procedure
 
 . Log in to OpenShift. See link:https://docs.openshift.com/container-platform/3.11/cli_reference/get_started_cli.html#basic-setup-and-login[Basic Setup and Login].
@@ -76,6 +78,25 @@ httpd-ex httpd-ex-hello-world.apps.rhpds311.openshift.opentlc.com httpd-ex      
 $ oc delete project hello-world
 ----
 
+. To upgrade from a previous {prod-short} installation in the same {ocp} {ocp3-ver} cluster, remove the Custom Resource Definition and the Cluster Roles:
++
+[subs="+attributes,+quotes",options="nowrap"]
+----
+$ oc delete customresourcedefinition/checlusters.org.eclipse.che
+$ oc patch customresourcedefinition/checlusters.org.eclipse.che \
+    --type merge \
+    -p '{ "metadata": { "finalizers": null }}'
+$ oc delete clusterrole {prod-operator}
+----
+
+. To have multiple {prod-short} deployments in parallel using different versions in the same {ocp} {ocp3-ver} cluster, create a new service account for the new deployment. It is, however, strongly recommended that you update all your old {prod-short} deployments to the latest version instead, as this mix of versions may cause unexpected and unsupported results.
++
+[subs="+attributes,+quotes",options="nowrap"]
+----
+$ oc patch clusterrolebinding {prod-operator} \
+    --type='json' \
+    -p '[{"op": "add", "path": "/subjects/0", "value": {"kind":"ServiceAccount", "namespace": "__<{prod-namespace}>__", "name": "{prod-operator}"} }]'
+----
 
 . Run the following command to create the {prod-short} instance:
 +
