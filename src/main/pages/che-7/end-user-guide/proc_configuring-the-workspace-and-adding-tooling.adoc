@@ -8,18 +8,6 @@
 
 == Adding plug-ins
 
-{prod-short} {prod-ver} plug-ins replace {prod-short} {prod-prev-ver} installers. The following table lists the {prod-short} {prod-ver} plug-ins that have replaced {prod-short} {prod-prev-ver} installers.
-
-.{prod-short} {prod-ver} plug-ins that have replaced {prod-short} {prod-prev-ver} installers
-[options="header"]
-|===
-| {prod-short} {prod-prev-ver} installer | {prod-short} {prod-ver} plug-in
-| org.eclipse.che.ws-agent | Deprecated and not necessary
-| org.eclipse.che.terminal | Deprecated and not necessary anymore-
-| org.eclipse.che.exec     | {prod-short} machine-exec Service
-| org.eclipse.che.ls.java  | Language Support for Java
-|===
-
 .Prerequisites
 
 * A running instance of {prod}. To install an instance of {prod}, see link:{site-baseurl}che-7/che-quick-starts/[{prod-short} 'quick-starts'].
@@ -32,7 +20,6 @@ To add plug-ins to your workspace:
 
 . Click the *Plugins* tab.
 . Enable the plug-in that you want to add and click the btn:[Save] button.
-
 
 == Defining the workspace editor
 
@@ -105,10 +92,6 @@ To use separate recipe files, you may specify relative or absolute paths. For ex
 ...
 ----
 
-* Alternatively, add the content as `referenceContent` (the `referenceContent` field replaces the {prod-short} {prod-prev-ver} recipe content).
-+
-image::workspaces/che-6-workspace-configuration.png[]
-
 . Add a {prod-short} {prod-prev-ver} recipe content to the {prod-short} {prod-ver} devfile as `referenceContent`:
 
 .. Click the *Containers* tab (*Workspace* -> *Details* -> *Containers*).
@@ -141,19 +124,7 @@ image::workspaces/component_as_a_referenceContent.png[link="{imagesdir}/workspac
 
 . Copy the required fields from the old workspace (`image`, `volumes`, `endpoints`). For example:
 +
-image::workspaces/workspace_configuration_che_6.png[]
-+
 image::workspaces/workspace_devfile_che_7_.png[]
-+
-.{prod-short} {prod-prev-ver-major} and {prod-short} {prod-ver} equivalence table
-[options="header"]
-|===
-| {prod-short} {prod-prev-ver-major} workspace configuration | {prod-short} {prod-ver} workspace devfile
-| `environments['defaultEnv'].machines['target'].servers` | `components[n].endpoints`
-| `environments['defaultEnv'].machines['machineName'].volumes` | `components[n].volumes`
-| `environments['defaultEnv'].recipe.type` | `components[n].type`
-| `environments['defaultEnv'].recipe.content` | `components[n].image`
-|===
 
 . Change the `memoryLimit` and `alias` variables, if needed. Here, the field `alias` is used to set a name for the component. It is generated automatically from the `image` field, if not set.
 +
@@ -183,19 +154,8 @@ image::workspaces/devfile-tab.png[]
 
 The following is a comparison between workspace configuration commands in {prod-short} {prod-prev-ver} (Figure 1) and {prod-short} {prod-ver} (Figure 2):
 
-.An example of the Workspace configuration commands in {prod-short} {prod-prev-ver}
-image::workspaces/che-6-workspace-configuration.png[]
-
 .An example of the Workspace configuration commands in {prod-short} {prod-ver}
 image::workspaces/workspace-devfile.png[]
-
-.{prod-short} {prod-prev-ver-major} and {prod-short} {prod-ver} equivalence table
-[options="header"]
-|===
-| {prod-short} {prod-prev-ver-major} workspace configuration | {prod-short} {prod-ver} workspace devfile
-| `environments['defaultEnv'].commands[n].name` | `commands[n].name`
-| `environments['defaultEnv'].commands[n].actions.command` | `components[n].commandLine`
-|===
 
 .Procedure
 
