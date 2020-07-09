@@ -63,7 +63,7 @@ commands:
         component: bash-curl
         workdir: /projects/che-docs
         command: bash tools/environment_docs_gen.sh
-  - name: Launch preview server
+  - name: Start preview server
     actions:
       - workdir: /projects/che-docs/src/main
         type: exec
@@ -80,16 +80,16 @@ commands:
         component: newdoc
         workdir: /projects/che-docs
         command: bash tools/newtopic.sh
-  - name: Test-adoc
+  - name: Validate Modular Doc
     actions:
       - type: exec
-        component: bash-curl
+        component: che-docs-dev
         workdir: /projects/che-docs
         command: >-
-          echo 'Enter path to the file to validate';
+          echo 'Enter path to the file to validate and press Enter:';
           read file;
           bash tools/test-adoc.sh $file;
-  - name: Check links
+  - name: Validate links
     actions:
       - type: exec
         component: linkchecker
