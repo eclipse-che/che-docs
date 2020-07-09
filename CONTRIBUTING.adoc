@@ -1,0 +1,231 @@
+:toc:
+
+= Contributing to the Eclipse Che Documentation
+
+== Understanding Che Documentation ecosystem
+
+* Please read the link:CODE_OF_CONDUCT.adoc[Code of conduct].
+
+* Eclipse Che documentation project follows a forking workflow. To learn more, read https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow[Forking Workflow]. 
+
+* Eclipse Che documentation follows the _IBM Style Guide_. If you do not have a paper copy of the styleguide, see the
+https://www.ibm.com/developerworks/library/styleguidelines/index.html[developerWorks editorial style guide] on the IBM website. While developerWorks is no longer maintained, it still provides useful reference information.
+
+* To learn more about the tool validating the style, see the https://errata-ai.gitbook.io/vale/[`+vale+` documentation].
+
+* Eclipse Che documentation uses AsciiDoc for markup. To learn more about AsciiDoc syntax, see the https://asciidoctor.org/docs/asciidoc-writers-guide/[AsciiDoc Writer’s Guide].
+
+* The Eclipse Che documentation project follows guidelines from the
+https://redhat-documentation.github.io/modular-docs/[Modular Documentation Initiative]. As Antora is using the term of _module_ with a different acceptation, this project is refering to them as _topics_. To understand the nature of topics, see the https://redhat-documentation.github.io/modular-docs/#modular-docs-terms-definitions[Appendix A: Modular Documentation Terms and Definitions].
+
+* Eclipse Che documentation uses Jekyll to build the documentation.
+
+* To learn more about the `+newdoc+` tool generating the topic
+templates, see https://github.com/mrksu/newdoc[`+newdoc+` documentation].
+
+* To learn more about the `+test-adoc+` tool validating the topic files, see the https://github.com/jhradilek/check-links[`+test-adoc+`documentation].
+
+* To learn more about Hosted Che, see the
+https://www.eclipse.org/che/docs/che-7/hosted-che/[Hosted Che documentation].
+
+
+[id="editing-and-submitting-new-content"]
+== Editing and submitting new content
+
+.Procedure
+
+. Fork the https://github.com/eclipse/che-docs/ project. See link:https://help.github.com/en/github/getting-started-with-github/fork-a-repo[Fork a repository].
+
+. The fork is now accessible at following URL, where `__<github-handle>__` is your GitHub handle: `++https++://github.com/__<github-handle__/che-docs/`.
+
+. Create a branch `__<branch-name>__` for your work.
+
+. The fork is now accessible at following URL: `++https++://github.com/__<github-handle>__/che-docs/__<branch-name>__/tree/`.
+
+. Use following factory to open the branch in a workspace running on Hosted Che: `++https++://che.openshift.io/factory?url=https://github.com/__<github-handle>__/che-docs/__<branch-name>__/tree/`.
+
+. Edit the content.
+
+. Build and validate the new content. See: xref:building-and-validating-the-documentation-using-che[].
+
+. To merge the content, open a pull request. Submit the pull request against the default `+master+` branch. Specify as much information as possible in the PR template.
+
+. To review the pull request: validate the accuracy of content, as well as build, language, links and modular docs requirements. See: xref:building-and-validating-the-documentation-using-che[].
+
+. The continuous integration process is publishing content once merged in the `+master+` publication branch.
+
+.Verification steps
+
+* Navigate to the publication URL of Eclipse Che Documentation: link:https://www.eclipse.org/che/docs/[] and search for your changes.
+
+
+[id="building-and-validating-the-documentation-using-che"]
+== Building and validating the documentation using Che
+
+To build the Eclipse Che documentation from a Che workspace.
+
+.Prerequisites
+
+* Open a Che workspace containing a fork of the documentation. See xref:editing-and-submitting-new-content[].
+
+.Procedure
+
+. Open _My Workspace_.
+
+. To process generated documentation: Open _User Runtimes / bash-curl / Generate reference tables_.
+
+. To build the documentation and start the preview server: open _User Runtimes / che-docs-dev / Start preview server_.
+
+. To validate the language of the files currently open, look at the _Problems_ panel in the _Bottom Panel_. To toggle the view of this panel use the _View > Problems_ menu entry.
+
+. To validate the compliance of an asciidoc file with Modular Documentation guidelines: 
+
+.. In the _Explorer_, right-click on file to validate and select _Copy Path_.
+
+.. Open _User Runtimes / che-docs-dev / Validate Modular Doc_.
+
+.. In the _Validate Modular Doc_ panel in the _Bottom Panel_, paste the path of the file to validate.
+
+.. The tool `+test-adoc+` tests the file and produces some output.
+
+. To validate all links: open _User Runtimes / linkchecker / Validate links_.
+
+
+[id="creating-a-new-topic-using-che"]
+== Creating a new topic using Che
+
+To create a new topic using a Che workspace:
+
+.Procedure
+
+. Open _My Workspace_.
+. Open _User Runtimes / tools / Create a new topic_.
+. Choose the target guide among the available guides:
++
+* `+overview+`: introductory section
+* `+end-user-guide+`: documentation for developers: navigating
+dashboard, working in Che-Theia, and so on
+* `+installation-guide+`: installation guides
+* `+administration-guide+`: documentation for administrators of the
+clusters: configuring Che on a cluster, managing users, monitoring
+resources, security and data recovery
+* `+contributor-guide+`: how to develop plug-ins for Che, add new
+debuggers, languages, and so on
+* `+extensions+`: documentation about extensions for Che, such as
+Eclipse Che4z, OpenShift Connector.
+
+. Choose the topic nature:
++
+* `+assembly+`
+* `+concept+`
+* `+procedure+`
+* `+reference+`
+
+. Enter the title for the new topic.
+
+.Verification steps
+
+. The file is generated in the `+src/main/pages-che-7/<guide_name>/+` directory and the script displays related information.
+
+
+
+== Adding images
+
+.Procedure
+
+. Add images to one of the subdirectories in the `+src/main/che/docs/images/+` directory. Create a new subdirectory if none of the existing ones fits the new image.
+
+. To publish an image, use the following syntax:
++
+....
+image::directory/img.png[alt text]
+....
++
+Images are sized automatically. You can provide a URL to a full-size image, as well as a caption and alt text:
++
+....
+.Click to view a larger image
+[link=che/docs/images/devel/js_flow.png
+image::devel/js_flow.png[Alt text]
+....
+
+Do not post too many images unless it is absolutely necessary. Animated `+.gif+` images are preferred, especially when explaining how to use complex UI features.
+
+== Using special characters
+
+* To prevent special characters from being interpreted as formatting mark-up, use pass-through macros. 
++
+.To escape underscores, asterisks, or backticks, use:
+====
+....
+pass:[VARIABLE_NAME__WITH__UNDERSCORES]
+....
+====
+
+== Building and validating Documentation on a local environment
+
+This section describes how to build and validate the documentation on a local environment.
+
+WARNING: This is not the preferred method. For the supported method, see: xref:building-and-validating-the-documentation-using-che[].
+
+.Prerequisites:
+
+* A running installation of link:http://podman.io[podman] or link:http://docker.io[docker].
+
+* An installation of link:https://github.com/mrksu/newdoc[newdoc].
+
+* An installation of 
+https://errata-ai.gitbook.io/vale/getting-started/installation[vale].
+
+* An installation of https://github.com/linkchecker/linkchecker[linkchecker].
+
+
+.Procedure
+
+. To build documentation locally, run:
++
+----
+$ bash run.sh
+----
+
+. Navigate to `+localhost:4000+` in your browser.
+
+. To create a new topic using, run following command:
++
+----
+$ bash ./tools/newtopic.sh
+----
+
+. To validate the compliance of an Asciidoc file with Modular Documentation standards, execute following command from a `+bash+` terminal, from the root directory of the project:
++
+----
+$ bash ./tools/test-adoc.sh <PATH_TO_THE_FILE>
+----
+
+. To validate compliance of a file with the style guide, execute following command in a terminal, from the root directory of the project:
++
+----
+$ vale <PATH_TO_THE_FILE>"
+----
+
+. To validate links, execute following command in a terminal, from the root directory of the project:
++
+----
+$ linkchecker -f linkcheckerrc  http://0.0.0.0:4000/
+----
+
+
+== Getting support
+
+.GitHub issue
+
+* https://github.com/eclipse/che/issues/new?labels=area/doc,kind/question[image:https://img.shields.io/badge/New-question-blue.svg?style=flat-curved[New
+questions]]
+
+* https://github.com/eclipse/che/issues/new?labels=area/doc,kind/bug[image:https://img.shields.io/badge/New-bug-red.svg?style=flat-curved[New
+bug]]
+
+.Public Chat
+ 
+* Join the public https://mattermost.eclipse.org/eclipse/channels/eclipse-che[eclipse-che Mattermost channel] to talk to the community and contributors.
+
