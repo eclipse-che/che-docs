@@ -56,7 +56,7 @@ data:
 ----
 
 As of {7-15-2-2} version of {prod-short}, the target container annotation has been deprecated. An example of the updated annotation looks as follows:
-+
+
 [source,yaml]
 ----
 apiVersion: v1
@@ -82,3 +82,22 @@ $ kubectl apply -f secret.yaml
 ----
 
 . Start a new workspace. You will see `/home/user/.m2/settings.xml` with your original content in the `maven` container.
+
+=== Openshift 3.11 and Kubernetes <1.13
+
+On Kubernetes versions older than 1.13, it's not possible to have multiple VolumeMounts at same path so having devfile with volume `/home/user/.m2` and secret at `/home/user/.m2/settings.xml` would resolve into the conflict. On these clusters use `/home/user/.m2/repository` as a volume for maven repository in the devfile:
+
+[source,yaml]
+----
+apiVersion: 1.0.0
+metadata:
+  ...
+components:
+ - type: dockerimage
+   alias: maven
+   image: maven:3.11
+   volumes:
+     - name: m2
+       containerPath: /home/user/.m2/repository
+   ...
+----
