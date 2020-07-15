@@ -5,13 +5,13 @@
 [id="using-self-signed-certificates-in-python-projects_{context}"]
 = Using self-signed certificates in Python projects
 
-Internal artifact repositories often do not have a self-signed (SSL) certificate signed by an authority that is trusted by default. They are usually signed by an internal company authority or are self-signed. Configure your tools to accept these certificates.
+Internal artifact repositories often do not have a self-signed TLS certificate signed by an authority that is trusted by default. They are usually signed by an internal company authority or are self-signed. Configure your tools to accept these certificates.
 
 Python uses certificates from a file defined in the `PIP_CERT` environment variable.
 
 .Procedure
 
-. Obtain the certificate from the non-standard repository and place the certificate file in the `/projects/ssl` file to make it accessible from all your containers.
+. Obtain the certificate from the non-standard repository and place the certificate file in the `/projects/tls/rootCA.pem` file to make it accessible from all your containers.
 +
 [NOTE]
 ====
@@ -28,7 +28,7 @@ pip accepts certificates in the Privacy-Enhanced Mail (PEM) format only. Convert
     env:
       - name: 'PIP_INDEX_URL'
         value: 'https://<username>:<password>@pypi.company.com/simple'
-      - value: '/projects/ssl/rootCA.pem'
+      - value: '/projects/tls/rootCA.pem'
         name: 'PIP_CERT'
   - mountSources: true
     memoryLimit: 512Mi
@@ -38,6 +38,6 @@ pip accepts certificates in the Privacy-Enhanced Mail (PEM) format only. Convert
     env:
       - name: 'PIP_INDEX_URL'
         value: 'https://<username>:<password>@pypi.company.com/simple'
-      - value:'/projects/ssl/rootCA.pem'
+      - value: '/projects/tls/rootCA.pem'
         name: 'PIP_CERT'
 ----
