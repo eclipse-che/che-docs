@@ -3,6 +3,6 @@
 [id="machine-token-validation_{context}"]
 = Machine token validation
 
-The validation of machine tokens is performed using a dedicated per-workspace service with `JWTProxy` running on it in a separate Pod. When the workspace starts, this service receives the public part of the SHA key from the {prod-short} server. A separate verification endpoint is created for each secure server. When traffic comes to that endpoint, `JWTProxy` tries to extract the token from the cookies or headers and validates it using the public-key part.
+The validation of machine tokens (JWT tokens) is performed using a dedicated per-workspace service with `JWTProxy` running on it in a separate Pod. When the workspace starts, this service receives the public part of the SHA key from the {prod-short} server. A separate verification endpoint is created for each secure server. When traffic comes to that endpoint, `JWTProxy` tries to extract the token from the cookies or headers and validates it using the public-key part.
 
 To query the {prod-short} server, a workspace server can use the machine token provided in the `CHE_MACHINE_TOKEN` environment variable. This token is the user's who starts the workspace. The scope of such requests is restricted to the current workspace only. The list of allowed operations is also strictly limited.
