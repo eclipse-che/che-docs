@@ -7,48 +7,44 @@
 
 This section describes how to uninstall an instance of {prod} that was installed using the `{prod-cli}` tool.
 
-[IMPORTANT]
-====
-* For {prod-short} installed using the `{prod-cli} server:start` command and the `-n` argument (custom {orch-namespace} specified), use the `-n` argument also to uninstall the {prod-short} instance.
-
-* For installations that did not use the `-n` argument, the created {orch-namespace} is named {prod-namespace} by default.
-====
-
 .Prerequisites
 
-* {prod-short} was installed on an OpenShift cluster using `{prod-cli}`.
-* OpenShift command-line tools (`oc`) and `{prod-cli}` are installed on the local workstation.
-* The user is logged in a {prod-short} cluster using `oc`.
+* The `{prod-cli}` tool is available.
+* The `{orch-cli}` tool is available.
+* The `{prod-cli}` tool installed the {prod-short} instance on {orch-name}.
 
 .Procedure
 
-. Stop the {prod} Server:
+. Sign in to the {orch-name} cluster:
 +
 [subs="+quotes,attributes"]
 ----
-$ {prod-cli} server:stop
+$ {orch-cli} login -u _<username>_ -p _<password>_ _<cluster_URL>_
 ----
 
 . Obtain the name of the {prod-short} namespace:
 +
+[subs="+quotes,attributes"]
 ----
-$ oc get checluster --all-namespaces -o=jsonpath="{.items[*].metadata.namespace}"
+$ {orch-cli} get checluster --all-namespaces -o=jsonpath="{.items[*].metadata.namespace}"
 ----
 
-. Remove {prod-short} from the cluster:
+. Remove the {prod-short} instance from the _<namespace>_ {orch-namespace}:
 +
 [subs="+quotes,attributes"]
 ----
 $ {prod-cli} server:delete -n _<namespace>_
 ----
 +
-This removes all {prod-short} installations from the cluster.
+[TIP]
+====
+When the name of the {orch-namespace} containing the {prod-short} instance is `{prod-namespace}`, the `-n` argument is not necessary.
+====
 
-////
-.Additional resources
+. Remove the  _<namespace>_ {orch-namespace}:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} delete namespaces __<namespace>__
+----
 
-* A bulleted list of links to other material closely related to the contents of the procedure module.
-* Currently, modules cannot include xrefs, so you cannot include links to other content in your collection. If you need to link to another assembly, add the xref to the assembly that includes this module.
-* For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-////
