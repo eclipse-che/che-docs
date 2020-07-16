@@ -79,6 +79,8 @@ parse_content() {
       ENV=${ENV//./_}                                   # replace dots with single underscore
       VALUE="${VALUE/ }"                                # trim first space
       VALUE="\`+${VALUE}+\`"                            # make sure asciidoc doesn't mix it up with attributes
+      VALUE="${VALUE/\`++\`}"                           # remove empty value `++`
+      
       DESCR_BUFF="$(sed 's| {\([^}]*\)}| `+{\1}+`|g' <<< $DESCR_BUFF)"    # make sure asciidoc doesn't mix it up with attributes
       DESCR_BUFF="$(sed 's|\${\([^}]*\)}|$++{\1}++|g' <<< $DESCR_BUFF)"   # make sure asciidoc doesn't mix it up with attributes
       DESCR_BUFF="$(sed 's|\(Eclipse \)\?\bChe\b|{prod-short}|g' <<< $DESCR_BUFF)"   # (Eclipse) Che -> {prod-short}
