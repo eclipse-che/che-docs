@@ -1,3 +1,7 @@
+//Module is included in
+//
+// * caching-images-for-faster-workspace-start
+
 [id="deploying-image-puller-using-operator_{context}"]
 = Deploying Image Puller using the Operator
 
@@ -5,13 +9,24 @@ The recommended way to deploy the Image Puller is through the link:https://githu
 
 == Installing the Image Puller on OpenShift using OperatorHub
 
-First, create a {orch-namespace} in your cluster to host the image puller.  Our example will use the {orch-namespace} "image-puller".
+.Prerequisites
 
-Navigate to your OpenShift cluster's console, and select *Operators*.  Select *OperatorHub* and type "image puller" into the "Filter by keyword.." search bar.  Click the *Kubernetes Image Puller Operator*, click *Continue* and click *Install*.  At the *Installation Mode* selection, choose *A specific {orch-namespace} on the cluster*, and use the drop-down to find the {orch-namespace} you created to install the image puller.  Click *Subscribe*.  
+* A {orch-namespace} in your cluster to host the image puller. This document uses the {orch-namespace} `image-puller` as an example.
 
-Wait for the Kubernetes Image Puller Operator to install, and click the installation.  Click the *KubernetesImagePuller* tab, and then click *Create instance*.  You will be taken to a screen with a YAML editor with a `KubernetesImagePuller` Custom Resource.  Make any modifications to the Custom resource and click *Create*.
+.Procedure
+. Navigate to your OpenShift cluster console, navigate to btn:[*Operators*] → btn:[*OperatorHub*].  
 
-Navigate to the *Workloads* and *Pods* menu in the {orch-namespace} that the image puller was installed, and you should see pods being created.
+. Use the btn:[*Filter by keyword*] box to search for `Kubernetes Image Puller Operator`. Click the btn:[Kubernetes Image Puller Operator].
+
+. Read the description of the Operator. Click btn:[*Continue*] → btn:[*Install*].
+
+. Select btn:[*A specific {orch-namespace} on the cluster*] for the btn:[*Installation Mode*]. In the drop-down find the {orch-namespace} you created to install the image puller. Click btn:[*Subscribe*].  
+
+. Wait for the Image Puller Operator to install. Click the btn:[*KubernetesImagePuller*] → btn:[*Create instance*]. 
+
+. In a redirected window with a YAML editor, make modifications to the `KubernetesImagePuller` Custom Resource and click btn:[*Create*].
+
+. Navigate to the btn:[*Workloads*] and btn:[*Pods*] menu in the {orch-namespace} and verify that the image puller is installed.
 
 
 ifeval::["{project-context}" == "che"]
