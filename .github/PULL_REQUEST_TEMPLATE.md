@@ -7,3 +7,11 @@
 
 
 ### Specify the version of the product this PR applies to. 
+
+### Pull Request Checklist
+
+Make sure that we all those checks befor merging the PR:
+
+- [ ] `vale` validation
+- [ ] link checker validation
+- [ ] QE Team Approval
