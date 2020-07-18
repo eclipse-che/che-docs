@@ -15,4 +15,4 @@ Before merging the PR the following items must be checked:
 
 - [ ] `vale` has been run successufully against the PR branch
 - [ ] link checker has been run successfully against the PR branch
-- [ ] Che QE team has been contacted and approves the PR
+- [ ] documentation describes a scenario that is already covered by QE tests, otherwise an issue has been created and acknoledeged by Che QE team
