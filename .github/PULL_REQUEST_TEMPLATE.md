@@ -8,10 +8,11 @@
 
 ### Specify the version of the product this PR applies to. 
 
+
 ### Pull Request Checklist
 
-Make sure that we all those checks befor merging the PR:
+Before merging the PR the following items must be checked:
 
-- [ ] `vale` validation
-- [ ] link checker validation
-- [ ] QE Team Approval
+- [ ] `vale` has been run successufully against the PR branch
+- [ ] link checker has been run successfully against the PR branch
+- [ ] Che QE team has been contacted and approves the PR
