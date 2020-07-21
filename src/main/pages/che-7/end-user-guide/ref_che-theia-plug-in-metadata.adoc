@@ -9,71 +9,80 @@ Che-Theia plug-in metadata is information about individual plug-ins for the plug
 
 The Che-Theia plug-in metadata, for each specific plug-in, is defined in a `meta.yaml` file. 
 
-The link:https://github.com/eclipse/che-plugin-registry/tree/master/v3/plugins[che-plugin-registry repository] contains .
+Here is an overview of all fields that can be available in plugin meta YAML files. This document represents the link:https://github.com/eclipse/che-plugin-registry#plugin-meta-yaml-structure[Plugin meta YAML structure version 3].
+
+The link:https://github.com/eclipse/che-plugin-registry/tree/master/v3/plugins[che-plugin-registry repository] contains:
 
 .`meta.yml`
+|===
+|`apiVersion`| Version 2 and higher where version is 1 supported for backwards compatibility 
+|`category`| Available: Category must be set to one of the followings: `Editor`, `Debugger`, `Formatter`, `Language`, `Linter`, `Snippet`, `Theme`, `Other`
+|`description`| Short description of plugin's purpose
+|`displayName`| Name shown in user dashboard
+|`Deprecate` | Optional; section for deprecating plugins in favor of others
 
-:===
-`apiVersion`: API version (`v2`and higher)
-`category`: Available\: `Language`, `Other`
-`description`: Description (a phrase)
-`displayName`: Display name
-`firstPublicationDate`: Date in the form `"YYYY-MM-DD"` Example\: `"2019-12-02"`
-`icon`: URL of an SVG icon
-`name`: Name (no spaces allowed)
-`publisher`: Name of the publisher
-`repository`: URL of the source repository
-`title`: Title (long)
-`type`: `Che Plugin`, `VS Code extension`
-`version`: Version information, for example\: `7.5.1`
-`spec`: Specifications (see underneath)
-:===
+            * autoMigrate - boolean 
+            
+            * migrateTo - new org/plugin-id/version, for example `redhat/vscode-apache-camel/latest`
+|`firstPublicationDate`| Not required to be present in YAML, as if not present, it will be generated during Plugin Registry dockerimage build
+|`latestUpdateDate`| Not required to be present in YAML, as if not present, it will be generated during Plugin Registry dockerimage build
+|`icon`| URL of an SVG or PNG icon
+|`name`| Name (no spaces allowed), must match [-a-z0-9]
+|`publisher`| Name of the publisher, must match [-a-z0-9]
+|`repository`| URL for plugin repository, for example, GitHub
+|`title`|  Plugin title (long)
+|`type`| `Che Plugin`, `VS Code extension`
+|`version`| Version information, for example: 7.5.1, [-.a-z0-9]
+|`spec`| Specifications (see below)
+|===
 
 .`spec` attributes
-:===
-`endpoints`: Plug-in endpoints
-`containers`: Sidecar containers for the plug-in. `Che Plugin` and `VS Code extension` supports only one container
-`initContainers`: Sidecar init containers for the plug-in
-`workspaceEnv`: Environment variables for the workspace
-`extensions`: Optional attribute required for VS Code and Che-Theia plug-ins. A list of URLs to plug-in artefacts, such as `.vsix` or `.theia` files
-:===
+|===
+|`endpoints` | Optional; plugin endpoint. See link:https://www.eclipse.org/che/docs/che-7/making-a-workspace-portable-using-a-devfile/#endpoints[endpoint description]
+|`containers`| Optional; sidecar containers for the plug-in. Che Plugin and VS Code extension supports only one container
+|`initContainers`| Optional; sidecar init containers for the plug-in
+|`workspaceEnv`| Optional; environment variables for the workspace
+|`extensions`| Optional; Attribute that is required for VS Code and Che-Theia plug-ins in a form list of URLs to plug-in artefacts, such as .vsix or .theia files
+|===
 
 .`spec.containers`. Notice: `spec.initContainers` has absolutely the same container definition.
-:===
-`name`: Sidecar container name
-`image`: Absolute or relative container image URL 
-`memoryLimit`: Kubernetes or OpenShift memory limit string, for example `512Mi`
-`memoryRequest`: Kubernetes or OpenShift memory request string, for example `512Mi`
-`cpuLimit`: Kubernetes or OpenShift CPU limit string, for example `2500m`
-`cpuRequest`: Kubernetes or OpenShift CPU request string, for example `125m`
-`env`: List of environment variables to set in the sidecar
-`command`: String array definition of the root process command in the container
-`args`: String array arguments for the root process command in the container
-`volumes`: Volumes required by the plug-in
-`ports`: Ports exposed by the plug-in (on the container)
-`commands`: Development commands available to the plug-in container
-`mountSources`: Boolean flag to bound volume with source code `/projects` to the plug-in container
-:===
+|===
+|`name` | Sidecar container name
+|`image` | Absolute or relative container image URL 
+|`memoryLimit` | OpenShift memory limit string, for example `512Mi`
+|`memoryRequest` | OpenShift memory request string, for example `512Mi`
+|`cpuLimit` | OpenShift CPU limit string, for example `2500m`
+|`cpuRequest` | OpenShift CPU request string, for example `125m`
+|`env` | List of environment variables to set in the sidecar
+|`command` | String array definition of the root process command in the container
+|`args` | String array arguments for the root process command in the container
+|`volumes` | Volumes required by the plug-in
+|`ports` | Ports exposed by the plug-in (on the container)
+|`commands` | Development commands available to the plug-in container
+|`mountSources` | Boolean flag to bound volume with source code `/projects` to the plug-in container
+|`initContainers` | Optional; init containers for sidecar plugin
+|`Lifecycle` | Container lifecycle hooks. See link:https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/[`lifecycle` description]
+|===
 
-.`spec.containers.env` (and `spec.initContainers.env`) attributes. Notice: `workspaceEnv` has absolutely the same attributes
-:===
-`name`: Environment variable name
-`value`: Environment variable value
-:===
+.`spec.containers.env` and `spec.initContainers.env` attributes. Notice:  `workspaceEnv` has absolutely the same attributes
+|===
+|`name`| Environment variable name
+|`value`| Environment variable value
+|===
 
-.`spec.containers.volumes` (and `spec.initContainers.volumes`) attributes
+.`spec.containers.volumes` and `spec.initContainers.volumes` attributes
 :===
 `mountPath`: Path to the volume in the container
 `name`: Volume name
 `ephemeral`: If true, the volume is ephemeral, otherwise the volume is persisted
 :===
 
-.`spec.containers.ports` (and `spec.initContainers.ports`) attributes
+.`spec.containers.ports` and `spec.initContainers.ports` attributes
 :===
 `exposedPort`: Exposed port
 :===
 
-.`spec.containers.commands` (and `spec.initContainers.commands`) attributes
+.`spec.containers.commands` and `spec.initContainers.commands` attributes
 :===
 `name`: Command name
 `workingDir`: Command working directory
@@ -82,7 +91,7 @@ The link:https://github.com/eclipse/che-plugin-registry/tree/master/v3/plugins[c
 
 .`spec.endpoints` attributes
 :===
-`name`: Name (no spaces allowed)
+`name`: Name (no spaces allowed), must match [-a-z0-9]
 `public`: `true`, `false`
 `targetPort`: Target port
 `attributes`: Endpoint attributes
@@ -97,6 +106,19 @@ The link:https://github.com/eclipse/che-plugin-registry/tree/master/v3/plugins[c
 `cookiesAuthEnabled`: `true`, `false`
 :===
 
+.`spec.containers.lifecycle` and `spec.initContainers.lifecycle` attributes
+|===
+|`postStart` | The `postStart` event that runs immediately after a Container is started. See link:https://kubernetes.io/docs/tasks/configure-pod-container/attach-handler-lifecycle-event/[postStart and preStop handlers] 
+
+* `exec`: Executes a specific command, resources consumed by the command are counted against the Container 
+
+* `command`: ["/bin/sh", "-c", "/bin/post-start.sh"] 	
+|`preStop` | The `preStop` event that runs before a Container is terminated. See link:https://kubernetes.io/docs/tasks/configure-pod-container/attach-handler-lifecycle-event/[postStart and preStop handlers]
+ 
+* `exec`: Executes a specific command, resources consumed by the command are counted against the Container 
+
+* `command`: ["/bin/sh", "-c", "/bin/post-start.sh"] 	
+|===
 
 .Example `meta.yaml` for a Che-Theia plug-in: the {prod-short} machine-exec Service
 [source,yaml,subs="+quotes,+attributes"]
