@@ -1,4 +1,4 @@
-[id="che-server"]
+[id="LChe-server"]
 .Che server 
 
 ,=== 
@@ -46,7 +46,7 @@
  `+CHE_WORKSPACE_STOP_ROLE_ENABLED+`,"`+true+`","If true, 'stop-workspace' role with the edit privileges will be granted to the 'che' ServiceAccount if OpenShift OAuth is enabled. This configuration is mainly required for workspace idling when the OpenShift OAuth is enabled." 
 ,=== 
 
-[id="templates"]
+[id="LTemplates"]
 .Templates 
 
 ,=== 
@@ -55,7 +55,7 @@
  `+CHE_TEMPLATE_STORAGE+`,"`+${che.home}/templates+`","Folder that contains JSON files with code templates and samples" 
 ,=== 
 
-[id="authentication-parameters"]
+[id="LAuthentication-parameters"]
 .Authentication parameters 
 
 ,=== 
@@ -75,7 +75,7 @@
  `+CHE_OAUTH_OPENSHIFT_VERIFY__TOKEN__URL+`,"`+NULL+`","ConfigurationofOpenShiftOAuth client. Used to obtain OpenShift OAuth token." 
 ,=== 
 
-[id="internal"]
+[id="LInternal"]
 .Internal 
 
 ,=== 
@@ -96,7 +96,7 @@
  `+DB_SCHEMA_FLYWAY_SCRIPTS_LOCATIONS+`,"`+classpath:che-schema+`","DBinitializationandmigrationconfiguration" 
 ,=== 
 
-[id="kubernetes-infra-parameters"]
+[id="LKubernetes-Infra-parameters"]
 .Kubernetes Infra parameters 
 
 ,=== 
@@ -143,7 +143,7 @@
  `+CHE_INFRA_KUBERNETES_RUNTIMES__CONSISTENCY__CHECK__PERIOD__MIN+`,"`+-1+`","Defines the period with which runtimes consistency checks will be performed. If runtime has inconsistent state then runtime will be stopped automatically. Value must be more than 0 or `-1`, where `-1` means that checks won't be performed at all. It is disabled by default because there is possible {prod-short} Server configuration when {prod-short} Server doesn't have an ability to interact with Kubernetes API when operation is not invoked by user. It DOES work on the following configurations: - workspaces objects are created in the same namespace where {prod-short} Server is located; - cluster-admin service account token is mount to {prod-short} Server pod; It DOES NOT work on the following configurations: - {prod-short} Server communicates with Kubernetes API using token from OAuth provider;" 
 ,=== 
 
-[id="openshift-infra-parameters"]
+[id="LOpenShift-Infra-parameters"]
 .OpenShift Infra parameters 
 
 ,=== 
@@ -155,7 +155,7 @@
  `+CHE_SINGLEPORT_WILDCARD__DOMAIN_IPLESS+`,"`+false+`","Enable single port custom DNS without inserting the IP" 
 ,=== 
 
-[id="experimental-properties"]
+[id="LExperimental-properties"]
 .Experimental properties 
 
 ,=== 
@@ -167,7 +167,8 @@
  `+CHE_WORKSPACE_PLUGIN__BROKER_WAIT__TIMEOUT__MIN+`,"`+3+`","Defines the timeout in minutes that limits the max period of result waiting for plugin broker." 
  `+CHE_WORKSPACE_PLUGIN__REGISTRY__URL+`,"`+https://che-plugin-registry.prod-preview.openshift.io/v3+`","Workspace tooling plugins registry endpoint. Should be a valid HTTP URL. `+Example: http://che-plugin-registry-eclipse-che.192.168.65.2.nip.io+` In case {prod-short} plugins tooling is not needed value 'NULL' should be used" 
  `+CHE_WORKSPACE_DEVFILE__REGISTRY__URL+`,"`+https://che-devfile-registry.prod-preview.openshift.io/+`","Devfile Registry endpoint. Should be a valid HTTP URL. `+Example: http://che-devfile-registry-eclipse-che.192.168.65.2.nip.io+` In case {prod-short} plugins tooling is not needed value 'NULL' should be used" 
- `+CHE_WORKSPACE_PERSIST__VOLUMES_DEFAULT+`,"`+true+`","Defines a default value for persist volumes that clients like Dashboard should propose for users during workspace creation. Possible values: true or false In case of true - PersistentVolumeClaims are used by declared volumes by user and plugins. `true` value is supposed not to be set explicitly in Devfile attributes since it's default fixed behaviour. In case of false - emptyDir is used instead of PVCs. Note that data will be lost after workspace restart." 
+ `+CHE_WORKSPACE_STORAGE_AVAILABLE__TYPES+`,"`+persistent,ephemeral,async+`","The configuration property that defines available values for storage types that clients like Dashboard should propose for users during workspace creation/update. Available values:   - 'persistent': Persistent Storage slow I/O but persistent.   - 'ephemeral': Ephemeral Storage allows for faster I/O but may have limited storage       and is not persistent.   - 'async': Experimental feature: Asynchronous storage is combination of Ephemeral       and Persistent storage. Allows for faster I/O and keep your changes, will backup on stop       and restore on start workspace.       Will work only if:           - che.infra.kubernetes.pvc.strategy='common'           - che.limits.user.workspaces.run.count=1           - che.infra.kubernetes.namespace.allow_user_defined=false           - che.infra.kubernetes.namespace.default contains <username>      in other cases remove 'async' from the list." 
+ `+CHE_WORKSPACE_STORAGE_PREFERRED__TYPE+`,"`+persistent+`","The configuration property that defines a default value for storage type that clients like Dashboard should propose for users during workspace creation/update. The 'async' value not recommended as default type since it's experimental" 
  `+CHE_SERVER_SECURE__EXPOSER+`,"`+default+`","Configures in which way secure servers will be protected with authentication. Suitable values:   - 'default': jwtproxy is configured in a pass-through mode.       So, servers should authenticate requests themselves.   - 'jwtproxy': jwtproxy will authenticate requests.       So, servers will receive only authenticated ones." 
  `+CHE_SERVER_SECURE__EXPOSER_JWTPROXY_TOKEN_ISSUER+`,"`+wsmaster+`","Jwtproxy issuer string, token lifetime and optional auth page path to route unsigned requests to." 
  `+CHE_SERVER_SECURE__EXPOSER_JWTPROXY_TOKEN_TTL+`,"`+8800h+`","Jwtproxyissuer string, token lifetime and optional auth page path to route unsigned requests to." 
@@ -177,7 +178,7 @@
  `+CHE_SERVER_SECURE__EXPOSER_JWTPROXY_CPU__LIMIT+`,"`+0.5+`","Jwtproxyissuerstring,tokenlifetimeand optional auth page path to route unsigned requests to." 
 ,=== 
 
-[id="configuration-of-major-websocket-endpoint"]
+[id="LConfiguration-of-major-websocket-endpoint"]
 .Configuration of major "/websocket" endpoint 
 
 ,=== 
@@ -188,7 +189,7 @@
  `+CHE_CORE_JSONRPC_PROCESSOR__QUEUE__CAPACITY+`,"`+100000+`","Configuration of queue used to process Json RPC messages." 
 ,=== 
 
-[id="configuration-of-major-websocket-minor-endpoint"]
+[id="LConfiguration-of-major-websocket-minor-endpoint"]
 .Configuration of major "/websocket-minor" endpoint 
 
 ,=== 
@@ -200,7 +201,7 @@
  `+CHE_METRICS_PORT+`,"`+8087+`","Port the the http server endpoint that would be exposed with Prometheus metrics" 
 ,=== 
 
-[id="cors-settings"]
+[id="LCORS-settings"]
 .CORS settings 
 
 ,=== 
@@ -210,7 +211,7 @@
  `+CHE_CORS_ALLOW__CREDENTIALS+`,"`+false+`","'cors.support.credentials' indicates if it allows processing of requests with credentials (in cookies, headers, TLS client certificates)" 
 ,=== 
 
-[id="factory-defaults"]
+[id="LFactory-defaults"]
 .Factory defaults 
 
 ,=== 
@@ -220,7 +221,7 @@
  `+CHE_FACTORY_DEFAULT__PLUGINS+`,"`+eclipse/che-machine-exec-plugin/nightly+`","Editorand plugin which will be used for factories which are created from remote git repository which doesn't contain any `+{prod-short}+`-specific workspace descriptors (like .devfile of .factory.json) Multiple plugins must be comma-separated, for example: pluginFooPublisher/pluginFooName/pluginFooVersion,pluginBarPublisher/pluginBarName/pluginBarVersion" 
 ,=== 
 
-[id="devfile-defaults"]
+[id="LDevfile-defaults"]
 .Devfile defaults 
 
 ,=== 
@@ -233,7 +234,7 @@
  `+CHE_INFRA_KUBERNETES_ASYNC_STORAGE_IMAGE+`,"`+quay.io/eclipse/che-workspace-data-sync-storage:latest#+`","Docker image for the {prod-short} async storage" 
 ,=== 
 
-[id="che-system"]
+[id="LChe-system"]
 .Che system 
 
 ,=== 
@@ -243,7 +244,7 @@
  `+CHE_SYSTEM_ADMIN__NAME+`,"`+admin+`","Grant system permission for 'che.admin.name' user. If the user already exists it'll happen on component startup, if not - during the first login when user is persisted in the database." 
 ,=== 
 
-[id="workspace-limits"]
+[id="LWorkspace-limits"]
 .Workspace limits 
 
 ,=== 
@@ -254,7 +255,7 @@
  `+CHE_LIMITS_WORKSPACE_RUN_TIMEOUT+`,"`+0+`","The length of time in milliseconds that a workspace will run, regardless of activity, before the system will suspend it.  Set this property if you want to automatically stop workspaces after a period of time.  The default is zero, meaning that there is no run timeout." 
 ,=== 
 
-[id="users-workspace-limits"]
+[id="LUsers-workspace-limits"]
 .Users workspace limits 
 
 ,=== 
@@ -265,7 +266,7 @@
  `+CHE_LIMITS_USER_WORKSPACES_RUN_COUNT+`,"`+1+`","The maximum number of running workspaces that a single user is allowed to have. If the user has reached this threshold and they try to start an additional workspace, they will be prompted with an error message. The user will need to stop a running workspace to activate another." 
 ,=== 
 
-[id="organizations-workspace-limits"]
+[id="LOrganizations-workspace-limits"]
 .Organizations workspace limits 
 
 ,=== 
@@ -277,7 +278,7 @@
  `+CHE_MAIL_FROM__EMAIL__ADDRESS+`,"`+che@noreply.com+`","Address that will be used as from email for email notifications" 
 ,=== 
 
-[id="organizations-notifications-settings"]
+[id="LOrganizations-notifications-settings"]
 .Organizations notifications settings 
 
 ,=== 
@@ -293,7 +294,7 @@
  `+CHE_ORGANIZATION_EMAIL_ORG__RENAMED__TEMPLATE+`,"`+st-html-templates/organization_renamed+`","" 
 ,=== 
 
-[id="multi-user-specific-openshift-infrastructure-configuration"]
+[id="LMulti-user-specific-OpenShift-infrastructure-configuration"]
 .Multi-user-specific OpenShift infrastructure configuration 
 
 ,=== 
@@ -302,7 +303,7 @@
  `+CHE_INFRA_OPENSHIFT_OAUTH__IDENTITY__PROVIDER+`,"`+NULL+`","Alias of the Openshift identity provider registered in Keycloak, that should be used to create workspace OpenShift resources in Openshift namespaces owned by the current {prod-short} user. Should be set to NULL if `che.infra.openshift.project` is set to a non-empty value. For more information see the following documentation: https://www.keycloak.org/docs/latest/server_admin/index.html#openshift-4" 
 ,=== 
 
-[id="keycloak-configuration"]
+[id="LKeycloak-configuration"]
 .Keycloak configuration 
 
 ,=== 
@@ -313,7 +314,7 @@
  `+CHE_KEYCLOAK_CLIENT__ID+`,"`+che-public+`","Keycloak client id in che.keycloak.realm that is used by dashboard, ide and cli to authenticate users" 
 ,=== 
 
-[id="redhat-che-specific-configuration"]
+[id="LRedHat-Che-specific-configuration"]
 .RedHat Che specific configuration 
 
 ,=== 
