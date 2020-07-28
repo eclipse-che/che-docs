@@ -7,10 +7,10 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-FROM ruby:2.6-alpine
+FROM ruby:2.6-alpine3.12
 COPY src/main/Gemfile* /tmp/
 
-RUN apk add --no-cache --update libstdc++ bash ca-certificates curl python3 grep perl libxml2-dev xmlstarlet \
+RUN apk add --no-cache --update libstdc++ bash ca-certificates curl git python3 py3-pip grep perl libxml2-dev xmlstarlet \
     && apk add --no-cache --virtual build-dependencies build-base \
     && cd /tmp \
     && time bundle install --no-cache --frozen \
