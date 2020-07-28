@@ -7,11 +7,11 @@ Since 7.17.0 Eclipse Che supports three types of storage with different capabili
 
 .Persistent storage
 
-This kind of storage gives you an ability to store your changes directly in the mounted Persistent Volume. In this case your changes will be totally safe and Kubernetes infrastructure takes care of it (storage backend in particular), but the price for that is slow I/O, especially with a huge amount of small files. For example, some NodeJS projects may have many dependencies and node_modules is filled with thousands of small files.  
+Persistent storage saves your changes directly in a mounted Persistent Volume. This option has the benefit of saving directly to a persistent store, but may encounter issues related to the storage plugin used for the Persistent Volume such as slow I/O or synchronization conflicts when modifying a large number of files. An example of when such an error can occur is when downloading dependencies for a NodeJS project, as the `node_modules` folder can contain thousands of small files.
 
 NOTE: Speed of I/O varies depending on the link:https://kubernetes.io/docs/concepts/storage/storage-classes/[Storage Classes] configured in the environment.
 
-For now this is the default mode for any new workspace, no additional attributes are required. If you want to explicitly make this setting visible in your workspace configuration you can add:
+This is the default mode for new workspace, and thus applies when the workspace configuration does not specify otherwise. If you want to explicitly make this setting visible in your workspace configuration you can add:
 [source,yaml]
 ----
 attributes:
@@ -20,11 +20,10 @@ attributes:
 
 .Ephemeral Storage
 
-With this kind of storage, files are mounted to the link:https://kubernetes.io/docs/concepts/storage/volumes/#emptydir[`emptyDir`] volume. As the name says, it is initially empty. When a Pod is removed from a node for any reason, the data in the `emptyDir` is deleted forever. This means that all the changes will be lost once the workspace is stopped or restarted for any reason.
+Ephemeral storage uses an link:https://kubernetes.io/docs/concepts/storage/volumes/#emptydir[`emptyDir`] volume to store workspace files. Such volumes exist only while the Kubernetes Pod they are attached to is running; if the pod is removed for any reason, all files stored in the volume are lost. While ephemeral storage provides fast I/O, it is necessary to ensure all changes are pushed to a remote repository, such as GitHub.
 
-WARNING: To save the changes, commit and push to the remote before stopping an ephemeral workspace. Otherwise, all the changes will be lost.
+WARNING: To save the changes, commit and push any changes to a remote repository before stopping an ephemeral workspace. Otherwise, all the changes will be lost.
 
-Thus, you need to take care of committing and pushing your changes to the remote before stopping a workspace. At the same time Ephemeral mode gives you faster I/O, as a result it will work fast for any kind of project. To enable this storage type add the following to your workspace configuration:
 [source,yaml]
 ----
 attributes:
@@ -48,18 +47,15 @@ attributes:
 |44m 53s
 |===
 
-.Asynchronous storage (Experimental)
+.Asynchronous storage (experimental)
 
-This is a combination of the above two. The initial workspace container will mount an `emptyDir`, however, the changes will be restored on workspace start and a backup is performed on workspace stop. This storage type also offers fast I/O (similar to the ephemeral mode) and workspace project changes are persisted.
+This is a combination of persistent and ephemeral storage. The workspace container will mount an emptyDir volume that is synchronized asynchronously with a persistent volume that stores workspace files. It has the benefits of fast I/O while allowing for persistence between workspace runs.
 
-Synchronization is powered by link:https://rsync.samba.org/[`rsync`] via the link:https://www.openssh.com/[SSH] protocol. When a workspace is configured with an asynchronous storage type, the link:https://github.com/che-incubator/workspace-data-sync/[workspace-data-sync] plugin is automatically added to the workspace configuration. The plugin runs `rsync` command on workspace start to restore changes if they exist. When a workspace is stopped, it sends changes to the permanent storage. The `rsync` process can take some time -  for relatively small projects the restore procedure is completed fast and you can see project source files and folders immediately after Che Theia is initialized. If `rsync` takes a longer time, the synchronization process is shown in Che Theia UI status bar area. (link:https://github.com/eclipse/che-theia/tree/master/extensions/eclipse-che-theia-file-sync-tracker][Extension in Che Theia repository]).
+Synchronization is powered by link:https://rsync.samba.org/[`rsync`] via the link:https://www.openssh.com/[SSH] protocol. When a workspace is configured with an asynchronous storage type, the link:https://github.com/che-incubator/workspace-data-sync/[workspace-data-sync] plugin is automatically added to the workspace configuration. This plugin will run `rsync` on workspace start to restore changes if they exist. When a workspace is stopped, it will synchronize changes with the backing permanent storage. The rsync process can take some time, so a workspace may be slower than when using persistent or ephemeral storage. For large projects, synchronization progress is shown in the Che Theia UI status bar. (link:https://github.com/eclipse/che-theia/tree/master/extensions/eclipse-che-theia-file-sync-tracker][Extension in Che Theia repository]).
 
 image::troubleshooting/status-bar-file-sync.png[link="{imagesdir}/troubleshooting/status-bar-file-sync.png",Files synchronization progress]
-'''
-NOTE:  Currently, this mode has some limitations, such as:
-supports only with ‘common’ PVC strategy;
-only  ‘per-user’ namespace strategy is supported;
-a user can simultaneously  run only 1 workspace with asynchronous storage
+
+NOTE: This mode has some limitations: it requires the {prod-short} server to be configured with the ‘common’ PVC strategy and the 'per-user' namespace strategy, and at most one workspace per user can run concurrently.
 
 To configure asynchronous storage for your workspace add the following to workspace configuration:
 [source,yaml]
@@ -69,11 +65,11 @@ attributes:
  persistVolumes: 'false'
 ----
 
-Aslo two new properties added to `che.properties` that can be used to configure behavior of a client like Che UserDashboard:
+The following properties can be set in `che.properties` to configure the behavior of a client such as the User Dashboard:
 
-`che.workspace.storage.available_types`: this configuration property defines available values for storage types that clients like Dashboard should propose for users during workspace creation/update. Available values: 'persistent’,'ephemeral', 'async'. You can use several type comma separate (e.g. `che.workspace.storage.available_types=persistent,ephemeral,async`)
+`che.workspace.storage.available_types`: this configuration property defines a comma-separated list of available values for storage types that clients like Dashboard should propose for users during workspace creation/update. Available values: 'persistent’,'ephemeral', 'async' (e.g. `che.workspace.storage.available_types=persistent,ephemeral,async`).
 
-`che.workspace.storage.preferred_type`: this configuration property defines a default value for storage type that clients like Dashboard should propose for users during workspace creation/update. The 'async' value not recommended as a default type since it's still experimental (e.g. `che.workspace.storage.preferred_type=persistent`)
+`che.workspace.storage.preferred_type`: this configuration property defines the default storage type that clients like the User Dashboard should propose for users during workspace creation/update. The 'async' value not recommended as a default type since it's still experimental (e.g. `che.workspace.storage.preferred_type=persistent`)
 
 The Storage Type switcher is available on the *Create Custom Workspace* page of the User Dashboard:
 
