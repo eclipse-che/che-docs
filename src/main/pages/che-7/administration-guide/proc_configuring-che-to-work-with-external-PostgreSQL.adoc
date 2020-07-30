@@ -1,0 +1,65 @@
+// deploying-the-registries
+
+[id="configuring-che-to-work-with-external-PostgreSQL_{context}"]
+= Configuring {prod-short} to work with an external PostgreSQL
+
+.Prerequisites
+
+* The `{orch-cli}` tool is available.
+
+.Procedure
+
+. Pre-create a {orch-namespace} for {prod-short}:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} create namespace {prod-namespace}
+----
+
+. Create a secret to store {prod-short} server database credentials:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} create secret generic <server-database-credentials> \ <1>
+--from-literal=user=<database-user> \                            <2>
+--from-literal=password=<database-password> \                    <3>
+-n {prod-namespace}
+----
+<1> Secret name to store {prod-short} server database credentials
+<2> {prod-short} server database username
+<3> {prod-short} server database password
+
+. Create a secret to store {identity-provider} database credentials:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} create secret generic <identity-database-credentials> \ <1>
+--from-literal=user=<identity-database-user> \                     <2>
+--from-literal=password=<identity-database-password> \             <3>
+-n {prod-namespace}
+----
+<1> Secret name to store {identity-provider} database credentials
+<2> {identity-provider} database username
+<3> {identity-provider} database password
+
+. To make the Operator skip deploying a database and pass connection details of an existing database to a {prod-short} server set the following values in the Custom Resource:
++
+[subs="+quotes,+attributes"]
+----
+spec:
+  database:
+    externalDb: true
+    chePostgresHostName: <hostname>                     <1>
+    chePostgresPort: <port>                             <2>
+    chePostgresSecret: <server-database-credentials>    <3>
+    chePostgresDb: <database>                           <4>
+spec:
+  auth:
+    identityProviderPostgresSecret: <identity-database-credentials> <5>
+----
+<1> External database hostname
+<2> External database port
+<3> Secret name with {prod-short} server database credentials
+<4> {prod-short} server database username
+<5> Secret name with {identity-provider} database credentials
+
