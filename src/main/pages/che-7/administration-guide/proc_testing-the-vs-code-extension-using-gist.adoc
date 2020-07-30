@@ -1,0 +1,252 @@
+// Module included in the following assemblies:
+//
+// assembly_testing-a-visual-studio-code-extension-in-che
+
+[id="testing-the-vs-code-extension-using-gist_{context}"]
+= Testing a VS Code extension using Github gist
+
+.Introduction
+
+Each workspace can have its own set of plug-ins. This definition of plug-ins consists in the `devfile.yaml` file containing as well the list of projects to clone.
+
+For example, enabling AsciiDoc plug-in from the {prod} dashboard is adding the following snippet in the devfile:
+
+[source,yaml,subs="+quotes"]
+----
+components:
+ - id: joaopinto/vscode-asciidoctor/latest
+   type: chePlugin
+----
+
+What if the plug-in is not in the default {prod} plug-in registry ?
+
+First idea, already documented {link-building-a-custom-plug-in-registry} consists to fork the current plug-in-registry repository, rebuild the docker image, deploy it and use this registry. It’s powerful for ‘in-house’ use-cases, etc but it can be a big effort at first.
+
+Second idea, simpler for a test, consists of using Github and its gist service.
+
+.Prerequisites
+
+* A running instance of {prod}. To install an instance of {prod}, see {link-installing-an-instance}.
+
+* Github account.
+
+.Procedure
+
+* Go on https://gist.github.com/ and create a README.md file with description `Try Bracket Pair Colorizer extension in {prod}` and content `Example of VS Code extension`
+The name is coming from https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer with its 3M of downloads as being the extension to test.
+
+* Click on Create secret gist button
+
+image::workspaces/vscode-gist-setup.png[]
+
+Behind a gist, there is a git repository
+
+Clone this repository by using the URL from the navbar of the browser
+
+Git clone command will look like:
+
+[subs="+quotes"]
+----
+$ git clone https://gist.github.com/<github-username>/<very-long-id>                                                                            
+----
+
+
+[subs="+quotes"]
+----
+git clone https://gist.github.com/benoitf/85c60c8c439177ac50141d527729b9d9 <1>                                                               
+Cloning into '85c60c8c439177ac50141d527729b9d9'...
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (3/3), done.
+----
+<1> this URL is an example, each gist has its own URL
+
+then enter into this cloned directory
+[subs="+quotes"]
+----
+$ cd 85c60c8c439177ac50141d527729b9d9 <1>
+----
+<1> this folder name is an example, each gist has its own URL and then directory is different each time.
+
+Then perform these actions:
+
+* Download the plug-in from the VS Code marketplace https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer or from its github page https://github.com/CoenraadS/BracketPair/releases and store the file in the cloned directory
+* Add a definition of this plug-in through a yaml file by creating a `plugin.yaml` file in the cloned directory
+
+Content of the new `plugin.yaml` file referencing the `.vsix` binary file extension:
+
+[source,yaml,subs="+quotes"]
+----
+apiVersion: v2
+publisher: CoenraadS
+name: bracket-pair-colorizer
+version: 1.0.61
+type: VS Code extension
+displayName: Bracket Pair Colorizer
+title: Bracket Pair Colorizer
+description: Bracket Pair Colorizer
+icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
+repository: https://github.com/CoenraadS/BracketPair
+category: Language
+firstPublicationDate: '2020-07-30'
+spec: <1>
+  extensions:
+  - "{{REPOSITORY}}/CoenraadS.bracket-pair-colorizer-1.0.61.vsix" <2>
+latestUpdateDate: "2020-07-30"
+----
+<1> This extension requires basic nodejs runtime so in the yaml definition there is no need to add a custom runtime image.
+<2> {{REPOSITORY}} is a macro for a pre-commit hook defined lated
+
+Memory limit and some extra volumes are extra optional attributes in this file, but not for a simple use-case of this extension
+
+[source,yaml,subs="+quotes"]
+----
+spec:
+  containers:
+    - image: "quay.io/eclipse/che-sidecar-java:8-0cfbacb"
+      name: vscode-java
+      memoryLimit: "1500Mi"
+      volumes:
+      - mountPath: "/home/theia/.m2"
+        name: m2
+----
+
+Almost files are in the directory including `.vsix` file, `plugin.yaml` except the workspace definition: `devfile.yaml`
+
+Create `devfile.yaml` that will reference the `plugin.yaml` with content:
+
+[source,yaml,subs="+quotes"]
+----
+apiVersion: 1.0.0
+metadata:
+  generateName: java-maven-
+projects:
+  -
+    name: console-java-simple
+    source:
+      type: git
+      location: "https://github.com/che-samples/console-java-simple.git"
+      branch: java1.11
+components:
+  -
+    type: chePlugin
+    id: redhat/java11/latest
+  -
+    type: chePlugin <1>
+    reference: "{{REPOSITORY}}/plugin.yaml"
+  -
+    type: dockerimage
+    alias: maven
+    image: quay.io/eclipse/che-java11-maven:nightly
+    memoryLimit: 512Mi
+    mountSources: true
+    volumes:
+      - name: m2
+        containerPath: /home/user/.m2
+commands:
+  -
+    name: maven build
+    actions:
+      -
+        type: exec
+        component: maven
+        command: "mvn clean install"
+        workdir: ${CHE_PROJECTS_ROOT}/console-java-simple
+  -
+    name: maven build and run
+    actions:
+      -
+        type: exec
+        component: maven
+        command: "mvn clean install && java -jar ./target/*.jar"
+        workdir: ${CHE_PROJECTS_ROOT}/console-java-simple
+----
+
+<1> Any other devfile definition is OK, important information from this devfile are the lines defining this external component
+. It means that an external reference defines the plug-in versus an id pointing to a definition inside the default plug-in registry.
+
+To sum up, 4 files are in the current git directory:
+
+[subs="+quotes"]
+----
+$ ls -la
+.git
+CoenraadS.bracket-pair-colorizer-1.0.61.vsix
+README.md
+devfile.yaml
+plugin.yaml
+----
+
+Before committing the files, add a pre-commit hook to update `{{REPOSITORY}}` variable to the public external raw gist link.
+
+Create file `.git/hooks/pre-commit` with content:
+
+[subs="+quotes"]
+----
+#!/bin/sh
+
+# get modified files
+FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.yaml" | sed 's| |\\ |g')
+
+# exit fast if no files found
+[ -z "$FILES" ] && exit 0
+
+# grab remote origin
+origin=$(git config --get remote.origin.url)
+url="${origin}/raw"
+
+# iterate on files and add the good prefix pattern
+for FILE in ${FILES}; do
+ sed -e "s#{{REPOSITORY}}#${url}#g" "${FILE}" > "${FILE}.back"
+ mv "${FILE}.back" "${FILE}"
+done
+
+# Add back to staging
+echo "$FILES" | xargs git add
+
+exit 0
+----
+
+This hook replaces `{{REPOSITORY}}` macro and add the external raw link to the gist.
+
+Make the script executable:
+
+[subs="+quotes"]
+----
+$ chmod u+x .git/hooks/pre-commit
+----
+
+Pre-commit hook is in place, commit the files
+
+[subs="+quotes"]
+----
+# Add files
+$ git add *
+
+# Commit
+$ git commit -m "Initial Commit for the test of our extension" .                                                                                                                      
+[master 98dd370] Initial Commit for the test of our extension
+ 3 files changed, 61 insertions(+)
+ create mode 100644 CoenraadS.bracket-pair-colorizer-1.0.61.vsix
+ create mode 100644 devfile.yaml
+ create mode 100644 plugin.yaml
+
+# and push the files to the main branch
+$ git push origin 
+----
+
+
+By going back to the gist website, we can see that all links have the correct public URL and do not contain anymore `{REPOSITORY}}` variable.
+
+The devfile is reachable at
+[subs="+quotes"]
+----
+echo "$(git config --get remote.origin.url)/raw/devfile.yaml"
+----
+
+Link to try with factory link:
+[subs="+quotes"]
+----
+echo "https://<che-server>/f?url=$(git config --get remote.origin.url)/raw/devfile.yaml"
+----
