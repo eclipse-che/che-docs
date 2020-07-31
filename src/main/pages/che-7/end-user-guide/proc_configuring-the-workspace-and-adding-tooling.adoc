@@ -49,26 +49,28 @@ image::workspaces/workspace-devfile.png[]
 
 To add a new container image:
 
-. Copy the following section from the *devfile* into *components*:
+. In the *Devfile* tab, add the following section under the *components* property:
 +
 [source,yaml]
 ----
-- mountSources: true
-   command:
-     - sleep
-   args:
-     - infinity
-   memoryLimit: 1Gi
-   alias: maven3-jdk11
-   type: dockerimage
-   endpoints:
-     - name: 8080/tcp
-       port: 8080
-   volumes:
-     - name: projects
-       containerPath: /projects
-   image: 'maven:3.6.0-jdk-11'
+components:
+  - mountSources: true
+     command:
+       - sleep
+     args:
+       - infinity
+     memoryLimit: 1Gi
+     alias: maven3-jdk11
+     type: dockerimage
+     endpoints:
+       - name: 8080/tcp
+         port: 8080
+     volumes:
+       - name: projects
+         containerPath: /projects
+     image: 'maven:3.6.0-jdk-11'
 ----
+ifeval::["{project-context}" == "che"]
 +
 . When using `type: kubernetes` or `type: openshift`, you must:
 +
@@ -91,14 +93,9 @@ To use separate recipe files, you may specify relative or absolute paths. For ex
     reference: deploy_openshift.yaml
 ...
 ----
+endif::[]
 
 . Add a {prod-short} {prod-prev-ver} recipe content to the {prod-short} {prod-ver} devfile as `referenceContent`:
-
-.. Click the *Containers* tab (*Workspace* -> *Details* -> *Containers*).
-+
-image::workspaces/edit-the-container.png[link="{imagesdir}/workspaces/edit-the-container.png"]
-
-.. Copy the {prod-short} {prod-prev-ver} recipe, and paste it into the separate {prod-short} {prod-ver} component as a *referenceContent*.
 +
 image::workspaces/component_as_a_referenceContent.png[link="{imagesdir}/workspaces/component_as_a_referenceContent.png"]
 
@@ -142,10 +139,6 @@ image::workspaces/workspace_devfile_che_7_.png[]
   memoryLimit: 256M
   memoryRequest: 128M
 ----
-
-. Open the *Devfile* tab to see the changes.
-+
-image::workspaces/devfile-tab.png[]
 
 . Repeat the steps to add additional container images.
 
