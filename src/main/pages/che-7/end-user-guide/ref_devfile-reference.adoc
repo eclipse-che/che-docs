@@ -128,7 +128,7 @@ Describes plug-ins in a workspace by defining their `id`. It is allowed to have 
 
 Both types above use an ID, which is slash-separated publisher, name and version of plug-in from the {prod-short} Plug-in registry.
 
-List of available {prod-short} plug-ins and more information about registry can be found in the link:https://github.com/eclipse/che-plugin-registry[{prod-short} plug-in registry] GitHub repository.
+List of available {prod-upstream} plug-ins and more information about registry can be found in the link:https://github.com/eclipse/che-plugin-registry[{prod-short-upstream} plug-in registry] GitHub repository.
 
 === Specifying an alternative component registry
 
@@ -182,7 +182,7 @@ Preferences may also be specified as an array:
 
 === Component type: kubernetes
 
-A complex component type that allows to apply configuration from a list of Kubernetes or OpenShift components.
+A complex component type that allows to apply configuration from a list of {kubernetes-or-openshift} components.
 
 The content can be provided through the `reference` attribute, which points to the file with the component content.
 
@@ -198,7 +198,7 @@ The content can be provided through the `reference` attribute, which points to t
         app.kubernetes.io/part-of: petclinic
 ----
 
-Alternatively, to post a devfile with such components to REST API, the contents of the Kubernetes or OpenShift list can be embedded into the devfile using the `referenceContent` field:
+Alternatively, to post a devfile with such components to REST API, the contents of the {orch-upstream-name} `List` object can be embedded into the devfile using the `referenceContent` field:
 
 [source,yaml]
 ----
@@ -250,11 +250,11 @@ Other types of constraints (and their combinations) are possible:
 `parentName`:: the name of the parent object that (indirectly) contains the containers to override
 `parentSelector`:: the set of labels the parent object needs to have
 
-A combination of these constraints can be used to precisely locate the containers inside the referenced Kubernetes list.
+A combination of these constraints can be used to precisely locate the containers inside the referenced {orch-upstream-name} `List`.
 
 === Overriding container environment variables
 
-To provision or override entrypoints in a Kubernetes or OpensShift component, configure it in the following way:
+To provision or override entrypoints in a {kubernetes-or-openshift} component, configure it in the following way:
 
 [source,yaml]
 ----
@@ -333,7 +333,7 @@ It specifies the type of the component, `dockerimage` and the `image` attribute 
 
 A `dockerimage` component has many features that enable augmenting the image with additional resources and information needed for meaningful integration of the *tool* provided by the image with {prod}.
 
-==== Mounting project sources
+=== Mounting project sources
 
 For the `dockerimage` component to have access to the project sources, you must set the `mountSources` attribute to `true`.
 
@@ -352,7 +352,7 @@ command: ['sleep', 'infinity']
 
 The sources is mounted on a location stored in the `CHE_PROJECTS_ROOT` environment variable that is made available in the running container of the image. This location defaults to `/projects`.
 
-==== Container Entrypoint
+=== Container Entrypoint
 
 The `command` attribute of the `dockerimage` along with other arguments, is used to modify the `entrypoint` command of the container created from the image. In {prod} the container is needed to run indefinitely so that you can connect to it and execute arbitrary commands in it at any time. Because the availability of the `sleep` command and the support for the `infinity` argument for it is different and depends on the base image used in the particular images, {prod-short} cannot insert this behavior automatically on its own. However, you can take advantage of this feature to, for example, start necessary servers with modified configurations, etc.
 
@@ -539,7 +539,7 @@ components:
 
 [NOTE]
 ====
-* The variable expansion works between the environment variables, and it uses the Kubernetes convention for the variable references.
+* The variable expansion works between the environment variables, and it uses the {orch-upstream-name} convention for the variable references.
 
 * The predefined variables are available for use in custom definitions.
 ====
@@ -711,7 +711,7 @@ Complex deployments can be described using Kubernetes or OpenShift resource list
 
 * Only the following subset of the Kubernetes objects are supported: `deployments`, `pods`, `services`, `persistent volume claims`, `secrets`, and `ConfigMaps`. Kubernetes Ingresses are ignored, but OpenShift routes are supported. A workspace created from a devfile using any other object types fails to start.
 
-* When running {prod-short} on a Kubernetes cluster, only Kubernetes lists are supported. When running {prod-short} on an OpenShift cluster, both Kubernetes and OpenShift lists are supported.
+* When running {prod-short} on a {orch-upstream-name} cluster, only {orch-upstream-name} lists are supported. When running {prod-short} on an OpenShift cluster, both {kubernetes-or-openshift} lists are supported.
 ====
 
 [source,yaml]
@@ -849,7 +849,7 @@ Each {prod-short}-specific command features:
  * An `action` attribute that is a command to execute.
  * A `component` attribute that specifies the container in which to execute the command.
  
- The commands are run using the default shell in the container.
+The commands are run using the default shell in the container.
 
 [source,yaml]
 ----
