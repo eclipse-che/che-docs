@@ -123,34 +123,36 @@ The link:https://github.com/eclipse/che-plugin-registry/tree/master/v3/plugins[c
 .Example `meta.yaml` for a Che-Theia plug-in: the {prod-short} machine-exec Service
 [source,yaml,subs="+quotes,+attributes"]
 ----
-apiVersion: v2
-category: Other
-description: Che Plugin with che-machine-exec service to provide creation terminal or tasks for {prod} workspace containers
-displayName: {prod-short} machine-exec Service
-firstPublicationDate: "2019-12-02"
-icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
-name: che-machine-exec-plug-in
-publisher: eclipse
-repository: https://github.com/eclipse/che-machine-exec/
-title: Che machine-exec Service Plugin
-type: Che Plugin
-version: 7.5.1
-spec:
-  endpoints:
-   -  name: "che-machine-exec"
-      public: true
-      targetPort: 4444
-      attributes:
-        protocol: ws
-        type: terminal
-        discoverable: false
-        secure: true
-        cookiesAuthEnabled: true
-  containers:
-   - name: che-machine-exec
-     image: "quay.io/eclipse/che-machine-exec:7.5.1"
-     ports:
-       - exposedPort: 4444
+  apiVersion: v2
+  publisher: eclipse
+  name: che-machine-exec-plugin
+  version: 7.9.2
+  type: Che Plugin
+  displayName: Che machine-exec Service
+  title: Che machine-exec Service Plugin
+  description: Che Plug-in with che-machine-exec service to provide creation terminal
+    or tasks for Eclipse CHE workspace containers.
+  icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+  repository: https://github.com/eclipse/che-machine-exec/
+  firstPublicationDate: "2020-03-18"
+  category: Other
+  spec:
+    endpoints:
+     -  name: "che-machine-exec"
+        public: true
+        targetPort: 4444
+        attributes:
+          protocol: ws
+          type: terminal
+          discoverable: false
+          secure: true
+          cookiesAuthEnabled: true
+    containers:
+     - name: che-machine-exec
+       image: "quay.io/eclipse/che-machine-exec:7.9.2"
+       ports:
+         - exposedPort: 4444
+       command: ['/go/bin/che-machine-exec', '--static', '/cloud-shell', '--url', '127.0.0.1:4444']
 ----
 
 .Example `meta.yaml` for a VisualStudio Code extension: the AsciiDoc support extension
