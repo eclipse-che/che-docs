@@ -3,19 +3,21 @@ title: Using different type of storage
 keywords:
 tags: []
 sidebar: che_7_docs
-permalink: che-7/using-diffrent-type-of-storage/
+permalink: che-7/using-different-type-of-storage/
 folder: che-7/end-user-guide
 summary:
 ---
 
-[id="using-diffrent-type-of-storage_{context}"]
+[id="using-different-type-of-storage_{context}"]
 = Using different type of storage 
 
 Since 7.17.0 Eclipse Che supports three types of storage with different capabilities: persistent storage, ephemeral and asynchronous.
 
 .Persistent storage
 
-This kind of storage gives you an ability to store your changes directly in the mounted Persistent Volume. In this case your changes will be totally safe and Kubernetes infrastructure takes care of it (storage backend in particular), but the price for that is slow I/O, especially with a huge amount of small files. For example, some NodeJS projects may have many dependencies and node_modules is filled with thousands of small files.
+This kind of storage gives you an ability to store your changes directly in the mounted Persistent Volume. In this case your changes will be totally safe and Kubernetes infrastructure takes care of it (storage backend in particular), but the price for that is slow I/O, especially with a huge amount of small files. For example, some NodeJS projects may have many dependencies and node_modules is filled with thousands of small files.  
+
+NOTE: Speed of I/O varies depending on the link:https://kubernetes.io/docs/concepts/storage/storage-classes/[Storage Classes] configured in the environment.
 
 For now this is the default mode for any new workspace, no additional attributes are required. If you want to explicitly make this setting visible in your workspace configuration you can add:
 [source,yaml]
@@ -26,7 +28,9 @@ attributes:
 
 .Ephemeral Storage
 
-With this kind of storage files are mounted to emptyDir. As the name says, it is initially empty. When a Pod is removed from a node for any reason, the data in the emptyDir is deleted forever.  This means that you lose all your changes if you stop your workspace (or workspace pod restarts for any reason).
+With this kind of storage, files are mounted to the link:https://kubernetes.io/docs/concepts/storage/volumes/#emptydir[`emptyDir`] volume. As the name says, it is initially empty. When a Pod is removed from a node for any reason, the data in the `emptyDir` is deleted forever. This means that all the changes will be lost once the workspace is stopped or restarted for any reason.
+
+WARNING: To save the changes, commit and push to the remote before stopping an ephemeral workspace. Otherwise, all the changes will be lost.
 
 Thus, you need to take care of committing and pushing your changes to the remote before stopping a workspace. At the same time Ephemeral mode gives you faster I/O, as a result it will work fast for any kind of project. To enable this storage type add the following to your workspace configuration:
 [source,yaml]
@@ -35,12 +39,31 @@ attributes:
  persistVolumes: ‘false’
 ----
 
-.Asynchronous storage
+=== Comparison table between I/O of Ephemeral (`emptyDir`) vs Persitent (link:https://kubernetes.io/docs/concepts/storage/storage-classes/#aws-ebs[AWS EBS])
 
-This is a combination of the above two. The initial workspace container will mount an emptyDir, however  your changes will be restored on workspace start and a backup is performed on workspace stop. This storage type also offers fast I/O (similar to an ephemeral mode) however, workspace project changes are persisted. Keep in mind that this is still an experimental feature.
+[cols="3", options="header"]
+|===
+|Command
+|Ephemeral
+|Persitent
 
-Synchronization is powered by ‘rsync’ via SSH protocol. When a workspace is configured with this storage type, a special plugin is automatically added to the workspace configuration. This plugin will run ‘rsync’ command on workspace start to restore changes if they exist. When a workspace is stopped, it will send changes to the permanent storage. Rsync process can take some time, so a workspace will not start immediately like in case with a persistent and ephemeral storage. For relatively small projects the restore procedure is completed very fast and you will see project source files and folders immediately after Che Theia is initialized. If rsync takes longer time, the synchronization process will be shown in Che Theia UI status bar area.
+|Clone  Eclipse Che
+|0m 19s
+|1m 26s
 
+|Generate 1000 random files
+|1m 12s
+|44m 53s
+|===
+
+.Asynchronous storage (Experimental)
+
+This is a combination of the above two. The initial workspace container will mount an `emptyDir`, however, the changes will be restored on workspace start and a backup is performed on workspace stop. This storage type also offers fast I/O (similar to the ephemeral mode) and workspace project changes are persisted.
+
+Synchronization is powered by link:https://rsync.samba.org/[`rsync`] via the link:https://www.openssh.com/[SSH] protocol. When a workspace is configured with an asynchronous storage type, the link:https://github.com/che-incubator/workspace-data-sync/[workspace-data-sync] plugin is automatically added to the workspace configuration. The plugin runs `rsync` command on workspace start to restore changes if they exist. When a workspace is stopped, it sends changes to the permanent storage. The `rsync` process can take some time -  for relatively small projects the restore procedure is completed fast and you can see project source files and folders immediately after Che Theia is initialized. If `rsync` takes a longer time, the synchronization process is shown in Che Theia UI status bar area. (link:https://github.com/eclipse/che-theia/tree/master/extensions/eclipse-che-theia-file-sync-tracker][Extension in Che Theia repository]).
+
+image::troubleshooting/status-bar-file-sync.png[link="{imagesdir}/troubleshooting/status-bar-file-sync.png",Files synchronization progress]
+'''
 NOTE:  Currently, this mode has some limitations, such as:
 supports only with ‘common’ PVC strategy;
 only  ‘per-user’ namespace strategy is supported;
@@ -60,3 +83,8 @@ Aslo two new properties added to `che.properties` that can be used to configure 
 
 `che.workspace.storage.preferred_type`: this configuration property defines a default value for storage type that clients like Dashboard should propose for users during workspace creation/update. The 'async' value not recommended as a default type since it's still experimental (e.g. `che.workspace.storage.preferred_type=persistent`)
 
+The Storage Type switcher is available on the *Create Custom Workspace* page of the User Dashboard:
+
+image::workspaces/create-custom-ws-storage-type-2.png[link="{imagesdir}/workspaces/create-custom-ws-storage-type-2.png"]
+
+image::workspaces/create-custom-ws-storage-type.png[link="{imagesdir}/workspaces/create-custom-ws-storage-type.png"]
