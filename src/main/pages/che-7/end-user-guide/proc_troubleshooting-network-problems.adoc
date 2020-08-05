@@ -1,0 +1,95 @@
+---
+title: Troubleshooting network problems
+keywords:
+tags: []
+sidebar: che_7_docs
+permalink: che-7/troubleshooting-network-problems/
+folder: che-7/end-user-guide
+summary:
+---
+
+// Module included in the following assemblies:
+//
+// troubleshooting-for-che-end-users
+
+
+:page-liquid:
+
+[id="troubleshooting-network-problems_{context}"]
+= Troubleshooting network problems
+
+:context: troubleshooting-network-problems
+
+Most often, connection problems occur because a firewall, proxy server, corporate network, or other network is configured in a way that blocks {prod-short}.
+
+The following section describes how to prevent or solve issues related to corporate network policies. The network administrator may be required to enable ports or WebSocket, which Che requires for proper functionality.
+
+Common scenarios:
+
+* Open additional ports for a specific web site.
+* Enable WebSockets on the proxy server.
+
+
+
+[id="enabling-the-websocket-protocol_{context}"]
+== Enabling the WebSocket protocol
+
+Enabling the WebSocket protocol is critical for the proper functionality of {prod-short} IDE.
+
+While the WebSocket protocol itself is unaware of proxy servers and firewalls, HTTP servers can share their default HTTP and HTTPS ports with a WebSocket server.
+
+* HTTP: port 80
+* HTTPS: port 433
+
+Some proxy servers operate with WebSockets by default, but others prevent WebSockets from working correctly, which causes the connection to fail.
+
+In some cases, the proxy server requires the additional configuration, and the specific proxy servers need an upgrade, which allows WebSockets support.
+
+
+
+[id="troubleshooting websocket-secure-connections_{context}"]
+== Troubleshooting WebSocket Secure connections
+
+Secure WebSocket connections improve confidentiality and also reliability because they reduce the risk of interference by bad proxies. {prod-short} operates under WebSocket Secure connections by default and usually no action is required. Some customer’s security policy blocks some aspects of the WebSocket protocol that causes problems with proper {prod-short} functionality. Those problems are however out of scope for {prod-short}  support and have to be solved by a network administrator. 
+
+To troubleshoot a failing WebSocket Secure (WSS) connection, use the instructions in this section.
+
+.Prerequisites
+
+Using an unsupported web browser causes a connection interruption, followed by a warning message.
+
+* Use a supported Web browser:
+
+** Chrome
+** Firefox
+
+* WebSockets protocol is enabled
+
+.Procedure
+
+. Browser support
+.. Check if WebSockets is running by a link:https://websocketstest.com/[realtime web test] using one of the supported browsers.
++
+If the problem wasn’t resolved, follow with the next step.
+		
+		
+. Proxy servers and firewalls settings
+.. Ask a system administrator to check if there is a proxy server or firewall that blocks WebSocket Secure (WSS) connections on port 443. 
++
+* Possible required actions:
+
+** Add an exception to the firewall 
+** Have the proxy intercept WebSocket connection 
+
+.Verification 
+* Check if WebSockets is running by a link:https://websocketstest.com/[realtime web test] using one of the supported browsers.
+
+
+////
+.Additional resources
+
+* A bulleted list of links to other material closely related to the contents of the procedure module.
+* Currently, modules cannot include xrefs, so you cannot include links to other content in your collection. If you need to link to another assembly, add the xref to the assembly that includes this module.
+* For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
+////
