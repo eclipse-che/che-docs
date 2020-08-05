@@ -18,78 +18,15 @@ summary:
 
 :context: defining-custom-commands-for-che-theia
 
-The Che-Theia IDE allows users to define custom commands in a devfile that are then available when working in a workspace.
+When starting a new project, new developers often loose time in finding the good procedure to build, run or debug a project. The result is documentation that are hard to follow and never up-to-date.
 
-The following is an example of the `commands` section of a devfile.
+On boarding new developers is one of the main Che challenges. To help the new developers, lead developers can define devfiles to create on-demand workspaces for specific projects. 
 
-[source,yaml]
-----
-commands:
-- name: theia:build
-  actions:
-  - type: exec
-    component: che-dev
-    command: >
-              yarn
-    workdir: /projects/theia
-- name: run
-  actions:
-  - type: vscode-task
-    referenceContent: |
-            {
-             "version": "2.0.0",
-             "tasks":
-             [
-              {
-               "label": "theia:watch",
-                "type": "shell",
-                "options": {"cwd": "/projects/theia"},
-                "command": "yarn",
-                "args": ["watch"]
-              }
-             ]
-            }
-- name: debug
-  actions:
-  - type: vscode-launch
-    referenceContent: |
-            {
-             "version": "0.2.0",
-             "configurations": [
-              {
-               "type": "node",
-               "request": "attach",
-               "name": "Attach by Process ID",
-               "processId": "${command:PickProcess}"
-              }
-             ]
-            }
-----
+In the devfile, lead developers can provide pre-defined commands to help the team to execute common build, run or debug tasks for the project.
 
-{prod-short} commands:: `theia:build`
-+
-* The `exec` type implies that the {prod-short} runner is used for command execution. The user can specify the component in whose container the command is executed.
-* The `command` field contains the command line for execution.
-* The `workdir` is the working directory in which the command is executed.
 
-Visual Studio Code (VS Code) tasks:: `run`
-+
-* The type is `vscode-task`.
-* For this type of command, the `referenceContent` field must contain content with task configurations in the VS Code format.
-* For more information about VS Code tasks, see the Task section on the link:https://code.visualstudio.com/docs/editor/tasks[Visual Studio User Guide page].
 
-VS Code launch configurations:: `debug`
-+
-* The type is `vscode-launch`.
-* It contains the launch configurations in the VS Code format.
-* For more information about VS Code launch configurations, see the Debugging section on the link:https://code.visualstudio.com/docs/editor/debugging#_launch-configurations[Visual Studio documentation page].
 
-For a list of available tasks and launch configurations, see the: 
-
-* `tasks.json` file in the  `/projects/.theia` directory
-* `launch.json` file in the `/home/theia/.theia` directory
-+
-of the `theia-ide` container.
 
 include::con_che-theia-task-types.adoc[leveloffset=+1]
 
