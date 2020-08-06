@@ -20,18 +20,18 @@ This procedure describes how to configure {prod} to use custom hostname.
 
 IMPORTANT: To generate the pair of private key and certificate the same CA must be used as for other {prod} hosts.
 
-IMPORTANT: Work with your DNS provider to point custom hostname to cluster's ingress.
+IMPORTANT: Ask a DNS provider to point the custom hostname to the cluster ingress.
 
 .Procedure
 
-. Pre-create a {orch-namespace} for {prod}:
+. Pre-create a {orch-namespace} for {prod-short}:
 +
 [subs="+quotes,attributes"]
 ----
 $ {orch-cli} create namespace {prod-namespace}
 ----
 
-. Create a tls secret
+. Create a tls secret:
 +
 [subs="+quotes,attributes"]
 ----
@@ -57,10 +57,10 @@ spec:
 <1> Custom {prod} server hostname
 <2> The tls secret name
 
-. This step is required if {prod} has been already deployed and it is needed to reconfigure {prod} to use a new {prod-short} hostname. Login into {identity-provider} and select `che-public` client in `Che` realm.
-
+. If {prod-short} has been already deployed and {prod-short} reconfiguring to use a new {prod-short} hostname is required, log in using {identity-provider} and select the `che-public` client in the`Che` realm.
++
 image::keycloak/keycloak_clients.png[]
 
-Update `Validate Redirect URIs` and `Web Origins` fields with the value of the {prod-short} hostname.
-
+. Update `Validate Redirect URIs` and `Web Origins` fields with the value of the {prod-short} hostname.
++
 image::keycloak/keycloak_che_public_client.png[]
