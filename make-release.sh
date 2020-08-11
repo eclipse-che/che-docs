@@ -16,9 +16,7 @@ bump_version() {
   git checkout ${BUMP_BRANCH}
 
   echo "Updating project version to ${NEXTVERSION}"
-  mvn versions:set -DnewVersion=${NEXTVERSION}
-  mvn versions:update-parent -DallowSnapshots=true -DparentVersion=${NEXTVERSION}
-  mvn versions:commit
+  echo ${NEXTVERSION} > VERSION
 
   COMMIT_MSG="[release] Bump to ${NEXTVERSION} in ${BUMP_BRANCH}"
   git commit -a -s -m "${COMMIT_MSG}"
