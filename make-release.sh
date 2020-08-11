@@ -18,19 +18,25 @@ bump_version() {
   echo "Updating project version to ${NEXTVERSION}"
   echo ${NEXTVERSION} > VERSION
 
-  COMMIT_MSG="[release] Bump to ${NEXTVERSION} in ${BUMP_BRANCH}"
-  git commit -a -s -m "${COMMIT_MSG}"
+  if [[ ${NOCOMMIT} -eq 0 ]]; then
+    COMMIT_MSG="[release] Bump to ${NEXTVERSION} in ${BUMP_BRANCH}"
+    git commit -s -m "${COMMIT_MSG}" VERSION
+    git pull origin "${BUMP_BRANCH}"
 
-  PR_BRANCH=pr-master-to-${NEXTVERSION}
-  # create pull request for master branch, as branch is restricted
-  git branch "${PR_BRANCH}"
-  git checkout "${PR_BRANCH}"
-  git pull origin "${PR_BRANCH}"
-  git push origin "${PR_BRANCH}"
-  lastCommitComment="$(git log -1 --pretty=%B)"
-  hub pull-request -o -f -m "${lastCommitComment}
-  ${lastCommitComment}" -b "${BRANCH}" -h "${PR_BRANCH}"
-
+    PUSH_TRY="$(git push origin "${BUMP_BRANCH}")"
+    # shellcheck disable=SC2181
+    if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
+    PR_BRANCH=pr-${BUMP_BRANCH}-to-${NEXTVERSION}
+      # create pull request for master branch, as branch is restricted
+      git branch "${PR_BRANCH}"
+      git checkout "${PR_BRANCH}"
+      git pull origin "${PR_BRANCH}"
+      git push origin "${PR_BRANCH}"
+      lastCommitComment="$(git log -1 --pretty=%B)"
+      hub pull-request -f -m "${lastCommitComment}
+${lastCommitComment}" -b "${BUMP_BRANCH}" -h "${PR_BRANCH}"
+    fi 
+  fi
   git checkout ${CURRENT_BRANCH}
 }
 
@@ -84,11 +90,16 @@ if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
 fi
 
 if [[ $TRIGGER_RELEASE -eq 1 ]]; then
-  # push new branch to release branch to trigger CI build
-  git fetch origin "${BRANCH}:${BRANCH}"
+  # create GH release - doesn't work unless you have admin rights
+  # GH_URL="https://api.github.com/repos/${REPO#*:}/releases"
+  # curl -v -X POST -H "Accept: application/vnd.github.v3+json" -H 'Authorization:token '"${GITHUB_TOKEN}" \
+  #   -d '{"tag_name": "'"${VERSION}"'", "target_commitish": "'"${BASEBRANCH}"'", "name": "'"${VERSION}"'", "body": "'"${VERSION}"'", "draft": "false", "prerelease": "false"}' \
+  #   $GH_URL
+
+  # or, just tag the release... which any fool can do, apparently
   git checkout "${BRANCH}"
-  git branch release -f 
-  git push origin release -f
+  git tag "${VERSION}"
+  git push origin "${VERSION}"
 fi
 
 # now update ${BASEBRANCH} to the new snapshot version
