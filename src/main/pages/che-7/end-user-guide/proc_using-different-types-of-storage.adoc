@@ -84,7 +84,16 @@ Aslo two new properties added to `che.properties` that can be used to configure 
 `che.workspace.storage.preferred_type`: this configuration property defines a default value for storage type that clients like Dashboard should propose for users during workspace creation/update. The 'async' value not recommended as a default type since it's still experimental (e.g. `che.workspace.storage.preferred_type=persistent`)
 
 The Storage Type switcher is available on the *Create Custom Workspace* page of the User Dashboard:
-
++
 image::workspaces/create-custom-ws-storage-type-2.png[link="{imagesdir}/workspaces/create-custom-ws-storage-type-2.png"]
-
++
 image::workspaces/create-custom-ws-storage-type.png[link="{imagesdir}/workspaces/create-custom-ws-storage-type.png"]
+
+.Asynchronous Storage Pod idling
+
+Since version 7.18.0 {prod-shor} adds the ability to shutdown Asynchronous Storage pod if not used for a while. 
+Use these configuration properties to ajust the behavior:
++	
+* `che.infra.kubernetes.async.storage.shutdown_timeout_min` :  Defines the shutdown timeout for `Asynchronous Storage Pod` after the last used workspace is stoped.
++	
+* `che.infra.kubernetes.async.storage.shutdown_check_period_min`: Defines the `Asynchronous Storage Pod` stopping stopping period.
