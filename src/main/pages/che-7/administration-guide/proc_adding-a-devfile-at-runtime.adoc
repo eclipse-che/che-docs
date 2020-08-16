@@ -10,43 +10,48 @@ To add a devfile:
 
 . Check out the devfile registry sources.
 +
+[subs="attributes+"]
 ----
-$ git clone https://github.com/eclipse/che-devfile-registry; \
-  cd che-devfile-registry
+$ git clone {url-devfile-registry-repo}; \
+  cd {repo-path}che-devfile-registry
 ----
 
 . Create a `devfile.yaml` and `meta.yaml` in some local folder. This can be done from scratch or by copying from an existing devfile.
 +
+[subs="+attributes"]
 ----
 $ STACK="new-stack"; \
-  mkdir -p devfiles/${STACK}; cp devfiles/nodejs/* devfiles/${STACK}/
+  mkdir -p devfiles/${STACK}; cp devfiles/{nodejs-stack}/* devfiles/${STACK}/
 ----
 
-. If copying from an existing devfile, make changes to the devfile to suit your needs. Make sure your new devfile has a unique `displayName` and `description`.
+. If copying from an existing devfile, make changes to the devfile to suit your needs. Make sure the new devfile has a unique `displayName` and `description`.
 
 . Get the name of the Pod that hosts the devfile registry container. To do this, filter the `component=devfile-registry` label:
 +
+[subs="+attributes"]
 ----
-$ DEVFILE_REG_POD=$(kubectl get -o custom-columns=NAME:.metadata.name \
+$ DEVFILE_REG_POD=$({orch-cli} get -o custom-columns=NAME:.metadata.name \
   --no-headers pod -l component=devfile-registry)
 ----
 
-. Regenerate the registry's `index.json` file to include your new devfile.
+. Regenerate the registry's `index.json` file to include the new devfile.
 +
+[subs="+attributes"]
 ----
-$ cd che-devfile-registry; \
+$ cd {repo-path}che-devfile-registry; \
   "$(pwd)/build/scripts/check_mandatory_fields.sh" devfiles; \
   "$(pwd)/build/scripts/index.sh" > index.json
 ----
 
-. Copy the new `index.json`, `devfile.yaml` and `meta.yaml` files from your new local devfile folder to the container.
+. Copy the new `index.json`, `devfile.yaml` and `meta.yaml` files from the new local devfile folder to the container.
 +
+[subs="+attributes"]
 ----
-$ cd che-devfile-registry; \
+$ cd {repo-path}che-devfile-registry; \
   LOCAL_FILES="$(pwd)/${STACK}/meta.yaml $(pwd)/${STACK}/devfile.yaml $(pwd)/index.json"; \
-  kubectl exec ${DEVFILE_REG_POD} -i -t -- mkdir -p /var/www/html/devfiles/${STACK}; \
+  {orch-cli} exec ${DEVFILE_REG_POD} -i -t -- mkdir -p /var/www/html/devfiles/${STACK}; \
   for f in $LOCAL_FILES; do e=${f/$(pwd)\//}; echo "Upload ${f} -> /var/www/html/devfiles/${e}"
-    kubectl cp "${f}" ${DEVFILE_REG_POD}:/var/www/html/devfiles/${e}; done
+    {orch-cli} cp "${f}" ${DEVFILE_REG_POD}:/var/www/html/devfiles/${e}; done
 ----
 
-. The new devfile can now be used from the existing {prod-short} instance's devfile registry. To discover it, go to the {prod-short} dashboard, then click the `Workspaces` link. From there, click `Add Workspace` to see the updated list of available devfiles.
+. The new devfile can now be used from the existing {prod-short} instance of the devfile registry. To discover it, go to the {prod-short} dashboard, then click the *Workspaces* link. From there, click *Add Workspace* to see the updated list of available devfiles.

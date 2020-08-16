@@ -10,9 +10,10 @@ To add a plug-in:
 
 . Check out the plugin registry sources.
 +
+[subs="+attributes"]
 ----
-$ git clone https://github.com/eclipse/che-plugin-registry; \
-  cd che-plugin-registry
+$ git clone {url-plug-in-registry-repo}; \
+  cd {repo-path}che-plugin-registry
 ----
 
 . Create a `meta.yaml` in some local folder. This can be done from scratch or by copying from an existing plug-in's `meta.yaml` file.
@@ -23,7 +24,7 @@ $ PLUGIN="v3/plugins/new-org/new-plugin/0.0.1"; \
   echo "${PLUGIN##*/}" > ${PLUGIN}/../latest.txt
 ----
 
-. If copying from an existing plug-in, make changes to the `meta.yaml` file to suit your needs. Make sure your new plug-in has a unique `title`, `displayName` and `description`. Update the `firstPublicationDate` to today's date.
+. If copying from an existing plug-in, make changes to the `meta.yaml` file to suit your needs. Make sure the new plug-in has a unique `title`, `displayName` and `description`. Update the `firstPublicationDate` to today's date.
 
 . These fields in `meta.yaml` must match the path defined in `PLUGIN` above.
 +
@@ -35,15 +36,17 @@ version: 0.0.1
 
 . Get the name of the Pod that hosts the plug-in registry container. To do this, filter the `component=plugin-registry` label:
 +
+[subs="+attributes"]
 ----
-$ PLUGIN_REG_POD=$(kubectl get -o custom-columns=NAME:.metadata.name \
+$ PLUGIN_REG_POD=$({orch-cli} get -o custom-columns=NAME:.metadata.name \
   --no-headers pod -l component=plugin-registry)
 ----
 
-. Regenerate the registry's `index.json` file to include your new plug-in.
+. Regenerate the registry's `index.json` file to include the new plug-in.
 +
+[subs="+attributes"]
 ----
-$ cd che-plugin-registry; \
+$ cd {repo-path}che-plugin-registry; \
     "$(pwd)/build/scripts/generate_latest_metas.sh" v3 && \
     "$(pwd)/build/scripts/check_plugins_location.sh" v3 && \
     "$(pwd)/build/scripts/set_plugin_dates.sh" v3 && \
@@ -51,14 +54,15 @@ $ cd che-plugin-registry; \
     "$(pwd)/build/scripts/index.sh" v3 > v3/plugins/index.json
 ----
 
-. Copy the new `index.json` and `meta.yaml` files from your new local plug-in folder to the container.
+. Copy the new `index.json` and `meta.yaml` files from the new local plug-in folder to the container.
 +
+[subs="+attributes"]
 ----
-$ cd che-plugin-registry; \
+$ cd {repo-path}che-plugin-registry; \
   LOCAL_FILES="$(pwd)/${PLUGIN}/meta.yaml $(pwd)/v3/plugins/index.json"; \
-  kubectl exec ${PLUGIN_REG_POD} -i -t -- mkdir -p /var/www/html/${PLUGIN}; \
+  {orch-cli} exec ${PLUGIN_REG_POD} -i -t -- mkdir -p /var/www/html/${PLUGIN}; \
   for f in $LOCAL_FILES; do e=${f/$(pwd)\//}; echo "Upload ${f} -> /var/www/html/${e}"; \
-    kubectl cp "${f}" ${PLUGIN_REG_POD}:/var/www/html/${e}; done
+    {orch-cli} cp "${f}" ${PLUGIN_REG_POD}:/var/www/html/${e}; done
 ----
 
-. The new plug-in can now be used from the existing {prod-short} instance's plug-in registry. To discover it, go to the {prod-short} dashboard, then click the `Workspaces` link. From there, click the gear icon to configure one of your workspaces. Select the `Plugins` tab to see the updated list of available plug-ins.
+. The new plug-in can now be used from the existing {prod-short} instance of the plug-in registry. To discover it, go to the {prod-short} dashboard, then click the *Workspaces* link. From there, click the gear icon to configure one of your workspaces. Select the *Plugins* tab to see the updated list of available plug-ins.
