@@ -37,7 +37,8 @@ $ cat settings.xml | base64
 
 . Copy the output to a new file, `secret.yaml`, which also defines needed annotations and labels:
 +
-[source,yaml]
+
+[source,yaml,subs="+attributes"]
 ----
 apiVersion: v1
 kind: Secret
@@ -48,7 +49,7 @@ metadata:
     app.kubernetes.io/component: workspace-secret
   annotations:
     che.eclipse.org/automount-workspace-secret: true
-    che.eclipse.org/mount-path: /home/user/.m2
+    che.eclipse.org/mount-path: {prod-home}/.m2
     che.eclipse.org/mount-as: file
 type: Opaque
 data:
@@ -61,13 +62,13 @@ data:
 $ kubectl apply -f secret.yaml
 ----
 
-. Start a new workspace. You will see `/home/user/.m2/settings.xml` with your original content in the `maven` container.
+. Start a new workspace. You will see `{prod-home}/.m2/settings.xml` with your original content in the `maven` container.
 
 == Openshift 3.11 and Kubernetes <1.13
 
-On Kubernetes versions older than 1.13, it's not possible to have multiple VolumeMounts at same path so having devfile with volume `/home/user/.m2` and secret at `/home/user/.m2/settings.xml` would resolve into the conflict. On these clusters use `/home/user/.m2/repository` as a volume for maven repository in the devfile:
+On Kubernetes versions older than 1.13, it's not possible to have multiple VolumeMounts at same path so having devfile with volume `{prod-home}/.m2` and secret at `{prod-home}/.m2/settings.xml` would resolve into the conflict. On these clusters use `{prod-home}/.m2/repository` as a volume for maven repository in the devfile:
 
-[source,yaml]
+[source,yaml,subs="+attributes"]
 ----
 apiVersion: 1.0.0
 metadata:
@@ -78,6 +79,6 @@ components:
    image: maven:3.11
    volumes:
      - name: m2
-       containerPath: /home/user/.m2/repository
+       containerPath: {prod-home}/.m2/repository
    ...
 ----
