@@ -14,7 +14,12 @@ summary:
 [id="installing-{prod-id-short}-on-openshift-3-using-the-operator_{context}"]
 = Installing {prod-short} on OpenShift 3 using the Operator
 
-This section describes how to install {prod-short} on OpenShift 3 with the `{prod-cli}` CLI management tool. The method of installation is using the Operator and enable TLS (HTTPS).
+This section describes how to install {prod-short} on OpenShift 3 with the `{prod-cli}` CLI management tool. The method of installation is using the Operator and enable TLS (HTTPS). 
+
+[NOTE]
+====
+Methods for updating from a previous {prod-short} installation and enabling multiple instances in the same {ocp} {ocp3-ver} cluster are provided below the installation procedure.
+====
 
 Operators are a method of packaging, deploying, and managing a Kubernetes application which also provide the following:
 
@@ -57,52 +62,20 @@ $ oc version
 oc v3.11.0+0cbc58b
 ----
 
-. Run the following commands to create a dummy project to find the URL that this OpenShift instance is using to deploy applications.
+. Run the following command to create the {prod-short} instance
 +
-[subs="+attributes,+quotes",options="nowrap"]
-----
-$ oc new-project hello-world
-$ oc new-app centos/httpd-24-centos7~https://github.com/openshift/httpd-ex
-$ oc expose svc/httpd-ex
-$ oc get route httpd-ex
-NAME     HOST/PORT                                                PATH     SERVICES PORT     TERMINATION WILDCARD
-httpd-ex httpd-ex-hello-world.apps.rhpds311.openshift.opentlc.com httpd-ex          8080-tcp             None
-----
-
-. Extract the domain from `++httpd-ex-hello-world.apps.rhpds311.openshift.opentlc.com++`. It is the part after the first name: `apps.rhpds311.openshift.opentlc.com`. Remember this URL as `__<OPENSHIFT_APPS_URL>__`.
-
-. Remove the dummy project:
-+
-[subs="+attributes,+quotes",options="nowrap"]
-----
-$ oc delete project hello-world
-----
-
-. To upgrade from a previous {prod-short} installation in the same {ocp} {ocp3-ver} cluster, remove the Custom Resource Definition and the Cluster Roles:
-+
-[subs="+attributes,+quotes",options="nowrap"]
-----
-$ oc delete customresourcedefinition/checlusters.org.eclipse.che
-$ oc patch customresourcedefinition/checlusters.org.eclipse.che \
-    --type merge \
-    -p '{ "metadata": { "finalizers": null }}'
-$ oc delete clusterrole {prod-operator}
-----
-
-. To have multiple {prod-short} deployments in parallel using different versions in the same {ocp} {ocp3-ver} cluster, create a new service account for the new deployment. It is, however, strongly recommended that you update all your old {prod-short} deployments to the latest version instead, as this mix of versions may cause unexpected and unsupported results.
-+
-[subs="+attributes,+quotes",options="nowrap"]
-----
-$ oc patch clusterrolebinding {prod-operator} \
-    --type='json' \
-    -p '[{"op": "add", "path": "/subjects/0", "value": {"kind":"ServiceAccount", "namespace": "__<{prod-namespace}>__", "name": "{prod-operator}"} }]'
-----
-
-. Run the following command to create the {prod-short} instance:
+** In the user-defined _<{prod-namespace}>_:
 +
 [subs="+quotes,+attributes",options="nowrap"]
 ----
-$ {prod-cli} server:start -n _<{prod-namespace}>_ --che-operator-cr-patch-yaml=operator-cr-patch.yaml
+$ {prod-cli} server:start -n _<{prod-namespace}>_ -p openshift
+----
+
+** In the default namespace called {prod-namespace}:
++
+[subs="+quotes,+attributes",options="nowrap"]
+----
+$ {prod-cli} server:start -p openshift
 ----
 
 
@@ -116,3 +89,27 @@ Command server:start has completed successfully.
 
 . Navigate to the {prod-short} cluster instance: `pass:c,a,q[{prod-url}]`. The domain uses _Let’s Encrypt_ ACME certificates.
 
+
+.Upgrading from a previous {prod-short} installation
+
+* To upgrade from a previous {prod-short} installation in the same {ocp} {ocp3-ver} cluster, remove the Custom Resource Definition and the Cluster Roles:
++
+[subs="+attributes,+quotes",options="nowrap"]
+----
+$ oc delete customresourcedefinition/checlusters.org.eclipse.che
+$ oc patch customresourcedefinition/checlusters.org.eclipse.che \
+    --type merge \
+    -p '{ "metadata": { "finalizers": null }}'
+$ oc delete clusterrole {prod-operator}
+----
+
+.Having multiple {prod-short} deployments
+
+* To have multiple {prod-short} deployments in parallel using different versions in the same {ocp} {ocp3-ver} cluster, create a new service account for the new deployment. It is, however, strongly recommended that you update all your old {prod-short} deployments to the latest version instead, as this mix of versions may cause unexpected and unsupported results.
++
+[subs="+attributes,+quotes",options="nowrap"]
+----
+$ oc patch clusterrolebinding {prod-operator} \
+    --type='json' \
+    -p '[{"op": "add", "path": "/subjects/0", "value": {"kind":"ServiceAccount", "namespace": "__<{prod-namespace}>__", "name": "{prod-operator}"} }]'
+----
