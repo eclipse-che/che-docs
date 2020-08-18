@@ -98,6 +98,10 @@ if [[ $TRIGGER_RELEASE -eq 1 ]]; then
 
   # or, just tag the release... which any fool can do, apparently
   git checkout "${BRANCH}"
+  
+  echo $VERSION > VERSION
+  git commit -sm "Release version ${VERSION}" VERSION
+
   git tag "${VERSION}"
   git push origin "${VERSION}"
 fi
