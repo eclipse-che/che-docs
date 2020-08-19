@@ -39,7 +39,7 @@ attributes:
  persistVolumes: ‘false’
 ----
 
-=== Comparison table between I/O of Ephemeral (`emptyDir`) vs Persitent (link:https://kubernetes.io/docs/concepts/storage/storage-classes/#aws-ebs[AWS EBS])
+== Comparison table between I/O of Ephemeral (`emptyDir`) vs Persitent (link:https://kubernetes.io/docs/concepts/storage/storage-classes/#aws-ebs[AWS EBS])
 
 [cols="3", options="header"]
 |===
@@ -60,7 +60,7 @@ attributes:
 
 This is a combination of the above two. The initial workspace container will mount an `emptyDir`, however, the changes will be restored on workspace start and a backup is performed on workspace stop. This storage type also offers fast I/O (similar to the ephemeral mode) and workspace project changes are persisted.
 
-Synchronization is powered by link:https://rsync.samba.org/[`rsync`] via the link:https://www.openssh.com/[SSH] protocol. When a workspace is configured with an asynchronous storage type, the link:https://github.com/che-incubator/workspace-data-sync/[workspace-data-sync] plugin is automatically added to the workspace configuration. The plugin runs `rsync` command on workspace start to restore changes if they exist. When a workspace is stopped, it sends changes to the permanent storage. The `rsync` process can take some time -  for relatively small projects the restore procedure is completed fast and you can see project source files and folders immediately after Che Theia is initialized. If `rsync` takes a longer time, the synchronization process is shown in Che Theia UI status bar area. (link:https://github.com/eclipse/che-theia/tree/master/extensions/eclipse-che-theia-file-sync-tracker][Extension in Che Theia repository]).
+Synchronization is powered by link:https://rsync.samba.org/[`rsync`] via the link:https://www.openssh.com/[SSH] protocol. When a workspace is configured with an asynchronous storage type, the link:https://github.com/che-incubator/workspace-data-sync/[workspace-data-sync] plugin is automatically added to the workspace configuration. The plugin runs `rsync` command on workspace start to restore changes if they exist. When a workspace is stopped, it sends changes to the permanent storage. The `rsync` process can take some time -  for relatively small projects the restore procedure is completed fast and you can see project source files and folders immediately after Che Theia is initialized. If `rsync` takes a longer time, the synchronization process is shown in Che Theia UI status bar area. (link:https://github.com/eclipse/che-theia/tree/master/extensions/eclipse-che-theia-file-sync-tracker[Extension in Che Theia repository]).
 
 image::troubleshooting/status-bar-file-sync.png[link="{imagesdir}/troubleshooting/status-bar-file-sync.png",Files synchronization progress]
 '''
