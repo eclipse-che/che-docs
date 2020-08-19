@@ -38,7 +38,7 @@ This approach is only supported for use with {ocp} and {osd} version 3.11, but a
 
 * To apply settings that the main {prod-cli} command-line parameters cannot set, prepare a configuration file `operator-cr-patch.yaml` that will override the default values in the `CheCluster` Custom Resource used by the Operator. See link:{site-baseurl}che-7/configuring-the-{prod-id-short}-installation[Configuring the {prod-short} installation].
 
-* __<{prod-namespace}>__ represents the project of the target installation.
+* __<namespace>__ represents the project of the target installation.
 
 .Procedure
 
@@ -57,7 +57,16 @@ $ oc version
 oc v3.11.0+0cbc58b
 ----
 
-. Run the following commands to create a dummy project to find the URL that this OpenShift instance is using to deploy applications.
+. Run the following command to create the {prod-short} instance
++
+** In the user-defined _<namespace>_:
++
+[subs="+quotes,+attributes",options="nowrap"]
+----
+$ {prod-cli} server:start -n _<namespace>_ -p openshift
+----
+
+** In the default namespace called {prod-namespace}:
 +
 [subs="+attributes,+quotes",options="nowrap"]
 ----
