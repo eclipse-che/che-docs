@@ -1,0 +1,32 @@
+---
+title: Configuring workspaces nodeselector
+keywords:
+tags: []
+sidebar: che_7_docs
+permalink: che-7/configuring-workspaces-nodeselector/
+folder: che-7/installation-guide
+summary:
+---
+
+[id="configuring-workspaces-nodeselector"]
+= Configuring workspaces nodeselector
+
+Nodeselector for pods of {prod-short} workspaces can be configured via `CHE_WORKSPACE_POD_NODE__SELECTOR` environment variable. This variable may contain set of comma-separated key=value pairs to form the nodeselector rule,
+or `NULL` to disable it.
+
+.Nodeselector configuration
+====
+
+[subs="+quotes,+attributes"]
+----
+CHE_WORKSPACE_POD_NODE__SELECTOR=disktype=ssd,cpu=xlarge,foo=bar
+----
+====
+
+WARNING: Node selector must be configured once during {prod-short} installation, otherwise, existing workspaces may
+fail to run due to volumes affinity conflict, when existing workspace PVC and pod are being scheduled in different zones.
+
+On big multi-zone cluster, it may be required to create additional `StorageClass` object with correctly composed `allowedTopologies` field, which will coordinate the PVC creation process to avoid pods and PVCs to be scheduled in different zones.
+
+In that case, name of this newly created StorageClass should be passed into {prod-short} using
+the `CHE_INFRA_KUBERNETES_PVC_STORAGE__CLASS__NAME` environment variable. A default empty value oh this variable means use the cluster-s  default `StorageClass`.
