@@ -47,11 +47,11 @@ $ cd {repo-path}che-devfile-registry; \
 +
 [subs="+attributes"]
 ----
-$ cd che-devfile-registry
-  kubectl exec ${DEVFILE_REG_POD} -i -t -- mkdir -p /var/www/html/devfiles/${STACK}
-  kubectl cp $(pwd)/devfiles/${STACK}/meta.yaml ${DEVFILE_REG_POD}:/var/www/html/devfiles/${STACK}/meta.yaml
-  kubectl cp $(pwd)/devfiles/${STACK}/devfile.yaml ${DEVFILE_REG_POD}:/var/www/html/devfiles/${STACK}/devfile.yaml
-  kubectl cp $(pwd)/index.json ${DEVFILE_REG_POD}:/var/www/html/devfiles/index.json
+$ cd che-devfile-registry; \
+  {orch-cli} exec ${DEVFILE_REG_POD} -i -t -- mkdir -p /var/www/html/devfiles/${STACK}; \
+  {orch-cli} cp $(pwd)/devfiles/${STACK}/meta.yaml ${DEVFILE_REG_POD}:/var/www/html/devfiles/${STACK}/meta.yaml; \
+  {orch-cli} cp $(pwd)/devfiles/${STACK}/devfile.yaml ${DEVFILE_REG_POD}:/var/www/html/devfiles/${STACK}/devfile.yaml; \
+  {orch-cli} cp $(pwd)/index.json ${DEVFILE_REG_POD}:/var/www/html/devfiles/index.json
 ----
 
 . The new devfile can now be used from the existing {prod-short} instance of the devfile registry. To discover it, go to the {prod-short} dashboard, then click the *Workspaces* link. From there, click *Add Workspace* to see the updated list of available devfiles.
