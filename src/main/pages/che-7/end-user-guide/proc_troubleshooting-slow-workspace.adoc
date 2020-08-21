@@ -1,0 +1,175 @@
+[id="troubleshooting-slow-workspace-{context}"]
+= Troubleshooting slow workspaces
+
+Sometimes, workspaces can take a long time to start. Tuning can reduce this startup-time which benefits to the users. Depending on the options, administrators or users can do the tuning.
+
+Here are the different options, for starting the workspace or after that the workspace boot:
+
+## Workspace startup time
+
+.Image Puller
+_Administrator_
+
+When starting a workspace, {orch-name} pulls the images from the registry. A workspace can include lot of containers meaning that {orch-name} pulls pod's images (one per container).
+
+Depending on the size of the image and the bandwidth, it can take a long time.
+
+Image puller is a tool that can cache images on each {orch-name} nodes. As such, pre-pulling images can improve start times.
+
+see link:{site-baseurl}che-7/che-7/caching-images-for-faster-workspace-start/[Caching images for faster workspace start].
+
+.Storage
+_Administrator and user_
+
+Every workspace has a shared volume attached. This volume stores the project files so that when restarting a workspace, changes are still available.
+
+Depending on the storage, attach time can take up to a couple of minutes, some will have slow I/O, etc.
+
+Another approach is to pick-up ephemeral storage or async mount of the persistent storage to have best I/O.
+
+see link:{site-baseurl}che-7/che-7/troubleshooting-che/#using-different-type-of-storage_troubleshooting-che[Use different storage images for faster workspace start].
+
+.Offline install
+_Administrator_
+
+Components of {prod-short} are OCI images. Setup {prod} in offline mode allow to reduce any extra download at runtime as everything needs to be present from the beginning. `Offline mode` will use `air-gap scenario` mode.
+
+see link:{site-baseurl}che-7/che-7/installing-che-in-restricted-environment/[{prod-short} Installing Che in restricted environment].
+
+.Optimize workspace plug-ins
+_User_
+
+Behind the scenes, when we select different plug-ins, each plug-in can bring its own sidecar container which is an OCI image. {orch-name} pulls the images of these sidecar containers.
+
+Reduce number of plug-ins or disable them to see if startup time is faster.
+
+Look at `Image Puller` section above as well to use image puller.
+
+. Reduce the number of public exposure
+_Administrator_
+
+For each endpoint, {orch-name} is creating routes or ingress objects. Depending on the underlying configuration, this creation can be slow.
+
+Idea is to reduce this number of exposure. For example, to automatically detect new port listening inside containers and redirect traffic for the processes using local ip (`127.0.0.1`), Theia IDE plug-in has 3 optional routes.
+
+By reducing endpoints, and checking endpoints of all plug-ins, workspace startup can be faster.
+
+.CDN configuration
+
+IDE editor is using CDN to serve content. Please check that the content is using CDN to the client (or a local route for offline setup).
+
+To check that, open web console tools and check for `vendors` in network tab.
+
+`vendors.<random-id>.js` or `editor.main.*` should come from CDN URLs.
+
+## Workspace runtime performance 
+
+In previous section, some options were useful to decrease the startup time. But depending on the workspace configuration, user can feel that operations are slow at runtime.
+
+.CPU
+
+Plug-ins consume CPU. For example, if a plug-in provides intellisense, giving more CPU may help to have faster results.
+Ensures cpu limit in the devfiles
+
+Giving more cpu to the plug-in can speed-up the feedback result.
+
+Ensure CPU setting is correct.
+
+
+In devfile definition: (`devfile.yaml`):
+
+[source,yaml]
+----
+apiVersion: 1.0.0
+
+components:
+  -
+    type: chePlugin
+    id: id/of/plug-in
+    cpuLimit: 1360Mi <1>
+----
+<1> specify cpu limit for this plug-in
+
+Another parameter for cpu request is also available:
+
+example:
+
+[source,yaml]
+----
+
+apiVersion: 1.0.0
+
+components:
+  -
+    type: chePlugin
+    id: id/of/plug-in
+    cpuLimit: 1360Mi <1>
+    cpuRequest: 100m <2>
+----
+<1> specify cpu limit for this plug-in
+<1> specify cpu request for this plug-in
+
+.Memory
+
+Plug-ins consume CPU and memory. For example, if a plug-in provides intellisense, collecting data can consume all the amount of memory allocated to the container.
+Giving more memory to the plug-in can speed-up the feedback result.
+
+Ensure memory setting is correct.
+
+In plugin's definition: (`meta.yaml`):
+
+[source,yaml]
+----
+apiVersion: v2
+
+spec:
+  containers:
+    - image: "quay.io/my-image"
+      name: "vscode-plugin"
+      memoryLimit: "512Mi" <1>
+  extensions:
+    - https://link.to/vsix
+----
+<1> specify memory limit for this plug-in
+
+In devfile definition: (`devfile.yaml`):
+
+[source,yaml]
+----
+apiVersion: 1.0.0
+
+components:
+  -
+    type: chePlugin
+    id: id/of/plug-in
+    memoryLimit: 1048M <1>
+----
+<1> specify memory limit for this plug-in
+
+
+Another parameter for memory request is also available:
+
+example:
+
+[source,yaml]
+----
+apiVersion: 1.0.0
+
+components:
+  -
+    type: chePlugin
+    id: id/of/plug-in
+    memoryLimit: 1048M  <1>
+    memoryRequest: 256M <2>
+----
+<1> specify memory limit for this plug-in
+<1> specify memory request for this plug-in
+
+
+.Storage
+
+Some storage can have slow I/O. The I/O are faster by switching to:
+ - ephemeral storage / lost changes on workspace restart
+ - async mount / keep changes on workspace restart and benefits from ephemeral mode I/O
+
+see link:{site-baseurl}che-7/che-7/troubleshooting-che/#using-different-type-of-storage_troubleshooting-che[Use different storage images for faster workspace start].
