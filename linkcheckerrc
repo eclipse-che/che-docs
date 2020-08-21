@@ -16,13 +16,35 @@ ignore=
   feed.xml
   /che-6/
   .*tag_.*.html
+  https://che.openshift.io/*
   http://che.aws.my-ide.cloud
   https://che-che.apps.rhpds311.openshift.opentlc.com
   https://my-plug-in-registry
   https://my-registry.com
   http://che_host:8080
   https://domain.net
+  https://codeready.*
+  # false positives:
+  https://www.keycloak.org/docs/latest/server_admin/#_user-storage-federation
+  https://www.keycloak.org/docs/6.0/server_admin/#github
+  https://maven.apache.org/settings.html*
+  https://www.keycloak.org/docs/latest/server_admin/index.html#openshift-4
 
 # Checks validity of HTML anchors.
 # Add section in the configuration file to enable the plugin
 [AnchorCheck]
+
+[output]
+
+# Output to a files linkchecker-out.html
+fileoutput=html
+
+log=text
+
+# Control printing check status messages. 
+status=0
+
+
+[text]
+
+parts=parenturl,url,realurl,warning,result,intro,outro

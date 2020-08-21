@@ -1,33 +1,38 @@
 // Module included in the following assemblies:
 //
-// creating-and-configuring-a-new-{prod-id-short}-{prod-ver}-workspace
+// creating-and-configuring-a-new-workspace
 
 [id="creating-a-new-workspace-from-the-dashboard_{context}"]
 = Creating a new workspace from the dashboard
 
-This procedure describes how to create and edit a new {prod-short} {prod-ver} devfile using the *Dashboard*.
+This procedure describes how to create and edit a new {prod-short} devfile using the *Dashboard*.
 
 .Prerequisites
 
-* A running instance of {prod}. To install an instance of {prod}, see link:{site-baseurl}che-7/che-quick-starts/[{prod-short} 'quick-starts'].
+* A running instance of {prod}. To install an instance of {prod}, see {link-installing-an-instance}.
 
 .Procedure
 
 To edit the devfile:
 
-. In the *Workspaces* window, click the btn:[Add Workspace] button.
-. In the *SELECT STACK* list, select one of the default stacks.
-+
-image::workspaces/{project-context}-stack-list.png[link="{imagesdir}/workspaces/{project-context}-stack-list.png"]
+. In the *Workspaces* window, click the btn:[Add Workspace] button. The *Custom Workspace* page should be opened.
 
-. Click the btn:[Create & Proceed Editing] button. The *Workspaces -> Configs* page is shown.
+. Scroll down to the *Devfile* section. In the *Devfile editor*, add necessary changes.
 +
-image::workspaces/workspaces-config-page.png[link="{imagesdir}/workspaces/workspaces-config-page.png"]
+image::workspaces/minimal-devfile.png[Devfile editor with the minimal devfile, link="{imagesdir}/workspaces/minimal-devfile.png"]
++
+[TIP]
+.Example: add a project
+====
+To add a project into the workspace, add or edit the following section:
+[source,yaml]
+----
+projects:
+  - name: che
+    source:
+      type: git
+      location: 'https://github.com/eclipse/che.git'
+----
+See the link:{site-baseurl}che-7/making-a-workspace-portable-using-a-devfile/#devfile-reference_making-a-workspace-portable-using-a-devfile[Devfile reference].
+====
 
-. Change the workspace name and click the *Devfile* tab.
-+
-image::workspaces/workspace-devfile-tab.png[link="{imagesdir}/workspaces/workspace-devfile-tab.png"]
-
-. Delete all the *components* and *commands* in the devfile to get an empty devfile.
-+
-image::workspaces/workspace-empty-devfile.png[]

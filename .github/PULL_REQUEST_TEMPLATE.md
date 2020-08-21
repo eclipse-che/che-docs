@@ -1,3 +1,5 @@
+> Read our [Contribution guide](https://github.com/eclipse/che-docs/blob/master/CONTRIBUTING.adoc) before submitting a PR.
+
 ### What does this PR do?
 
 

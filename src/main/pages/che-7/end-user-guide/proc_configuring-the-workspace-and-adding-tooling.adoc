@@ -1,6 +1,6 @@
 // Module included in the following assemblies:
 //
-// creating-and-configuring-a-new-{prod-id-short}-{prod-ver}-workspace
+// creating-and-configuring-a-new-workspace
 
 [id="configuring-the-workspace-and-adding-tooling_{context}"]
 = Configuring the workspace and adding tools
@@ -8,23 +8,11 @@
 
 == Adding plug-ins
 
-{prod-short} {prod-ver} plug-ins replace {prod-short} {prod-prev-ver} installers. The following table lists the {prod-short} {prod-ver} plug-ins that have replaced {prod-short} {prod-prev-ver} installers.
-
-.{prod-short} {prod-ver} plug-ins that have replaced {prod-short} {prod-prev-ver} installers
-[options="header"]
-|===
-| {prod-short} {prod-prev-ver} installer | {prod-short} {prod-ver} plug-in
-| org.eclipse.che.ws-agent | Deprecated and not necessary
-| org.eclipse.che.terminal | Deprecated and not necessary anymore-
-| org.eclipse.che.exec     | {prod-short} machine-exec Service
-| org.eclipse.che.ls.java  | Language Support for Java
-|===
-
 .Prerequisites
 
-* A running instance of {prod}. To install an instance of {prod}, see link:{site-baseurl}che-7/che-quick-starts/[{prod-short} 'quick-starts'].
+* A running instance of {prod}. To install an instance of {prod}, see {link-installing-an-instance}.
 
-* An existing workspace defined on this instance of {prod} link:{site-baseurl}che-7/creating-and-configuring-a-new-che-7-workspace/[Creating a workspace from user dashboard].
+* An existing workspace defined on this instance of {prod} link:{site-baseurl}che-7/creating-and-configuring-a-new-workspace/[Creating a workspace from user dashboard].
 
 .Procedure
 
@@ -33,14 +21,13 @@ To add plug-ins to your workspace:
 . Click the *Plugins* tab.
 . Enable the plug-in that you want to add and click the btn:[Save] button.
 
-
 == Defining the workspace editor
 
 .Prerequisites
 
-* A running instance of {prod}. To install an instance of {prod}, see link:{site-baseurl}che-7/che-quick-starts/[{prod-short} 'quick-starts'].
+* A running instance of {prod}. To install an instance of {prod}, see {link-installing-an-instance}.
 
-* An existing workspace defined on this instance of {prod} link:{site-baseurl}che-7/creating-and-configuring-a-new-che-7-workspace/[Creating a workspace from user dashboard].
+* An existing workspace defined on this instance of {prod} link:{site-baseurl}che-7/creating-and-configuring-a-new-workspace/[Creating a workspace from user dashboard].
 
 .Procedure
 
@@ -62,35 +49,35 @@ image::workspaces/workspace-devfile.png[]
 
 To add a new container image:
 
-. Copy the following section from the *devfile* into *components*:
+. In the *Devfile* tab, add the following section under the *components* property:
 +
 [source,yaml]
 ----
-- mountSources: true
-   command:
-     - sleep
-   args:
-     - infinity
-   memoryLimit: 1Gi
-   alias: maven3-jdk11
-   type: dockerimage
-   endpoints:
-     - name: 8080/tcp
-       port: 8080
-   volumes:
-     - name: projects
-       containerPath: /projects
-   image: 'maven:3.6.0-jdk-11'
+components:
+  - mountSources: true
+     command:
+       - sleep
+     args:
+       - infinity
+     memoryLimit: 1Gi
+     alias: maven3-jdk11
+     type: dockerimage
+     endpoints:
+       - name: 8080/tcp
+         port: 8080
+     volumes:
+       - name: projects
+         containerPath: /projects
+     image: 'maven:3.6.0-jdk-11'
 ----
+ifeval::["{project-context}" == "che"]
 +
 . When using `type: kubernetes` or `type: openshift`, you must:
 +
 * Use separate recipe files.
 +
-[NOTE]
-====
-To use separate recipe files, the paths can be relative or absolute. For example:
-
+To use separate recipe files, you may specify relative or absolute paths. For example:
++
 [source,yaml]
 ----
 ...
@@ -98,7 +85,7 @@ To use separate recipe files, the paths can be relative or absolute. For example
     reference: deploy_k8s.yaml
 ...
 ----
-
++
 [source,yaml]
 ----
 ...
@@ -106,18 +93,9 @@ To use separate recipe files, the paths can be relative or absolute. For example
     reference: deploy_openshift.yaml
 ...
 ----
-====
-* Alternatively, add the content as `referenceContent` (the `referenceContent` field replaces the {prod-short} {prod-prev-ver} recipe content).
-+
-image::workspaces/che-6-workspace-configuration.png[]
+endif::[]
 
 . Add a {prod-short} {prod-prev-ver} recipe content to the {prod-short} {prod-ver} devfile as `referenceContent`:
-
-.. Click the *Containers* tab (*Workspace* -> *Details* -> *Containers*).
-+
-image::workspaces/edit-the-container.png[link="{imagesdir}/workspaces/edit-the-container.png"]
-
-.. Copy the {prod-short} {prod-prev-ver} recipe, and paste it into the separate {prod-short} {prod-ver} component as a *referenceContent*.
 +
 image::workspaces/component_as_a_referenceContent.png[link="{imagesdir}/workspaces/component_as_a_referenceContent.png"]
 
@@ -143,19 +121,7 @@ image::workspaces/component_as_a_referenceContent.png[link="{imagesdir}/workspac
 
 . Copy the required fields from the old workspace (`image`, `volumes`, `endpoints`). For example:
 +
-image::workspaces/workspace_configuration_che_6.png[]
-+
 image::workspaces/workspace_devfile_che_7_.png[]
-+
-.Сhe 6 and Сhe 7 equivalence table
-[options="header"]
-|===
-| {prod-short} {prod-prev-ver} workspace configuration | {prod-short} {prod-ver} workspace devfile
-| `environments['defaultEnv'].machines['target'].servers` | `components[n].endpoints`
-| `environments['defaultEnv'].machines['machineName'].volumes` | `components[n].volumes`
-| `environments['defaultEnv'].recipe.type` | `components[n].type`
-| `environments['defaultEnv'].recipe.content` | `components[n].image`
-|===
 
 . Change the `memoryLimit` and `alias` variables, if needed. Here, the field `alias` is used to set a name for the component. It is generated automatically from the `image` field, if not set.
 +
@@ -174,10 +140,6 @@ image::workspaces/workspace_devfile_che_7_.png[]
   memoryRequest: 128M
 ----
 
-. Open the *Devfile* tab to see the changes.
-+
-image::workspaces/devfile-tab.png[]
-
 . Repeat the steps to add additional container images.
 
 
@@ -185,19 +147,8 @@ image::workspaces/devfile-tab.png[]
 
 The following is a comparison between workspace configuration commands in {prod-short} {prod-prev-ver} (Figure 1) and {prod-short} {prod-ver} (Figure 2):
 
-.An example of the Workspace configuration commands in {prod-short} {prod-prev-ver}
-image::workspaces/che-6-workspace-configuration.png[]
-
 .An example of the Workspace configuration commands in {prod-short} {prod-ver}
 image::workspaces/workspace-devfile.png[]
-
-.Сhe 6 and Сhe 7 equivalence table
-[options="header"]
-|===
-| {prod-short} {prod-prev-ver} workspace configuration | {prod-short} {prod-ver} workspace devfile
-| `environments['defaultEnv'].commands[n].name` | `commands[n].name`
-| `environments['defaultEnv'].commands[n].actions.command` | `components[n].commandLine`
-|===
 
 .Procedure
 

@@ -16,50 +16,23 @@ summary:
 
 :context: upgrading-{prod-id-short}
 
-This chapter describes how to upgrade from {prod-short} {prod-prev-ver} instance to {prod-short} {prod-ver}.
+This chapter describes how to upgrade a {prod-short} instance from previous minor version to {prod-short} {prod-ver}.
 
-The method that was used to install the {prod-short} {prod-prev-ver} instance determines the method to proceed with for the upgrade.
+The method used to install the {prod-short} instance determines the method to proceed with for the upgrade:
 
-Following scenarios are covered:
+* xref:upgrading-{prod-id-short}-using-operatorhub_{context}[]
 
-* xref:upgrading-{prod-id-short}-on-openshift-4-using-the-openshift-web-console_{context}[]
+* xref:upgrading-{prod-id-short}-using-the-cli-management-tool_{context}[]
 
-* xref:upgrading-{prod-id-short}-on-openshift-4-using-the-cli-management-tool_{context}[]
+include::proc_upgrading-che-using-operatorhub.adoc[leveloffset=+1]
 
-* xref:upgrading-{prod-id-short}-on-openshift-3-using-the-cli-management-tool_{context}[]
-
-
-After a major upgrade of the {prod-short} instance from {prod-prev-ver} to {prod-ver}, it is necessary to migrate the workspaces to new devfiles definitions:
-
-* link:{site-baseurl}che-7/converting-a-che-6-workspace-to-a-che-7-devfile[Converting a {prod-short} {prod-prev-ver} workspace to a {prod-short} {prod-ver} devfile]
-
-* link:{site-baseurl}che-7/configuring-a-workspace-using-a-devfile[Configuring a workspace using a devfile].
-
-include::assembly_upgrading-che-on-openshift-4-using-the-openshift-web-console.adoc[leveloffset=+1]
-
-include::proc_upgrading-che-on-openshift-4-using-the-cli-management-tool.adoc[leveloffset=+1]
-
-include::proc_upgrading-che-on-openshift-3-using-the-cli-management-tool.adoc[leveloffset=+1]
+include::proc_upgrading-che-using-the-cli-management-tool.adoc[leveloffset=+1]
 
 == Known issues
 
-=== Upgrading from {prod-short} {prod-prev-ver} to {prod-short} {prod-ver} using the Operator
-
-When upgrading the Operator of a {prod-short} {prod-prev-ver} installation to {prod-short} {prod-ver}, some components may not be automatically updated. To fix this, manually update the images listed in the `checluster` custom resource, which describes the {prod-short} installation. To reset the images to their default versions for given Operator version, set the image properties to empty strings. This forces the {prod-short} Operator to use the default versions it was built with.
-
-Review the following components:
-
-|===
-| Component | CR attribute name
-| PostgreSQL | `spec.database.postgresImage`
-| {identity-provider} | `spec.auth.identityProviderImage`
-| PVC Jobs | `spec.storage.pvcJobsImage`
-|===
-
-
 === Updating a {prod-short} installation using the Operator
 
-When making changes to the `checluster` custom resource, use patching to make updates to it. For example:
+When making changes to the `checluster` Custom Resource, use patching to make updates to it. For example:
 
 ifeval::["{project-context}" == "che"]
 On Kubernetes, run:

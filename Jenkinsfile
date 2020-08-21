@@ -23,6 +23,16 @@ spec:
       command:
       - cat
       tty: true
+    - name: antora
+      image: docker.io/antora/antora
+      command:
+      - cat
+      tty: true
+    - name: vale
+      image: docker.io/jdkato/vale
+      command:
+      - cat
+      tty: true
   volumes:
   - configMap:
       name: known-hosts
@@ -67,7 +77,7 @@ spec:
       steps {
         container('che-docs') {
             dir('che-docs') {
-                sh './tools/enviromnent_docs_gen.sh &&  cd src/main && jekyll build --config _config.yml,_config-web.yml'
+                sh './tools/environment_docs_gen.sh &&  cd src/main && jekyll build --config _config.yml,_config-web.yml'
             }
         }
       }
@@ -92,7 +102,7 @@ spec:
                   git config --global user.email "${PROJECT_NAME}-bot@eclipse.org"
                   git config --global user.name "${PROJECT_BOT_NAME}"
                   export DOC_COMMIT_MSG=$(git log --oneline --format=%B -n 1 HEAD | tail -1)
-                  git commit -m "[docs] ${DOC_COMMIT_MSG}"
+                  git commit -s -m "[docs] ${DOC_COMMIT_MSG}"
                   git log --graph --abbrev-commit --date=relative -n 5
                   git push origin HEAD:${BRANCH_NAME}
                 else
@@ -104,6 +114,13 @@ spec:
       }
     }
   }
+
+  post {
+    always {
+      archiveArtifacts artifacts: 'che-docs/src/main/_site/**', fingerprint: true
+    }
+  }
+
 }
 
 

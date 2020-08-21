@@ -18,7 +18,7 @@ This section describes all fields available to customize the `CheCluster` Custom
 [id="a-minimal-checluster-custom-resource-example_{context}"]
 .A minimal `CheCluster` Custom Resource example.
 ====
-[source,yaml]
+[source,yaml,subs="+quotes,+attributes"]
 ----
 include::examples/checluster-custom-resource.yaml[]
 ----
@@ -42,7 +42,7 @@ Property: Default value: Description
 `cheImage`: omit: Overrides the container image used in {prod-short} deployment. This does not include the container image tag. Omit it or leave it empty to use the default container image provided by the Operator.
 `cheLogLevel`: `INFO`: Log level for the {prod-short} server\: `INFO` or `DEBUG`.
 `cheWorkspaceClusterRole`: omit: Custom cluster role bound to the user for the {prod-short} workspaces. Omit or leave empty to use the default roles.
-`customCheProperties`: omit: Map of additional environment variables that will be applied in the generated `{prod-id-short}` config map to be used by the {prod-short} server, in addition to the values already generated from other fields of the `CheCluster` custom resource (CR). If `customCheProperties` contains a property that would be normally generated in `{prod-id-short}` config map from other CR fields, then the value defined in the `customCheProperties` will be used instead.
+`customCheProperties`: omit: Map of additional environment variables that will be applied in the generated `{prod-id-short}` ConfigMap to be used by the {prod-short} server, in addition to the values already generated from other fields of the `CheCluster` Custom Resource (CR). If `customCheProperties` contains a property that would be normally generated in `{prod-id-short}` ConfigMap from other CR fields, then the value defined in the `customCheProperties` will be used instead.
 `devfileRegistryImage`: omit: Overrides the container image used in the Devfile registry deployment. This includes the image tag. Omit it or leave it empty to use the default container image provided by the Operator.
 `devfileRegistryMemoryLimit`: `256Mi`: Overrides the memory limit used in the Devfile registry deployment.
 `devfileRegistryMemoryRequest`: `16Mi`: Overrides the memory request used in the Devfile registry deployment.
@@ -63,7 +63,7 @@ Property: Default value: Description
 `selfSignedCert`: `false`: Enables the support of OpenShift clusters with routers that use self-signed certificates. When enabled, the Operator retrieves the default self-signed certificate of OpenShift routes and adds it to the Java trust store of the {prod-short} server. Required when activating the `tlsSupport` field on demo OpenShift clusters that have not been setup with a valid certificate for the routes.
 `serverMemoryLimit`: `1Gi`: Overrides the memory limit used in the {prod-short} server deployment.
 `serverMemoryRequest`: `512Mi`: Overrides the memory request used in the {prod-short} server deployment.
-`tlsSupport`: `false`: Instructs the Operator to deploy {prod-short} in TLS mode. Enabling TLS requires enabling the `selfSignedCert` field.
+`tlsSupport`: `true`: Instructs the Operator to deploy {prod-short} in TLS mode. Enabling TLS requires enabling the `selfSignedCert` field.
 :===
 
 [id="checluster-custom-resource-database-settings_{context}"]
@@ -99,7 +99,7 @@ Property: Default value: Description
 `identityProviderURL`: the Operator sets the value automatically: Instructs the Operator to deploy a dedicated Identity Provider (Keycloak or RH SSO instance). Public URL of the Identity Provider server (Keycloak / RH SSO server). Set it only when using an external Identity Provider (see the `externalIdentityProvider` field).
 `oAuthClientName`: the Operator sets the value automatically: Name of the OpenShift `OAuthClient` resource used to setup identity federation on the OpenShift side. See also the `OpenShiftoAuth` field.
 `oAuthSecret`: the Operator sets the value automatically: Name of the secret set in the OpenShift `OAuthClient` resource used to setup identity federation on the OpenShift side. See also the `OAuthClientName` field.
-`openShiftoAuth`: `true` on OpenShift: Enables the integration of the identity provider (Keycloak / RHSSO) with OpenShift OAuth. This allows users to log in with their OpenShift login and have their workspaces created under personal OpenShift namespaces. The `kubeadmin` user is not supported, and logging through does not allow access to the {prod-short} Dashboard.
+`openShiftoAuth`: `true` on OpenShift: Enables the integration of the identity provider (Keycloak / RHSSO) with OpenShift OAuth. This allows users to log in with their OpenShift login and have their workspaces created under personal OpenShift {orch-namespace}s. The `kubeadmin` user is not supported, and logging through does not allow access to the {prod-short} Dashboard.
 `updateAdminPassword`: `false`: Forces the default `admin` {prod-short} user to update password on first login.
 :===
 

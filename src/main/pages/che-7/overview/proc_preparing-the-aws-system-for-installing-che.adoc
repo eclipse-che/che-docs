@@ -1,6 +1,6 @@
 // Module included in the following assemblies:
 //
-// deploying-{prod-id-short}-on-kubernetes-on-aws
+// installing-{prod-id-short}-on-aws
 
 [id="preparing-the-aws-system-for-installing-che_{context}"]
 = Preparing the AWS system for installing {prod-short}
@@ -22,8 +22,6 @@ on Amazon Elastic Compute Cloud (Amazon EC2).
 . Check the `PATH` environment variable if the `aws` tool is not available.
 
 . Install Kubernetes on EC2. There are several ways to have a running Kubernetes instance on EC2. Here, the `kops` tool is used to install Kubernetes. For details, see link:https://kubernetes.io/docs/setup/production-environment/tools/kops/[Installing Kubernetes with `kops`].
-
-. Set up `IAM` user for `kops`. For detailed instructions, see https://github.com/kubernetes/kops/blob/master/docs/aws.md#setup-iam-user[Set up IAM user].
 
 This document assumes that {prod} must be configured to run at link:http://che.aws.my-ide.cloud[{prod-short} AWS Cloud].
 
@@ -307,11 +305,11 @@ namespace/cert-manager labeled
 [subs="+quotes",options="nowrap"]
 ----
 $ kubectl apply \
-  -f https://github.com/jetstack/cert-manager/releases/download/v0.8.1/cert-manager.yaml \
+  -f https://github.com/jetstack/cert-manager/releases/download/v0.15.0/cert-manager.yaml \
   --validate=false
 ----
 
-. Create the {prod-short} namespace if it does not already exist:
+. Create the {prod-short} {orch-namespace} if it does not already exist:
 +
 [subs="+quotes",options="nowrap"]
 ----
@@ -433,7 +431,7 @@ apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
  name: che-tls
- namespace: che
+ namespace: __<{prod-namespace}>__
 spec:
  secretName: che-tls
  issuerRef:
