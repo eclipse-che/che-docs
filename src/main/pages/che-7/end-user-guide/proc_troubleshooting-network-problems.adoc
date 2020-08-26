@@ -10,7 +10,7 @@ summary:
 
 // Module included in the following assemblies:
 //
-// troubleshooting-for-che-end-users
+// troubleshooting-che
 
 
 :page-liquid:
@@ -22,13 +22,12 @@ summary:
 
 Most often, connection problems occur because a firewall, proxy server, corporate network, or other network is configured in a way that blocks {prod-short}.
 
-The following section describes how to prevent or solve issues related to corporate network policies. The network administrator may be required to enable ports or WebSocket, which Che requires for proper functionality.
+This section describes how to prevent or resolve issues related to corporate network policies. The network administrator may be required to enable ports or the WebSockets protocol, which {prod-short} requires for proper functionality.
 
 Common scenarios:
 
 * Open additional ports for a specific web site.
 * Enable WebSockets on the proxy server.
-
 
 
 [id="enabling-the-websocket-protocol_{context}"]
@@ -46,43 +45,44 @@ Some proxy servers operate with WebSockets by default, but others prevent WebSoc
 In some cases, the proxy server requires the additional configuration, and the specific proxy servers need an upgrade, which allows WebSockets support.
 
 
-
 [id="troubleshooting websocket-secure-connections_{context}"]
 == Troubleshooting WebSocket Secure connections
 
-Secure WebSocket connections improve confidentiality and also reliability because they reduce the risk of interference by bad proxies. {prod-short} operates under WebSocket Secure connections by default and usually no action is required. Some customer’s security policy blocks some aspects of the WebSocket protocol that causes problems with proper {prod-short} functionality. Those problems are however out of scope for {prod-short}  support and have to be solved by a network administrator. 
+Secure WebSocket connections improve confidentiality and also reliability because they reduce the risk of interference by bad proxies. {prod-short} operates under WebSocket Secure connections by default and usually no action is required. Some customer's security policy blocks some aspects of the WebSocket protocol that causes problems with proper {prod-short} functionality. Those problems are however out of scope for {prod-short}  support and have to be solved by a network administrator.
 
 To troubleshoot a failing WebSocket Secure (WSS) connection, use the instructions in this section.
 
 .Prerequisites
 
-Using an unsupported web browser causes a connection interruption, followed by a warning message.
-
-* Use a supported Web browser:
-
+* Using a supported web browser:
++
+--
 ** Chrome
 ** Firefox
+--
++
+NOTE: Using an unsupported web browser causes a connection interruption, followed by a warning message.
 
-* WebSockets protocol is enabled
+* WebSockets protocol is enabled.
 
 .Procedure
 
-. Browser support
+. Check browser support:
 .. Check if WebSockets is running by a link:https://websocketstest.com/[realtime web test] using one of the supported browsers.
 +
-If the problem wasn’t resolved, follow with the next step.
-		
-		
-. Proxy servers and firewalls settings
-.. Ask a system administrator to check if there is a proxy server or firewall that blocks WebSocket Secure (WSS) connections on port 443. 
+If the problem is not resolved, follow with the next step.
+
+. Check proxy servers and firewalls settings:
+.. Ask the system administrator to check if there is a proxy server or firewall that blocks WebSocket Secure (WSS) connections on port 443.
 +
-* Possible required actions:
+Possible required actions:
++
+* Add an exception to the firewall.
+* Have the proxy intercept WebSocket connection.
 
-** Add an exception to the firewall 
-** Have the proxy intercept WebSocket connection 
+.Verification
 
-.Verification 
-* Check if WebSockets is running by a link:https://websocketstest.com/[realtime web test] using one of the supported browsers.
+Check if WebSockets is running by a link:https://websocketstest.com/[realtime web test] using one of the supported browsers.
 
 
 ////
