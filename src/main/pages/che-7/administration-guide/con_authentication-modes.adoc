@@ -3,29 +3,36 @@
 [id="authentication-modes_{context}"]
 = Authentication modes
 
-{prod-short} supports `multiuser` and `singleuser` mode.
+{prod-short} supports multiuser and single-user mode.
  
 .Single-user mode
-`singleuser` mode is a mode that requires no authentication and anyone can access all cluster resources. In `singleuser` mode server performs all operations as the predefined user, regardless of who accesses the server. Therefore, this mode is suitable only for use in a private instance for testing product possibilities and configurations.
+
+Single-user mode requires no authentication and anyone can access all cluster resources. In single-user mode, the server performs all operations as the predefined user, regardless of who accesses the server. Therefore, this mode is suitable only for use in a private instance for testing product possibilities and configurations.
  
 * H2 database is used. 
  
-If {prod-short} is deployed in `singleuser` mode then there is no authentication and anyone who can access the URL of the {prod-short} deployment sees all workspaces and owns all resources. Since the deployment in this mode has fewer containers, RAM and CPU usage requirements are decreased. This mode is useful if the whole {prod-short} deployment is used by a single person or for lowering resources which are used for {prod-short} itself, but since the server does not authenticate, actions of several users logged in the same workspace can easily interfere with each other.
+{prod-short} deployed in single-user mode has no authentication and anyone who can access the URL of the {prod-short} deployment sees all workspaces and owns all resources. Because the deployment in this mode requires fewer containers, RAM and CPU requirements are lower. This mode is useful when the whole {prod-short} deployment is used by a single person or for lowering resources used. As the server does not authenticate, actions of multiple users logged in the same workspace can interfere with each other.
  
-Usually, in `singleuser` mode {prod-short} has protection by third party services such as `haproxy` and `nginix`, but it is the responsibility of the user to configure them.
+Use third-party services, such as HAproxy or NGINX, to secure {prod-short} in single-user mode.
 
-.Multi-user mod 
-`multiuser` mode is the default mode for {prod-short} that requires user authentication and offers isolated workspaces and their resources. In multi-user mode workspaces are used in the scope of registered users and workspace definitions, the devfiles of particular workspaces, can be shared and reused between many users.
+.Multiuser mode
+
+Multiuser mode is the default mode for {prod-short}. It requires user authentication and offers isolated workspaces and their resources. In multiuser mode, workspaces are used in the scope of registered users and workspace definitions, and devfiles of particular workspaces can be shared and reused between many users.
  
 * {identity-provider} is used to authenticate users.
 * PostgreSQL database is used. 
- 
+
+
 ["changing-the-authentication-mode_{context}"]
 == Changing the authentication mode
  
-By default, the {prod-short} Operator deploys {prod-short} in `multiuser` mode. To change that: 
+This procedure describes how to change authentication mode for various deployment types.
 
-. Update the `CheCluster` Custom Resource (CR) to set the`CHE_MULTIUSER` property to `false`:
+.Procedure
+
+{prod-short} deployed using the {prod-short} Operator defaults to multiuser mode. To change to sing-user mode:
+
+. Update the `CheCluster` Custom Resource (CR) to set the `CHE_MULTIUSER` property to `false`:
 +
 [source, yaml]
 ----
@@ -34,10 +41,8 @@ spec:
    customCheProperties:
       CHE_MULTIUSER: "false"
 ----
- 
-If {prod-short} is deployed via Helm installer, it defaults to `singleuser` mode. 
 
-** To deploy {prod-short} in `multiuser` mode with Helm installer:
+{prod-short} deployed using the Helm installer defaults to single-user mode. To change to multiuser mode:
 
 . Set the `multiuser` Helm chart field to `true`:
 +
@@ -46,15 +51,12 @@ If {prod-short} is deployed via Helm installer, it defaults to `singleuser` mode
 $ helm upgrade --install che --force --namespace che --set global.cheDomain=__<{prod-host}>__  -f multi-user.yaml
 ----
 
-** To deploy {prod-short} in `multiuser` mode with {prod-cli}:
- 
-. Use `--multiuser` flag, or `-m` option to `{prod-cli} server:start` command:
+{prod-short} deployed using the `{prod-cli}` command-line tool defaults to single-user mode. To change to multiuser mode:
+
+. Use the `--multiuser` (`-m`) option with the `{prod-cli} server:start` command:
 +
 [subs="+quotes,+attributes"]
 ----
 $ {prod-cli} server:start --platfrom=minikube --installer=helm --multiuser
 ----
 
-////
-.Additional resources
-////
