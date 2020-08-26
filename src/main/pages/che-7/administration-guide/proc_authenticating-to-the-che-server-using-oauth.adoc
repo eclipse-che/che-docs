@@ -5,21 +5,17 @@
 
 For easy user interaction with third-party services, the {prod-short} server supports OAuth authentication. OAuth tokens are also used for GitHub-related plug-ins.
 
-OAuth authentication has two main flows based on the {identity-provider} brokering mechanism. The following are the two main OAuth API implementations:
+OAuth authentication has two main flows:
 
-internal:: org.eclipse.che.security.oauth.EmbeddedOAuthAPI
-external:: org.eclipse.che.multiuser.keycloak.server.oauth2.DelegatedOAuthAPI
+delegated:: Default. Delegates OAuth authentication to {identity-provider} server.
+embedded:: Uses built-in {prod-short} server mechanism to communicate with OAuth providers.
 
 To switch between the two implementations, use the `che.oauth.service_mode=__<embedded|delegated>__` configuration property.
 
-The main REST endpoint in the OAuth API is `org.eclipse.che.security.oauth.OAuthAuthenticationService`, which contains:
+The main REST endpoint in the OAuth API is `/api/oauth`, which contains:
 
-* An authentication method that the OAuth authentication flow can start with.
-* A callback method to process callbacks from the provider.
-* A token to retrieve the current user's OAuth token.
-
-These methods apply to the currently activated, embedded or delegated, OAuthAPI. The OAuthAPI then provides the following underlying operations:
-
-* Finding the appropriate authenticator.
-* Initializing the login process.
-* Forwarding the user.
+* An authentication method, `/authenticate`, that the OAuth authentication flow can start with.
+* A callback method, `/callback`, to process callbacks from the provider.
+* A token GET method, `/token`, to retrieve the current user's OAuth token.
+* A token DELETE method, `/token`, to invalidated the current user's OAuth token.
+* A GET method, `/`, to get the list of configured identity providers.
