@@ -1,0 +1,67 @@
+[id="pulling-images-used-by-{prod-id-short}-to-a-private-registry_{context}"]
+= Pulling images used by {prod-short} to a private registry
+
+{prod-short} workspaces consist of Pods running in a cluster, and therefore, many images are required to support all languages and plug-ins that can be used for a workspace. In an offline deployment, these images must be made available to the {prod-short} server running in the cluster.
+
+== Essential images
+
+The images _essential_ for starting a workspace are infrastructure images that are included in every workspace launch:
+
+.Images essential to starting workspaces
+[cols="2*"]
+|===
+| `quay.io/eclipse/che-server`
+| The main {prod-short} server image
+
+| `{postgresql-image-url}`
+| The database used by {prod-short}
+
+| `{identity-provider-image-url}`
+| {identity-provider} Pod for user authentication
+
+| `quay.io/eclipse/che-jwtproxy`
+| JWT proxy image for enabling authentication between services. See link:{site-baseurl}che-7/che-workspaces-architecture/#che-workspace-jwt-proxy_che-workspace-components[{prod-short} workspace JWT proxy].
+
+| `quay.io/eclipse/che-plugin-artifacts-broker` +
+  `quay.io/eclipse/che-plugin-metadata-broker`
+| Images for adding plug-ins to workspaces. See link:{site-baseurl}che-7/che-workspaces-architecture/#che-plug-in-broker_che-workspace-components[{prod-short} plug-ins broker].
+
+| `quay.io/eclipse/che-plugin-registry` +
+  `quay.io/eclipse/che-devfile-registry`
+| Plug-in and devfile registries that store metadata for workspaces. See xref:building-offline-versions-of-the-plug-in-and-devfile-registry_{context}[] for information about building appropriate images.
+|===
+
+== Workspace-specific images
+
+The images described in this section are required for running a workspace. Any one workspace uses a subset of the images below. It is only necessary to include the images that are used in workspaces created. For example, when using {prod-short} only for developing in Java, many images can be omitted.
+
+To avoid issues when only a subset of the images described in this section is needed, remove unnecessary plug-ins and devfiles when building custom registries (see link:{site-baseurl}che-7/customizing-the-devfile-and-plug-in-registries/[Customizing devfile and plug-in registries] for more information).
+
+
+=== Plug-in sidecar images
+
+Many workspace plug-ins are run in sidecar containers to ensure their dependencies are available. The offline plug-in registry (see xref:building-offline-plug-in-registry_{context}[]) includes a file with the list of all images referenced in its plug-ins.
+
+To get a list of images required for plug-ins, display this file:
+
+[subs="+quotes"]
+----
+$ docker run -it --rm \
+  --entrypoint cat _<my-offline-registry>_ /var/www/html/v3/external_images.txt
+----
+
+In the example above, substitute `<my-offline-registry>` for the image name and tag of the custom plug-in registry.
+
+=== Devfile base images
+
+Every {prod-short} workspace uses one or more _base_ images, which contain the development dependencies for projects that are being built. To use the samples, pull these images from the offline devfile registry. This is needed because the sample devfiles included in the devfile registry apply to images suited for this purpose.
+
+An offline devfile registry (see xref:building-offline-devfile-registry_{context}[]) contains a file with the list of all images referenced in its devfiles:
+
+[subs="+quotes"]
+----
+$ docker run -it --rm \
+  --entrypoint cat _<my-offline-registry>_ /var/www/html/devfiles/external_images.txt
+----
+
+In the example above, substitute `<my-offline-registry>` for the image name and tag of the custom devfile registry.

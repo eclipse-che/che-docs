@@ -16,10 +16,7 @@ summary:
 
 :context: installing-{prod-id-short}-in-restricted-environment
 
-The following sections describe the steps necessary to deploy {prod-short} in a Kubernetes or OpenShift cluster in a restricted environment (also called _offline mode_ or _air-gap scenario_).
-
-
-== Introduction
+The following sections describe how to deploy {prod-short} in a Kubernetes or OpenShift cluster in a restricted environment (also called _offline mode_ or _air-gap scenario_).
 
 By default, {prod} workspaces reference various external resources, including container images available in public registries or sample projects hosted on GitHub.
 
@@ -29,200 +26,20 @@ To deploy {prod-short} in an environment where these external resources are not 
 * Pull all images needed for running {prod-short} to a registry that is accessible.
 * Configure {prod-short} to use these images.
 
-
-== Notes on network connectivity in restricted environments
-
-Restricted network environments range from a private subnetwork in a cloud provider to a separate network owned by a company, disconnected from the public Internet. Regardless of the network configuration, {prod-short} works *provided that the Ingress and Routes that are created for {prod-short} components ({prod-id-short}-server, keycloak, devfile-registry, plugin-registry) are accessible from inside the Kubernetes or OpenShift cluster.*
-
-Consider the network topology of the environment to determine how best to accomplish this. For example, on a network owned by a company or an organization, the network administrators must ensure that traffic bound from the cluster can be routed to Ingress and Route host names. In other cases, for example, on AWS, create a proxy configuration allowing the traffic to leave the node to reach an external-facing Load Balancer.
-
-[id="building-offline-versions-of-the-plug-in-and-devfile-registry_{context}"]
-== Building offline versions of the plug-in and devfile registry
-
-This section describes how to build _offline_ registry images. For additional information, see link:{site-baseurl}che-7/building-and-running-a-custom-registry-image/[Building and running a custom registry image].
-
-The main purpose of building offline registry images is to ensure that workspaces can be started without relying on resources from the outside internet. For the plug-in registry, this means building a registry that serves all plug-in or extension artifacts in addition to plug-in metadata. Similarly, an offline devfile registry serves all sample projects referenced in devfiles as `zip` files.
-
-Plug-in registry repositories contain scripts to make it easier to build custom images.
-
-
-[id="building-offline-plug-in-registry_{context}"]
-=== Building offline plug-in registry
-
-. Clone the plug-in registry repository:
-+
-----
-$ git clone https://github.com/eclipse/che-plugin-registry.git
-$ cd che-plugin-registry
-----
-
-. Check out version of the registry to be deployed:
-+
-----
-$ git checkout 7.3.0
-----
-
-. Build the plug-in registry image:
-+
-[subs="+quotes"]
-----
-./build.sh --organization _<my-org>_ \
-           --registry _<my-registry>_ \
-           --tag _<my-tag>_ \
-           --offline
-----
-+
-Use the `--help` parameter to display full options for the `build.sh` script.
-
-This build of the registry builds a container image that contains all `.vsix` and `.theia` extensions that can be used in workspaces. This results in a large image. To build a version of the registry that contains only the _latest_ version of each plug-in, use the `--latest-only` argument.
-
-
-[id="building-offline-devfile-registry_{context}"]
-=== Building offline devfile registry
-
-. Clone the devfile registry repository:
-+
-----
-$ git clone https://github.com/eclipse/che-devfile-registry.git
-$ cd che-devfile-registry
-----
-
-. Check out version of the registry to be deployed:
-+
-----
-$ git checkout 7.3.0
-----
-
-. Build the devfile registry image:
-+
-[subs="+quotes"]
-----
-./build.sh --organization _<my-org>_ \
-           --registry _<my-registry>_ \
-           --tag _<my-tag>_ \
-           --offline
-----
-+
-Use the `--help` parameter to display full options for the `build.sh` script.
-
-
-[id="pulling-images-used-by-{prod-id-short}-to-a-private-registry_{context}"]
-== Pulling images used by {prod-short} to a private registry
-
-{prod-short} workspaces consist of pods running on a cluster, and therefore, many images are required to support all languages and plug-ins that can be used for a workspace. In an offline deployment, these images must be made available to the {prod-short} server running in the cluster.
-
-
-=== Essential images
-
-The images _essential_ for starting a workspace are infrastructure images that are included in every workspace launch:
-
-.Images essential to starting workspaces
-[cols="2*"]
-|===
-| `docker.io/eclipse/che-server`
-| The main {prod-short} server image
-
-| `{postgresql-image-url}`
-| The database used by {prod-short}
-
-| `{identity-provider-image-url}`
-| {identity-provider} Pod for user authentication
-
-| `quay.io/eclipse/che-jwtproxy`
-| JWT proxy image for enabling authentication between services. See link:{site-baseurl}che-7/che-workspaces-architecture/#che-workspace-jwt-proxy_che-workspace-components[{prod-short} workspace JWT proxy].
-
-| `docker.io/eclipse/che-unified-plugin-broker` +
-  `docker.io/eclipse/che-init-plugin-broker`
-| Images for adding plug-ins to workspaces. See link:{site-baseurl}che-7/che-workspaces-architecture/#che-plug-in-broker_che-workspace-components[{prod-short} plug-ins broker].
-
-| `quay.io/eclipse/che-plugin-registry` +
-  `quay.io/eclipse/che-devfile-registry`
-| Plug-in and devfile registries that store metadata for workspaces. See xref:building-offline-versions-of-the-plug-in-and-devfile-registry_{context}[] for information about building appropriate images.
-|===
-
-
-=== Workspace-specific images
-
-The images described in this section are required for running a workspace. Any one workspace uses a subset of the images below. It is only necessary to include the images that are used in workspaces created. For example, when using {prod-short} only for developing in Java, many images can be omitted.
-
-To avoid issues when only a subset of the images described in this section is needed, remove unnecessary plug-ins and devfiles when building custom registries (see link:{site-baseurl}che-7/customizing-the-devfile-and-plug-in-registries/[Customizing devfile and plug-in registries] for more information).
-
-
-==== Plug-in sidecar images
-
-Many workspace plug-ins are run in sidecar containers to ensure their dependencies are available. The offline plug-in registry (see xref:building-offline-plug-in-registry_{context}[]) includes a file with the list of all images referenced in its plug-ins.
-
-To get a list of images required for plug-ins, display this file:
-
-[subs="+quotes"]
-----
-$ docker run -it --rm \
-  --entrypoint cat _<my-offline-registry>_ /var/www/html/v3/external_images.txt
-----
-
-In the example above, substitute `<my-offline-registry>` for the image name and tag of the custom plug-in registry.
-
-==== Devfile base images
-
-Every {prod-short} workspace uses one or more _base_ images, which contain the development dependencies for projects that are being built. To use the samples, pull these images from the offline devfile registry. This is needed because the sample devfiles included in the devfile registry apply to images suited for this purpose.
-
-An offline devfile registry (see xref:building-offline-devfile-registry_{context}[]) contains a file with the list of all images referenced in its devfiles:
-
-[subs="+quotes"]
-----
-$ docker run -it --rm \
-  --entrypoint cat _<my-offline-registry>_ /var/www/html/devfiles/external_images.txt
-----
-
-In the example above, substitute `<my-offline-registry>` for the image name and tag of the custom devfile registry.
-
-== Configuring {prod-short} to run in restricted environment
-
-This section describes how to configure {prod-short} and related containers to use images in a restricted environment rather than the default images in an online registry.
-
 .Prerequisites
 
-* All required images available in an image registry that is visible to the cluster where {prod-short} is to be deployed.
+* You are logged in to the cluster using the developer account.
 
-.Procedure
+* Dynamic provisioning or pre-defined PVs configured before the deployment.
 
-This procedure uses the following placeholders:
+* Block-based storage volume or NFS share available outside of the cluster to serve dynamic storage provisioning or PVs. Block-based storage is recommended for optimal performance. 
 
-.Placeholders used in examples
-[cols="1,2"]
-|===
-| `<my-internal-registry>`
-| a host name of the container-image registry (which is accessible in the restricted environment, see xref:pulling-images-used-by-{prod-id-short}-to-a-private-registry_{context}[])
+include::con_network-connectivity-in-restricted-environments.adoc[leveloffset=+1]
 
-| `<my-organization>`
-| organization of the container-image registry
+include::proc_building-offline-versions-of-the-plug-in-and-devfile-registries.adoc[leveloffset=+1]
 
-| `<my-offline-devfile-registry>` +
-  `<my-offline-plug-in-registry>`
-| offline plug-in and devfile registries (see xref:building-offline-versions-of-the-plug-in-and-devfile-registry_{context}[])
+include::proc_pulling-images-used-by-che-to-a-private-registry.adoc[leveloffset=+1]
 
-| `<ver>`
-| release of {prod-short} that is being deployed
-|===
-
-The `CheCluster` Custom Resource, which is managed by the {prod-short} Operator, includes fields to facilitate deploying an instance of {prod-short} in a restricted environment:
-
-[source,yaml,subs="+quotes"]
-----
-# [...]
-spec:
-  server:
-    airGapContainerRegistryHostname: '__<my-internal-registry>__'
-    airGapContainerRegistryOrganization: '__<my-organization>__'
-# [...]
-----
-
-Setting these values uses `<my-internal-registry>` and `<my-organization>` for all images. This means that the Operator expects the offline plug-in and devfile registries to be available at:
-
-[subs="+quotes"]
-----
-__<my-internal-registry>__/__<my-organization>__/my-offline-plug-in-registry:__<ver>__
-__<my-internal-registry>__/__<my-organization>__/my-offline-plug-in-registry:__<ver>__
-----
+include::proc_configuring-che-to-run-in-a-restricted-environment.adoc[leveloffset=+1]
 
 :context: {parent-context-of-installing-che-in-restricted-environment}
