@@ -12,15 +12,15 @@ To start a remote plug-in endpoint, use the `+PLUGIN_REMOTE_ENDPOINT_EXECUTABLE+
 * Start a remote plug-in endpoint using the `CMD` command in the Dockerfile:
 +
 .Dockerfile example
-[source]
+[source,subs="+attributes"]
 ----
 FROM fedora:30
 
 RUN dnf update -y && dnf install -y nodejs htop && node -v
 
-RUN mkdir /home/user
+RUN mkdir {prod-home}
 
-ENV HOME=/home/user
+ENV HOME={prod-home}
 
 RUN mkdir /projects \
     && chmod -R g+rwX /projects \
@@ -32,15 +32,15 @@ CMD ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
 * Start a remote plug-in endpoint using the `ENTRYPOINT` command in the Dockerfile:
 +
 .Dockerfile example
-[source]
+[source,subs="+attributes"]
 ----
 FROM fedora:30
 
 RUN dnf update -y && dnf install -y nodejs htop && node -v
 
-RUN mkdir /home/user
+RUN mkdir {prod-home}
 
-ENV HOME=/home/user
+ENV HOME={prod-home}
 
 RUN mkdir /projects \
     && chmod -R g+rwX /projects \
