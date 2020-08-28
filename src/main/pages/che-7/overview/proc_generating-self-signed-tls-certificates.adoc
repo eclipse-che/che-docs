@@ -5,23 +5,12 @@
 [id="generating-self-signed-tls-certificates_{context}"]
 = Generating self-signed TLS certificates
 
-This section describes how to prepare self-signed TLS certificates to use with {prod-short} on different platforms.
+This section describes how to prepare self-signed TLS certificates to use with {prod-short} on Minishift.
 
 
 .Prerequisites
 
-* The expected domain name where the {prod-short} deployment is planned.
-ifeval::["{project-context}" == "che"]
-+
-.Expected (default) domain names
-[options="header"]
-|===
-| Platform | Default domain
-| Minishift | `$(minishift ip).nip.io`
-| Minikube | `$(minikube ip).nip.io`
-| CodeReady Containers | `apps-crc.testing`
-|===
-endif::[]
+* The expected domain name where the {prod-short} deployment is planned. Typically, for Minishift, this is `$(minishift ip).nip.io`
 
 * The location of the `openssl.cnf` file on the target machine.
 +
@@ -45,19 +34,19 @@ $ OPENSSL_CNF=__<path_to_openssl.cnf>__
 ----
 ifeval::["{project-context}" == "che"]
 +
-.Example with Minikube on Fedora
+.Example (Fedora)
 [subs="+attributes,quotes"]
 ----
 $ CA_CN="Local {prod} Signer"
-$ DOMAIN=\*.$( minikube ip ).nip.io
+$ DOMAIN=\*.$( minishift ip ).nip.io
 $ OPENSSL_CNF=/etc/pki/tls/openssl.cnf
 ----
 +
-.Example with CodeReady Containers on macOS
+.Example (macOS)
 [subs="+attributes,quotes"]
 ----
 $ export CA_CN="Local {prod} Signer"
-$ export DOMAIN=*.apps-crc.testing
+$ export DOMAIN=\*.$( minishift ip ).nip.io
 $ export OPENSSL_CNF=/System/Library/OpenSSL/openssl.cnf
 ----
 endif::[]

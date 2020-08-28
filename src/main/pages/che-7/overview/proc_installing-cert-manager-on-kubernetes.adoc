@@ -17,7 +17,8 @@ namespace/cert-manager created
 $ kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
 
 $ kubectl apply \
-  -f https://github.com/jetstack/cert-manager/releases/download/v0.8.1/cert-manager.yaml --validate=false
+  -f https://github.com/jetstack/cert-manager/releases/download/v0.15.0/cert-manager.yaml \
+  --validate=false
 ----
 
 . Create the *che* {orch-namespace} if it does not exist already:
@@ -32,20 +33,19 @@ namespace/__<{prod-namespace}>__ created
 +
 ----
 $ cat <<EOF | kubectl apply -f -
-apiVersion: certmanager.k8s.io/v1alpha1
+apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
   name: che-certificate-issuer
 spec:
   acme:
-    dns01:
-      providers:
-      - clouddns:
+    solvers:
+    - dns01:
+        clouddns:
           project: eclipse-che-1
           serviceAccountSecretRef:
             key: key.json
             name: clouddns-dns01-solver-svc-acct
-        name: clouddns
     email: joe@example.com
     privateKeySecretRef:
       name: letsencrypt
@@ -58,11 +58,11 @@ EOF
 [subs="+quotes,+attributes"]
 ----
 $ cat <<EOF | kubectl apply -f -
-apiVersion: certmanager.k8s.io/v1alpha1
+apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
  name: che-tls
- namespace: __<{prod-namespace}>__
+ namespace: {prod-namespace}
 spec:
  secretName: che-tls
  issuerRef:
@@ -70,13 +70,8 @@ spec:
    kind: ClusterIssuer
  dnsNames:
    - '*.gcp.my-ide.cloud'
- acme:
-   config:
-     - dns01:
-         provider: clouddns
-       domains:
-         - '*.gcp.my-ide.cloud'
 EOF
+
 ----
 
 . Check that the `issuerRef` name is the same as the `ClusterIssuer`. A new DNS challenge is added to the DNS zone for _Let’s Encrypt_.
@@ -108,7 +103,7 @@ I0729 13:50:49.420198 1 controller.go:219] cert-manager/controller/challenges "l
 +
 [subs="+quotes,+attributes"]
 ----
-$ kubectl describe certificate/che-tls -n __<{prod-namespace}>__
+$ kubectl describe certificate/che-tls -n {prod-namespace}
 
 Status:
  Conditions:

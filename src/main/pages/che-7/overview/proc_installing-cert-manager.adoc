@@ -17,11 +17,17 @@ namespace/cert-manager created
 $ kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
 ----
 
-. Set `validate=false`. Without it, cert-manager only works with the latest Kubernetes version:
 +
 ----
-$ kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.8.1/cert-manager.yaml --validate=false
+$ kubectl apply \
+  -f https://github.com/jetstack/cert-manager/releases/download/v0.15.0/cert-manager.yaml
 ----
+
+----
+$ kubectl apply \
+ --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.15.0/cert-manager.crds.yaml
+----
+
 
 . Create the *che* {orch-namespace} if it does not already exist:
 +
@@ -30,26 +36,27 @@ $ kubectl create namespace che
 namespace/che created
 ----
 
-. Create the certificate issuer. Enter your email address in the *email* field:
+. Create the certificate issuer. Enter your email address in the *email* field and set *clientID*, *CLIENT_SECRET* *subscriptionID*, *tenantID*, *hostedZoneName*  fields:
 +
 ----
 cat <<EOF | kubectl apply -f -
-apiVersion: certmanager.k8s.io/v1alpha1
+apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
   name: che-certificate-issuer
 spec:
   acme:
-    dns01:
-      providers:
-      - azuredns:
+    solvers:
+    - dns01:
+        azuredns:
           # Service principal clientId (It's the value printed in the previous lines: echo ID=$AZURE_CERT_MANAGER_SP_APP_ID )
           clientID: <AZURE_CERT_MANAGER_SP_APP_ID>
           # A secretKeyRef to a service principal ClientSecret (password)
           # ref: https://docs.microsoft.com/en-us/azure/container-service/kubernetes/container-service-kubernetes-service-principal
           clientSecretSecretRef:
             name: azuredns-config
-            key: CLIENT_SECRET
+            # CLIENT_SECRET is the value of AZURE_CERT_MANAGER_SP_PASSWORD
+            key: <CLIENT_SECRET>
           # Azure subscription Id that can be obtained with command:
           # $ az account show  | jq -r '.id'
           subscriptionID: <SUBSCRIPTION_ID>
@@ -59,7 +66,6 @@ spec:
           resourceGroupName: eclipseCheResourceGroup
           # The DNS Zone to use
           hostedZoneName: azr.my-ide.cloud
-        name: azuredns
     email: florent@example.com
     privateKeySecretRef:
       name: letsencrypt
@@ -71,11 +77,11 @@ EOF
 +
 ----
 cat <<EOF | kubectl apply -f -
-apiVersion: certmanager.k8s.io/v1alpha1
+apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
  name: che-tls
- namespace: __<{prod-namespace}>__
+ namespace: {prod-namespace}
 spec:
  secretName: che-tls
  issuerRef:
@@ -83,12 +89,6 @@ spec:
    kind: ClusterIssuer
  dnsNames:
    - '*.azr.my-ide.cloud'
- acme:
-   config:
-     - dns01:
-         provider: azuredns
-       domains:
-         - '*.azr.my-ide.cloud'
 EOF
 ----
 
@@ -128,27 +128,19 @@ Events:
 . Wait for the status to show *OK* and ensure that the log contains the following:
 +
 ----
-$ kubectl describe certificate/che-tls -n che
+$ kubectl describe certificate/che-tls -n {prod-namespace}
 Name:         che-tls
 Namespace:    che
 Labels:       <none>
-Annotations:  kubectl.kubernetes.io/last-applied-configuration:
-                {"apiVersion":"certmanager.k8s.io/v1alpha1","kind":"Certificate","metadata":{"annotations":{},"name":"che-tls","namespace":"che"},"spec":{...
-API Version:  certmanager.k8s.io/v1alpha1
+Annotations:  API Version:  cert-manager.io/v1alpha3
 Kind:         Certificate
 Metadata:
-  Creation Timestamp:  2019-07-30T08:22:13Z
+  Creation Timestamp:  2020-07-29T10:32:49Z
   Generation:          1
-  Resource Version:    76822
-  Self Link:           /apis/certmanager.k8s.io/v1alpha1/namespaces/che/certificates/che-tls
-  UID:                 225a1cfb-b2a3-11e9-9e1c-76b96a78248b
+  Resource Version:    7961
+  Self Link:           /apis/cert-manager.io/v1alpha3/namespaces/che/certificates/che-tls
+  UID:                 2034c6d5-bce3-4ce8-8489-df31d02b84e9
 Spec:
-  Acme:
-    Config:
-      dns01:
-        Provider:  azuredns
-      Domains:
-        *.azr.my-ide.cloud
   Dns Names:
     *.azr.my-ide.cloud
   Issuer Ref:
@@ -157,16 +149,16 @@ Spec:
   Secret Name:  che-tls
 Status:
   Conditions:
-    Last Transition Time:  2019-07-30T08:23:21Z
+    Last Transition Time:  2020-07-29T10:35:05Z
     Message:               Certificate is up to date and has not expired
     Reason:                Ready
     Status:                True
     Type:                  Ready
-  Not After:               2019-10-28T07:23:19Z
+  Not After:               2020-10-27T09:35:02Z
 Events:
-  Type    Reason         Age   From          Message
-  ----    ------         ----  ----          -------
-  Normal  OrderCreated   102s  cert-manager  Created Order resource "che-tls-3633081213"
-  Normal  OrderComplete  34s   cert-manager  Order "che-tls-3633081213" completed successfully
-  Normal  CertIssued     34s   cert-manager  Certificate issued successfully
+  Type    Reason        Age    From          Message
+  ----    ------        ----   ----          -------
+  Normal  GeneratedKey  5m49s  cert-manager  Generated a new private key
+  Normal  Requested     5m49s  cert-manager  Created new CertificateRequest resource "che-tls-2082883576"
+  Normal  Issued        3m34s  cert-manager  Certificate issued successfully
 ----
