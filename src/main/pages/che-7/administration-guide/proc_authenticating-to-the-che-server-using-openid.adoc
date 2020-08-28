@@ -71,12 +71,12 @@ To obtain the token, send a request to the token endpoint with the username and 
 
 [subs="+quotes,+attributes"]
 ----
-$ curl --insecure --data "grant_type=password&client_id={prod-deployment}-public&username=<USERNAME>&password=<PASSWORD>" \ <1> <2>
+$ curl --insecure --data "grant_type=password&client_id={prod-deployment}-public&username=__<USERNAME>__&password=__<PASSWORD>__" \ <1> <2>
 https://<keyckloak_host>/auth/realms/{prod-deployment}/protocol/openid-connect/token <3>
 ----
 <1> {prod} username
 <2> {prod} user's password
-<3> {identity-provider} host.
+<3> {identity-provider} host
 
 The {prod-short} dashboard uses a customized {identity-provider} login page and an authentication mechanism based on `grant_type=authorization_code`. It is a two-step authentication process:
 
@@ -99,11 +99,11 @@ $ curl --insecure -X POST  \
 -d "subject_issuer=__<OPENSHIFT_IDENTITY_PROVIDER_NAME>__" \ <2>
 --data-urlencode "grant_type=urn:ietf:params:oauth:grant-type:token-exchange" \
 --data-urlencode "subject_token_type=urn:ietf:params:oauth:token-type:access_token" \
-https://<KEYCKLOAK_HOST>/auth/realms/{prod-deployment}/protocol/openid-connect/token <3>
+https://__<KEYCKLOAK_HOST>__/auth/realms/{prod-deployment}/protocol/openid-connect/token <3>
 ----
 <1> The token retrieved by the end-user with the command `oc whoami --show-token`
 <2> `openshift-v4` for OpenShift 4.x and `openshift-v3` for OpenShift 3.11
-<3> {identity-provider} host.
+<3> {identity-provider} host
 
 
 WARNING: Before using this token exchange feature, it is required for an end user to be interactively logged in at least once to the {prod-short} Dashboard using the OpenShift login page. This step is needed to link the OpenShift and {identity-provider} user accounts properly and set the required user profile information.
