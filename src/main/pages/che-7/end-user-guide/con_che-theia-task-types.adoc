@@ -5,34 +5,63 @@
 [id="che-theia-task-types_{context}"]
 = Che-Theia task types
 
-The `commands` section in a devfile allows a user to automate certain actions when running a Che workspace.
+The following is an example of the `commands` section of a devfile.
 
-There are three types of Che commands:
+[source,yaml]
+----
+commands:
 
-* `exec`: Each command of type `exec` is translated into a Che-Theia task of type `che`. A `che` command executes a shell command, but in contrast to regular Che-Theia shell-type tasks, a user can choose a workspace container for the command execution.
-* `vscode-task`: `vscode-task` is a single command type that copies the contents of the `referenceContentfield` of the specific command directly to the user-level task configurations in Che-Theia.
-* `vscode-launch`: Functions like a `vscode-task` command, but instead of being copied into the task configurations, the content of the `referenceContent` field is copied into the `launch.json` configuration file.
+  - name: Package Native App
+    actions:
+      - type: exec
+        component: centos-quarkus-maven
+        command: "mvn package -Dnative -Dmaven.test.skip"
+        workdir: ${CHE_PROJECTS_ROOT}/quarkus-quickstarts/getting-started
 
-Tasks of type `che`, also known as `exec` commands, can be executed from the *Terminal->Run Task* menu or by clicking them in the *My Workspace* panel.
-Other tasks are only available via *Terminal->Run Task*. Launch configurations are available in the Che-Theia debugger.
+  - name: Start Native App
+    actions:
+      - type: exec
+        component: ubi-minimal
+        command: ./getting-started-1.0-SNAPSHOT-runner
+        workdir: ${CHE_PROJECTS_ROOT}/quarkus-quickstarts/getting-started/target
 
-.Example:
+  - name: Attach remote debugger
+    actions:
+    - type: vscode-launch
+      referenceContent: |
+        {
+          "version": "0.2.0",
+          "configurations": [
+            {
+              "type": "java",
+              "request": "attach",
+              "name": "Attach to Remote Quarkus App",
+              "hostName": "localhost",
+              "port": 5005
+            }
+          ]
+        }
+----
 
-The following example contains a  `che` task and `vscode-task` task sample.
-
-The configuration in link:{site-baseurl}che-7/defining-custom-commands-for-che-theia/[Defining custom commands for Che-Theia] sets up the `theia:watch` and `theia:build` tasks in the `theia` workspace:
-
-* `theia:watch`, which runs the `theia` project in `watch` mode.
-* `theia:build`, which builds the `theia` project in the `che-dev` component.
-
-
-.Descriptions of used `che` commands in the above-mentioned example `theia:build`
-* The `exec` type implies that the Che runner is used for command execution. 
-* The user can specify the component in whose container the command is executed.
+prod-short} commands:: `Package Native App` and `Start Native App`
++
+The {prod-short} commands are to be used to define tasks that will be executed in the workspace container.
++
+* The `exec` type implies that the {prod-short} runner is used for command execution. The user can specify the component in whose container the command is executed.
 * The `command` field contains the command line for execution.
 * The `workdir` is the working directory in which the command is executed.
+* The `component` field refers to the container where the command will be executed. The field contains the component `alias` where the container is defined.
 
-These tasks are available for running in a workspace from the *Terminal->Run Task* menu or by clicking them in the *My Workspace* panel.
+VS Code launch configurations:: `Attach remote debugger`
++
+VS Code launch configurations are usually used to define debugging configuration. To trigger these configurations, press btn:[F5] or choose *Start Debugging* from the *Debug* menu. The configurations provide information to the debugger, such as the port to connect to for debugging or the type of the application to debug (Node.js, Java, and others.).
++
+* The type is `vscode-launch`.
+* It contains the launch configurations in the VS Code format.
+* For more information about VS Code launch configurations, see the Debugging section on the link:https://code.visualstudio.com/docs/editor/debugging#_launch-configurations[Visual Studio documentation page].
+
+Tasks of type `che`, also known as `exec` commands, can be executed from the *Terminal->Run Task* menu or by selecting them in the *My Workspace* panel. Other tasks are only available from *Terminal->Run Task*. Launch configurations are available in the Che-Theia debugger.
+
 
 .Additional examples
 * link:https://github.com/eclipse/che-devfile-registry/blob/master/devfiles/quarkus-command-mode/devfile.yaml#L63-L71[Theia task of type `che` example]
