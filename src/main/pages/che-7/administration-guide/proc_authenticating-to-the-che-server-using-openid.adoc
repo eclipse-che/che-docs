@@ -44,7 +44,7 @@ The service allows downloading the JavaScript client library to interact with th
 
 The verification of the token signature occurs in two main steps:
 
-. Authentication: The token is extracted from the *Authorization* header or from the `token` query parameter and is parsed using the public key retrieved from the provider. In case of expired, invalid, or malformed tokens, a `403` error is sent to the user. The minimal use of the query parameter is recommended, due to its support limitations or complete removal in upcoming versions. 
+. Authentication: The token is extracted from the *Authorization* header or from the `token` query parameter and is parsed using the public key retrieved from the provider. In case of expired, invalid, or malformed tokens, a `403` error is sent to the user. The minimal use of the query parameter is recommended, due to its support limitations or complete removal in upcoming versions.
 +
 If the validation is successful, the parsed form of the token is passed to the environment initialization step:
 
@@ -69,11 +69,14 @@ Clients that cannot run JavaScript or other clients (such as command-line client
 
 To obtain the token, send a request to the token endpoint with the username and password credentials. This request can be schematically described as the following cURL request:
 
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
-$ curl --data "grant_type=password&client_id=__<client_name>__&username=__<username>__&password=__<password>__" \
-  http://<keyckloak_host>:5050/auth/realms/__<realm_name>__/protocol/openid-connect/token
+$ curl --insecure --data "grant_type=password&client_id={prod-deployment}-public&username=__<USERNAME>__&password=__<PASSWORD>__" \ <1> <2>
+https://<keyckloak_host>/auth/realms/{prod-deployment}/protocol/openid-connect/token <3>
 ----
+<1> {prod} username
+<2> {prod} user's password
+<3> {identity-provider} host
 
 The {prod-short} dashboard uses a customized {identity-provider} login page and an authentication mechanism based on `grant_type=authorization_code`. It is a two-step authentication process:
 
@@ -88,25 +91,19 @@ the user's {prod-short} authentication token can be retrieved from the user's Op
 
 To retrieve the authentication token from the OpenShift token, send a schematically described cURL request to the OpenShift token endpoint:
 
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
-$ curl -X POST -d "client_id=__<client_name>__" \
+$ curl --insecure -X POST  \
+-d "client_id={prod-deployment}-public" \
+-d "subject_token=__<USER_OPENSHIFT_TOKEN>__" \ <1>
+-d "subject_issuer=__<OPENSHIFT_IDENTITY_PROVIDER_NAME>__" \ <2>
 --data-urlencode "grant_type=urn:ietf:params:oauth:grant-type:token-exchange" \
--d "subject_token=__<user_openshift_token>__" \
- -d "subject_issuer=__<openshift_identity_provider_name>__" \
- --data-urlencode "subject_token_type=urn:ietf:params:oauth:token-type:access_token" \
- http://<keyckloak_host>:5050/auth/realms/__<realm_name>__/protocol/openid-connect/token
+--data-urlencode "subject_token_type=urn:ietf:params:oauth:token-type:access_token" \
+https://__<KEYCKLOAK_HOST>__/auth/realms/{prod-deployment}/protocol/openid-connect/token <3>
 ----
+<1> The token retrieved by the end-user with the command `oc whoami --show-token`
+<2> `openshift-v4` for OpenShift 4.x and `openshift-v3` for OpenShift 3.11
+<3> {identity-provider} host
 
-The default values for `_<openshift_identity_provider_name>_` are:
-
-- On OpenShift 3.11: `openshift-v3`
-- On OpenShift 4.x: `openshift-v4`
-
-`_<user_openshift_token>_` is the token retrieved by the end-user with the command:
-[subs="+quotes"]
-----
-$ oc whoami --show-token
-----
 
 WARNING: Before using this token exchange feature, it is required for an end user to be interactively logged in at least once to the {prod-short} Dashboard using the OpenShift login page. This step is needed to link the OpenShift and {identity-provider} user accounts properly and set the required user profile information.
