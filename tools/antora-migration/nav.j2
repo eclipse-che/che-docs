@@ -1,0 +1,21 @@
+{%- for guide in entries|sort(attribute='title') -%}
+    {%- if guide.title | lower | replace(" ", "-") == target -%}
+.{{ guide.title }}
+        {% for chapter in guide.folders -%}
+            {%- if chapter.url -%}
+                {%- set url = chapter.url | replace('che-7/','') %}
+* xref:{{ url }}.adoc[]
+            {%- endif -%}
+            {%- if chapter.folderitems -%}
+                {% for section in chapter.folderitems -%}
+                    {%- set url = section.url | replace('che-7/','') %}
+                        {%- if section.title == "Overview" %}
+* xref:{{ url }}.adoc[]
+                        {%- else %}
+** xref:{{ url }}.adoc[]
+                        {%- endif %}
+                {%- endfor %}
+            {%- endif -%}
+        {%- endfor %}
+   {%- endif %}
+{%- endfor %}

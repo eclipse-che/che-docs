@@ -1,0 +1,48 @@
+
+
+:parent-context-of-upgrading-che: {context}
+
+[id="upgrading-{prod-id-short}_{context}"]
+= Upgrading {prod-short}
+
+:context: upgrading-{prod-id-short}
+
+This chapter describes how to upgrade a {prod-short} instance from previous minor version to {prod-short} {prod-ver}.
+
+The method used to install the {prod-short} instance determines the method to proceed with for the upgrade:
+
+* xref:proc_upgrading-che-using-operatorhub.adoc[]
+
+* xref:proc_upgrading-che-using-the-cli-management-tool.adoc[]
+
+include::partial$proc_upgrading-che-using-operatorhub.adoc[leveloffset=+1]
+
+include::partial$proc_upgrading-che-using-the-cli-management-tool.adoc[leveloffset=+1]
+
+== Known issues
+
+=== Updating a {prod-short} installation using the Operator
+
+When making changes to the `checluster` Custom Resource, use patching to make updates to it. For example:
+
+ifeval::["{project-context}" == "che"]
+On Kubernetes, run:
+
+[subs="+quotes,+attributes",options="nowrap",role=white-space-pre]
+----
+$ kubectl patch checluster _<{prod-deployment}-cluster>_ --type=json -n _<{prod-deployment}-namespace>_ --patch '_<requested-patch>_'
+----
+
+endif::[]
+
+On OpenShift, run:
+
+[subs="+quotes,+attributes",options="nowrap",role=white-space-pre]
+----
+$ oc patch checluster _<{prod-deployment}-cluster>_ --type=json -n _<{prod-deployment}-namespace>_ --patch '_<requested-patch>_'
+----
+
+WARNING: Making local updates to the YAML file of the `checluster` resource and then applying such changed resource to
+the cluster using `kubectl apply -f` or `oc apply -f` can result in an invalidation of the {prod-short} installation.
+
+:context: {parent-context-of-upgrading-che}
