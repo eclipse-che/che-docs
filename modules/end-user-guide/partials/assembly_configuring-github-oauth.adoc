@@ -1,0 +1,41 @@
+
+
+
+[id="configuring-github-oauth_{context}"]
+= Configuring GitHub OAuth
+
+OAuth for GitHub allows for automatic SSH key upload to GitHub.
+
+.Procedure
+
+* Set up the link:https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app[GitHub OAuth client]. The *Authorization callback URL* is filled in the next steps.
+
+
+. Go to the {identity-provider} administration console and select the *Identity Providers* tab.
+. Select the *GitHub* identity provider in the drop-down list.
+. Paste the *Redirect URI* to the *Authorization callback URL* of the GitHub OAuth application.
+. Fill the *Client ID* and *Client Secret* from the GitHub oauth app.
+. Enable *Store Tokens*.
+. Save the changes of the Github Identity provider and click *Register application* in the GitHub oauth app page.
+ifeval::["{project-context}" == "che"]
++
+image::git/github-keycloak-setup.png[]
+
+* For {prod-short} deployed in single-user mode:
+. On OpenShift or Kubernetes, update the deployment configuration (see xref:installation-guide:configuring-the-che-installation.adoc[Configuring the {prod-short} installation] and xref:installation-guide:advanced-configuration-options-for-the-che-server-component.adoc#authentication-parameters[]).
++
+[subs=+quotes]
+----
+CHE_OAUTH_GITHUB_CLIENTID=__<your-github-client-ID>__
+CHE_OAUTH_GITHUB_CLIENTSECRET=__<your-github-secret>__
+----
+
+. In the *Authorization callback URL* field of the GitHub OAuth application, enter `__<prod-url__/api/oauth/callback`.
++
+[NOTE]
+====
+* Substitute `_<prod-url>_` with the URL and port of the {prod-short} installation.
+* Substitute `_<your-github-client-ID>_` and `_<your-github-secret>_` with your GitHub client ID and secret.
+* This configuration only applies to single-user deployments of {prod-short}.
+====
+endif::[]

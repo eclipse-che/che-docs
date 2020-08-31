@@ -1,0 +1,40 @@
+aliases: {{ aliases }}
+map:
+{%- for guide in entries|sort(attribute='title') -%}
+    {%- if guide.title | lower | replace(" ", "-") == target -%}
+        {% for chapter in guide.folders -%}
+            {%- if chapter.url -%}
+                {%- set url = chapter.url | replace('che-7/','') %}
+  - url: {{ url }}
+    navtitle: "{{ chapter.title }}"
+    {% for item in map -%}
+        {%- if item.url == url -%}
+    file: {{ item.file }}
+        {%- endif %}
+    {%- endfor %}
+            {%- endif -%}
+            {%- if chapter.folderitems -%}
+                {% for section in chapter.folderitems -%}
+                    {%- set url = section.url | replace('che-7/','') %}
+                        {%- if section.title == "Overview" %}
+  - url: {{ url }}
+    navtitle: "{{ chapter.title }}"
+    {% for item in map -%}
+        {%- if item.url == url -%}
+    file: {{ item.file }}
+        {%- endif %}
+    {%- endfor %}
+                        {%- else %}
+  - url: {{ url }}
+    navtitle: "{{ section.title }}"
+    {% for item in map -%}
+        {%- if item.url == url -%}
+    file: {{ item.file }}
+        {%- endif %}
+    {%- endfor %}
+                        {%- endif %}
+                {%- endfor %}
+            {%- endif -%}
+        {%- endfor %}
+   {%- endif %}
+{%- endfor %}
