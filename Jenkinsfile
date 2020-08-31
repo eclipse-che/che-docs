@@ -44,7 +44,6 @@ spec:
   environment {
     PROJECT_NAME = "che"
     PROJECT_BOT_NAME = "CHE Bot"
-    CI = true
   }
  
   triggers { pollSCM('H/10 * * * *') 
@@ -97,7 +96,7 @@ spec:
         milestone 21
         container('antora') {
           dir('che-docs') {
-                sh 'antora generate antora-playbook.yml --stacktrace'
+                sh 'CI=true antora generate antora-playbook.yml --stacktrace'
             }
         }
         milestone 22
