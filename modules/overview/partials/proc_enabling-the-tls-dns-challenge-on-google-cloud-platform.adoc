@@ -1,0 +1,52 @@
+// Module included in the following assemblies:
+//
+// preparing-google-cloud-platform-for-installing-che
+
+[id="enabling-the-tls-dns-challenge-on-google-cloud-platform_{context}"]
+= Enabling the TLS and DNS challenge on Google Cloud Platform
+
+
+.Procedure
+
+To use the Cloud DNS and TLS, service accounts must be enabled, and cert-manager must manage the DNS challenge for the _Let’s Encrypt_ service.
+
+. Create a service account with the given name:
++
+----
+$ gcloud iam service-accounts create dns01-solver --display-name "dns01-solver"
+----
+
+. Add the policy binding to the IAM policy of the *eclipse-che-1* project (replace the *eclipse-che-1* project name with the name of your project):
++
+----
+$ gcloud projects add-iam-policy-binding eclipse-che-1 \
+  --member serviceAccount:dns01-solver@eclipse-che-1.iam.gserviceaccount.com \
+  --role roles/dns.admin
+----
++
+The following is the output of this command:
++
+----
+Updated IAM policy for project [eclipse-che-1].
+
+bindings:
+- members:
+ - serviceAccount:service-779451692063@compute-system.iam.gserviceaccount.com
+ role: roles/compute.serviceAgent
+- members:
+ - serviceAccount:service-779451692063@container-engine-robot.iam.gserviceaccount.com
+ role: roles/container.serviceAgent
+- members:
+ - serviceAccount:dns01-solver@eclipse-che-1.iam.gserviceaccount.com
+ role: roles/dns.admin
+- members:
+ - serviceAccount:779451692063-compute@developer.gserviceaccount.com
+ - serviceAccount:779451692063@cloudservices.gserviceaccount.com
+ - serviceAccount:service-779451692063@containerregistry.iam.gserviceaccount.com
+ role: roles/editor
+- members:
+ - user:<email-address>
+ role: roles/owner
+etag: <some-tag>
+version: 1
+----

@@ -1,0 +1,66 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-on-microsoft-azure
+
+[id="preparing-azure-for-installing-che_{context}"]
+= Preparing Azure for installing {prod-short}
+
+.Procedure
+
+To set up the Azure environment for {prod-short}:
+
+. Install the Azure command-line tool. For details, see https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest[Install the Azure CLI].
++
+For example, on macOS:
++
+----
+$ brew update && brew install azure-cli
+----
+
+. Log in to Azure:
++
+----
+$ az login
+----
+
+. Create an Azure group (to list the locations, use the `az account list-locations` command):
++
+----
+$ az group create --name eclipseCheResourceGroup --location francecentral
+{
+  "id": "/subscriptions/ab0f7986-a280-481c-a47d-98fa45ff94ca/resourceGroups/eclipseCheResourceGroup",
+  "location": "francecentral",
+  "managedBy": null,
+  "name": "eclipseCheResourceGroup",
+  "properties": {
+    "provisioningState": "Succeeded"
+  },
+  "tags": null,
+  "type": null
+}
+----
+
+. Create the cluster:
++
+----
+$ az aks create --resource-group eclipseCheResourceGroup \
+  --name eclipse-che --node-count 1 --enable-addons monitoring --generate-ssh-keys
+----
+
+. Configure `kubectl`:
++
+----
+$ az aks get-credentials --name eclipse-che --resource-group eclipseCheResourceGroup
+Merged "eclipse-che" as current context in /Users/benoitf/.kube/config
+----
+
+. Check the Kubernetes context:
++
+----
+$ kubectl config current-context
+eclipse-che
+
+$ kubectl get pods --all-namespaces
+----
++
+All the Pods in the running state are displayed.

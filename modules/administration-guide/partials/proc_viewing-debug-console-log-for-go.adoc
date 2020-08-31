@@ -1,0 +1,45 @@
+// viewing-logs-for-go
+
+[id="viewing-debug-console-log-for-go_{context}"]
+= Viewing the Debug Console log for Go
+
+This section describes how to view the log output from the Go debugger.
+
+.Procedure
+
+. Set the `showLog` attribute to `true` in the debug configuration.
++
+[source,json]
+----
+{
+  "version": "0.2.0",
+  "configurations": [
+     {
+        "type": "go",
+        "showLog": true
+       ....
+     }
+  ]
+}
+----
+
+. To enable debugging output for a component, add the package to the comma-separated list value of the `logOutput` attribute:
++
+[source,json]
+----
+{
+  "version": "0.2.0",
+  "configurations": [
+     {
+        "type": "go",
+        "showLog": true,
+        "logOutput": "debugger,rpc,gdbwire,lldbout,debuglineerr"
+       ....
+     }
+  ]
+}
+----
+
+. The debug console prints the additional information in the debug console.
++
+image::logs/viewing-debug-console-log-for-go.png[]

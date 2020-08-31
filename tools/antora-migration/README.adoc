@@ -1,0 +1,43 @@
+# Antora migration tasks
+
+.DONE
+
+* Usage documentation: `README-antora.adoc`
+
+
+* Handle publication:
+
+** Build script: `run_antora.sh` running Antora on http://127.0.0.1:4000.
+
+** Define *Playbook*: `antora-playbook.yml`.
+
+** Define single *Component*, named `che-7`, with no version, including asciidoc attributes: `antora.yml`. 
+
+** Define each guides as a *Module* in `modules/` directory.
+
+** Define *UI* in `supplemental-ui`: favicon, header, footer, admonition icons, Font Awesome icons.
+
+** Define *URLs* without `.html` extension (Indexify): `<site>/che-7/<module>/<page>/`.
+
+
+* Migration script: `tools/antora-migration.sh` and files in `tools/antora-migration/` directory.
+
+** Generate navigation: navbar.yml -> `modules/<module-name>/nav.adoc`.
+
+* Generate `pages`: avoid `assembly_` prefix in the URL, add `:pages-aliases:` and `:keywords:`.
+
+** Copy adoc files in `partials` directory.
+
+** Handle `images`. Images in 2 guides are copied twice. See https://docs.antora.org/antora/2.3/page/images/
+
+** Handle `examples` files. Use `include::example$filename.ext[]` pattern See https://docs.antora.org/antora/2.3/page/include-an-example/
+
+** Replace all internal links using `link:` by proper `xref:` pointing to the adoc file.
+
+** Remove Jekyll headers, including `:page-liquid:`.
+
+** Fix `icon:fa`
+
+.TODO
+
+See TODO.adoc

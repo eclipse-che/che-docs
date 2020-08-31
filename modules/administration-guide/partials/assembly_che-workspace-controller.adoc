@@ -1,0 +1,38 @@
+
+
+:parent-context-of-che-workspace-controller: {context}
+
+[id="{prod-id-short}-workspace-controller_{context}"]
+= {prod-short} workspace controller
+
+:context: {prod-id-short}-workspace-controller
+
+The workspaces controller manages the container-based development environments: {prod-short} workspaces. It can be deployed in the following distinct configurations:
+
+* *Single-user*: No authentication service is set up. Development environments are not secured. This configuration requires fewer resources. It is more adapted for local installations, such as when using Minikube.
+
+* *Multi-user*: This is a multi-tenant configuration. Development environments are secured, and this configuration requires more resources. Appropriate for cloud installations.
+ifeval::["{project-context}" == "che"]
++
+For additional information, see the xref:authenticating-users.adoc#authentication-mods_{context}[] chapter. 
+endif::[]
+
+The different services that are a part of the {prod-short} workspaces controller are shown in the following diagram. Note that {identity-provider} and PostgreSQL are only needed in the multi-user configuration.
+
+
+.{prod-short} workspaces controller
+image::architecture/{project-context}-workspaces-controllers.png[]
+
+include::partial$con_che-server.adoc[leveloffset=+1]
+
+include::partial$con_che-user-dashboard.adoc[leveloffset=+1]
+
+include::partial$con_che-devfile-registry.adoc[leveloffset=+1]
+
+include::partial$con_che-plug-in-registry.adoc[leveloffset=+1]
+
+include::partial$con_che-postgresql.adoc[leveloffset=+1]
+
+include::partial$con_che-keycloak.adoc[leveloffset=+1]
+
+:context: {parent-context-of-che-workspace-controller}
