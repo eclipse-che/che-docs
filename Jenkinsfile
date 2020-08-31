@@ -44,6 +44,7 @@ spec:
   environment {
     PROJECT_NAME = "che"
     PROJECT_BOT_NAME = "CHE Bot"
+    CI = true
   }
  
   triggers { pollSCM('H/10 * * * *') 
