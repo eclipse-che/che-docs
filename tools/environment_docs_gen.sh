@@ -17,7 +17,7 @@ TABLE_HEADER="$NEWLINEx2,=== $NEWLINE Environment Variable Name,Default value, D
 TABLE_FOOTER=",=== $NEWLINEx2"
 PARENT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")/.." ; pwd -P )
 BUFF=""
-OUTPUT_PATH="$PARENT_PATH/src/main/pages/che-7/installation-guide/examples/system-variables.adoc"
+OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/system-variables.adoc"
 
 fetch_current_version() {
   echo "Trying to read current product version from pom.xml..." >&2
