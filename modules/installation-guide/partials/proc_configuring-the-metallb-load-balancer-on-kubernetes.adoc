@@ -1,0 +1,60 @@
+[id="configuring-the-metallb-load-balancer-on-kubernetes_{context}"]
+= Configuring the MetalLB load balancer on Kubernetes
+
+This section describes how to use MetalLB to install a load balancer for Kubernetes on bare metal.
+
+.Prerequisites
+
+* MetalLB installed. See the link:https://metallb.universe.tf/installation/[installation guide].
+
+.Procedure
+
+. Configure Kubernetes proxy:
++
+----
+$ kubectl edit configmap -n kube-system kube-proxy
+----
++
+and set:
++
+[source,yaml]
+----
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+mode: "ipvs"
+ipvs:
+  strictARP: true
+----
+
+. Apply the MetalLB manifests:
++
+----
+$ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.3/manifests/namespace.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.3/manifests/metallb.yaml
+
+# On first install only:
+$ kubectl create secret generic -n metallb-system memberlist \
+  --from-literal=secretkey="$(openssl rand -base64 128)"
+----
+
+. Configure MetalLB. To allow the load balancer to distribute external IPs, specify in its configuration the IP range allocated for it:
++
+[subs="+quotes"]
+----
+$ cat << EOF | kubectl apply -f -
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb-system
+  name: config
+data:
+  config: |
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - _<your-ip-range>_
+EOF
+----
++
+NOTE: Set `_<your-ip-range>_` to the IP range you intend to use.
