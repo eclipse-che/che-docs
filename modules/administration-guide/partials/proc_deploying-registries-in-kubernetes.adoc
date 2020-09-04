@@ -9,7 +9,7 @@ A Helm chart for the plug-in registry is available in the `/kubernetes/che-plugi
 
 . To deploy the plug-in registry using the Helm chart, run the following command:
 +
-[subs="+quotes,+attributes"]
+[subs="+quotes,+attributes,+macros"]
 ----
 NAMESPACE=__<namespace-name>__     <1>
 DOMAIN=__<kubernetes-cluster-domain>__ <2>
@@ -17,8 +17,8 @@ IMAGE="my-plug-in-registry"
 helm upgrade --install che-plugin-registry \
  --debug \
  --namespace $\{NAMESPACE} \
- --set global.ingressDomain=$\{DOMAIN} \
- --set chePluginRegistryImage=$\{IMAGE} \
+ --set +global.ingressDomain=$\{DOMAIN}+ \
+ --set +chePluginRegistryImage=$\{IMAGE}+ \
  --set chePluginRegistryImagePullPolicy="IfNotPresent" \
  ./kubernetes/che-plugin-registry/
 ----
