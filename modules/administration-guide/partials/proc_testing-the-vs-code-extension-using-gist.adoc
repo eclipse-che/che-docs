@@ -28,9 +28,7 @@ To add a plug-in that is not in the default plug-in registry, build a custom plu
 
 . Go to the link:https://gist.github.com/[gist] webpage and create a `README.md` file with the following description: `Try Bracket Pair Colorizer extension in {prod}` and content: `Example VS Code extension`. (link:https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer[Bracket Pair Colorizer] is a popular VS Code extension.)
 
-. Click the btn:[Create secret gist] button:
-+
-image::workspaces/vscode-gist-setup.png[link="../_images/workspaces/vscode-gist-setup.png"]
+. Click the btn:[Create secret gist] button.
 
 . Clone the gist repository by using the URL from the navigation bar of the browser:
 +
@@ -85,7 +83,7 @@ spec:                                                             <1>
 latestUpdateDate: "2020-07-30"
 ----
 <1> This extension requires a basic Node.js runtime, so it is not necessary to add a custom runtime image in `plugin.yaml`.
-<2> `{{REPOSITORY}}` is a macro for a pre-commit hook.
+<2> `{\{REPOSITORY}}` is a macro for a pre-commit hook.
 
 . Define a memory limit and volumes:
 +
@@ -163,7 +161,7 @@ devfile.yaml
 plugin.yaml
 ----
 
-. Before committing the files, add a pre-commit hook to update the `{{REPOSITORY}}` variable to the public external raw gist link:
+. Before committing the files, add a pre-commit hook to update the `{\{REPOSITORY}}` variable to the public external raw gist link:
 
 .. Create a `.git/hooks/pre-commit` file with this content:
 +
@@ -193,7 +191,7 @@ echo "$FILES" | xargs git add
 exit 0
 ----
 +
-The hook replaces the `{{REPOSITORY}}` macro and adds the external raw link to the gist.
+The hook replaces the `{\{REPOSITORY}}` macro and adds the external raw link to the gist.
 
 .. Make the script executable:
 +
@@ -221,7 +219,7 @@ $ git commit -m "Initial Commit for the test of our extension"
 $ git push origin
 ----
 
-. Visit the gist website and verify that all links have the correct public URL and do not contain any `{{REPOSITORY}}` variables. To reach the devfile:
+. Visit the gist website and verify that all links have the correct public URL and do not contain any `{\{REPOSITORY}}` variables. To reach the devfile:
 +
 [subs="+quotes"]
 ----

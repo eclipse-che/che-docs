@@ -21,9 +21,9 @@ OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/system-variables.a
 
 fetch_current_version() {
   echo "Trying to read current product version from pom.xml..." >&2
-  CURRENT_VERSION=$(grep -ri "<version>" $PARENT_PATH/pom.xml | tail -n 1 |sed -e "s/^[ \t]*<version>\([^<]*\)<.*$/\1/")
+  CURRENT_VERSION=$(cat $PARENT_PATH/VERSION)
   if [ $? -ne 0 ]; then
-    echo "Failure: Cannot read version from pom.xml" >&2
+    echo "Failure: Cannot read version from $PARENT_PATH/VERSION" >&2
     exit 1
   fi
   if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
