@@ -16,18 +16,28 @@ link:https://docs.openshift.com/container-platform/latest/operators/olm-what-ope
 When deploying {prod-short} using the Operator, configure the intended strategy by modifying the `spec.k8s.ingressStrategy` property of the CheCluster Custom Resource object YAML file.
 To activate changes done to CheCluster YAML file, do one of the following:
 
-* Create a new cluster by executing the `{orch-cli} apply` command. For example:
+* Create a new cluster by executing the `{prod-cli}` command with applying a patch. For example:
 +
 [subs="+quotes,+attributes"]
 ----
-$ {orch-cli} apply -f _<my-cluster.yaml>_
+$ {prod-cli} server:start ... --che-operator-cr-patch-yaml=patch.yaml
 ----
+
+patch.yaml should contain the following:
+
+[source,yaml,subs="+quotes"]
+----
+spec:
+  k8s:
+    ingressStrategy: '__single-host__'
+----
+
 
 * Update the YAML file properties of an already running cluster by executing the `{orch-cli} patch` command. For example:
 +
 [subs="+quotes,+attributes"]
 ----
-$ {orch-cli} patch checluster {prod-checluster} --type=json -p '[{"op": "replace", "path": "/spec/k8s/ingressStrategy", "value": "__single-host__"}]'
+$ {orch-cli} patch checluster {prod-checluster} --type=json -p '[{"op": "replace", "path": "/spec/k8s/ingressStrategy", "value": "__single-host__"}] -n __<namespace-name>__'
 ----
 
 Depending on the strategy used, replace the `_single-host_` option in the above example with `multi-host` or `default-host`.
