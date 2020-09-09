@@ -1,21 +1,26 @@
+# chectl devfile:generate --name=che-docs --git-repo=https://github.com/eclipse/che-docs --dockerimage=docker.io/antora/antora --command=./run_antora.sh
 apiVersion: 1.0.0
 metadata:
   generateName: che-docs-
 
 components:
-  - alias: che-docs-dev
+  - alias: antora
     type: dockerimage
-    image: 'quay.io/eclipse/che-docs:latest'
-    memoryLimit: 1Gi
+    image: docker.io/antora/antora
+    memoryLimit: 512M
     mountSources: true
+    command:
+      - tail
+    args:
+      - '-f'
+      - /dev/null
     endpoints:
-      - name: che-docs-livereload-server
+      - name: Open-Livereload
         port: 35729
-      - name: che-docs-web-server
+      - name: Open-Preview-server
         port: 4000
         attributes:
-          path: /che-7/introduction-to-eclipse-che/
-    args: ['sleep', 'infinity']
+          path: /che-7/overview/introduction-to-eclipse-che/
   - alias: bash-curl
     type: dockerimage
     image: 'docker.io/cosmintitei/bash-curl'
@@ -51,9 +56,9 @@ components:
       - /dev/null
   - id: testthedocs/vale/latest
     type: chePlugin
-  - id: joaompinto/vscode-asciidoctor/latest
-    type: chePlugin
   - id: ms-vscode/vscode-github-pullrequest/latest
+    type: chePlugin
+  - id: joaompinto/vscode-asciidoctor/latest
     type: chePlugin
 
 commands:
@@ -65,15 +70,10 @@ commands:
         command: bash tools/environment_docs_gen.sh
   - name: Start preview server
     actions:
-      - workdir: /projects/che-docs/src/main
-        type: exec
-        command: 'jekyll clean && jekyll serve --incremental --livereload -H 0.0.0.0'
-        component: che-docs-dev
-  - name: Kill preview server
-    actions:
       - type: exec
-        command: killall ruby
-        component: che-docs-dev
+        command: echo "--modules-folder /tmp/node_modules" > /projects/.yarnrc; export HOME=/projects && export NODE_PATH=/tmp/node_modules && yarn add gulp gulp-cli gulp-connect && LIVERELOAD=true $NODE_PATH/gulp/bin/gulp.js
+        component: antora
+        workdir: /projects/che-docs
   - name: Create a new topic
     actions:
       - type: exec
@@ -83,7 +83,7 @@ commands:
   - name: Validate Modular Doc
     actions:
       - type: exec
-        component: che-docs-dev
+        component: bash-curl
         workdir: /projects/che-docs
         command: >-
           echo 'Enter path to the file to validate and press Enter:';

@@ -33,7 +33,7 @@ do
     esac
 done
 
-cd "src/main/pages/che-7/$guide" || exit
+cd "modules/$guide/partials" || exit
 
 echo 'Choose the topic nature:'
 

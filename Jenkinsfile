@@ -44,6 +44,7 @@ spec:
   environment {
     PROJECT_NAME = "che"
     PROJECT_BOT_NAME = "CHE Bot"
+    CI = true
   }
  
   triggers { pollSCM('H/10 * * * *') 
@@ -53,49 +54,71 @@ spec:
   options {
     buildDiscarder(logRotator(numToKeepStr: '5'))
     checkoutToSubdirectory('che-docs')
+    timeout(time: 15, unit: 'MINUTES')
   }
  
   stages {
-    stage('Checkout www repo') {
+    
+    stage('Checkout www repo (master)') {
       when {
         branch 'master'
+        beforeAgent true
       }
       steps {
-       container('jnlp') {
-        dir('www') {
+        milestone 1
+        container('jnlp') {
+          dir('www') {
             sshagent(['git.eclipse.org-bot-ssh']) {
                 sh '''
                     GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" git clone ssh://genie.${PROJECT_NAME}@git.eclipse.org:29418/www.eclipse.org/${PROJECT_NAME}.git .
                     git checkout master
                 '''
             }
+          }
         }
-       }
-      }
-    }
-    stage('Build website (master) with Che Docs') {
-      steps {
-        container('che-docs') {
-            dir('che-docs') {
-                sh './tools/environment_docs_gen.sh &&  cd src/main && jekyll build --config _config.yml,_config-web.yml'
-            }
-        }
+        milestone 2
       }
     }
 
-    stage('Push to $env.BRANCH_NAME branch') {
+    stage('Generate reference tables') {
+      steps {
+        milestone 11
+        container('che-docs') {
+          dir('che-docs') {
+                sh './tools/environment_docs_gen.sh'
+            }
+        }
+        milestone 12
+      }
+    }
+
+    stage('Build che-docs website') {
+      steps {
+        milestone 21
+        container('antora') {
+          dir('che-docs') {
+                sh 'CI=true antora generate antora-playbook.yml --stacktrace'
+            }
+        }
+        milestone 22
+      }
+    }
+
+    stage('Push to www repo (master)') {
       when {
         branch 'master'
+        beforeAgent true
       }
       steps {
+        milestone 41
         sh 'ls -la'
         dir('www') {
             sshagent(['git.eclipse.org-bot-ssh']) {
                 sh '''
                 cd "${WEBSITE}"
-                rm -rf docs/ && mkdir -p docs/images/
-                cp -Rvf ../che-docs/src/main/images/* docs/images/
-                cp -Rvf ../che-docs/src/main/_site/* docs/
+                rm -rf docs/
+                mkdir -p docs
+                cp -Rvf ../che-docs/build/site/* docs/
                 git add -A
                 if ! git diff --cached --exit-code; then
                   echo "Changes have been detected, publishing to repo 'www.eclipse.org/${PROJECT_NAME}'"
@@ -111,13 +134,15 @@ spec:
                 '''
             }
         }
+        milestone 42
       }
     }
+
   }
 
   post {
     always {
-      archiveArtifacts artifacts: 'che-docs/src/main/_site/**', fingerprint: true
+      archiveArtifacts artifacts: 'che-docs/build/**', fingerprint: true
     }
   }
 

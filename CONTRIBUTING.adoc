@@ -18,7 +18,7 @@ https://www.ibm.com/developerworks/library/styleguidelines/index.html[developerW
 * The Eclipse Che documentation project follows guidelines from the
 https://redhat-documentation.github.io/modular-docs/[Modular Documentation Initiative]. As Antora is using the term of _module_ with a different acceptation, this project is refering to them as _topics_. To understand the nature of topics, see the https://redhat-documentation.github.io/modular-docs/#modular-docs-terms-definitions[Appendix A: Modular Documentation Terms and Definitions].
 
-* Eclipse Che documentation uses Jekyll to build the documentation.
+* Eclipse Che documentation uses https://docs.antora.org[Antora] to build the documentation.
 
 * To learn more about the `+newdoc+` tool generating the topic
 templates, see https://github.com/mrksu/newdoc[`+newdoc+` documentation].
@@ -164,6 +164,9 @@ WARNING: This is not the preferred method. For the supported method, see: xref:b
 
 .Prerequisites:
 
+* A running version of yarn. See link:https://yarnpkg.com/getting-started/install[Installing Yarn].
+* `./node_modules/.bin` is in the `PATH` environment variable.
+
 * A running installation of link:http://podman.io[podman] or link:http://docker.io[docker].
 
 * An installation of link:https://github.com/mrksu/newdoc[newdoc].
@@ -176,11 +179,19 @@ https://errata-ai.gitbook.io/vale/getting-started/installation[vale].
 
 .Procedure
 
+. Open a shell into the project directory.
+
+. Install Antora and Gulp using yarn:
++
+----
+$ yarn
+----
+
 . To build documentation locally, run:
 +
 ----
-$ bash run.sh
-----
+$ gulp
+---- 
 
 . Navigate to `+localhost:4000+` in your browser.
 
@@ -205,7 +216,7 @@ $ vale <PATH_TO_THE_FILE>"
 . To validate links, execute following command in a terminal, from the root directory of the project:
 +
 ----
-$ linkchecker -f linkcheckerrc  http://0.0.0.0:4000/
+$ ./tools/linkchecker.sh
 ----
 
 
