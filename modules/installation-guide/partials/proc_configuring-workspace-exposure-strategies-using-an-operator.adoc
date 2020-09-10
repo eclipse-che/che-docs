@@ -13,7 +13,7 @@ link:https://docs.openshift.com/container-platform/latest/operators/olm-what-ope
 
 .Procedure
 
-When deploying {prod-short} using the Operator, configure the intended strategy by modifying the `spec.server.serverExposureStrategy` and  optionally `spec.server.singleHostWorkspaceExposureType` properties of the CheCluster Custom Resource object YAML file.
+When deploying {prod-short} using the Operator, configure the intended strategy by modifying the `spec.server.serverExposureStrategy` and  optionally `spec.server.singleHostExposureType` properties of the CheCluster Custom Resource object YAML file.
 To activate changes done to CheCluster YAML file, do one of the following:
 
 * Create a new cluster by executing the `{prod-cli}` command with applying a patch. For example:
@@ -34,6 +34,7 @@ metadata:
 spec:
   server:
     serverExposureStrategy: '__single-host__'
+    singleHostExposureType: 'native'
 ----
 
 
@@ -48,9 +49,7 @@ metadata:
 spec:
   server:
     serverExposureStrategy: 'single-host'
-    singleHostWorkspaceExposureType: 'gateway'
-    customCheProperties:
-      CHE_INFRA_KUBERNETES_SINGLEHOST_WORKSPACE_EXPOSURE: 'gateway'
+    singleHostExposureType: 'gateway'
 ----
 
 
@@ -63,3 +62,11 @@ $ {orch-cli} patch checluster {prod-checluster} --type=json -p '[{"op": "replace
 ----
 
 Depending on the strategy used, replace the `_single-host_` option in the above example with `multi-host` or `default-host`.
+
+If single-host type should be changed as well, command will look like:
+
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch checluster {prod-checluster} --type=json -p '[{"op": "replace", "path": "/spec/server/serverExposureStrategy", "value": "single-host"},
+{"op": "replace", "path": "/spec/server/singleHostExposureType", "value": "gateway"}] -n __<namespace-name>__'
+----
