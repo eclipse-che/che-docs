@@ -10,7 +10,10 @@ A link:https://helm.sh/[Helm Chart] is a Kubernetes extension for defining, inst
 
 .Procedure 
 
-When deploying {prod-short} using the Helm chart, configure the workspace exposure strategy using the `global.serverStrategy` property. To do so, add the following option to the `helm install` or `helm upgrade` command:
+When deploying {prod-short} using the Helm chart, configure the workspace exposure strategy using the `global.serverStrategy`.  For single-host, optional `global.singleHostExposure` and `cheSinglehostGateway.deploy` properties may be configured as well. To do so, add the following option to the `helm install` or `helm upgrade` command:
+
+
+Example for `native` single-host strategy type and `multi-host` or `default-host` strategies:
 
 [subs="+quotes"]
 ----
@@ -25,3 +28,28 @@ $ helm upgrade --set global.serverStrategy=__<single-host>__
 ----
 
 Depending on the strategy used, replace the `_<single-host>_` option in the above example with `multi-host` or `default-host`.
+
+
+Example for `gateway` single-host strategy type:
+
+[subs="+quotes"]
+----
+$ helm install --namespace __<namespace>__ --set global.serverStrategy=single-host --set global.singleHostExposure=gateway --set cheSinglehostGateway.deploy=true
+----
+
+or:
+
+[subs="+quotes"]
+----
+$ helm upgrade --install che --namespace __<namespace>__ --set global.serverStrategy=single-host --set global.singleHostExposure=gateway --set cheSinglehostGateway.deploy=true
+----
+
+Alternatively, predefined values file can be used as follows:
+
+[subs="+quotes"]
+----
+$ helm upgrade --install che --namespace __<namespace>__ \
+--set global.ingressDomain=$(minikube ip).nip.io \
+-f "${CHEDIR}"/deploy/kubernetes/helm/che/values/single-host-gateway.yaml \
+...
+----
