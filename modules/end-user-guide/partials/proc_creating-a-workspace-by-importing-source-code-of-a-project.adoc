@@ -1,0 +1,132 @@
+
+
+:parent-context-of-creating-a-workspace-by-importing-source-code-of-a-project: {context}
+
+[id="creating-a-workspace-by-importing-source-code-of-a-project_{context}"]
+= Creating a workspace by importing the source code of a project
+
+:context: creating-a-workspace-by-importing-source-code-of-a-project
+
+This section describes how to create a new workspace to edit an existing codebase.
+
+.Prerequisites
+
+* A running instance of {prod}. To install an instance of {prod}, see {link-installing-an-instance}.
+
+* An existing workspace with plug-ins related to your development environment defined on this instance of {prod} xref:creating-and-configuring-a-new-workspace.adoc[].
+
+You can do it in two ways *before* starting a workspace:
+
+* xref:#creating-a-custom-workspace-from-the-dashboard_{context}[Select a sample from the Dashboard, then change the devfile to include your project]
+* xref:configuring-a-workspace-using-a-devfile.adoc[]
+
+To create a new workspace to edit an existing codebase, use one of the following three methods *after* you have started the workspace:
+
+* xref:#importing-from-the-dashboard-into-an-existing-workspace_{context}[Import from the *Dashboard* into an existing workspace]
+* xref:#importing-to-a-running-workspace-using-the-git-clone-command_{context}[Import to a running workspace using the `git clone` command]
+* xref:#importing-to-a-running-workspace-with-git-clone-in-a-terminal_{context}[Import to a running workspace using `git clone` in a terminal]
+
+[id="creating-a-custom-workspace-from-the-dashboard_{context}"]
+== Select a sample from the Dashboard, then change the devfile to include your project
+
+* In the left navigation panel, go to *Get Started*.
+
+* Click the *Custom Workspace* tab if it's not already selected.
+
+* In the *Devfile* section, select the devfile template that will be used to build and run projects.
++
+image::workspaces/{project-context}-select-devfile.png[Select a devfile from the list]
+
+* In the *Devfile editor*, update `projects` section:
++
+image::workspaces/devfile-projects.png[Update projects section of the devfile]
++
+[TIP]
+.Example: add a project
+====
+To add a project into the workspace, add or edit the following section:
+
+[source,yaml]
+----
+projects:
+  - name: che
+    source:
+      type: git
+      location: 'https://github.com/eclipse/che.git'
+----
+See the xref:making-a-workspace-portable-using-a-devfile.adoc#devfile-reference_{context}[].
+====
+
+* To open the workspace, click the btn:[Create & Open] button.
+
+[id="importing-from-the-dashboard-into-an-existing-workspace_{context}"]
+== Importing from the Dashboard into an existing workspace
+
+. Import the project. There are at least two ways to import a project using the *Dashboard*.
++
+* From the *Dashboard*, select *Workspaces*, then select your workspace by clicking on its name. This will link you to the workspace's *Overview* tab.
+
+* Or, use the gear icon. This will link to the *Devfile* tab where you can enter your own YAML configuration.
++
+. Click the *Projects* tab.
+. Click *Add Project*. You can then import project by a repository Git URL or from GitHub.
+
+image::workspaces/che-config-projects-add-git.png[Add projects to workspace]
+
+[NOTE]
+====
+You can add a project to a non-running workspace, but you must start the workspace to delete it.
+====
+
+=== Editing the commands after importing a project
+
+After you have a project in your workspace, you can add commands to it. Adding commands to your projects allows you to run, debug, or launch your application in a browser.
+
+To add commands to the project:
+
+. Open the workspace configuration in the *Dashboard*, then select the *Devfile* tab.
++
+image::workspaces/workspace-config-yaml.png[Add commands to workspace]
+
+. Open the workspace.
+
+. To run a command, select *Terminal* > *Run Task* from the main menu.
++
+image::workspaces/run-command.png[Run task]
+
+. To configure commands, select *Terminal* > *Configure Tasks* from the main menu.
++
+image::workspaces/configure-command.png[Configure tasks]
+
+[id="importing-to-a-running-workspace-using-the-git-clone-command_{context}"]
+== Importing to a running workspace using the *Git: Clone* command
+
+To import to a running workspace using the *Git: Clone* command:
+
+. Start a workspace, then use the *Git: Clone* command from the command palette or the Welcome screen to import a project to a running workspace.
++
+image::workspaces/{project-context}-welcome.png[Welcome screen]
+
+. Open the command palette using `F1` or `CTRL-SHIFT-P`, or from the link in the Welcome screen.
++
+image::workspaces/git-clone-command.png[Invoke git clone command]
+
+. Enter the path to the project you want to clone.
++
+image::workspaces/git-clone-command-2.png[Configure git clone command]
+
+[id="importing-to-a-running-workspace-with-git-clone-in-a-terminal_{context}"]
+== Importing to a running workspace with `git clone` in a terminal
+
+In addition to the approaches above, you can also start a workspace, open a *Terminal*, and type `git clone` to pull code.
+
+image::workspaces/git-clone-terminal.png[Run git clone in a terminal]
+
+[NOTE]
+====
+Importing or deleting workspace projects in the terminal does not update the workspace configuration, and the change is not reflected in the *Project* and *Devfile* tabs in the dashboard.
+
+Similarly, if you add a project using the *Dashboard*, then delete it with `rm -fr myproject`, it may still appear in the *Projects* or *Devfile* tab.
+====
+
+:context: {parent-context-of-creating-a-workspace-by-importing-source-code-of-a-project}

@@ -17,13 +17,13 @@ TABLE_HEADER="$NEWLINEx2,=== $NEWLINE Environment Variable Name,Default value, D
 TABLE_FOOTER=",=== $NEWLINEx2"
 PARENT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")/.." ; pwd -P )
 BUFF=""
-OUTPUT_PATH="$PARENT_PATH/src/main/pages/che-7/installation-guide/examples/system-variables.adoc"
+OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/system-variables.adoc"
 
 fetch_current_version() {
   echo "Trying to read current product version from pom.xml..." >&2
-  CURRENT_VERSION=$(grep -ri "<version>" $PARENT_PATH/pom.xml | tail -n 1 |sed -e "s/^[ \t]*<version>\([^<]*\)<.*$/\1/")
+  CURRENT_VERSION=$(cat $PARENT_PATH/VERSION)
   if [ $? -ne 0 ]; then
-    echo "Failure: Cannot read version from pom.xml" >&2
+    echo "Failure: Cannot read version from $PARENT_PATH/VERSION" >&2
     exit 1
   fi
   if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
