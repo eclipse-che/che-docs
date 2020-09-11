@@ -1026,3 +1026,22 @@ attributes:
   persistVolumes: false
   asyncPersist: true
 ----
+
+=== Attribute: mergePlugins
+
+This property can be set to manually control how plugins are included in the workspace. When the property `mergePlugins` is set to `true`, Che will attempt to avoid running multiple instances of the same container by combining plugins. The default value when this property is not included in a devfile is governed by the Che configuration property `che.workspace.plugin_broker.default_merge_plugins`; adding the `mergePlugins: false` attribute to a devfile will disable plugin merging for that workspace.
+
+.Example of a devfile with plugin merging disabled
+[source,yaml]
+----
+apiVersion: 1.0.0
+metadata:
+  name: petclinic-dev-environment
+projects:
+  - name: petclinic
+    source:
+      type: git
+      location: 'https://github.com/che-samples/web-java-spring-petclinic.git'
+attributes:
+  mergePlugins: false
+----
