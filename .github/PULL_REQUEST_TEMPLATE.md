@@ -13,7 +13,7 @@
 
 As the author of this Pull Request I made sure that:
 
-- [ ] `vale` has been run successufully against the PR branch
+- [ ] `vale` has been run successfully against the PR branch
 - [ ] Link checker has been run successfully against the PR branch
 - [ ] Documentation describes a scenario that is already covered by QE tests, otherwise an issue has been created and acknowledged by Che QE team
 - [ ] Changed article references are updated where they are used (or a redirect has been set up on the docs side):
