@@ -71,9 +71,9 @@ commands:
   - name: Start preview server
     actions:
       - type: exec
-        command: echo "--modules-folder /tmp/node_modules" > /projects/.yarnrc; export HOME=/projects && export NODE_PATH=/tmp/node_modules && yarn add gulp gulp-cli gulp-connect && LIVERELOAD=true $NODE_PATH/gulp/bin/gulp.js
         component: antora
         workdir: /projects/che-docs
+        command: sh tools/preview.sh
   - name: Create a new topic
     actions:
       - type: exec
@@ -94,4 +94,4 @@ commands:
       - type: exec
         component: linkchecker
         workdir: /projects/che-docs
-        command: linkchecker -f linkcheckerrc http://0.0.0.0:4000
+        command: sh tools/linkchecker.sh
