@@ -34,6 +34,7 @@ metadata:
 spec:
   server:
     serverExposureStrategy: '__single-host__'
+  k8s:
     singleHostExposureType: 'native'
 ----
 
@@ -49,6 +50,7 @@ metadata:
 spec:
   server:
     serverExposureStrategy: 'single-host'
+  k8s:
     singleHostExposureType: 'gateway'
 ----
 
@@ -68,5 +70,5 @@ If single-host type should be changed as well, command will look like:
 [subs="+quotes,+attributes"]
 ----
 $ {orch-cli} patch checluster {prod-checluster} --type=json -p '[{"op": "replace", "path": "/spec/server/serverExposureStrategy", "value": "single-host"},
-{"op": "replace", "path": "/spec/server/singleHostExposureType", "value": "gateway"}] -n __<namespace-name>__'
+{"op": "replace", "path": "/spec/k8s/singleHostExposureType", "value": "gateway"}] -n __<namespace-name>__'
 ----
