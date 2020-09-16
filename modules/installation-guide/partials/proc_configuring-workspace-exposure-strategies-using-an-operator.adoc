@@ -13,31 +13,62 @@ link:https://docs.openshift.com/container-platform/latest/operators/olm-what-ope
 
 .Procedure
 
-When deploying {prod-short} using the Operator, configure the intended strategy by modifying the `spec.k8s.ingressStrategy` property of the CheCluster Custom Resource object YAML file.
+When deploying {prod-short} using the Operator, configure the intended strategy by modifying the `spec.server.serverExposureStrategy` and  optionally `spec.k8s.singleHostExposureType` properties of the CheCluster Custom Resource object YAML file.
 To activate changes done to CheCluster YAML file, do one of the following:
 
 * Create a new cluster by executing the `{prod-cli}` command with applying a patch. For example:
 +
 [subs="+quotes,+attributes"]
 ----
-$ {prod-cli} server:start ... --che-operator-cr-patch-yaml=patch.yaml
+$ {prod-cli} server:start  --installer=operator --platform=... --che-operator-cr-patch-yaml=patch.yaml
 ----
 
-patch.yaml should contain the following:
+patch.yaml should contain the following for `native` single-host exposure type:
 
 [source,yaml,subs="+quotes"]
 ----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  name: eclipse-che
 spec:
+  server:
+    serverExposureStrategy: '__single-host__'
   k8s:
-    ingressStrategy: '__single-host__'
+    singleHostExposureType: 'native'
 ----
+
+
+For `gateway` type, patch.yaml should look as follows:
+
+[source,yaml,subs="+quotes"]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  name: eclipse-che
+spec:
+  server:
+    serverExposureStrategy: 'single-host'
+  k8s:
+    singleHostExposureType: 'gateway'
+----
+
 
 
 * Update the YAML file properties of an already running cluster by executing the `{orch-cli} patch` command. For example:
 +
 [subs="+quotes,+attributes"]
 ----
-$ {orch-cli} patch checluster {prod-checluster} --type=json -p '[{"op": "replace", "path": "/spec/k8s/ingressStrategy", "value": "__single-host__"}] -n __<namespace-name>__'
+$ {orch-cli} patch checluster {prod-checluster} --type=json -p '[{"op": "replace", "path": "/spec/server/serverExposureStrategy", "value": "__single-host__"}] -n __<namespace-name>__'
 ----
 
 Depending on the strategy used, replace the `_single-host_` option in the above example with `multi-host` or `default-host`.
+
+If single-host type should be changed as well, command will look like:
+
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch checluster {prod-checluster} --type=json -p '[{"op": "replace", "path": "/spec/server/serverExposureStrategy", "value": "single-host"},
+{"op": "replace", "path": "/spec/k8s/singleHostExposureType", "value": "gateway"}] -n __<namespace-name>__'
+----
