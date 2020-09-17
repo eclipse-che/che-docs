@@ -1,11 +1,18 @@
 
 
 [id="importing-tls-certificates-to-{prod-id-short}-server-java-trustore_{context}"]
-= Importing TLS certificates to {prod-short} server Java truststore
+= Importing external or additional TLS certificates to {prod-short}
 
-When {prod-short} server attempts to send an HTTPS request to an external service as {identity-provider}, a proxy or a git server, the connection fails if {prod-short} does not trust the TLS certificate used by the external service.
+Network communications between the components of a {prod-short} installation and the started workspaces, are all secured through the TLS protocol, and thus require the use of trusted certificate authorities. 
 
-To fix this problem, configure {prod-short} to authorize HTTPS communication with external services, such as identity and Git servers, by adding information about the TLS certificates to the {prod-short} configuration.
+In standard installations performed with the {prod-short} operator, the operator itself takes care of setting up and propagating the required TLS certificates, and no manual step should be necessary.
+
+But in some cases it can be necessary to add TLS certificates to the {prod-short} installation, and have them used as trusted certificate authorities by {prod-short}.
+
+Typical cases that may require this addition are:
+
+* when using some specific configuration of the underlying Kubernetes or OpenShift cluster,
+* to provide access to external secured services such as {identity-provider}or a Git server, from either the {prod-short} installation or the developer workspaces.
 
 .Prerequisites
 
@@ -13,13 +20,19 @@ To fix this problem, configure {prod-short} to authorize HTTPS communication wit
 
 .Procedure
 
+// IF with the operator:
+//   Look into the Custom Resource to find out if the field of the config map name exists
+//   => config map name == this, else create 
+//   
+
+
 . Save the external services certificates to a local file system.
 
 . Create a new configMap with the required TLS certificates:
 +
 [subs="+attributes,+quotes"]
 ----
-$ {orch-cli} create configmap __<configMap-name>__ --from-file=__<certificate-file-path>__ -n=__<{project-context}-namespace-name>__
+$ {orch-cli} create configmap __<configMap-name>__ --from-file=__<certificate-file-path>__ -n=__<{project-context}-namespace-name>__ -o yaml --dry-run | {orch-cli} apply -f -
 ----
 +
 To apply more than one certificate, add another `--from-file=_<certificate-file-path>_` option to the above command.
