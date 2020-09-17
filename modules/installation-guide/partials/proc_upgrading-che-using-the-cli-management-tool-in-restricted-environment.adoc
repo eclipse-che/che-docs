@@ -11,23 +11,23 @@ This section describes how to upgrade from previous minor version using the CLI 
 
 * An administrative account on an OpenShift instance.
 
-* A running instance of a previous minor version of {prod}, installed using the CLI management tool on the same instance of OpenShift, in the `__<{prod-namespace}>__` project.
+* A running instance of a previous minor version of {prod}, installed using the CLI management tool on the same instance of OpenShift, in the `_<{prod-namespace}>_` project.
 
-* Essential images are available to the Che server running in the cluster. See xref:pulling-images-used-by-che-to-a-private-registry.adoc[]
+* Essential container images are available to the {prod-short} server running in the cluster. See xref:pulling-images-used-by-che-to-a-private-registry.adoc[].
 
-* An installation of the `{prod-cli}` {prod-ver} version management tool. See xref:overview:using-the-chectl-management-tool.adoc[].
+* The `{prod-cli}` {prod-ver} management tool is installed. See xref:overview:using-the-chectl-management-tool.adoc[].
 
 .Procedure
 
 . In all running workspaces in the {prod-short} {prod-prev-ver} instance, save and push changes back to the Git repositories.
 
-. Shut down all workspaces in the {prod-short} {prod-prev-ver} instance.
+. Terminate all workspaces in the {prod-short} {prod-prev-ver} instance.
 
 . Run the following command:
 +
 [subs="+attributes,+quotes"]
 ----
-$ {prod-cli} server:update --che-operator-image=__<image-registry>__/__<organization>__/{prod-operator-image-name}:{prod-ver}  -n __<{prod-namespace}>__
+$ {prod-cli} server:update --che-operator-image=__<image-registry>__/__<organization>__/{prod-operator-image-name}:{prod-ver} -n {prod-namespace}
 ----
 +
 * _<image-registry>_: A host name and a port of the container-image registry accessible in the restricted environment.
