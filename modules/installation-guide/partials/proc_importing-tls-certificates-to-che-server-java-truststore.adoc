@@ -12,7 +12,10 @@ But in some cases it can be necessary to add TLS certificates to the {prod-short
 Typical cases that may require this addition are:
 
 * when using some specific configuration of the underlying Kubernetes or OpenShift cluster,
-* to provide access to external secured services such as {identity-provider}or a Git server, from either the {prod-short} installation or the developer workspaces.
+* to provide access to external secured services such as {identity-provider} or a Git server, from either the {prod-short} installation or the developer workspaces.
+
+To store those certificates, {prod-short} uses a dedicated ConfigMap. Its default name is `ca-certs` but {prod-short} allows configuring its name.
+On OpenShift, the {prod-short} operator even injects cluster trusted certificates into this config map automatically.
 
 .Prerequisites
 
@@ -20,35 +23,72 @@ Typical cases that may require this addition are:
 
 .Procedure
 
-// IF with the operator:
-//   Look into the Custom Resource to find out if the field of the config map name exists
-//   => config map name == this, else create 
-//   
+. You should first define the name of the ConfigMap you will import certificates into, and put it in the `CERT_CONFIG_MAP_NAME` environment variable.
 
+====
+On existing instances of {prod-short} deployed with the {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operator],
+retrieve the name of the ConfigMap by reading the `spec.server.ServerTrustStoreConfigMapName` `CheCluster` Custom Resource property:
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+$ CERT_CONFIG_MAP_NAME=$({orch-cli} get checluster {prod-checluster} -n __<{project-context}-namespace-name>__ --output=jsonpath={.spec.server.serverTrustStoreConfigMapName})
+----
+====
+ifeval::["{project-context}" == "che"]
+====
+On existing instances of {prod-short} deployed with the {prod-short} link:https://helm.sh/[Helm Chart] deployment, retrieve the name of the ConfigMap by reading the `spec.server.ServerTrustStoreConfigMapName` property from the Helm Chart:
+[subs="+quotes",options="nowrap",role=white-space-pre]
+----
+$ CERT_CONFIG_MAP_NAME=$(helm get values che --all --output json | jq -r '.global.tls.serverTrustStoreConfigMapName')
+----
+====
+endif::[]
+====
+If you are about to install a new instance of {prod-short}, or the ConfigMap name retrieved in the previous step is empty, we recommend that you would use the default ConfigMap name.
++
+[subs="+quotes",options="nowrap",role=white-space-pre]
+----
+$ CERT_CONFIG_MAP_NAME="ca-certs"
+----
+====
 
-. Save the external services certificates to a local file system.
+. Save the certificates you need to import, to a local file system.
++
+[CAUTION]
+====
+* Certificate files are typically stored as Base64 ASCII files, such as `.pem`, `.crt`, `.ca-bundle`. But, they can also be encoded as binary data, for example, `.cer`. All Secrets that hold certificate files should use the Base64 ASCII certificate rather than the binary data certificate.
+* {prod-short} already uses some reserved file names to automatically inject certificates into the ConfigMap, so you should avoid using the following reserved file names to save your certificates:
+** `ca-bundle.crt`
+** `ca.crt`
+====
 
-. Create a new configMap with the required TLS certificates:
+. Create a new configMap or update the existing one with the required TLS certificates:
 +
 [subs="+attributes,+quotes"]
 ----
-$ {orch-cli} create configmap __<configMap-name>__ --from-file=__<certificate-file-path>__ -n=__<{project-context}-namespace-name>__ -o yaml --dry-run | {orch-cli} apply -f -
+$ {orch-cli} create configmap $CERT_CONFIG_MAP_NAME --from-file=__<certificate-file-path>__ -n=__<{project-context}-namespace-name>__ -o yaml --dry-run | {orch-cli} apply -f -
 ----
 +
 To apply more than one certificate, add another `--from-file=_<certificate-file-path>_` option to the above command.
 
-. Update the existing {prod-short} server configuration
-+
-NOTE: Use these steps with existing instances of {prod-short}. To install a new instance of {prod-short} with self-signed TLS certificates, create a new `CheCluster` Custom Resource or Helm Chart property, based on the installation method selected, instead of updating the existing configuration.
-+
+. For an existing {prod-short} instance, configure the installation to use the ConfigMap content
 ====
 ** For a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators] deployment:
 
-* Define a name for the newly created configMap by editing the `spec.server.ServerTrustStoreConfigMapName` `CheCluster` Custom Resource property to match the previously created configMap:
+. If necessary, update the name of the configMap {prod-short} will use, by editing the `spec.server.ServerTrustStoreConfigMapName` `CheCluster` Custom Resource property to match the name of the previously created or updated ConfigMap:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} patch checluster {prod-checluster} -n che --type=json -p '[{"op": "replace", "path": "/spec/server/serverTrustStoreConfigMapName", "value": "__<config-map-name>__"}]'
+$ {orch-cli} patch checluster {prod-checluster} -n __<{project-context}-namespace-name>__ --type=json -p '[{"op": "replace", "path": "/spec/server/serverTrustStoreConfigMapName", "value": "'$CERT_CONFIG_MAP_NAME'"}]'
+----
++
+. Restart the {prod-short} operator, server and the {identity-provider}:
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+$ {orch-cli} rollout restart -n __<{project-context}-namespace-name>__ deployment/{prod-id-short}-operator
+$ {orch-cli} rollout restart -n __<{project-context}-namespace-name>__ deployment/{prod-id-short}/keycloak
+$ {orch-cli} rollout restart -n __<{project-context}-namespace-name>__ deployment/{prod-id-short}
 ----
 ====
 +
@@ -58,15 +98,40 @@ ifeval::["{project-context}" == "che"]
 +
 . Clone the https://github.com/eclipse/che[che] project.
 . Go to the `deploy/kubernetes/helm/che` directory.
-. Define a name for the newly created configMap by editing the `global.tls.serverTrustStoreConfigMapName` Helm Chart property to match the previously created configMap:
+. Uodate the name of the configMap {prod-short} will use, by editing the `global.tls.serverTrustStoreConfigMapName` Helm Chart property to match the previously created or updated ConfigMap:
 +
 [subs="+quotes",options="nowrap",role=white-space-pre]
 ----
-$ helm upgrade che -n che --set global.tls.serverTrustStoreConfigMapName=__<config-map name>__ \
+$ helm upgrade che -n che --set global.tls.serverTrustStoreConfigMapName=$CERT_CONFIG_MAP_NAME \
    --set global.ingressDomain=__<kubernetes-cluster-domain>__ .
 ----
 +
 When using Minikube to run {prod-short}, substitute _<kubernetes-cluster-domain>_ with `$(minikube ip).nip.io`.
+====
+endif::[]
+
+. If you are about to install a new instance of {prod-short}, take care of configuring the right name for the ConfigMap during installation.
+====
+** For a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operator] deployment,
+ensure you fill the `spec.server.ServerTrustStoreConfigMapName` field with the name of the ConfigMap you created, in the `CheCluster` Custom Resource you create during the installation.
++
+[source,yaml,subs="+quotes",options="nowrap",role=white-space-pre]
+----
+spec:
+  server:
+    // ...
+    spec.server.ServerTrustStoreConfigMapName: __$CERT_CONFIG_MAP_NAME__
+----
+====
++
+ifeval::["{project-context}" == "che"]
+====
+** For a {prod-short} link:https://helm.sh/[Helm Chart] deployment, ensure you override the `global.tls.serverTrustStoreConfigMapName` Helm Chart property with the name of the ConfigMap you created,
+when installing the {prod-short} Helm Chart. For this you should add the following arguments to the Helm command line:
+[subs="+quotes",options="nowrap",role=white-space-pre]
+----
+--set global.tls.serverTrustStoreConfigMapName=$CERT_CONFIG_MAP_NAME
+----
 ====
 endif::[]
 
