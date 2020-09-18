@@ -24,28 +24,31 @@ On OpenShift, the {prod-short} operator even injects cluster trusted certificate
 .Procedure
 
 . You should first define the name of the ConfigMap you will import certificates into, and put it in the `CERT_CONFIG_MAP_NAME` environment variable.
-
++
 ====
 On existing instances of {prod-short} deployed with the {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operator],
 retrieve the name of the ConfigMap by reading the `spec.server.ServerTrustStoreConfigMapName` `CheCluster` Custom Resource property:
-+
+
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ CERT_CONFIG_MAP_NAME=$({orch-cli} get checluster {prod-checluster} -n __<{project-context}-namespace-name>__ --output=jsonpath={.spec.server.serverTrustStoreConfigMapName})
 ----
 ====
 ifeval::["{project-context}" == "che"]
++
 ====
-On existing instances of {prod-short} deployed with the {prod-short} link:https://helm.sh/[Helm Chart] deployment, retrieve the name of the ConfigMap by reading the `spec.server.ServerTrustStoreConfigMapName` property from the Helm Chart:
+On existing instances of {prod-short} deployed with the {prod-short} link:https://helm.sh/[Helm Chart] deployment, retrieve the name of the ConfigMap by reading the `global.tls.serverTrustStoreConfigMapName` property from the Helm Chart:
+
 [subs="+quotes",options="nowrap",role=white-space-pre]
 ----
 $ CERT_CONFIG_MAP_NAME=$(helm get values che --all --output json | jq -r '.global.tls.serverTrustStoreConfigMapName')
 ----
 ====
 endif::[]
-====
-If you are about to install a new instance of {prod-short}, or the ConfigMap name retrieved in the previous step is empty, we recommend that you would use the default ConfigMap name.
 +
+====
+If you are about to install a new instance of {prod-short}, or the ConfigMap name retrieved in the previous step is empty, we recommend that you would use the default ConfigMap name:
+
 [subs="+quotes",options="nowrap",role=white-space-pre]
 ----
 $ CERT_CONFIG_MAP_NAME="ca-certs"
@@ -56,13 +59,13 @@ $ CERT_CONFIG_MAP_NAME="ca-certs"
 +
 [CAUTION]
 ====
-* Certificate files are typically stored as Base64 ASCII files, such as `.pem`, `.crt`, `.ca-bundle`. But, they can also be encoded as binary data, for example, `.cer`. All Secrets that hold certificate files should use the Base64 ASCII certificate rather than the binary data certificate.
+* Certificate files are typically stored as Base64 ASCII files, such as `.pem`, `.crt`, `.ca-bundle`. But, they can also be binary-encoded, for example, as `.cer` files. All Secrets that hold certificate files should use the Base64 ASCII certificate rather than the binary-encoded certificate.
 * {prod-short} already uses some reserved file names to automatically inject certificates into the ConfigMap, so you should avoid using the following reserved file names to save your certificates:
-** `ca-bundle.crt`
-** `ca.crt`
+  ** `ca-bundle.crt`
+  ** `ca.crt`
 ====
 
-. Create a new configMap or update the existing one with the required TLS certificates:
+. Create a new ConfigMap or update the existing one with the required TLS certificates:
 +
 [subs="+attributes,+quotes"]
 ----
@@ -71,18 +74,19 @@ $ {orch-cli} create configmap $CERT_CONFIG_MAP_NAME --from-file=__<certificate-f
 +
 To apply more than one certificate, add another `--from-file=_<certificate-file-path>_` option to the above command.
 
-. For an existing {prod-short} instance, configure the installation to use the ConfigMap content
+. For an existing {prod-short} instance, configure the installation to use the new ConfigMap content:
++
 ====
-** For a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators] deployment:
+For a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators] deployment:
 
-. If necessary, update the name of the configMap {prod-short} will use, by editing the `spec.server.ServerTrustStoreConfigMapName` `CheCluster` Custom Resource property to match the name of the previously created or updated ConfigMap:
+. If necessary, update the name of the configMap {prod-short} will use, by editing the `spec.server.ServerTrustStoreConfigMapName` `CheCluster` Custom Resource property to match the name of the created or updated ConfigMap:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} patch checluster {prod-checluster} -n __<{project-context}-namespace-name>__ --type=json -p '[{"op": "replace", "path": "/spec/server/serverTrustStoreConfigMapName", "value": "'$CERT_CONFIG_MAP_NAME'"}]'
 ----
 +
-. Restart the {prod-short} operator, server and the {identity-provider}:
+. Restart the {prod-short} operator, the {prod-short} server and {identity-provider}:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -91,14 +95,14 @@ $ {orch-cli} rollout restart -n __<{project-context}-namespace-name>__ deploymen
 $ {orch-cli} rollout restart -n __<{project-context}-namespace-name>__ deployment/{prod-id-short}
 ----
 ====
-+
 ifeval::["{project-context}" == "che"]
-====
-** For a {prod-short} link:https://helm.sh/[Helm Chart] deployment: 
 +
+====
+For a {prod-short} link:https://helm.sh/[Helm Chart] deployment: 
+
 . Clone the https://github.com/eclipse/che[che] project.
 . Go to the `deploy/kubernetes/helm/che` directory.
-. Uodate the name of the configMap {prod-short} will use, by editing the `global.tls.serverTrustStoreConfigMapName` Helm Chart property to match the previously created or updated ConfigMap:
+. Update the name of the configMap {prod-short} will use, by editing the `global.tls.serverTrustStoreConfigMapName` Helm Chart property to match the created or updated ConfigMap:
 +
 [subs="+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -110,24 +114,24 @@ When using Minikube to run {prod-short}, substitute _<kubernetes-cluster-domain>
 ====
 endif::[]
 
-. If you are about to install a new instance of {prod-short}, take care of configuring the right name for the ConfigMap during installation.
-====
-** For a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operator] deployment,
-ensure you fill the `spec.server.ServerTrustStoreConfigMapName` field with the name of the ConfigMap you created, in the `CheCluster` Custom Resource you create during the installation.
+. If you are about to install a new instance of {prod-short} take care, during the installation, of configuring the right name for the created ConfigMap.
 +
+====
+For a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operator] deployment,
+ensure you add the `spec.server.ServerTrustStoreConfigMapName` field with the name of the ConfigMap, to the `CheCluster` Custom Resource you will create during the installation:
+
 [source,yaml,subs="+quotes",options="nowrap",role=white-space-pre]
 ----
 spec:
   server:
-    // ...
+    ...
     spec.server.ServerTrustStoreConfigMapName: __$CERT_CONFIG_MAP_NAME__
 ----
 ====
-+
 ifeval::["{project-context}" == "che"]
++
 ====
-** For a {prod-short} link:https://helm.sh/[Helm Chart] deployment, ensure you override the `global.tls.serverTrustStoreConfigMapName` Helm Chart property with the name of the ConfigMap you created,
-when installing the {prod-short} Helm Chart. For this you should add the following arguments to the Helm command line:
+For a {prod-short} link:https://helm.sh/[Helm Chart] deployment, ensure you override the `global.tls.serverTrustStoreConfigMapName` Helm Chart property with the name of the ConfigMap when installing the {prod-short} Helm Chart. For this you should add the following arguments to the Helm command line:
 [subs="+quotes",options="nowrap",role=white-space-pre]
 ----
 --set global.tls.serverTrustStoreConfigMapName=$CERT_CONFIG_MAP_NAME
@@ -137,34 +141,34 @@ endif::[]
 
 .Verification 
 
-If the certificates have been added correctly, the {prod-short} server starts and obtains {identity-provider} configuration over HTTPS. Otherwise here is a list of things to verify: 
+If you added the certificates without error, the {prod-short} server starts and obtains {identity-provider} configuration over HTTPS. Otherwise here is a list of things to verify: 
 
-- CheCluster attribute `serverTrustStoreConfigMapName` value matches the name of the ConfigMap. Get the value using the following command :
+- In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operator] deployment, the `CheCluster` attribute `serverTrustStoreConfigMapName` value matches the name of the ConfigMap. Get the value using the following command :
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get -o json checluster/{prod-checluster} -n {prod-namespace} | jq .spec.server.serverTrustStoreConfigMapName
+$ {orch-cli} get -o json checluster/{prod-checluster} -n __<{project-context}-namespace-name>__ | jq .spec.server.serverTrustStoreConfigMapName
 ----
 +
 - {prod-short} Pod Volumes list contains one Volume that uses the ConfigMap as data-source. To get the list of Volumes of the {prod-short} Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get po -o json __<{prod-id-short}-pod-name>__ -n {prod-namespace} | jq .spec.volumes
+$ {orch-cli} get pod -o json __<{prod-id-short}-pod-name>__ -n __<{project-context}-namespace-name>__ | jq .spec.volumes
 ----
 +
-- Certificates are mounted in folder `/public-certs/` of the {prod-short} server container. This command returns the list of files in that folder:
-+
-[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
-----
-$ {orch-cli} exec -t __<{prod-id-short}-pod-name>__ -n {prod-namespace} -- ls /public-certs/
-----
-+
-- In the {prod-short} server logs there is a line for every certificate added to the Java truststore, including {prod-short} self signed certificate.
+- {prod-short} mounts certificates in folder `/public-certs/` of the {prod-short} server container. This command returns the list of files in that folder:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} logs __<{prod-id-short}-pod-name>__ -n {prod-namespace}
+$ {orch-cli} exec -t __<{prod-id-short}-pod-name>__ -n __<{project-context}-namespace-name>__ -- ls /public-certs/
+----
++
+- In the {prod-short} server logs there is a line for every certificate added to the Java truststore, including configured {prod-short} certificates.
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+$ {orch-cli} logs __<{prod-id-short}-pod-name>__ -n __<{project-context}-namespace-name>__
 (...)
 Found a custom cert. Adding it to java trust store based on /usr/lib/jvm/java-1.8.0/jre/lib/security/cacerts
 (...)
