@@ -3,24 +3,24 @@
 [id="image-puller-overview_{context}"]
 = Image Puller overview
 
-Slow starts of {prod} workspaces may be caused by waiting for the underlying cluster to pull images used in workspaces from remote registries. As such, pre-pulling images can improve start times significantly. The _Image Puller_ can be used to pre-pull images and shorten workspace start times.
+Slow starts of {prod} workspaces may be caused by waiting for the underlying cluster to pull images used in workspaces from remote registries. As such, pre-pulling images can improve start times significantly. The _{image-puller-name-short}_ can be used to pre-pull images and shorten workspace start times.
 
-The Image Puller is an additional deployment that runs alongside {prod}. Given a list of images to pre-pull, the application runs inside a cluster and creates a _DaemonSet_ that pulls the images on each node.
+The {image-puller-name-short} is an additional deployment that runs alongside {prod}. Given a list of images to pre-pull, the application runs inside a cluster and creates a _DaemonSet_ that pulls the images on each node.
 
 NOTE: The minimal requirement for an image to be pre-pulled is the availability of the `sleep` command, which means that `FROM scratch` images (for example, 'che-machine-exec') are currently not supported. Also, images that mount volumes in the dockerfile are not supported for pre-pulling on OpenShift.
 
 The application can be deployed:
 
-* using OperatorHub or installing the link:https://github.com/che-incubator/kubernetes-image-puller-operator[kubernetes image puller operator]
+* using OperatorHub or installing the link:https://github.com/che-incubator/kubernetes-image-puller-operator[{image-puller-operator-name}]
 ifeval::["{project-context}" == "che"]
 * using Helm
 endif::[]
 * by processing and applying OpenShift templates.
 
-The image puller loads its configuration from a `ConfigMap` with the following available parameters:
+The {image-puller-name-short} loads its configuration from a `ConfigMap` with the following available parameters:
 
 [id="image-puller-configuration_{context}"]
-.Image Puller default parameters
+.{image-puller-name-short} default parameters
 [options="header"]
 |===
 |Parameter |Usage |Default
@@ -39,4 +39,4 @@ The default memory requests and limits ensure that the container has enough memo
 
 `(memory limit) * (number of images) * (number of nodes in the cluster)`
 
-For example, running the image puller that caches 5 images on 20 nodes, with a container memory limit of `20Mi` requires `2000Mi` of memory.
+For example, running the {image-puller-name-short} that caches 5 images on 20 nodes, with a container memory limit of `20Mi` requires `2000Mi` of memory.

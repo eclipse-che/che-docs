@@ -47,7 +47,7 @@ helm upgrade --install che-devfile-registry \
 +
 [subs="+quotes,+attributes"]
 ----
-$ kubectl get -o custom-columns=TYPE:.kind,NAME:.metadata.name \
+$ {orch-cli}  get -o custom-columns=TYPE:.kind,NAME:.metadata.name \
   -l app=che-plugin-registry pod,svc,ingress
 TYPE      NAME
 Pod       che-plugin-registry-5c7cd8d5c9-zlqlz
@@ -61,7 +61,7 @@ Ingress   che-plugin-registry
 +
 [subs="+quotes,+attributes"]
 ----
-$ URL=$(kubectl get -o 'custom-columns=URL:.spec.rules[0].host' \
+$ URL=$({orch-cli}  get -o 'custom-columns=URL:.spec.rules[0].host' \
   -l app=che-plugin-registry ingress --no-headers)
 $ INDEX_JSON=$(curl -sSL http://$\{URL}/v3/plugins/index.json)
 $ echo $\{INDEX_JSON} | grep -A 4 -B 5 "\"name\":\"my-plug-in\""
@@ -93,7 +93,7 @@ $ echo $\{INDEX_JSON} | grep -A 4 -B 5 "\"name\":\"my-plug-in\""
 +
 [subs="+quotes,+attributes"]
 ----
-$ kubectl get \
+$ {orch-cli}  get \
   -o "custom-columns=URL:.data['CHE_WORKSPACE_PLUGIN__REGISTRY__URL']" \
   --no-headers cm/che
 URL
@@ -104,7 +104,7 @@ with the URL of the Ingress:
 +
 [subs="+quotes,+attributes"]
 ----
-$ kubectl get -o 'custom-columns=URL:.spec.rules[0].host' \
+$ {orch-cli}  get -o 'custom-columns=URL:.spec.rules[0].host' \
   -l app=che-plugin-registry ingress --no-headers
 che-plugin-registry-che.192.168.99.100.nip.io
 ----
@@ -113,10 +113,10 @@ che-plugin-registry-che.192.168.99.100.nip.io
 +
 [subs="+quotes,+attributes"]
 ----
-$ kubectl edit cm/che
+$ {orch-cli}  edit cm/che
 (...)
-$ kubectl scale --replicas=0 deployment/che
-$ kubectl scale --replicas=1 deployment/che
+$ {orch-cli}  scale --replicas=0 deployment/che
+$ {orch-cli}  scale --replicas=1 deployment/che
 ----
 +
 When the new registries are deployed and the {prod-short} server is configured to use them, the new plug-ins are available in the *Plugin* view of a workspace.

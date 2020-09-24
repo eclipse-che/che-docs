@@ -11,7 +11,7 @@ The recommended way to deploy the {image-puller-name-short} is through the link:
 
 .Prerequisites
 
-* A {orch-namespace} in your cluster to host the image puller. This document uses the {orch-namespace} `image-puller` as an example.
+* A {orch-namespace} in your cluster to host the {image-puller-name-short}. This document uses the {orch-namespace} `image-puller` as an example.
 
 .Procedure
 . Navigate to your OpenShift cluster console, navigate to btn:[*Operators*] → btn:[*OperatorHub*].  
@@ -26,7 +26,7 @@ The recommended way to deploy the {image-puller-name-short} is through the link:
 
 . In a redirected window with a YAML editor, make modifications to the `{image-puller-cr-name}` Custom Resource and click btn:[*Create*].
 
-. Navigate to the btn:[*Workloads*] and btn:[*Pods*] menu in the {orch-namespace} and verify that the image puller is available.
+. Navigate to the btn:[*Workloads*] and btn:[*Pods*] menu in the {orch-namespace} and verify that the {image-puller-name-short} is available.
 
 
 ifeval::["{project-context}" == "che"]
@@ -34,14 +34,14 @@ ifeval::["{project-context}" == "che"]
 
 Create a {orch-namespace} to host the {image-puller-name-short}, and apply the following manifests from the link:https://github.com/che-incubator/kubernetes-image-puller-operator[GitHub repository]:
 
-[source,shell]
+[source,shell,subs="+quotes,+attributes"]
 ----
 export NAMESPACE=<namespace you created to host the image puller>
-kubectl apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/crds/che.eclipse.org_kubernetesimagepullers_crd.yaml -n $NAMESPACE
-kubectl apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/role.yaml -n $NAMESPACE
-kubectl apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/role_binding.yaml -n $NAMESPACE
-kubectl apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/service_account.yaml -n $NAMESPACE
-kubectl apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/operator.yaml -n $NAMESPACE
+{orch-cli}  apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/crds/che.eclipse.org_kubernetesimagepullers_crd.yaml -n $NAMESPACE
+{orch-cli}  apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/role.yaml -n $NAMESPACE
+{orch-cli}  apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/role_binding.yaml -n $NAMESPACE
+{orch-cli}  apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/service_account.yaml -n $NAMESPACE
+{orch-cli}  apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/operator.yaml -n $NAMESPACE
 ----
 
 Then create a `{image-puller-cr-name}` Custom Resource:

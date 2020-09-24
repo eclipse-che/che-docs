@@ -32,9 +32,9 @@ For versions 1.5.0 or higher, proceed with the steps in this section.
 
 . To find the name of the {platforms-name} {orch-namespace} and the Pod that runs the {prod-short} workspace:
 +
-[subs="+quotes",options="+nowrap"]
+[subs="+attributes,+quotes",options="+nowrap"]
 ----
-$ kubectl get pod -l che.workspace_id --all-namespaces
+$ {orch-cli}  get pod -l che.workspace_id --all-namespaces
 NAMESPACE   NAME                                               READY   STATUS    RESTARTS   AGE
 che         workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4   4/4     Running   0          6m4s
 ----
@@ -43,23 +43,23 @@ In the example above, the Pod name is `workspace7b2wemdf3hx7s3ln.maven-74885cf4d
 
 . To find the name of the container:
 +
-[subs="+quotes",options="+nowrap"]
+[subs="+attributes,+quotes",options="+nowrap"]
 ----
 $ NAMESPACE=che
 $ POD=workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4
-$ kubectl get pod ${POD} -o custom-columns=CONTAINERS:.spec.containers[*].name
+$ {orch-cli}  get pod ${POD} -o custom-columns=CONTAINERS:.spec.containers[*].name
 CONTAINERS
 maven,che-machine-execpau,theia-ide6dj,vscode-javaw92
 ----
 
-. When you have the {orch-namespace}, pod name, and the name of the container, use the `kubectl` command to open a remote shell:
+. When you have the {orch-namespace}, pod name, and the name of the container, use the `{orch-cli} ` command to open a remote shell:
 +
-[literal,subs="+quotes",options="nowrap"]
+[literal,subs="+attributes,+quotes",options="nowrap"]
 --
 $ NAMESPACE=che
 $ POD=workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4
 $ CONTAINER=maven
-$ kubectl exec -ti -n ${NAMESPACE} ${POD} -c ${CONTAINER} bash
+$ {orch-cli}  exec -ti -n ${NAMESPACE} ${POD} -c ${CONTAINER} bash
 user@workspace7b2wemdf3hx7s3ln $
 --
 
