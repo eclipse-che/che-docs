@@ -3,48 +3,48 @@
 // * caching-images-for-faster-workspace-start
 
 [id="deploying-image-puller-using-operator_{context}"]
-= Deploying Image Puller using the Operator
+= Deploying {image-puller-name-short} using the Operator
 
-The recommended way to deploy the Image Puller is through the link:https://github.com/che-incubator/kubernetes-image-puller-operator[Operator].
+The recommended way to deploy the {image-puller-name-short} is through the link:https://github.com/che-incubator/kubernetes-image-puller-operator[Operator].
 
-== Installing the Image Puller on OpenShift using OperatorHub
+== Installing the {image-puller-name-short} on OpenShift using OperatorHub
 
 .Prerequisites
 
-* A {orch-namespace} in your cluster to host the image puller. This document uses the {orch-namespace} `image-puller` as an example.
+* A {orch-namespace} in your cluster to host the {image-puller-name-short}. This document uses the {orch-namespace} `image-puller` as an example.
 
 .Procedure
 . Navigate to your OpenShift cluster console, navigate to btn:[*Operators*] → btn:[*OperatorHub*].  
 
-. Use the btn:[*Filter by keyword*] box to search for `Kubernetes Image Puller Operator`. Click the btn:[Kubernetes Image Puller Operator].
+. Use the btn:[*Filter by keyword*] box to search for `{image-puller-operator-name}`. Click the btn:[{image-puller-operator-name}].
 
 . Read the description of the Operator. Click btn:[*Continue*] → btn:[*Install*].
 
-. Select btn:[*A specific {orch-namespace} on the cluster*] for the btn:[*Installation Mode*]. In the drop-down find the {orch-namespace} you created to install the image puller. Click btn:[*Subscribe*].  
+. Select btn:[*A specific {orch-namespace} on the cluster*] for the btn:[*Installation Mode*]. In the drop-down find the {orch-namespace} you created to install the {image-puller-name-short}. Click btn:[*Subscribe*].  
 
-. Wait for the Image Puller Operator to install. Click the btn:[*KubernetesImagePuller*] → btn:[*Create instance*]. 
+. Wait for the {image-puller-operator-name} to install. Click the btn:[*{image-puller-cr-name}*] → btn:[*Create instance*]. 
 
-. In a redirected window with a YAML editor, make modifications to the `KubernetesImagePuller` Custom Resource and click btn:[*Create*].
+. In a redirected window with a YAML editor, make modifications to the `{image-puller-cr-name}` Custom Resource and click btn:[*Create*].
 
-. Navigate to the btn:[*Workloads*] and btn:[*Pods*] menu in the {orch-namespace} and verify that the image puller is installed.
+. Navigate to the btn:[*Workloads*] and btn:[*Pods*] menu in the {orch-namespace} and verify that the {image-puller-name-short} is available.
 
 
 ifeval::["{project-context}" == "che"]
-== Installing the Image Puller on Kubernetes using the Operator
+== Installing the {image-puller-name-short} on {kubernetes} using the Operator
 
-Create a {orch-namespace} to host the kubernetes image puller, and apply the following manifests from the link:https://github.com/che-incubator/kubernetes-image-puller-operator[GitHub repository]:
+Create a {orch-namespace} to host the {image-puller-name-short}, and apply the following manifests from the link:https://github.com/che-incubator/kubernetes-image-puller-operator[GitHub repository]:
 
-[source,shell]
+[source,shell,subs="+quotes,+attributes"]
 ----
 export NAMESPACE=<namespace you created to host the image puller>
-kubectl apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/crds/che.eclipse.org_kubernetesimagepullers_crd.yaml -n $NAMESPACE
-kubectl apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/role.yaml -n $NAMESPACE
-kubectl apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/role_binding.yaml -n $NAMESPACE
-kubectl apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/service_account.yaml -n $NAMESPACE
-kubectl apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/operator.yaml -n $NAMESPACE
+{orch-cli}  apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/crds/che.eclipse.org_kubernetesimagepullers_crd.yaml -n $NAMESPACE
+{orch-cli}  apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/role.yaml -n $NAMESPACE
+{orch-cli}  apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/role_binding.yaml -n $NAMESPACE
+{orch-cli}  apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/service_account.yaml -n $NAMESPACE
+{orch-cli}  apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/operator.yaml -n $NAMESPACE
 ----
 
-Then create a `KubernetesImagePuller` Custom Resource:
+Then create a `{image-puller-cr-name}` Custom Resource:
 
 [source,yaml]
 ----
