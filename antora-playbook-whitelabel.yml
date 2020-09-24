@@ -1,0 +1,26 @@
+---
+site:
+  title: Eclipse Che Whitelabeled Documentation
+  # The url property is mandatory to generate the 404 and sitemap files.
+  url: https://www.eclipse.org/che/docs
+  start_page: che-7:overview:introduction-to-eclipse-che.adoc
+  robots: allow
+content:
+  sources:
+    - url: ./
+      branches: HEAD
+      edit_url: 'https://github.com/eclipse/che-docs/edit/master/{path}'
+output:
+  destinations:
+    - provider: fs
+      clean: true
+      path: build/site-whitelabel
+    - provider: archive
+      path: build/site-whitelabel.zip
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+  supplemental_files: ./supplemental-ui
+runtime:
+  cache_dir: ./.cache/antora

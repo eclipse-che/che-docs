@@ -5,23 +5,23 @@
 [id="preparing-the-aws-system-for-installing-che_{context}"]
 = Preparing the AWS system for installing {prod-short}
 
-The following sections describe how to set up Kubernetes for {prod}
+The following sections describe how to set up {kubernetes} for {prod}
 on Amazon Elastic Compute Cloud (Amazon EC2).
 
 .Prerequisites
 
-* A running instance of Kubernetes, version 1.9 or higher, and Ingress.
-* The `kubectl` tool installed.
+* A running instance of {kubernetes}, version 1.9 or higher, and Ingress.
+* The `{orch-cli} ` tool installed.
 * The `{prod-cli}` tool installed.
 
 
-== Installing Kubernetes on Amazon EC2
+== Installing {kubernetes} on Amazon EC2
 
 . Set up the AWS Command Line Interface (AWS CLI). For detailed installation instructions, see link:https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html[Installing the AWS CLI].
 
 . Check the `PATH` environment variable if the `aws` tool is not available.
 
-. Install Kubernetes on EC2. There are several ways to have a running Kubernetes instance on EC2. Here, the `kops` tool is used to install Kubernetes. For details, see link:https://kubernetes.io/docs/setup/production-environment/tools/kops/[Installing Kubernetes with `kops`].
+. Install {kubernetes} on EC2. There are several ways to have a running {kubernetes} instance on EC2. Here, the `kops` tool is used to install {kubernetes}. For details, see link:https://kubernetes.io/docs/setup/production-environment/tools/kops/[Installing {kubernetes} with `kops`].
 
 This document assumes that {prod} must be configured to run at link:http://che.aws.my-ide.cloud[{prod-short} AWS Cloud].
 
@@ -100,7 +100,7 @@ $ kops update cluster eu.aws.my-ide.cloud --yes
 ----
 $ kops validate cluster
 
-Using cluster from kubectl context: eu.aws.my-ide.cloud
+Using cluster from {orch-cli}  context: eu.aws.my-ide.cloud
 
 Validating cluster eu.aws.my-ide.cloud
 
@@ -118,7 +118,7 @@ ip-172-20-60-129.eu-west-1.compute.internal  master  True
 Your cluster eu.aws.my-ide.cloud is ready
 ----
 
-. Check the cluster using the `kubectl` command. The `kubectl` context is also configured automatically by the `kops` tool:
+. Check the cluster using the `{orch-cli} ` command. The `{orch-cli} ` context is also configured automatically by the `kops` tool:
 +
 [subs="+quotes",options="nowrap"]
 ----
@@ -208,7 +208,7 @@ che.aws.my-ide.cloud is an alias for ade9c9f48b2cd11e9a28c0611bc28f24-1591254057
 ade9c9f48b2cd11e9a28c0611bc28f24-1591254057.eu-west-1.elb.amazonaws.com has address 54.77.155.195
 ----
 
-It is now possible to install {prod} on this existing Kubernetes instance.
+It is now possible to install {prod} on this existing {kubernetes} instance.
 
 
 == Enabling the TLS and DNS challenge
@@ -290,7 +290,7 @@ image::installation/create-policy-review-policy.png[link="../_images/installatio
 
 == Installing cert-manager
 
-. To install cert-manager, run the following commands (for details, see link:https://docs.cert-manager.io/en/latest/getting-started/install/kubernetes.html[Installing Cert on Kubernetes]):
+. To install cert-manager, run the following commands (for details, see link:https://docs.cert-manager.io/en/latest/getting-started/install/kubernetes.html[Installing Cert on {kubernetes}]):
 +
 [subs="+quotes",options="nowrap"]
 ----
@@ -300,7 +300,7 @@ $ kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=tru
 namespace/cert-manager labeled
 ----
 
-. Set `validate=false`. If set to `true`, it will only work with the latest Kubernetes:
+. Set `validate=false`. If set to `true`, it will only work with the latest {kubernetes}:
 +
 [subs="+quotes",options="nowrap"]
 ----
