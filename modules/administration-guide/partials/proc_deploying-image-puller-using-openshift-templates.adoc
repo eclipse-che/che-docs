@@ -26,7 +26,7 @@ See xref:image-puller-configuration_{context}[] for more information about confi
 
 *Installing*
 
-. Clone the `kubernetes-image-puller` repository:
+. Clone the {image-puller-name} repository:
 +
 include::example${project-context}-proc_deploying-image-puller-using-openshift-templates_cloning-project.adoc[]
 
@@ -40,19 +40,19 @@ include::example${project-context}-proc_deploying-image-puller-using-openshift-t
 
 *Verifying the installation*
 
-. Confirm that a new deployment, `kubernetes-image-puller`, and a DaemonSet (named based on the value of the `DAEMONSET_NAME` parameter) exist. The DaemonSet needs to have a Pod for each node in the cluster:
+. Confirm that a new deployment, `{image-puller-deployment-name}`, and a DaemonSet (named based on the value of the `DAEMONSET_NAME` parameter) exist. The DaemonSet needs to have a Pod for each node in the cluster:
 +
-[source%nowrap,dummy]
+[source%nowrap,dummy,subs="+quotes,+attributes"]
 ----
 $ oc get deployment,daemonset,pod --namespace k8s-image-puller
-deployment.extensions/kubernetes-image-puller   1/1       1            1           2m19s
+deployment.extensions/{image-puller-deployment-name}   1/1       1            1           2m19s
 
 NAME                                           DESIRED   CURRENT   READY     UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
-daemonset.extensions/kubernetes-image-puller   1         1         1         1            1           <none>          2m10s
+daemonset.extensions/{image-puller-deployment-name}   1         1         1         1            1           <none>          2m10s
 
 NAME                                           READY     STATUS    RESTARTS   AGE
-pod/kubernetes-image-puller-5495f46497-mkd4p   1/1       Running   0          2m18s
-pod/kubernetes-image-puller-n8bmf              3/3       Running   0          2m10s
+pod/{image-puller-deployment-name}-5495f46497-mkd4p   1/1       Running   0          2m18s
+pod/{image-puller-deployment-name}-n8bmf              3/3       Running   0          2m10s
 ----
 
 . Check that the `ConfigMap` named `k8s-image-puller` has the values you specified in your parameter substitution, or that they contain the default values:

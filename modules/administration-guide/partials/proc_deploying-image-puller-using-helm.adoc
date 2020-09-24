@@ -7,18 +7,12 @@ This section describes how to install the Image Puller using Helm.
 
 .Prerequisites
 
+* A running {platforms-name} cluster.
 * The `helm` tool is available.
-
+* The {platforms-cli} tool is available.
 ifeval::["{project-context}" == "che"]
-* A running OpenShift or Kubernetes cluster.
-* The `oc` or the `kubectl` tool is available.
 +
-NOTE: In the instructions later in this section, use the `oc` command when installing on OpenShift and the `kubectl` command for installing on Kubernetes.
-endif::[]
-
-ifeval::["{project-context}" != "che"]
-* A running OpenShift cluster.
-* The `oc` tool is available.
+NOTE: In the instructions later in this section, use the `oc` command when installing on OpenShift and the `kubectl` command for installing on {kubernetes}.
 endif::[]
 
 The following parameters are available for configuring the installation with Helm:
@@ -27,8 +21,8 @@ The following parameters are available for configuring the installation with Hel
 [options="header",subs="+attributes"]
 |===
 |Value |Usage |Default
-|`appName` |The value of `DAEMONSET_NAME` to be set in the ConfigMap | `{image-puller}`
-|`image.repository` |The repository to pull the image from | `{image-puller-tag}`
+|`appName` |The value of `DAEMONSET_NAME` to be set in the ConfigMap | `{image-puller-image-name}`
+|`image.repository` |The repository to pull the image from | `{image-puller-image-tag}`
 |`image.tag` |The image tag to pull |`latest`
 |`serviceAccount.name` |The name of the ServiceAccount to create |`k8s-image-puller`
 |`configMap.name` |The name of the ConfigMap to create |`k8s-image-puller`
@@ -45,7 +39,7 @@ The following parameters are available for configuring the installation with Hel
 
 *Installing*
 
-. Clone the `kubernetes-image-puller` repository:
+. Clone the {image-puller-name} repository:
 +
 ----
 $ git clone https://github.com/che-incubator/kubernetes-image-puller
@@ -68,27 +62,27 @@ To set values, edit the `deploy/helm/values.yaml` file, or use the `--set proper
 
 *Verifying the installation*
 
-. Confirm that a new deployment, `kubernetes-image-puller`, and a DaemonSet (named based on the value of the `DAEMONSET_NAME` parameter) exist. The DaemonSet needs to have a Pod for each node in the cluster:
+. Confirm that a new deployment, `{image-puller-deployment-name}`, and a DaemonSet (named based on the value of the `DAEMONSET_NAME` parameter) exist. The DaemonSet needs to have a Pod for each node in the cluster:
 +
-[source%nowrap,dummy]
+[source%nowrap,dummy,subs="+quotes,+attributes"]
 ----
 $ oc get deployment,daemonset,pod --namespace k8s-image-puller
 NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/kubernetes-image-puller   1/1     1            1           4m21s
+deployment.apps/{image-puller-deployment-name}   1/1     1            1           4m21s
 
 NAME                                     DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
-daemonset.apps/kubernetes-image-puller   3         3         3       3            3           <none>          3m40s
+daemonset.apps/{image-puller-deployment-name}   3         3         3       3            3           <none>          3m40s
 
 NAME                                          READY   STATUS    RESTARTS   AGE
-pod/kubernetes-image-puller-b556c8bd4-qxwwl   1/1     Running   0          4m21s
-pod/kubernetes-image-puller-glh87             3/3     Running   0          3m40s
-pod/kubernetes-image-puller-h7lxf             3/3     Running   0          3m40s
-pod/kubernetes-image-puller-nrt6p             3/3     Running   0          3m40s
+pod/{image-puller-deployment-name}-b556c8bd4-qxwwl   1/1     Running   0          4m21s
+pod/{image-puller-deployment-name}-glh87             3/3     Running   0          3m40s
+pod/{image-puller-deployment-name}-h7lxf             3/3     Running   0          3m40s
+pod/{image-puller-deployment-name}-nrt6p             3/3     Running   0          3m40s
 ----
 
 . Check that the `ConfigMap` named `k8s-image-puller` has the values specified in the Helm configuration, or that they contain the default values:
 +
-[source%nowrap,dummy]
+[source%nowrap,dummy,subs="+quotes,+attributes"]
 ----
 $ oc get configmap k8s-image-puller --output yaml
 apiVersion: v1
@@ -96,7 +90,7 @@ data:
   CACHING_INTERVAL_HOURS: "1"
   CACHING_MEMORY_LIMIT: 20Mi
   CACHING_MEMORY_REQUEST: 10Mi
-  DAEMONSET_NAME: kubernetes-image-puller
+  DAEMONSET_NAME: {image-puller-deployment-name}
   IMAGES: java11-maven=quay.io/eclipse/che-java11-maven:nightly; che-theia=eclipse/che-theia:next;
     java-plugin-runner=eclipse/che-remote-plugin-runner-java8:latest;
   NAMESPACE: k8s-image-puller

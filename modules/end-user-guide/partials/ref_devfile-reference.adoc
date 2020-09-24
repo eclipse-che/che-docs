@@ -182,7 +182,7 @@ Preferences may also be specified as an array:
 
 === Component type: kubernetes
 
-A complex component type that allows to apply configuration from a list of {kubernetes-or-openshift} components.
+A complex component type that allows to apply configuration from a list of {orch-name} components.
 
 The content can be provided through the `reference` attribute, which points to the file with the component content.
 
@@ -198,7 +198,7 @@ The content can be provided through the `reference` attribute, which points to t
         app.kubernetes.io/part-of: petclinic
 ----
 
-Alternatively, to post a devfile with such components to REST API, the contents of the {orch-upstream-name} `List` object can be embedded into the devfile using the `referenceContent` field:
+Alternatively, to post a devfile with such components to REST API, the contents of the {orch-name} `List` object can be embedded into the devfile using the `referenceContent` field:
 
 [source,yaml]
 ----
@@ -221,7 +221,7 @@ Alternatively, to post a devfile with such components to REST API, the contents 
 
 === Overriding container entrypoints
 
-As with the xref:component-type-dockerimage_{context}[understood] by Kubernetes).
+As with the xref:component-type-dockerimage_{context}[understood] by {platforms-name}).
 
 There can be more containers in the list (contained in Pods or Pod templates of deployments). To select which containers to apply the entrypoint changes to.
 
@@ -250,11 +250,11 @@ Other types of constraints (and their combinations) are possible:
 `parentName`:: the name of the parent object that (indirectly) contains the containers to override
 `parentSelector`:: the set of labels the parent object needs to have
 
-A combination of these constraints can be used to precisely locate the containers inside the referenced {orch-upstream-name} `List`.
+A combination of these constraints can be used to precisely locate the containers inside the referenced {orch-name} `List`.
 
 === Overriding container environment variables
 
-To provision or override entrypoints in a {kubernetes-or-openshift} component, configure it in the following way:
+To provision or override entrypoints in a {platforms-name} component, configure it in the following way:
 
 [source,yaml]
 ----
@@ -539,7 +539,7 @@ components:
 
 [NOTE]
 ====
-* The variable expansion works between the environment variables, and it uses the {orch-upstream-name} convention for the variable references.
+* The variable expansion works between the environment variables, and it uses the {kubernetes} convention for the variable references.
 
 * The predefined variables are available for use in custom definitions.
 ====
@@ -557,7 +557,7 @@ The following environment variables are pre-set by the {prod-short} server:
 * `CHE_WORKSPACE_NAME`: The name of the current workspace.
 
 * `CHE_WORKSPACE_NAMESPACE`: The {prod-short} {orch-namespace} of the current workspace. This environment variable is the name of the user or organization that the workspace belongs to. Note that this is different from
-the Kubernetes {orch-namespace} or OpenShift project to which the workspace is deployed.
+the {platforms-namespace} to which the workspace is deployed.
 
 * `CHE_MACHINE_TOKEN`: The token used to authenticate the request against the {prod-short} server.
 
@@ -570,7 +570,7 @@ A devfiles may only need the `CHE_PROJECTS_ROOT` environment variable to locate 
 [id="endpoints_{context}"]
 === Endpoints
 
-Components of any type can specify the endpoints that the Docker image exposes. These endpoints can be made accessible to the users if the {prod-short} cluster is running using a Kubernetes ingress or an OpenShift route and to the other components within the workspace. You can create an endpoint for your application or database, if your application or database server is listening on a port and you want to be able to directly interact with it yourself or you want other components to interact with it.
+Components of any type can specify the endpoints that the Docker image exposes. These endpoints can be made accessible to the users if the {prod-short} cluster is running using a {kubernetes} ingress or an OpenShift route and to the other components within the workspace. You can create an endpoint for your application or database, if your application or database server is listening on a port and you want to be able to directly interact with it yourself or you want other components to interact with it.
 
 Endpoints have several properties as shown in the following example:
 
@@ -623,7 +623,7 @@ components:
 
 Here, there are two Docker images, each defining a single endpoint. Endpoint is an accessible port that can be made accessible inside the workspace or also publicly (example, from the UI). Each endpoint has a name and port, which is the port on which certain server running inside the container is listening. The following are a few attributes that you can set on the endpoint:
 
-* `discoverable`: If an endpoint is discoverable, it means that it can be accessed using its name as the host name within the workspace containers (in the Kubernetes parlance, a service is created for it with the provided name).
+* `discoverable`: If an endpoint is discoverable, it means that it can be accessed using its name as the host name within the workspace containers (in the {platforms-name} parlance, a service is created for it with the provided name).
 55
 * `public`: The endpoint will be accessible outside of the workspace, too (such endpoint can be accessed from the {prod-short} user interface). Such endpoints are publicized always on port `80` or `443` (depending on whether `tls` is enabled in {prod-short}).
 
@@ -700,20 +700,28 @@ components:
         public: false
 ----
 
-=== Kubernetes and OpenShift resources
+=== {platforms-name} resources
 
-Complex deployments can be described using Kubernetes or OpenShift resource lists that can be referenced in the devfile. This makes them a part of the workspace.
+To describe complex deployments, include references to {platforms-name} resource lists in the devfile. The {platforms-name} resource lists become a part of the workspace.
 
 [IMPORTANT]
 ====
-* Because a {prod-short} workspace is internally represented as a single deployment, all resources from the Kubernetes or OpenShift list are merged into that single deployment.
+* {prod-short} merges all resources from the {platforms-name} resource lists into a single deployment.
 
-* Be careful when designing such lists because this can result in name conflicts and other problems.
+* Be careful when designing such lists to avoid name conflicts and other problems.
 
-* Only the following subset of the Kubernetes objects are supported: `deployments`, `pods`, `services`, `persistent volume claims`, `secrets`, and `ConfigMaps`. Kubernetes Ingresses are ignored, but OpenShift routes are supported. A workspace created from a devfile using any other object types fails to start.
-
-* When running {prod-short} on a {orch-upstream-name} cluster, only {orch-upstream-name} lists are supported. When running {prod-short} on an OpenShift cluster, both {kubernetes-or-openshift} lists are supported.
 ====
+
+.Supported {platforms-name} resources
+[%header]
+|===
+| Platform | Supported resources
+ifeval::["{project-context}" == "che"]
+| {kubernetes} | `deployments`, `pods`, `services`, `persistent volume claims`, `secrets`, `ConfigMaps`
+endif::[]
+| OpenShift | `deployments`, `pods`, `services`, `persistent volume claims`, `secrets`, `ConfigMaps`, `Routes`
+|===
+
 
 [source,yaml]
 ----
@@ -731,7 +739,7 @@ components:
      reference: ../relative/path/postgres.yaml
 ----
 
-The preceding component references a file that is relative to the location of the devfile itself. Meaning, this devfile is only loadable by a {prod-short} factory to which you supply the location of the devfile and therefore it is able to figure out the location of the referenced Kubernetes resource list.
+The preceding component references a file that is relative to the location of the devfile itself. Meaning, this devfile is only loadable by a {prod-short} factory to which you supply the location of the devfile and therefore it is able to figure out the location of the referenced {platforms-name} resource list.
 
 The following is an example of the `postgres.yaml` file.
 
@@ -796,9 +804,9 @@ items:
                 storage: 1Gi
 ----
 
-For a basic example of a devfile with an associated Kubernetes or OpenShift list, see link:https://github.com/redhat-developer/devfile/tree/master/samples/web-nodejs-with-db-sample[web-nodejs-with-db-sample] on redhat-developer GitHub.
+For a basic example of a devfile with an associated {platforms-name} list, see link:https://github.com/redhat-developer/devfile/tree/master/samples/web-nodejs-with-db-sample[web-nodejs-with-db-sample] on redhat-developer GitHub.
 
-If you use generic or large resource lists from which you will only need a subset of resources, you can select particular resources from the list using a selector (which, as the usual Kubernetes selectors, works on the labels of the resources in the list).
+If you use generic or large resource lists from which you will only need a subset of resources, you can select particular resources from the list using a selector (which, as the usual {platforms-name} selectors, works on the labels of the resources in the list).
 
 [source,yaml]
 ----
@@ -947,7 +955,7 @@ commands:
 <1> TCP port where the application listens. Mandatory parameter.
 <2> The path part of the URL to the UI. Optional parameter. The default is root (`/`).
 
-The example above opens `++http://__<server-domain>__/myweb++`, where `_<server-domain>_` is the URL to the dynamically created Kubernetes Ingress or OpenShift Route.
+The example above opens `++http://__<server-domain>__/myweb++`, where `_<server-domain>_` is the URL to the dynamically created {platforms-ingress}.
 
 ==== Setting the default way of opening preview URLs
 
