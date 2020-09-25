@@ -14,11 +14,22 @@ This section describes how to install {prod-short} on Minikube using {prod-cli}.
 
 .Procedure
 
-* Run the following command:
+* To install {prod-short} in multi-user mode (default and recommended), run the following command:
 +
 [subs="+attributes"]
 ----
-$ {prod-cli} server:start --platform minikube --multiuser
+$ {prod-cli} server:start --platform minikube
 ----
+
+* To install {prod-short} in single-user mode add one if the following parameters to the command above:
+
+  ** Use Helm installer by providing `--installer helm` option.
+  ** Pass `--che-operator-cr-patch-yaml patch.yaml`, where `patch.yaml` file has the following content:
 +
-NOTE: Omit the `--multiuser` option to install a single-user instance of {prod-short}.
+[source,yaml]
+----
+spec:
+  server:
+    customCheProperties:
+       CHE_MULTIUSER: "false"
+----
