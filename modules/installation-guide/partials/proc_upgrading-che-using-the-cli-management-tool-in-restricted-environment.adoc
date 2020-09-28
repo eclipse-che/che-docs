@@ -5,32 +5,23 @@
 [id="upgrading-che-using-the-cli-management-tool-in-restricted-environment_{context}"]
 = Upgrading {prod-short} using the CLI management tool in restricted environment
 
-This section describes how to upgrade from previous minor version using the CLI management tool in restricted environment.
-
-[NOTE]
-====
-The following method of upgrading an older version of {prod-short} in restricted environment is specific to OpenShift 3.11 and 4.x, but it is only relevant when the existing instance has been installed using the {prod-cli} `--installer operator` method, which is the default installation method for OpenShift 3.11.
-
-ifeval::["{project-context}" == "che"]
-This method is also available for instances deployed on {kubernetes}.
-endif::[]
-====
+This section describes how to upgrade {prod} using the CLI management tool in restricted environment.
 
 .Prerequisites
 
 * An administrative account on an OpenShift instance.
 
-* A running instance of a previous minor version of {prod}, installed using the CLI management tool on the same instance of OpenShift, in the `_<{prod-namespace}>_` project.
+* A running instance version {prod-prev-ver} of {prod}, installed using the CLI management tool on the same instance of {platforms-name}, with the {prod-cli} `--installer operator` method, in the `_<{prod-namespace}>_` project. See xref:installing-che-in-a-restricted-environment.adoc[].
 
-* Essential container images are available to the {prod-short} server running in the cluster. See xref:pulling-images-used-by-che-to-a-private-registry.adoc[].
+* Essential container images are available to the {prod-short} server running in the cluster. See xref:pulling-images-used-by-che-to-a-private-registry_{context}[].
 
-* The `{prod-cli}` {prod-ver} management tool is installed. See xref:overview:using-the-chectl-management-tool.adoc[].
+* The `{prod-cli}` {prod-ver} management tool is available. See xref:overview:using-the-chectl-management-tool.adoc[].
 
 .Procedure
 
 . In all running workspaces in the {prod-short} {prod-prev-ver} instance, save and push changes back to the Git repositories.
 
-. Terminate all workspaces in the {prod-short} {prod-prev-ver} instance.
+. Stop all workspaces in the {prod-short} {prod-prev-ver} instance.
 
 . Run the following command:
 +
@@ -40,7 +31,7 @@ $ {prod-cli} server:update --che-operator-image=__<image-registry>__/__<organiza
 ----
 +
 * _<image-registry>_: A host name and a port of the container-image registry accessible in the restricted environment.
-* _<organization>_: An organization of the container-image registry. See: xref:pulling-images-used-by-che-to-a-private-registry.adoc[].
+* _<organization>_: An organization of the container-image registry. See: xref:pulling-images-used-by-che-to-a-private-registry_{context}[].
 
 .Verification steps
 
@@ -53,11 +44,3 @@ $ {prod-cli} server:update --che-operator-image=__<image-registry>__/__<organiza
 For slow systems or internet connections, add the `--k8spodwaittimeout=1800000` flag option to the `{prod-cli} server:update` command to extend the Pod timeout period to 1800000 ms or longer. 
 ====
 
-////
-.Additional resources
-
-* A bulleted list of links to other material closely related to the contents of the procedure module.
-* Currently, modules cannot include xrefs, so you cannot include links to other content in your collection. If you need to link to another assembly, add the xref to the assembly that includes this module.
-* For more details on writing procedure modules, see the link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-* Use a consistent system for file names, IDs, and titles. For tips, see _Anchor Names and File Names_ in link:https://github.com/redhat-documentation/modular-docs#modular-documentation-reference-guide[Modular Documentation Reference Guide].
-////

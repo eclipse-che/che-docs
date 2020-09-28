@@ -7,15 +7,13 @@
 
 :context: installing-{prod-id-short}-in-a-restricted-environment
 
-The following sections describe how to deploy {prod-short} in a {platforms-name} cluster in a restricted environment (also called _offline mode_ or _air-gap scenario_).
+By default, {prod-short} workspaces reference various external resources, including container images available in public registries or sample projects hosted on public resources. This section describes how to deploy {prod-short} in a restricted environment where these external resources are not available. This method is also called _offline mode_ or _air-gap scenario_.
 
-By default, {prod} workspaces reference various external resources, including container images available in public registries or sample projects hosted on GitHub.
-
-To deploy {prod-short} in an environment where these external resources are not available (for example, on a cluster that is not exposed to the public Internet):
-
-* Build images containing external resources (workspace plug-ins, projects).
-* Pull all images needed for running {prod-short} to a registry that is accessible.
-* Configure {prod-short} to use these images.
+* xref:understanding-network-connectivity-in-restricted-environments_{context}[]
+* xref:building-an-offline-plug-in-registry-image_{context}[]
+* xref:building-an-offline-devfile-registry-image_{context}[]
+* xref:pulling-images-used-by-{prod-id-short}-to-a-private-registry_{context}[]
+* xref:configuring-{prod-id-short}-to-run-in-a-restricted-environment_{context}[]
 
 .Prerequisites
 
@@ -25,12 +23,14 @@ To deploy {prod-short} in an environment where these external resources are not 
 
 * Block-based storage volume or NFS share available outside of the cluster to serve dynamic storage provisioning or PVs. Block-based storage is recommended for optimal performance. 
 
-include::partial$con_network-connectivity-in-restricted-environments.adoc[leveloffset=+1]
+include::example${project-context}-con_understanding-network-connectivity-in-restricted-environments.adoc[leveloffset=+1]
 
-include::partial$proc_building-offline-versions-of-the-plug-in-and-devfile-registries.adoc[leveloffset=+1]
+include::example${project-context}-proc_building-an-offline-plug-in-registry-image.adoc[leveloffset=+1]
 
-include::partial$proc_pulling-images-used-by-che-to-a-private-registry.adoc[leveloffset=+1]
+include::example${project-context}-proc_building-an-offline-devfile-registry-image.adoc[leveloffset=+1]
 
-include::partial$proc_configuring-che-to-run-in-a-restricted-environment.adoc[leveloffset=+1]
+include::example${project-context}-proc_pulling-images-used-by-che-to-a-private-registry.adoc[leveloffset=+1]
+
+include::example${project-context}-proc_configuring-che-to-run-in-a-restricted-environment.adoc[leveloffset=+1]
 
 :context: {parent-context-of-installing-che-in-a-restricted-environment}
