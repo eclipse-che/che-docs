@@ -3,9 +3,6 @@
 //
 // troubleshooting-che
 
-
-
-
 [id="troubleshooting-slow-workspaces_{context}"]
 = Troubleshooting slow workspaces
 
@@ -17,13 +14,13 @@ This section includes several tuning options for starting workspaces faster or i
 [id="improving-workspace-start-time_{context}"]
 == Improving workspace start time
 
-Caching images with Image Puller::
+Caching images with {image-puller-name-short}::
 +
 _Role: Administrator_
 +
 When starting a workspace, {orch-name} pulls the images from the registry. A workspace can include many containers meaning that {orch-name} pulls Pod's images (one per container). Depending on the size of the image and the bandwidth, it can take a long time.
 +
-Image puller is a tool that can cache images on each of {orch-name} nodes. As such, pre-pulling images can improve start times. See xref:administration-guide:caching-images-for-faster-workspace-start.adoc[].
+{image-puller-name-short} is a tool that can cache images on each of {orch-name} nodes. As such, pre-pulling images can improve start times. See xref:administration-guide:caching-images-for-faster-workspace-start.adoc[].
 
 Choosing better storage type::
 +
@@ -51,7 +48,7 @@ Reducing the number of public endpoints::
 +
 _Role: Administrator_
 +
-For each endpoint, {orch-name} is creating Route or Ingress objects. Depending on the underlying configuration, this creation can be slow.
+For each endpoint, {orch-name} is creating {platforms-ingress} objects. Depending on the underlying configuration, this creation can be slow.
 +
 To avoid this problem, reduce the exposure. For example, to automatically detect a new port listening inside containers and redirect traffic for the processes using a local IP address (`127.0.0.1`), the Che-Theia IDE plug-in has three optional routes.
 +
