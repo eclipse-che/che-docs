@@ -39,7 +39,7 @@ There are 2 ways of exposing the endpoints specified in the devfile. These can b
 
 `++CHE_INFRA_KUBERNETES_SINGLEHOST_WORKSPACE_DEVFILE__ENDPOINT__EXPOSURE: 'single-host'++`
 
-This single-host configuration exposes the endpoints on subpaths, e.g.: `++https://<che-host>/serverihzmuqqc/go-cli-server-8080++`. This limits the exposed components and user applications. Any absolute URL generated on the server side that points back to the server does not work. This is because the server is hidden behind a path-rewriting reverse proxy that hides the unique URL path prefix from the component or user application.
+This single-host configuration exposes the endpoints on subpaths, for example: `++https://<che-host>/serverihzmuqqc/go-cli-server-8080++`. This limits the exposed components and user applications. Any absolute URL generated on the server side that points back to the server does not work. This is because the server is hidden behind a path-rewriting reverse proxy that hides the unique URL path prefix from the component or user application.
 
 For example, when the user accesses the hypothetical `[{prod-url}/component-prefix-djh3d/app/index.php]` URL, the application sees the request coming to `++https://internal-host/app/index.php++`. If the application used the host in the URL that it generates in its UI, it would not work because the internal host is different from the externally visible host. However, if the application used an absolute path as the URL (for the example above, this would be `/app/index.php`), such URL would still not work. This is because on the outside, such URL does not point to the application, because it is missing the component-specific prefix.
 
