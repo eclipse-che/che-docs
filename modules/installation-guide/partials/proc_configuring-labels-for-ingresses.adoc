@@ -1,0 +1,35 @@
+
+[id="configuring-labels-for-ingresses_{context}"]
+= Configuring labels for Kubernetes Ingress
+
+This procedure describes how to configure labels for Kubernetes Ingress to organize and categorize (scope and select) objects.
+
+.Prerequisites
+
+* The `{orch-cli}` tool is available.
+* An instance of {prod-short} running in {orch-name}.
+
+IMPORTANT: Use comma to separate labels: `key1=value1,key2=value2`
+
+.Procedure
+
+. To configure labels for Kubernetes Ingress update the Custom Resource with the following commands:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/server/cheServerIngress/labels", '\
+'"value": "__<labels for a {prod-id-short} server ingress>__"}]'
+
+$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/auth/identityProviderIngress/labels", '\
+'"value": "__<labels for a {identity-provider} ingress>__"}]'
+
+$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/server/pluginRegistryIngress/labels", '\
+'"value": "__<labels for a plugin registry ingress>__"}]'
+
+$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/server/devfileRegistryIngress/labels",'\
+'"value": "__<labels for a devfile registry ingress>__"}]'
+----

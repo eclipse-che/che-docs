@@ -58,15 +58,20 @@ data:
 
 . Create this secret in the cluster:
 +
+[subs="+quotes,+attributes"]
 ----
-$ kubectl apply -f secret.yaml
+$ {orch-cli}  apply -f secret.yaml
 ----
 
 . Start a new workspace. You will see `{prod-home}/.m2/settings.xml` with your original content in the `maven` container.
 
-== Openshift 3.11 and Kubernetes <1.13
+== Openshift 3.11 and {platforms-name} <1.13
 
-On Kubernetes versions older than 1.13, it's not possible to have multiple VolumeMounts at same path so having devfile with volume `{prod-home}/.m2` and secret at `{prod-home}/.m2/settings.xml` would resolve into the conflict. On these clusters use `{prod-home}/.m2/repository` as a volume for maven repository in the devfile:
+On OpenShift 3.11 
+ifeval::["{project-context}" == "che"]
+and {kubernetes} versions older than 1.13
+endif::[]
+, it's impossible to have multiple VolumeMounts at same path so having devfile with volume `{prod-home}/.m2` and secret at `{prod-home}/.m2/settings.xml` would resolve into the conflict. On these clusters use `{prod-home}/.m2/repository` as a volume for maven repository in the devfile:
 
 [source,yaml,subs="+attributes"]
 ----
