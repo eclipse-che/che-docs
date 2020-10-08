@@ -1,11 +1,5 @@
-
-
-:parent-context-of-removing-user-data: {context}
-
 [id="removing-user-data_{context}"]
 = Removing user data
-
-:context: removing-user-data
 
 == Removing user data according to GDPR
 
@@ -15,21 +9,12 @@ The following procedure describes how to remove a user’s data from a cluster a
 
 [NOTE]
 ====
-* Following commands use the default namespace, `_{prod-namespace}_`, as a user's namespace example after the `-n` option.
+Following commands use the default namespace, `{prod-namespace}`, as a user's namespace example after the `-n` option.
 ====
 
 .Prerequisites
 
-* A user or an administrator authorization token. If a user wants to delete any other data except the data bound to their user account, the `admin` privileges are required.
-+
-The `admin` is a  special {prod-short} administrator account pre-created and enabled using the:
-+
-[subs="+quotes,macros"]
-* `pass:[CHE_SYSTEM_ADMIN__NAME]`
-[subs="+quotes,macros"]
-* `pass:[CHE_SYSTEM_SUPER__PRIVILEGED__MODE = true]` 
-+
-Custom Resource definitions.
+* A user or an administrator authorization token. To delete any other data except the data bound to a user account, `admin` privileges are required. The `admin` is a special {prod-short} administrator account pre-created and enabled using the `pass:[CHE_SYSTEM_ADMIN__NAME]` and `pass:[CHE_SYSTEM_SUPER__PRIVILEGED__MODE = true]` Custom Resource definitions.
 +
 [subs="+quotes,macros"]
 ----
@@ -40,13 +25,13 @@ spec:
      pass:[CHE_SYSTEM_ADMIN__NAME]: '__<admin-name>__'
 ----
 +
-If needed, use commands below for creating an `admin` user:
+If needed, use commands below for creating the `admin` user:
 +
 [subs="+quotes,macros,attributes"]
 ----
 $ oc patch checluster {prod-checluster} \
   --type merge \
-  -p '{ "spec": { "server": {"customCheProperties": pass:[{"CHE_SYSTEM_SUPER__PRIVILEGED__MODE": "true"}] } }}' \
+  -p '{ "spec": { "server": {"customCheProperties": {"pass:[CHE_SYSTEM_SUPER__PRIVILEGED__MODE]": "true"} } }}' \
   -n __{prod-namespace}__
 ----
 +
@@ -54,7 +39,7 @@ $ oc patch checluster {prod-checluster} \
 ----
 $ oc patch checluster {prod-checluster} \
   --type merge \
-  pass:[-p '{ "spec": { "server": {"customCheProperties": {"CHE_SYSTEM_ADMIN__NAME": "__<admin-name>__"}] } }}' \
+  -p '{ "spec": { "server": {"customCheProperties": {"pass:[CHE_SYSTEM_ADMIN__NAME]": "__<admin-name>__"} } }}' \
   -n __{prod-namespace}__
 ----
 +
@@ -98,11 +83,11 @@ $ curl -X GET \
   --header 'Authorization: Bearer __<user-token>__' \
   'pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/find?email=__<email>__'
 ----
-
++
 .Example of obtaining a user ID
-
++
 This example uses `vparfono` as a local user name.
-
++
 ====
 [subs="+quotes,macros,attributes"]
 ----
@@ -136,8 +121,8 @@ The user ID is at the bottom of the curl command output.
 [subs="+quotes,macros,attributes"]
 ----
 $ oc patch checluster/{prod-checluster} \
-  --patch "{\"spec\":{\"server\":{\"customCheProperties\": pass:[{\"CHE_KEYCLOAK_CASCADE__USER__REMOVAL__ENABLED\"]: \"true\"}}}}" \
-  --type=merge -n __{prod-namespace}__
+  --patch "{\"spec\":{\"server\":{\"customCheProperties\": {\"pass:[CHE_KEYCLOAK_CASCADE__USER__REMOVAL__ENABLED]\": \"true\"}}}}" \
+  --type=merge -n _{prod-namespace}_
 ----
 
 . Remove the data using the API:
@@ -152,11 +137,16 @@ $ curl -i -X DELETE \
 
 .Verification
 
-The execution of the `curl -i -X DELETE --header 'Authorization: Bearer __<user-token>__' pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/__<user-id>__` command, returns the code 204 as the API response.
+Running the following command returns code `204` as the API response:
++
+ [subs="+quotes,macros,attributes"]
+ ====
+$ curl -i -X DELETE \
+  --header 'Authorization: Bearer __<user-token>__' \
+  pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/__<user-id>__
+====
 
 
 .Additional resources
-To remove the data of all the users, follow the instructions for xref:installation-guide:uninstalling-che.adoc[].
-
-
-:context: {parent-context-of-removing-user-data}
++
+To remove the data of all users, follow the instructions for xref:installation-guide:uninstalling-che.adoc[].
