@@ -80,20 +80,6 @@ Command server:start has completed successfully.
 
 . Navigate to the {prod-short} cluster instance: `pass:c,a,q[{prod-url}]`. The domain uses _Let’s Encrypt_ ACME certificates.
 
-
-.Upgrading from a previous {prod-short} installation
-
-* To upgrade from a previous {prod-short} installation in the same {ocp} {ocp3-ver} cluster, remove the Custom Resource Definition and the Cluster Roles:
-+
-[subs="+attributes,+quotes",options="nowrap"]
-----
-$ oc delete customresourcedefinition/checlusters.org.eclipse.che
-$ oc patch customresourcedefinition/checlusters.org.eclipse.che \
-    --type merge \
-    -p '{ "metadata": { "finalizers": null }}'
-$ oc delete clusterrole {prod-operator}
-----
-
 .Having multiple {prod-short} deployments
 
 * To have multiple {prod-short} deployments in parallel using different versions in the same {ocp} {ocp3-ver} cluster, create a new service account for the new deployment. It is, however, strongly recommended that you update all your old {prod-short} deployments to the latest version instead, as this mix of versions may cause unexpected and unsupported results.
