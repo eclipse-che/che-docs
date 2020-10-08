@@ -3,13 +3,13 @@
 
 == Removing user data according to GDPR
 
-The General Data Protection Regulation (GDPR) law enforces the right for individuals to have personal data erased.
+The General Data Protection Regulation (link:https://en.wikipedia.org/wiki/General_Data_Protection_Regulation[GDPR]) law enforces the right for individuals to have personal data erased.
 
 The following procedure describes how to remove a user’s data from a cluster and the {identity-provider} database.
 
 [NOTE]
 ====
-Following commands use the default namespace, `{prod-namespace}`, as a user's namespace example after the `-n` option.
+The following commands use the default namespace, `{prod-namespace}`, as a user's namespace example after the `-n` option.
 ====
 
 .Prerequisites
@@ -116,7 +116,7 @@ The user ID is at the bottom of the curl command output.
 
 .Procedure
 
-. Update the `customresourceCR` file to permit the removal of a user’s data from the {identity-provider} database:
+. Update the `{prod-checluster}` `CheCluster Custom` Resource (CR) to permit the removal of a user’s data from the {identity-provider} database:
 +
 [subs="+quotes,macros,attributes"]
 ----
@@ -138,9 +138,9 @@ $ curl -i -X DELETE \
 .Verification
 
 Running the following command returns code `204` as the API response:
-+
- [subs="+quotes,macros,attributes"]
- ====
+
+[subs="+quotes,macros,attributes"]
+====
 $ curl -i -X DELETE \
   --header 'Authorization: Bearer __<user-token>__' \
   pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/__<user-id>__
@@ -148,5 +148,5 @@ $ curl -i -X DELETE \
 
 
 .Additional resources
-+
+
 To remove the data of all users, follow the instructions for xref:installation-guide:uninstalling-che.adoc[].
