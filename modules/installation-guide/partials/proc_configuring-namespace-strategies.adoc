@@ -10,6 +10,21 @@ The {platforms-namespace} strategies are configured using the `CHE_INFRA_KUBERNE
 
 WARNING: `CHE_INFRA_KUBERNETES_NAMESPACE` and `CHE_INFRA_OPENSHIFT_PROJECT` are legacy variables. Keep these variables unset for a new installations. Changing these variables during an update can lead to data loss.
 
+[IMPORTANT]
+====
+To run more than one workspace at a time:
+
+1. Remove the limit of concurrently running workspaces per user:
+
+ifeval::["{project-context}" == "che"]
+* For Helm Chart deployments: set the `.global.workspace.number` parameter to `-1`.
+endif::[]
+
+* For Operator deployments: set the `spec.server.cheCustomProperties.CHE_LIMITS_USER_WORKSPACE_RUN_COUNT` variable of the CheCluster Custom Resource (CR) to `-1`.
+
+2. For `common` PVC strategy configure persistent volumes to use `ReadWriteMany` access mode.
+====
+
 == One {orch-namespace} per workspace strategy
 
 The strategy creates a new {orch-namespace} for each new workspace.
@@ -42,8 +57,6 @@ CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=__{prod-workspace}__
 ----
 ====
 
-IMPORTANT: To run more than one workspace at a time when using this strategy together with the `common` PVC strategy, configure persistent volumes to use `ReadWriteMany` access mode.
-
 == One {orch-namespace} per user strategy
 
 The strategy isolates each user in their own {orch-namespace}.
@@ -58,23 +71,6 @@ To assign {orch-namespace} names composed of a __`{prod-workspace}`__ prefix and
 ----
 CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=__{prod-workspace}__-__<username>__
 ----
-====
-
-[IMPORTANT]
-====
-To run more than one workspace at a time when using this strategy together with the `common` PVC strategy, configure persistent volumes to use `ReadWriteMany` access mode.
-
-To limit the number of concurrently running workspaces per user to one, set the `CHE_LIMITS_USER_WORKSPACES_RUN_COUNT` environment variable to `1`.
-
-// Links to Helm and Operator docs need to be added below:
-
-To limit the number of concurrently running workspaces per user to one (1):
-ifeval::["{project-context}" == "che"]
-
-* For Helm Chart deployments: set the `.global.workspace.number` parameter to `1`.
-endif::[]
-
-* For Operator deployments: set the `spec.server.cheCustomProperties.CHE_LIMITS_USER_WORKSPACE_RUN_COUNT` variable of the CheCluster Custom Resource (CR) to `1`.
 ====
 
 == Allowing user-defined workspace {orch-namespace}s
