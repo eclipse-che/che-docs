@@ -1,36 +1,11 @@
-
-
-:parent-context-of-telemetry: {context}
-
-[id="telemetry_{context}"]
-= Telemetry
-
-:context: telemetry
-
-Telemetry is the transparent and ethical collection of the usage data. By default, telemetry is not available in {prod}, but there is an abstract API that allows enabling telemetry via the plug-in mechanism. This approach is used in the xref:overview:hosted-che.adoc[] service where telemetry is enabled for every workspace.
-
-== Use cases
-
-{prod} telemetry API allows tracking:
-
-* Duration of workspace usage
-* User-driven actions like file editing, committing, and pushing to remote repositories
-* The list of plug-ins enabled in a workspace
-* Programming languages and xref:end-user-guide:making-a-workspace-portable-using-a-devfile.adoc#what-is-a-devfile_{context}[] used in workspaces
-
-== How it works?
-
-When a {prod-short} workspace starts, the `che-theia` container starts the telemetry plug-in, which is responsible for sending telemetry events to a back-end. If the `$CHE_WORKSPACE_TELEMETRY_BACKEND_PORT` environment variable is set in the workspace pod, the telemetry plug-in will send events to a back-end listening at that port.
-
-If the {prod-short} workspace has a telemetry back-end container running, and it is listening on `$CHE_WORKSPACE_TELEMETRY_BACKEND_PORT`, it takes the events sent from the telemetry plug-in, turns them into the back-end-specific representation of events, and sends them to the configured analytics back-end (for example, Segment or Woopra).
-
-image::telemetry/telemetry_diagram.png[]
+[id="creating-a-telemetry-plugin_{context}"]
+= Creating A Telemetry Plugin
 
 This section shows how to create an `AnalyticsManager` class that extends link:https://github.com/che-incubator/che-workspace-telemetry-client/blob/master/backend-base/src/main/java/org/eclipse/che/incubator/workspace/telemetry/base/AbstractAnalyticsManager.java[`AbstractAnalyticsManager`] and implements the following methods:
 
-* `isEnabled()` - determines whether or not the telemetry back-end is functioning correctly. This can mean always returning `true`, or have more complex checks, for example, returning `false` when a connection property is missing.
-* `destroy()` - cleaning method that is run before shutting down the telemetry back-end. This method sends the `WORKSPACE_STOPPED` event.
-* `onActivity()` - notifies that some activity is still occuring for a given user. This is mainly used to send `WORKSPACE_INACTIVE` events.
+* `isEnabled()` - determines whether or not the telemetry back-end is functioning correctly. This could mean always returning `true`, or have more complex checks, for example, returning `false` when a connection property is missing.
+* `destroy()` - cleanup method that is run before shutting down the telemetry back-end. This method sends the `WORKSPACE_STOPPED` event.
+* `onActivity()` - notifies that some activity is still happening for a given user. This is mainly used to send `WORKSPACE_INACTIVE` events.
 * `onEvent()` - submits telemetry events to the telemetry server, such as `WORKSPACE_USED` or `WORKSPACE_STARTED`.
 * `increaseDuration()` - increases the duration of a current event rather than sending multiple events in a small frame of time.
 
@@ -58,7 +33,7 @@ The following Go code starts a server on port 8080 and writes events to standard
 include::example$telemetry/main.go[]
 ----
 
-Create a container image based on this code and expose it as a deployment in OpenShift in the `che` {orch-namespace}.  The code for the example telemetry server is available at link:https://github.com/che-incubator/che-workspace-telemetry-example[che-workspace-telemetry-example]. To deploy the telemetry server, clone the repository and build the container:
+Create a container image based on this code and expose it as a deployment in OpenShift in the `che` {orch-namespace}. The code for the example telemetry server is available at link:https://github.com/che-incubator/che-workspace-telemetry-example[che-workspace-telemetry-example]. To deploy the telemetry server, clone the repository and build the container:
 
 ----
 $ git clone https://github.com/che-incubator/che-workspace-telemetry-example
@@ -270,5 +245,3 @@ In this guide, you:
 * Extended the {prod-short} telemetry client and implemented your own custom back-end.
 * Created a `meta.yaml` file to represent a {prod-short} workspace plug-in for your custom back-end.
 * Told {prod-short} where to find your custom plug-in by changing the `CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR_PLUGINS` environment variable.
-
-:context: {parent-context-of-telemetry}
