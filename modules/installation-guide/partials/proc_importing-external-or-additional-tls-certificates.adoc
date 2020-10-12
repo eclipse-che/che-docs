@@ -1,18 +1,16 @@
 
 
-[id="importing-tls-certificates-to-{prod-id-short}-server-java-trustore_{context}"]
+[id="importing-external-or-additional-tls-certificates_{context}"]
 = Importing external or additional TLS certificates to {prod-short}
 
 Network communications between the components of a {prod-short} installation and the started workspaces, are all secured through the TLS protocol, and thus require the use of trusted certificate authorities. 
 
-In standard installations performed with the {prod-short} operator, the operator itself takes care of setting up and propagating the required TLS certificates, and no manual step should be necessary.
-
-But in some cases it can be necessary to add TLS certificates to the {prod-short} installation, and have them used as trusted certificate authorities by {prod-short}.
+In some cases it can be necessary to add TLS certificates to the {prod-short} installation, so that every {prod-short} component will consider them as signed by a trusted CA.
 
 Typical cases that may require this addition are:
 
-* when using some specific configuration of the underlying Kubernetes or OpenShift cluster,
-* to provide access to external secured services such as {identity-provider} or a Git server, from either the {prod-short} installation or the developer workspaces.
+* when the underlying Kubernetes cluster uses TLS certificates signed by a CA that is not trusted,
+* when {prod-short} server or workspace components connect to external services such as {identity-provider} or a Git server that use TLS certificates signed by an untrusted CA.
 
 To store those certificates, {prod-short} uses a dedicated ConfigMap. Its default name is `ca-certs` but {prod-short} allows configuring its name.
 On OpenShift, the {prod-short} operator even injects cluster trusted certificates into this config map automatically.
