@@ -1,16 +1,15 @@
 [id="the-woopra-telemetry-plugin"]
 
-= The Woopra Telemetry Plugin Yo
+= The Woopra Telemetry Plugin
 
-The link:https://github.com/che-incubator/che-workspace-telemetry-woopra-plugin[Woopra Telemetry Plugin] is a plugin built to send telemetry from link:https://che.openshift.io[Hosted Che] to Segment and Woopra. The plugin has no dependencies other than a valid Woopra domain and Segment Write key. The link:https://raw.githubusercontent.com/che-incubator/che-workspace-telemetry-woopra-plugin/master/meta.yaml [plugin's meta.yaml] file has 5 environment variables that can be passed to the plugin:
+The link:https://github.com/che-incubator/che-workspace-telemetry-woopra-plugin[Woopra Telemetry Plugin] is a plugin built to send telemetry from a {prod} installation to Segment and Woopra. This plugin is used by link:https://che.openshift.io[Hosted Che], but any {prod} deployment can take advantage of this plugin. There are no dependencies other than a valid Woopra domain and Segment Write key. The link:https://raw.githubusercontent.com/che-incubator/che-workspace-telemetry-woopra-plugin/master/meta.yaml [plugin's meta.yaml] file has 5 environment variables that can be passed to the plugin:
 
-- `CHE_API` - This is set to the value of `$(CHE_API_INTERNAL)` and should not change.
-- `WOOPRA_DOMAIN` - The woopra domain to send events to.
+- `WOOPRA_DOMAIN` - The Woopra domain to send events to.
 - `SEGMENT_WRITE_KEY` - The write key to send events to Segment and Woopra.
 - `WOOPRA_DOMAIN_ENDPOINT` - If you prefer not to pass in the Woopra domain directly, the plugin will get it from a supplied HTTP endpoint that returns the Woopra Domain.
 - `SEGMENT_WRITE_KEY_ENDPOINT` - If you prefer not to pass in the Segment write key directly, the plugin will get it from a supplied HTTP endpoint that returns the Segment write key.
 
-In order to enable the woopra plugin on your {prod} installation, deploy the `meta.yaml` file to an HTTP server with the environment variables set correctly, and edit the `CheCluster` Custom Resource, and set the `spec.server.customCheProperties.CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR_PLUGINS` field:
+To enable the Woopra plugin on your {prod} installation, deploy the `meta.yaml` file to an HTTP server with the environment variables set correctly. Then, edit the `CheCluster` Custom Resource, and set the `spec.server.customCheProperties.CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR_PLUGINS` field:
 
 [source,yaml]
 ----
