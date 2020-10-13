@@ -1,0 +1,33 @@
+
+[id="run-several-workspaces-at-a-time_{context}"]
+= Run more than one workspaces at a time
+
+This procedure describes how to run more than once workspace at a time.
+
+.Prerequisites
+
+* The `{orch-cli}` tool is available.
+* An instance of {prod-short} running in {orch-name}.
+
+.Procedure
+
+. Remove the limit of concurrently running workspaces per user:
+
+* For Operator deployments:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type merge \
+-p '{ "spec": { "server": {"customCheProperties": {"CHE_LIMITS_USER_WORKSPACE_RUN_COUNT": "-1"} } }}'
+----
+ifeval::["{project-context}" == "che"]
+* For Helm Chart deployments:
++
+[subs="+quotes,+attributes"]
+----
+$ helm upgrade che -n {prod-namespace} --set global.workspace.number=-1
+----
+endif::[]
+
+. Use `per-workspace` or `unique` PVC strategy. To use `common` PVC strategy configure the persistent volumes to use `ReadWriteMany` access mode.
+

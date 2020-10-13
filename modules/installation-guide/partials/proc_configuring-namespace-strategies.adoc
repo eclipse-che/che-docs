@@ -10,20 +10,8 @@ The {platforms-namespace} strategies are configured using the `CHE_INFRA_KUBERNE
 
 WARNING: `CHE_INFRA_KUBERNETES_NAMESPACE` and `CHE_INFRA_OPENSHIFT_PROJECT` are legacy variables. Keep these variables unset for a new installations. Changing these variables during an update can lead to data loss.
 
-[IMPORTANT]
-====
-To run more than one workspace at a time:
+WARNING: Only one workspace in the same {orch-namespace} may be running by default. See xref:installation-guide:run-several-workspaces-at-a-time.adoc[].
 
-1. Remove the limit of concurrently running workspaces per user:
-
-ifeval::["{project-context}" == "che"]
-* For Helm Chart deployments: set the `.global.workspace.number` parameter to `-1`.
-endif::[]
-
-* For Operator deployments: set the `spec.server.cheCustomProperties.CHE_LIMITS_USER_WORKSPACE_RUN_COUNT` variable of the CheCluster Custom Resource (CR) to `-1`.
-
-2. Use `per-workspace` or `unique` PVC strategy. To use `common` PVC strategy configure the persistent volumes to use `ReadWriteMany` access mode.
-====
 
 == One {orch-namespace} per workspace strategy
 

@@ -14,7 +14,7 @@ include::example${project-context}-pvc-strategies.adoc[]
 [id="the-common-pvc-strategy_{context}"]
 == The `common` PVC strategy
 
-All workspaces inside a {platforms-namespace} use the same Persistent Volume Claim (PVC) as the default data storage when storing data such as the following in their declared volumes: 
+All workspaces inside a {platforms-namespace} use the same Persistent Volume Claim (PVC) as the default data storage when storing data such as the following in their declared volumes:
 
 * projects
 * workspace logs
@@ -38,9 +38,9 @@ If there are several nodes, you can use the `common` strategy, but:
 
 * The workspace PVC access mode must be reconfigured to `ReadWriteMany` (RWM), so multiple nodes can use this PVC simultaneously.
 
-* Only one workspace in the same {orch-namespace} may be running. See xref:installation-guide:configuring-namespace-strategies.adoc[].
+* Only one workspace in the same {orch-namespace} may be running. See xref:installation-guide:run-several-workspaces-at-a-time.adoc[].
 
-The `common` PVC strategy is not suitable for large multi-node clusters. Therefore, it is best to use it in single-node clusters. However, in combination with `per-workspace` {orch-namespace} strategy, the `common` PVC strategy is usable for clusters with around 75 nodes. The PVC used in this strategy must be large enough to accommodate all projects since there is a risk of the event, in which one project depletes the resources of others. 
+The `common` PVC strategy is not suitable for large multi-node clusters. Therefore, it is best to use it in single-node clusters. However, in combination with `per-workspace` {orch-namespace} strategy, the `common` PVC strategy is usable for clusters with around 75 nodes. The PVC used in this strategy must be large enough to accommodate all projects since there is a risk of the event, in which one project depletes the resources of others.
 
 [id="the-per-workspace-pvc-strategy_{context}"]
 == The `per-workspace` PVC strategy
@@ -51,7 +51,7 @@ The `per-workspace` strategy is similar to the `common` PVC strategy. The only d
 * workspace logs
 * additional Volumes defined by a user
 
-It’s a strategy when {prod-short} keeps its workspace data in assigned PVs that are allocated by a single PVC. 
+It’s a strategy when {prod-short} keeps its workspace data in assigned PVs that are allocated by a single PVC.
 
 The `per-workspace` PVC strategy is the most universal strategy out of the PVC strategies available and acts as a proper option for large multi-node clusters with a higher amount of users. Using the `per-workspace` PVC strategy, users can run multiple workspaces simultaneously, results in more PVCs being created.
 
@@ -60,7 +60,7 @@ The `per-workspace` PVC strategy is the most universal strategy out of the PVC s
 
 When using the `unique `PVC strategy, every {prod-short} Volume of a workspace has its own PVC. This means that workspace PVCs are:
 
-Created when a workspace starts for the first time. 
+Created when a workspace starts for the first time.
 Deleted when a corresponding workspace is deleted.
 
 User-defined PVCs are created with the following specifics:
