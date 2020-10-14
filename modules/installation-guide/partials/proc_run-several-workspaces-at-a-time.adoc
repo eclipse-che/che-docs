@@ -1,13 +1,21 @@
+// Module included in the following assemblies:
+//
+// advanced-configuration
 
 [id="run-several-workspaces-at-a-time_{context}"]
-= Run more than one workspaces at a time
+= Running more than one workspace at a time
 
-This procedure describes how to run more than once workspace at a time.
+This procedure describes how to run more than one workspace simultaneously, allowing a user to fulfill several tasks at once.
 
 .Prerequisites
 
-* The `{orch-cli}` tool is available.
-* An instance of {prod-short} running in {orch-name}.
+* The `{platforms-cli}` tool is available.
+* An instance of {prod-short} running in {platforms-name}.
++
+[NOTE]
+====
+The following commands use the default {platforms-namespace}, `{prod-namespace}`, as a user's example for the `-n` option.
+====
 
 .Procedure
 
@@ -29,5 +37,10 @@ $ helm upgrade che -n {prod-namespace} --set global.workspace.number=-1
 ----
 endif::[]
 
-. Use `per-workspace` or `unique` PVC strategy. To use `common` PVC strategy configure the persistent volumes to use `ReadWriteMany` access mode.
+. Set the `per-workspace` or `unique` PVC strategy. See, xref:administration-guide:che-workspaces-architecture.adoc#configuring-a-{prod-id-short}-workspace-with-a-persistent-volume-strategy_{prod-id-short}-workspace-configuration[Configuring a {prod-short} workspace with a persistent volume strategy].
++
+[NOTE]
+====
+To use `common` PVC strategy, configure the persistent volumes to use the `ReadWriteMany` access mode.
+====
 
