@@ -94,3 +94,42 @@ endif::[]
 ----
 allowUserDefinedWorkspaceNamespaces
 ----
+
+== Pre-create {orch-namespace}s for users
+
+To pre-create {orch-namespace}s for users, use {orch-namespace} labels.
+
+----
+metadata:
+  labels:
+    app.kubernetes.io/component: workspace
+    app.kubernetes.io/part-of: che.eclipse.org
+    che.eclipse.org/username: <username>  <1>
+----
+<1> target user's username
+
+To configure the labels, set the `CHE_INFRA_KUBERNETES_NAMESPACE_LABELS` to desired labels. See the xref:installation-guide:advanced-configuration-options-for-the-che-server-component.adoc#che-server-component-system-properties-reference_advanced-configuration-options-for-the-che-server-component[Che server component system properties reference] for more details.
+
+[IMPORTANT]
+====
+On OpenShift with OAuth, target user must have `admin` role privileges in target namespace:
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: admin
+  namespace: <namespace> <1>
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: <username> <2>
+----
+<1> pre-created namespace
+<2> target user
+
+On Kubernetes, `che` ServiceAccount must have cluster-wide `list namespaces` privilege as well as `admin` role in target namespace.
+====
