@@ -19,15 +19,8 @@ The following commands use the default {platforms-namespace}, `{prod-namespace}`
 
 .Procedure
 
-. Change the default limit of 1 to -1 to allow an unlimited number of concurrent workspaces per user:
+. Change the default limit of `1` to `-1` to allow an unlimited number of concurrent workspaces per user:
 
-* For Operator deployments:
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type merge \
--p '{ "spec": { "server": {"customCheProperties": {"CHE_LIMITS_USER_WORKSPACE_RUN_COUNT": "-1"} } }}'
-----
 ifeval::["{project-context}" == "che"]
 * For Helm Chart deployments:
 +
@@ -35,12 +28,18 @@ ifeval::["{project-context}" == "che"]
 ----
 $ helm upgrade che -n {prod-namespace} --set global.workspace.number=-1
 ----
+* For Operator deployments:
++
 endif::[]
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type merge \
+  -p '{ "spec": { "server": {"customCheProperties": {"CHE_LIMITS_USER_WORKSPACE_RUN_COUNT": "-1"} } }}'
+----
 
-. Set the `per-workspace` or `unique` PVC strategy. See, xref:administration-guide:che-workspaces-architecture.adoc#configuring-a-{prod-id-short}-workspace-with-a-persistent-volume-strategy_{prod-id-short}-workspace-configuration[Configuring a {prod-short} workspace with a persistent volume strategy].
+. Set the `per-workspace` or `unique` PVC strategy. See xref:administration-guide:che-workspaces-architecture.adoc#configuring-a-{prod-id-short}-workspace-with-a-persistent-volume-strategy_{prod-id-short}-workspace-configuration[Configuring a {prod-short} workspace with a persistent volume strategy].
 +
 [NOTE]
 ====
 When using the _common PVC_ strategy, configure the persistent volumes to use the `ReadWriteMany` access mode. That way, any of the user's concurrent workspaces can read from and write to the common PVC.
 ====
-

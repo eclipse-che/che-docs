@@ -40,7 +40,7 @@ If there are several nodes, you can use the `common` strategy, but:
 
 * Only one workspace in the same {orch-namespace} may be running. See xref:installation-guide:run-several-workspaces-at-a-time.adoc[].
 
-The `common` PVC strategy is not suitable for large multi-node clusters. Therefore, it is best to use it in single-node clusters. However, in combination with `per-workspace` {orch-namespace} strategy, the `common` PVC strategy is usable for clusters with around 75 nodes. The PVC used in this strategy must be large enough to accommodate all projects since there is a risk of the event, in which one project depletes the resources of others.
+The `common` PVC strategy is not suitable for large multi-node clusters. Therefore, it is best to use it in single-node clusters. However, in combination with the `per-workspace` {orch-namespace} strategy, the `common` PVC strategy is usable for clusters with not more than 75 nodes. The PVC used with this strategy must be large enough to accommodate all projects to prevent a situation in which one project depletes the resources of others.
 
 [id="the-per-workspace-pvc-strategy_{context}"]
 == The `per-workspace` PVC strategy
@@ -51,7 +51,7 @@ The `per-workspace` strategy is similar to the `common` PVC strategy. The only d
 * workspace logs
 * additional Volumes defined by a user
 
-It’s a strategy when {prod-short} keeps its workspace data in assigned PVs that are allocated by a single PVC.
+With this strategy, {prod-short} keeps its workspace data in assigned PVs that are allocated by a single PVC.
 
 The `per-workspace` PVC strategy is the most universal strategy out of the PVC strategies available and acts as a proper option for large multi-node clusters with a higher amount of users. Using the `per-workspace` PVC strategy, users can run multiple workspaces simultaneously, results in more PVCs being created.
 
