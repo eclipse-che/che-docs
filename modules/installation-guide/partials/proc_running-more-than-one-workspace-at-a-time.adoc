@@ -1,0 +1,45 @@
+// Module included in the following assemblies:
+//
+// advanced-configuration
+
+[id="running-more-than-one-workspace-at-a-time_{context}"]
+= Running more than one workspace at a time
+
+This procedure describes how to run more than one workspace simultaneously. This makes it possible for multiple workspace contexts per user to run in parallel.
+
+.Prerequisites
+
+* The `{platforms-cli}` tool is available.
+* An instance of {prod-short} running in {platforms-name}.
++
+[NOTE]
+====
+The following commands use the default {platforms-namespace}, `{prod-namespace}`, as a user's example for the `-n` option.
+====
+
+.Procedure
+
+. Change the default limit of `1` to `-1` to allow an unlimited number of concurrent workspaces per user:
+
+ifeval::["{project-context}" == "che"]
+* For Helm Chart deployments:
++
+[subs="+quotes,+attributes"]
+----
+$ helm upgrade che -n {prod-namespace} --set global.workspace.number=-1
+----
+* For Operator deployments:
++
+endif::[]
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type merge \
+  -p '{ "spec": { "server": {"customCheProperties": {"CHE_LIMITS_USER_WORKSPACE_RUN_COUNT": "-1"} } }}'
+----
+
+. Set the `per-workspace` or `unique` PVC strategy. See xref:administration-guide:che-workspaces-architecture.adoc#configuring-a-{prod-id-short}-workspace-with-a-persistent-volume-strategy_{prod-id-short}-workspace-configuration[Configuring a {prod-short} workspace with a persistent volume strategy].
++
+[NOTE]
+====
+When using the _common PVC_ strategy, configure the persistent volumes to use the `ReadWriteMany` access mode. That way, any of the user's concurrent workspaces can read from and write to the common PVC.
+====
