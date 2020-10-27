@@ -120,7 +120,7 @@ fi
 # bump the z digit
 [[ $VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; NEXT="${BASH_REMATCH[3]}"; (( NEXT=NEXT+1 )) # for VERSION=7.7.1, get BASE=7.7, NEXT=2
 NEXTVERSION_Z="${BASE}.${NEXT}-SNAPSHOT"
-bump_version ${NEXTVERSION_Z} ${BASEBRANCH}
+bump_version ${NEXTVERSION_Z} ${BRANCH}
 
 popd > /dev/null || exit
 
