@@ -1,0 +1,160 @@
+// Module included in the following assemblies:
+//
+// configuring-a-workspace-using-a-devfile
+
+[id="allow-users-to-define-workspace-deployment-labels-and-annotations_{context}"]
+= Allow users to define workspace deployment labels and annotations
+Users might want to decide to define custome labels and annotation for thier deployment.
+
+
+.Prerequisites
+* A running instance of {prod}. To install an instance of {prod}, see xref:installation-guide:installing-che.adoc[].
+* A publicly accessible standalone `devfile.yaml` file. See xref:making-a-workspace-portable-using-a-devfile.adoc[] for detailed information about creating and using devfiles.
+
+.Procedure
+. Open the workspace by navigating to the following URL: `pass:c,a,q[{prod-url}/f?url=https://__<hostURL>__/devfile.yaml&__<workspaceDeploymentLabels>__=__<url_encoded_comma_separated_key_values>__&__<workspaceDeploymentAnnotations>__=__<url_encoded_comma_separated_key_values override>__]`
+
+.Example of overriding the `deployment labels` 
+
+Consider the following labels to add:
+
+[subs="+quotes"]
+----
+ike.target=preference-v1
+ike.session=test
+----
+
+
+To add or override labels, use the following factory URL:
+
+[subs="+quotes"]
+----
+https://che-che.apps.cluster-661c.661c.example.opentlc.com/f?url=https://gist.githubusercontent.com/themr0c/ef8e59a162748a8be07e900b6401e6a8/raw/8802c20743cde712bbc822521463359a60d1f7a9/devfile.yaml&workspaceDeploymentLabels=ike.target%3Dpreference-v1%2Cike.session%3Dtest
+----
+
+The resulting workspace has the following workspace deplyemnt labels:
+
+[subs="+quotes"]
+----
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  creationTimestamp: "2020-10-27T14:03:26Z"
+  generation: 1
+  labels:
+    che.component.name: che-docs-dev
+    che.original_name: che-docs-dev
+    che.workspace_id: workspacegln2g1shejjufpkd
+    ike.session: test
+    ike.target: preference-v1
+  name: workspacegln2g1shejjufpkd.che-docs-dev
+  namespace: opentlc-mgr-che
+  resourceVersion: "107516"
+spec:
+...
+----
+
+.Example of overriding project source branch property
+
+Consider the following initial devfile:
+
+[subs="+quotes"]
+----
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: java-mysql-
+projects:
+  - name: web-java-spring-petclinic
+    source:
+      type: git
+      location: "https://github.com/spring-projects/spring-petclinic.git"
+...
+----
+
+To add or override source `branch` value, use the following factory URL:
+
+[subs="+quotes"]
+----
+https://che.openshift.io/f?url=https://gist.githubusercontent.com/themr0c/ef8e59a162748a8be07e900b6401e6a8/raw/8802c20743cde712bbc822521463359a60d1f7a9/devfile.yaml&override.projects.web-java-spring-petclinic.source.branch=1.0.x
+----
+
+The resulting workspace has the following devfile model:
+
+[subs="+quotes"]
+----
+apiVersion: 1.0.0
+metadata:
+  generateName: java-mysql-
+projects:
+  - name: web-java-spring-petclinic
+    source:
+      type: git
+      location: "https://github.com/spring-projects/spring-petclinic.git"
+      branch: 1.0.x
+...
+----
+
+
+
+.Example of overriding or creating an attribute value
+
+Consider the following initial devfile:
+
+[subs="+quotes"]
+----
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: golang-
+attributes:
+   persistVolumes: false
+projects:
+...
+----
+
+To add or override `persistVolumes` attribute value, use the following factory URL:
+
+[subs="+quotes"]
+----
+https://che.openshift.io/f?url=https://gist.githubusercontent.com/themr0c/ef8e59a162748a8be07e900b6401e6a8/raw/8802c20743cde712bbc822521463359a60d1f7a9/devfile.yaml&override.attributes.persistVolumes=true
+----
+
+
+The resulting workspace has the following devfile model:
+
+[subs="+quotes"]
+----
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: golang-
+attributes:
+   persistVolumes: true
+projects:
+...
+----
+
+When overriding attributes, everything that follows the `attributes` keyword is interpreted as an attribute name, so you can use dot-separated names:
+
+[subs="+quotes"]
+----
+https://che.openshift.io/f?url=https://gist.githubusercontent.com/themr0c/ef8e59a162748a8be07e900b6401e6a8/raw/8802c20743cde712bbc822521463359a60d1f7a9/devfile.yaml&override.attributes.dot.name.format.attribute=true
+----
+
+The resulting workspace has the following devfile model:
+
+[subs="+quotes"]
+----
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: golang-
+attributes:
+   dot.name.format.attribute: true
+projects:
+...
+----
