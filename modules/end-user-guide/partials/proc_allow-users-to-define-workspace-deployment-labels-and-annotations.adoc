@@ -29,7 +29,7 @@ To add or override labels, use the following factory URL:
 
 [subs="+quotes"]
 ----
-https://che-che.apps.cluster-661c.661c.example.opentlc.com/f?url=https://gist.githubusercontent.com/themr0c/ef8e59a162748a8be07e900b6401e6a8/raw/8802c20743cde712bbc822521463359a60d1f7a9/devfile.yaml&workspaceDeploymentLabels=ike.target%3Dpreference-v1%2Cike.session%3Dtest
+https://che.openshift.io/f?url=https://gist.githubusercontent.com/themr0c/ef8e59a162748a8be07e900b6401e6a8/raw/8802c20743cde712bbc822521463359a60d1f7a9/devfile.yaml&workspaceDeploymentLabels=ike.target%3Dpreference-v1%2Cike.session%3Dtest
 ----
 
 The resulting workspace has the following workspace deplyemnt labels:
@@ -57,104 +57,45 @@ spec:
 ...
 ----
 
-.Example of overriding project source branch property
+.Example of overriding the `deployment annotations`
 
-Consider the following initial devfile:
+Consider the following annotations to add:
+
+[subs="+quotes"]
+----
+ike.A1=preference-v1
+ike.A=test
+----
+
+
+To add or override annotations, use the following factory URL:
+
+[subs="+quotes"]
+----
+https://che.openshift.io/f?url=https://gist.githubusercontent.com/themr0c/ef8e59a162748a8be07e900b6401e6a8/raw/8802c20743cde712bbc822521463359a60d1f7a9/devfile.yaml&workspaceDeploymentAnnotations=ike.A1%3Dpreference-v1%2Cike.A%3Dtest
+
+----
+
+The resulting workspace has the following workspace deplyemnt labels:
 
 [subs="+quotes"]
 ----
 ---
-apiVersion: 1.0.0
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  generateName: java-mysql-
-projects:
-  - name: web-java-spring-petclinic
-    source:
-      type: git
-      location: "https://github.com/spring-projects/spring-petclinic.git"
-...
-----
-
-To add or override source `branch` value, use the following factory URL:
-
-[subs="+quotes"]
-----
-https://che.openshift.io/f?url=https://gist.githubusercontent.com/themr0c/ef8e59a162748a8be07e900b6401e6a8/raw/8802c20743cde712bbc822521463359a60d1f7a9/devfile.yaml&override.projects.web-java-spring-petclinic.source.branch=1.0.x
-----
-
-The resulting workspace has the following devfile model:
-
-[subs="+quotes"]
-----
-apiVersion: 1.0.0
-metadata:
-  generateName: java-mysql-
-projects:
-  - name: web-java-spring-petclinic
-    source:
-      type: git
-      location: "https://github.com/spring-projects/spring-petclinic.git"
-      branch: 1.0.x
-...
-----
-
-
-
-.Example of overriding or creating an attribute value
-
-Consider the following initial devfile:
-
-[subs="+quotes"]
-----
----
-apiVersion: 1.0.0
-metadata:
-  generateName: golang-
-attributes:
-   persistVolumes: false
-projects:
-...
-----
-
-To add or override `persistVolumes` attribute value, use the following factory URL:
-
-[subs="+quotes"]
-----
-https://che.openshift.io/f?url=https://gist.githubusercontent.com/themr0c/ef8e59a162748a8be07e900b6401e6a8/raw/8802c20743cde712bbc822521463359a60d1f7a9/devfile.yaml&override.attributes.persistVolumes=true
-----
-
-
-The resulting workspace has the following devfile model:
-
-[subs="+quotes"]
-----
----
-apiVersion: 1.0.0
-metadata:
-  generateName: golang-
-attributes:
-   persistVolumes: true
-projects:
-...
-----
-
-When overriding attributes, everything that follows the `attributes` keyword is interpreted as an attribute name, so you can use dot-separated names:
-
-[subs="+quotes"]
-----
-https://che.openshift.io/f?url=https://gist.githubusercontent.com/themr0c/ef8e59a162748a8be07e900b6401e6a8/raw/8802c20743cde712bbc822521463359a60d1f7a9/devfile.yaml&override.attributes.dot.name.format.attribute=true
-----
-
-The resulting workspace has the following devfile model:
-
-[subs="+quotes"]
-----
----
-apiVersion: 1.0.0
-metadata:
-  generateName: golang-
-attributes:
-   dot.name.format.attribute: true
-projects:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    ike.A: test
+    ike.A1: preference-v1
+  creationTimestamp: "2020-10-28T09:58:52Z"
+  generation: 1
+  labels:
+    che.component.name: che-docs-dev
+    che.original_name: che-docs-dev
+    che.workspace_id: workspacexrtf710v64rl5ouz
+  name: workspacexrtf710v64rl5ouz.che-docs-dev
+  namespace: opentlc-mgr-che
+  resourceVersion: "213191"
 ...
 ----
