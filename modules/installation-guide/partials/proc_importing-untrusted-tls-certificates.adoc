@@ -13,7 +13,20 @@ Typical cases that may require this addition are:
 * when {prod-short} server or workspace components connect to external services such as {identity-provider} or a Git server that use TLS certificates signed by an untrusted CA.
 
 To store those certificates, {prod-short} uses a dedicated ConfigMap. Its default name is `ca-certs` but {prod-short} allows configuring its name.
-On OpenShift, the {prod-short} operator even injects cluster trusted certificates into this ConfigMap automatically.
+
+[NOTE]
+====
+ifeval::["{project-context}" == "che"]
+On OpenShift, when
+endif::[]
+ifeval::["{project-context}" != "che"]
+When
+endif::[]
+the cluster contains cluster-wide trusted CA certificates added through the link:https://docs.openshift.com/container-platform/4.4/networking/configuring-a-custom-pki.html#nw-proxy-configure-object_configuring-a-custom-pki[cluster-wide-proxy configuration], {prod-short} operator detects them and automatically injects them into this ConfigMap:
+
+- {prod-short} automatically labels the ConfigMap with the `config.openshift.io/inject-trusted-cabundle="true"` label.
+- Based on this annotation, OpenShift automatically injects the cluster-wide trusted CA certificates inside the `ca-bundle.crt` key of ConfigMap
+====
 
 == At {prod-short} installation time
 
@@ -24,15 +37,7 @@ On OpenShift, the {prod-short} operator even injects cluster trusted certificate
 
 .Procedure
 
-. Save the certificates you need to import, to a local file system.
-+
-[CAUTION]
-====
-* Certificate files are typically stored as Base64 ASCII files, such as `.pem`, `.crt`, `.ca-bundle`. But, they can also be binary-encoded, for example, as `.cer` files. All Secrets that hold certificate files should use the Base64 ASCII certificate rather than the binary-encoded certificate.
-* {prod-short} already uses some reserved file names to automatically inject certificates into the ConfigMap, so you should avoid using the following reserved file names to save your certificates:
-  ** `ca-bundle.crt`
-  ** `ca.crt`
-====
+include::example$snip_importing-untrusted-tls-certificates_1.adoc[]
 
 . Create a new ConfigMap with the required TLS certificates:
 +
@@ -104,15 +109,7 @@ If the existing installation did not define any name for the ConfigMap, just use
 
 .Procedure
 
-. Save the certificates you need to import, to a local file system.
-+
-[CAUTION]
-====
-* Certificate files are typically stored as Base64 ASCII files, such as `.pem`, `.crt`, `.ca-bundle`. But, they can also be binary-encoded, for example, as `.cer` files. All Secrets that hold certificate files should use the Base64 ASCII certificate rather than the binary-encoded certificate.
-* {prod-short} already uses some reserved file names to automatically inject certificates into the ConfigMap, so you should avoid using the following reserved file names to save your certificates:
-  ** `ca-bundle.crt`
-  ** `ca.crt`
-====
+include::example$snip_importing-untrusted-tls-certificates_1.adoc[]
 
 . Add the required TLS certificates in the ConfigMap:
 +
