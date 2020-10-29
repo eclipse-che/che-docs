@@ -21,11 +21,17 @@ To activate changes done to CheCluster YAML file, do one of the following:
 +
 [subs="+quotes,+attributes"]
 ----
-$ {prod-cli} server:deploy  --installer=operator --platform=... --che-operator-cr-patch-yaml=patch.yaml
+$ {prod-cli} server:deploy  --installer=operator --platform=__<user-platform>__ \
+  --che-operator-cr-patch-yaml=patch.yaml
 ----
 +
+[NOTE]
+====
+For a list of available user platforms, use `{prod-cli} server:deploy --platform --help`.
+====
++
 ifeval::["{project-context}" == "che"]
-patch.yaml should contain the following for `native` single-host exposure type:
+* For the `native` single-host exposure type, use the following `patch.yaml` file:
 +
 [source,yaml,subs="+quotes"]
 ----
@@ -41,7 +47,7 @@ spec:
 ----
 endif::[]
 +
-For `gateway` type, patch.yaml should look as follows:
+* For the `gateway` type, use the following `patch.yaml`:
 +
 [source,yaml,subs="+quotes"]
 ----
@@ -61,7 +67,8 @@ spec:
 +
 [subs="+quotes,+attributes"]
 ----
-$ {orch-cli} patch checluster {prod-checluster} --type=json -p '[{"op": "replace", "path": "/spec/server/serverExposureStrategy", "value": "__single-host__"}] -n __<namespace-name>__'
+$ {orch-cli} patch checluster {prod-checluster} --type=json \
+  -p '[{"op": "replace", "path": "/spec/server/serverExposureStrategy", "value": "__single-host__"}] -n __<namespace-name>__'
 ----
 +
 Depending on the strategy used, replace the `_single-host_` option in the above example with `multi-host`
@@ -70,10 +77,11 @@ ifeval::["{project-context}" == "che"]
 endif::[]
 .
 +
-If single-host type should be changed as well, command will look like:
+To change the `single-host` type, too, use:
 +
 [subs="+quotes,+attributes"]
 ----
-$ {orch-cli} patch checluster {prod-checluster} --type=json -p '[{"op": "replace", "path": "/spec/server/serverExposureStrategy", "value": "single-host"},
-{"op": "replace", "path": "/spec/k8s/singleHostExposureType", "value": "gateway"}] -n __<namespace-name>__'
+$ {orch-cli} patch checluster {prod-checluster} --type=json \
+  -p '[{"op": "replace", "path": "/spec/server/serverExposureStrategy", "value": "single-host"}, {"op": "replace", "path": "/spec/k8s/singleHostExposureType", "value": "gateway"}]' \
+  -n _<namespace-name>_
 ----
