@@ -10,9 +10,12 @@ Specific components of workspaces need to be made accessible outside of the {pla
 The supported way of making workspace components available to the users is referred to as a _strategy_. This strategy defines whether new subdomains are created for the workspace components and what hosts these components are available on.
 
 {prod-short} supports:
+
 * `multi-host` strategy
+* `single-host` strategy 
+** with the `gateway` subtype 
 ifeval::["{project-context}" == "che"]
-* `single-host` strategy
+** with the `native` subtype
 * `default-host` strategy
 endif::[]
 
@@ -33,7 +36,7 @@ When any of those single-host types is used, all workspaces are deployed to sub-
 
 This is convenient for TLS-secured {prod-short} servers because it is sufficient to have a single certificate for the {prod-short} server, which will cover all the workspace component deployments as well.
 
-There are 2 ways of exposing the endpoints specified in the devfile. These can be configured using the `++CHE_INFRA_KUBERNETES_SINGLEHOST_WORKSPACE_DEVFILE__ENDPOINT__EXPOSURE++` environment variable of the {prod-short}. This environment variable is only effective with the single-host server strategy and is applicable to all workspaces of all users.
+There are two ways of exposing the endpoints specified in the devfile. These can be configured using the `++CHE_INFRA_KUBERNETES_SINGLEHOST_WORKSPACE_DEVFILE__ENDPOINT__EXPOSURE++` environment variable of the {prod-short}. This environment variable is only effective with the single-host server strategy and is applicable to all workspaces of all users.
 
 === devfile endpoints: `single-host`
 
@@ -46,6 +49,7 @@ For example, when the user accesses the hypothetical `[{prod-url}/component-pref
 Therefore, only applications that use relative URLs in their UI work with the single-host workspace exposure strategy.
 
 === devfile endpoints: `multi-host`
+
 `++CHE_INFRA_KUBERNETES_SINGLEHOST_WORKSPACE_DEVFILE__ENDPOINT__EXPOSURE: 'multi-host'++`
 
 This single-host configuration exposes the endpoints on subdomains, for example: `++http://serverihzmuqqc-go-cli-server-8080.<che-host>++`. These endpoints are exposed on an unsecured HTTP port. A dedicated Ingress or Route is used for such endpoints, even with `gateway` single-host setup.
