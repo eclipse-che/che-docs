@@ -61,7 +61,7 @@ spec:
     
     stage('Checkout www repo (master)') {
       when {
-        branch 'production'
+        branch 'master'
         beforeAgent true
       }
       steps {
@@ -106,7 +106,7 @@ spec:
 
     stage('Push to www repo (master)') {
       when {
-        branch 'production'
+        branch 'master'
         beforeAgent true
       }
       steps {
