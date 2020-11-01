@@ -1,0 +1,78 @@
+[id="jetbrains-provision-activation-code-for-offline-usage_{context}"]
+= Provision activation code for offline usage
+
+Activation code for offline usage is a file with license code, that can
+be retrieved from the license management section of your JetBrains
+Account, for the license that is assigned to you. When you purchase a
+personal subscription or are assigned a commercial subscription by your
+organization, you’ll be sent an email prompting you to create a
+JetBrains Account that becomes connected with the license.
+
+____
+Note: if you are using an activation code to activate a product, you
+will need to generate a new activation code and apply it to your product
+each time the subscription is renewed.
+____
+
+Activation code can be retieved from JetBrains account:
+
+image::jetbrains/jetbrains-account.jpg[]
+
+JetBrains provides zip archive with two types of activation code.
+`<License ID> - for 2018.1 or later.txt` file should be used.
+
+image::jetbrains/activation-code.jpg[]
+
+No it’s time to provision activation code for offline usage into Che.
+This procedure is performed through the Kubernetes Secrets.
+
+____
+To understand what is Kubernetes Secret and how to operate with the last
+one, see:
+https://kubernetes.io/docs/concepts/configuration/secret/[Kubernetes
+Documentation]
+____
+
+Let’s create a Kubernetes Secret, that will instruct Che to mount
+activation code into container based on JetBrains specific product:
+
+....
+apiVersion: v1
+kind: Secret
+metadata:
+  name: <secret name here>
+  labels:
+    app.kubernetes.io/component: workspace-secret
+    app.kubernetes.io/part-of: che.eclipse.org
+  annotations:
+    che.eclipse.org/automount-workspace-secret: 'false'
+    che.eclipse.org/mount-path: /tmp/
+    che.eclipse.org/mount-as: file
+data:
+  <product name here (ideaIU or WebStorm)>.key: <base64 encoded data content here>
+....
+
+* `<secret name here>` – section that describes secret name. It might
+has different name, e.g. `ideaiu-offline-activation-code`. Secret name
+*should* be provided in lowercase only.
+* `<product name here (ideaIU or WebStorm)>` – should be replaced with
+JetBrains product name. See section
+xref:jetbrains-product-name-mapping[].
+* `<base64 encoded data content here>` – activation code content that is
+encoded in base64.
+
+Annotation `automount-workspace-secret` with the `false` value disables
+the mounting process until it is explicitly requested in a devfile
+component using the `automountWorkspaceSecrets:true` property. As you
+could observer in workspace.yaml above. This is default behavior to
+avoid mount activation code into every container except specific ones
+that have to work with it.
+
+As the result, in Che Editor file with activation code for offline usage
+will be mounted to path `/tmp/ideaIU.key` or `/tmp/WebStorm.key`, etc.
+Based on you type of build.
+
+IntelliJ Idea Community Edition doesn’t require this procedure. This has
+to be done for JetBrains products that need to be registered.
+
+include::partial$con_jetbrains-product-name-mapping.adoc[leveloffset=+1]

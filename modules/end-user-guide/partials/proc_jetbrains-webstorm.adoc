@@ -1,0 +1,95 @@
+[id="jetbrains-webstorm_{context}"]
+= WebStorm
+
+You will need to clone
+https://github.com/che-incubator/che-editor-intellij-community[the
+repository] which is needed to build IntelliJ Idea Community Edition
+located under che-incubator organization.
+
+The process of build is similar as build IntelliJ Idea Ultimate Edition
+except of using different build argument:
+
+....
+PRODUCT_NAME=WebStorm
+....
+
+Build command will look like this:
+
+....
+$ docker build -t webstorm --build-arg PRODUCT_NAME=WebStorm .
+....
+
+This command will build image with *2020.2.3* version by default. Built
+image can be tagged and pushed to user repository the same way how it is
+described in previous section:
+
+....
+$ docker tag webstorm:latest <username>/webstorm:latest
+$ docker push <username>/webstorm:latest
+....
+
+The next step is to provision activation code for offline usage. To be
+able to use WebStorm with registered license. See section:
+xref:jetbrains-provision-activation-code-for-offline-usage.adoc[]
+
+Now it is time to create workspace with the following `workspace.yaml`
+and `meta.yaml`:
+
+* `workspace.yaml` – workspace configuration. Do not forged to provide
+correct url to the `meta.yaml` file:
++
+....
+metadata:
+  name: che-webstorm
+components:
+  - type: cheEditor
+    reference: '<url for the meta.yaml goes here>'
+    alias: webstorm-editor
+    automountWorkspaceSecrets: true
+apiVersion: 1.0.0
+....
++
+____
+Note, that in current workspace definition there is a new property:
+`automountWorkspaceSecrets: true`. This property instructs Eclipse Che
+to provision secrets into specific component. In our case into Che
+Editor based on IntelliJ Idea Ultimate Edition. This parameter is
+*mandatory* needed to successfully register IDE with activation code for
+offline usage.
+____
+* `meta.yaml` – Che Editor configuration. Do not forget to replace
+`<username>` with the user name where image is pushed to:
++
+....
+apiVersion: v2
+publisher: <username>
+name: webstorm-NOVNC
+version: 2020.2.3
+type: Che Editor
+displayName:  WebStorm
+title:  WebStorm (in browser using noVNC) as editor for Eclipse Che
+description:  WebStorm running on the Web with noVNC
+icon: https://resources.jetbrains.com/storage/products/webstorm/img/meta/webstorm_logo_300x300.png
+category: Editor
+repository: https://github.com/che-incubator/che-editor-intellij-community
+firstPublicationDate: "2020-10-27"
+spec:
+  endpoints:
+   -  name: "intellij"
+      public: true
+      targetPort: 8080
+      attributes:
+        protocol: http
+        type: ide
+        path: /vnc.html?resize=remote&autoconnect=true&reconnect=true
+  containers:
+   - name: webstorm-novnc
+     image: "<username>/webstorm:latest"
+     mountSources: true
+     volumes:
+         - mountPath: "/JetBrains/WebStorm"
+           name: webstorm-configuration
+     ports:
+         - exposedPort: 8080
+     memoryLimit: "2048M"
+....
