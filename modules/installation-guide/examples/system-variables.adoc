@@ -276,8 +276,19 @@
  
  `+CHE_LIMITS_USER_WORKSPACES_RAM+`,"`+-1+`","The total amount of RAM that a single user is allowed to allocate to running workspaces. A user can allocate this RAM to a single workspace or spread it across multiple workspaces." 
  `+CHE_LIMITS_USER_WORKSPACES_COUNT+`,"`+-1+`","The maximum number of workspaces that a user is allowed to create. The user will be presented with an error message if they try to create additional workspaces. This applies to the total number of both running and stopped workspaces." 
- `+CHE_LIMITS_USER_WORKSPACES_RUN_COUNT+`,"`+1+`","The maximum number of running workspaces that a single user is allowed to have. If the user has reached this threshold and they try to start an additional workspace, they will be prompted with an error message. The user will need to stop a running workspace to activate another." 
+ `+CHE_LIMITS_USER_WORKSPACES_RUN_COUNT+`,"`+1+`","The maximum number of running workspaces that a single user is allowed to have. If the user has reached this threshold and they try to start an additional workspace, they will be prompted with an error message. The user will need to stop a running workspace to activate another."
 ,=== 
+
+[IMPORTANT]
+====
+By default, it is possible to run only one workspace at a time. To increase the number of concurrent workspaces a user can run, patch the checluster:
+
+[subs="+quotes,+attributes"]
+----
+$ oc patch checluster {prod-checluster} -n __<user-project-namespace>__ --type=merge \ 
+-p '{ "spec": { "server": { "customCheProperties": { "CHE_LIMITS_USER_WORKSPACES_RUN_COUNT": "-1" } } } }'
+----
+====
 
 [id="organizations-workspace-limits"]
 .Organizations workspace limits 
