@@ -96,19 +96,24 @@ a random 6-symbol suffix is added and the result is stored in preferences for re
 
 == Pre-creating {orch-namespace}s for users
 
-To pre-create {orch-namespace}s for users, use {orch-namespace} labels and annotations.
+To pre-create {orch-namespace}s for users, use {orch-namespace} labels and annotations. Such namespace is used in preference to `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable.
 
 ----
 metadata:
   labels:
-    app.kubernetes.io/component: workspace
     app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-namespace
   annotations:
     che.eclipse.org/username: <username>  <1>
 ----
 <1> target user's username
 
 To configure the labels, set the `CHE_INFRA_KUBERNETES_NAMESPACE_LABELS` to desired labels. To configure the annotations, set the `CHE_INFRA_KUBERNETES_NAMESPACE_ANNOTATIONS` to desired annotations. See the xref:advanced-configuration-options-for-the-che-server-component.adoc#che-server-component-system-properties-reference_advanced-configuration-options-for-the-che-server-component[Che server component system properties reference] for more details.
+
+[WARNING]
+====
+We do not recommend to create multiple namespaces for single user. It may lead to undefined behavior.
+====
 
 [IMPORTANT]
 ====
@@ -131,5 +136,5 @@ subjects:
 <1> pre-created namespace
 <2> target user
 
-On {kubernetes}, `che` ServiceAccount must have a cluster-wide `list namespaces` privilege as well as an `admin` role in target namespace.
+On {kubernetes}, `che` ServiceAccount must have a cluster-wide `list` and `get` `namespaces` permissions as well as an `admin` role in target namespace.
 ====
