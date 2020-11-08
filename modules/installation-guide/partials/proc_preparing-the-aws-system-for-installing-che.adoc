@@ -391,25 +391,28 @@ image::installation/create-policy-review.png[link="../_images/installation/creat
 +
 ----
 $ cat <<EOF | kubectl apply -f -
-apiVersion: certmanager.k8s.io/v1alpha1
+apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
   name: che-certificate-issuer
+  namespace: cert-manager
 spec:
   acme:
-    dns01:
-      providers:
-      - route53:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: your-email@example.com
+    privateKeySecretRef:
+      name: letsencrypt
+    solvers:
+    - selector:
+        dnsZones:
+          - "YOUR DOMAIN"
+      dns01:
+        route53:
           region: eu-west-1
           accessKeyID: <USE ACCESS_KEY_ID_CREATED_BEFORE>
           secretAccessKeySecretRef:
             name: aws-cert-manager-access-key
             key: CLIENT_SECRET
-        name: route53
-    email: florent@example.com
-    privateKeySecretRef:
-      name: letsencrypt
-    server: https://acme-v02.api.letsencrypt.org/directory
 EOF
 ----
 
