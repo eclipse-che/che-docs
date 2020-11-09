@@ -23,3 +23,25 @@
 
 |che-quarkus |quay.io/eclipse/che-quarkus:{prod-ver} |{prod-ver}
 |===
+
+[NOTE]
+====
+The table of recommended images to pre-pull is updated once per release and might vary from the most updated build at the time.
+
+To get the latest build:
+
+. Use the following scriptlet:
++
+[subs="+attributes,+quotes"]
+----
+$➔ curl -sSLo- https://raw.githubusercontent.com/eclipse/che-operator/master/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/{che-ver}/eclipse-che-preview-openshift.v{che-ver}.clusterserviceversion.yaml | yq -r '.spec.relatedImages[].image' | sort | uniq
+----
++
+. Exclude redundant, unused digests, and unsupported images for OpenShift pre-pulling such as:
++
+* machine-exec image
+* images without a sleep command installed
+* images that mount volumes in the docker file
++
+For additional information, see link:https://github.com/eclipse/che/issues/17562[GitHub Issue 17562]
+====
