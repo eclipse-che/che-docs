@@ -30,14 +30,42 @@ The table of recommended images to pre-pull is updated once per release and migh
 
 To get the latest build:
 
+. Install the dependencies:
++
+----
+# dnf install -y jq python-pip
+----
++
+----
+# pip install yq
+----
+
 . Use the following scriptlet:
 +
 [subs="+attributes,+quotes"]
 ----
-$➔ curl -sSLo- https://raw.githubusercontent.com/eclipse/che-operator/master/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/{che-ver}/eclipse-che-preview-openshift.v{che-ver}.clusterserviceversion.yaml | yq -r '.spec.relatedImages[].image' | sort | uniq
+$ curl -sSLo- https://raw.githubusercontent.com/eclipse/che-operator/master/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/{che-ver}/eclipse-che-preview-openshift.v{che-ver}.clusterserviceversion.yaml | \
+  yq -r '.spec.relatedImages[]
 ----
 +
-. Exclude redundant, unused digests, and unsupported images for OpenShift pre-pulling such as:
+----
+...
+{
+  "name": "che-theia-7.19.2",
+  "image": "quay.io/eclipse/che-theia@sha256:11b5fe33edd72df22f76d7933ba79029051f4c0c6adc6c1a91f2dfe4228455c9"
+}
+{
+  "name": "che-theia-7.20.0",
+  "image": "quay.io/eclipse/che-theia@sha256:92a8bac94e446f1f933d1a92bc96dace9450c9f4efdef5539a429a37d14be904"
+}
+{
+  "name": "che-theia-7.20.1",
+  "image": "quay.io/eclipse/che-theia@sha256:a56428ee28ceefca2a1cba51093f6015e0eee82659fec786f2e1fdc939fdb856"
+}
+...
+----
++
+Following images from the list cannot be pre-pulled, therefore need to be pulled manually with `skopeo copy --all __<...>__`:
 +
 * machine-exec image
 * images without a sleep command installed
