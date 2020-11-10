@@ -40,6 +40,8 @@ To get the latest build:
 # pip install yq
 ----
 
+.Procedure
+
 . Use the following scriptlet:
 +
 [subs="+attributes,+quotes"]
@@ -48,8 +50,9 @@ $ curl -sSLo- https://raw.githubusercontent.com/eclipse/che-operator/master/olm/
   yq -r '.spec.relatedImages[]
 ----
 +
+[source,json]
 ----
-...
+#[...]
 {
   "name": "che-theia-7.19.2",
   "image": "quay.io/eclipse/che-theia@sha256:11b5fe33edd72df22f76d7933ba79029051f4c0c6adc6c1a91f2dfe4228455c9"
@@ -62,10 +65,15 @@ $ curl -sSLo- https://raw.githubusercontent.com/eclipse/che-operator/master/olm/
   "name": "che-theia-7.20.1",
   "image": "quay.io/eclipse/che-theia@sha256:a56428ee28ceefca2a1cba51093f6015e0eee82659fec786f2e1fdc939fdb856"
 }
-...
+#[...]
 ----
 +
-Following images from the list cannot be pre-pulled, therefore need to be pulled manually with `skopeo copy --all __<...>__`:
+The following images from the list cannot be pre-pulled and need to be pulled manually using:
+
+[subs="+quotes"]
+----
+$ skopeo copy --all _<image>_
+----
 +
 * machine-exec image
 * images without a sleep command installed
