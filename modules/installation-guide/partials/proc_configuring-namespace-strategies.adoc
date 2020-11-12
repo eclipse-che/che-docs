@@ -138,3 +138,46 @@ subjects:
 
 On {kubernetes}, `che` ServiceAccount must have a cluster-wide `list` and `get` `namespaces` permissions as well as an `admin` role in target namespace.
 ====
+
+== Labeling the namespaces
+{prod-short} updates the workspace's namespace on workspace startup by adding the labels defined in `CHE_INFRA_KUBERNETES_NAMESPACE_LABELS`. To do so, `che` ServiceAccout has to have following cluster-wide permissions to `update` and `get` `namespaces`:
+
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: <cluster-role-name> <1>
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs:
+      - update
+      - get
+----
+<1> name of the cluster role
+
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: <cluster-role-binding-name> <1>
+subjects:
+  - kind: ServiceAccount
+    name: <service-account-name> <2>
+    namespace: <service-accout-namespace> <3>
+roleRef:
+  kind: ClusterRole
+  name: <cluster-role-name> <4>
+  apiGroup: rbac.authorization.k8s.io
+----
+<1> name of the cluster role binding
+<2> name of the che service account
+<3> {prod-short} installation namespace
+<4> name of the cluster role created in previous step
+
+[NOTE]
+====
+{prod-short} does not fail to start a workspace for lack of permissions, it only logs the warning. If you see the warnings in {prod-short} logs, consider disabling the feature with setting `CHE_INFRA_KUBERNETES_NAMESPACE_LABEL=false`.
+====
