@@ -13,7 +13,7 @@ CURRENT_VERSION=""
 RAW_CONTENT=""
 NEWLINE=$'\n'
 NEWLINEx2="$NEWLINE$NEWLINE"
-TABLE_HEADER="$NEWLINEx2,=== $NEWLINE Environment Variable Name,Default value, Description $NEWLINE"
+TABLE_HEADER="$NEWLINE,=== $NEWLINE Environment Variable Name,Default value, Description $NEWLINE"
 TABLE_FOOTER=",=== $NEWLINEx2"
 PARENT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")/.." ; pwd -P )
 BUFF=""
@@ -21,7 +21,7 @@ OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/system-variables.a
 
 fetch_current_version() {
   echo "Trying to read current product version from pom.xml..." >&2
-  CURRENT_VERSION=$(cat $PARENT_PATH/VERSION)
+  CURRENT_VERSION=$(cat "$PARENT_PATH/VERSION")
   if [ $? -ne 0 ]; then
     echo "Failure: Cannot read version from $PARENT_PATH/VERSION" >&2
     exit 1
@@ -64,7 +64,7 @@ parse_content() {
                                                         # replace spaces with dashes, create topic ID, convert to lowercase chars
                                                         # remove non alpha-num, wrap in AsciiDoc ID markup
       echo "   Found begin of topic: $TOPIC" >&2
-      BUFF="${BUFF}${TOPICID}$NEWLINE.${TOPIC} $TABLE_HEADER $NEWLINE"      # new topic and table header
+      BUFF="${BUFF}${TOPICID}$NEWLINE= ${TOPIC}$NEWLINEx2.${TOPIC} $TABLE_HEADER $NEWLINE"      # new topic and table header
     elif [[ $LINE == '#'* ]] && [[ -n $TOPIC ]]; then   # line starting with single # means property description (can be multi-line)
       TRIM_LINE=${LINE/\#}                              # read description, stripping first #
       DESCR_BUFF="$DESCR_BUFF${TRIM_LINE}"              # collect all description lines into buffer
@@ -81,7 +81,6 @@ parse_content() {
       VALUE="\`+${VALUE}+\`"                            # make sure asciidoc doesn't mix it up with attributes
       VALUE="${VALUE/\`++\`}"                           # remove empty value `++`
       
-      DESCR_BUFF="$(sed 's| {\([^}]*\)}| `+{\1}+`|g' <<< $DESCR_BUFF)"    # make sure asciidoc doesn't mix it up with attributes
       DESCR_BUFF="$(sed 's|\${\([^}]*\)}|$++{\1}++|g' <<< $DESCR_BUFF)"   # make sure asciidoc doesn't mix it up with attributes
       DESCR_BUFF="$(sed 's|\(Eclipse \)\?\bChe\b|{prod-short}|g' <<< $DESCR_BUFF)"   # (Eclipse) Che -> {prod-short}
       DESCR_BUFF="$(sed -E 's|`(http.?*)`|`+\1+`|g' <<< $DESCR_BUFF)"   # Deactivate http links
@@ -97,7 +96,7 @@ parse_content() {
     fi
   done <<< "$RAW_CONTENT"
   BUFF="$BUFF$TABLE_FOOTER"                             # close last table
-  echo "$BUFF" > $OUTPUT_PATH                           # flush buffer into file
+  echo "$BUFF" > "$OUTPUT_PATH"                         # flush buffer into file
   echo "Processing done. Output file is $OUTPUT_PATH" >&2
 }
 
