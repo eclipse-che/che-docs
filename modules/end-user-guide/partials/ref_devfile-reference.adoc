@@ -323,10 +323,10 @@ apiVersion: 1.0.0
 metadata:
     name: MyDevfile
 components:
-type: dockerimage
-image: golang
-memoryLimit: 512Mi
-command: ['sleep', 'infinity']
+    - type: dockerimage
+      image: golang
+      memoryLimit: 512Mi
+      command: ['sleep', 'infinity']
 ----
 
 It specifies the type of the component, `dockerimage` and the `image` attribute names the image to be used for the component using the usual Docker naming conventions, that is, the above `type` attribute is equal to `docker.io/library/golang:latest`.
@@ -343,11 +343,10 @@ apiVersion: 1.0.0
 metadata:
     name: MyDevfile
 components:
-type: dockerimage
-image: golang
-memoryLimit: 512Mi
-mountSources: true
-command: ['sleep', 'infinity']
+    - type: dockerimage
+      image: golang
+      memoryLimit: 512Mi
+      command: ['sleep', 'infinity']
 ----
 
 The sources is mounted on a location stored in the `CHE_PROJECTS_ROOT` environment variable that is made available in the running container of the image. This location defaults to `/projects`.
@@ -561,7 +560,8 @@ the {platforms-namespace} to which the workspace is deployed.
 
 * `CHE_MACHINE_TOKEN`: The token used to authenticate the request against the {prod-short} server.
 
-* `CHE_MACHINE_AUTH_SIGNATURE__PUBLIC__KEY`: The public key used to secure the communication with the {prod-short} server.
+[subs="+quotes,macros"]
+* `pass:[CHE_MACHINE_AUTH_SIGNATURE__PUBLIC__KEY]`: The public key used to secure the communication with the {prod-short} server.
 
 * `CHE_MACHINE_AUTH_SIGNATURE__ALGORITHM`: The encryption algorithm used in the secured communication with the {prod-short} server.
 
