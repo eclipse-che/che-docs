@@ -51,27 +51,42 @@ components:
 [id="specifying-multiple-projects-in-a-devfile_{context}"]
 == Specifying multiple projects in a devfile
 
-A single devfile can specify multiple projects. For each project, specify the type of the source repository, its location, and, optionally, the directory the project is cloned to.
+A single devfile can define multiple projects, which are cloned to the desired destination. These projects are created inside a user’s workspace after the workspace is started.
+
+For each project, specify the following:
+
+* The type of the source repository - this can be .git or .zip. For additional information, see the xref:making-a-workspace-portable-using-a-devfile.adoc#devfile-reference_making-a-workspace-portable-using-a-devfile[Devfile reference] section.
+
+* The location of the source repository - an URL to a Git repository or ZIP archive.
+
+* Optionally, the directory to which the project is cloned. If none is specified, the default directory is used, which is a directory that matches the project name or project Git repository.
+
+
 
 .Example of a devfile with two projects
-[source,yaml]
+
+In the following example, the projects `frontend` and `backend` act as examples of a user's projects. Each project is located in a separate repository. 
+
+* The `backend` project has a specific requirement to be cloned into the `src/github.com/__<github-organization>__/__<backend>__/` directory under the source root, implicitly defined by the {prod-short} runtime. 
+
+* The `frontend` project will be cloned into the `__<frontend/>__` directory under the source root.
+
+[source,yaml,subs="+quotes"]
 ----
 apiVersion: 1.0.0
 metadata:
   name: example-devfile
 projects:
-- name: frontend
+- name: __<frontend>__
   source:
     type: git
-    location: https://github.com/acmecorp/frontend.git
-- name: backend
-  clonePath: src/github.com/acmecorp/backend
+    location: https://github.com/__<github-organization>__/__<frontend>__.git
+- name: __<backend>__
+  clonePath: src/github.com/__<github-organization>__/__<backend>__
   source:
     type: git
-    location: https://github.com/acmecorp/backend.git
+    location: https://github.com/__<github-organization>__/__<backend>__.git
 ----
-
-In the preceding example, there are two projects defined, `frontend` and `backend`. Each project is located in its own repository. The `backend` project has a specific requirement to be cloned into the `src/github.com/acmecorp/backend/` directory under the source root (implicitly defined by the {prod-short} runtime) while the `frontend` project will be cloned into the `frontend/` directory under the source root.
 
 
 .Additional resources
