@@ -13,22 +13,24 @@ endif::[]
 
 .Prerequisites
 
-* The `{orch-cli}` tool is available. See https://kubernetes.io/docs/tasks/tools/install-kubectl/[{kubernetes} website].
-* Verify the installation of `{orch-cli}` using the `{orch-cli} version` command:
+* The `{orch-cli}`, version 1.5.0 or higher, is available. For information about installed version, use:
 +
-[subs="+quotes",options="+nowrap,+attributes"]
+[subs="+quotes,+attributes",options="+nowrap"]
 ----
 $ {orch-cli} version
-Client Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.0", GitCommit:"e8462b5b5dc2584fdcd18e6bcfe9f1e4d970a529", GitTreeState:"clean", BuildDate:"2019-06-19T16:40:16Z", GoVersion:"go1.12.5", Compiler:"gc", Platform:"darwin/amd64"}
-Server Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.0", GitCommit:"e8462b5b5dc2584fdcd18e6bcfe9f1e4d970a529", GitTreeState:"clean", BuildDate:"2019-06-19T16:32:14Z", GoVersion:"go1.12.5", Compiler:"gc", Platform:"linux/amd64"}
+Client Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.0"
+
+...
+
 ----
-+
-For versions 1.5.0 or higher, proceed with the steps in this section.
+
 
 .Procedure
 
-. Use the `exec` command to open a remote shell.
-// Fill THE OUTPUT HERE
+In the example below:
+ 
+* `workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4` is the name of the Pod.
+* `{project-context}` is the {orch-namespace}.
 
 . To find the name of the {platforms-name} {orch-namespace} and the Pod that runs the {prod-short} workspace:
 +
@@ -36,16 +38,15 @@ For versions 1.5.0 or higher, proceed with the steps in this section.
 ----
 $ {orch-cli}  get pod -l che.workspace_id --all-namespaces
 NAMESPACE   NAME                                               READY   STATUS    RESTARTS   AGE
-che         workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4   4/4     Running   0          6m4s
+{project-context}         workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4   4/4     Running   0          6m4s
 ----
 
-In the example above, the Pod name is `workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4`, and the {orch-namespace} is `che`.
 
 . To find the name of the container:
 +
 [subs="+attributes,+quotes",options="+nowrap"]
 ----
-$ NAMESPACE=che
+$ NAMESPACE={project-context}
 $ POD=workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4
 $ {orch-cli}  get pod $\{POD} -o custom-columns=CONTAINERS:.spec.containers[*].name
 CONTAINERS
@@ -56,7 +57,7 @@ maven,che-machine-execpau,theia-ide6dj,vscode-javaw92
 +
 [literal,subs="+attributes,+quotes",options="nowrap"]
 --
-$ NAMESPACE=che
+$ NAMESPACE={project-context}
 $ POD=workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4
 $ CONTAINER=maven
 $ {orch-cli} exec -ti -n $\{NAMESPACE} $\{POD} -c $\{CONTAINER} bash
@@ -72,6 +73,8 @@ user@workspace7b2wemdf3hx7s3ln $ mvn clean install
 (...)
 ----
 
+ifeval::["{project-context}" == "che"]
 .Additional resources
 
 * For more about `{orch-cli}`, see the link:https://kubernetes.io/docs/reference/kubectl/overview/[{kubernetes} documentation].
+endif::[]
