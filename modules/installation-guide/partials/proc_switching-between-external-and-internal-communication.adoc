@@ -1,0 +1,29 @@
+
+[id="switching-between-external-and-internal-communication_{context}"]
+= Switching between external and internal ways in inter-component communication
+
+.Prerequisites
+
+* The `{orch-cli}` tool is available.
+* An instance of {prod-short} running in {orch-name}.
+
+IMPORTANT: The internal way of inter-component communication is set by default but it won't work in multicluster on OpenShift and in environments where communication between namespaces is restricted.
+
+.Procedure
+
+. To use external ingress/route in inter-component communication:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/server/useInternalClusterSVCNames", "value": false}]'
+----
+
+. To use internal cluster hostname in inter-component communication:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/server/useInternalClusterSVCNames", "value": true}]'
+----
+
