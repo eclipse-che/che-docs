@@ -173,7 +173,7 @@ endif::[]
 and higher.
 ====
 
-== Verification 
+== Verification at the {prod-short} installation level
 
 If you added the certificates without error, the {prod-short} server starts and obtains {identity-provider} configuration over HTTPS. Otherwise here is a list of things to verify: 
 
@@ -225,3 +225,76 @@ To get the SHA1 hash of a certificate on the local filesystem:
 $ openssl x509 -in __<certificate-file-path>__ -fingerprint -noout
 SHA1 Fingerprint=3F:DA:BF:E7:A7:A7:90:62:CA:CF:C7:55:0E:1D:7D:05:16:7D:45:60
 ----
+
+== Verification at the workspace level
+
+- Start a workspace, get the Kubernetes namespace in which it has been created, and wait for it to be started
+
+- Get the name of the workspace POD with the following command:
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+$ {orch-cli} get pods -o=jsonpath='{.items[0].metadata.name}' -n __<workspace namespace>__ | grep '^workspace.*'
+----
+
+- Get the name of the theia IDE container in the workspace POD with the following command:
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+$ {orch-cli} get -o json pod __<workspace pod name>__  -n __<workspace namespace>__ | \
+    jq -r '.spec.containers[] | select(.name | startswith("theia-ide")).name'
+----
+
+- Look for a `ca-certs` config map that should have been created inside the workspace namespace:
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+$ {orch-cli} get cm ca-certs __<workspace namespace>__
+----
+
+- Check that the entries in the `ca-certs` config map contain all the additional entries you added in the certificate config map at the {prod-short} installation level, in addition to the the `ca-bundl.crt` entry which is a reserved one:
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+$ {orch-cli} get cm ca-certs -n __<workspace namespace>__ -o json | jq -r '.data | keys[]'
+ca-bundle.crt
+manually-added-certificate.crt
+----
+
+- Make sure that the `ca-certs` config map has been added as a volume in the workspace POD:
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+$ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>__ | \
+    jq '.spec.volumes[] | select(.configMap.name == "ca-certs")'
+{
+  "configMap": {
+    "defaultMode": 420,
+    "name": "ca-certs"
+  },
+  "name": "che-self-signed-certs"
+}
+----
+
+- Confirm that the volume has been mounted into containers, especially in the Theia IDE container:
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+$ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>__ | \
+   jq '.spec.containers[] | select(.name == "__<theia ide container name>__").volumeMounts[] | select(.name == "che-self-signed-certs")'
+{
+  "mountPath": "/public-certs",
+  "name": "che-self-signed-certs",
+  "readOnly": true
+}
+----
+
+- Inspect `/public-certs` folder on the Theia IDE container and check that its contents match the list of entries in the `ca-certs` config map:
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+$ {orch-cli} exec __<workspace pod name>__ -c __<theia ide container name>__ -n __<workspace namespace>__ -- ls /public-certs
+ca-bundle.crt
+manually-added-certificate.crt
+----
++
