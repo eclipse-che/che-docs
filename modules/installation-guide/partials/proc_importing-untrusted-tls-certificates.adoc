@@ -3,7 +3,7 @@
 [id="importing-untrusted-tls-certificates_{context}"]
 = Importing untrusted TLS certificates to {prod-short}
 
-Internal communications between {prod-short} components are, by default, encrypted with TLS. Communications of {prod-short} components with external services like proxies, source code repositories, identity providers may require TLS tool. Those communications require the use of SSL certificates signed by trusted Certificate Authorities. 
+Internal communications between {prod-short} components are, by default, encrypted with TLS. Communications of {prod-short} components with external services such as proxies, source code repositories, identity providers may require TLS tool. Those communications require the use of SSL certificates signed by trusted Certificate Authorities. 
 
 When the certificates used by {prod-short} components or by an external service are signed by an untrusted CA it can be necessary to import the CA certificate in the {prod-short} installation, so that every {prod-short} component will consider them as signed by a trusted CA.
 
@@ -22,7 +22,7 @@ endif::[]
 ifeval::["{project-context}" != "che"]
 When
 endif::[]
-the cluster contains cluster-wide trusted CA certificates added through the link:https://docs.openshift.com/container-platform/4.4/networking/configuring-a-custom-pki.html#nw-proxy-configure-object_configuring-a-custom-pki[cluster-wide-proxy configuration], {prod-short} operator detects them and automatically injects them into this ConfigMap:
+the cluster contains cluster-wide trusted CA certificates added through the link:https://docs.openshift.com/container-platform/4.4/networking/configuring-a-custom-pki.html#nw-proxy-configure-object_configuring-a-custom-pki[cluster-wide-proxy configuration], {prod-short} Operator detects them and automatically injects them into this ConfigMap:
 
 - {prod-short} automatically labels the ConfigMap with the `config.openshift.io/inject-trusted-cabundle="true"` label.
 - Based on this annotation, OpenShift automatically injects the cluster-wide trusted CA certificates inside the `ca-bundle.crt` key of ConfigMap
@@ -152,7 +152,7 @@ When using Minikube to run {prod-short}, substitute _<kubernetes-cluster-domain>
 ====
 endif::[]
 
-. Restart the {prod-short} operator, the {prod-short} server and {identity-provider} to load the new certificates:
+. Restart the {prod-short} Operator, the {prod-short} server and {identity-provider} to load the new certificates:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -175,7 +175,7 @@ and higher.
 
 == Verification at the {prod-short} installation level
 
-If you added the certificates without error, the {prod-short} server starts and obtains {identity-provider} configuration over HTTPS. Otherwise here is a list of things to verify: 
+If you added the certificates without error, the {prod-short} server starts and obtains {identity-provider} configuration over https. Otherwise here is a list of things to verify: 
 
 - In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operator] deployment, the `CheCluster` attribute `serverTrustStoreConfigMapName` value matches the name of the ConfigMap. Get the value using the following command :
 +
@@ -208,7 +208,7 @@ Found a custom cert. Adding it to java trust store based on /usr/lib/jvm/java-1.
 (...)
 ----
 +
-- ${prod-short} server Java trustore contains the certificates. The certificates SHA1 fingerpints are among the list of the SHA1 of the certificates included in the trustore returned by the following command:
+- ${prod-short} server Java truststore contains the certificates. The certificates SHA1 fingerprints are among the list of the SHA1 of the certificates included in the truststore returned by the following command:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -230,7 +230,7 @@ SHA1 Fingerprint=3F:DA:BF:E7:A7:A7:90:62:CA:CF:C7:55:0E:1D:7D:05:16:7D:45:60
 
 - Start a workspace, get the Kubernetes namespace in which it has been created, and wait for it to be started
 
-- Get the name of the workspace POD with the following command:
+- Get the name of the workspace Pod with the following command:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -245,14 +245,14 @@ $ {orch-cli} get -o json pod __<workspace pod name>__  -n __<workspace namespace
     jq -r '.spec.containers[] | select(.name | startswith("theia-ide")).name'
 ----
 
-- Look for a `ca-certs` config map that should have been created inside the workspace namespace:
+- Look for a `ca-certs` ConfigMap that should have been created inside the workspace namespace:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get cm ca-certs __<workspace namespace>__
 ----
 
-- Check that the entries in the `ca-certs` config map contain all the additional entries you added in the certificate config map at the {prod-short} installation level, in addition to the the `ca-bundl.crt` entry which is a reserved one:
+- Check that the entries in the `ca-certs` config map contain all the additional entries you added in the certificate ConfigMap at the {prod-short} installation level, in addition to the the `ca-bundl.crt` entry which is a reserved one:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -261,7 +261,7 @@ ca-bundle.crt
 manually-added-certificate.crt
 ----
 
-- Make sure that the `ca-certs` config map has been added as a volume in the workspace POD:
+- Make sure that the `ca-certs` ConfigMap has been added as a volume in the workspace Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -289,7 +289,7 @@ $ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>
 }
 ----
 
-- Inspect `/public-certs` folder on the Theia IDE container and check that its contents match the list of entries in the `ca-certs` config map:
+- Inspect `/public-certs` folder on the Theia IDE container and check that its contents match the list of entries in the `ca-certs` ConfigMap:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
