@@ -127,7 +127,7 @@ spec:
                   export DOC_COMMIT_MSG=$(git log --oneline --format=%B -n 1 HEAD | tail -1)
                   git commit -s -m "[docs] ${DOC_COMMIT_MSG}"
                   git log --graph --abbrev-commit --date=relative -n 5
-                  git push origin HEAD:${BRANCH_NAME}
+                  git push origin HEAD:master
                 else
                   echo "No change have been detected since last build, nothing to publish"
                 fi

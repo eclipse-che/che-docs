@@ -8,17 +8,17 @@
 
 * Eclipse Che documentation project follows a forking workflow. To learn more, read https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow[Forking Workflow]. 
 
-* Eclipse Che documentation follows the _IBM Style Guide_. If you do not have a paper copy of the styleguide, see the
+* Eclipse Che documentation follows the _IBM Style Guide_. If you do not have a paper copy of the style guide, see the
 https://www.ibm.com/developerworks/library/styleguidelines/index.html[developerWorks editorial style guide] on the IBM website. While developerWorks is no longer maintained, it still provides useful reference information.
 
 * To learn more about the tool validating the style, see the https://errata-ai.gitbook.io/vale/[`+vale+` documentation].
 
 * Eclipse Che documentation uses AsciiDoc for markup. To learn more about AsciiDoc syntax, see the https://asciidoctor.org/docs/asciidoc-writers-guide/[AsciiDoc Writer’s Guide].
 
-* The Eclipse Che documentation project follows guidelines from the
-https://redhat-documentation.github.io/modular-docs/[Modular Documentation Initiative]. As Antora is using the term of _module_ with a different acceptation, this project is refering to them as _topics_. To understand the nature of topics, see the https://redhat-documentation.github.io/modular-docs/#modular-docs-terms-definitions[Appendix A: Modular Documentation Terms and Definitions].
-
 * Eclipse Che documentation uses https://docs.antora.org[Antora] to build the documentation.
+
+* The Eclipse Che documentation project follows guidelines from the
+https://redhat-documentation.github.io/modular-docs/[Modular Documentation Initiative]. As Antora is using the term of _module_ with a different meaning, this project is referring to modules as _topics_. To understand the nature of topics, see the https://redhat-documentation.github.io/modular-docs/#modular-docs-terms-definitions[Appendix A: Modular Documentation Terms and Definitions].
 
 * To learn more about the `+newdoc+` tool generating the topic
 templates, see https://github.com/mrksu/newdoc[`+newdoc+` documentation].
@@ -29,8 +29,36 @@ templates, see https://github.com/mrksu/newdoc[`+newdoc+` documentation].
 https://www.eclipse.org/che/docs/che-7/hosted-che/[Hosted Che documentation].
 
 
-[id="editing-and-submitting-new-content"]
-== Editing and submitting new content
+[id="documentation-workflow"]
+== The documentation workflow
+
+.Procedure
+
+. Contributor submits a new code pull request in https://github.com/eclipse/che with a `status/doc-impact` label.
+
+. The author of the code pull request or the reviewer ensures that a documentation pull request for the `master` branch of the `che-docs` repository is provided and referenced from the code pull request:
+
+.. The author of the code pull request or the reviewer provides a complete documentation pull request that can then be merged by the members of the documentation team without further editing.
+
+.. Or, the author of the code pull request or the reviewer provides at least an initial draft of the content and reaches out to the documentation-team members for assistance with editing, so that the documentation pull request can be finalized.
+
+.. Or, the author of the code pull request or the reviewer reaches out to the members of the documentation team and work with them on submitting a documentation pull request.
+
+. Review the documentation pull request. See xref:editing-submitting-and-reviewing-new-content[].
+
+. Merge the code pull request into the `che` repository, for next milestone `x.y.z`.
+
+. The documentation pull request, validated, stays in the queue in the `che-docs` repository. 
+
+. Release `che` milestone `x.y.z`.
+
+. Merge the documentation content for milestone `x.y.z` into the `master` branch of the `che-docs` repository. 
+
+. Publish the `che-docs` `master` branch to https://www.eclipse.org/che/docs.
+
+
+[id="editing-submitting-and-reviewing-new-content"]
+== Editing, submitting and reviewing new content
 
 .Procedure
 
@@ -42,9 +70,19 @@ https://www.eclipse.org/che/docs/che-7/hosted-che/[Hosted Che documentation].
 
 . Build and validate the new content. See: xref:building-and-validating-the-documentation-using-che[].
 
-. To merge the content, open a pull request. Submit the pull request against the default `+master+` branch. Specify as much information as possible in the PR template.
+. To merge the content, open a pull request. Submit the pull request against the default `+master+` branch. Specify as much information as possible in the pull request template.
 
-. To review the pull request: validate the accuracy of content, as well as build, language, links and modular docs requirements. See: xref:building-and-validating-the-documentation-using-che[].
+. When you intend to review a pull request, click Assignees in the GitHub pull request view. This indicates you are the reviewer and avoids duplication of efforts.
+
+. To review the pull request:
+
+.. Validate the accuracy of content, as well as build, language, links and modular docs requirements.
+
+.. For documentation updates containing testable steps, the documentation pull request needs to have the `team/che-qe` label set and get reviewed by both the documentation team and the Che QA team.
+
+.. For documentation updates not containing testable steps, the documentation pull request needs to get reviewed by the documentation team.
+
+.. For more information, see xref:building-and-validating-the-documentation-using-che[].
 
 . The continuous integration process is publishing content once merged in the `+master+` publication branch.
 
@@ -56,11 +94,11 @@ https://www.eclipse.org/che/docs/che-7/hosted-che/[Hosted Che documentation].
 [id="building-and-validating-the-documentation-using-che"]
 == Building and validating the documentation using Che
 
-To build the Eclipse Che documentation from a Che workspace.
+To build the Eclipse Che documentation from a Che workspace, follow the steps below.
 
 .Prerequisites
 
-* Open a Che workspace containing a fork of the documentation. See xref:editing-and-submitting-new-content[].
+* Open a Che workspace containing a fork of the documentation. See xref:editing-submitting-and-reviewing-new-content[].
 
 .Procedure
 
@@ -72,7 +110,7 @@ To build the Eclipse Che documentation from a Che workspace.
 
 . To validate the language of the files currently open, look at the _Problems_ panel in the _Bottom Panel_. To toggle the view of this panel use the _View > Problems_ menu entry.
 
-. To validate the compliance of an asciidoc file with Modular Documentation guidelines: 
+. To validate the compliance of an AsciiDoc file with Modular Documentation guidelines:
 
 .. In the _Explorer_, right-click on file to validate and select _Copy Path_.
 
@@ -120,7 +158,6 @@ Eclipse Che4z, OpenShift Connector.
 .Verification steps
 
 . The file is generated in the `+src/main/pages-che-7/<guide_name>/+` directory and the script displays related information.
-
 
 
 == Adding images
@@ -233,4 +270,3 @@ bug]]
 .Public Chat
  
 * Join the public https://mattermost.eclipse.org/eclipse/channels/eclipse-che[eclipse-che Mattermost channel] to talk to the community and contributors.
-

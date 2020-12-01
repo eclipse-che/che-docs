@@ -10,7 +10,7 @@
 {prod} provides developer workspaces with everything needed to a code, build, test, run, and debug applications. To allow that, the developer workspaces provide four main components:
 
 . The source code of a project.
-. A web-based IDE.
+. A web-based integrated development environment (IDE).
 . Tool dependencies, needed by developers to work on a project
 . Application runtime: a replica of the environment where the application runs in production
 
@@ -18,7 +18,19 @@ Pods manage each component of a {prod-short} workspace. Therefore, everything ru
 
 The embedded browser-based IDE is the point of access for everything running in a {prod-short} workspace. This makes a {prod-short} workspace easily shareable.
 
-IMPORTANT: By default, it is possible to run only one workspace at a time. To change the default value, see: xref:installation-guide:advanced-configuration-options-for-the-che-server-component.adoc#users-workspace-limits[Users workspace limits].
+[IMPORTANT]
+====
+By default, it is possible to run only one workspace at a time. To increase the number of concurrent workspaces a user can run, patch the checluster:
+
+[subs="+quotes,+attributes"]
+----
+$ oc patch checluster {prod-checluster} -n __<user-project-namespace>__ --type=merge \ 
+-p '{ "spec": { "server": { "customCheProperties": { "CHE_LIMITS_USER_WORKSPACES_RUN_COUNT": "-1" } } } }'
+----
+
+For additional information, see: xref:installation-guide:advanced-configuration-options-for-the-che-server-component.adoc#users-workspace-limits[Users workspace limits].
+====
+
 
 .Features and benefits
 [options="header",cols="h,,"]

@@ -1,0 +1,33 @@
+. In the `./{che-devfile-registry-directory}/devfiles/` directory, create a subdirectory `__<devfile-name>__/` and add the `devfile.yaml` and `meta.yaml` files.
++
+.File organization for a devfile
+[subs="+attributes,+quotes"]
+----
+./{che-devfile-registry-directory}/devfiles/
+└── __<devfile-name>__
+    ├── devfile.yaml
+    └── meta.yaml
+----
+
+. Add valid content in the `devfile.yaml` file. For a detailed description of the devfile format, see xref:end-user-guide:making-a-workspace-portable-using-a-devfile.adoc[].
+
+. Ensure that the `meta.yaml` file conforms to the following structure:
++
+.Parameters for a devfile `meta.yaml`
+[%header,format=csv,cols="1m,3"]
+|===
+Attribute, Description
+description, Description as it appears on the user dashboard.
+displayName, Name as it appears on the user dashboard.
+globalMemoryLimit, The sum of the expected memory consumed by all the components launched by the devfile. This number will be visible on the user dashboard. It is informative and is not taken into account by the {prod-short} server.
+icon, Link to an `.svg` file that is displayed on the user dashboard.
+tags, List of tags. Tags usually include the tools included in the stack.
+|===
++
+.Example devfile `meta.yaml`
+====
+[source,yaml]
+----
+include::example$snip_{project-context}-devfile-meta.adoc[]
+----
+====

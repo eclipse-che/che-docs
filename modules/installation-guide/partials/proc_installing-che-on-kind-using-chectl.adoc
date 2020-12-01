@@ -14,7 +14,7 @@ This section describes how to install {prod-short} on https://github.com/kuberne
 
 .Procedure
 
-For {prod-short} installation, kind cluster should have an Ingress backend and a persitent volumes storage backend. If these requirements are met, go directly to xref:installing-che-on-kind.adoc#run-chectl-on-kind[deploying {prod-short}].
+For {prod-short} installation, kind cluster should have an Ingress backend and a persistent volumes storage backend. If these requirements are met, go directly to xref:installing-che-on-kind.adoc#run-{prod-cli}-on-kind[deploying {prod-short}].
 
 Following instruction is a way of configuring Kind cluster to have all needed for {prod} components:
 
@@ -57,9 +57,8 @@ $ kubectl patch storageclass standard -p '{"metadata": {"annotations": {"storage
 . Install the https://kubernetes.github.io/ingress-nginx/deploy/[NGINX Ingress Controller]:
 +
 ----
-$ VERSION=0.30.0
-$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-${VERSION}/deploy/static/mandatory.yaml
-$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-${VERSION}/deploy/static/provider/cloud-generic.yaml
+$ VERSION=v0.41.0
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-${VERSION}/deploy/static/provider/aws/deploy.yaml
 ----
 
 . Install the https://metallb.universe.tf/[MetalLB] load balancer:
@@ -128,7 +127,7 @@ ingress-nginx   LoadBalancer   10.107.194.26   172.17.250.1   80:32033/TCP,443:3
 +
 [subs="+quotes,+attributes"]
 ----
-$ {prod-cli} server:start --installer operator --platform k8s --domain 172.17.250.1.nip.io
+$ {prod-cli} server:deploy --installer operator --platform k8s --domain 172.17.250.1.nip.io
 ----
 +
 [NOTE]

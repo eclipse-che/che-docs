@@ -43,8 +43,10 @@ source:
     branch: 7.20.x
     sparseCheckoutDir: core  <2>
 ----
-<1> `startPoint` is the general value for `tag`, `commitId`, and `branch`. The `startPoint`, `tag`, `commitId`, and `branch` parameters are mutually exclusive. When more than one is supplied, the following order is used: `startPoint`, `tag`, `commitId`, `branch`.
-<2> `sparseCheckoutDir` the template for the sparse checkout Git feature. This is useful when only a part of a project (typically only a single directory) is needed.
+
+<1> `startPoint`: The general value for `tag`, `commitId`, and `branch`. The `startPoint`, `tag`, `commitId`, and `branch` parameters are mutually exclusive. When more than one is supplied, the following order is used: `startPoint`, `tag`, `commitId`, `branch`.
+
+<2> `sparseCheckoutDir`: The template for the sparse checkout Git feature. This is useful when only a part of a project, typically a single directory, is needed.
 
 .`sparseCheckoutDir` parameter settings
 ====
@@ -323,10 +325,10 @@ apiVersion: 1.0.0
 metadata:
     name: MyDevfile
 components:
-type: dockerimage
-image: golang
-memoryLimit: 512Mi
-command: ['sleep', 'infinity']
+    - type: dockerimage
+      image: golang
+      memoryLimit: 512Mi
+      command: ['sleep', 'infinity']
 ----
 
 It specifies the type of the component, `dockerimage` and the `image` attribute names the image to be used for the component using the usual Docker naming conventions, that is, the above `type` attribute is equal to `docker.io/library/golang:latest`.
@@ -343,11 +345,10 @@ apiVersion: 1.0.0
 metadata:
     name: MyDevfile
 components:
-type: dockerimage
-image: golang
-memoryLimit: 512Mi
-mountSources: true
-command: ['sleep', 'infinity']
+    - type: dockerimage
+      image: golang
+      memoryLimit: 512Mi
+      command: ['sleep', 'infinity']
 ----
 
 The sources is mounted on a location stored in the `CHE_PROJECTS_ROOT` environment variable that is made available in the running container of the image. This location defaults to `/projects`.
@@ -561,7 +562,8 @@ the {platforms-namespace} to which the workspace is deployed.
 
 * `CHE_MACHINE_TOKEN`: The token used to authenticate the request against the {prod-short} server.
 
-* `CHE_MACHINE_AUTH_SIGNATURE__PUBLIC__KEY`: The public key used to secure the communication with the {prod-short} server.
+[subs="+quotes,macros"]
+* `pass:[CHE_MACHINE_AUTH_SIGNATURE__PUBLIC__KEY]`: The public key used to secure the communication with the {prod-short} server.
 
 * `CHE_MACHINE_AUTH_SIGNATURE__ALGORITHM`: The encryption algorithm used in the secured communication with the {prod-short} server.
 
@@ -633,9 +635,7 @@ Here, there are two Docker images, each defining a single endpoint. Endpoint is 
 +
 WARNING: Listening on any other interface than the local loopback poses a security risk because such server is accessible without the JWT authentication within the cluster network on the corresponding IP addresses.
 
-* `path`: The URL of the endpoint.
-+
-IMPORTANT: Currently, it is not possible to specify a non-root path on secure endpoints. If you need your endpoint secured by {prod-short}, do not specify the path of the endpoint.
+* `path`: The path portion of the URL to the endpoint. This defaults to `/`, meaning that the endpoint is assumed to be accessible at the web root of the server defined by the component.
 
 * `unsecuredPaths`: A comma-separated list of endpoint paths that are to stay unsecured even if the `secure` attribute is set to `true`.
 
@@ -857,7 +857,7 @@ The following are two kinds of commands:
 
 Each {prod-short}-specific command features:
 
- * An `action` attribute that is a command to execute.
+ * An `actions` attribute that specifies a command to execute.
  * A `component` attribute that specifies the container in which to execute the command.
  
 The commands are run using the default shell in the container.
@@ -893,7 +893,7 @@ commands:
        command: “go get -d && go run main.go”
        workdir: “${CHE_PROJECTS_ROOT}/src/github.com/acme/my-go-project”
 ----
-+
+
 [NOTE]
 ====
 * If a component to be used in a command must have an alias. This alias is used to reference the component in the command definition. Example: `alias: go-cli` in the component definition and `component: go-cli` in the command definition. This ensures that {prod} can find the correct container to run the command in.

@@ -34,17 +34,22 @@ $ {orch-cli} create secret generic <server-database-credentials> \ <1>
 [subs="+quotes,attributes"]
 ----
 $ {orch-cli} create secret generic <identity-database-credentials> \ <1>
---from-literal=user=<identity-database-user> \                     <2>
---from-literal=password=<identity-database-password> \             <3>
+--from-literal=password=<identity-database-password> \             <2>
 -n {prod-namespace}
 ----
 <1> Secret name to store {identity-provider} database credentials
-<2> {identity-provider} database username
-<3> {identity-provider} database password
+<2> {identity-provider} database password
 
-. To make the Operator skip deploying a database and pass connection details of an existing database to a {prod-short} server set the following values in the Custom Resource:
+. Deploy {prod} by executing the `{prod-cli}` command with applying a patch. For example:
 +
 [subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:deploy --che-operator-cr-patch-yaml=patch.yaml ...
+----
+
+patch.yaml should contain the following to make the Operator skip deploying a database and pass connection details of an existing database to a {prod-short} server:
+
+[source,yaml,subs="+quotes"]
 ----
 spec:
   database:
@@ -60,6 +65,6 @@ spec:
 <1> External database hostname
 <2> External database port
 <3> Secret name with {prod-short} server database credentials
-<4> {prod-short} server database username
+<4> {prod-short} server database name
 <5> Secret name with {identity-provider} database credentials
 

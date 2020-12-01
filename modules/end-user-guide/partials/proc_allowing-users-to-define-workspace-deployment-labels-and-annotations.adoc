@@ -1,0 +1,102 @@
+// Module included in the following assemblies:
+//
+// configuring-a-workspace-using-a-devfile
+
+[id="allowing-users-to-define-workspace-deployment-labels-and-annotations_{context}"]
+= Allowing users to define workspace deployment labels and annotations
+
+This section describes how to customize workspace deployment labels and annotation using factory parameters.
+
+
+.Prerequisites
+* A running instance of {prod}. To install an instance of {prod}, see xref:installation-guide:installing-che.adoc[].
+* A publicly accessible standalone `devfile.yaml` file. See xref:making-a-workspace-portable-using-a-devfile.adoc[] for detailed information about creating and using devfiles.
+
+.Procedure
+. Open the workspace by navigating to the following URL: `pass:c,a,q[{prod-url}/f?url=https://__<hostURL>__/devfile.yaml&workspaceDeploymentLabels=__<url_encoded_comma_separated_key_values>__&workspaceDeploymentAnnotations=__<url_encoded_comma_separated_key_values override>__]`
+
+.Example of overriding the `deployment labels` 
+
+Consider the following labels to add:
+
+[subs="+quotes"]
+----
+ike.target=preference-v1
+ike.session=test
+----
+
+
+To add or override labels, use the following factory URL:
+
+[subs="+quotes"]
+----
+https://che.openshift.io/f?url=https://gist.githubusercontent.com/themr0c/ef8e59a162748a8be07e900b6401e6a8/raw/8802c20743cde712bbc822521463359a60d1f7a9/devfile.yaml&workspaceDeploymentLabels=ike.target%3Dpreference-v1%2Cike.session%3Dtest
+----
+
+The resulting workspace has the following deployment labels:
+
+[subs="+quotes"]
+----
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  creationTimestamp: "2020-10-27T14:03:26Z"
+  generation: 1
+  labels:
+    che.component.name: che-docs-dev
+    che.original_name: che-docs-dev
+    che.workspace_id: workspacegln2g1shejjufpkd
+    ike.session: test
+    ike.target: preference-v1
+  name: workspacegln2g1shejjufpkd.che-docs-dev
+  namespace: opentlc-mgr-che
+  resourceVersion: "107516"
+spec:
+...
+----
+
+.Example of overriding the `deployment annotations`
+
+Consider the following annotations to add:
+
+[subs="+quotes"]
+----
+ike.A1=preference-v1
+ike.A=test
+----
+
+
+To add or override annotations, use the following factory URL:
+
+[subs="+quotes"]
+----
+https://che.openshift.io/f?url=https://gist.githubusercontent.com/themr0c/ef8e59a162748a8be07e900b6401e6a8/raw/8802c20743cde712bbc822521463359a60d1f7a9/devfile.yaml&workspaceDeploymentAnnotations=ike.A1%3Dpreference-v1%2Cike.A%3Dtest
+
+----
+
+The resulting workspace has the following deployment annotations:
+
+[subs="+quotes"]
+----
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    ike.A: test
+    ike.A1: preference-v1
+  creationTimestamp: "2020-10-28T09:58:52Z"
+  generation: 1
+  labels:
+    che.component.name: che-docs-dev
+    che.original_name: che-docs-dev
+    che.workspace_id: workspacexrtf710v64rl5ouz
+  name: workspacexrtf710v64rl5ouz.che-docs-dev
+  namespace: opentlc-mgr-che
+  resourceVersion: "213191"
+...
+----
