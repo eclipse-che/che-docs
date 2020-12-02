@@ -30,23 +30,23 @@ WARNING: It is not recommended to reconfigure PVC strategies on an existing {pro
 
 .Procedure
 
-When deploying {prod-short} using Helm Chart, configure the workspace PVC strategy by setting values for the `global.pvcStrategy` option. 
+When deploying {prod-short} using Helm Chart, configure the workspace PVC strategy by setting values for the `global.cheWorkspacesPVCStrategy` option. 
 
-* For a new installation, use the `helm install` command with the `global.pvcStrategy` option:
+* For a new installation, use the `helm install` command with the `global.cheWorkspacesPVCStrategy` option:
 +
 [subs="+quotes"]
 ----
-$ helm install --set global.pvcStrategy=__<per-workspace>__
+$ helm install --set global.cheWorkspacesPVCStrategy=__per-workspace__
 ----
 
-* For an already installed instance, use the `helm upgrade` command with the `global.pvcStrategy` option:
+* For an already installed instance, use the `helm upgrade` command with the `global.cheWorkspacesPVCStrategy` option:
 +
 [subs="+quotes"]
 ----
-$ helm upgrade --set global.pvcStrategy=__<per-workspace>__
+$ helm upgrade --set global.cheWorkspacesPVCStrategy=__per-workspace__
 ----
 
-Depending on the strategy used, replace the `_<per-workspace>_` option in the above examples with `unique` or `common`.
+Depending on the strategy used, replace the `_per-workspace_` option in the above examples with `unique` or `common`.
 
 [id="configuring-a-pvc-strategy-by-editing-a-configmap_{context}"]
 == Configuring a PVC strategy strategy by editing a configMap
@@ -66,10 +66,10 @@ Changes to a configMap created during Operator installation are not permanent be
 +
 [subs="+quotes"]
 ----
-CHE_INFRA_KUBERNETES_PVC_STRATEGY=__<per-workspace>__
+CHE_INFRA_KUBERNETES_PVC_STRATEGY=__per-workspace__
 ----
 +
-Depending on the strategy used, replace the `_<per-workspace>_` option in the above example with `unique` or `common`.
+Depending on the strategy used, replace the `_per-workspace_` option in the above example with `unique` or `common`.
 
 . Restart {prod-short} by scaling the deployment to zero and then back to one again:
 +
