@@ -1,0 +1,27 @@
+
+
+:parent-context-of-differences-in-how-che-theia-webview-works-on-a-single-host-mode-comparing-to-a-multi-host-mode: {context}
+
+[id="differences-in-how-che-theia-webview-works-on-a-single-host-mode-comparing-to-a-multi-host-mode_{context}"]
+= Differences in how Che-Theia Webview works on a single-host mode comparing to a multi-host mode
+
+:context: differences-in-how-che-theia-webview-works-on-a-single-host-mode-comparing-to-a-multi-host-mode
+
+Depending on which Che deployment strategy is used, single-host or multi-host, there’re differences in how Che-Theia Webview API works.
+
+== What’s a Webview
+
+Webview Plug-in API allows creating a view within Che-Theia to show an arbitrary HTML content. Internally, it’s implemented with an link:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe[iframe] and link:https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API[service worker].
+
+== Webview in a multi-host mode
+
+When {prod} is deployed in a multi-host mode, webview content is served on a separate link:https://developer.mozilla.org/en-US/docs/Glossary/Origin[origin]. That means it’s isolated from the main Che-Theia context. So, a contributed view has no access:
+
+* to the top-level DOM
+* to the Che-Theia state, like local storage, cookies, etc.
+
+== Webview in single-host mode
+
+When {prod} is deployed in a single-host mode, webview content is loaded through the same origin as the main Che-Theia context. It means that nothing prevents external content from accessing the main Che-Theia in a browser. So, pay extra attention to what content may be loaded by different Plugins that contribute the webviews.
+
+:context: {parent-context-of-differences-in-how-che-theia-webview-works-on-a-single-host-mode-comparing-to-a-multi-host-mode}
