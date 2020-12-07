@@ -36,17 +36,17 @@ When deploying {prod-short} using Helm Chart, configure the workspace PVC strate
 +
 [subs="+quotes"]
 ----
-$ helm install --set global.cheWorkspacesPVCStrategy=__per-workspace__
+$ helm install --set global.cheWorkspacesPVCStrategy=per-workspace
 ----
 
 * For an already installed instance, use the `helm upgrade` command with the `global.cheWorkspacesPVCStrategy` option:
 +
 [subs="+quotes"]
 ----
-$ helm upgrade --set global.cheWorkspacesPVCStrategy=__per-workspace__
+$ helm upgrade --set global.cheWorkspacesPVCStrategy=per-workspace
 ----
 
-Depending on the strategy used, replace the `_per-workspace_` option in the above examples with `unique` or `common`.
+Depending on the strategy used, replace the `per-workspace` value in the above examples with `unique` or `common`.
 
 [id="configuring-a-pvc-strategy-by-editing-a-configmap_{context}"]
 == Configuring a PVC strategy strategy by editing a configMap
@@ -66,7 +66,7 @@ Changes to a configMap created during Operator installation are not permanent be
 +
 [subs="+quotes"]
 ----
-CHE_INFRA_KUBERNETES_PVC_STRATEGY=__per-workspace__
+CHE_INFRA_KUBERNETES_PVC_STRATEGY=per-workspace
 ----
 +
 Depending on the strategy used, replace the `_per-workspace_` option in the above example with `unique` or `common`.
@@ -116,7 +116,7 @@ $ {orch-cli} apply -f _<my-cluster.yaml>_
 [subs="+quotes,+attributes"]
 ----
 $ {orch-cli} patch checluster {prod-checluster} --type=json \
-  -p '[{"op": "replace", "path": "/spec/storage/pvcStrategy", "value": "__per-workspace__"}]'
+  -p '[{"op": "replace", "path": "/spec/storage/pvcStrategy", "value": "per-workspace"}]'
 ----
 
 Depending on the strategy used, replace the `_per-workspace_` option in the above example with `unique` or `common`.
