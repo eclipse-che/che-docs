@@ -5,14 +5,14 @@
 [id="defining-a-launch-remote-plug-in-endpoint-in-a-meta-yaml-file_{context}"]
 = Defining a launch remote plug-in endpoint in a `meta.yaml` file
 
-Use this method to re-use images to start remote a plug-in endpoint without modifications.
+Use this method to re-use images for starting a remote plug-in endpoint without any modifications.
 
 .Procedure
 
 Modify the plug-in `meta.yaml` file properties `command` and `args`:
 
-* `command` - {prod} uses to override `Dockerfile#ENTRYPOINT`.
-* `args`  - {prod} uses to override `Dockerfile#CMD`.
+* `command` - {prod2} uses the `command` properties to override the `Dockerfile#ENTRYPOINT` value.
+* `args`  - {prod2} uses uses the `args` properties to override the `Dockerfile#CMD` value.
 
 
 * Example of a YAML file with the `command` and `args` properties modified:
@@ -78,5 +78,18 @@ spec:
 
 [NOTE]
 ====
-To execute a service when starting the container and also to start a remote plug-in endpoint, use `meta.yaml` with modified `command` and `args` properties. Start the service, detach the process, and start the remote plug-in endpoint, and they then work in parallel.
+.By modifying the `command` and `args` properties of the `meta.yaml` file, a user can:
+
+* Execute a service at a container start
+
+* Start a remote plug-in endpoint
+
+.To make these actions run at the same time:
+
+. Start the service.
+
+. Detach the process.
+
+. Start the remote plug-in endpoint.
 ====
+
