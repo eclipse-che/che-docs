@@ -7,13 +7,16 @@
 
 Developer workspaces in {prod} provide all dependencies needed to work on a project. The application includes the dependencies needed by all the tools and plug-ins used.
 
-Che-Theia plug-in can run in two different ways, based on the necessary dependencies: *embedded* (or local) and *remote*.
+Based on the required dependencies, Che-Theia plug-in can run as: 
+
+* Embedded, also know as local
+* Remote
 
 
 [id="embedded-or-local-plug-ins_{context}"]
-== Embedded (or local) plug-ins
+== Embedded (local) plug-ins
 
-The plug-in does not have specific dependencies - it only uses a Node.js runtime, and it runs in the same container as the IDE. The plug-in is injected into the IDE.
+The Embedded plug-ins are plug-ins without specific dependencies that are injected into the Che-Theia IDE. These plug-ins use the Node.js runtime, which runs in the IDE container. 
 
 Examples:
 
@@ -21,7 +24,8 @@ Examples:
 * New set of commands
 * New UI components
 
-To include a Che-Theia plug-in as embedded, define a URL to the plug-in binary file (the `.theia` archive) in the `meta.yaml` file. In the case of a VS Code extension, provide the extension ID from the Visual Studio Code  marketplace (see xref:administration-guide:using-a-visual-studio-code-extension-in-che.adoc[]).
+To include a Che-Theia plug-in or VS Code extension, define a URL to the plug-in `.theia` archive binary in the `meta.yaml` file. See
+xref:administration-guide:using-a-visual-studio-code-extension-in-che.adoc[]
 
 When starting a workspace, {prod-short} downloads and unpacks the plug-in binaries and includes them in the Che-Theia editor container. The Che-Theia editor initializes the plug-ins when it starts.
 
@@ -47,7 +51,9 @@ When starting a workspace, {prod-short} creates a container from the plug-in ima
 
 == Comparison matrix
 
-When a Che-Theia plug-in (or a VS Code extension) does not need extra dependencies inside its container, it is an embedded plug-in. A container with extra dependencies that includes a plug-in is a remote plug-in.
+* Embedded plug-ins are those Che-Theia plug-ins or VS Code extensions that do not require extra dependencies inside its container.
+
+* Remote plug-ins are containers that contain a plug-in with all required dependencies.
 
 .Che-Theia plug-in comparison matrix: embedded vs remote
 [options="header",cols="h,,,"]
