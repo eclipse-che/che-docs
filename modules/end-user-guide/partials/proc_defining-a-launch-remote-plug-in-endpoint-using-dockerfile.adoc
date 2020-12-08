@@ -5,7 +5,7 @@
 [id="defining-a-launch-remote-plug-in-endpoint-using-dockerfile_{context}"]
 = Defining a launch remote plug-in endpoint using Dockerfile
 
-To start a remote plug-in endpoint, use the `+PLUGIN_REMOTE_ENDPOINT_EXECUTABLE+` environment variable in the Dockerfile.
+To start a remote plug-in endpoint, set the `+PLUGIN_REMOTE_ENDPOINT_EXECUTABLE+` environment variable in the Dockerfile.
 
 .Procedure
 
@@ -51,9 +51,9 @@ ENTRYPOINT $\{PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
 
 == Using a wrapper script
 
-Some images use a wrapper script to configure permissions. The script is defined it in the `ENTRYPOINT` command of the Dockerfile to configure permissions inside the container, and it script executes a main process defined in the `CMD` command of the Dockerfile.
+Some images use a wrapper script to configure permissions inside the container. The Dockertfile `ENTRYPOINT` command defines this script, which executes the main process defined in the `CMD` command of the Dockerfile.
 
-{prod} uses such images with a wrapper script to provide permission configurations on different infrastructures with advanced security, for example on OpenShift.
+{prod2} uses images with a wrapper script to provide permission configurations to different infrastructures protected by advanced security. {OCP} is an example of such an infrastructure.
 
 * Example of a wrapper script:
 +
@@ -100,4 +100,14 @@ ENTRYPOINT [ "/entrypoint.sh" ]
 CMD ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
 ----
 +
-In this example, the container launches the `/entrypoint.sh` script defined in the `ENTRYPOINT` command of the Dockerfile. The script configures the permissions and executes the command using `exec $@`. `CMD` is the argument for `ENTRYPOINT`, and the `exec $@` command calls `+${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}+`. A remote plug-in endpoint then starts in the container after permission configuration.
+====
+.Explanation:
+
+* The container launches the `/entrypoint.sh` script defined in the `ENTRYPOINT` command of the Dockerfile.
+
+* The script configures the permissions and executes the command using `exec $@`.
+
+* `CMD` is the argument for `ENTRYPOINT`, and the `exec $@` command calls `+${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}+`.
+
+* The remote plug-in endpoint then starts in the container after permission configuration.
+====
