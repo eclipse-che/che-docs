@@ -4,7 +4,7 @@
 
 Internal communications between {prod-short} components are, by default, encrypted with TLS.
 Communications of {prod-short} components with external services such as proxies, source code repositories, identity providers may require using of TLS.
-Those communications require the use of SSL certificates signed by trusted Certificate Authorities.
+Those communications require the use of TLS certificates signed by trusted Certificate Authorities.
 
 When the certificates used by {prod-short} components or by an external service are signed by an untrusted CA it can be necessary to import the CA certificate in the {prod-short} installation, so that every {prod-short} component will consider them as signed by a trusted CA.
 
@@ -13,8 +13,8 @@ Typical cases that may require this addition are:
 * when the underlying Kubernetes cluster uses TLS certificates signed by a CA that is not trusted,
 * when {prod-short} server or workspace components connect to external services such as {identity-provider} or a Git server that use TLS certificates signed by an untrusted CA.
 
-{prod-short} uses labeled config maps in {prod-short} namespace as sources for TLS certificates.
-The config maps can have arbitrary number of data fields with arbitrary number of certificates each.
+{prod-short} uses labeled ConfigMaps in {prod-short} namespace as sources for TLS certificates.
+The ConfigMaps can have arbitrary number of keys with arbitrary number of certificates each.
 
 [NOTE]
 ====
@@ -24,10 +24,10 @@ endif::[]
 ifeval::["{project-context}" != "che"]
 When
 endif::[]
-the cluster contains cluster-wide trusted CA certificates added through the link:https://docs.openshift.com/container-platform/4.4/networking/configuring-a-custom-pki.html#nw-proxy-configure-object_configuring-a-custom-pki[cluster-wide-proxy configuration], {prod-short} Operator detects them and automatically injects them into this config map:
+the cluster contains cluster-wide trusted CA certificates added through the link:https://docs.openshift.com/container-platform/4.4/networking/configuring-a-custom-pki.html#nw-proxy-configure-object_configuring-a-custom-pki[cluster-wide-proxy configuration], {prod-short} Operator detects them and automatically injects them into this ConfigMap:
 
-- {prod-short} automatically labels the config map with the `config.openshift.io/inject-trusted-cabundle="true"` label.
-- Based on this annotation, OpenShift automatically injects the cluster-wide trusted CA certificates inside the `ca-bundle.crt` key of config map
+- {prod-short} automatically labels the ConfigMap with the `config.openshift.io/inject-trusted-cabundle="true"` label.
+- Based on this annotation, OpenShift automatically injects the cluster-wide trusted CA certificates inside the `ca-bundle.crt` key of ConfigMap
 ====
 
 == Adding new CA certificates into {prod-short}
@@ -54,61 +54,43 @@ see xref:importing-untrusted-tls-certificates-old.adoc[this guide] on how to app
 
 include::example$snip_importing-untrusted-tls-certificates_1.adoc[]
 
-. Create a new config map with the required TLS certificates:
+. Create a new ConfigMap with the required TLS certificates:
 +
 [subs="+attributes,+quotes"]
 ----
 $ {orch-cli} create configmap custom-certs --from-file=__<bundle-file-path>__ -n=__<{project-context}-namespace-name>__
 ----
 +
-To apply more than one bundle, add another `--from-file=_<bundle-file-path>_` option to the above command.
-Or you may create another config map.
+To apply more than one bundle, add another `--from-file=_<bundle-file-path>_` flag to the above command.
+Or you may create another ConfigMap.
 
-. Label created config maps with both `app.kubernetes.io/part-of=che.eclipse.org` and `app.kubernetes.io/component=ca-bundle` labels:
+. Label created ConfigMaps with both `app.kubernetes.io/part-of=che.eclipse.org` and `app.kubernetes.io/component=ca-bundle` labels:
 +
 [subs="+attributes,+quotes"]
 ----
-$ {orch-cli} label configmap custom-certs app.kubernetes.io/part-of=che.eclipse.org -n <{project-context}-namespace-name>  && kubectl label configmap custom-certs app.kubernetes.io/component=ca-bundle -n <{project-context}-namespace-name>
+$ {orch-cli} label configmap custom-certs app.kubernetes.io/part-of=che.eclipse.org app.kubernetes.io/component=ca-bundle -n <{project-context}-namespace-name>
 ----
 
-. Wait until rollout of {prod-short} components finishes.
+. Deploy {prod-short} if it has not been deployed before otherwise wait until rollout of {prod-short} components finishes.
 If there are running workspaces, they should be restarted in order the changes take effect.
-
-[NOTE]
-====
-On {prod-short} version below
-ifeval::["{project-context}" == "che"]
-v7.20.0
-endif::[]
-ifeval::["{project-context}" != "che"]
-2.5.1
-endif::[]
-it is required to restart the {prod-short} Operator, the {prod-short} server and {identity-provider} to load the new certificates:
-
-[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
-----
-$ kubectl rollout restart -n __<{project-context}-namespace-name>__ deployment/{prod-id-short}-operator
-$ kubectl rollout restart -n __<{project-context}-namespace-name>__ deployment/keycloak
-$ kubectl rollout restart -n __<{project-context}-namespace-name>__ deployment/{prod-id-short}
-----
-====
 
 ifeval::["{project-context}" == "che"]
 
 == Adding CA certificates in case of Helm installer
 
-For a {prod-short} link:https://helm.sh/[Helm Chart] deployment only one config map supported. It is reccomended to add the certificates at installation time.
+For a {prod-short} link:https://helm.sh/[Helm Chart] deployment only one ConfigMap supported.
+It is recommended to add the certificates at installation time.
 
 === At installation time
 
-The config map should be pre-created in the {prod} installation namespace.
-Ensure you override the `global.tls.serverTrustStoreConfigMapName` Helm Chart property with the name of the config map when installing the {prod-short} Helm Chart. For this you should add the following arguments to the Helm command line:
+The ConfigMap should be pre-created in the {prod} installation namespace.
+Ensure you override the `global.tls.serverTrustStoreConfigMapName` Helm Chart field with the name of the ConfigMap when installing the {prod-short} Helm Chart. For this you should add the following arguments to the Helm command line:
 [subs="+quotes",options="nowrap",role=white-space-pre]
 ----
 --set global.tls.serverTrustStoreConfigMapName=custom-certs
 ----
 
-Or, in case of `{prod-cli}` usage, provide a Helm patch `--helm-patch-yaml` parameter that points to an yaml file with:
+Or, in case of `{prod-cli}` usage, provide a Helm patch `--helm-patch-yaml` flag that points to an yaml file with:
 [subs="+quotes",options="nowrap",role=white-space-pre]
 ----
 global:
@@ -118,7 +100,8 @@ global:
 ----
 
 === On already running installations
-For a {prod-short} link:https://helm.sh/[Helm Chart] deployment:
+
+Upgrade {prod-short} Helm Chart:
 
 . Clone the https://github.com/eclipse/che[che] project.
 . Go to the `deploy/kubernetes/helm/che` directory.
@@ -126,8 +109,7 @@ For a {prod-short} link:https://helm.sh/[Helm Chart] deployment:
 +
 [subs="+quotes",options="nowrap",role=white-space-pre]
 ----
-$ helm upgrade che -n che --set global.tls.serverTrustStoreConfigMapName=<config-map-name> \
-   --set global.ingressDomain=__<kubernetes-cluster-domain>__ .
+$ helm upgrade che -n che --set global.tls.serverTrustStoreConfigMapName=<config-map-name> .
 ----
 +
 When using Minikube to run {prod-short}, substitute _<kubernetes-cluster-domain>_ with `$(minikube ip).nip.io`.
@@ -138,19 +120,19 @@ endif::[]
 
 If after adding the certificates something does not work as expected, here is a list of things to verify:
 
-- In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operator] deployment, namespace where `CheCluster` located contains labeled config maps with right content:
+- In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operator] deployment, namespace where `CheCluster` located contains labeled ConfigMaps with right content:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get cm --selector=app.kubernetes.io/component=ca-bundle,app.kubernetes.io/part-of=che.eclipse.org -n __<{project-context}-namespace-name>__
 ----
 +
-And to check content of config map:
+And to check content of ConfigMap:
 ----
 $ {orch-cli} get cm __<name>__ -n __<{project-context}-namespace-name>__ -o yaml
 ----
 
-- {prod-short} Pod Volumes list contains a volume that uses `ca-certs-merged` config map as data-source.
+- {prod-short} Pod Volumes list contains a volume that uses `ca-certs-merged` ConfigMap as data-source.
 To get the list of Volumes of the {prod-short} Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
@@ -172,7 +154,7 @@ $ {orch-cli} exec -t __<{prod-id-short}-pod-name>__ -n __<{project-context}-name
 $ {orch-cli} logs __<{prod-id-short}-pod-name>__ -n __<{project-context}-namespace-name>__
 ----
 +
-- ${prod-short} server Java truststore contains the certificates. The certificates SHA1 fingerprints are among the list of the SHA1 of the certificates included in the truststore returned by the following command:
+- {prod-short} server Java truststore contains the certificates. The certificates SHA1 fingerprints are among the list of the SHA1 of the certificates included in the truststore returned by the following command:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -201,7 +183,7 @@ SHA1 Fingerprint=3F:DA:BF:E7:A7:A7:90:62:CA:CF:C7:55:0E:1D:7D:05:16:7D:45:60
 $ {orch-cli} get pods -o=jsonpath='{.items[0].metadata.name}' -n __<workspace namespace>__ | grep '^workspace.*'
 ----
 
-- Get the name of the Theia IDE container in the workspace POD with the following command:
+- Get the name of the Theia IDE container in the workspace Pod with the following command:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -209,14 +191,14 @@ $ {orch-cli} get -o json pod __<workspace pod name>__  -n __<workspace namespace
     jq -r '.spec.containers[] | select(.name | startswith("theia-ide")).name'
 ----
 
-- Look for a `ca-certs` config map that should have been created inside the workspace namespace:
+- Look for a `ca-certs` ConfigMap that should have been created inside the workspace namespace:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get cm ca-certs __<workspace namespace>__
 ----
 
-- Check that the entries in the `ca-certs` config map contain all the additional entries you added before. In addition it may contain `ca-bundl.crt` entry which is a reserved one:
+- Check that the entries in the `ca-certs` ConfigMap contain all the additional entries you added before. In addition it may contain `ca-bundl.crt` entry which is a reserved one:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -225,7 +207,7 @@ ca-bundle.crt
 source-config-map-name.data-key.crt
 ----
 
-- Make sure that the `ca-certs` config map has been added as a volume in the workspace Pod:
+- Make sure that the `ca-certs` ConfigMap has been added as a volume in the workspace Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -253,7 +235,7 @@ $ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>
 }
 ----
 
-- Inspect `/public-certs` folder in the Theia IDE container and check that its contents match the list of entries in the `ca-certs` config map:
+- Inspect `/public-certs` folder in the Theia IDE container and check that its contents match the list of entries in the `ca-certs` ConfigMap:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----

@@ -14,7 +14,7 @@ there is xref:importing-untrusted-tls-certificates.adoc[newer way] to apply addi
 This method is kept for backward compatibility.
 ====
 
-Internal communications between {prod-short} components are, by default, encrypted with TLS. Communications of {prod-short} components with external services such as proxies, source code repositories, identity providers may require TLS tool. Those communications require the use of SSL certificates signed by trusted Certificate Authorities.
+Internal communications between {prod-short} components are, by default, encrypted with TLS. Communications of {prod-short} components with external services such as proxies, source code repositories, identity providers may require TLS tool. Those communications require the use of TLS certificates signed by trusted Certificate Authorities.
 
 When the certificates used by {prod-short} components or by an external service are signed by an untrusted CA it can be necessary to import the CA certificate in the {prod-short} installation, so that every {prod-short} component will consider them as signed by a trusted CA.
 
@@ -168,7 +168,7 @@ endif::[]
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ kubectl rollout restart -n __<{project-context}-namespace-name>__ deployment/{prod-id-short}-operator
-$ kubectl rollout restart -n __<{project-context}-namespace-name>__ deployment/{prod-id-short}/keycloak
+$ kubectl rollout restart -n __<{project-context}-namespace-name>__ deployment/keycloak
 $ kubectl rollout restart -n __<{project-context}-namespace-name>__ deployment/{prod-id-short}
 ----
 +
@@ -219,7 +219,7 @@ Found a custom cert. Adding it to java trust store based on /usr/lib/jvm/java-1.
 (...)
 ----
 +
-- ${prod-short} server Java truststore contains the certificates. The certificates SHA1 fingerprints are among the list of the SHA1 of the certificates included in the truststore returned by the following command:
+- {prod-short} server Java truststore contains the certificates. The certificates SHA1 fingerprints are among the list of the SHA1 of the certificates included in the truststore returned by the following command:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -248,7 +248,7 @@ SHA1 Fingerprint=3F:DA:BF:E7:A7:A7:90:62:CA:CF:C7:55:0E:1D:7D:05:16:7D:45:60
 $ {orch-cli} get pods -o=jsonpath='{.items[0].metadata.name}' -n __<workspace namespace>__ | grep '^workspace.*'
 ----
 
-- Get the name of the theia IDE container in the workspace POD with the following command:
+- Get the name of the Theia IDE container in the workspace Pod with the following command:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -263,7 +263,7 @@ $ {orch-cli} get -o json pod __<workspace pod name>__  -n __<workspace namespace
 $ {orch-cli} get cm ca-certs __<workspace namespace>__
 ----
 
-- Check that the entries in the `ca-certs` config map contain all the additional entries you added in the certificate ConfigMap at the {prod-short} installation level, in addition to the the `ca-bundl.crt` entry which is a reserved one:
+- Check that the entries in the `ca-certs` ConfigMap contain all the additional entries you added in the certificate ConfigMap at the {prod-short} installation level, in addition to the `ca-bundl.crt` entry which is a reserved one:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
