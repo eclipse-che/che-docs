@@ -188,28 +188,28 @@ and higher.
 
 If you added the certificates without error, the {prod-short} server starts and obtains {identity-provider} configuration over https. Otherwise here is a list of things to verify:
 
-- In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operator] deployment, the `CheCluster` attribute `serverTrustStoreConfigMapName` value matches the name of the ConfigMap. Get the value using the following command :
+. In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operator] deployment, the `CheCluster` attribute `serverTrustStoreConfigMapName` value matches the name of the ConfigMap. Get the value using the following command :
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get -o json checluster/{prod-checluster} -n __<{project-context}-namespace-name>__ | jq .spec.server.serverTrustStoreConfigMapName
 ----
 +
-- {prod-short} Pod Volumes list contains one Volume that uses the ConfigMap as data-source. To get the list of Volumes of the {prod-short} Pod:
+. {prod-short} Pod Volumes list contains one Volume that uses the ConfigMap as data-source. To get the list of Volumes of the {prod-short} Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get pod -o json __<{prod-id-short}-pod-name>__ -n __<{project-context}-namespace-name>__ | jq .spec.volumes
 ----
 +
-- {prod-short} mounts certificates in folder `/public-certs/` of the {prod-short} server container. This command returns the list of files in that folder:
+. {prod-short} mounts certificates in folder `/public-certs/` of the {prod-short} server container. This command returns the list of files in that folder:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} exec -t __<{prod-id-short}-pod-name>__ -n __<{project-context}-namespace-name>__ -- ls /public-certs/
 ----
 +
-- In the {prod-short} server logs there is a line for every certificate added to the Java truststore, including configured {prod-short} certificates.
+. In the {prod-short} server logs there is a line for every certificate added to the Java truststore, including configured {prod-short} certificates.
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -219,7 +219,7 @@ Found a custom cert. Adding it to java trust store based on /usr/lib/jvm/java-1.
 (...)
 ----
 +
-- {prod-short} server Java truststore contains the certificates. The certificates SHA1 fingerprints are among the list of the SHA1 of the certificates included in the truststore returned by the following command:
+. {prod-short} server Java truststore contains the certificates. The certificates SHA1 fingerprints are among the list of the SHA1 of the certificates included in the truststore returned by the following command:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -239,16 +239,16 @@ SHA1 Fingerprint=3F:DA:BF:E7:A7:A7:90:62:CA:CF:C7:55:0E:1D:7D:05:16:7D:45:60
 
 == Verification at the workspace level
 
-- Start a workspace, get the Kubernetes namespace in which it has been created, and wait for it to be started
+. Start a workspace, get the Kubernetes namespace in which it has been created, and wait for it to be started
 
-- Get the name of the workspace Pod with the following command:
+. Get the name of the workspace Pod with the following command:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get pods -o=jsonpath='{.items[0].metadata.name}' -n __<workspace namespace>__ | grep '^workspace.*'
 ----
 
-- Get the name of the Theia IDE container in the workspace Pod with the following command:
+. Get the name of the Theia IDE container in the workspace Pod with the following command:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -256,14 +256,14 @@ $ {orch-cli} get -o json pod __<workspace pod name>__  -n __<workspace namespace
     jq -r '.spec.containers[] | select(.name | startswith("theia-ide")).name'
 ----
 
-- Look for a `ca-certs` ConfigMap that should have been created inside the workspace namespace:
+. Look for a `ca-certs` ConfigMap that should have been created inside the workspace namespace:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get cm ca-certs __<workspace namespace>__
 ----
 
-- Check that the entries in the `ca-certs` ConfigMap contain all the additional entries you added in the certificate ConfigMap at the {prod-short} installation level, in addition to the `ca-bundl.crt` entry which is a reserved one:
+. Check that the entries in the `ca-certs` ConfigMap contain all the additional entries you added in the certificate ConfigMap at the {prod-short} installation level, in addition to the `ca-bundl.crt` entry which is a reserved one:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -272,7 +272,7 @@ ca-bundle.crt
 manually-added-certificate.crt
 ----
 
-- Make sure that the `ca-certs` ConfigMap has been added as a volume in the workspace Pod:
+. Make sure that the `ca-certs` ConfigMap has been added as a volume in the workspace Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -287,7 +287,7 @@ $ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>
 }
 ----
 
-- Confirm that the volume has been mounted into containers, especially in the Theia IDE container:
+. Confirm that the volume has been mounted into containers, especially in the Theia IDE container:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -300,7 +300,7 @@ $ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>
 }
 ----
 
-- Inspect `/public-certs` folder on the Theia IDE container and check that its contents match the list of entries in the `ca-certs` ConfigMap:
+. Inspect `/public-certs` folder on the Theia IDE container and check that its contents match the list of entries in the `ca-certs` ConfigMap:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
