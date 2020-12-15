@@ -2,21 +2,21 @@
 [id="switching-between-external-and-internal-communication_{context}"]
 = Switching between external and internal ways in inter-component communication
 
-The communication between {prod} components uses the internal cluster host name.
-In following situations, instead, use external {platforms-ingress} in inter-component communication:
+The communication between {prod} components uses the internal {orch-name} DNS names.
+In following situations, instead, use external {platforms-ingress} in inter-component communications:
 
 * Multi-cluster OpenShift environment.
-* The environment is restricting communication between namespaces.
+* The {orch-name} NetworkPolicies are restricting communication between namespaces.
 
 .Prerequisites
 
 * The `{orch-cli}` tool is available.
-* An instance of {prod-short} running in {platform-name}.
+* An instance of {prod-short} running in {orch-name}.
 
 
 .Procedure
 
-. To use external {platforms-ingress} in inter-component communication:
+. To use external {platforms-ingress} in inter-component communications:
 +
 [subs="+quotes,+attributes"]
 ----
@@ -24,7 +24,7 @@ $ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json 
 '[{"op": "replace", "path": "/spec/server/useInternalClusterSVCNames", "value": false}]'
 ----
 
-. To use internal cluster host name in inter-component communication:
+. To use internal {orch-name} DNS names in inter-component communications:
 +
 [subs="+quotes,+attributes"]
 ----
