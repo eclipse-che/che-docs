@@ -8,7 +8,41 @@ ifeval::["{project-context}" == "che"]
 NOTE: The term _{orch-namespace}_ ({kubernetes}) is used interchangeably with _project_ (OpenShift).
 endif::[]
 
-The {platforms-namespace} strategies are configured using the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` environment variable.
+With **Operator** installer, {platforms-namespace} strategies are configured using `server.workspaceNamespaceDefault` property.
+
+*Operator CheCluster CR patch*
+[subs="+quotes,+attributes"]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  name: <che-cluster-name>
+spec:
+  server:
+    workspaceNamespaceDefault: __<workspace-namespace>__ <1>
+----
+<1> - {prod-short} workspace namespace configuration
+
+
+ifeval::["{project-context}" == "che"]
+With **Helm** installer, Kubernetes namespaces strategies are configured using `global.cheWorkspacesNamespace` property.
+
+*Helm*
+[subs="+quotes,+attributes"]
+----
+$ helm install --namespace <namespace>
+  --set global.cheWorkspacesNamespace=__<workspace-namespace>__ <1>
+----
+or
+[subs="+quotes,+attributes"]
+----
+$ helm upgrade --namespace <namespace>
+  --set global.cheWorkspacesNamespace=__<workspace-namespace>__ <1>
+----
+<1> - {prod-short} workspace namespace configuration
+endif::[]
+
+NOTE: The underlying environmant variable that {prod-short} server uses is `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT`.
 
 WARNING: `CHE_INFRA_KUBERNETES_NAMESPACE` and `CHE_INFRA_OPENSHIFT_PROJECT` are legacy variables. Keep these variables unset for a new installations. Changing these variables during an update can lead to data loss.
 
@@ -23,53 +57,90 @@ On OpenShift with multi-host server exposure strategy, the length is further lim
 Be aware that the `_<userid>_` placeholder is evaluated into a 36 character long UUID string.
 ====
 
+WARNING: For strategies where creating new {orch-namespace} is needed, make sure that `che` ServiceAccount has enough permissions to do so. With OpenShift OAuth, the authenticated User must have privileges to create new {orch-namespace}.
+
+== One {orch-namespace} per user strategy
+
+The strategy isolates each user in their own {orch-namespace}.
+
+To use the strategy, set the _{prod-short} workspace namespace configuration_ value to contain one or more user identifiers. Currently supported identifiers are `_<username>_` and `_<userid>_`.
+
+.One {orch-namespace} per user
+====
+To assign {orch-namespace} names composed of a __`{prod-workspace}`__ prefix and individual usernames (`__{prod-workspace}__-user1`, `__{prod-workspace}__-user2`), set:
+
+*Operator installer (CheCluster CustomResource)*
+[subs="+quotes,+attributes"]
+----
+...
+spec:
+  server:
+    workspaceNamespaceDefault: __{prod-workspace}__-__<username>__
+...
+----
+
+ifeval::["{project-context}" == "che"]
+*Helm*
+[subs="+quotes,+attributes"]
+----
+$ helm ... --set global.cheWorkspacesNamespace=__{prod-workspace}__-__<username>__
+endif::[]
+====
 
 == One {orch-namespace} per workspace strategy
 
 The strategy creates a new {orch-namespace} for each new workspace.
 
-To use the strategy, the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable value must contain the `_<workspaceID>_` identifier. It can be used alone or combined with other identifiers or any string.
+To use the strategy, set the _{prod-short} workspace namespace configuration_ value to contain the `_<workspaceID>_` identifier. It can be used alone or combined with other identifiers or any string.
 
 .One {orch-namespace} per workspace
 ====
 To assign {orch-namespace} names composed of a __`{prod-workspace}`__ prefix and workspace id, set:
 
+*Operator installer (CheCluster CustomResource)*
 [subs="+quotes,+attributes"]
 ----
-CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=__{prod-workspace}__-__<workspaceID>__
+...
+spec:
+  server:
+    workspaceNamespaceDefault: __{prod-workspace}__-__<workspaceID>__
+...
 ----
+
+ifeval::["{project-context}" == "che"]
+*Helm*
+[subs="+quotes,+attributes"]
+----
+$ helm ... --set global.cheWorkspacesNamespace=__{prod-workspace}__-__<workspaceID>__
+endif::[]
 ====
 
 == One {orch-namespace} for all workspaces strategy
 
 The strategy uses one predefined {orch-namespace} for all workspaces.
 
-To use the strategy, the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable value must be the name of the desired {orch-namespace} to use.
+To use the strategy, set the _{prod-short} workspace namespace configuration_ value to the name of the desired {orch-namespace} to use.
 
 .One {orch-namespace} for all workspaces
 ====
 To have all workspaces created in __`{prod-workspace}`__ {orch-namespace}, set:
 
+*Operator installer (CheCluster CustomResource)*
 [subs="+quotes,+attributes"]
 ----
-CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=__{prod-workspace}__
+...
+spec:
+  server:
+    workspaceNamespaceDefault: __{prod-workspace}__
+...
 ----
-====
 
-== One {orch-namespace} per user strategy
-
-The strategy isolates each user in their own {orch-namespace}.
-
-To use the strategy, the `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable value must contain one or more user identifiers. Currently supported identifiers are `_<username>_` and `_<userid>_`.
-
-.One {orch-namespace} per user
-====
-To assign {orch-namespace} names composed of a __`{prod-workspace}`__ prefix and individual usernames (`__{prod-workspace}__-user1`, `__{prod-workspace}__-user2`), set:
-
+ifeval::["{project-context}" == "che"]
+*Helm*
 [subs="+quotes,+attributes"]
 ----
-CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT=__{prod-workspace}__-__<username>__
-----
+$ helm ... --set global.cheWorkspacesNamespace=__{prod-workspace}__
+endif::[]
 ====
 
 == Allowing user-defined workspace {orch-namespace}s
@@ -88,7 +159,10 @@ endif::[]
 * For Operator deployments, set the following field in the CheCluster Custom Resource:
 +
 ----
-allowUserDefinedWorkspaceNamespaces
+...
+server:
+  allowUserDefinedWorkspaceNamespaces: true
+...
 ----
 
 == Handling incompatible usernames or user IDs
