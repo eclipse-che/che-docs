@@ -3,13 +3,22 @@
 // advanced-configuration
 
 [id="switching-between-external-and-internal-communication_{context}"]
-= Switching between external and internal ways in inter-component communication
+= Switching between external and internal DNS names in inter-component communication
 
-The communication between {prod} components uses the internal cluster host name.
-In following situations, instead, use external {platforms-ingress} in inter-component communication:
+By default, new {prod-short} deployments use {orch-name} services DNS names for communications between {prod-short} server, {identity-provider}, registries , and helps with:
 
-* Multi-cluster OpenShift environment.
-* The environment is restricting communication between namespaces.
+* Bypassing proxy, certificates, and firewalls issues
+* Speeding up the traffic
+
+This type of communication is an alternative to the external method of inter-component communication, which uses {platforms-ingress} cluster hostnames. In the situations described below, using {orch-name} internal DNS names is not supported. By disabling the use of the internal cluster hostname in inter-component communication, the communication using external {platforms-ingress} will come into effect.
+
+.Internal inter-component communication restrictions in {platforms-name}
+
+* The {prod-short} components are deployed across multi-cluster {platforms-name} environments.
+* The {orch-name} NetworkPolicies restricts communication between namespaces.
+
+The following section describes how to enable and disable the external inter-component communication for {platforms-ingress}.
+
 
 .Prerequisites
 
@@ -19,6 +28,8 @@ In following situations, instead, use external {platforms-ingress} in inter-comp
 
 .Procedure
 
+Switching between external and internal inter-component communication methods is reached through the update against Custom Resource (CR).
+
 . To use external {platforms-ingress} in inter-component communication:
 +
 [subs="+quotes,+attributes"]
@@ -27,10 +38,11 @@ $ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json 
 '[{"op": "replace", "path": "/spec/server/useInternalClusterSVCNames", "value": false}]'
 ----
 
-. To use internal cluster host name in inter-component communication:
+. To use internal {orch-name} DNS names in the inter-component communication:
 +
 [subs="+quotes,+attributes"]
 ----
 $ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
 '[{"op": "replace", "path": "/spec/server/useInternalClusterSVCNames", "value": true}]'
 ----
+
