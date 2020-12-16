@@ -16,28 +16,52 @@ You can add Che-Theia plug-in into the Che-Theia IDE in three ways:
 
 This method adds a plug-in to an already running workspace. The plug-in is not added permanently; it is removed when the workspace stops. This is a good method to test a plug-in without affecting the permanent workspace configuration.
 
-. Run the `Deploy Plugin by Id` command, and specify the ID of the plug-in that you want to add to the workspace. A plug-in ID can be:
+.Procedure
+* Run the `Deploy Plugin by Id` command, and specify the ID of the plug-in to add to the workspace. A plug-in ID can be:
 +
-** A local directory with plug-ins. All the plug-in binaries (`.theia` files) in the specified directory would be loaded. Example: `local-dir:///home/theia/plugins/`.
-
-** VS Code extension link. To obtain the link, go to the VS Code marketplace, find the needed extension, copy its ID, and append the ID to the `vscode:extension/` prefix.
+A local directory with plug-ins:: {prod-short} loads all the plug-in binaries (`.theia` files) in the specified directory. 
 +
-For example, for the link:https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml[XML language server] plug-in, it is: `vscode:extension/redhat.vscode-xml`.
+.Adding the local directory `/home/theia/plugins/`
+====
+----
+local-dir:///home/theia/plugins/
+----
+====
++
+VS Code extension link:: To obtain the link, go to the VS Code marketplace, find the needed extension, copy its ID, and append the ID to the `vscode:extension/` prefix.
++
+.VS Code extension link for the link:https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml[XML language server] plug-in 
+====
+----
+vscode:extension/redhat.vscode-xml
+----
+====
++
+Link to plug-in binaries (`.theia` files):: Can be both HTTP and HTTPS.
++
+.Link to plug-in binaries
+====
+----
+https://domain.net/path/plugin.theia
+----
+====
 
-** Link to plug-in binaries (`.theia` files). Can be both HTTP and HTTPS. Example: `https://domain.net/path/plugin.theia`.
-
-To check if the plug-in loaded successful, open the *Plugins panel* (*View* > *Plugins* in the main menu) and search for the plug-in in the list.
+.Verification steps
+* Open the *Plugins panel* (*View* > *Plugins* in the main menu) and search for the plug-in in the list.
 
 [id="adding-a-plug-in-by-configuring-a-workspace_{context}"]
 == Adding a plug-in by configuring a workspace devfile
 
 This method is useful when you need to add plug-ins from a non-default registry.
 
+.Procedure
+
 . Navigate to the *Workspaces* tab in the dashboard.
 . Select the workspace to which you want to add the plug-in.
 . Switch to the *Devfile* tab, and find the `components` section.
 . To add plug-ins, append your plugin component to the `components` section. A record has the following format:
 +
+[subs="+quotes,macros,attributes"]
 ----
 components:
   - type: chePlugin
@@ -45,11 +69,13 @@ components:
       __<registry-base-uri>__/v3/plugins/__<plugin-publisher>__/__<plugin-name>__/__<plugin-version>__
 ----
 +
-Reference URL examples:
-+
-* pass:[https://custom-registry/v3/plugins/custom-plugin-name/0.0.1/]
-* pass:[https://raw.githubusercontent.com/username/che-custom-plugins/master/v3/plugins/custom-plugin-name/0.0.1/meta.yaml]
-
+.`chePlugin` reference URLs pointing to a plug-in `meta.yaml`
+====
+----
+https://custom-registry/v3/plugins/custom-plugin-name/0.0.1/
+https://raw.githubusercontent.com/username/che-custom-plugins/master/v3/plugins/custom-plugin-name/0.0.1/meta.yaml
+----
+====
 [id="adding-a-plug-in-by-shareable-devfile_{context}"]
 == Adding a plug-in by preparing shareable devfile
 
@@ -61,10 +87,15 @@ This approach brings an advantage of other users being able to contribute to the
 
 . Share with reviewers factory link with a URL to a repository with devfile or a direct URL to content of the devfile.
 +
-Reference URL examples:
+.Factory URL pointing to a repository containing a devfile
+====
+{prod-url}/f?url=https://github.com/eclipse/che
+====
 +
-* {prod-url-secure}/f?url=https://github.com/eclipse/che
-* {prod-url-secure}/f?url=https://raw.githubusercontent.com/eclipse/che/master/devfile.yaml
+.Factory URL pointing to a devfile
+====
+{prod-url}/f?url=https://raw.githubusercontent.com/eclipse/che/master/devfile.yaml
+====
 
 . The reviewer starts a workspace by opening a link where they are able to starts a hosted plug-in instance and specify the path to the plug-in project inside the workspace. For instructions on how to start a hosted instance of Che-Theia for plug-in testing, see xref:testing-che-theia-plug-ins.adoc[].
 
