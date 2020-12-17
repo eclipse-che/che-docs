@@ -19,7 +19,7 @@ helm upgrade --install che-plugin-registry \
  --namespace $\{NAMESPACE} \
  --set global.ingressDomain=$\{DOMAIN} \
  --set chePluginRegistryImage=$\{IMAGE} \
- --set chePluginRegistryImagePullPolicy="IfNotPresent" \
+ --set chePluginRegistryImagePullPolicy="Always" \
  ./kubernetes/che-plugin-registry/
 ----
 <1> If installed using {prod-cli}, the default {prod-short} {orch-namespace} is `{prod-namespace}`. The OperatorHub installation method deploys {prod-short} to the users current {orch-namespace}.
@@ -37,13 +37,13 @@ helm upgrade --install che-devfile-registry \
  --namespace $\{NAMESPACE} \
  --set global.ingressDomain=$\{DOMAIN} \
  --set cheDevfileRegistryImage=$\{IMAGE} \
- --set cheDevfileRegistryImagePullPolicy="IfNotPresent" \
+ --set cheDevfileRegistryImagePullPolicy="Always" \
  ./deploy/kubernetes/che-devfile-registry/
 ----
 <1> If installed using {prod-cli}, the default {prod-short} {orch-namespace} is `{prod-namespace}`. The OperatorHub installation method deploys {prod-short} to the users current {orch-namespace}.
 <2> On Minikube, use `$(minikube ip).nip.io`
 
-. The Helm chart creates a Pod, a service, and an Ingress. To get them, use `app=che-plugin-registry` (or `app=che-plugin-registry` for the devfile registry).
+. The Helm chart creates a Pod, a service, and an Ingress. To get them, use `app=che-plugin-registry` (or `app=che-devfile-registry` for the devfile registry)
 +
 [subs="+quotes,+attributes"]
 ----
@@ -55,74 +55,8 @@ Service   che-plugin-registry
 Ingress   che-plugin-registry
 ----
 
-. Check if the registries are deployed successfully on {kubernetes}.
+:platform-routing: ingress
+:registry-routing-name: che-plugin-registry
+:platform-routing-host-path: .spec.rules[0].host
 
-.. To verify that the new plug-in is correctly published to the plug-in registry, make a request to the registry path `/v3/plugins/index.json` (or `/devfiles/index.json` for the devfile registry).
-+
-[subs="+quotes,+attributes"]
-----
-$ URL=$({orch-cli}  get -o 'custom-columns=URL:.spec.rules[0].host' \
-  -l app=che-plugin-registry ingress --no-headers)
-$ INDEX_JSON=$(curl -sSL http://$\{URL}/v3/plugins/index.json)
-$ echo $\{INDEX_JSON} | grep -A 4 -B 5 "\"name\":\"my-plug-in\""
-,\{
- "id": "my-org/my-plug-in/1.0.0",
- "displayName":"This is my first plug-in for {prod-short}",
- "version":"1.0.0",
- "type":"VS Code extension",
- "name":"my-plug-in",
- "description":"This plugins shows that we are able to add plugins to the registry...",
- "publisher":"my-org",
- "links": \{"self":"/v3/plugins/my-org/my-plug-in/1.0.0" }
-}
---
---
-,\{
- "id": "my-org/my-plug-in/latest",
- "displayName":"This is my first plug-in for {prod-short}",
- "version":"latest",
- "type":"VS Code extension",
- "name":"my-plug-in",
- "description":"This plugins shows that we are able to add plugins to the registry...",
- "publisher":"my-org",
- "links": \{"self":"/v3/plugins/my-org/my-plug-in/latest" }
-}
-----
-
-.. Verify that the {prod-short} server points to the URL of the registry. To do this, compare the value of the `pass:[CHE_WORKSPACE_PLUGIN__REGISTRY__URL]` parameter in the `che` ConfigMap (or `pass:[CHE_WORKSPACE_DEVFILE__REGISTRY__URL]` for the devfile registry):
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli}  get \
-  -o "custom-columns=URL:.data['CHE_WORKSPACE_PLUGIN__REGISTRY__URL']" \
-  --no-headers cm/che
-URL
-http://che-plugin-registry-che.192.168.99.100.nip.io/v3
-----
-+
-with the URL of the Ingress:
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli}  get -o 'custom-columns=URL:.spec.rules[0].host' \
-  -l app=che-plugin-registry ingress --no-headers
-che-plugin-registry-che.192.168.99.100.nip.io
-----
-
-.. If they do not match, update the ConfigMap and restart the {prod-short} server.
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli}  edit cm/che
-(...)
-$ {orch-cli}  scale --replicas=0 deployment/che
-$ {orch-cli}  scale --replicas=1 deployment/che
-----
-+
-When the new registries are deployed and the {prod-short} server is configured to use them, the new plug-ins are available in the *Plugin* view of a workspace.
-+
-image::customization/{project-context}-deploying-plugin-registry-in-kubernetes.png[]
-+
-The new stacks are displayed in the *New Workspace* tab of the user dashboard.
-+
-image::customization/deploying-devfile-registry-in-kubernetes.png[]
+include::partial$proc_verification-custom-registries.adoc[]
