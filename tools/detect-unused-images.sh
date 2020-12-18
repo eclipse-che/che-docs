@@ -46,4 +46,6 @@ if [[ "$unused_images" ]]; then
     echo "!!! Remove them to fix the issue."
     echo -e "${unused_images}"
     exit 1
+else
+    echo "All images have references in their the modules."
 fi
