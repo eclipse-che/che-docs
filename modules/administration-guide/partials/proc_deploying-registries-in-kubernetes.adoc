@@ -43,12 +43,12 @@ helm upgrade --install che-devfile-registry \
 <1> If installed using {prod-cli}, the default {prod-short} {orch-namespace} is `{prod-namespace}`. The OperatorHub installation method deploys {prod-short} to the users current {orch-namespace}.
 <2> On Minikube, use `$(minikube ip).nip.io`
 
-. The Helm chart creates a Pod, a service, and an Ingress. To get them, use `app=che-plugin-registry` (or `app=che-devfile-registry` for the devfile registry)
+. The Helm chart creates a Pod, a service, and an Ingress. To get them, use `component=plugin-registry` (or `component=plugin-registry` for the devfile registry)
 +
 [subs="+quotes,+attributes"]
 ----
 $ {orch-cli}  get -o custom-columns=TYPE:.kind,NAME:.metadata.name \
-  -l app=che-plugin-registry pod,svc,ingress
+  -l component=plugin-registry pod,svc,ingress
 TYPE      NAME
 Pod       che-plugin-registry-5c7cd8d5c9-zlqlz
 Service   che-plugin-registry
@@ -56,7 +56,6 @@ Ingress   che-plugin-registry
 ----
 
 :platform-routing: ingress
-:registry-routing-name: che-plugin-registry
 :platform-routing-host-path: .spec.rules[0].host
 
 include::partial$proc_verification-custom-registries.adoc[]

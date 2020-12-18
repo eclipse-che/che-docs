@@ -8,7 +8,7 @@
 +
 [subs="+quotes,+attributes"]
 ----
-$ URL=$({orch-cli}  get {platform-routing} {registry-routing-name} \
+$ URL=$({orch-cli}  get {platform-routing} -l app=che,component=plugin-registry \
   -o 'custom-columns=URL:{platform-routing-host-path}' --no-headers)
 $ INDEX_JSON=$(curl -sSL http://$\{URL}/v3/plugins/index.json)
 $ echo $\{INDEX_JSON} | jq '.[] | select(.name == "my-plug-in")'
@@ -52,7 +52,7 @@ with the URL of the {platform-routing}:
 
 [subs="+quotes,+attributes"]
 ----
-$ {orch-cli}  get {platform-routing} {registry-routing-name} \
+$ {orch-cli}  get {platform-routing} -l app=che,component=plugin-registry \
   -o 'custom-columns=URL: {platform-routing-host-path}' --no-headers
 che-plugin-registry-che.192.168.99.100.nip.io
 ----
