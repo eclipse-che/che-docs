@@ -3,6 +3,9 @@
 # Exit on any error
 set -e
 
+# This is a configuration parameters that can be che or crwctl
+PROJECT_CONTEXT=${PROJECT_CONTEXT:-che}
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DOCS_PROJECT_PATH=$SCRIPT_DIR/..
 
@@ -27,7 +30,7 @@ do
         #`../` instead of `images/` is used in the documentation references
         image=${image#"images/"}
         image_with_che_context="${image/che/{project-context\}}"
-        image_with_crw_context="${image/crw/{project-context\}}"
+        image_with_crw_context="${image/${PROJECT_CONTEXT}/{project-context\}}"
         if ! grep -q -r "$image" . && ! grep -q -r "$image_with_che_context" . && ! grep -q -r "$image_with_crw_context" . ; then
             unused_images="$unused_images\n$image"
         fi
