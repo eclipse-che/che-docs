@@ -17,31 +17,43 @@ Example for `native` single-host strategy type and `multi-host` or `default-host
 
 [subs="+quotes"]
 ----
-$ helm install --set global.serverStrategy=__<single-host>__
+$ helm install --set global.serverStrategy=__<exposure-strategy>__
 ----
 
 or:
 
 [subs="+quotes"]
 ----
-$ helm upgrade --set global.serverStrategy=__<single-host>__
+$ helm upgrade --set global.serverStrategy=__<exposure-strategy>__
 ----
 
-Depending on the strategy used, replace the `_<single-host>_` option in the above example with `multi-host` or `default-host`.
+The supported values for `global.serverStrategy` are:
+
+* xref:multi-host-workspace-exposure-strategy_{context}[`multi-host`]
+* xref:single-host-workspace-exposure-strategy_{context}[`single-host`]
+* xref:default-host-workspace-exposure-strategy_{context}[`default-host`]
 
 
-Example for `gateway` single-host strategy type:
+.Gateway single-host on Kubernetes
+
+Single-host on Kubernetes has 2 implementations, `native`(default) and `gateway`. To deploy with `gateway` use:
 
 [subs="+quotes"]
 ----
-$ helm install --namespace __<namespace>__ --set global.serverStrategy=single-host --set global.singleHostExposure=gateway --set cheSinglehostGateway.deploy=true
+$ helm install --namespace __<namespace>__ \
+--set global.serverStrategy=single-host \
+--set global.singleHostExposure=gateway \
+--set cheSinglehostGateway.deploy=true
 ----
 
 or:
 
 [subs="+quotes"]
 ----
-$ helm upgrade --install che --namespace __<namespace>__ --set global.serverStrategy=single-host --set global.singleHostExposure=gateway --set cheSinglehostGateway.deploy=true
+$ helm upgrade --install che --namespace __<namespace>__ \
+--set global.serverStrategy=single-host \
+--set global.singleHostExposure=gateway \
+--set cheSinglehostGateway.deploy=true
 ----
 
 Alternatively, predefined values file can be used as follows:
@@ -49,7 +61,5 @@ Alternatively, predefined values file can be used as follows:
 [subs="+quotes"]
 ----
 $ helm upgrade --install che --namespace __<namespace>__ \
-...
--f "${SOURCE_HOME_DIR}"/deploy/kubernetes/helm/che/values/single-host-gateway.yaml \
-...
+-f "${SOURCE_HOME_DIR}"/deploy/kubernetes/helm/che/values/single-host-gateway.yaml
 ----
