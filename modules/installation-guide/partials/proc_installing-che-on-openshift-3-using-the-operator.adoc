@@ -79,14 +79,3 @@ Command server:deploy has completed successfully.
 ----
 
 . Navigate to the {prod-short} cluster instance: `pass:c,a,q[{prod-url}]`.
-
-.Having multiple {prod-short} deployments
-
-* To have multiple {prod-short} deployments in parallel using different versions in the same {ocp} {ocp3-ver} cluster, create a new service account for the new deployment. It is, however, strongly recommended that you update all your old {prod-short} deployments to the latest version instead, as this mix of versions may cause unexpected and unsupported results.
-+
-[subs="+attributes,+quotes",options="nowrap"]
-----
-$ oc patch clusterrolebinding {prod-operator} \
-    --type='json' \
-    -p '[{"op": "add", "path": "/subjects/0", "value": {"kind":"ServiceAccount", "namespace": "__<{prod-namespace}>__", "name": "{prod-operator}"} }]'
-----
