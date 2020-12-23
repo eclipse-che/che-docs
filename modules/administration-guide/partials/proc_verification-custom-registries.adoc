@@ -1,0 +1,74 @@
+// deploying-the-registries
+
+[id="verification-custom_registries-_{context}"]
+
+.Verification steps
+
+. To verify that the new plug-in is correctly published to the plug-in registry, make a request to the registry path `/v3/plugins/index.json` (or `/devfiles/index.json` for the devfile registry).
++
+[subs="+quotes,+attributes"]
+----
+$ URL=$({orch-cli}  get {platform-routing} -l app=che,component=plugin-registry \
+  -o 'custom-columns=URL:{platform-routing-host-path}' --no-headers)
+$ INDEX_JSON=$(curl -sSL http://$\{URL}/v3/plugins/index.json)
+$ echo $\{INDEX_JSON} | jq '.[] | select(.name == "my-plug-in")'
+{
+ "id": "my-org/my-plug-in/1.0.0",
+ "displayName":"This is my first plug-in for {prod-short}",
+ "version":"1.0.0",
+ "type":"VS Code extension",
+ "name":"my-plug-in",
+ "description":"This plugins shows that we are able to add plugins to the registry...",
+ "publisher":"my-org",
+ "links": {"self":"/v3/plugins/my-org/my-plug-in/1.0.0"}
+}
+--
+--
+{
+ "id": "my-org/my-plug-in/latest",
+ "displayName":"This is my first plug-in for {prod-short}",
+ "version":"latest",
+ "type":"VS Code extension",
+ "name":"my-plug-in",
+ "description":"This plugins shows that we are able to add plugins to the registry...",
+ "publisher":"my-org",
+ "links": {"self":"/v3/plugins/my-org/my-plug-in/latest" }
+}
+----
+
+. Verify that the {prod-short} server points to the URL of the registry. To do this, compare the value of the `pass:[CHE_WORKSPACE_PLUGIN__REGISTRY__URL]` parameter in the `che` ConfigMap (or `pass:[CHE_WORKSPACE_DEVFILE__REGISTRY__URL]` for the devfile registry):
++
+[subs="+attributes"]
+----
+$ {orch-cli}  get cm/che \
+  -o "custom-columns=URL:.data['CHE_WORKSPACE_PLUGIN__REGISTRY__URL']" \
+  --no-headers
+URL
+http://che-plugin-registry-che.192.168.99.100.nip.io/v3
+----
++
+with the URL of the {platform-routing}:
++
+
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli}  get {platform-routing} -l app=che,component=plugin-registry \
+  -o 'custom-columns=URL: {platform-routing-host-path}' --no-headers
+che-plugin-registry-che.192.168.99.100.nip.io
+----
+
+.. If they do not match, update the ConfigMap and restart the {prod-short} server.
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli}  edit cm/che
+(...)
+$ {orch-cli}  scale --replicas=0 deployment/che
+$ {orch-cli}  scale --replicas=1 deployment/che
+----
+
+. When the new plugin registry is deployed and the {prod-short} server is configured to use them, UI should be reflected in the following places:
+.. The new plug-ins are available in the completion to *chePlugin* components in *Devfile* tab of a workspace details;
+.. The new plug-ins are available in the *Plugin* Theia view of a workspace.
+
+. When the new devfile registry is deployed the {prod-short} server is configured to use them, the new devfiles are displayed in the *Get Started* and *Create Custom Workspace* tab of the user dashboard.
