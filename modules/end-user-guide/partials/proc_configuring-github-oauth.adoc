@@ -10,19 +10,42 @@ OAuth for GitHub allows for automatic SSH key upload to GitHub.
 
 .Procedure
 
-* Set up the link:https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app[GitHub OAuth client]. The *Authorization callback URL* is filled in the next steps.
+ifeval::["{project-context}" == "che"]
+* For {prod-short} deployed in multi-user mode:
+endif::[]
+. Set up the link:https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app[GitHub OAuth client] using `https://{prod-deployment}-{prod-namespace}.<DOMAIN>/` and `https://keycloak-{prod-namespace}.<DOMAIN>/auth/realms/{prod-deployment}/broker/github/endpoint` as Homepage and Authorization callback urls correspondingly, where `<DOMAIN>` is {orch-name} cluster domain.
 
+. Create a new secret in the {orch-namespace} where a {prod-short} will be deployed.
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f - <<EOF
+kind: Secret
+apiVersion: v1
+metadata:
+  name: github-oauth-credentials
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: keycloak-secret
+  annotations:
+    che.eclipse.org/github-oauth-credentials: "true"
+    che.eclipse.org/mount-as: env
+    che.eclipse.org/id_env-name: GITHUB_CLIENT_ID
+    che.eclipse.org/secret_env-name: GITHUB_SECRET
+data:
+  id: <...> <1>
+  secret: <...> <2>
+type: Opaque
+EOF
+----
+<1> base64 encoded GitHub OAuth Client ID
+<2> base64 encoded GitHub OAuth Client Secret
 
-. Go to the {identity-provider} administration console and select the *Identity Providers* tab.
-. Select the *GitHub* identity provider in the drop-down list.
-. Paste the *Redirect URL* to the *Authorization callback URL* of the GitHub OAuth application.
-. Fill the *Client ID* and *Client Secret* from the GitHub oauth app.
-. Paste `repo,user,write:public_key` to the Default Scopes field.
-. Enable *Store Tokens*.
-. Save the changes of the Github Identity provider and click *Register application* in the GitHub oauth app page.
+. Wait until rollout of {identity-provider} component finishes.
+
 ifeval::["{project-context}" == "che"]
 +
-image::git/github-keycloak-setup.png[]
 
 * For {prod-short} deployed in single-user mode:
 . On {platforms-name}, update the deployment configuration (see xref:installation-guide:configuring-the-che-installation.adoc[] and xref:installation-guide:advanced-configuration-options-for-the-che-server-component.adoc#authentication-parameters[]).
