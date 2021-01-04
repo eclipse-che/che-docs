@@ -30,6 +30,9 @@ The following section describes how to enable and disable the external inter-com
 
 Switching between external and internal inter-component communication method is reached through the update against Custom Resource (CR).
 
+ifeval::["{project-context}" == "che"]
+* For {prod-short} deployed using Operators
+endif::[]
 . To use external {platforms-ingress} in inter-component communication:
 +
 [subs="+quotes,+attributes"]
@@ -45,3 +48,26 @@ $ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json 
 $ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
 '[{"op": "replace", "path": "/spec/server/useInternalClusterSVCNames", "value": true}]'
 ----
+
+ifeval::["{project-context}" == "che"]
+* For {prod-short} deployed using a Helm Chart
+
+. Clone the https://github.com/eclipse/che[che] project
+. Go to `deploy/kubernetes/helm/che` directory
+. Update the `global.useInternalClusterSVCNames` property. To do that, add the following option to the `helm upgrade` command:
+- To use external {platforms-ingress} in inter-component communication:
++
+[subs="+quotes,+attributes"]
+----
+$ helm upgrade che -n {prod-namespace} --set global.useInternalClusterSVCNames=false \
+-f values/multi-user.yaml -f values/tls.yaml .
+----
+- To use internal {orch-name} DNS names in the inter-component communication:
++
+[subs="+quotes,+attributes"]
+----
+$ helm upgrade che -n {prod-namespace} --set global.useInternalClusterSVCNames=true  \
+-f values/multi-user.yaml -f values/tls.yaml .
+----
+NOTE: if {prod} has been deployed in single-host mode or without TLS then remove the corresponding flags from the `helm upgrade` command and add others if needed.
+endif::[]
