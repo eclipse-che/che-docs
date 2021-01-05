@@ -20,10 +20,11 @@ BUFF=""
 OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/system-variables.adoc"
 
 fetch_current_version() {
-  echo "Trying to read current product version from pom.xml..." >&2
-  CURRENT_VERSION=$(cat "$PARENT_PATH/VERSION")
+  echo "Trying to read current product version from $PARENT_PATH/antora-playbook.yml..." >&2
+  
+  CURRENT_VERSION=$(grep 'prod-ver:' "$PARENT_PATH/antora-playbook.yml" | cut -d: -f2 | sed  's/ //g').x
   if [ $? -ne 0 ]; then
-    echo "Failure: Cannot read version from $PARENT_PATH/VERSION" >&2
+    echo "Failure: Cannot read version from $PARENT_PATH/antora-playbook.yml" >&2
     exit 1
   fi
   if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
@@ -83,8 +84,8 @@ parse_content() {
       
       DESCR_BUFF="$(sed 's|\${\([^}]*\)}|$++{\1}++|g' <<< $DESCR_BUFF)"   # make sure asciidoc doesn't mix it up with attributes
       DESCR_BUFF="$(sed 's|\(Eclipse \)\?\bChe\b|{prod-short}|g' <<< $DESCR_BUFF)"   # (Eclipse) Che -> {prod-short}
-      DESCR_BUFF="$(sed -E 's|`(http.?*)`|`+\1+`|g' <<< $DESCR_BUFF)"   # Deactivate http links
-      DESCR_BUFF="$(sed -E 's|(Example: http.?*io)|`+\1+`|g' <<< $DESCR_BUFF)"   # Deactivate http links
+      DESCR_BUFF="$(sed -E 's|http:|\\http:|g' <<< $DESCR_BUFF)"   # Deactivate http links
+      DESCR_BUFF="$(sed -E 's|https:|\\https:|g' <<< $DESCR_BUFF)"   # Deactivate http links
       DESCR_BUFF="$(sed -E 's|https://docs.openshift.com/container-platform/latest/architecture/additional_concepts/storage.html#pv-access-modes|https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html|' <<< $DESCR_BUFF)"   # Fix broken link
       DESCR_BUFF="$(sed -E 's|https://docs.openshift.com/container-platform/latest/dev_guide/compute_resources.html#dev-compute-resources|https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html|' <<< $DESCR_BUFF)"   # Fix broken link
       DESCR_BUFF="$(sed -E 's|https://www.keycloak.org/docs/3.3/server_admin/topics/identity-broker/social/openshift.html|https://www.keycloak.org/docs/latest/server_admin/index.html#openshift-4|' <<< $DESCR_BUFF)"   # Fix broken link
