@@ -1,0 +1,13 @@
+
+[id="configuring-workspaces-tolerations"]
+= Configuring workspaces tolerations
+
+This section describes how to configure link:https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/[`taint tolerations`] for Pods of {prod-short} workspaces.
+
+.Procedure
+
+{prod-short} uses the `CHE_WORKSPACE_POD_TOLERATIONS__JSON` environment variable to configure `tolerations`. This variable may contain a JSON Array string representing an array of taint tolerations, or `NULL` to disable it.  The JSON Array objects has to follow this link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#toleration-v1-core[spec].
+
+----
+CHE_WORKSPACE_POD_TOLERATIONS__JSON=[{"effect":"NoExecute","key":"aNodeTaint","operator":"Equal","value":"aValue"}]
+----
