@@ -84,8 +84,8 @@ parse_content() {
       
       DESCR_BUFF="$(sed 's|\${\([^}]*\)}|$++{\1}++|g' <<< $DESCR_BUFF)"   # make sure asciidoc doesn't mix it up with attributes
       DESCR_BUFF="$(sed 's|\(Eclipse \)\?\bChe\b|{prod-short}|g' <<< $DESCR_BUFF)"   # (Eclipse) Che -> {prod-short}
-      DESCR_BUFF="$(sed -E 's|http:|\\http:|g' <<< $DESCR_BUFF)"   # Deactivate http links
-      DESCR_BUFF="$(sed -E 's|https:|\\https:|g' <<< $DESCR_BUFF)"   # Deactivate http links
+      DESCR_BUFF="$(sed -E 's| http:| \\http:|g' <<< $DESCR_BUFF)"   # Deactivate http links
+      DESCR_BUFF="$(sed -E 's| https:| \\https:|g' <<< $DESCR_BUFF)"   # Deactivate http links
       DESCR_BUFF="$(sed -E 's|https://docs.openshift.com/container-platform/latest/architecture/additional_concepts/storage.html#pv-access-modes|https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html|' <<< $DESCR_BUFF)"   # Fix broken link
       DESCR_BUFF="$(sed -E 's|https://docs.openshift.com/container-platform/latest/dev_guide/compute_resources.html#dev-compute-resources|https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html|' <<< $DESCR_BUFF)"   # Fix broken link
       DESCR_BUFF="$(sed -E 's|https://www.keycloak.org/docs/3.3/server_admin/topics/identity-broker/social/openshift.html|https://www.keycloak.org/docs/latest/server_admin/index.html#openshift-4|' <<< $DESCR_BUFF)"   # Fix broken link
