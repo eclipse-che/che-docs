@@ -1,0 +1,42 @@
+ifeval::["{project-context}" == "che"]
+
+[id="installing-image-puller-on-kubernetes-using-the-operator_{context}"]
+= Installing {image-puller-name-short} on {kubernetes} using the Operator
+
+This procedure describes how to install the {image-puller-name-short} on {kubernetes} using the Operator. This is the recommended installation method.
+
+.Prerequisites
+
+* xref:defining-the-list-of-images-to-pull.adoc[]
+* xref:defining-the-memory-parameters-for-the-image-puller.adoc[].
+
+.Procedure
+
+. Create a {orch-namespace} __<{image-puller-deployment-name}>__ to host the {image-puller-name-short}:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+kubectl create namespace __<{image-puller-deployment-name}>__
+----
+
+. Apply the {image-puller-name-short} manifests on the namespace:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+export NAMESPACE=__<{image-puller-deployment-name}>__
+{orch-cli}  apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/crds/che.eclipse.org_kubernetesimagepullers_crd.yaml -n $NAMESPACE
+{orch-cli}  apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/role.yaml -n $NAMESPACE
+{orch-cli}  apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/role_binding.yaml -n $NAMESPACE
+{orch-cli}  apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/service_account.yaml -n $NAMESPACE
+{orch-cli}  apply -f https://raw.githubusercontent.com/che-incubator/kubernetes-image-puller-operator/master/deploy/operator.yaml -n $NAMESPACE
+----
+
+. Create a `{image-puller-cr-name}` Custom Resource:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+include::example$image_puller/example_image_puller.yaml[]
+----
+
+endif::[]
+

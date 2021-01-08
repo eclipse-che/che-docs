@@ -1,36 +1,28 @@
 // caching-images-for-faster-workspace-start
 
-[id="deploying-image-puller-using-openshift-templates_{context}"]
-= Deploying {image-puller-name-short} using OpenShift templates
+[id="installing-image-puller-using-openshift-templates_{context}"]
+= Installing {image-puller-name-short} using OpenShift templates
 
 The {image-puller-name-short} repository contains OpenShift templates for deploying on OpenShift.
-
-ifeval::["{project-context}" == "che"]
-Alternatively, you can use xref:caching-images-for-faster-workspace-start.adoc#deploying-image-puller-using-helm_{context}[].
-endif::[]
 
 .Prerequisites
 
 * A running OpenShift cluster.
 * The `oc` tool is available.
-
-The following parameters are available to further configure the OpenShift templates:
-
-include::example${project-context}-proc_deploying-image-puller-using-openshift-templates_parameters.adoc[] 
-
-include::example${project-context}-prepulled-images-table.adoc[]
-
-See xref:image-puller-configuration_{context}[] for more information about configuration values, such as `DAEMONSET_NAME`, `CACHING_INTERVAL_HOURS`, and `CACHING_MEMORY_REQUEST`.
+* xref:defining-the-list-of-images-to-pull.adoc[].
+* xref:defining-the-memory-parameters-for-the-image-puller.adoc[].
 
 .Procedure
-
-*Installing*
 
 . Clone the {image-puller-name} repository:
 +
 include::example${project-context}-proc_deploying-image-puller-using-openshift-templates_cloning-project.adoc[]
 
-. Create a new OpenShift project to deploy the puller into:
+. Configure the OpenShift templates in the `deploy/openshift` directory using following parameters:
++
+include::example${project-context}-proc_deploying-image-puller-using-openshift-templates_parameters.adoc[]
+
+. Create an OpenShift project to host the {image-puller-name-short}:
 +
 include::example${project-context}-proc_deploying-image-puller-using-openshift-templates_prepare.adoc[]
 
@@ -38,7 +30,7 @@ include::example${project-context}-proc_deploying-image-puller-using-openshift-t
 +
 include::example${project-context}-proc_deploying-image-puller-using-openshift-templates_process.adoc[]
 
-*Verifying the installation*
+.Verification steps
 
 . Confirm that a new deployment, `{image-puller-deployment-name}`, and a DaemonSet (named based on the value of the `DAEMONSET_NAME` parameter) exist. The DaemonSet needs to have a Pod for each node in the cluster:
 +

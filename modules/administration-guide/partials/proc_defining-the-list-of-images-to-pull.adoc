@@ -1,0 +1,59 @@
+[id="defining-the-list-of-images-to-pull_{context}"]
+= Defining the list of images to pull
+
+.Prerequisites
+
+* The `curl` tool is available. See link:https://curl.se/[curl homepage].
+* The `jq` tool is available. See link:https://stedolan.github.io/jq/[jq homepage].
+* The `yq` tool is available. See link:https://pypi.org/project/yq/[yq homepage].
+
+.Procedure
+
+. Get the list of relevant container images.
+ifeval::["{project-context}" == "che"]
++
+.Getting the list of all images for {kubernetes}
+====
+[subs="+attributes,+quotes,+macros"]
+----
+$ curl -sSLo- https://raw.githubusercontent.com/eclipse/che-operator/master/olm/eclipse-che-preview-kubernetes/deploy/olm-catalog/eclipse-che-preview-kubernetes/{prod-ver-patch}/eclipse-che-preview-kubernetes.v{prod-ver-patch}.clusterserviceversion.yaml | \
+  yq -r '.spec.relatedImages[]'
+----
+====
+endif::[]
++
+.Getting the list of all images for OpenShift
+====
+[subs="+attributes,+quotes,+macros"]
+----
+$ curl -sSLo- https://raw.githubusercontent.com/eclipse/che-operator/master/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/{prod-ver-patch}/eclipse-che-preview-openshift.v{prod-ver-patch}.clusterserviceversion.yaml | \
+  yq -r '.spec.relatedImages[]'
+----
+====
+
+. Exclude from the list the container images not containing the `sleep` command.
++
+.Incompatible images, missing the `sleep` command
+====
+* `FROM scratch` images.
+* 'che-machine-exec'. 
+====
+
+. Exclude from the list the container images mounting volumes in Dockerfile.
+
+.Additional resources
+
+pass:[<!-- vale CheDocs.Attributes = NO -->]
+
+* xref:defining-the-memory-parameters-for-the-image-puller.adoc[].
+ifeval::["{project-context}" == "che"]
+* xref:installing-image-puller-on-kubernetes-using-the-operator.adoc[]
+endif::[]
+* xref:installing-image-puller-on-openshift-using-operatorhub.adoc[]
+* xref:installing-image-puller-on-openshift-using-openshift-templates.adoc[]
+ifeval::["{project-context}" == "che"]
+* xref:installing-image-puller-on-kubernetes-using-helm.adoc[]
+endif::[]
+
+pass:[<!-- vale CheDocs.Attributes = YES -->]
+
