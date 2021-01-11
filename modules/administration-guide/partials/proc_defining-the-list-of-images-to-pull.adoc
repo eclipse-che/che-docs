@@ -10,36 +10,18 @@
 .Procedure
 
 . Get the list of relevant container images.
-ifeval::["{project-context}" == "che"]
 +
-.Getting the list of all images for {kubernetes}
-====
-[subs="+attributes,+quotes,+macros"]
-----
-$ curl -sSLo- https://raw.githubusercontent.com/eclipse/che-operator/master/olm/eclipse-che-preview-kubernetes/deploy/olm-catalog/eclipse-che-preview-kubernetes/{prod-ver-patch}/eclipse-che-preview-kubernetes.v{prod-ver-patch}.clusterserviceversion.yaml | \
-  yq -r '.spec.relatedImages[]'
-----
-====
-endif::[]
-+
-.Getting the list of all images for OpenShift
-====
-[subs="+attributes,+quotes,+macros"]
-----
-$ curl -sSLo- https://raw.githubusercontent.com/eclipse/che-operator/master/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/{prod-ver-patch}/eclipse-che-preview-openshift.v{prod-ver-patch}.clusterserviceversion.yaml | \
-  yq -r '.spec.relatedImages[]'
-----
-====
+include::example$/snip_{project-context}-getting-the-list-of-relevant-images.adoc[]
+
 
 . Exclude from the list the container images not containing the `sleep` command.
 +
-.Incompatible images, missing the `sleep` command
-====
-* `FROM scratch` images.
-* 'che-machine-exec'. 
-====
+include::example$snip_{project-context}-images-incompatibles-with-image-puller.adoc[]
+
 
 . Exclude from the list the container images mounting volumes in Dockerfile.
+
+
 
 .Additional resources
 
