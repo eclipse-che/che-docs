@@ -15,6 +15,10 @@
 # You should have received a copy of the  GNU General Public License  along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
+set -o errexit
+set -o nounset
+set -o pipefail
+
 # -------------------------------------------------------------------------
 #                            GLOBAL VARIABLES
 # -------------------------------------------------------------------------
