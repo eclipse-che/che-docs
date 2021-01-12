@@ -1,0 +1,49 @@
+// configuring-bitbucket-authentication
+
+[id="configuring_bitbucket_authentication_{context}"]
+= Authentication on Bitbucket servers
+
+{prod} users may use public or private Bitbucket git repositories as a source of theirs projects. The standart
+factory flow using devfile at the root of the repository is available starting of {version} of {prod}.
+
+Using private repositories, requires some additional configuration described below.
+
+Bitbucket authentication is based on using so-called "personal access tokens". Each Bitbucket user can request some
+amount of personal access tokens with different names, permissions, expiration times etc. Those tokens
+may be used to sign Bitbucket REST API calls and perform Git repository operations.
+
+To allow Bitbucket authentication on {prod} side, personal tokens should be stored in user's namespace in a form of
+secret. The secret should look as follows:
+
+[source,yaml]
+----
+include::example$snip_bitbucket-personal-access-token-secret.adoc[]
+----
+
+The main parts of the secret are:
+
+[cols=2*]
+|===
+| `app.kubernetes.io/component`
+| Label indicates it is a SCM personal token secret
+
+| `che.eclipse.org/che-userid`
+| {prod} id of the user token belongs to
+
+| `che.eclipse.org/scm-userid`
+| SCM id of the user token belongs to
+
+| `che.eclipse.org/scm-username`
+| SCM name of the user token belongs to
+
+| `che.eclipse.org/scm-url`
+| SCM URL which this token belongs to
+
+| `che.eclipse.org/expired-after`
+| Token expiration time
+
+| `token`
+| Base-64 encoded value of the personal access token
+
+|===
+
