@@ -3,8 +3,8 @@
 [id="configuring_bitbucket_authentication_{context}"]
 = Authentication on Bitbucket servers
 
-{prod} users may use public or private Bitbucket Git repositories as a source of theirs projects. The standard
-factory flow using devfile at the root of the repository is available starting of {version} of {prod}.
+{prod} users may use public or private Bitbucket SCM (Source Code Management) system  as a source of theirs projects. The standard
+factory flow using devfile at the root of the repository is available starting of 7.25 version of {prod}.
 
 Using private repositories, requires some additional configuration described below.
 
@@ -22,26 +22,33 @@ include::example$snip_bitbucket-personal-access-token-secret.adoc[]
 
 The main parts of the secret are:
 
-[cols=2*]
+[cols=3*]
 |===
+| Label
 | `app.kubernetes.io/component`
-| Label indicates it is a SCM personal token secret
+| Indicates it is a SCM personal token secret. 
 
+| Annotation
 | `che.eclipse.org/che-userid`
 | {prod} id of the user token belongs to
 
+| Annotation
 | `che.eclipse.org/scm-userid`
-| SCM id of the user token belongs to
+| Bitbucket user id to which token belongs
 
+| Annotattion
 | `che.eclipse.org/scm-username`
-| SCM name of the user token belongs to
+| Bitbucket user name to which token belongs
 
+| Annotation
 | `che.eclipse.org/scm-url`
-| SCM URL which this token belongs to
+| Bitbucket server URL to which this token belong
 
+| Annotation
 | `che.eclipse.org/expired-after`
-| Token expiration time
+| Personal access token expiration time
 
+| Data entry
 | `token`
 | Base-64 encoded value of the personal access token
 
