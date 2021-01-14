@@ -20,7 +20,7 @@ RUN dnf install --refresh -y --nodocs --setopt=install_weak_deps=False --best \
     findutils \
     git-core \
     jq \
-    npm \
+    nodejs \
     python3-jinja2-cli \
     python3-pip \
     python3-setuptools \
@@ -34,7 +34,7 @@ RUN dnf install --refresh -y --nodocs --setopt=install_weak_deps=False --best \
     && pip3 install --no-cache-dir --no-input git+https://github.com/linkchecker/linkchecker.git yq\
     && curl -sfL https://install.goreleaser.com/github.com/ValeLint/vale.sh | sh \
     && mv ./bin/vale /usr/local/bin/vale \
-    && yarnpkg global add --ignore-optional --non-interactive @antora/cli@latest @antora/site-generator-default@latest gulp gulp-cli gulp-connect \
+    && yarnpkg global add --ignore-optional --non-interactive @antora/cli@latest @antora/site-generator-default@latest gulp gulp-connect \
     && rm -rf $(yarnpkg cache dir)/* \
     && rm -rf /tmp/* \
     && antora --version \
@@ -55,5 +55,6 @@ EXPOSE 35729
 VOLUME /projects
 WORKDIR /projects
 ENV HOME /projects
+ENV NODE_PATH /usr/local/share/.config/yarn/global/node_modules
 
 USER 1001

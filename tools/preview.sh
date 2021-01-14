@@ -2,7 +2,7 @@
 set -ex
 
 LIVERELOAD=true
-export $LIVERELOAD
+export LIVERELOAD
 
 installandrungulp() { # Install gulp when not present in $PATH
 echo "--modules-folder /tmp/node_modules" > /projects/.yarnrc
