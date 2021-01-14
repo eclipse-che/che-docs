@@ -1,4 +1,4 @@
-FROM fedora:latest
+FROM quay.io/fedora/fedora:33-x86_64
 
 LABEL description="Tools to build Eclipse Che documentation: antora, bash, curl, findutils, git, gulp, linkchecker, vale"
 LABEL io.k8s.description="Tools to build Eclipse Che documentation: antora, bash, curl, findutils, git, gulp, jq, linkchecker, newdoc, vale, yq"
