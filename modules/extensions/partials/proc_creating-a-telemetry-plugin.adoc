@@ -198,8 +198,9 @@ include::example$telemetry/sample_meta.yaml[]
 
 Ordinarily, you would deploy this file to a corporate web server. For this guide, we create an Apache web server on OpenShift and host the plug-in there. Create a configMap referencing your new `meta.yaml` file.
 
+[subs="+attributes"]
 ----
-$ oc create configmap --from-file=meta.yaml -n che telemetry-plugin-meta
+$ oc create configmap --from-file=meta.yaml -n {prod-namespace} telemetry-plugin-meta
 ----
 
 Then create a deployment, a service, and a route to expose the web server. The deployment references this configMap and places it in the `/var/www/html` directory.
@@ -224,7 +225,7 @@ This command should return the `meta.yaml` file.
 
 == Updating {prod-short} to reference your telemetry plug-in
 
-Update the `CheCluster` Custom Resource, and add the `CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR_PLUGINS` environment variable to `spec.server.customCheProperties`. The value of the environment variable should be the URL of the location of the `meta.yaml` file on your web server.  This can be accomplished by running `oc edit checluster -n che` and typing in the change at the terminal, or by editing the CR in the OpenShift console (*Installed Operators -> {prod} -> {prod} Cluster -> {prod-checluster} -> YAML*).
+Update the `CheCluster` Custom Resource, and add the `CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR_PLUGINS` environment variable to `spec.server.customCheProperties`. The value of the environment variable should be the URL of the location of the `meta.yaml` file on your web server.  This can be accomplished by running `oc edit checluster -n {prod-namespace}` and typing in the change at the terminal, or by editing the CR in the OpenShift console (*Installed Operators -> {prod} -> {prod} Cluster -> {prod-checluster} -> YAML*).
 
 [source,yaml,subs="+quotes,+attributes"]
 ----
