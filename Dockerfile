@@ -1,18 +1,19 @@
-FROM mrksu/newdoc as newdoc
+FROM jdkato/vale:v2.8.0 as vale
 
-FROM jdkato/vale as vale
+FROM rust:1.49.0-alpine3.12 as newdoc-builder
+RUN cargo install newdoc
 
-FROM registry.access.redhat.com/ubi8/ubi-minimal
+FROM alpine:3.13
 
-COPY --from=newdoc /usr/local/bin/newdoc /usr/local/bin/newdoc
+COPY --from=newdoc-builder /usr/local/cargo/bin/newdoc /usr/local/bin/newdoc
 COPY --from=vale /bin/vale /usr/local/bin/vale
 
 EXPOSE 4000
 EXPOSE 35729
 
-LABEL description="Tools to build Eclipse Che documentation: antora, bash, curl, findutils, git, gulp, linkchecker, vale" \
-    io.k8s.description="Tools to build Eclipse Che documentation: antora, bash, curl, findutils, git, gulp, jq, linkchecker, newdoc, vale, yq" \
-    io.k8s.display-name="Che docs tools" \
+LABEL description="Tools to build Eclipse Che documentation: antora, asciidoctor.js, bash, curl, findutils, git, gulp, jinja2, jq, linkchecker, newdoc, vale, yq" \
+    io.k8s.description="Tools to build Eclipse Che documentation: antora, asciidoctor.js, bash, curl, findutils, git, gulp, jinja2, jq, linkchecker, newdoc, vale, yq" \
+    io.k8s.display-name="Che-docs tools" \
     license="Eclipse Public License - v 2.0" \
     MAINTAINERS="Eclipse Che Documentation Team" \
     maintainer="Eclipse Che Documentation Team" \
@@ -23,23 +24,19 @@ LABEL description="Tools to build Eclipse Che documentation: antora, bash, curl,
     vendor="Eclipse Che Documentation Team" \
     version="2021.1"
 
-RUN curl --silent --location https://dl.yarnpkg.com/rpm/yarn.repo | tee /etc/yum.repos.d/yarn.repo \
-    && microdnf install --refresh -y --nodocs  --best \
+RUN apk add --no-cache --update \
     bash \
     curl \
     findutils \
-    git-core \
+    git \
     jq \
     nodejs \
-    python3-pip \
-    python3-setuptools \
-    python3-wheel \
+    py3-pip \
+    py3-wheel \
     tar \
     yarn \
-    && microdnf clean all \
-    && rm -rf /var/lib/dnf \
-    && rm -rf /usr/share/doc \
-    && pip3 install --no-cache-dir --no-input git+https://github.com/linkchecker/linkchecker.git jinja2-cli yq \
+    yq \
+    && pip3 install --no-cache-dir --no-input git+https://github.com/linkchecker/linkchecker.git jinja2-cli \
     && yarnpkg global add --ignore-optional --non-interactive @antora/cli@latest @antora/site-generator-default@latest asciidoctor gulp gulp-connect \
     && rm -rf $(yarnpkg cache dir)/* \
     && rm -rf /tmp/* \
@@ -52,9 +49,9 @@ RUN curl --silent --location https://dl.yarnpkg.com/rpm/yarn.repo | tee /etc/yum
     && jinja2 --version \
     && jq --version \
     && linkchecker --version \
-    && newdoc --version \
     && vale -v \
-    && yq --version
+    && yq --version \
+    && newdoc --version
 
 VOLUME /projects
 WORKDIR /projects
