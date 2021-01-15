@@ -54,7 +54,7 @@ include::example$snip_importing-untrusted-tls-certificates_1.adoc[]
 +
 [subs="+attributes,+quotes"]
 ----
-$ {orch-cli} create configmap ca-certs --from-file=__<certificate-file-path>__ -n=__<{project-context}-namespace-name>__
+$ {orch-cli} create configmap ca-certs --from-file=__<certificate-file-path>__ -n={prod-namespace}
 ----
 +
 To apply more than one certificate, add another `--from-file=_<certificate-file-path>_` option to the above command.
@@ -98,7 +98,7 @@ retrieve the name of the ConfigMap by reading the `spec.server.ServerTrustStoreC
 
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get checluster {prod-checluster} -n __<{project-context}-namespace-name>__ -o jsonpath={.spec.server.serverTrustStoreConfigMapName}
+$ {orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath={.spec.server.serverTrustStoreConfigMapName}
 ----
 ====
 ifeval::["{project-context}" == "che"]
@@ -126,7 +126,7 @@ include::example$snip_importing-untrusted-tls-certificates_1.adoc[]
 +
 [subs="+attributes,+quotes"]
 ----
-$ {orch-cli} create configmap __<config-map-name>__ --from-file=__<certificate-file-path>__ -n=__<{project-context}-namespace-name>__ -o yaml --dry-run | {orch-cli} apply -f -
+$ {orch-cli} create configmap __<config-map-name>__ --from-file=__<certificate-file-path>__ -n={prod-namespace} -o yaml --dry-run | {orch-cli} apply -f -
 ----
 +
 To apply more than one certificate, add another `--from-file=_<certificate-file-path>_` option to the above command.
@@ -140,7 +140,7 @@ For a {prod-short} link:https://docs.openshift.com/container-platform/latest/ope
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} patch checluster {prod-checluster} -n __<{project-context}-namespace-name>__ --type=json -p '[{"op": "replace", "path": "/spec/server/serverTrustStoreConfigMapName", "value": "<config-map-name>"}]'
+$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json -p '[{"op": "replace", "path": "/spec/server/serverTrustStoreConfigMapName", "value": "<config-map-name>"}]'
 ----
 +
 ====
@@ -167,9 +167,9 @@ endif::[]
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ kubectl rollout restart -n __<{project-context}-namespace-name>__ deployment/{prod-id-short}-operator
-$ kubectl rollout restart -n __<{project-context}-namespace-name>__ deployment/keycloak
-$ kubectl rollout restart -n __<{project-context}-namespace-name>__ deployment/{prod-id-short}
+$ kubectl rollout restart -n {prod-namespace} deployment/{prod-id-short}-operator
+$ kubectl rollout restart -n {prod-namespace} deployment/keycloak
+$ kubectl rollout restart -n {prod-namespace} deployment/{prod-id-short}
 ----
 +
 [NOTE]
@@ -192,28 +192,28 @@ If you added the certificates without error, the {prod-short} server starts and 
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get -o json checluster/{prod-checluster} -n __<{project-context}-namespace-name>__ | jq .spec.server.serverTrustStoreConfigMapName
+$ {orch-cli} get -o json checluster/{prod-checluster} -n {prod-namespace} | jq .spec.server.serverTrustStoreConfigMapName
 ----
 +
 . {prod-short} Pod Volumes list contains one Volume that uses the ConfigMap as data-source. To get the list of Volumes of the {prod-short} Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get pod -o json __<{prod-id-short}-pod-name>__ -n __<{project-context}-namespace-name>__ | jq .spec.volumes
+$ {orch-cli} get pod -o json __<{prod-id-short}-pod-name>__ -n {prod-namespace} | jq .spec.volumes
 ----
 +
 . {prod-short} mounts certificates in folder `/public-certs/` of the {prod-short} server container. This command returns the list of files in that folder:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} exec -t __<{prod-id-short}-pod-name>__ -n __<{project-context}-namespace-name>__ -- ls /public-certs/
+$ {orch-cli} exec -t __<{prod-id-short}-pod-name>__ -n {prod-namespace} -- ls /public-certs/
 ----
 +
 . In the {prod-short} server logs there is a line for every certificate added to the Java truststore, including configured {prod-short} certificates.
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} logs __<{prod-id-short}-pod-name>__ -n __<{project-context}-namespace-name>__
+$ {orch-cli} logs __<{prod-id-short}-pod-name>__ -n {prod-namespace}
 (...)
 Found a custom cert. Adding it to java trust store based on /usr/lib/jvm/java-1.8.0/jre/lib/security/cacerts
 (...)
@@ -276,7 +276,7 @@ manually-added-certificate.crt
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>__ | \
+$ {orch-cli} get -o json pod __<workspace pod name>__ -n {prod-namespace} | \
     jq '.spec.volumes[] | select(.configMap.name == "ca-certs")'
 {
   "configMap": {

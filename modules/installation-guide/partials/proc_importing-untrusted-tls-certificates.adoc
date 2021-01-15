@@ -58,7 +58,7 @@ include::example$snip_importing-untrusted-tls-certificates_1.adoc[]
 +
 [subs="+attributes,+quotes"]
 ----
-$ {orch-cli} create configmap custom-certs --from-file=__<bundle-file-path>__ -n=__<{project-context}-namespace-name>__
+$ {orch-cli} create configmap custom-certs --from-file=__<bundle-file-path>__ -n={prod-namespace}
 ----
 +
 To apply more than one bundle, add another `--from-file=_<bundle-file-path>_` flag to the above command.
@@ -124,12 +124,13 @@ If after adding the certificates something does not work as expected, here is a 
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get cm --selector=app.kubernetes.io/component=ca-bundle,app.kubernetes.io/part-of=che.eclipse.org -n __<{project-context}-namespace-name>__
+$ {orch-cli} get cm --selector=app.kubernetes.io/component=ca-bundle,app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
 ----
 +
 And to check content of ConfigMap:
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get cm __<name>__ -n __<{project-context}-namespace-name>__ -o yaml
+$ {orch-cli} get cm __<name>__ -n {prod-namespace} -o yaml
 ----
 
 - {prod-short} Pod Volumes list contains a volume that uses `ca-certs-merged` ConfigMap as data-source.
@@ -137,21 +138,21 @@ To get the list of Volumes of the {prod-short} Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get pod -o json __<{prod-id-short}-pod-name>__ -n __<{project-context}-namespace-name>__ | jq .spec.volumes
+$ {orch-cli} get pod -o json __<{prod-id-short}-pod-name>__ -n {prod-namespace} | jq .spec.volumes
 ----
 +
 - {prod-short} mounts certificates in folder `/public-certs/` of the {prod-short} server container. This command returns the list of files in that folder:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} exec -t __<{prod-id-short}-pod-name>__ -n __<{project-context}-namespace-name>__ -- ls /public-certs/
+$ {orch-cli} exec -t __<{prod-id-short}-pod-name>__ -n {prod-namespace} -- ls /public-certs/
 ----
 +
 - In the {prod-short} server logs there is a line for every certificate added to the Java truststore, including configured {prod-short} certificates.
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} logs __<{prod-id-short}-pod-name>__ -n __<{project-context}-namespace-name>__
+$ {orch-cli} logs __<{prod-id-short}-pod-name>__ -n {prod-namespace}
 ----
 +
 - {prod-short} server Java truststore contains the certificates. The certificates SHA1 fingerprints are among the list of the SHA1 of the certificates included in the truststore returned by the following command:
