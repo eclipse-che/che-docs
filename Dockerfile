@@ -1,4 +1,8 @@
-FROM jdkato/vale:v2.8.0 as vale
+FROM golang:1.15.6-alpine3.12 as vale-builder
+WORKDIR /vale
+RUN wget -qO- https://github.com/errata-ai/vale/archive/v2.8.0.tar.gz | tar --strip-components=1 -zxvf -
+RUN export ARCH="$(uname -m)" && if [[ ${ARCH} == "x86_64" ]]; then export ARCH="amd64"; elif [[ ${ARCH} == "aarch64" ]]; then export ARCH="arm64"; fi && \
+    GOOS=linux GOARCH=${ARCH} CGO_ENABLED=0 go build -tags closed -o bin/vale ./cmd/vale
 
 FROM rust:1.49.0-alpine3.12 as newdoc-builder
 RUN cargo install newdoc
@@ -6,7 +10,7 @@ RUN cargo install newdoc
 FROM alpine:3.13
 
 COPY --from=newdoc-builder /usr/local/cargo/bin/newdoc /usr/local/bin/newdoc
-COPY --from=vale /bin/vale /usr/local/bin/vale
+COPY --from=vale-builder /vale/bin/vale /usr/local/bin/vale
 
 EXPOSE 4000
 EXPOSE 35729
