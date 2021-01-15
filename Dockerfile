@@ -1,43 +1,50 @@
-FROM quay.io/fedora/fedora:33-x86_64
+FROM mrksu/newdoc as newdoc
 
-LABEL description="Tools to build Eclipse Che documentation: antora, bash, curl, findutils, git, gulp, linkchecker, vale"
-LABEL io.k8s.description="Tools to build Eclipse Che documentation: antora, bash, curl, findutils, git, gulp, jq, linkchecker, newdoc, vale, yq"
-LABEL io.k8s.display name="Che docs tools"
-LABEL license="Eclipse Public License - v 2.0"
-LABEL MAINTAINERS="Eclipse Che Documentation Team"
-LABEL maintainer="Eclipse Che Documentation Team"
-LABEL name="che-docs"
-LABEL source="https://github.com/eclipse/che-docs/Dockerfile"
-LABEL summary="Tools to build Eclipse Che documentation"
-LABEL URL="quay.io/eclipse/che-docs"
-LABEL vendor="Eclipse Che Documentation Team"
-LABEL version="2021.1"
+FROM jdkato/vale as vale
 
-RUN dnf install --refresh -y --nodocs --setopt=install_weak_deps=False --best \
+FROM registry.access.redhat.com/ubi8/ubi-minimal
+
+COPY --from=newdoc /usr/local/bin/newdoc /usr/local/bin/newdoc
+COPY --from=vale /bin/vale /usr/local/bin/vale
+
+EXPOSE 4000
+EXPOSE 35729
+
+LABEL description="Tools to build Eclipse Che documentation: antora, bash, curl, findutils, git, gulp, linkchecker, vale" \
+    io.k8s.description="Tools to build Eclipse Che documentation: antora, bash, curl, findutils, git, gulp, jq, linkchecker, newdoc, vale, yq" \
+    io.k8s.display-name="Che docs tools" \
+    license="Eclipse Public License - v 2.0" \
+    MAINTAINERS="Eclipse Che Documentation Team" \
+    maintainer="Eclipse Che Documentation Team" \
+    name="che-docs" \
+    source="https://github.com/eclipse/che-docs/Dockerfile" \
+    summary="Tools to build Eclipse Che documentation" \
+    URL="quay.io/eclipse/che-docs" \
+    vendor="Eclipse Che Documentation Team" \
+    version="2021.1"
+
+RUN curl --silent --location https://dl.yarnpkg.com/rpm/yarn.repo | tee /etc/yum.repos.d/yarn.repo \
+    && microdnf install --refresh -y --nodocs  --best \
     bash \
     curl \
-    dnf-plugins-core \
     findutils \
     git-core \
     jq \
     nodejs \
-    python3-jinja2-cli \
     python3-pip \
     python3-setuptools \
     python3-wheel \
-    yarnpkg \
-    && dnf copr enable -y mareksu/newdoc-rs \
-    && dnf install -y --nodocs --setopt=install_weak_deps=False --best newdoc \
-    && dnf clean all \
+    tar \
+    yarn \
+    && microdnf clean all \
     && rm -rf /var/lib/dnf \
     && rm -rf /usr/share/doc \
-    && pip3 install --no-cache-dir --no-input git+https://github.com/linkchecker/linkchecker.git yq\
-    && curl -sfL https://install.goreleaser.com/github.com/ValeLint/vale.sh | sh \
-    && mv ./bin/vale /usr/local/bin/vale \
+    && pip3 install --no-cache-dir --no-input git+https://github.com/linkchecker/linkchecker.git jinja2-cli yq \
     && yarnpkg global add --ignore-optional --non-interactive @antora/cli@latest @antora/site-generator-default@latest asciidoctor gulp gulp-connect \
     && rm -rf $(yarnpkg cache dir)/* \
     && rm -rf /tmp/* \
     && antora --version \
+    && asciidoctor --version \
     && bash --version \
     && curl --version \
     && git --version \
@@ -49,12 +56,9 @@ RUN dnf install --refresh -y --nodocs --setopt=install_weak_deps=False --best \
     && vale -v \
     && yq --version
 
-EXPOSE 4000
-EXPOSE 35729
-
 VOLUME /projects
 WORKDIR /projects
-ENV HOME /projects
-ENV NODE_PATH /usr/local/share/.config/yarn/global/node_modules
+ENV HOME="/projects" \
+    NODE_PATH="/usr/local/share/.config/yarn/global/node_modules"
 
 USER 1001
