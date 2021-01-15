@@ -11,7 +11,7 @@ on Amazon Elastic Compute Cloud (Amazon EC2).
 .Prerequisites
 
 * A running instance of {kubernetes}, version 1.9 or higher, and Ingress.
-* The `{orch-cli} ` tool installed.
+* The `{orch-cli}` tool installed.
 * The `{prod-cli}` tool installed.
 
 
@@ -122,10 +122,10 @@ Your cluster eu.aws.my-ide.cloud is ready
 +
 [subs="+quotes",options="nowrap"]
 ----
-$ kubectl config current-context
+$ {orch-cli} config current-context
 eu.aws.my-ide.cloud
 
-$ kubectl get pods --all-namespaces
+$ {orch-cli} get pods --all-namespaces
 
 All the pods in the running state are displayed.
 ----
@@ -139,7 +139,7 @@ To install Ingress-nginx:
 +
 [subs="+quotes",options="nowrap"]
 ----
-$ kubectl apply \
+$ {orch-cli} apply \
   -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.41.0/deploy/static/provider/aws/deploy.yaml
 ----
 +
@@ -147,7 +147,7 @@ The following output confirms that the Ingress controller is running.
 +
 [subs="+quotes",options="nowrap"]
 ----
-$ kubectl get pods --namespace ingress-nginx
+$ {orch-cli} get pods --namespace ingress-nginx
 NAME                                        READY   STATUS    RESTARTS   AGE
 nginx-ingress-controller-76c86d76c4-gswmg   1/1     Running   0          9m3s
 ----
@@ -156,14 +156,14 @@ nginx-ingress-controller-76c86d76c4-gswmg   1/1     Running   0          9m3s
 +
 [subs="+quotes",options="nowrap"]
 ----
-$ kubectl get services --namespace ingress-nginx -o jsonpath='{.items[].status.loadBalancer.ingress[0].hostname}'
+$ {orch-cli} get services --namespace ingress-nginx -o jsonpath='{.items[].status.loadBalancer.ingress[0].hostname}'
 Ade9c9f48b2cd11e9a28c0611bc28f24-1591254057.eu-west-1.elb.amazonaws.com
 ----
 +
 *Troubleshooting*: If the output is empty, it implies that the cluster has configuration issues. Use the following command to find the cause of the issue:
 +
 ----
-$ kubectl describe service -n ingress-nginx ingress-nginx
+$ {orch-cli} describe service -n ingress-nginx ingress-nginx
 ----
 +
 Output similar to the following means a needed role must be created manually:
@@ -284,9 +284,9 @@ image::installation/create-policy-review-policy.png[link="../_images/installatio
 +
 [subs="+quotes",options="nowrap"]
 ----
-$ kubectl create namespace cert-manager
+$ {orch-cli} create namespace cert-manager
 namespace/cert-manager created
-$ kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
+$ {orch-cli} label namespace cert-manager certmanager.k8s.io/disable-validation=true
 namespace/cert-manager labeled
 ----
 
@@ -294,7 +294,7 @@ namespace/cert-manager labeled
 +
 [subs="+quotes",options="nowrap"]
 ----
-$ kubectl apply \
+$ {orch-cli} apply \
   -f https://github.com/jetstack/cert-manager/releases/download/v0.15.0/cert-manager.yaml \
   --validate=false
 ----
@@ -303,7 +303,7 @@ $ kubectl apply \
 +
 [subs="+quotes,+attributes",options="nowrap"]
 ----
-$ kubectl create namespace {prod-namespace}
+$ {orch-cli} create namespace {prod-namespace}
 namespace/{prod-namespace} created
 ----
 
@@ -345,7 +345,7 @@ IMPORTANT: Remember the access key for later use.
 +
 [subs="+quotes",options="nowrap"]
 ----
-$ kubectl create secret generic aws-cert-manager-access-key \
+$ {orch-cli} create secret generic aws-cert-manager-access-key \
   --from-literal=CLIENT_SECRET=<REPLACE WITH SecretAccessKey content> -n cert-manager
 ----
 
@@ -390,7 +390,7 @@ image::installation/create-policy-review.png[link="../_images/installation/creat
 . To create the certificate issuer, change the email address and specify the `accessKeyID`:
 +
 ----
-$ cat <<EOF | kubectl apply -f -
+$ cat <<EOF | {orch-cli} apply -f -
 apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
@@ -419,7 +419,7 @@ EOF
 . Add the certificate by editing the domain name value (`aws.my-ide.cloud`, in this case) and the `dnsName` value:
 +
 ----
-$ cat <<EOF | kubectl apply -f -
+$ cat <<EOF | {orch-cli} apply -f -
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
@@ -451,7 +451,7 @@ The cert-manager logs contain information about the DNS challenge.
 +
 [subs="+quotes",options="nowrap"]
 ----
-$ kubectl get pods --namespace cert-manager
+$ {orch-cli} get pods --namespace cert-manager
 NAME                                       READY   STATUS    RESTARTS   AGE
 cert-manager-6587688cb8-wj68p              1/1     Running   0          6h
 cert-manager-cainjector-76d56f7f55-zsqjp   1/1     Running   0          6h
@@ -463,7 +463,7 @@ cert-manager-webhook-7485dd47b6-88m6l      1/1     Running   0          6h
 +
 [subs="+quotes",options="nowrap"]
 ----
-$ kubectl logs -f cert-manager-8d478bb45-sdfmz -n cert-manager
+$ {orch-cli} logs -f cert-manager-8d478bb45-sdfmz -n cert-manager
 I0730 14:46:25.382385       1 sync.go:274] Need to create 0 challenges
 I0730 14:46:25.382401       1 sync.go:319] Waiting for all challenges for order "che-tls-3365293372" to enter 'valid' state
 I0730 14:46:25.382431       1 controller.go:204] cert-manager/controller/orders "level"=0 "msg"="finished processing work item" "key"="che/che-tls-3365293372"
@@ -478,7 +478,7 @@ I0730 14:47:03.220952       1 dns.go:124] Waiting DNS record TTL (60s) to allow 
 +
 [subs="+quotes,+attributes",options="nowrap"]
 ----
-$ kubectl describe certificate/che-tls -n {prod-namespace}
+$ {orch-cli} describe certificate/che-tls -n {prod-namespace}
 Status:
   Conditions:
     Last Transition Time:  2019-07-30T14:46:23Z
@@ -503,7 +503,7 @@ I0729 13:56:26.140886       1 conditions.go:143] Found status change for Certifi
 +
 [subs="+quotes,+attributes",options="nowrap"]
 ----
-$ kubectl describe certificate/che-tls -n {prod-namespace}
+$ {orch-cli} describe certificate/che-tls -n {prod-namespace}
 
 Status:
   Conditions:

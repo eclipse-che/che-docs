@@ -6,25 +6,29 @@
 = Installing cert-manager on Azure
 
 
+.Prerequisites
+
+* The `{orch-cli}` tool is available.
+
 .Procedure
 
 . To install the cert-manager on Azure, create the *cert-manager* namespace:
 +
 ----
-$ kubectl create namespace cert-manager
+$ {orch-cli} create namespace cert-manager
 namespace/cert-manager created
 
-$ kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
+$ {orch-cli} label namespace cert-manager certmanager.k8s.io/disable-validation=true
 ----
 
 +
 ----
-$ kubectl apply \
+$ {orch-cli} apply \
   -f https://github.com/jetstack/cert-manager/releases/download/v0.15.0/cert-manager.yaml
 ----
 
 ----
-$ kubectl apply \
+$ {orch-cli} apply \
  --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.15.0/cert-manager.crds.yaml
 ----
 
@@ -33,14 +37,14 @@ $ kubectl apply \
 +
 [subs="+attributes"]
 ----
-$ kubectl create namespace {prod-namespace}
+$ {orch-cli} create namespace {prod-namespace}
 namespace/{prod-namespace} created
 ----
 
 . Create the certificate issuer. Enter your email address in the *email* field and set *clientID*, *CLIENT_SECRET* *subscriptionID*, *tenantID*, *hostedZoneName*  fields:
 +
 ----
-cat <<EOF | kubectl apply -f -
+cat <<EOF | {orch-cli} apply -f -
 apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
@@ -77,7 +81,7 @@ EOF
 . Create the certificate. Edit the domain name:
 +
 ----
-cat <<EOF | kubectl apply -f -
+cat <<EOF | {orch-cli} apply -f -
 apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
@@ -102,14 +106,14 @@ The cert-manager logs contain information about the DNS challenge.
 . Obtain the logs using the following command (here, `cert-manager-8d478bb45-2924h` is the name of the cert-manager Pod):
 +
 ----
-$  kubectl logs -f -n cert-manager cert-manager-8d478bb45-2924h
+$  {orch-cli} logs -f -n cert-manager cert-manager-8d478bb45-2924h
 ----
 
 . Ensure that the certificate is ready:
 +
 [subs="+attributes"]
 ----
-$ kubectl describe certificate/che-tls -n {prod-namespace}
+$ {orch-cli} describe certificate/che-tls -n {prod-namespace}
 
 Status:
   Conditions:
@@ -130,7 +134,7 @@ Events:
 . Wait for the status to show *OK* and ensure that the log contains the following:
 +
 ----
-$ kubectl describe certificate/che-tls -n {prod-namespace}
+$ {orch-cli} describe certificate/che-tls -n {prod-namespace}
 Name:         che-tls
 Namespace:    che
 Labels:       <none>
