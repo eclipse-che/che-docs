@@ -1,5 +1,5 @@
 [id="creating-a-telemetry-plugin_{context}"]
-= Creating A Telemetry Plugin
+= Creating A Telemetry Plug-in
 
 This section shows how to create an `AnalyticsManager` class that extends link:https://github.com/che-incubator/che-workspace-telemetry-client/blob/master/backend-base/src/main/java/org/eclipse/che/incubator/workspace/telemetry/base/AbstractAnalyticsManager.java[`AbstractAnalyticsManager`] and implements the following methods:
 
@@ -8,6 +8,13 @@ This section shows how to create an `AnalyticsManager` class that extends link:h
 * `onActivity()` - notifies that some activity is still happening for a given user. This is mainly used to send `WORKSPACE_INACTIVE` events.
 * `onEvent()` - submits telemetry events to the telemetry server, such as `WORKSPACE_USED` or `WORKSPACE_STARTED`.
 * `increaseDuration()` - increases the duration of a current event rather than sending multiple events in a small frame of time.
+
+The following section covers:
+
+* Creation of a telemetry server to echo events to standard output.
+* Extending the {prod-short} telemetry client and implementing a user's custom back-end.
+* Creating a `meta.yaml` file representing a {prod-short} workspace plug-in for a user's custom back-end.
+* Specifying of a location of a custom plug-in to {prod-short} by setting the `CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR_PLUGINS` environment variable.
 
 == Getting Started
 
@@ -111,8 +118,8 @@ $ mvn quarkus:dev -Dquarkus.http.port=${CHE_WORKSPACE_TELEMETRY_BACKEND_PORT} \
 
 Create two new files in your project:
 
-* `AnalyticsManager.java` contains the logic specific to our telemetry system.
-* `MainConfiguration.java` is the main entrypoint that creates an instance of `AnalyticsManager` and starts listening for events.
+* `AnalyticsManager.java` - contains the logic specific to our telemetry system.
+* `MainConfiguration.java` - is the main entrypoint that creates an instance of `AnalyticsManager` and starts listening for events.
 
 .AnalyticsManager.java
 [source,java]
@@ -148,11 +155,11 @@ It is possible to put more a complex login in `isEnabled()`. For example, the se
 include::example$telemetry/onEvent.java[]
 ----
 
-This sends an HTTP request to the telemetry server and automatically debounces identical events in a small time period (the default is 1500 milliseconds, and it can be changed by subclasses.
+This sends an HTTP request to the telemetry server and automatically debounces identical events in a small time period, where the default value is 1500 milliseconds. It is possible to modify this period by setting subclasses.
 
 == Implementing `increaseDuration()`
 
-Many telemetry systems recognize event duration. The `AbstractAnalyticsManager` merges similar events that happen in the same frame of time into one event, so that you do not get several identical events sent to the server in a small frame of time. This implementation of `increaseDuration()` is a no-op. This method uses the APIs of your telemetry provider to alter the event or event properties to reflect an increased duration of the event.
+Many telemetry systems recognize event duration. The `AbstractAnalyticsManager` merges similar events that happen in the same frame of time into one event, so that a user does not get several identical events sent to the server in a small time frame. This implementation of `increaseDuration()` is a no-op. This method uses the APIs of a user's telemetry provider to alter the event or event properties to reflect an event's increased duration.
 
 .AnalyticsManager.java
 [source,java]
@@ -196,14 +203,16 @@ Create a `meta.yaml` definition representing a {prod-short} plug-in that runs yo
 include::example$telemetry/sample_meta.yaml[]
 ----
 
-Ordinarily, you would deploy this file to a corporate web server. For this guide, we create an Apache web server on OpenShift and host the plug-in there. Create a configMap referencing your new `meta.yaml` file.
+Usually, a user would deploy this file to a corporate web server. For this guide, we create an Apache web server on OpenShift and host the plug-in there.
+
+Create a configMap referencing the new `meta.yaml` file.
 
 [subs="+attributes"]
 ----
 $ oc create configmap --from-file=meta.yaml -n {prod-namespace} telemetry-plugin-meta
 ----
 
-Then create a deployment, a service, and a route to expose the web server. The deployment references this configMap and places it in the `/var/www/html` directory.
+Create a deployment, a service, and a route to expose the web server. The deployment references this configMap and places it in the `/var/www/html` directory.
 
 .manifests.yaml
 [source,yaml,subs="+quotes,+attributes"]
@@ -232,17 +241,9 @@ Update the `CheCluster` Custom Resource, and add the `CHE_WORKSPACE_DEVFILE_DEFA
 include::example$telemetry/che_cluster_with_custom_plugin.yaml[]
 ----
 
-Wait for the {prod-short} server to restart, and create a new workspace. You should see a new message saying that your plug-in is being installed into the workspace.
+Wait for the {prod-short} server to restart, and create a new workspace. See a new message stating that the plug-in is being installed into the workspace.
 
 image::telemetry/custom_telemetry_plugin.png[]
 
-Perform a some operations in the workspace you started. You should see those events in the logs of the example telemetry server.
+Perform any operations in the started workspace and observe their events in the example telemetry server logs.
 
-== Summary
-
-In this guide, you:
-
-* Created a telemetry server to echo events to standard out.
-* Extended the {prod-short} telemetry client and implemented your own custom back-end.
-* Created a `meta.yaml` file to represent a {prod-short} workspace plug-in for your custom back-end.
-* Told {prod-short} where to find your custom plug-in by changing the `CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR_PLUGINS` environment variable.
