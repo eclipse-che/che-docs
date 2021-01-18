@@ -23,16 +23,6 @@ spec:
       command:
       - cat
       tty: true
-    - name: antora
-      image: docker.io/antora/antora
-      command:
-      - cat
-      tty: true
-    - name: vale
-      image: docker.io/jdkato/vale
-      command:
-      - cat
-      tty: true
   volumes:
   - configMap:
       name: known-hosts
@@ -80,23 +70,12 @@ spec:
       }
     }
 
-    stage('Generate reference tables') {
-      steps {
-        milestone 11
-        container('che-docs') {
-          dir('che-docs') {
-                sh './tools/environment_docs_gen.sh'
-            }
-        }
-        milestone 12
-      }
-    }
-
     stage('Build che-docs website') {
       steps {
         milestone 21
-        container('antora') {
+        container('che-docs') {
           dir('che-docs') {
+                sh './tools/environment_docs_gen.sh'
                 sh 'CI=true antora generate antora-playbook.yml --stacktrace'
             }
         }
