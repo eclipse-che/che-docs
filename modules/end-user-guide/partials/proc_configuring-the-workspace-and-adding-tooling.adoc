@@ -1,9 +1,9 @@
 // Module included in the following assemblies:
 //
-// creating-and-configuring-a-new-workspace
+// configuring-a-workspace-with-dashboard
 
 [id="configuring-the-workspace-and-adding-tooling_{context}"]
-= Configuring the workspace and adding tools
+= Configuring the workspace tools
 
 [id="adding-plug-ins_{context}"]
 == Adding plug-ins
@@ -12,7 +12,7 @@
 
 * A running instance of {prod}. To install an instance of {prod}, see {link-installing-an-instance}.
 
-* An existing workspace defined on this instance of {prod}. See xref:creating-and-configuring-a-new-workspace.adoc[Creating and configuring a new {prod-short} {prod-ver} workspace].
+* An existing workspace defined on this instance of {prod}. See xref:configuring-a-workspace-with-dashboard.adoc[Creating and configuring a new {prod-short} {prod-ver} workspace].
 
 .Procedure
 
@@ -32,7 +32,7 @@ image::workspaces/workspace-add-plugin.png[]
 
 * A running instance of {prod}. To install an instance of {prod}, see {link-installing-an-instance}.
 
-* An existing workspace defined on this instance of {prod}. See xref:creating-and-configuring-a-new-workspace.adoc[Creating and configuring a new {prod-short} {prod-ver} workspace].
+* An existing workspace defined on this instance of {prod}. See xref:configuring-a-workspace-with-dashboard.adoc[Creating and configuring a new {prod-short} {prod-ver} workspace].
 
 .Procedure
 
@@ -47,165 +47,3 @@ NOTE: The recommended editor for {prod-short} {prod-ver} is Che-Theia.
 +
 image::workspaces/workspace-add-editor.png[]
 
-
-[id="defining-specific-container-images_{context}"]
-== Defining specific container images
-
-.Prerequisites
-
-* A running instance of {prod}. To install an instance of {prod}, see {link-installing-an-instance}.
-
-* An existing workspace defined on this instance of {prod}. See xref:creating-and-configuring-a-new-workspace.adoc[Creating and configuring a new {prod-short} {prod-ver} workspace].
-
-.Procedure
-
-To add a new container image:
-
-. In the *Devfile* tab, add the following section under the *components* property:
-+
-[source,yaml]
-----
-components:
-  - mountSources: true
-    command:
-      - sleep
-    args:
-      - infinity
-    memoryLimit: 1Gi
-    alias: maven3-jdk11
-    type: dockerimage
-    endpoints:
-      - name: 8080/tcp
-        port: 8080
-    volumes:
-      - name: projects
-        containerPath: /projects
-    image: 'maven:3.6.0-jdk-11'
-----
-ifeval::["{project-context}" == "che"]
-+
-. When using `type: kubernetes` or `type: openshift`:
-+
-* Use separate recipe files.
-+
-To use separate recipe files, specify relative or absolute paths:
-+
-.Example
-+
-[source,yaml]
-----
-...
-    type: kubernetes
-    reference: deploy_k8s.yaml
-...
-----
-+
-[source,yaml]
-----
-...
-    type: openshift
-    reference: deploy_openshift.yaml
-...
-----
-endif::[]
-
-. Add a {prod-short} {prod-prev-ver} recipe content to the {prod-short} {prod-ver} devfile as `referenceContent`:
-+
-image::workspaces/component_as_a_referenceContent.png[link="../_images/workspaces/component_as_a_referenceContent.png"]
-
-.. Set the type from the original {prod-short} {prod-prev-ver} configuration. The following is an example of the resulting file:
-+
-[source,yaml]
-----
-  type: kubernetes
-  referenceContent: |
-    apiVersion: v1
-    kind: Pod
-    metadata:
-     name: ws
-    spec:
-     containers:
-      -
-       image: 'rhche/centos_jdk8:latest'
-       name: dev
-       resources:
-       limits:
-         memory: 512Mi
-----
-
-. Copy the required fields, such as `image`, `volumes`, and `endpoints` from the old workspace. See below:
-+
-image::workspaces/workspace_devfile_che_7_.png[]
-
-. If needed, change the `memoryLimit` and `alias` variables. The field `alias` is used to set a name for the component and if not manually set, it is generated from the values of the `image` attribute field.
-+
-[source,yaml]
-----
-  image: 'maven:3.6.0-jdk-11'
-  alias: maven3-jdk11
-----
-
-. To specify the `RAM` component requirements, set the `memoryLimit`, `memoryRequest`, or both.
-+
-[source,yaml]
-----
-  alias: maven3-jdk11
-  memoryLimit: 256M
-  memoryRequest: 128M
-----
-
-. Repeat the steps to add additional container images.
-
-
-[id="adding-commands-to-your-workspace_{context}"]
-== Adding commands to your workspace
-
-The following image is a demonstration of workspace configuration commands in  {prod-short} {prod-ver}:
-
-.An example of the Workspace configuration commands in {prod-short} {prod-ver}
-image::workspaces/workspace-devfile.png[]
-
-.Prerequisites
-
-* A running instance of {prod}. To install an instance of {prod}, see {link-installing-an-instance}.
-
-* An existing workspace defined on this instance of {prod}. See xref:creating-and-configuring-a-new-workspace.adoc[Creating and configuring a new {prod-short} {prod-ver} workspace].
-
-.Procedure
-
-To define commands to your workspace, edit the workspace devfile:
-
-. Add or edit the `command` section with the first command. Change the `name` and the `command` fields from the original workspace configuration (see the preceding equivalence table).
-+
-[source,yaml]
-----
-commands:
-  - name: build
-    actions:
-      - type: exec
-        command: mvn clean install
-----
-
-. To add a new command or edit command from other devfile, copy the following YAML code into the `command` section and define the a command. 
-
-.. Change the `name` and the `command` fields from the original workspace configuration, as shown in the introduction screenshot of this chapter.
-+
-[source,yaml]
-----
-  - name: build and run
-    actions:
-      - type: exec
-        command: mvn clean install && java -jar
-----
-
-. Optionally, add the `component` field into `actions`. This indicates the component alias where the command will be performed.
-
-. Repeat step 2 to add more commands to the devfile.
-
-. Click the *Devfile* tab to view the changes.
-+
-image::workspaces/workspace-devfile-changes.png[]
-
-. Save changes and start the new {prod-short} {prod-ver} workspace.
-+
-image::workspaces/save-and-start-the-new-che-workspace.png[link="../_images/workspaces/save-and-start-the-new-che-workspace.png"]
