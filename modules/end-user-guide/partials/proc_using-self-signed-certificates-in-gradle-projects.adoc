@@ -9,36 +9,22 @@ Internal artifact repositories often do not have a certificate signed by an auth
 
 .Procedure
 
-. Obtain a server certificate file from the repository server. It is often a file named `tls.crt`.
+. Obtain a server certificate file from the repository server. It is customary for administrators to provide certificates of internal artifact servers as Kubernetes secrets (see xref:installation-guide:importing-untrusted-tls-certificates.adoc[]). The relevant server certificates will be mounted in `/public-certs` in every container in the workspace.
 
-.. Create a Java truststore file:
+.. Copy the original Java truststore file:
 +
 ----
-$ keytool -import -file tls.crt -alias nexus -keystore truststore.jks -storepass changeit
-
-Trust this certificate? [no]:  yes
+$ mkdir /projects/maven
+$ cp $JAVA_HOME/lib/security/cacerts /projects/maven/truststore.jks
+$ chmod +w /projects/maven/truststore.jks
+----
++
+.. Import the certificate into the Java truststore file
++
+----
+$ keytool -import -noprompt -file /public-certs/nexus.cer -alias nexus -keystore /projects/maven/truststore.jks -storepass changeit
 Certificate was added to keystore
-Owner: CN=example.com
-Issuer: CN=example.com
-Serial number: 80ca0f6980c6019a
-Valid from: Thu Feb 06 11:00:29 CET 2020 until: Fri Feb 05 11:00:29 CET 2021
-Certificate fingerprints:
-     MD5:  88:3C:EC:E1:BE:57:DD:9D:46:36:8E:DD:BF:14:04:22
-     SHA1: 08:D8:79:D3:F8:6B:5C:3D:71:AA:23:CA:72:01:47:BD:9D:91:0A:AD
-     SHA256: 5C:BB:66:81:44:D2:50:EE:EB:CE:D6:15:7E:63:E1:9A:71:EA:58:3F:14:01:15:4E:68:5D:71:0A:A0:31:33:29
-Signature algorithm name: SHA256withRSA
-Subject Public Key Algorithm: 4096-bit RSA key
-Version: 3
 
-Extensions:
-
-#1: ObjectId: 2.5.29.17 Criticality=false
-SubjectAlternativeName [
-  DNSName: *.apps.example.com
-]
-
-Trust this certificate? [no]:  yes
-Certificate was added to keystore
 ----
 
 .. Upload the truststore file to `/projects/gradle/truststore.jks` to make it available for all containers.
@@ -56,5 +42,7 @@ Certificate was added to keystore
     env:
        -name: JAVA_OPTS
         value: >-
-          -Duser.home=/projects/gradle -Djavax.net.ssl.trustStore=/projects/maven/truststore.jks
+          -Duser.home=/projects/gradle 
+          -Djavax.net.ssl.trustStore=/projects/maven/truststore.jks
+          -Djavax.net.ssl.trustStorePassword=changeit
 ----
