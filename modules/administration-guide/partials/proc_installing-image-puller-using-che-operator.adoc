@@ -1,0 +1,97 @@
+[id="installing-image-puller-using-che-operator_{context}"]
+= Installing {image-puller-name-short} using {prod-short} Operator
+
+Since version 7.24, it has been possible to use the {prod-short} Operator to install the {image-puller-name-short}. The Operator Spec has an `ImagePuller` field with the same parameters as the {image-puller-name-short} Operator.
+
+This is a Community-Supported tech preview feature.
+
+.Prerequisites
+
+* xref:defining-the-list-of-images-to-pull.adoc[]
+* xref:defining-the-memory-parameters-for-the-image-puller.adoc[]
+* Operator Lifecycle Manager must be installed when deploying to Kubernetes, or the OperatorHub on OpenShift.
+* The {prod-short} Operator must be installed.
+
+.Procedure
+
+Edit the `CheCluster` Custom Resource and set `.spec.imagePuller.enable` to `true`
+
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  name: eclipse-che
+spec:
+  ...
+  imagePuller:
+    enable: true
+----
+
+This will create a `Subscription` to `kubernetes-imagepuller-operator`, and you will see a `ClusterServiceVersion` in the `eclipse-che namespace`:
+
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} get clusterserviceversions
+NAME                                     DISPLAY                            VERSION   REPLACES              PHASE
+eclipse-che.v7.24.2                      Eclipse Che                        7.24.2    eclipse-che.v7.24.1   Succeeded
+kubernetes-imagepuller-operator.v0.0.4   Kubernetes Image Puller Operator   0.0.4                           Succeeded
+
+----
+
+You will also see two new `Deployments`, one for the {image-puller-name-short} Operator, and one for the {image-puller-name-short}. You will also see a `KubernetesImagePuller` Custom Resource that was created by the Operator:
+
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} get deployments
+NAME                               READY   UP-TO-DATE   AVAILABLE   AGE
+che                                1/1     1            1           28h
+che-operator                       1/1     1            1           7d2h
+devfile-registry                   1/1     1            1           28h
+keycloak                           1/1     1            1           28h
+kubernetes-image-puller            1/1     1            1           10m
+kubernetes-image-puller-operator   1/1     1            1           11m
+plugin-registry                    1/1     1            1           28h
+postgres                           1/1     1            1           28h
+
+{orch-cli} get kubernetesimagepullers
+NAME                       AGE
+eclipse-che-image-puller   11m
+----
+
+.Configuring
+
+The {image-puller-name-short} is configurable with the same parameters passed to {image-puller-name-short} Operator. Set the `imagePuller.spec` to configure the {image-puller-name-short} parameters for the {prod-short} Operator.
+
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  name: eclipse-che
+spec:
+  ...
+  imagePuller:
+    enable: true
+    spec:
+        configMapName: image-puller-custom-config-map-name
+        daemonsetName: image-puller-custom-daemonset-name
+        deploymentName: image-puller-custom-deployment-name
+        images: java11-maven=quay.io/eclipse/che-java11-maven:nightly;che-theia=quay.io/eclipse/che-theia:next;java-plugin-runner=eclipse/che-remote-plugin-runner-java8:latest;
+----
+
+.Uninstalling
+
+To uninstall the {image-puller-name-short}, set `spec.imagePuller.enable` in the `CheCluster` Custom Resource to `false`:
+
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  name: eclipse-che
+spec:
+  ...
+  imagePuller:
+    enable: false
+----
