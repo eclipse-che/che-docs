@@ -1,0 +1,159 @@
+[id="checluster-custom-resource-server-settings_{context}"]
+.`CheCluster` Custom Resource `server` settings, related to the {prod-short} server component.
+
+[cols="2,5", options=header]
+:=== 
+ Property: Description 
+airGapContainerRegistryHostname: Optional hostname (or url) to an alternate container registry to pull images from. This value overrides the container registry hostname defined in all the default container images involved in a Che deployment. This is particularly useful to install Che in an air-gapped environment.
+airGapContainerRegistryOrganization: Optional repository name of an alternate container registry to pull images from. This value overrides the container registry organization defined in all the default container images involved in a Che deployment. This is particularly useful to install Che in an air-gapped environment.
+allowUserDefinedWorkspaceNamespaces: Defines if a user is able to specify Kubernetes namespace (or OpenShift project) different from the default. It's NOT RECOMMENDED to configured true without OAuth configured. This property is also used by the OpenShift infra.
+cheClusterRoles: Comma-separated list of ClusterRoles that will be assigned to che ServiceAccount. Be aware that che-operator has to already have all permissions in these ClusterRoles to be able to grant them.
+cheDebug: Enables the debug mode for Che server. Defaults to `false`.
+cheFlavor: Flavor of the installation. This is either `che` for upstream Che installations, or `codeready` for CodeReady Workspaces installation. In most cases the default value should not be overridden.
+cheHost: Public hostname of the installed Che server. If value is omitted then it will be automatically set by the operator. (see the `cheHostTLSSecret` field).
+cheHostTLSSecret: Name of a secret containing certificates to secure ingress/route for the custom hostname of the installed Che server. (see the `cheHost` field).
+cheImage: Overrides the container image used in Che deployment. This does NOT include the container image tag. Omit it or leave it empty to use the defaut container image provided by the operator.
+cheImagePullPolicy: Overrides the image pull policy used in Che deployment. Default value is `Always` for `nightly` or `latest` images, and `IfNotPresent` in other cases.
+cheImageTag: Overrides the tag of the container image used in Che deployment. Omit it or leave it empty to use the defaut image tag provided by the operator.
+cheLogLevel: Log level for the Che server\: `INFO` or `DEBUG`. Defaults to `INFO`.
+cheServerIngress: Che server ingress custom settings
+cheServerRoute: Che server route custom settings
+cheWorkspaceClusterRole: Custom cluster role bound to the user for the Che workspaces. The default roles are used if this is omitted or left blank.
+customCheProperties: Map of additional environment variables that will be applied in the generated `che` config map to be used by the Che server, in addition to the values already generated from other fields of the `CheCluster` custom resource (CR). If `customCheProperties` contains a property that would be normally generated in `che` config map from other CR fields, then the value defined in the `customCheProperties` will be used instead.
+devfileRegistryImage: Overrides the container image used in the Devfile registry deployment. This includes the image tag. Omit it or leave it empty to use the defaut container image provided by the operator.
+devfileRegistryIngress: Devfile registry ingress custom settings
+devfileRegistryMemoryLimit: Overrides the memory limit used in the Devfile registry deployment. Defaults to 256Mi.
+devfileRegistryMemoryRequest: Overrides the memory request used in the Devfile registry deployment. Defaults to 16Mi.
+devfileRegistryPullPolicy: Overrides the image pull policy used in the Devfile registry deployment. Default value is `Always` for `nightly` or `latest` images, and `IfNotPresent` in other cases.
+devfileRegistryRoute: Devfile registry route custom settings
+devfileRegistryUrl: Public URL of the Devfile registry, that serves sample, ready-to-use devfiles. You should set it ONLY if you use an external devfile registry (see the `externalDevfileRegistry` field). By default this will be automatically calculated by the operator.
+externalDevfileRegistry: Instructs the operator on whether or not to deploy a dedicated Devfile registry server. By default a dedicated devfile registry server is started. But if `externalDevfileRegistry` is `true`, then no such dedicated server will be started by the operator and you will have to manually set the `devfileRegistryUrl` field
+externalPluginRegistry: Instructs the operator on whether or not to deploy a dedicated Plugin registry server. By default a dedicated plugin registry server is started. But if `externalPluginRegistry` is `true`, then no such dedicated server will be started by the operator and you will have to manually set the `pluginRegistryUrl` field.
+gitSelfSignedCert: If enabled, then the certificate from `che-git-self-signed-cert` config map will be propagated to the Che components and provide particular configuration for Git.
+nonProxyHosts: List of hosts that should not use the configured proxy. So specify wild card domain use the following form `.<DOMAIN>` and `|` as delimiter, eg\: `localhost|.my.host.com|123.42.12.32` Only use when configuring a proxy is required. Operator respects OpenShift cluster wide proxy configuration and no additional configuration is required, but defining `nonProxyHosts` in a custom resource leads to merging non proxy hosts lists from the cluster proxy configuration and ones defined in the custom resources. (see the doc https\://docs.openshift.com/container-platform/4.4/networking/enable-cluster-wide-proxy.html) (see also the `proxyURL` fields).
+pluginRegistryImage: Overrides the container image used in the Plugin registry deployment. This includes the image tag. Omit it or leave it empty to use the default container image provided by the operator.
+pluginRegistryIngress: Plugin registry ingress custom settings
+pluginRegistryMemoryLimit: Overrides the memory limit used in the Plugin registry deployment. Defaults to 256Mi.
+pluginRegistryMemoryRequest: Overrides the memory request used in the Plugin registry deployment. Defaults to 16Mi.
+pluginRegistryPullPolicy: Overrides the image pull policy used in the Plugin registry deployment. Default value is `Always` for `nightly` or `latest` images, and `IfNotPresent` in other cases.
+pluginRegistryRoute: Plugin registry route custom settings
+pluginRegistryUrl: Public URL of the Plugin registry, that serves sample ready-to-use devfiles. You should set it ONLY if you use an external devfile registry (see the `externalPluginRegistry` field). By default this will be automatically calculated by the operator.
+proxyPassword: Password of the proxy server Only use when proxy configuration is required (see also the `proxyURL`, `proxyUser` and `proxySecret` fields).
+proxyPort: Port of the proxy server. Only use when configuring a proxy is required. (see also the `proxyURL` and `nonProxyHosts` fields).
+proxySecret: The secret that contains `user` and `password` for a proxy server. If the secret is defined then `proxyUser` and `proxyPassword` are ignored
+proxyURL: URL (protocol+hostname) of the proxy server. This drives the appropriate changes in the `JAVA_OPTS` and `https(s)_proxy` variables in the Che server and workspaces containers. Only use when configuring a proxy is required. Operator respects OpenShift cluster wide proxy configuration and no additional configuration is required, but defining `proxyUrl` in a custom resource leads to overrides the cluster proxy configuration with fields `proxyUrl`, `proxyPort`, `proxyUser` and `proxyPassword` from the custom resource. (see the doc https\://docs.openshift.com/container-platform/4.4/networking/enable-cluster-wide-proxy.html) (see also the `proxyPort` and `nonProxyHosts` fields).
+proxyUser: User name of the proxy server. Only use when configuring a proxy is required (see also the `proxyURL`, `proxyPassword` and `proxySecret` fields).
+selfSignedCert: Deprecated. The value of this flag is ignored. Che operator will automatically detect if router certificate is self-signed. If so it will be propagated to Che server and some other components.
+serverExposureStrategy: Sets the server and workspaces exposure type. Possible values are \multi-host\, \single-host\, \default-host\. Defaults to \multi-host\ which creates a separate ingress (or route on OpenShift) for every required endpoint. \single-host\ makes Che exposed on a single hostname with workspaces exposed on subpaths. Please read the docs to learn about the limitations of this approach. Also consult the `singleHostExposureType` property to further configure how the operator and Che server make that happen on Kubernetes. \default-host\ exposes che server on the host of the cluster. Please read the docs to learn about the limitations of this approach.
+serverMemoryLimit: Overrides the memory limit used in the Che server deployment. Defaults to 1Gi.
+serverMemoryRequest: Overrides the memory request used in the Che server deployment. Defaults to 512Mi.
+serverTrustStoreConfigMapName: Name of the config-map with public certificates to add to Java trust store of the Che server. This is usually required when adding the OpenShift OAuth provider which has https endpoint signed with self-signed cert. So, Che server must be aware of its CA cert to be able to request it. This is disabled by default.
+singleHostGatewayConfigMapLabels: The labels that need to be present (and are put) on the configmaps representing the gateway configuration.
+singleHostGatewayConfigSidecarImage: The image used for the gateway sidecar that provides configuration to the gateway. Omit it or leave it empty to use the defaut container image provided by the operator.
+singleHostGatewayImage: The image used for the gateway in the single host mode. Omit it or leave it empty to use the defaut container image provided by the operator.
+tlsSupport: Deprecated. Instructs the operator to deploy Che in TLS mode. This is enabled by default. Disabling TLS may cause malfunction of some Che components.
+useInternalClusterSVCNames: Use internal cluster svc names to communicate between components to speed up the traffic and avoid proxy issues. The default value is `true`.
+workspaceNamespaceDefault: Defines Kubernetes default namespace in which user's workspaces are created if user does not override it. It's possible to use <username>, <userid> and <workspaceid> placeholders (e.g.\: che-workspace-<username>). In that case, new namespace will be created for each user (or workspace). Is used by OpenShift infra as well to specify Project
+:=== 
+
+[id="checluster-custom-resource-database-settings_{context}"]
+.`CheCluster` Custom Resource `database` configuration settings related to the database used by {prod-short}.
+
+[cols="2,5", options=header]
+:=== 
+ Property: Description 
+chePostgresDb: Postgres database name that the Che server uses to connect to the DB. Defaults to `dbche`.
+chePostgresHostName: Postgres Database hostname that the Che server uses to connect to. Defaults to postgres. This value should be overridden ONLY when using an external database (see field `externalDb`). In the default case it will be automatically set by the operator.
+chePostgresPassword: Postgres password that the Che server should use to connect to the DB. If omitted or left blank, it will be set to an auto-generated value.
+chePostgresPort: Postgres Database port that the Che server uses to connect to. Defaults to 5432. This value should be overridden ONLY when using an external database (see field `externalDb`). In the default case it will be automatically set by the operator.
+chePostgresSecret: The secret that contains Postgres `user` and `password` that the Che server should use to connect to the DB. If the secret is defined then `chePostgresUser` and `chePostgresPassword` are ignored. If the value is omitted or left blank then there are two scenarios\: 1. `chePostgresUser` and `chePostgresPassword` are defined, then they will be used to connect to the DB. 2. `chePostgresUser` or `chePostgresPassword` are not defined, then a new secret with the name `che-postgres-secret` will be created with default value of `pgche` for `user` and with an auto-generated value for `password`.
+chePostgresUser: Postgres user that the Che server should use to connect to the DB. Defaults to `pgche`.
+externalDb: Instructs the operator on whether or not to deploy a dedicated database. By default a dedicated Postgres database is deployed as part of the Che installation. But if `externalDb` is `true`, then no dedicated database will be deployed by the operator and you might need to provide connection details to the external DB you want to use. See also all the fields starting with\: `chePostgres`.
+postgresImage: Overrides the container image used in the Postgres database deployment. This includes the image tag. Omit it or leave it empty to use the defaut container image provided by the operator.
+postgresImagePullPolicy: Overrides the image pull policy used in the Postgres database deployment. Default value is `Always` for `nightly` or `latest` images, and `IfNotPresent` in other cases.
+:=== 
+
+[id="checluster-custom-resource-auth-settings_{context}"]
+.Custom Resource `auth` configuration settings related to authentication used by {prod-short}.
+
+[cols="2,5", options=header]
+:=== 
+ Property: Description 
+externalIdentityProvider: Instructs the operator on whether or not to deploy a dedicated Identity Provider (Keycloak or RH SSO instance). By default a dedicated Identity Provider server is deployed as part of the Che installation. But if `externalIdentityProvider` is `true`, then no dedicated identity provider will be deployed by the operator and you might need to provide details about the external identity provider you want to use. See also all the other fields starting with\: `identityProvider`.
+identityProviderAdminUserName: Overrides the name of the Identity Provider admin user. Defaults to `admin`.
+identityProviderClientId: Name of a Identity provider (Keycloak / RH SSO) `client-id` that should be used for Che. This is useful to override it ONLY if you use an external Identity Provider (see the `externalIdentityProvider` field). If omitted or left blank, it will be set to the value of the `flavour` field suffixed with `-public`.
+identityProviderImage: Overrides the container image used in the Identity Provider (Keycloak / RH SSO) deployment. This includes the image tag. Omit it or leave it empty to use the defaut container image provided by the operator.
+identityProviderImagePullPolicy: Overrides the image pull policy used in the Identity Provider (Keycloak / RH SSO) deployment. Default value is `Always` for `nightly` or `latest` images, and `IfNotPresent` in other cases.
+identityProviderIngress: Ingress custom settings
+identityProviderPassword: Overrides the password of Keycloak admin user. This is useful to override it ONLY if you use an external Identity Provider (see the `externalIdentityProvider` field). If omitted or left blank, it will be set to an auto-generated password.
+identityProviderPostgresPassword: Password for The Identity Provider (Keycloak / RH SSO) to connect to the database. This is useful to override it ONLY if you use an external Identity Provider (see the `externalIdentityProvider` field). If omitted or left blank, it will be set to an auto-generated password.
+identityProviderPostgresSecret: The secret that contains `password` for The Identity Provider (Keycloak / RH SSO) to connect to the database. If the secret is defined then `identityProviderPostgresPassword` will be ignored. If the value is omitted or left blank then there are two scenarios\: 1. `identityProviderPostgresPassword` is defined, then it will be used to connect to the database. 2. `identityProviderPostgresPassword` is not defined, then a new secret with the name `che-identity-postgres-secret` will be created with an auto-generated value for `password`.
+identityProviderRealm: Name of a Identity provider (Keycloak / RH SSO) realm that should be used for Che. This is useful to override it ONLY if you use an external Identity Provider (see the `externalIdentityProvider` field). If omitted or left blank, it will be set to the value of the `flavour` field.
+identityProviderRoute: Route custom settings
+identityProviderSecret: The secret that contains `user` and `password` for Identity Provider. If the secret is defined then `identityProviderAdminUserName` and `identityProviderPassword` are ignored. If the value is omitted or left blank then there are two scenarios\: 1. `identityProviderAdminUserName` and `identityProviderPassword` are defined, then they will be used. 2. `identityProviderAdminUserName` or `identityProviderPassword` are not defined, then a new secret with the name `che-identity-secret` will be created with default value `admin` for `user` and with an auto-generated value for `password`.
+identityProviderURL: Public URL of the Identity Provider server (Keycloak / RH SSO server). You should set it ONLY if you use an external Identity Provider (see the `externalIdentityProvider` field). By default this will be automatically calculated and set by the operator.
+oAuthClientName: Name of the OpenShift `OAuthClient` resource used to setup identity federation on the OpenShift side. Auto-generated if left blank. See also the `OpenShiftoAuth` field.
+oAuthSecret: Name of the secret set in the OpenShift `OAuthClient` resource used to setup identity federation on the OpenShift side. Auto-generated if left blank. See also the `OAuthClientName` field.
+openShiftoAuth: Enables the integration of the identity provider (Keycloak / RHSSO) with OpenShift OAuth. Enabled by default on OpenShift. This will allow users to directly login with their Openshift user through the Openshift login, and have their workspaces created under personal OpenShift namespaces. WARNING\: the `kubeadmin` user is NOT supported, and logging through it will NOT allow accessing the Che Dashboard.
+updateAdminPassword: Forces the default `admin` Che user to update password on first login. Defaults to `false`.
+:=== 
+
+[id="checluster-custom-resource-storage-settings_{context}"]
+.`CheCluster` Custom Resource `storage` configuration settings related to persistent storage used by {prod-short}.
+
+[cols="2,5", options=header]
+:=== 
+ Property: Description 
+postgresPVCStorageClassName: Storage class for the Persistent Volume Claim dedicated to the Postgres database. If omitted or left blank, default storage class is used.
+preCreateSubPaths: Instructs the Che server to launch a special pod to pre-create a subpath in the Persistent Volumes. Defaults to `false`, however it might need to enable it according to the configuration of your K8S cluster.
+pvcClaimSize: Size of the persistent volume claim for workspaces. Defaults to `1Gi`
+pvcJobsImage: Overrides the container image used to create sub-paths in the Persistent Volumes. This includes the image tag. Omit it or leave it empty to use the defaut container image provided by the operator. See also the `preCreateSubPaths` field.
+pvcStrategy: Persistent volume claim strategy for the Che server. This Can be\:`common` (all workspaces PVCs in one volume), `per-workspace` (one PVC per workspace for all declared volumes) and `unique` (one PVC per declared volume). Defaults to `common`.
+workspacePVCStorageClassName: Storage class for the Persistent Volume Claims dedicated to the Che workspaces. If omitted or left blank, default storage class is used.
+:=== 
+
+[id="checluster-custom-resource-k8s-settings_{context}"]
+.`CheCluster` Custom Resource `k8s` configuration settings specific to {prod-short} installations on {platforms-name}.
+
+[cols="2,5", options=header]
+:=== 
+ Property: Description 
+ingressClass: Ingress class that will define the which controler will manage ingresses. Defaults to `nginx`. NB\: This drives the `is kubernetes.io/ingress.class` annotation on Che-related ingresses.
+ingressDomain: Global ingress domain for a K8S cluster. This MUST be explicitly specified\: there are no defaults.
+ingressStrategy: Strategy for ingress creation. This can be `multi-host` (host is explicitly provided in ingress), `single-host` (host is provided, path-based rules) and `default-host.*`(no host is provided, path-based rules). Defaults to `\multi-host` Deprecated in favor of \serverExposureStrategy\ in the \server\ section, which defines this regardless of the cluster type. If both are defined, `serverExposureStrategy` takes precedence.
+securityContextFsGroup: FSGroup the Che pod and Workspace pods containers should run in. Defaults to `1724`.
+securityContextRunAsUser: ID of the user the Che pod and Workspace pods containers should run as. Default to `1724`.
+singleHostExposureType: When the serverExposureStrategy is set to \single-host\, the way the server, registries and workspaces are exposed is further configured by this property. The possible values are \native\ (which means that the server and workspaces are exposed using ingresses on K8s) or \gateway\ where the server and workspaces are exposed using a custom gateway based on Traefik. All the endpoints whether backed by the ingress or gateway \route\ always point to the subpaths on the same domain. Defaults to \native\.
+tlsSecretName: Name of a secret that will be used to setup ingress TLS termination if TLS is enabled. If the field is empty string, then default cluster certificate will be used. See also the `tlsSupport` field.
+:=== 
+
+[id="checluster-custom-resource-metrics-settings_{context}"]
+.`CheCluster` Custom Resource `metrics` settings, related to the {prod-short} metrics collection used by {prod-short}.
+
+[cols="2,5", options=header]
+:=== 
+ Property: Description 
+enable: Enables `metrics` Che server endpoint. Default to `true`.
+:=== 
+
+[id="checluster-custom-resource-status-settings_{context}"]
+.`CheCluster` Custom Resource `status` defines the observed state of {prod-short} installation
+
+[cols="2,5", options=header]
+:=== 
+ Property: Description 
+cheClusterRunning: Status of a Che installation. Can be `Available`, `Unavailable`, or `Available, Rolling Update in Progress`
+cheURL: Public URL to the Che server
+cheVersion: Current installed Che version
+dbProvisioned: Indicates if or not a Postgres instance has been correctly provisioned
+devfileRegistryURL: Public URL to the Devfile registry
+helpLink: A URL that can point to some URL where to find help related to the current Operator status.
+keycloakProvisioned: Indicates whether an Identity Provider instance (Keycloak / RH SSO) has been provisioned with realm, client and user
+keycloakURL: Public URL to the Identity Provider server (Keycloak / RH SSO).
+message: A human readable message indicating details about why the pod is in this condition.
+openShiftoAuthProvisioned: Indicates whether an Identity Provider instance (Keycloak / RH SSO) has been configured to integrate with the OpenShift OAuth.
+pluginRegistryURL: Public URL to the Plugin registry
+reason: A brief CamelCase message indicating details about why the pod is in this state.
+:=== 
+
+
