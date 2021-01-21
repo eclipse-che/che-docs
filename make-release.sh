@@ -70,13 +70,7 @@ else
   BASEBRANCH="${BRANCH}"
 fi
 
-# work in tmp dir
-TMP=$(mktemp -d); pushd "$TMP" > /dev/null || exit 1
-
 # get sources from ${BASEBRANCH} branch
-echo "Check out ${REPO} to ${TMP}/${REPO##*/}"
-git clone "${REPO}" -q
-cd "${REPO##*/}" || exit 1
 git fetch origin "${BASEBRANCH}":"${BASEBRANCH}"
 git checkout "${BASEBRANCH}"
 
@@ -121,8 +115,3 @@ fi
 [[ $VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; NEXT="${BASH_REMATCH[3]}"; (( NEXT=NEXT+1 )) # for VERSION=7.7.1, get BASE=7.7, NEXT=2
 NEXTVERSION_Z="${BASE}.${NEXT}-SNAPSHOT"
 bump_version ${NEXTVERSION_Z} ${BRANCH}
-
-popd > /dev/null || exit
-
-# cleanup tmp dir
-cd /tmp && rm -fr "$TMP"
