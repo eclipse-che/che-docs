@@ -34,7 +34,7 @@ In the command, substitute `_<host:port>_` for the host and port of the HTTPS co
 ====
 * When `githost` is not specified, the given certificate is used for all HTTPS repositories.
 * The certificate file must be named `ca.crt`.
-* Certificate files are typically stored as Base64 ASCII files, such as. `.pem`, `.crt`, `.ca-bundle`. Also, they can be encoded as binary data, for example, `.cer`.  All `Secrets` that hold certificate files should use the Base64 ASCII certificate rather than the binary data certificate. 
+* Certificate files are typically stored as Base64 ASCII files, such as. `.pem`, `.crt`, `.ca-bundle`. Also, they can be encoded as binary data, for example, `.cer`.  All `Secrets` that hold certificate files should use the Base64 ASCII certificate rather than the binary data certificate.
 ====
 
 . Configure the workspace exposure strategy:
@@ -47,9 +47,9 @@ ifeval::["{project-context}" == "che"]
 . Go to `deploy/kubernetes/helm/che` directory
 . Update the `global.useGitSelfSignedCerts` property. To do that, add the following option to the `helm upgrade` command:
 +
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
-$ helm upgrade che -n che --set global.useGitSelfSignedCerts=true \
+$ helm upgrade che -n {prod-namespace} --set global.useGitSelfSignedCerts=true \
   --set global.ingressDomain=__<kubernetes-cluster-domain>__ .
 ----
 

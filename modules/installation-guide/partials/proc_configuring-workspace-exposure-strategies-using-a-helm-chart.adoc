@@ -8,7 +8,7 @@
 
 A link:https://helm.sh/[Helm Chart] is a {kubernetes} extension for defining, installing, and upgrading {kubernetes} applications.
 
-.Procedure 
+.Procedure
 
 When deploying {prod-short} using the Helm chart, configure the workspace exposure strategy using the `global.serverStrategy`.  For single-host, optional `global.singleHostExposure` and `cheSinglehostGateway.deploy` properties may be configured as well. To do so, add the following option to the `helm install` or `helm upgrade` command:
 
@@ -38,9 +38,9 @@ The supported values for `global.serverStrategy` are:
 
 Single-host on Kubernetes has 2 implementations, `native`(default) and `gateway`. To deploy with `gateway` use:
 
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
-$ helm install --namespace __<namespace>__ \
+$ helm install --namespace {prod-namespace} \
 --set global.serverStrategy=single-host \
 --set global.singleHostExposure=gateway \
 --set cheSinglehostGateway.deploy=true
@@ -48,9 +48,9 @@ $ helm install --namespace __<namespace>__ \
 
 or:
 
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
-$ helm upgrade --install che --namespace __<namespace>__ \
+$ helm upgrade --install che --namespace {prod-namespace} \
 --set global.serverStrategy=single-host \
 --set global.singleHostExposure=gateway \
 --set cheSinglehostGateway.deploy=true
@@ -58,8 +58,8 @@ $ helm upgrade --install che --namespace __<namespace>__ \
 
 Alternatively, predefined values file can be used as follows:
 
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
-$ helm upgrade --install che --namespace __<namespace>__ \
+$ helm upgrade --install che --namespace {prod-namespace} \
 -f "${SOURCE_HOME_DIR}"/deploy/kubernetes/helm/che/values/single-host-gateway.yaml
 ----
