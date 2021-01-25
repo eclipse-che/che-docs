@@ -1,18 +1,35 @@
 [checking]
 
-aborttimeout=60
-maxfilesizedownload=10000000
-maxfilesizeparse=10000000
-maxnumurls=1000000
-maxrunseconds=60
+# Files larger than NUMBER bytes will be ignored, without downloading anything if accessed over http and an accurate Content-Length header was returned. No more than this amount of a file will be downloaded. The default is 5242880 (5 MB). 67108860 = 64M. Increased to avoid false positives on anchors checks.
+maxfilesizedownload=67108860
+
+# Files larger than NUMBER bytes will not be parsed for links. The default is 1048576 (1 MB). 67108860 = 64M. Increased to avoid false positives on anchors checks.
+maxfilesizeparse=67108860
+
+# When using http, fetch robots.txt, and confirm whether each URL should be accessed before checking. The default is to use robots.txt files. Disabled to avoid false positives on anchors checks.
 robotstxt=0
-# Disable threads to avoid false positives on anchors checks
+
+# Generate no more than the given number of threads. Default number of threads is 10. To disable threading specify a non-positive number. Disabled to avoid false positives on anchors checks.
 threads=-1
-timeout=60
+
+# Checks validity of HTML anchors.
+[AnchorCheck]
+
+[output]
+
+# Output to a file linkchecker-out.html. Valid file output types are text, html, sql, csv, gml, dot, xml, none or failures. Default is no file output. 
+fileoutput=html
+
+
+[text]
+
+# Comma-separated list of parts that have to be logged.
+parts=parenturl,url,realurl,warning,result,intro,outro
+
 
 [filtering]
 
-# Check external links.
+# Check external links. Default is to check internal links only.
 checkextern=1
 
 # URLs matching the given regular expression will be ignored and not checked.
@@ -46,21 +63,4 @@ ignore=
   https://console.aws.amazon.com/*
 
 
-# Checks validity of HTML anchors.
-[AnchorCheck]
-
-[output]
-
-# Output to a files linkchecker-out.html
-fileoutput=html
-
-log=text
-
-# Control printing check status messages. 
-status=0
-
-
-[text]
-
-parts=parenturl,url,realurl,warning,result,intro,outro
 
