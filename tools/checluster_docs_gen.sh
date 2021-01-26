@@ -8,26 +8,22 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 set -o pipefail
+set -e
 
 CURRENT_VERSION=""
 PRODUCT=""
 RAW_CONTENT=""
 NEWLINE=$'\n'
 NEWLINEx2="$NEWLINE$NEWLINE"
-TABLE_HEADER="$NEWLINE[cols=\"2,5\", options="header"]$NEWLINE:=== $NEWLINE Property: Description $NEWLINE"
+TABLE_HEADER="$NEWLINE[cols=\"2,5\", options=\"header\"]$NEWLINE:=== $NEWLINE Property: Description $NEWLINE"
 TABLE_FOOTER=":=== $NEWLINEx2"
-PARENT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")/.." ; pwd -P )
+PARENT_PATH=$(cd "$(dirname "${BASH_SOURCE[0]}")/.."; pwd -P)
 BUFF=""
 OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/checluster-properties.adoc"
 
 fetch_current_version() {
   echo "Trying to read current product version from $PARENT_PATH/antora-playbook.yml..." >&2
-
   CURRENT_VERSION=$(grep 'prod-ver:' "$PARENT_PATH/antora-playbook.yml" | cut -d: -f2 | sed  's/ //g').x
-  if [ $? -ne 0 ]; then
-    echo "Failure: Cannot read version from $PARENT_PATH/antora-playbook.yml" >&2
-    exit 1
-  fi
   if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
      CURRENT_VERSION="master"
   fi
@@ -36,12 +32,7 @@ fetch_current_version() {
 
 fetch_product_name() {
   echo "Trying to read product name from $PARENT_PATH/antora-playbook.yml..." >&2
-
   PRODUCT=$(grep 'prod-id-short:' "$PARENT_PATH/antora-playbook.yml" | cut -d: -f2 | sed  's/ //g')
-  if [ $? -ne 0 ]; then
-    echo "Failure: Cannot read product from $PARENT_PATH/antora-playbook.yml" >&2
-    exit 1
-  fi
   echo "Detected product: $PRODUCT" >&2
 }
 
@@ -56,10 +47,6 @@ fetch_conf_files_content() {
   fi
 
   RAW_CONTENT=$(curl -sf "$CHECLUSTER_PROPERTIES_URL")
-  if [ $? -ne 0 ]; then
-    echo "Failure: Cannot read 'org_v1_che_crd.yaml' from URL $CHECLUSTER_PROPERTIES_URL" >&2
-    exit 1
-  fi
   echo "Fetching content done. Trying to parse it." >&2
 }
 
@@ -80,14 +67,15 @@ parse_content() {
 
 
 parse_section() {
+  local section
   local sectionName=$1
   local id="[id=\"checluster-custom-resource-$sectionName-settings_{context}\"]"
   local caption=$2
 
   if [[ $sectionName == "status" ]]; then
-    local section=$(echo "$RAW_CONTENT" | yq -M '.spec.validation.openAPIV3Schema.properties.status')
+    section=$(echo "$RAW_CONTENT" | yq -M '.spec.validation.openAPIV3Schema.properties.status')
   else
-    local section=$(echo "$RAW_CONTENT" | yq -M '.spec.validation.openAPIV3Schema.properties.spec.properties.'$sectionName)
+     section=$(echo "$RAW_CONTENT" | yq -M '.spec.validation.openAPIV3Schema.properties.spec.properties.'"$sectionName")
   fi
 
   local properties=(
@@ -100,7 +88,7 @@ parse_section() {
   for prop in "${properties[@]}"
   do
     prop="${prop//\"}"
-    description=$(echo "$section" | yq -M '.properties.'$prop'.description')
+    description=$(echo "$section" | yq -M '.properties.'"$prop"'.description')
     description="${description//\"}"
     description="${description//:/\\:}"
     BUFF="$BUFF${prop}: ${description}$NEWLINE"
