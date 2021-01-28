@@ -23,7 +23,7 @@ OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/checluster-propert
 
 fetch_current_version() {
   echo "Trying to read current product version from $PARENT_PATH/antora-playbook.yml..." >&2
-  CURRENT_VERSION=$(grep 'prod-ver:' "$PARENT_PATH/antora-playbook.yml" | cut -d: -f2 | sed  's/ //g').x
+  CURRENT_VERSION=$(yq -M '.asciidoc.attributes."prod-ver"' "$PARENT_PATH/antora-playbook.yml").x
   if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
      CURRENT_VERSION="master"
   fi
@@ -32,15 +32,14 @@ fetch_current_version() {
 
 fetch_product_name() {
   echo "Trying to read product name from $PARENT_PATH/antora-playbook.yml..." >&2
-  PRODUCT=$(grep 'prod-id-short:' "$PARENT_PATH/antora-playbook.yml" | cut -d: -f2 | sed  's/ //g')
+  PRODUCT=$(yq -M '.asciidoc.attributes."prod-id-short"' "$PARENT_PATH/antora-playbook.yml")
   echo "Detected product: $PRODUCT" >&2
 }
-
 
 fetch_conf_files_content() {
   echo "Fetching property files content from GitHub..." >&2
 
-  if [[ $PRODUCT == "che" ]]; then
+  if [[ $PRODUCT == "\"che\"" ]]; then
     CHECLUSTER_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse/che-operator/$CURRENT_VERSION/deploy/crds/org_v1_che_crd.yaml"
   else
     CHECLUSTER_PROPERTIES_URL="https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/crw-$CURRENT_VERSION-rhel-8/deploy/crds/org_v1_che_crd.yaml"
@@ -55,7 +54,7 @@ parse_content() {
   parse_section "database" "\`CheCluster\` Custom Resource \`database\` configuration settings related to the database used by {prod-short}."
   parse_section "auth" "Custom Resource \`auth\` configuration settings related to authentication used by {prod-short}."
   parse_section "storage" "\`CheCluster\` Custom Resource \`storage\` configuration settings related to persistent storage used by {prod-short}."
-  if [[ $PRODUCT == "che" ]]; then
+  if [[ $PRODUCT == "\"che\"" ]]; then
     parse_section "k8s" "\`CheCluster\` Custom Resource \`k8s\` configuration settings specific to {prod-short} installations on {platforms-name}."
   fi
   parse_section "metrics" "\`CheCluster\` Custom Resource \`metrics\` settings, related to the {prod-short} metrics collection used by {prod-short}."
@@ -85,13 +84,14 @@ parse_section() {
   BUFF="$BUFF$id$NEWLINE"
   BUFF="$BUFF.$caption$NEWLINE"
   BUFF="$BUFF$TABLE_HEADER"
-  for prop in "${properties[@]}"
+  for PROP in "${properties[@]}"
   do
-    prop="${prop//\"}"
-    description=$(echo "$section" | yq -M '.properties.'"$prop"'.description')
-    description="${description//\"}"
-    description="${description//:/\\:}"
-    BUFF="$BUFF${prop}: ${description}$NEWLINE"
+    PROP="${PROP//\"}"
+    DESCR_BUFF=$(echo "$section" | yq -M '.properties.'"$PROP"'.description')
+    DESCR_BUFF="${DESCR_BUFF//\"}"
+    DESCR_BUFF="${DESCR_BUFF//:/\\:}"
+    DESCR_BUFF="$(sed 's|\(Eclipse \)\?\bChe\b|{prod-short}|g' <<< $DESCR_BUFF)"
+    BUFF="$BUFF${PROP}: ${DESCR_BUFF}$NEWLINE"
   done
   BUFF="$BUFF$TABLE_FOOTER"
 }
