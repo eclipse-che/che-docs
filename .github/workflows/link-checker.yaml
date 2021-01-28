@@ -26,4 +26,4 @@ jobs:
           ./node_modules/.bin/gulp &
           sleep 10
           # Run link checker
-          docker run --net=host --rm -v $(pwd):/doc linkchecker/linkchecker -f /doc/linkcheckerrc http://localhost:4000
+          docker run --net=host --rm -v $(pwd):/doc --entrypoint=bash quay.io/eclipse/che-docs -c "/usr/bin/linkchecker -f /doc/linkcheckerrc http://localhost:4000"
