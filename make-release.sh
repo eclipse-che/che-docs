@@ -45,12 +45,12 @@ updateYaml() {
   NEWVERSION=${1}; NEWVERSION=${NEWVERSION/-SNAPSHOT/}
   echo "[INFO] update $playbookfile with prod-ver = $NEWVERSION"
 
-  prodPrevVer=$(cat $playbookfile | grep -E "    prod-ver: " | sed -r -e "s#(    prod-ver: )(.+)#\2#")
-  if [[ $prodPrevVer ]]; then replaceFieldSed $playbookfile 'prod-prev-ver' $prodPrevVer; fi
-
-  [[ $NEWVERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; # for VERSION=7.25.2-SNAPSHOT, get BASE=7.25
-  replaceFieldSed $playbookfile 'prod-ver' $BASE
+  [[ $NEWVERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE1="${BASH_REMATCH[1]}"; BASE2="${BASH_REMATCH[2]}"; # for VERSION=7.25.2-SNAPSHOT, get BASE1=7; BASE2=25
+  replaceFieldSed $playbookfile 'prod-ver' "${BASE1}.${BASE2}"
   replaceFieldSed $playbookfile 'prod-ver-patch' $NEWVERSION
+  # set prod-prev-ver = 7.y-1
+  (( BASE2=BASE2-1 ))
+  replaceFieldSed $playbookfile 'prod-prev-ver' "${BASE1}.${BASE2}"
 }
 
 # NOTE that if using yq, comments in the file will be lost and formatting will change!
