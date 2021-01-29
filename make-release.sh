@@ -6,12 +6,14 @@
 # set to 1 to actually trigger changes in the release branch
 TAG_RELEASE=0 
 docommit=1 # by default DO commit the change
+FORCE_NEW_BRANCH=0 # by default don't recreate the .x branch if exists
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t'|'--trigger-release') TAG_RELEASE=1; docommit=1; shift 0;;
     '-r'|'--repo') REPO="$2"; shift 1;;
     '-v'|'--version') VERSION="$2"; shift 1;;
+    '--force') FORCE_NEW_BRANCH=1; shift 1;;
     '-n'|'--nocommit'|'--no-commit') docommit=0; shift 0;;
   esac
   shift 1
@@ -25,6 +27,7 @@ Example: $0 --repo git@github.com:eclipse/che-docs --version 7.25.2
 
 Options: 
   --trigger-release, -t  tag this release
+  --force                if .x branch exists, delete and recreate it
   --no-commit, -n        do not commit changes to branches
 "
 }
@@ -127,7 +130,14 @@ git checkout "${BASEBRANCH}"
 
 # create new branch off ${BASEBRANCH} (or check out latest commits if branch already exists), then push to origin
 if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
-  git branch "${BRANCH}" || git checkout "${BRANCH}" && git pull origin "${BRANCH}"
+  git branch "${BRANCH}" || { 
+    if [[ $FORCE_NEW_BRANCH -eq 1 ]]; then 
+      git branch -D "${BRANCH}" || true
+      git push origin ":${BRANCH}" || true
+      git branch "${BRANCH}"
+    fi
+    git checkout "${BRANCH}" && git pull origin "${BRANCH}"
+  }
   git push origin "${BRANCH}"
   git fetch origin "${BRANCH}:${BRANCH}"
   git checkout "${BRANCH}"
@@ -157,3 +167,5 @@ if [[ $TAG_RELEASE -eq 1 ]]; then
   git push origin "${VERSION}" || true
 fi
 
+# cleanup 
+rm -fr /tmp/$tmpdir
