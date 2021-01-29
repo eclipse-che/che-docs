@@ -7,6 +7,49 @@
 TRIGGER_RELEASE=0 
 NOCOMMIT=0
 
+
+# where in other repos we have a VERSION file, here we have an antora-playbook.yml file which contains some keys:
+#    prod-prev-ver-major: 6 [never changes]
+#    prod-ver-major: 7 [never changes]
+#    prod-prev-ver: 7.24
+#    prod-ver: 7.25
+#    prod-ver-patch: 7.25.2
+playbookfile=antora-playbook.yml
+updateYaml() {
+  NEWVERSION=${1}; NEWVERSION=${NEWVERSION/-SNAPSHOT/}
+  echo "[INFO] update $playbookfile with prod-ver = $NEWVERSION"
+
+  prodPrevVer=$(cat $playbookfile | grep -E "    prod-ver: " | sed -r -e "s#(    prod-ver: )(.+)#\2#")
+  if [[ $prodPrevVer ]]; then replaceFieldSed $playbookfile 'prod-prev-ver' $prodPrevVer; fi
+
+  [[ $NEWVERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; # for VERSION=7.25.2-SNAPSHOT, get BASE=7.25
+  replaceFieldSed $playbookfile 'prod-ver' $BASE
+  replaceFieldSed $playbookfile 'prod-ver-patch' $NEWVERSION
+}
+
+# NOTE that if using yq, comments in the file will be lost and formatting will change!
+#  replaceFieldYq $playbookfile '.asciidoc.attributes."prod-ver"' $BASE
+#  replaceFieldYq $playbookfile '.asciidoc.attributes."prod-ver-patch"' $NEWVERSION
+replaceFieldYq()
+{
+  YAMLFILE=$1
+  updateName=$2
+  updateVal=$3
+  # echo "[INFO] * ${YAMLFILE} ==> ${updateName}: ${updateVal}"
+  cat ${YAMLFILE} | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
+    ${updateName}' = $updateVal' \
+    > ${YAMLFILE}.2; mv ${YAMLFILE}.2 ${YAMLFILE}
+}
+
+replaceFieldSed()
+{
+  YAMLFILE=$1
+  updateName=$2
+  updateVal=$3
+  # echo "[INFO] * ${YAMLFILE} ==> ${updateName}: ${updateVal}"
+  sed -i ${YAMLFILE} -r -e "s#(    $updateName: ).+#\1${updateVal}#"
+}
+
 bump_version() {
   CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
@@ -15,26 +58,30 @@ bump_version() {
 
   git checkout ${BUMP_BRANCH}
 
-  echo "Updating project version to ${NEXTVERSION}"
-  echo ${NEXTVERSION} > VERSION
+  echo "Update project version to ${NEXTVERSION}"
+  updateYaml ${NEXTVERSION}
 
   if [[ ${NOCOMMIT} -eq 0 ]]; then
     COMMIT_MSG="[release] Bump to ${NEXTVERSION} in ${BUMP_BRANCH}"
-    git commit -s -m "${COMMIT_MSG}" VERSION
-    git pull origin "${BUMP_BRANCH}"
+    if [[ $docommit -eq 1 ]]; then
+      git commit -s -m "${COMMIT_MSG}" VERSION
+      git pull origin "${BUMP_BRANCH}"
 
-    PUSH_TRY="$(git push origin "${BUMP_BRANCH}")"
-    # shellcheck disable=SC2181
-    if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
-    PR_BRANCH=pr-${BUMP_BRANCH}-to-${NEXTVERSION}
-      # create pull request for master branch, as branch is restricted
-      git branch "${PR_BRANCH}"
-      git checkout "${PR_BRANCH}"
-      git pull origin "${PR_BRANCH}"
-      git push origin "${PR_BRANCH}"
-      lastCommitComment="$(git log -1 --pretty=%B)"
-      hub pull-request -f -m "${lastCommitComment}
+      PUSH_TRY="$(git push origin "${BUMP_BRANCH}")"
+      # shellcheck disable=SC2181
+      if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
+      PR_BRANCH=pr-${BUMP_BRANCH}-to-${NEXTVERSION}
+        # create pull request for master branch, as branch is restricted
+        git branch "${PR_BRANCH}"
+        git checkout "${PR_BRANCH}"
+        git pull origin "${PR_BRANCH}"
+        git push origin "${PR_BRANCH}"
+        lastCommitComment="$(git log -1 --pretty=%B)"
+        hub pull-request -f -m "${lastCommitComment}
 ${lastCommitComment}" -b "${BUMP_BRANCH}" -h "${PR_BRANCH}"
+      else
+        echo "[INFO] docommit = $docommit :: $COMMIT_MSG"
+      fi
     fi 
   fi
   git checkout ${CURRENT_BRANCH}
@@ -84,16 +131,10 @@ if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
 fi
 
 if [[ $TRIGGER_RELEASE -eq 1 ]]; then
-  # create GH release - doesn't work unless you have admin rights
-  # GH_URL="https://api.github.com/repos/${REPO#*:}/releases"
-  # curl -v -X POST -H "Accept: application/vnd.github.v3+json" -H 'Authorization:token '"${GITHUB_TOKEN}" \
-  #   -d '{"tag_name": "'"${VERSION}"'", "target_commitish": "'"${BASEBRANCH}"'", "name": "'"${VERSION}"'", "body": "'"${VERSION}"'", "draft": "false", "prerelease": "false"}' \
-  #   $GH_URL
-
   # or, just tag the release... which any fool can do, apparently
   git checkout "${BRANCH}"
   
-  echo $VERSION > VERSION
+  updateYaml ${VERSION}
   git commit -sm "Release version ${VERSION}" VERSION
 
   git tag "${VERSION}"
