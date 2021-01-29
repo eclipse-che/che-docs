@@ -5,8 +5,33 @@
 
 # set to 1 to actually trigger changes in the release branch
 TRIGGER_RELEASE=0 
-NOCOMMIT=0
+docommit=1 # by default DO commit the change
 
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    '-t'|'--trigger-release') TRIGGER_RELEASE=1; docommit=1; shift 0;;
+    '-r'|'--repo') REPO="$2"; shift 1;;
+    '-v'|'--version') VERSION="$2"; shift 1;;
+    '-n'|'--nocommit'|'--no-commit') docommit=0; shift 0;;
+  esac
+  shift 1
+done
+
+usage ()
+{
+  echo "
+Usage: $0 --repo [GIT REPO TO EDIT] --version [VERSION TO RELEASE] [--trigger-release]
+Example: $0 --repo git@github.com:eclipse/che-subproject --version 7.7.0 --trigger-release
+
+Options: 
+	--no-commit, -n    do not commit to BRANCH
+	"
+}
+
+if [[ ! ${VERSION} ]] || [[ ! ${REPO} ]]; then
+  usage
+  exit 1
+fi
 
 # where in other repos we have a VERSION file, here we have an antora-playbook.yml file which contains some keys:
 #    prod-prev-ver-major: 6 [never changes]
@@ -61,51 +86,27 @@ bump_version() {
   echo "Update project version to ${NEXTVERSION}"
   updateYaml ${NEXTVERSION}
 
-  if [[ ${NOCOMMIT} -eq 0 ]]; then
+  if [[ ${docommit} -eq 1 ]]; then
     COMMIT_MSG="[release] Bump to ${NEXTVERSION} in ${BUMP_BRANCH}"
-    if [[ $docommit -eq 1 ]]; then
-      git commit -s -m "${COMMIT_MSG}" VERSION
-      git pull origin "${BUMP_BRANCH}"
+    git commit -s -m "${COMMIT_MSG}" VERSION
+    git pull origin "${BUMP_BRANCH}"
 
-      PUSH_TRY="$(git push origin "${BUMP_BRANCH}")"
-      # shellcheck disable=SC2181
-      if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
-      PR_BRANCH=pr-${BUMP_BRANCH}-to-${NEXTVERSION}
-        # create pull request for master branch, as branch is restricted
-        git branch "${PR_BRANCH}"
-        git checkout "${PR_BRANCH}"
-        git pull origin "${PR_BRANCH}"
-        git push origin "${PR_BRANCH}"
-        lastCommitComment="$(git log -1 --pretty=%B)"
-        hub pull-request -f -m "${lastCommitComment}
+    PUSH_TRY="$(git push origin "${BUMP_BRANCH}")"
+    # shellcheck disable=SC2181
+    if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
+    PR_BRANCH=pr-${BUMP_BRANCH}-to-${NEXTVERSION}
+      # create pull request for master branch, as branch is restricted
+      git branch "${PR_BRANCH}"
+      git checkout "${PR_BRANCH}"
+      git pull origin "${PR_BRANCH}"
+      git push origin "${PR_BRANCH}"
+      lastCommitComment="$(git log -1 --pretty=%B)"
+      hub pull-request -f -m "${lastCommitComment}
 ${lastCommitComment}" -b "${BUMP_BRANCH}" -h "${PR_BRANCH}"
-      else
-        echo "[INFO] docommit = $docommit :: $COMMIT_MSG"
-      fi
     fi 
   fi
   git checkout ${CURRENT_BRANCH}
 }
-
-while [[ "$#" -gt 0 ]]; do
-  case $1 in
-    '-t'|'--trigger-release') TRIGGER_RELEASE=1; NOCOMMIT=0; shift 0;;
-    '-r'|'--repo') REPO="$2"; shift 1;;
-    '-v'|'--version') VERSION="$2"; shift 1;;
-  esac
-  shift 1
-done
-
-usage ()
-{
-  echo "Usage: $0 --repo [GIT REPO TO EDIT] --version [VERSION TO RELEASE] [--trigger-release]"
-  echo "Example: $0 --repo git@github.com:eclipse/che-subproject --version 7.7.0 --trigger-release"; echo
-}
-
-if [[ ! ${VERSION} ]] || [[ ! ${REPO} ]]; then
-  usage
-  exit 1
-fi
 
 # derive branch from version
 BRANCH=${VERSION%.*}.x
