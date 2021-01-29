@@ -4,15 +4,15 @@ metadata:
   generateName: che-docs-
 
 components:
-  - alias: antora
+  - alias: che-docs
     type: dockerimage
-    image: 'quay.io/themr0c/antora:latest'
+    image: "quay.io/eclipse/che-docs:latest"
     memoryLimit: 512M
     mountSources: true
     command:
       - tail
     args:
-      - '-f'
+      - "-f"
       - /dev/null
     endpoints:
       - name: Open-Livereload
@@ -21,39 +21,6 @@ components:
         port: 4000
         attributes:
           path: /che-7/overview/introduction-to-eclipse-che/
-  - alias: bash-curl
-    type: dockerimage
-    image: 'quay.io/redhat-cop/ubi8-bats:latest'
-    memoryLimit: 512M
-    mountSources: true
-    command:
-      - tail
-    args:
-      - '-f'
-      - /dev/null
-  - alias: linkchecker
-    type: dockerimage
-    image: 'quay.io/themr0c/linkchecker:latest'
-    memoryLimit: 512M
-    mountSources: true
-    command:
-      - tail
-    args:
-      - '-f'
-      - /dev/null
-    volumes:
-      - name: mnt
-        containerPath: /mnt
-  - alias: newdoc
-    type: dockerimage
-    image: 'docker.io/mrksu/newdoc'
-    memoryLimit: 512M
-    mountSources: true
-    command:
-      - tail
-    args:
-      - '-f'
-      - /dev/null
   - id: testthedocs/vale/latest
     type: chePlugin
   - id: ms-vscode/vscode-github-pullrequest/latest
@@ -67,25 +34,25 @@ commands:
   - name: Generate reference tables
     actions:
       - type: exec
-        component: bash-curl
+        component: che-docs
         workdir: /projects/che-docs
         command: bash tools/environment_docs_gen.sh
   - name: Start preview server
     actions:
       - type: exec
-        component: antora
+        component: che-docs
         workdir: /projects/che-docs
         command: sh tools/preview.sh
   - name: Create a new topic
     actions:
       - type: exec
-        component: newdoc
+        component: che-docs
         workdir: /projects/che-docs
         command: bash tools/newtopic.sh
   - name: Validate Modular Doc
     actions:
       - type: exec
-        component: bash-curl
+        component: che-docs
         workdir: /projects/che-docs
         command: >-
           echo 'Enter path to the file to validate and press Enter:';
@@ -94,12 +61,12 @@ commands:
   - name: Validate links
     actions:
       - type: exec
-        component: linkchecker
+        component: che-docs
         workdir: /projects/che-docs
         command: sh tools/linkchecker.sh
   - name: Detect unused images
     actions:
       - type: exec
-        component: linkchecker
+        component: che-docs
         workdir: /projects/che-docs
         command: bash tools/detect-unused-images.sh
