@@ -4,12 +4,12 @@
 # and and trigger release by force pushing changes to the release branch
 
 # set to 1 to actually trigger changes in the release branch
-TRIGGER_RELEASE=0 
+TAG_RELEASE=0 
 docommit=1 # by default DO commit the change
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-t'|'--trigger-release') TRIGGER_RELEASE=1; docommit=1; shift 0;;
+    '-t'|'--trigger-release') TAG_RELEASE=1; docommit=1; shift 0;;
     '-r'|'--repo') REPO="$2"; shift 1;;
     '-v'|'--version') VERSION="$2"; shift 1;;
     '-n'|'--nocommit'|'--no-commit') docommit=0; shift 0;;
@@ -24,7 +24,7 @@ Usage: $0 --repo [GIT REPO TO EDIT] --version [VERSION TO RELEASE]
 Example: $0 --repo git@github.com:eclipse/che-docs --version 7.25.2
 
 Options: 
-  --trigger-release, -t  trigger a tagged release
+  --trigger-release, -t  tag this release
   --no-commit, -n        do not commit changes to branches
 "
 }
@@ -32,12 +32,17 @@ Options:
 if [[ ! ${VERSION} ]] || [[ ! ${REPO} ]]; then
   usage
   exit 1
+else # clone into a temp folder so we don't collide with local changes to this script
+  cd /tmp/
+  tmpdir=tmp-${0##*/}-$VERSION
+  git clone $REPO $tmpdir
+  cd /tmp/$tmpdir
 fi
 
 # where in other repos we have a VERSION file, here we have an antora-playbook.yml file which contains some keys:
 #    prod-prev-ver-major: 6 [never changes]
 #    prod-ver-major: 7 [never changes]
-#    prod-prev-ver: 7.24
+#    prod-prev-ver: 7.24 [always prod-ver - 1]
 #    prod-ver: 7.25
 #    prod-ver-patch: 7.25.2
 playbookfile=antora-playbook.yml
@@ -132,29 +137,27 @@ if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
   git checkout "${BRANCH}"
 fi
 
-if [[ $TRIGGER_RELEASE -eq 1 ]]; then
-  # or, just tag the release... which any fool can do, apparently
-  git checkout "${BRANCH}"
-  
-  updateYaml ${VERSION}
-  git commit -sm "Release version ${VERSION}" $playbookfile
-
-  git tag "${VERSION}"
-  git push origin "${VERSION}"
-fi
-
 # now update ${BASEBRANCH} to the new snapshot version
 git fetch origin "${BASEBRANCH}":"${BASEBRANCH}"
 git checkout "${BASEBRANCH}"
 
-# infer project version + commit change into ${BASEBRANCH} branch
 if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
   # bump the y digit, if it is a major release
-  [[ $BRANCH =~ ^([0-9]+)\.([0-9]+)\.x ]] && BASE=${BASH_REMATCH[1]}; NEXT=${BASH_REMATCH[2]}; (( NEXT=NEXT+1 )) # for BRANCH=7.10.x, get BASE=7, NEXT=11
+  [[ $BRANCH =~ ^([0-9]+)\.([0-9]+)\.x ]] && BASE=${BASH_REMATCH[1]}; NEXT=${BASH_REMATCH[2]}; # for BRANCH=7.25.x, get BASE=7, NEXT=25 [DO NOT BUMP]
   NEXTVERSION_Y="${BASE}.${NEXT}.0"
   bump_version ${NEXTVERSION_Y} ${BASEBRANCH}
+  bump_version ${NEXTVERSION_Y} ${BRANCH}
+else
+  # bump the z digit
+  [[ $VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; NEXT="${BASH_REMATCH[3]}"; # for VERSION=7.25.2, get BASE=7.25, NEXT=2 [DO NOT BUMP]
+  NEXTVERSION_Z="${BASE}.${NEXT}"
+  bump_version ${NEXTVERSION_Z} ${BASEBRANCH}
+  bump_version ${NEXTVERSION_Z} ${BRANCH}
 fi
-# bump the z digit
-[[ $VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; NEXT="${BASH_REMATCH[3]}"; # for VERSION=7.7.1, get BASE=7.7, NEXT=1 [DO NOT BUMP]
-NEXTVERSION_Z="${BASE}.${NEXT}"
-bump_version ${NEXTVERSION_Z} ${BRANCH}
+
+if [[ $TAG_RELEASE -eq 1 ]]; then
+  git checkout "${BRANCH}"
+  git tag "${VERSION}"
+  git push origin "${VERSION}" || true
+fi
+
