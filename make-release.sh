@@ -89,7 +89,7 @@ bump_version() {
 
   if [[ ${docommit} -eq 1 ]]; then
     COMMIT_MSG="[release] Bump to ${NEXTVERSION} in ${BUMP_BRANCH}"
-    git commit -s -m "${COMMIT_MSG}" VERSION
+    git commit -s -m "${COMMIT_MSG}" $playbookfile
     git pull origin "${BUMP_BRANCH}"
 
     PUSH_TRY="$(git push origin "${BUMP_BRANCH}")"
@@ -137,7 +137,7 @@ if [[ $TRIGGER_RELEASE -eq 1 ]]; then
   git checkout "${BRANCH}"
   
   updateYaml ${VERSION}
-  git commit -sm "Release version ${VERSION}" VERSION
+  git commit -sm "Release version ${VERSION}" $playbookfile
 
   git tag "${VERSION}"
   git push origin "${VERSION}"
