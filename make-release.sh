@@ -20,12 +20,13 @@ done
 usage ()
 {
   echo "
-Usage: $0 --repo [GIT REPO TO EDIT] --version [VERSION TO RELEASE] [--trigger-release]
-Example: $0 --repo git@github.com:eclipse/che-subproject --version 7.7.0 --trigger-release
+Usage: $0 --repo [GIT REPO TO EDIT] --version [VERSION TO RELEASE] 
+Example: $0 --repo git@github.com:eclipse/che-docs --version 7.25.2
 
 Options: 
-	--no-commit, -n    do not commit to BRANCH
-	"
+  --trigger-release, -t  trigger a tagged release
+  --no-commit, -n        do not commit changes to branches
+"
 }
 
 if [[ ! ${VERSION} ]] || [[ ! ${REPO} ]]; then
