@@ -33,10 +33,7 @@ if [[ ! ${VERSION} ]] || [[ ! ${REPO} ]]; then
   usage
   exit 1
 else # clone into a temp folder so we don't collide with local changes to this script
-  cd /tmp/
-  tmpdir=tmp-${0##*/}-$VERSION
-  git clone $REPO $tmpdir
-  cd /tmp/$tmpdir
+  cd /tmp/ && tmpdir=tmp-${0##*/}-$VERSION && git clone $REPO $tmpdir && cd /tmp/$tmpdir
 fi
 
 # where in other repos we have a VERSION file, here we have an antora-playbook.yml file which contains some keys:
@@ -47,10 +44,10 @@ fi
 #    prod-ver-patch: 7.25.2
 playbookfile=antora-playbook.yml
 updateYaml() {
-  NEWVERSION=${1}; NEWVERSION=${NEWVERSION/-SNAPSHOT/}
+  NEWVERSION=${1}
   echo "[INFO] update $playbookfile with prod-ver = $NEWVERSION"
 
-  [[ $NEWVERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE1="${BASH_REMATCH[1]}"; BASE2="${BASH_REMATCH[2]}"; # for VERSION=7.25.2-SNAPSHOT, get BASE1=7; BASE2=25
+  [[ $NEWVERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE1="${BASH_REMATCH[1]}"; BASE2="${BASH_REMATCH[2]}"; # for VERSION=7.25.2, get BASE1=7; BASE2=25
   replaceFieldSed $playbookfile 'prod-ver' "${BASE1}.${BASE2}"
   replaceFieldSed $playbookfile 'prod-ver-patch' $NEWVERSION
   # set prod-prev-ver = 7.y-1
@@ -129,7 +126,6 @@ git fetch origin "${BASEBRANCH}":"${BASEBRANCH}"
 git checkout "${BASEBRANCH}"
 
 # create new branch off ${BASEBRANCH} (or check out latest commits if branch already exists), then push to origin
-# NOTE: cico job will automatically remove -SNAPSHOT suffix in the 7.a.x branch as part of the release to Nexus
 if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
   git branch "${BRANCH}" || git checkout "${BRANCH}" && git pull origin "${BRANCH}"
   git push origin "${BRANCH}"
