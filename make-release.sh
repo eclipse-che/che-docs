@@ -99,7 +99,7 @@ bump_version() {
 
     PUSH_TRY="$(git push origin "${BUMP_BRANCH}")"
     # shellcheck disable=SC2181
-    if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
+    if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]] || [[ $PUSH_TRY == *"Protected branch update"* ]]; then
     PR_BRANCH=pr-${BUMP_BRANCH}-to-${NEXTVERSION}
       # create pull request for master branch, as branch is restricted
       git branch "${PR_BRANCH}"
