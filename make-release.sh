@@ -6,14 +6,12 @@
 # set to 1 to actually trigger changes in the release branch
 TAG_RELEASE=0 
 docommit=1 # by default DO commit the change
-FORCE_NEW_BRANCH=0 # by default don't recreate the .x branch if exists
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t'|'--trigger-release') TAG_RELEASE=1; docommit=1; shift 0;;
     '-r'|'--repo') REPO="$2"; shift 1;;
     '-v'|'--version') VERSION="$2"; shift 1;;
-    '--force') FORCE_NEW_BRANCH=1; shift 1;;
     '-n'|'--nocommit'|'--no-commit') docommit=0; shift 0;;
   esac
   shift 1
@@ -27,7 +25,6 @@ Example: $0 --repo git@github.com:eclipse/che-docs --version 7.25.2
 
 Options: 
   --trigger-release, -t  tag this release
-  --force                if .x branch exists, delete and recreate it
   --no-commit, -n        do not commit changes to branches
 "
 }
@@ -51,25 +48,20 @@ updateYaml() {
   echo "[INFO] update $playbookfile with prod-ver = $NEWVERSION"
 
   [[ $NEWVERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE1="${BASH_REMATCH[1]}"; BASE2="${BASH_REMATCH[2]}"; # for VERSION=7.25.2, get BASE1=7; BASE2=25
-  replaceFieldSed $playbookfile 'prod-ver' "${BASE1}.${BASE2}"
-  replaceFieldSed $playbookfile 'prod-ver-patch' $NEWVERSION
-  # set prod-prev-ver = 7.y-1
-  (( BASE2=BASE2-1 ))
-  replaceFieldSed $playbookfile 'prod-prev-ver' "${BASE1}.${BASE2}"
-}
-
-# NOTE that if using yq, comments in the file will be lost and formatting will change!
-#  replaceFieldYq $playbookfile '.asciidoc.attributes."prod-ver"' $BASE
-#  replaceFieldYq $playbookfile '.asciidoc.attributes."prod-ver-patch"' $NEWVERSION
-replaceFieldYq()
-{
-  YAMLFILE=$1
-  updateName=$2
-  updateVal=$3
-  # echo "[INFO] * ${YAMLFILE} ==> ${updateName}: ${updateVal}"
-  cat ${YAMLFILE} | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" \
-    ${updateName}' = $updateVal' \
-    > ${YAMLFILE}.2; mv ${YAMLFILE}.2 ${YAMLFILE}
+  # prod-ver should never go down, only up
+  OLDVERSION=$(cat $playbookfile | yq -r '.asciidoc.attributes."prod-ver-patch"') # existing prod-ver-patch version 7.yy.z
+  VERSIONS="${OLDVERSION} ${NEWVERSION}"
+  VERSIONS_SORTED="$(echo $VERSIONS | tr " " "\n" | sort -V | tr "\n" " ")"
+  # echo "Compare '$VERSIONS_SORTED' with '$VERSIONS '"
+  if [[ "${VERSIONS_SORTED}" != "${VERSIONS} " ]] || [[ "${OLDVERSION}" == "${NEWVERSION}" ]]; then # note trailing space after VERSIONS is required!
+    echo "[WARN] Existing prod-ver ${OLDVERSION} is greater or equal than planned update to ${NEWVERSION}. Version should not go backwards, so nothing to do!"
+  else 
+    replaceFieldSed $playbookfile 'prod-ver' "${BASE1}.${BASE2}"
+    replaceFieldSed $playbookfile 'prod-ver-patch' $NEWVERSION
+    # set prod-prev-ver = 7.y-1
+    (( BASE2=BASE2-1 ))
+    replaceFieldSed $playbookfile 'prod-prev-ver' "${BASE1}.${BASE2}"
+  fi
 }
 
 replaceFieldSed()
@@ -89,7 +81,7 @@ bump_version() {
 
   git checkout ${BUMP_BRANCH}
 
-  echo "Update project version to ${NEXTVERSION}"
+  echo "[INFO] Update project version to ${NEXTVERSION}"
   updateYaml ${NEXTVERSION}
 
   if [[ ${docommit} -eq 1 ]]; then
@@ -128,22 +120,24 @@ fi
 git fetch origin "${BASEBRANCH}":"${BASEBRANCH}"
 git checkout "${BASEBRANCH}"
 
+EXISTING_BRANCH=0
 # create new branch off ${BASEBRANCH} (or check out latest commits if branch already exists), then push to origin
 if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
-  git branch "${BRANCH}" || { 
-    if [[ $FORCE_NEW_BRANCH -eq 1 ]]; then 
-      git branch -D "${BRANCH}" || true
-      git push origin ":${BRANCH}" || true
-      git branch "${BRANCH}"
-    fi
+
+  # note: if branch already exists, do not recreate it!
+  if [[ $(git branch "${BRANCH}" 2>&1) == *"already exists"* ]]; then 
+    EXISTING_BRANCH=1
+  fi
+
+  if [[ ${EXISTING_BRANCH} -eq 0 ]]; then
     git checkout "${BRANCH}" && git pull origin "${BRANCH}"
-  }
-  git push origin "${BRANCH}"
-  git fetch origin "${BRANCH}:${BRANCH}"
-  git checkout "${BRANCH}"
+    git push origin "${BRANCH}"
+    git fetch origin "${BRANCH}:${BRANCH}"
+    git checkout "${BRANCH}"
+  fi
 fi
 
-# now update ${BASEBRANCH} to the new snapshot version
+# now update ${BASEBRANCH} to the new version
 git fetch origin "${BASEBRANCH}":"${BASEBRANCH}"
 git checkout "${BASEBRANCH}"
 
@@ -162,7 +156,7 @@ else
 fi
 
 if [[ $TAG_RELEASE -eq 1 ]]; then
-  git checkout "${BRANCH}"
+  git checkout "${BRANCH}" && git pull origin "${BRANCH}"
   git tag "${VERSION}"
   git push origin "${VERSION}" || true
 fi
