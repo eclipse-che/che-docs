@@ -130,10 +130,7 @@ if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
   fi
 
   if [[ ${EXISTING_BRANCH} -eq 0 ]]; then
-    git checkout "${BRANCH}" && git pull origin "${BRANCH}"
     git push origin "${BRANCH}"
-    git fetch origin "${BRANCH}:${BRANCH}"
-    git checkout "${BRANCH}"
   fi
 fi
 
