@@ -125,7 +125,7 @@ EXISTING_BRANCH=0
 if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
 
   # note: if branch already exists, do not recreate it!
-  if [[ $(git branch "${BRANCH}" 2>&1) == *"already exists"* ]]; then 
+  if [[ $(git branch "${BRANCH}" 2>&1 || true) == *"already exists"* ]]; then 
     EXISTING_BRANCH=1
   fi
 
