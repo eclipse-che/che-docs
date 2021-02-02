@@ -1,0 +1,29 @@
+#
+# Copyright (c) 2020 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+name: linkchecker-pr-check
+on: [push, pull_request]
+jobs:
+  linkchecker:
+    name: link checker
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: build
+        id: antora-build
+        run: |
+           yarn
+           ./node_modules/.bin/antora generate antora-playbook.yml
+      - name: run linkchecker
+        run: |
+          ./node_modules/.bin/gulp &
+          sleep 10
+          # Run link checker
+          docker run --net=host --rm -v $(pwd):/doc --entrypoint=bash quay.io/eclipse/che-docs -c "/usr/bin/linkchecker -f /doc/linkcheckerrc http://localhost:4000"

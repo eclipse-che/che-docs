@@ -1,0 +1,58 @@
+// Module included in the following assemblies:
+//
+// remotely-accessing-workspaces
+
+[id="downloading-and-uploading-a-file-to-a-workspace-using-the-command-line-interface_{context}"]
+= Downloading and uploading a file to a workspace using the command-line interface
+
+This procedure describes how to use the `{orch-cli} ` tool to download or upload files remotely from or to an {prod-short} workspace.
+
+.Prerequisites
+
+* A running instance of {prod-short}. To install an instance of {prod-short}, see {link-installing-an-instance}.
+* Remote access to the {prod-short} workspace you intend to modify. For instructions see xref:remotely-accessing-workspaces.adoc[Remotely accessing workspaces].
+
+* The `{orch-cli}`, version 1.5.0 or higher, is available. For information about installed version, use:
++
+[subs="+quotes,+attributes",options="+nowrap"]
+----
+$ {orch-cli} version
+Client Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.0"
+
+...
+
+----
+
+.Procedure
+
+The following procedure uses `{project-context}` as an example of a user {orch-namespace}.
+
+* To download a local file named `downloadme.txt` from a workspace container to the current home directory of the user, use the following in the {prod-short} remote shell.
++
+[subs="+quotes,+attributes",options="+nowrap"]
+----
+$ REMOTE_FILE_PATH=/projects/downloadme.txt
+$ NAMESPACE={project-context}
+$ POD=workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4
+$ CONTAINER=maven
+$ {orch-cli} cp $\{NAMESPACE}/$\{POD}:$\{REMOTE_FILE_PATH} ~/downloadme.txt -c $\{CONTAINER}
+----
+
+* To upload a local file named `uploadme.txt` to a workspace container in the `/projects` directory:
+
+[subs="+quotes,+attributes",options="+nowrap"]
+----
+$ LOCAL_FILE_PATH=./uploadme.txt
+$ NAMESPACE={project-context}
+$ POD=workspace7b2wemdf3hx7s3ln.maven-74885cf4d5-kf2q4
+$ CONTAINER=maven
+$ {orch-cli} cp $\{LOCAL_FILE_PATH} $\{NAMESPACE}/$\{POD}:/projects -c $\{CONTAINER}
+----
+
+Using the preceding steps, the user can also download and upload directories.
+
+// PUT AN EXAMPLE HERE?
+
+.Additional resources
+
+* For more about `{orch-cli}`, see the {orch-cli-link}.

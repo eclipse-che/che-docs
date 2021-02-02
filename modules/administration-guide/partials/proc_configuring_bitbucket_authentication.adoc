@@ -1,0 +1,69 @@
+// configuring-bitbucket-authentication
+
+[id="configuring_bitbucket_authentication_{context}"]
+= Authentication on Bitbucket servers
+
+{prod} users may use public or private repositories Bitbucket SCM (Source Code Management) system as a source of their projects. The standard
+factory flow using devfile at the root of the repository is available starting of 7.25 version of {prod}.
+
+The use of private repositories, requires some additional configuration described below.
+
+Bitbucket authentication is based on using personal access tokens. Each Bitbucket user is able to request some
+amount of personal access tokens with different names, permissions, expiration times, and so on. Those tokens
+can be used to sign Bitbucket REST API calls and perform Git repository operations.
+
+To allow Bitbucket authentication on {prod} side, personal tokens must be stored in user's namespace in a form of
+secret. The secret must look as follows:
+
+[source,yaml]
+----
+include::example$snip_bitbucket-personal-access-token-secret.adoc[]
+----
+
+The main parts of the secret are:
+
+[cols=3*]
+|===
+| Label
+| `app.kubernetes.io/component`
+| Indicates it is a SCM personal token secret. 
+
+| Annotation
+| `che.eclipse.org/che-userid`
+| {prod} id of the user token belongs to
+
+| Annotation
+| `che.eclipse.org/scm-userid`
+| Bitbucket user id to which token belongs
+
+| Annotation
+| `che.eclipse.org/scm-username`
+| Bitbucket user name to which token belongs
+
+| Annotation
+| `che.eclipse.org/scm-url`
+| Bitbucket server URL to which this token belong
+
+| Annotation
+| `che.eclipse.org/expired-after`
+| Personal access token expiration time
+
+| Data entry
+| `token`
+| Base-64 encoded value of the personal access token
+
+|===
+
+Bitbucket user id can be obtained with call to REST API:
+----
+https://{bitbucket-hostname}/rest/api/1.0/users/{username}
+----
+
+and for {prod} the user API URL is
+----
+https://{che-hostname}/api/user
+----
+
+Using the token credential provided in this secret, another one is automatically created to allow authorized Git operations. It will be mount
+into workspace containers as Git credentials file. Users don't have to perform any additional configurations to be able to work
+with private Git repositories.

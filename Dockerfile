@@ -1,38 +1,76 @@
-#
-# Copyright (c) 2018 Red Hat, Inc.
+# Copyright (c) 2021 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
 #
 # SPDX-License-Identifier: EPL-2.0
 #
+# Contributors:
+#   Red Hat, Inc. - initial implementation
+#
 
-FROM ruby:2.6-alpine3.12
-COPY src/main/Gemfile* /tmp/
+FROM golang:1.15.6-alpine3.12 as vale-builder
+WORKDIR /vale
+RUN wget -qO- https://github.com/errata-ai/vale/archive/v2.8.0.tar.gz | tar --strip-components=1 -zxvf -
+RUN export ARCH="$(uname -m)" && if [[ ${ARCH} == "x86_64" ]]; then export ARCH="amd64"; elif [[ ${ARCH} == "aarch64" ]]; then export ARCH="arm64"; fi && \
+    GOOS=linux GOARCH=${ARCH} CGO_ENABLED=0 go build -tags closed -o bin/vale ./cmd/vale
 
-RUN apk add --no-cache --update libstdc++ bash ca-certificates curl git python3 py3-pip grep perl libxml2-dev xmlstarlet \
-    && apk add --no-cache --virtual build-dependencies build-base \
-    && cd /tmp \
-    && time bundle install --no-cache --frozen \
-    && time apk del build-dependencies build-base \
-    && rm -rf /root/.bundle/cache \
-    && time pip3 install newdoc --upgrade pip --no-cache-dir \
-    && newdoc --version \
-    && curl -sfLo /usr/bin/test-adoc.sh https://raw.githubusercontent.com/jhradilek/check-links/master/test-adoc.sh \
-    && chmod +x /usr/bin/test-adoc.sh \
-    && test-adoc.sh -V \
-    && curl -sfLo /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
-    && curl -sfLo glibc-2.30-r0.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-2.30-r0.apk \
-    && apk add --no-cache glibc-2.30-r0.apk \
-    && curl -sfLo vale.tar.gz https://github.com/errata-ai/vale/releases/download/v2.0.0/vale_2.0.0_Linux_64-bit.tar.gz \
-    && tar xvzf vale.tar.gz -C /usr/bin/ \
-    && rm vale.tar.gz \
+FROM rust:1.49.0-alpine3.12 as newdoc-builder
+RUN cargo install newdoc
+
+FROM alpine:3.13
+
+COPY --from=newdoc-builder /usr/local/cargo/bin/newdoc /usr/local/bin/newdoc
+COPY --from=vale-builder /vale/bin/vale /usr/local/bin/vale
+
+EXPOSE 4000
+EXPOSE 35729
+
+LABEL description="Tools to build Eclipse Che documentation: antora, asciidoctor.js, bash, curl, findutils, git, gulp, jinja2, jq, linkchecker, newdoc, vale, yq" \
+    io.k8s.description="Tools to build Eclipse Che documentation: antora, asciidoctor.js, bash, curl, findutils, git, gulp, jinja2, jq, linkchecker, newdoc, vale, yq" \
+    io.k8s.display-name="Che-docs tools" \
+    license="Eclipse Public License - v 2.0" \
+    MAINTAINERS="Eclipse Che Documentation Team" \
+    maintainer="Eclipse Che Documentation Team" \
+    name="che-docs" \
+    source="https://github.com/eclipse/che-docs/Dockerfile" \
+    summary="Tools to build Eclipse Che documentation" \
+    URL="quay.io/eclipse/che-docs" \
+    vendor="Eclipse Che Documentation Team" \
+    version="2021.1"
+
+RUN apk add --no-cache --update \
+    bash \
+    curl \
+    findutils \
+    git \
+    jq \
+    nodejs \
+    py3-pip \
+    py3-wheel \
+    tar \
+    yarn \
+    yq \
+    && pip3 install --no-cache-dir --no-input git+https://github.com/linkchecker/linkchecker.git jinja2-cli \
+    && yarnpkg global add --ignore-optional --non-interactive @antora/cli@latest @antora/site-generator-default@latest asciidoctor gulp gulp-connect \
+    && rm -rf $(yarnpkg cache dir)/* \
+    && rm -rf /tmp/* \
+    && antora --version \
+    && asciidoctor --version \
+    && bash --version \
+    && curl --version \
+    && git --version \
+    && gulp --version \
+    && jinja2 --version \
+    && jq --version \
+    && linkchecker --version \
     && vale -v \
-    && mkdir /che-docs \
-    && for f in "/che-docs"; do \
-           chgrp -R 0 ${f} && \
-           chmod -R g+rwX ${f}; \
-       done
+    && yq --version \
+    && newdoc --version
 
-WORKDIR /che-docs
-CMD jekyll clean && jekyll serve --livereload -H 0.0.0.0 --trace
+VOLUME /projects
+WORKDIR /projects
+ENV HOME="/projects" \
+    NODE_PATH="/usr/local/share/.config/yarn/global/node_modules"
+
+USER 1001

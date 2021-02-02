@@ -1,0 +1,33 @@
+// Module included in the following assemblies:
+//
+// configuring-a-workspace-using-a-devfile
+// making-a-workspace-portable-using-a-devfile
+
+
+[id="what-is-a-devfile_{context}"]
+= What is a devfile
+
+A devfile is a file that describes and define a development environment:
+
+* The source code.
+* The development components, such as browser IDE tools and application runtimes.
+* A list of pre-defined commands.
+* Projects to clone.
+
+A devfiles is a YAML file that {prod-short} consumes and transforms into a cloud workspace composed of multiple containers. It is possible to store a devfile remotely or locally, in any number of ways, such as:
+
+* In a git repository, in the root folder, or on a feature branch.
+* On a publicly accessible web server, accessible through HTTP.
+* Locally as a file, and deployed using `{prod-cli}`.
+* In a collection of devfiles, known as a xref:administration-guide:customizing-the-registries.adoc#understanding-the-che-registries_{context}[devfile registry].
+
+When creating a workspace, {prod-short} uses that definition to initiate everything and run all the containers for the required tools and application runtimes. {prod-short} also mounts file-system volumes to make source code available to the workspace.
+
+Devfiles can be versioned with the project source code. When there is a need for a workspace to fix an old maintenance branch, the project devfile provides a definition of the workspace with the tools and the exact dependencies to start working on the old branch. Use it to instantiate workspaces on demand.
+
+{prod-short} maintains the devfile up-to-date with the tools used in the workspace:
+
+* Elements of the project, such as the path, git location, or branch.
+* Commands to perform daily tasks such as build, run, test, and debug.
+* The runtime environment with its container images needed for the application to run.
+* Che-Theia plug-ins with tools, IDE features, and helpers that a developer would use in the workspace, for example, Git, Java support, SonarLint, and Pull Request.

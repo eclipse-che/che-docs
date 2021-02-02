@@ -1,0 +1,39 @@
+---
+# .pre-commit-config.yaml
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+# fail_fast: true
+repos:
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+      - id: check-useless-excludes
+      - id: identity
+        name: List files to watch
+  - repo: local
+    hooks:
+      - id: antora
+        name: Build documentation with Antora
+        description: Build documentation with Antora
+        language: docker_image
+        entry: docker.io/antora/antora antora-playbook.yml
+        pass_filenames: false
+        always_run: true
+        verbose: true
+        require_serial: false
+      - id: vale
+        name: Validate Style Guide with Vale
+        description: Validate Style Guide with Vale
+        language: docker_image
+        entry: docker.io/jdkato/vale
+        pass_filenames: true
+        always_run: false
+        verbose: true
+        require_serial: false
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files

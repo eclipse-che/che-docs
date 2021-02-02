@@ -1,0 +1,95 @@
+// This module is included in
+//
+// remote-plug-in-endpoint
+
+[id="defining-a-launch-remote-plug-in-endpoint-in-a-meta-yaml-file_{context}"]
+= Defining a launch remote plug-in endpoint in a `meta.yaml` file
+
+Use this method to re-use images for starting a remote plug-in endpoint without any modifications.
+
+.Procedure
+
+Modify the plug-in `meta.yaml` file properties `command` and `args`:
+
+* `command` - {prod2} uses the `command` properties to override the `Dockerfile#ENTRYPOINT` value.
+* `args`  - {prod2} uses uses the `args` properties to override the `Dockerfile#CMD` value.
+
+
+* Example of a YAML file with the `command` and `args` properties modified:
++
+[source,yaml]
+----
+apiVersion: v2
+category: Language
+description: "Typescript language features"
+displayName: Typescript
+firstPublicationDate: "2019-10-28"
+icon: "https://www.eclipse.org/che/images/logo-eclipseche.svg"
+name: typescript
+publisher: che-incubator
+repository: "https://github.com/Microsoft/vscode"
+title: "Typescript language features"
+type: "VS Code extension"
+version: remote-bin-with-override-entrypoint
+spec:
+  containers:
+    - image: "example/fedora-for-ts-remote-plugin-without-endpoint:latest"
+      memoryLimit: 512Mi
+      name: vscode-typescript
+      command:
+        - sh
+        - -c
+      args:
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+  extensions:
+    - "https://github.com/che-incubator/ms-code.typescript/releases/download/v1.35.1/che-typescript-language-1.35.1.vsix"
+----
+
+* Modify `args` instead of `command` to use an image with a wrapper script pattern and to keep a call of the `entrypoint.sh` script:
++
+[source,yaml]
+----
+apiVersion: v2
+category: Language
+description: "Typescript language features"
+displayName: Typescript
+firstPublicationDate: "2019-10-28"
+icon: "https://www.eclipse.org/che/images/logo-eclipseche.svg"
+name: typescript
+publisher: che-incubator
+repository: "https://github.com/Microsoft/vscode"
+title: "Typescript language features"
+type: "VS Code extension"
+version: remote-bin-with-override-entrypoint
+spec:
+  containers:
+    - image: "example/fedora-for-ts-remote-plugin-without-endpoint:latest"
+      memoryLimit: 512Mi
+      name: vscode-typescript
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+  extensions:
+    - "https://github.com/che-incubator/ms-code.typescript/releases/download/v1.35.1/che-typescript-language-1.35.1.vsix"
+----
++
+{prod} calls the `entrypoint.sh` wrapper script defined in the `ENTRYPOINT` command of the Dockerfile. The script executes `+[ ‘sh’, ‘-c”, ‘ ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}’ ]+` using the `exec “$@”` command.
+
+[NOTE]
+====
+.By modifying the `command` and `args` properties of the `meta.yaml` file, a user can:
+
+* Execute a service at a container start
+
+* Start a remote plug-in endpoint
+
+.To make these actions run at the same time:
+
+. Start the service.
+
+. Detach the process.
+
+. Start the remote plug-in endpoint.
+====
+

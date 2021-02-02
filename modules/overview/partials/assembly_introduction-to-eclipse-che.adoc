@@ -1,0 +1,154 @@
+
+
+:parent-context-of-introduction-to-eclipse-che: {context}
+
+[id="introduction-to-{prod-id-short}_{context}"]
+= Introduction to {prod}
+
+:context: introduction-to-eclipse-che
+
+* A centralized developer environment running on {platforms-name}.
+* A multicontainer workspace for each developer with the ability to replicate with a single click using {prod} factories.
+* Pre-built stacks with the ability to create custom stacks for any language or runtime.
+* An enterprise integration that uses {identity-provider} for Active Directory (AD) database and Lightweight Directory Access Protocol (LDAP) related actions.
+* Browser-based IDEs; integration with Che-Theia or any other web IDE, such as Jupyter.
+* Support of tooling protocols, such as the Language Server Protocol or Debug Adapter Protocol.
+* A plug-in mechanism compatible with Visual Studio Code extensions.
+* A software development kit (SDK) for creating custom cloud developer platforms.
+
+[id="getting-started-with-{prod-id-short}_{context}"]
+== Getting started with {prod-short}
+
+* xref:what-is-{prod-id-short}_{context}[].
+* xref:che-architecture.adoc[]
+* xref:hosted-che.adoc[]
+* xref:installation-guide:running-che-locally.adoc[]
+* xref:installation-guide:supported-platforms.adoc[]
+* xref:administration-guide:calculating-che-resource-requirements.adoc[]
+
+
+== Joining the community
+
+Interested in joining the community? Join us on the following channels:
+
+Public chat:: 
+
+Join the public link:https://mattermost.eclipse.org/eclipse/channels/eclipse-che[{prod} Mattermost] channel to chat with the developers.
+
+GitHub project repositories::
+
+Report bugs, request features, and contribute in the main link:https://github.com/eclipse/che[{prod} repository].
++
+Improve documentation in the link:https://github.com/eclipse/che-docs[{prod} docs repository].
+
+Support::
+
+Visit StackOverflow to help other users of {prod}: link:https://stackoverflow.com/questions/tagged/eclipse-che[{prod} on StackOverflow].
+
+
+Community blog::
+
+Learn about the latest of {prod} and submit your blog posts to the link:https://che.eclipse.org[{prod} blog].
+
+Weekly meetings::
+
+Join us in our link:https://github.com/eclipse/che/wiki/{prod-short}-Dev-Meetings[{prod-short} community meeting] every Monday.
+
+Roadmap:: 
+
+See the development link:https://github.com/eclipse/che/wiki/Roadmap[roadmap] on the wiki.
+
+[id="what-is-{prod-id-short}_{context}"]
+== What is {prod}
+
+{prod} is a {kubernetes}-native IDE and developer collaboration platform.
+
+As an open-source project, the core goals of {prod} are to:
+
+* *Accelerate project and developer onboarding:* As a zero-install development environment that runs in your browser, {prod} makes it easy for anyone to join your team and contribute to a project.
+* **Remove inconsistency between developer environments:** No more: “But it works on my machine.” Your code works exactly the same way in everyone’s environment.
+* *Provide built-in security and enterprise readiness:* As {prod} becomes a viable replacement for VDI solutions, it must be secure and it must support enterprise requirements, such as role-based access control and the ability to remove all source code from developer machines.
+
+To achieve those core goals, {prod} provides:
+
+* *Workspaces:* Container-based developer workspaces providing all the tools and dependencies needed to code, build, test, run, and debug applications.
+* *Browser-based IDEs:* Bundled browser-based IDEs with language tools, debuggers, terminal, VCS integration, and much more.
+* *Extensible platform:* Bring your own IDE. Define, configure, and extend the tools that you need for your application by using plug-ins, which are compatible with Visual Studio Code extensions.
+* *Enterprise Integration:* Multiuser capabilities, including {identity-provider} for authentication and integration with LDAP or AD.
+
+=== Workspace model
+
+{prod-short} defines the workspace to be the project code files and all the dependencies necessary to edit, build, run, and debug them. {prod-short} treats the IDE and the development runtime as dependencies of the workspace. These items are embedded and always included with the workspace. This differentiates {prod-short} from classical workspace definitions, which may include the project code, but require the developer to bind their IDE to their workstation and use it to provide a runtime locally.
+
+Workspaces are isolated from one another and are responsible for managing the lifecycle of their components.
+
+Developers using {prod} use their containers directly in their developer workspaces. *{prod-short} workspaces are {platforms-name} pods, which allow to replicate the application runtimes (and its microservices) used in production* and provide a “dev mode” layer on top of those, adding intelligent code completion and IDE tools.
+
+=== Browser-based IDEs
+
+{prod} provides browser-based IDEs for its workspaces. The default IDE is built on link:https://github.com/theia-ide/theia[Theia], and it has the following capabilities:
+
+* *Monaco-based editor:* A fast and responsive editor, CodeLens
+* **Language Server Protocol:** Language tools
+* *Debug Adapter Protocol:* Debugger tools
+* *Command palette:* Do everything from your keyboard
+* *Task support:* Tasks from Visual Studio Code are extended and support {prod-short} commands
+* *Embedded preview:* Preview your application directly from the IDE, including Markdown preview
+* *Customizable layout:* Adapt the layout using drag and drop
+* *And more:* Outline view, search, Git
+
+
+==== Different IDEs for different use cases
+
+
+In {prod}, the IDE is completely decoupled, so that it is possible to plug a different IDE into {prod-short} workspaces:
+
+* It can be based on Eclipse Theia (as it is a framework to build a web IDE), such as Sirius:
++
+video::B6aCqywKpyY[youtube]
+
+* It can be a completely different solution, such as Jupyter or Eclipse Dirigible:
++
+video::VooNzKxRFgw[youtube]
+
+For situations in which the default IDE does not cover the use cases of the users or to use a dedicated tool instead of an IDE.
+
+
+=== Extensible platform
+
+{prod} is a great platform to build cloud-native tools, and it provides a strong extensibility model with an enjoyable developer experience for contributors.
+
+{prod} is extensible in different ways:
+
+* *Plug-ins* to add capabilities to the IDE. Che-Theia plug-ins rely on APIs compatible with Visual Studio Code. Plug-ins are isolated and provide their own dependencies packaged in containers.
+* *Stacks* to create pre-configured {prod-short} workspaces with a dedicated set of tools.
+* *Alternative IDEs* to provide specialized tools within {prod}. Build your own, based on Eclipse Theia, or pick existing ones like Jupyter.
+* *Marketplace (soon)* to easily distribute tools and custom IDEs, which can be tried online, to users and communities.
+
+{prod} uses Che-Theia as its default browser-based IDE. Che-Theia provides a framework to build web IDEs. It is built in TypeScript and gives contributors a programming model that is flexible, relies on state-of-the-art tooling protocols, and makes it faster to build new tools.
+
+In {prod}, the dependencies needed for the tools running in the user's workspace are available when needed. This means that a Che-Theia plug-in provides its dependencies, its back-end services (which could be running in a sidecar container connected to the user’s workspace), and the IDE UI extension. {prod-short} packages all these elements together, so that the user does not have to configure different tools together.
+
+==== Visual Studio Code extension compatibility
+
+{prod} rationalizes the effort for a contributor who wants to build a plug-in and distribute it to different developer communities and tools. For that purpose, {prod} features a plug-in API compatible with extension points from Visual Studio Code. As a result, it is easy to bring an existing plug-in from Visual Studio Code into {prod}. The main difference is in the way the plug-ins are packaged. On {prod}, plug-ins are delivered with their own dependencies in their own container.
+
+video::HbTKDlOL1eo[youtube]
+
+=== Enterprise integration
+
+* {prod} includes link:{identity-provider-url}[{identity-provider}] to handle authentication and security. It allows integration with any single sign-on (SSO), and with Active Directory or LDAP.
+
+* Every {prod} user gets a centralized developer workspace that can be easily defined, administered, and managed.
+
+* As a {kubernetes}-native application, {prod} provides state-of-the-art monitoring and tracing capabilities, integrating with link:https://prometheus.io/[Prometheus] and link:https://grafana.com/[Grafana].
+
+.Additional resources
+
+* xref:administration-guide:che-architecture-overview.adoc[]
+
+* xref:administration-guide:che-workspace-controller.adoc[]
+
+* xref:administration-guide:che-workspaces-architecture.adoc[]
+
+:context: {parent-context-of-introduction-to-eclipse-che}

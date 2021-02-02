@@ -13,17 +13,18 @@ CURRENT_VERSION=""
 RAW_CONTENT=""
 NEWLINE=$'\n'
 NEWLINEx2="$NEWLINE$NEWLINE"
-TABLE_HEADER="$NEWLINEx2,=== $NEWLINE Environment Variable Name,Default value, Description $NEWLINE"
+TABLE_HEADER="$NEWLINE,=== $NEWLINE Environment Variable Name,Default value, Description $NEWLINE"
 TABLE_FOOTER=",=== $NEWLINEx2"
 PARENT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")/.." ; pwd -P )
 BUFF=""
-OUTPUT_PATH="$PARENT_PATH/src/main/pages/che-7/installation-guide/examples/system-variables.adoc"
+OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/system-variables.adoc"
 
 fetch_current_version() {
-  echo "Trying to read current product version from pom.xml..." >&2
-  CURRENT_VERSION=$(grep -ri "<version>" $PARENT_PATH/pom.xml | tail -n 1 |sed -e "s/^[ \t]*<version>\([^<]*\)<.*$/\1/")
+  echo "Trying to read current product version from $PARENT_PATH/antora-playbook.yml..." >&2
+  
+  CURRENT_VERSION=$(grep 'prod-ver:' "$PARENT_PATH/antora-playbook.yml" | cut -d: -f2 | sed  's/ //g').x
   if [ $? -ne 0 ]; then
-    echo "Failure: Cannot read version from pom.xml" >&2
+    echo "Failure: Cannot read version from $PARENT_PATH/antora-playbook.yml" >&2
     exit 1
   fi
   if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
@@ -64,7 +65,7 @@ parse_content() {
                                                         # replace spaces with dashes, create topic ID, convert to lowercase chars
                                                         # remove non alpha-num, wrap in AsciiDoc ID markup
       echo "   Found begin of topic: $TOPIC" >&2
-      BUFF="${BUFF}${TOPICID}$NEWLINE.${TOPIC} $TABLE_HEADER $NEWLINE"      # new topic and table header
+      BUFF="${BUFF}${TOPICID}$NEWLINE= ${TOPIC}$NEWLINEx2.${TOPIC} $TABLE_HEADER $NEWLINE"      # new topic and table header
     elif [[ $LINE == '#'* ]] && [[ -n $TOPIC ]]; then   # line starting with single # means property description (can be multi-line)
       TRIM_LINE=${LINE/\#}                              # read description, stripping first #
       DESCR_BUFF="$DESCR_BUFF${TRIM_LINE}"              # collect all description lines into buffer
@@ -81,11 +82,10 @@ parse_content() {
       VALUE="\`+${VALUE}+\`"                            # make sure asciidoc doesn't mix it up with attributes
       VALUE="${VALUE/\`++\`}"                           # remove empty value `++`
       
-      DESCR_BUFF="$(sed 's| {\([^}]*\)}| `+{\1}+`|g' <<< $DESCR_BUFF)"    # make sure asciidoc doesn't mix it up with attributes
       DESCR_BUFF="$(sed 's|\${\([^}]*\)}|$++{\1}++|g' <<< $DESCR_BUFF)"   # make sure asciidoc doesn't mix it up with attributes
       DESCR_BUFF="$(sed 's|\(Eclipse \)\?\bChe\b|{prod-short}|g' <<< $DESCR_BUFF)"   # (Eclipse) Che -> {prod-short}
-      DESCR_BUFF="$(sed -E 's|`(http.?*)`|`+\1+`|g' <<< $DESCR_BUFF)"   # Deactivate http links
-      DESCR_BUFF="$(sed -E 's|(Example: http.?*io)|`+\1+`|g' <<< $DESCR_BUFF)"   # Deactivate http links
+      DESCR_BUFF="$(sed -E 's| http:| \\http:|g' <<< $DESCR_BUFF)"   # Deactivate http links
+      DESCR_BUFF="$(sed -E 's| https:| \\https:|g' <<< $DESCR_BUFF)"   # Deactivate http links
       DESCR_BUFF="$(sed -E 's|https://docs.openshift.com/container-platform/latest/architecture/additional_concepts/storage.html#pv-access-modes|https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html|' <<< $DESCR_BUFF)"   # Fix broken link
       DESCR_BUFF="$(sed -E 's|https://docs.openshift.com/container-platform/latest/dev_guide/compute_resources.html#dev-compute-resources|https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html|' <<< $DESCR_BUFF)"   # Fix broken link
       DESCR_BUFF="$(sed -E 's|https://www.keycloak.org/docs/3.3/server_admin/topics/identity-broker/social/openshift.html|https://www.keycloak.org/docs/latest/server_admin/index.html#openshift-4|' <<< $DESCR_BUFF)"   # Fix broken link
@@ -97,7 +97,7 @@ parse_content() {
     fi
   done <<< "$RAW_CONTENT"
   BUFF="$BUFF$TABLE_FOOTER"                             # close last table
-  echo "$BUFF" > $OUTPUT_PATH                           # flush buffer into file
+  echo "$BUFF" > "$OUTPUT_PATH"                         # flush buffer into file
   echo "Processing done. Output file is $OUTPUT_PATH" >&2
 }
 

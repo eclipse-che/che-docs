@@ -1,0 +1,75 @@
+// Module included in the following assemblies:
+//
+// Configuring OpenShift OAuth
+
+[id="configuring-openshift-oauth_{context}"]
+= Configuring OpenShift OAuth
+
+For users to interact with OpenShift, they must first authenticate to the OpenShift cluster. OpenShift OAuth is a process in which users prove themselves to a cluster through an API with obtained OAuth access tokens.
+
+Authentication with the xref:extensions:openshift-connector-overview.adoc[] is a possible way for {prod-short} users to authenticate with an OpenShift cluster.
+
+The following section describes the OpenShift OAuth configuration options
+and its use with a {prod-short}.
+
+.Prerequisites
+
+* The `oc` tool is available.
+* `{prod-cli}` management tool is available. See xref:overview:using-the-chectl-management-tool.adoc[].
+* Openshift identity providers are configured on the cluster. See the link:https://docs.openshift.com/container-platform/latest/authentication/understanding-identity-provider.html#identity-provider-overview_understanding-identity-provider[Understanding identity provider configuration]
+
+.Procedure
+
+* OpenShift OAuth will be enabled by default, deploy {prod-short} using xref:installation-guide:installing-che-on-openshift-4-using-operatorhub.adoc[OperatorHub] or the {prod-cli}, see the
+link:{link-cli-github}#user-content-{prod-cli}-serverdeploy[`{prod-cli} server:deploy` specification] chapter.
+
+ifeval::["{project-context}" == "che"]
+* For {prod-short} deployed in single-user mode:
++
+====
+. Register {prod-short} OAuth client in OpenShift. See the link:https://docs.openshift.com/container-platform/4.3/authentication/configuring-internal-oauth.html#oauth-register-additional-client_configuring-internal-oauth[Register an OAuth client in OpenShift] chapter.
++
+[subs="+quotes,+attributes"]
+----
+$ oc create -f <(echo '
+kind: OAuthClient
+apiVersion: oauth.openshift.io/v1
+metadata:
+ name: che
+secret: "<random set of symbols>"
+redirectURIs:
+ - "<{prod-short} api url>/oauth/callback"
+grantMethod: prompt
+')
+----
+
+. Add the OpenShift TLS certificate to the {prod-short} Java trust store.
++
+* See xref:installation-guide:importing-untrusted-tls-certificates.adoc[].
+. Update the OpenShift deployment configuration.
++
+[subs="+quotes,macros"]
+----
+CHE_OAUTH_OPENSHIFT_CLIENTID: _<client-ID>_
+CHE_OAUTH_OPENSHIFT_CLIENTSECRET: _<openshift-secret>_
+pass:[CHE_OAUTH_OPENSHIFT_OAUTH__ENDPOINT]: _<oauth-endpoint>_
+pass:[CHE_OAUTH_OPENSHIFT_VERIFY__TOKEN__URL]: _<verify-token-url>_
+----
++
+* `_<client-ID>_` a name specified in the OpenShift OAuthClient.
+* `_<openshift-secret>_` a secret specified in the OpenShift OAuthClient.
+* `_<oauth-endpoint>_` the URL of the OpenShift OAuth service:
+** For OpenShift 3 specify the OpenShift master URL.
+** For OpenShift 4 specify the `oauth-openshift` route.
+* `_<verify-token-url>_` request URL that is used to verify the token. `<OpenShift master url>/api` can be used for OpenShift 3 and 4.
++
+* See {link-advanced-configuration-options}.
+====
+
+.Additional resources
+
+* See xref:administration-guide:authenticating-users.adoc[].
+
+endif::[]
+
+

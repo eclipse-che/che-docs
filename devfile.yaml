@@ -1,89 +1,58 @@
+# chectl devfile:generate --name=che-docs --git-repo=https://github.com/eclipse/che-docs --dockerimage=docker.io/antora/antora --command=./run_antora.sh
 apiVersion: 1.0.0
 metadata:
   generateName: che-docs-
 
 components:
-  - alias: che-docs-dev
+  - alias: che-docs
     type: dockerimage
-    image: 'quay.io/eclipse/che-docs:latest'
-    memoryLimit: 1Gi
+    image: "quay.io/eclipse/che-docs:latest"
+    memoryLimit: 512M
     mountSources: true
+    command:
+      - tail
+    args:
+      - "-f"
+      - /dev/null
     endpoints:
-      - name: che-docs-livereload-server
+      - name: Open-Livereload
         port: 35729
-      - name: che-docs-web-server
+      - name: Open-Preview-server
         port: 4000
         attributes:
-          path: /che-7/introduction-to-eclipse-che/
-    args: ['sleep', 'infinity']
-  - alias: bash-curl
-    type: dockerimage
-    image: 'docker.io/cosmintitei/bash-curl'
-    memoryLimit: 512M
-    mountSources: true
-    command:
-      - tail
-    args:
-      - '-f'
-      - /dev/null
-  - alias: linkchecker
-    type: dockerimage
-    image: 'docker.io/linkchecker/linkchecker:latest'
-    memoryLimit: 512M
-    mountSources: true
-    command:
-      - tail
-    args:
-      - '-f'
-      - /dev/null
-    volumes:
-      - name: mnt
-        containerPath: /mnt
-  - alias: newdoc
-    type: dockerimage
-    image: 'docker.io/mrksu/newdoc'
-    memoryLimit: 512M
-    mountSources: true
-    command:
-      - tail
-    args:
-      - '-f'
-      - /dev/null
+          path: /che-7/overview/introduction-to-eclipse-che/
   - id: testthedocs/vale/latest
     type: chePlugin
-  - id: joaompinto/vscode-asciidoctor/latest
-    type: chePlugin
   - id: ms-vscode/vscode-github-pullrequest/latest
+    type: chePlugin
+  - id: joaompinto/asciidoctor-vscode/latest
+    type: chePlugin
+  - id: timonwong/shellcheck/latest
     type: chePlugin
 
 commands:
   - name: Generate reference tables
     actions:
       - type: exec
-        component: bash-curl
+        component: che-docs
         workdir: /projects/che-docs
         command: bash tools/environment_docs_gen.sh
   - name: Start preview server
     actions:
-      - workdir: /projects/che-docs/src/main
-        type: exec
-        command: 'jekyll clean && jekyll serve --incremental --livereload -H 0.0.0.0'
-        component: che-docs-dev
-  - name: Kill preview server
-    actions:
       - type: exec
-        command: killall ruby
-        component: che-docs-dev
+        component: che-docs
+        workdir: /projects/che-docs
+        command: sh tools/preview.sh
   - name: Create a new topic
     actions:
       - type: exec
-        component: newdoc
+        component: che-docs
         workdir: /projects/che-docs
         command: bash tools/newtopic.sh
   - name: Validate Modular Doc
     actions:
       - type: exec
-        component: che-docs-dev
+        component: che-docs
         workdir: /projects/che-docs
         command: >-
           echo 'Enter path to the file to validate and press Enter:';
@@ -92,6 +61,12 @@ commands:
   - name: Validate links
     actions:
       - type: exec
-        component: linkchecker
+        component: che-docs
         workdir: /projects/che-docs
-        command: linkchecker -f linkcheckerrc http://0.0.0.0:4000
+        command: sh tools/linkchecker.sh
+  - name: Detect unused images
+    actions:
+      - type: exec
+        component: che-docs
+        workdir: /projects/che-docs
+        command: bash tools/detect-unused-images.sh

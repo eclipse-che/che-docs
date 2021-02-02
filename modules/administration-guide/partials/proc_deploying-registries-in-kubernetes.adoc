@@ -1,0 +1,61 @@
+// deploying-the-registries
+
+[id="deploying-registries-in-kubernetes_{context}"]
+= Deploying registries in {kubernetes}
+
+.Procedure
+
+A Helm chart for the plug-in registry is available in the `/kubernetes/che-plugin-registry/` directory of the GitHub repository.
+
+. To deploy the plug-in registry using the Helm chart, run the following command:
++
+[subs="+quotes,+attributes"]
+----
+NAMESPACE=__<namespace-name>__     <1>
+DOMAIN=__<kubernetes-cluster-domain>__ <2>
+IMAGE="my-plug-in-registry"
+helm upgrade --install che-plugin-registry \
+ --debug \
+ --namespace $\{NAMESPACE} \
+ --set global.ingressDomain=$\{DOMAIN} \
+ --set chePluginRegistryImage=$\{IMAGE} \
+ --set chePluginRegistryImagePullPolicy="Always" \
+ ./kubernetes/che-plugin-registry/
+----
+<1> If installed using {prod-cli}, the default {prod-short} {orch-namespace} is `{prod-namespace}`. The OperatorHub installation method deploys {prod-short} to the users current {orch-namespace}.
+<2> On Minikube, use `$(minikube ip).nip.io`
+
+. The devfile registry also has a Helm chart in the `deploy/kubernetes/che-devfile-registry/` directory of the GitHub repository. To deploy it, run the command:
++
+[subs="+quotes,+attributes"]
+----
+NAMESPACE=__<namespace-name>__     <1>
+DOMAIN=__<kubernetes-cluster-domain>__ <2>
+IMAGE="my-devfile-registry"
+helm upgrade --install che-devfile-registry \
+ --debug \
+ --namespace $\{NAMESPACE} \
+ --set global.ingressDomain=$\{DOMAIN} \
+ --set cheDevfileRegistryImage=$\{IMAGE} \
+ --set cheDevfileRegistryImagePullPolicy="Always" \
+ ./deploy/kubernetes/che-devfile-registry/
+----
+<1> If installed using {prod-cli}, the default {prod-short} {orch-namespace} is `{prod-namespace}`. The OperatorHub installation method deploys {prod-short} to the users current {orch-namespace}.
+<2> On Minikube, use `$(minikube ip).nip.io`
+
+. The Helm chart creates a Pod, a service, and an Ingress. To get them, use `component=plugin-registry` (or `component=plugin-registry` for the devfile registry)
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli}  get -o custom-columns=TYPE:.kind,NAME:.metadata.name \
+  -l component=plugin-registry pod,svc,ingress
+TYPE      NAME
+Pod       che-plugin-registry-5c7cd8d5c9-zlqlz
+Service   che-plugin-registry
+Ingress   che-plugin-registry
+----
+
+:platform-routing: ingress
+:platform-routing-host-path: .spec.rules[0].host
+
+include::partial$proc_verification-custom-registries.adoc[]
