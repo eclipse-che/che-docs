@@ -1,0 +1,117 @@
+// Module included in the following assemblies:
+//
+// Configuring Bitbucket server OAuth1
+
+
+[id="proc_configuring-bitbucket-server-oauth1_{context}"]
+= Configuring Bitbucket server OAuth1
+
+OAuth1 for Bitbucket server allows for automatic obtaining and renewing link:https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html[Personal access tokens]. These tokens {prod-short} can use to resolve devfile in a factory flow or it  xref:end-user-guide:authentication-against-bitbucket-server-with-the-personal-access-token.adoc[can be used in place of passwords for Git over HTTPS].
+
+
+.Prerequisites
+
+* The `{orch-cli}` tool is available.
+* Bitbucket server installed and reachable from {prod-short} server.
+
+.Procedure
+
+* Generate RSA key pair as described below or follow this guide: link:https://confluence.atlassian.com/jirakb/how-to-generate-public-key-to-application-link-3rd-party-applications-913214098.html[How to generate public key to application link 3rd party applications]
+
+[subs="+quotes,+attributes"]
+----
+openssl genrsa -out private.pem 2048
+openssl rsa -in private.pem -pubout > public.pub
+openssl pkcs8 -topk8 -inform pem -outform pem -nocrypt -in private.pem -out privatepkcs8.pem
+----
+
+* Generate consumer key and shared secret.
+
+[subs="+quotes,+attributes"]
+----
+openssl rand -base64 24 > bitbucket_server_consumer_key
+openssl rand -base64 24 > bitbucket_shared_secret
+----
+
+*  Configure an link:https://confluence.atlassian.com/adminjiraserver/using-applinks-to-link-to-other-applications-938846918.html[Application Link] in Bitbucket to allow {prod-short} communicate with your enterprise Bitbucket server. To create the Application Link:
+**  In Bitbucket Server, go to **Administration** (select the cog in the top navigation bar)  > **Application Links**.
+
+image::bitbucket/bitbucket_configure_application_links.png[link="../_images/bitbucket/bitbucket_configure_application_links.png"]
+**  Enter the application URL (see Application Link details page) and select **Create new link**.
+**  Select **Continue** on the warning message. This is not a problem.
+**  Complete the form:
+   - Application Name - Enter a name to help you identify this {prod-short} instance.
+   - Application Type - Leave as Generic Application.
+   - Service Provider Name - Enter the same name you used for Application Name.
+   - Consumer Key - Specify a consumer key. That is the value that is stored in  `bitbucket_server_consumer_key` file.
+   - Shared secret - Specify shared secret.  That is the value that is stored in  `bitbucket_shared_secret` file.
+   - Request Token URL - `{your Bitbucket Server URL}/plugins/servlet/oauth/request-token`.
+   - Access token URL - `{your Bitbucket Server URL}/plugins/servlet/oauth/access-token`.
+   - Authorize URL - `{your Bitbucket Server URL}/plugins/servlet/oauth/access-token`.
+   - Create incoming link - Select this checkbox.
+[NOTE]
+====
+Bitbucket is not going to communicate with Che. There is no outgoing integration.
+It doesn't really matter what value is set as in`Request Token URL`, `Access token URL`, or `Authorize URL`.
+====
+image::bitbucket/bitbucket_link_applications.png[link="../_images/bitbucket/bitbucket_link_applications.png"]
+** Select **Continue**.
+**  Complete the form:
+   - Consumer Key -  Specify a consumer key. That is the value that is stored in  `bitbucket_server_consumer_key` file.
+   - Consumer name - Enter the same name you used for Application Name.
+   - Public Key  - Provide the public key of your RSA key pair `public.pub`.
+[NOTE]
+====
+Value of public key should not include first `----BEGIN PUBLIC KEY-----` or last `-----END PUBLIC KEY-----` lines.
+To help to get the value you can use such a command:
+====
+[subs="+quotes,+attributes"]
+----
+cat public.pub | sed 's/-----BEGIN PUBLIC KEY-----//g' |  sed 's/-----END PUBLIC KEY-----//g' | tr -d '\n'
+----
+image::bitbucket/bitbucket_link_applications_step2.png[link="../_images/bitbucket/bitbucket_link_applications_step2.png"]
+* Configure Bitbucket Server integration on {prod-short}
+** Create a Kubernetes Secret in {prod-short} namespace
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f - <<EOF
+kind: Secret
+apiVersion: v1
+metadata:
+  name: github-oauth-credentials
+  namespace: <...> <1>
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: che-secret
+  annotations:
+    che.eclipse.org/mount-path: /home/user/eclipse-che/conf/oauth1/bitbucket
+    che.eclipse.org/mount-as: file
+data:
+  private.key: <...> <2>
+  consumer.key: <...> <3>
+  shared_secret: <...> <4>
+type: Opaque
+EOF
+----
+<1> {prod-short} namespace. The default is {prod-namespace}
+<2> base64 encoded content of `privatepkcs8.pem` without first and last lines.
+<3> base64 encoded content of `bitbucket_server_consumer_key` file.
+<4> base64 encoded content of `bitbucket_shared_secret` file.
+** Configure {prod-short} server environment variables:
++
+[subs="+quotes,macros"]
+----
+spec:
+ server:
+   customCheProperties:
+     pass:[CHE_OAUTH1_BITBUCKET_CONSUMERKEYPATH]: '/home/user/eclipse-che/conf/oauth1/bitbucket/consumer.key'
+     pass:[CHE_OAUTH1_BITBUCKET_SHAREDSECRETPATH]: '/home/user/eclipse-che/conf/oauth1/bitbucket/shared_secret'
+     pass:[CHE_OAUTH1_BITBUCKET_PRIVATEKEYPATH]: '/home/user/eclipse-che/conf/oauth1/bitbucket/private.key'
+     pass:[CHE_OAUTH1_BITBUCKET_ENDPOINT]: 'https://{your Bitbucket Server URL}'
+     pass:[CHE_INTEGRATION_BITBUCKET_SERVER__ENDPOINTS]: 'https://{your Bitbucket Server URL}'
+
+----
++
+
+
