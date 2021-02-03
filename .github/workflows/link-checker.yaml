@@ -17,14 +17,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: build
-        id: antora-build
-        run: |
-          antora generate antora-playbook.yml
       - name: run linkchecker
         run: |
           # Build and serve
           gulp &
           sleep 20
           # Run link checker
-          linkchecker -f /doc/linkcheckerrc http://localhost:4000"
+          linkchecker -f /doc/linkcheckerrc http://localhost:4000
