@@ -16,14 +16,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: run vale
-        run: |
-          git fetch
-          git diff --name-only origin/master > changed-files.txt
-          for f in `cat changed-files.txt` ; do
-            mkdir -p /tmp/vale/$(dirname $f)
-            echo "-- extracting git changes from $f --"
-            git diff --unified=0 origin/master -- $f | tail -n +6 | grep '^+' | sed 's/^+//' > /tmp/vale/$f
-          done
-          # Run vale on the delta changes
-          docker run --rm -v $(pwd):/docs -v /tmp/vale:/che-docs --entrypoint=sh jdkato/vale -c 'cd /docs && vale --sort /che-docs'
+      - name: Vale
+        uses: errata-ai/vale-action@v1.3.0
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          files: __onlyModified
+          onlyAnnotateModifiedLines: false
+      # - name: run vale
+      #   run: |
+      #     git fetch
+      #     git diff --name-only origin/master > changed-files.txt
+      #     for f in `cat changed-files.txt` ; do
+      #       mkdir -p /tmp/vale/$(dirname $f)
+      #       echo "-- extracting git changes from $f --"
+      #       git diff --unified=0 origin/master -- $f | tail -n +6 | grep '^+' | sed 's/^+//' > /tmp/vale/$f
+      #     done
+      #     # Run vale on the delta changes
+      #     docker run --rm -v $(pwd):/docs -v /tmp/vale:/che-docs --entrypoint=sh jdkato/vale -c 'cd /docs && vale --sort /che-docs'
