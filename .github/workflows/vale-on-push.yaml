@@ -7,11 +7,12 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-name: vale-pr-check
-on: [pull_request]
+name: vale-push-check
+on:
+  - push
 jobs:
   vale:
-    name: check vale
+    name: Validate style on all content on push
     runs-on: ubuntu-20.04
     container: "quay.io/eclipse/che-docs:latest"
     steps:
@@ -22,6 +23,4 @@ jobs:
       - name: Vale
         run: |
           vale -v
-          echo "Changed files, in comparison to branch $GITHUB_BASE_REF"
-          git diff --name-only $GITHUB_BASE_REF
-          vale $(git diff --name-only $GITHUB_BASE_REF)
+          vale .
