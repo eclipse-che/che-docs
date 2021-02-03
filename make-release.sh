@@ -4,8 +4,74 @@
 # and and trigger release by force pushing changes to the release branch
 
 # set to 1 to actually trigger changes in the release branch
-TRIGGER_RELEASE=0 
-NOCOMMIT=0
+TAG_RELEASE=0 
+docommit=1 # by default DO commit the change
+
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    '-t'|'--trigger-release') TAG_RELEASE=1; docommit=1; shift 0;;
+    '-r'|'--repo') REPO="$2"; shift 1;;
+    '-v'|'--version') VERSION="$2"; shift 1;;
+    '-n'|'--nocommit'|'--no-commit') docommit=0; shift 0;;
+  esac
+  shift 1
+done
+
+usage ()
+{
+  echo "
+Usage: $0 --repo [GIT REPO TO EDIT] --version [VERSION TO RELEASE] 
+Example: $0 --repo git@github.com:eclipse/che-docs --version 7.25.2
+
+Options: 
+  --trigger-release, -t  tag this release
+  --no-commit, -n        do not commit changes to branches
+"
+}
+
+if [[ ! ${VERSION} ]] || [[ ! ${REPO} ]]; then
+  usage
+  exit 1
+else # clone into a temp folder so we don't collide with local changes to this script
+  cd /tmp/ && tmpdir=tmp-${0##*/}-$VERSION && git clone $REPO $tmpdir && cd /tmp/$tmpdir
+fi
+
+# where in other repos we have a VERSION file, here we have an antora-playbook.yml file which contains some keys:
+#    prod-prev-ver-major: 6 [never changes]
+#    prod-ver-major: 7 [never changes]
+#    prod-prev-ver: 7.24 [always prod-ver - 1]
+#    prod-ver: 7.25
+#    prod-ver-patch: 7.25.2
+playbookfile=antora-playbook.yml
+updateYaml() {
+  NEWVERSION=${1}
+  echo "[INFO] update $playbookfile with prod-ver = $NEWVERSION"
+
+  [[ $NEWVERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE1="${BASH_REMATCH[1]}"; BASE2="${BASH_REMATCH[2]}"; # for VERSION=7.25.2, get BASE1=7; BASE2=25
+  # prod-ver should never go down, only up
+  OLDVERSION=$(cat $playbookfile | yq -r '.asciidoc.attributes."prod-ver-patch"') # existing prod-ver-patch version 7.yy.z
+  VERSIONS="${OLDVERSION} ${NEWVERSION}"
+  VERSIONS_SORTED="$(echo $VERSIONS | tr " " "\n" | sort -V | tr "\n" " ")"
+  # echo "Compare '$VERSIONS_SORTED' with '$VERSIONS '"
+  if [[ "${VERSIONS_SORTED}" != "${VERSIONS} " ]] || [[ "${OLDVERSION}" == "${NEWVERSION}" ]]; then # note trailing space after VERSIONS is required!
+    echo "[WARN] Existing prod-ver ${OLDVERSION} is greater or equal than planned update to ${NEWVERSION}. Version should not go backwards, so nothing to do!"
+  else 
+    replaceFieldSed $playbookfile 'prod-ver' "${BASE1}.${BASE2}"
+    replaceFieldSed $playbookfile 'prod-ver-patch' $NEWVERSION
+    # set prod-prev-ver = 7.y-1
+    (( BASE2=BASE2-1 ))
+    replaceFieldSed $playbookfile 'prod-prev-ver' "${BASE1}.${BASE2}"
+  fi
+}
+
+replaceFieldSed()
+{
+  YAMLFILE=$1
+  updateName=$2
+  updateVal=$3
+  # echo "[INFO] * ${YAMLFILE} ==> ${updateName}: ${updateVal}"
+  sed -i ${YAMLFILE} -r -e "s#(    $updateName: ).+#\1${updateVal}#"
+}
 
 bump_version() {
   CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -15,17 +81,17 @@ bump_version() {
 
   git checkout ${BUMP_BRANCH}
 
-  echo "Updating project version to ${NEXTVERSION}"
-  echo ${NEXTVERSION} > VERSION
+  echo "[INFO] Update project version to ${NEXTVERSION}"
+  updateYaml ${NEXTVERSION}
 
-  if [[ ${NOCOMMIT} -eq 0 ]]; then
+  if [[ ${docommit} -eq 1 ]]; then
     COMMIT_MSG="[release] Bump to ${NEXTVERSION} in ${BUMP_BRANCH}"
-    git commit -s -m "${COMMIT_MSG}" VERSION
+    git commit -s -m "${COMMIT_MSG}" $playbookfile
     git pull origin "${BUMP_BRANCH}"
 
     PUSH_TRY="$(git push origin "${BUMP_BRANCH}")"
     # shellcheck disable=SC2181
-    if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
+    if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]] || [[ $PUSH_TRY == *"Protected branch update"* ]]; then
     PR_BRANCH=pr-${BUMP_BRANCH}-to-${NEXTVERSION}
       # create pull request for master branch, as branch is restricted
       git branch "${PR_BRANCH}"
@@ -39,26 +105,6 @@ ${lastCommitComment}" -b "${BUMP_BRANCH}" -h "${PR_BRANCH}"
   fi
   git checkout ${CURRENT_BRANCH}
 }
-
-while [[ "$#" -gt 0 ]]; do
-  case $1 in
-    '-t'|'--trigger-release') TRIGGER_RELEASE=1; NOCOMMIT=0; shift 0;;
-    '-r'|'--repo') REPO="$2"; shift 1;;
-    '-v'|'--version') VERSION="$2"; shift 1;;
-  esac
-  shift 1
-done
-
-usage ()
-{
-  echo "Usage: $0 --repo [GIT REPO TO EDIT] --version [VERSION TO RELEASE] [--trigger-release]"
-  echo "Example: $0 --repo git@github.com:eclipse/che-subproject --version 7.7.0 --trigger-release"; echo
-}
-
-if [[ ! ${VERSION} ]] || [[ ! ${REPO} ]]; then
-  usage
-  exit 1
-fi
 
 # derive branch from version
 BRANCH=${VERSION%.*}.x
@@ -74,44 +120,43 @@ fi
 git fetch origin "${BASEBRANCH}":"${BASEBRANCH}"
 git checkout "${BASEBRANCH}"
 
+EXISTING_BRANCH=0
 # create new branch off ${BASEBRANCH} (or check out latest commits if branch already exists), then push to origin
-# NOTE: cico job will automatically remove -SNAPSHOT suffix in the 7.a.x branch as part of the release to Nexus
 if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
-  git branch "${BRANCH}" || git checkout "${BRANCH}" && git pull origin "${BRANCH}"
-  git push origin "${BRANCH}"
-  git fetch origin "${BRANCH}:${BRANCH}"
-  git checkout "${BRANCH}"
+
+  # note: if branch already exists, do not recreate it!
+  if [[ $(git branch "${BRANCH}" 2>&1 || true) == *"already exists"* ]]; then 
+    EXISTING_BRANCH=1
+  fi
+
+  if [[ ${EXISTING_BRANCH} -eq 0 ]]; then
+    git push origin "${BRANCH}"
+  fi
 fi
 
-if [[ $TRIGGER_RELEASE -eq 1 ]]; then
-  # create GH release - doesn't work unless you have admin rights
-  # GH_URL="https://api.github.com/repos/${REPO#*:}/releases"
-  # curl -v -X POST -H "Accept: application/vnd.github.v3+json" -H 'Authorization:token '"${GITHUB_TOKEN}" \
-  #   -d '{"tag_name": "'"${VERSION}"'", "target_commitish": "'"${BASEBRANCH}"'", "name": "'"${VERSION}"'", "body": "'"${VERSION}"'", "draft": "false", "prerelease": "false"}' \
-  #   $GH_URL
-
-  # or, just tag the release... which any fool can do, apparently
-  git checkout "${BRANCH}"
-  
-  echo $VERSION > VERSION
-  git commit -sm "Release version ${VERSION}" VERSION
-
-  git tag "${VERSION}"
-  git push origin "${VERSION}"
-fi
-
-# now update ${BASEBRANCH} to the new snapshot version
+# now update ${BASEBRANCH} to the new version
 git fetch origin "${BASEBRANCH}":"${BASEBRANCH}"
 git checkout "${BASEBRANCH}"
 
-# infer project version + commit change into ${BASEBRANCH} branch
 if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
   # bump the y digit, if it is a major release
-  [[ $BRANCH =~ ^([0-9]+)\.([0-9]+)\.x ]] && BASE=${BASH_REMATCH[1]}; NEXT=${BASH_REMATCH[2]}; (( NEXT=NEXT+1 )) # for BRANCH=7.10.x, get BASE=7, NEXT=11
-  NEXTVERSION_Y="${BASE}.${NEXT}.0-SNAPSHOT"
+  [[ $BRANCH =~ ^([0-9]+)\.([0-9]+)\.x ]] && BASE=${BASH_REMATCH[1]}; NEXT=${BASH_REMATCH[2]}; # for BRANCH=7.25.x, get BASE=7, NEXT=25 [DO NOT BUMP]
+  NEXTVERSION_Y="${BASE}.${NEXT}.0"
   bump_version ${NEXTVERSION_Y} ${BASEBRANCH}
+  bump_version ${NEXTVERSION_Y} ${BRANCH}
+else
+  # bump the z digit
+  [[ $VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; NEXT="${BASH_REMATCH[3]}"; # for VERSION=7.25.2, get BASE=7.25, NEXT=2 [DO NOT BUMP]
+  NEXTVERSION_Z="${BASE}.${NEXT}"
+  bump_version ${NEXTVERSION_Z} ${BASEBRANCH}
+  bump_version ${NEXTVERSION_Z} ${BRANCH}
 fi
-# bump the z digit
-[[ $VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; NEXT="${BASH_REMATCH[3]}"; (( NEXT=NEXT+1 )) # for VERSION=7.7.1, get BASE=7.7, NEXT=2
-NEXTVERSION_Z="${BASE}.${NEXT}-SNAPSHOT"
-bump_version ${NEXTVERSION_Z} ${BRANCH}
+
+if [[ $TAG_RELEASE -eq 1 ]]; then
+  git checkout "${BRANCH}" && git pull origin "${BRANCH}"
+  git tag "${VERSION}"
+  git push origin "${VERSION}" || true
+fi
+
+# cleanup 
+rm -fr /tmp/$tmpdir
