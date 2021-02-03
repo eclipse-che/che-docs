@@ -13,17 +13,14 @@ jobs:
   linkchecker:
     name: link checker
     runs-on: ubuntu-20.04
+    container: "quay.io/eclipse/che-docs:latest"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: build
-        id: antora-build
-        run: |
-           yarn
-           ./node_modules/.bin/antora generate antora-playbook.yml
       - name: run linkchecker
         run: |
-          ./node_modules/.bin/gulp &
-          sleep 10
+          # Build and serve
+          gulp &
+          sleep 20
           # Run link checker
-          docker run --net=host --rm -v $(pwd):/doc --entrypoint=bash quay.io/eclipse/che-docs -c "/usr/bin/linkchecker -f /doc/linkcheckerrc http://localhost:4000"
+          linkchecker -f /doc/linkcheckerrc http://localhost:4000
