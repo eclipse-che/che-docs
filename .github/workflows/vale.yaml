@@ -17,8 +17,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Vale
         run: |
-          git fetch
           vale -v
+          echo "Changed files, in comparison to branch $GITHUB_BASE_REF"
+          git diff --name-only $GITHUB_BASE_REF
           vale $(git diff --name-only $GITHUB_BASE_REF)
