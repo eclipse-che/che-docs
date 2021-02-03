@@ -48,10 +48,10 @@ RUN apk add --no-cache --update \
     nodejs \
     py3-pip \
     py3-wheel \
+    shellcheck \
     tar \
     yarn \
-    yq \
-    && pip3 install --no-cache-dir --no-input git+https://github.com/linkchecker/linkchecker.git jinja2-cli \
+    && pip3 install --no-cache-dir --no-input jinja2-cli linkchecker yq \
     && yarnpkg global add --ignore-optional --non-interactive @antora/cli@latest @antora/site-generator-default@latest asciidoctor gulp gulp-connect \
     && rm -rf $(yarnpkg cache dir)/* \
     && rm -rf /tmp/* \
