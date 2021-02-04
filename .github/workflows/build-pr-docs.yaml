@@ -11,15 +11,16 @@ name: build-documentation-pr
 on: pull_request
 jobs:
   build:
+    name: Build the documentation
     runs-on: ubuntu-20.04
+    container: "quay.io/eclipse/che-docs:latest"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: build
         id: antora-build
         run: |
-           yarn
-           ./node_modules/.bin/antora generate antora-playbook.yml
+          antora generate antora-playbook.yml
       - uses: actions/upload-artifact@v2
         with:
           name: doc-content
