@@ -6,17 +6,36 @@ on:
       version:
         description: 'The version that is going to be released. Should be in format 7.y.z'
         required: true
-        default: '7.y.z'
+        default: ''
+      forceRecreateTags:
+        description: If true, tags will be recreated. Use with caution
+        required: false
+        default: 'false'
 jobs:
   build:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Set up Python 3.6
         uses: actions/setup-python@v2
         with:
           python-version: 3.6
+      - name: Check existing tags
+        run: |
+          RECREATE_TAGS=${{ github.event.inputs.forceRecreateTags }}
+          git ls-remote --exit-code origin refs/tags/${{ github.event.inputs.version}}
+          TAG_EXISTS=$?
+          if [[ $TAG_EXISTS -eq 0 ]]; then
+            if [[ $RECREATE_TAGS == "true" ]]; then
+              echo "[INFO] Recreating tags for ${{ github.event.inputs.version}} version"
+              git push origin :${{ github.event.inputs.version}}
+            else
+              echo "[ERROR] Cannot proceed with release - tag already exists"
+            fi
+          fi
       - name: Set up yq
         run: |
           python -m pip install --upgrade pip

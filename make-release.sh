@@ -83,10 +83,7 @@ bump_version() {
   git checkout ${BUMP_BRANCH}
 
   echo "[INFO] Update project version to ${NEXTVERSION}"
-  set +e
-  updateYaml ${NEXTVERSION}
-  set -e
-  if [[ $? -eq 0 ]] && [[ ${docommit} -eq 1 ]]; then
+  if updateYaml ${NEXTVERSION} && [[ ${docommit} -eq 1 ]]; then
     COMMIT_MSG="[release] Bump to ${NEXTVERSION} in ${BUMP_BRANCH}"
     git commit -s -m "${COMMIT_MSG}" $playbookfile
     git pull origin "${BUMP_BRANCH}"
@@ -151,6 +148,7 @@ else
   # bump the z digit
   [[ $VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; NEXT="${BASH_REMATCH[3]}"; # for VERSION=7.25.2, get BASE=7.25, NEXT=2 [DO NOT BUMP]
   NEXTVERSION_Z="${BASE}.${NEXT}"
+  bump_version ${NEXTVERSION_Z} "master"
   bump_version ${NEXTVERSION_Z} ${BRANCH}
 fi
 echo "[INFO] Project version has been updated"
