@@ -54,6 +54,10 @@ The main parts of the secret are:
 
 |===
 
+NOTE: Please note that encoding base64 string using *base64* tool on Linux machines most probably will
+add the newline character to the end of source string, so hash may become unusable as the authentication header value after decoding.
+To avoid that it is better to use online tools, or strip newlines explicilty (for example, using *tr -d \\n*)
+
 Bitbucket user id can be obtained with call to REST API:
 ----
 https://{bitbucket-hostname}/rest/api/1.0/users/{username}
@@ -67,3 +71,6 @@ https://{che-hostname}/api/user
 Using the token credential provided in this secret, another one is automatically created to allow authorized Git operations. It will be mount
 into workspace containers as Git credentials file. Users don't have to perform any additional configurations to be able to work
 with private Git repositories.
+
+If remote Git repository is using self-signed certificate, additional server configuration is required. This procedure is described here:
+xref:installation-guide:deploying-che-with-support-for-git-repositories-with-self-signed-certificates.adoc[]
