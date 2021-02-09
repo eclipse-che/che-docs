@@ -54,23 +54,24 @@ The main parts of the secret are:
 
 |===
 
-NOTE: Please note that encoding string into base64 format using *base64* tool on Linux machines most probably will
-add the newline character to the end of source string, so it's value may become unusable as the authentication header value after decoding.
-To avoid that, it is better to use online tools, or strip newlines explicilty (for example, using *tr -d \\n*)
+NOTE: Encoding a string into the base64 format using the `base64` tool on Linux machines leads to adding the newline character to the end of the source string and causing a value to be unusable as the authentication header value after decoding. Avoid this by using `base64 -w0`, which removes newly added lines, or strip newlines explicitly using`tr -d \\n`.
 
-Bitbucket user id can be obtained with call to REST API:
+. To obtain a user ID from a secret using a call to a REST API URL:
+*  For Bitbucket:
++
+[subs="+quotes"]
 ----
-https://{bitbucket-hostname}/rest/api/1.0/users/{username}
+https://__<bitbucket-hostname>__/rest/api/1.0/users/__<username>__
 ----
 
-and for {prod} the user API URL is
+* For {prod-short}
++
+[subs="+attributes,+quotes"]
 ----
 https://{che-hostname}/api/user
 ----
 
-Using the token credential provided in this secret, another one is automatically created to allow authorized Git operations. It will be mount
-into workspace containers as Git credentials file. Users don't have to perform any additional configurations to be able to work
-with private Git repositories.
+* With the token credentials obtained from a secret, another secret is automatically created, allowing authorization to Git operations. This secret is mounted into a workspace container as a Git credentials file, and any additional configurations are not required to work with private Git repositories.
 
-If remote Git repository is using self-signed certificate, additional server configuration is required. This procedure is described here:
-xref:installation-guide:deploying-che-with-support-for-git-repositories-with-self-signed-certificates.adoc[]
+* When a remote Git repository uses a self-signed certificate, add an additional server configuration. See:
+xref:installation-guide:deploying-che-with-support-for-git-repositories-with-self-signed-certificates.adoc[].
