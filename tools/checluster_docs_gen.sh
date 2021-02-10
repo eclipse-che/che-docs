@@ -74,7 +74,7 @@ parse_section() {
   if [[ $sectionName == "status" ]]; then
     section=$(echo "$RAW_CONTENT" | yq -M '.spec.validation.openAPIV3Schema.properties.status')
   else
-     section=$(echo "$RAW_CONTENT" | yq -M '.spec.validation.openAPIV3Schema.properties.spec.properties.'"$sectionName")
+    section=$(echo "$RAW_CONTENT" | yq -M '.spec.validation.openAPIV3Schema.properties.spec.properties.'"$sectionName")
   fi
 
   local properties=(
