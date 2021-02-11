@@ -7,12 +7,15 @@
 TAG_RELEASE=0 
 docommit=1 # by default DO commit the change
 REPO=git@github.com:eclipse/che-docs
+MAINBRANCH="master"
+USE_TMP_DIR=0
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t'|'--trigger-release') TAG_RELEASE=1; docommit=1; shift 0;;
     '-v'|'--version') VERSION="$2"; shift 1;;
-    '-n'|'--nocommit'|'--no-commit') docommit=0; shift 0;;
+    '-n'|'--nocommit') docommit=0; shift 0;;
+    '-tmp'|'--use-tmp-dir') USE_TMP_DIR=0; shift 0;;
   esac
   shift 1
 done
@@ -29,10 +32,14 @@ Options:
 "
 }
 
+set -e
+
 if [[ ! ${VERSION} ]]; then
   usage
   exit 1
-else # clone into a temp folder so we don't collide with local changes to this script
+fi
+
+if [[ ${USE_TMP_DIR} ]]; then
   cd /tmp/ && tmpdir=tmp-${0##*/}-$VERSION && git clone $REPO $tmpdir && cd /tmp/$tmpdir
 fi
 
@@ -55,6 +62,7 @@ updateYaml() {
   # echo "Compare '$VERSIONS_SORTED' with '$VERSIONS '"
   if [[ "${VERSIONS_SORTED}" != "${VERSIONS} " ]] || [[ "${OLDVERSION}" == "${NEWVERSION}" ]]; then # note trailing space after VERSIONS is required!
     echo "[WARN] Existing prod-ver ${OLDVERSION} is greater or equal than planned update to ${NEWVERSION}. Version should not go backwards, so nothing to do!"
+    return 1
   else 
     replaceFieldSed $playbookfile 'prod-ver' "${BASE1}.${BASE2}"
     replaceFieldSed $playbookfile 'prod-ver-patch' $NEWVERSION
@@ -82,9 +90,7 @@ bump_version() {
   git checkout ${BUMP_BRANCH}
 
   echo "[INFO] Update project version to ${NEXTVERSION}"
-  updateYaml ${NEXTVERSION}
-
-  if [[ ${docommit} -eq 1 ]]; then
+  if updateYaml ${NEXTVERSION} && [[ ${docommit} -eq 1 ]]; then
     COMMIT_MSG="[release] Bump to ${NEXTVERSION} in ${BUMP_BRANCH}"
     git commit -s -m "${COMMIT_MSG}" $playbookfile
     git pull origin "${BUMP_BRANCH}"
@@ -99,31 +105,20 @@ bump_version() {
       git pull origin "${PR_BRANCH}"
       git push origin "${PR_BRANCH}"
       lastCommitComment="$(git log -1 --pretty=%B)"
-      hub pull-request -f -m "${lastCommitComment}
-${lastCommitComment}" -b "${BUMP_BRANCH}" -h "${PR_BRANCH}"
+      hub pull-request -f -m "${lastCommitComment}" -b "${BUMP_BRANCH}" -h "${PR_BRANCH}"
     fi 
   fi
   git checkout ${CURRENT_BRANCH}
 }
 
+set -x
+
 # derive branch from version
 BRANCH=${VERSION%.*}.x
 
-# if doing a .0 release, use master; if doing a .z release, use $BRANCH
-if [[ ${VERSION} == *".0" ]]; then
-  BASEBRANCH="master"
-else 
-  BASEBRANCH="${BRANCH}"
-fi
-
-# get sources from ${BASEBRANCH} branch
-git fetch origin "${BASEBRANCH}":"${BASEBRANCH}"
-git checkout "${BASEBRANCH}"
-
 EXISTING_BRANCH=0
 # create new branch off ${BASEBRANCH} (or check out latest commits if branch already exists), then push to origin
-if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
-
+if [[ ${VERSION} == *".0" ]]; then
   # note: if branch already exists, do not recreate it!
   if [[ $(git branch "${BRANCH}" 2>&1 || true) == *"already exists"* ]]; then 
     EXISTING_BRANCH=1
@@ -134,29 +129,27 @@ if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
   fi
 fi
 
-# now update ${BASEBRANCH} to the new version
-git fetch origin "${BASEBRANCH}":"${BASEBRANCH}"
-git checkout "${BASEBRANCH}"
-
-if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
+# if doing a .0 release, use master; if doing a .z release, use $BRANCH
+if [[ ${VERSION} == *".0" ]]; then
   # bump the y digit, if it is a major release
   [[ $BRANCH =~ ^([0-9]+)\.([0-9]+)\.x ]] && BASE=${BASH_REMATCH[1]}; NEXT=${BASH_REMATCH[2]}; # for BRANCH=7.25.x, get BASE=7, NEXT=25 [DO NOT BUMP]
-  NEXTVERSION_Y="${BASE}.${NEXT}.0"
-  bump_version ${NEXTVERSION_Y} ${BASEBRANCH}
-  bump_version ${NEXTVERSION_Y} ${BRANCH}
+  NEXTVERSION="${BASE}.${NEXT}.0"
 else
   # bump the z digit
   [[ $VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; NEXT="${BASH_REMATCH[3]}"; # for VERSION=7.25.2, get BASE=7.25, NEXT=2 [DO NOT BUMP]
-  NEXTVERSION_Z="${BASE}.${NEXT}"
-  bump_version ${NEXTVERSION_Z} ${BASEBRANCH}
-  bump_version ${NEXTVERSION_Z} ${BRANCH}
+  NEXTVERSION="${BASE}.${NEXT}"
 fi
+bump_version ${NEXTVERSION} ${MAINBRANCH}
+bump_version ${NEXTVERSION} ${BRANCH}
+echo "[INFO] Project version has been updated"
 
 if [[ $TAG_RELEASE -eq 1 ]]; then
-  git checkout "${BRANCH}" && git pull origin "${BRANCH}"
+  echo "[INFO] Creating release tag"
+  git checkout "${BRANCH}" && git pull origin "${BRANCH}" || true
   git tag "${VERSION}"
   git push origin "${VERSION}" || true
 fi
 
-# cleanup 
-rm -fr /tmp/$tmpdir
+if [[ ${USE_TMP_DIR} ]]; then
+  rm -fr /tmp/$tmpdir
+fi
