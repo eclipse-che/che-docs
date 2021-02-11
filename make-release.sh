@@ -6,11 +6,11 @@
 # set to 1 to actually trigger changes in the release branch
 TAG_RELEASE=0 
 docommit=1 # by default DO commit the change
+REPO=git@github.com:eclipse/che-docs
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t'|'--trigger-release') TAG_RELEASE=1; docommit=1; shift 0;;
-    '-r'|'--repo') REPO="$2"; shift 1;;
     '-v'|'--version') VERSION="$2"; shift 1;;
     '-n'|'--nocommit'|'--no-commit') docommit=0; shift 0;;
   esac
@@ -20,8 +20,8 @@ done
 usage ()
 {
   echo "
-Usage: $0 --repo [GIT REPO TO EDIT] --version [VERSION TO RELEASE] 
-Example: $0 --repo git@github.com:eclipse/che-docs --version 7.25.2
+Usage: $0 --version [VERSION TO RELEASE] 
+Example: $0 --version 7.25.2 -t
 
 Options: 
   --trigger-release, -t  tag this release
@@ -29,7 +29,7 @@ Options:
 "
 }
 
-if [[ ! ${VERSION} ]] || [[ ! ${REPO} ]]; then
+if [[ ! ${VERSION} ]]; then
   usage
   exit 1
 else # clone into a temp folder so we don't collide with local changes to this script
