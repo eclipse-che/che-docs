@@ -6,7 +6,7 @@
 # set to 1 to actually trigger changes in the release branch
 TAG_RELEASE=0 
 docommit=1 # by default DO commit the change
-REPO=https://github.com/eclipse/che-docs
+REPO=git@github.com:eclipse/che-docs
 MAINBRANCH="master"
 USE_TMP_DIR=0
 
