@@ -9,7 +9,7 @@ airGapContainerRegistryOrganization: Optional repository name of an alternate co
 allowUserDefinedWorkspaceNamespaces: Defines that a user is allowed to specify a Kubernetes namespace, or an OpenShift project, which differs from the default. It's NOT RECOMMENDED to set to `true` without OpenShift OAuth configured. The OpenShift infrastructure also uses this property.
 cheClusterRoles: A comma-separated list of ClusterRoles that will be assigned to Che ServiceAccount. Be aware that the Che Operator has to already have all permissions in these ClusterRoles to grant them.
 cheDebug: Enables the debug mode for Che server. Defaults to `false`.
-cheFlavor: Specifies a variation of the installation. The options are `che` for upstream Che installations, or `codeready` for CodeReady Workspaces installation. Override the default value only on necessary occasions.
+cheFlavor: Specifies a variation of the installation. The options are `che` for upstream Che installations, or `codeready` for link\:https\://developers.redhat.com/products/codeready-workspaces/overview[CodeReady Workspaces] installation. Override the default value only on necessary occasions.
 cheHost: Public host name of the installed Che server. When value is omitted, the value it will be automatically set by the Operator. See the `cheHostTLSSecret` field.
 cheHostTLSSecret: Name of a secret containing certificates to secure ingress or route for the custom host name of the installed Che server. See the `cheHost` field.
 cheImage: Overrides the container image used in Che deployment. This does NOT include the container image tag. Omit it or leave it empty to use the default container image provided by the Operator.
@@ -113,7 +113,7 @@ updateAdminPassword: Forces the default `admin` Che user to update password on f
 :=== 
  Property: Description 
 postgresPVCStorageClassName: Storage class for the Persistent Volume Claim dedicated to the PosgreSQL database. When omitted or left blank, a default storage class is used.
-preCreateSubPaths: Instructs the Che server to start a special Pod to pre-create a sub-path in the Persistent Volumes. Defaults to `false`, however it will need to enable it according to the configuration of your K8S cluster.
+preCreateSubPaths: Instructs the Che server to start a special Pod to pre-create a sub-path in the Persistent Volumes. Defaults to `false`, however it will need to enable it according to the configuration of your Kubernetes cluster.
 pvcClaimSize: Size of the persistent volume claim for workspaces. Defaults to `1Gi`.
 pvcJobsImage: Overrides the container image used to create sub-paths in the Persistent Volumes. This includes the image tag. Omit it or leave it empty to use the default container image provided by the Operator. See also the `preCreateSubPaths` field.
 pvcStrategy: Persistent volume claim strategy for the Che server. This Can be\:`common` (all workspaces PVCs in one volume), `per-workspace` (one PVC per workspace for all declared volumes) and `unique` (one PVC per declared volume). Defaults to `common`.
@@ -127,7 +127,7 @@ workspacePVCStorageClassName: Storage class for the Persistent Volume Claims ded
 :=== 
  Property: Description 
 ingressClass: Ingress class that will define the which controller will manage ingresses. Defaults to `nginx`. NB\: This drives the `kubernetes.io/ingress.class` annotation on Che-related ingresses.
-ingressDomain: Global ingress domain for a K8S cluster. This MUST be explicitly specified\: there are no defaults.
+ingressDomain: Global ingress domain for a Kubernetes cluster. This MUST be explicitly specified\: there are no defaults.
 ingressStrategy: Strategy for ingress creation. Options are\: `multi-host` (host is explicitly provided in ingress), `single-host` (host is provided, path-based rules) and `default-host` (no host is provided, path-based rules). Defaults to `multi-host` Deprecated in favor of `serverExposureStrategy` in the `server` section, which defines this regardless of the cluster type. When both are defined, the `serverExposureStrategy` option takes precedence.
 securityContextFsGroup: The FSGroup in which the Che Pod and workspace Pods containers runs in. Default value is `1724`.
 securityContextRunAsUser: ID of the user the Che Pod and workspace Pods containers run as. Default value is `1724`.
