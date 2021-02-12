@@ -15,7 +15,7 @@ while [[ "$#" -gt 0 ]]; do
     '-t'|'--trigger-release') TAG_RELEASE=1; docommit=1; shift 0;;
     '-v'|'--version') VERSION="$2"; shift 1;;
     '-n'|'--nocommit') docommit=0; shift 0;;
-    '-tmp'|'--use-tmp-dir') USE_TMP_DIR=0; shift 0;;
+    '-tmp'|'--use-tmp-dir') USE_TMP_DIR=1; shift 0;;
   esac
   shift 1
 done
@@ -39,7 +39,7 @@ if [[ ! ${VERSION} ]]; then
   exit 1
 fi
 
-if [[ ${USE_TMP_DIR} ]]; then
+if [[ ${USE_TMP_DIR} -eq 1 ]]; then
   cd /tmp/ && tmpdir=tmp-${0##*/}-$VERSION && git clone $REPO $tmpdir && cd /tmp/$tmpdir
 fi
 
