@@ -32,8 +32,6 @@ Options:
 "
 }
 
-set -e
-
 if [[ ! ${VERSION} ]]; then
   usage
   exit 1
