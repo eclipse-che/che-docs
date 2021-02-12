@@ -32,8 +32,6 @@ Options:
 "
 }
 
-set -e
-
 if [[ ! ${VERSION} ]]; then
   usage
   exit 1
@@ -95,6 +93,7 @@ bump_version() {
     git commit -s -m "${COMMIT_MSG}" $playbookfile
     git pull origin "${BUMP_BRANCH}"
 
+    set +e
     PUSH_TRY="$(git push origin "${BUMP_BRANCH}")"
     # shellcheck disable=SC2181
     if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]] || [[ $PUSH_TRY == *"Protected branch update"* ]]; then
