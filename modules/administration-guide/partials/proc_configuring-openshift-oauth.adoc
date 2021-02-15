@@ -10,18 +10,36 @@ For users to interact with OpenShift, they must first authenticate to the OpenSh
 Authentication with the xref:extensions:openshift-connector-overview.adoc[] is a possible way for {prod-short} users to authenticate with an OpenShift cluster.
 
 The following section describes the OpenShift OAuth configuration options
-and its use with a {prod-short}.
+and its use with a {prod}.
 
 .Prerequisites
 
 * The `oc` tool is available.
 * `{prod-cli}` management tool is available. See xref:overview:using-the-chectl-management-tool.adoc[].
-* Openshift identity providers are configured on the cluster. See the link:https://docs.openshift.com/container-platform/latest/authentication/understanding-identity-provider.html#identity-provider-overview_understanding-identity-provider[Understanding identity provider configuration]
 
 .Procedure
 
-* OpenShift OAuth will be enabled by default, deploy {prod-short} using xref:installation-guide:installing-che-on-openshift-4-using-operatorhub.adoc[OperatorHub] or the {prod-cli}, see the
-link:{link-cli-github}#user-content-{prod-cli}-serverdeploy[`{prod-cli} server:deploy` specification] chapter.
+* Configure Openshift identity providers on the cluster. See the link:https://docs.openshift.com/container-platform/latest/authentication/understanding-identity-provider.html#identity-provider-overview_understanding-identity-provider[Understanding identity provider configuration].
++
+====
+If skip this step and there are identity providers configured on the OpenShift cluster, then {prod} will create initial OpenShift user for HTPasswd identity provider and put user's credentials in `openshift-oauth-user-credentials` secret in {prod-namespace} namespace. Follow these steps to obtain credentials to log in into OpenShift cluster and {prod}:
+
+. Obtain OpenShift user name:
++
+[subs="+attributes,+quotes"]
+----
+oc get secret openshift-oauth-user-credentials  -n {prod-namespace} -o json | jq -r '.data.user' | base64 -d
+----
+. Obtain OpenShift user password:
++
+[subs="+attributes,+quotes"]
+----
+oc get secret openshift-oauth-user-credentials -n {prod-namespace} -o json | jq -r '.data.password' | base64 -d
+----
+====
++
+* Deploy {prod-short} using xref:installation-guide:installing-che-on-openshift-4-using-operatorhub.adoc[OperatorHub] or the {prod-cli}, see the
+link:{link-cli-github}#user-content-{prod-cli}-serverdeploy[`{prod-cli} server:deploy` specification] chapter. OpenShift OAuth will be enabled by default.
 
 ifeval::["{project-context}" == "che"]
 * For {prod-short} deployed in single-user mode:
@@ -72,4 +90,6 @@ pass:[CHE_OAUTH_OPENSHIFT_VERIFY__TOKEN__URL]: _<verify-token-url>_
 
 endif::[]
 
+include::partial$proc_removing-initial-openshift-user.adoc[leveloffset=+1]
 
+include::partial$proc_openshift-oauth-without-initial-user.adoc[leveloffset=+1]

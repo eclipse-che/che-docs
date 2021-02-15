@@ -1,0 +1,38 @@
+[id="proc_openshift-oauth-without-initial-user_{context}"]
+== Enabling OpenShift OAuth without provisioning OpenShift initial OAuth user
+
+The following procedure describes how to enable OpenShift OAuth without provisioning OpenShift initial OAuth user.
+
+.Prerequisites
+
+* The `{orch-cli}` tool installed.
+* Logged in to OpenShift cluster using the `{orch-cli}` tool.
+
+.Procedure
+
+. Deploy {prod} by executing the `{prod-cli}` command with applying a patch:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:deploy --che-operator-cr-patch-yaml=patch.yaml ...
+----
++
+`patch.yaml` should contain the following:
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  auth:
+    openShiftoAuth: true
+    initialOpenShiftOAuthUser: ''
+----
++
+. When {prod} deployed by OperatorHub set the following values in {prod-checluster} custom resource:
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  auth:
+    openShiftoAuth: true
+    initialOpenShiftOAuthUser: ''
+----
