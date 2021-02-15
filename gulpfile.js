@@ -19,7 +19,7 @@ const watchPatterns = playbook.content.sources.filter((source) => !source.url.in
 }, [])
 
 
-function generate (done) {
+async function generate (done) {
   generator(antoraArgs, process.env)
     .then(() => done())
     .catch((err) => {
