@@ -1,5 +1,5 @@
 pipeline {
- 
+
   agent {
     kubernetes {
       label 'che-docs-pod'
@@ -30,25 +30,25 @@ spec:
 """
     }
   }
- 
+
   environment {
     PROJECT_NAME = "che"
     PROJECT_BOT_NAME = "CHE Bot"
     CI = true
   }
- 
-  triggers { pollSCM('H/10 * * * *') 
- 
+
+  triggers { pollSCM('H/10 * * * *')
+
  }
- 
+
   options {
     buildDiscarder(logRotator(numToKeepStr: '5'))
     checkoutToSubdirectory('che-docs')
     timeout(time: 15, unit: 'MINUTES')
   }
- 
+
   stages {
-    
+
     stage('Checkout www repo (master)') {
       when {
         branch 'master'
@@ -76,6 +76,7 @@ spec:
         container('che-docs') {
           dir('che-docs') {
                 sh './tools/environment_docs_gen.sh'
+                sh './tools/checluster_docs_gen.sh'
                 sh 'CI=true antora generate antora-playbook.yml --stacktrace'
             }
         }
