@@ -8,7 +8,7 @@
 
 .Procedure
 
-* Configure Openshift identity providers on the cluster. See the link:https://docs.openshift.com/container-platform/latest/authentication/understanding-identity-provider.html#identity-provider-overview_understanding-identity-provider[Understanding identity provider configuration].
+* Configure OpenShift identity providers on the cluster. See the link:https://docs.openshift.com/container-platform/latest/authentication/understanding-identity-provider.html#identity-provider-overview_understanding-identity-provider[Understanding identity provider configuration].
 +
 ====
 If skip this step and there are identity providers configured on the OpenShift cluster, then {prod} will create initial OpenShift user for HTPasswd identity provider and put user's credentials in `openshift-oauth-user-credentials` secret in {prod-namespace} namespace. Follow these steps to obtain credentials to log in into OpenShift cluster and {prod}:
@@ -17,13 +17,13 @@ If skip this step and there are identity providers configured on the OpenShift c
 +
 [subs="+attributes,+quotes"]
 ----
-oc get secret openshift-oauth-user-credentials  -n {prod-namespace} -o json | jq -r '.data.user' | base64 -d
+$ oc get secret openshift-oauth-user-credentials  -n {prod-namespace} -o json | jq -r '.data.user' | base64 -d
 ----
 . Obtain OpenShift user password:
 +
 [subs="+attributes,+quotes"]
 ----
-oc get secret openshift-oauth-user-credentials -n {prod-namespace} -o json | jq -r '.data.password' | base64 -d
+$ oc get secret openshift-oauth-user-credentials -n {prod-namespace} -o json | jq -r '.data.password' | base64 -d
 ----
 ====
 +
@@ -78,4 +78,3 @@ pass:[CHE_OAUTH_OPENSHIFT_VERIFY__TOKEN__URL]: _<verify-token-url>_
 * See xref:administration-guide:authenticating-users.adoc[].
 
 endif::[]
-
