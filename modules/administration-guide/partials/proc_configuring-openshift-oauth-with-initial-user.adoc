@@ -1,5 +1,5 @@
-[id="configuring-openshift-oauth_{context}"]
-= Configuring OpenShift OAuth
+[id="configuring-openshift-oauth-with-initial-user_{context}"]
+= Configuring OpenShift OAuth with initial user
 
 .Prerequisites
 
@@ -11,13 +11,15 @@
 * Configure OpenShift identity providers on the cluster. See the link:https://docs.openshift.com/container-platform/latest/authentication/understanding-identity-provider.html#identity-provider-overview_understanding-identity-provider[Understanding identity provider configuration].
 +
 ====
-If skip this step and there are identity providers configured on the OpenShift cluster, then {prod} will create initial OpenShift user for HTPasswd identity provider and put user's credentials in `openshift-oauth-user-credentials` secret in {prod-namespace} namespace. Follow these steps to obtain credentials to log in into OpenShift cluster and {prod}:
+When a user skips the Configuring step of OpenShift identity providers, and the OpenShift cluster does not already contain configured identity providers, {prod-short} creates an initial OpenShift user for the `HTPasswd` identity provider. Credentials of this user are stored in the `openshift-oauth-user-credentials` secret, located in the {prod-namespace} namespace. 
+
+Obtain the credentials for logging in to an OpenShift cluster and {prod-short} instance:
 
 . Obtain OpenShift user name:
 +
 [subs="+attributes,+quotes"]
 ----
-$ oc get secret openshift-oauth-user-credentials  -n {prod-namespace} -o json | jq -r '.data.user' | base64 -d
+$ oc get secret openshift-oauth-user-credentials -n {prod-namespace} -o json | jq -r '.data.user' | base64 -d
 ----
 . Obtain OpenShift user password:
 +
