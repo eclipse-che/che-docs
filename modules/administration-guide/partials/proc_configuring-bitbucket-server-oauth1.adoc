@@ -23,7 +23,7 @@ It enables {prod-short} to obtain and renew link:https://confluence.atlassian.co
 
 .Procedure
 
-. Generate a RSA key pair and a stripped down version of the public key: 
+. Generate a RSA key pair and a stripped down version of the public key:
 +
 [subs="+quotes,+attributes"]
 ----
@@ -33,7 +33,7 @@ openssl pkcs8 -topk8 -inform pem -outform pem -nocrypt -in __<private.pem>__ -ou
 cat __<public.pub>__ | sed 's/-----BEGIN PUBLIC KEY-----//g' | sed 's/-----END PUBLIC KEY-----//g' | tr -d '\n' > __<public-stripped.pub>__
 ----
 
-. Generate a consumer key and a shared secret.
+. Generate a consumer key.
 +
 [subs="+quotes,+attributes"]
 ----
@@ -41,7 +41,7 @@ openssl rand -base64 24 > __<bitbucket_server_consumer_key>__
 openssl rand -base64 24 > __<bitbucket_shared_secret>__
 ----
 
-. Create a Kubernetes Secret in {prod-short} namespace containing the RSA key pair, the consumer key and the shared secret.
+. Create a Kubernetes Secret in {prod-short} namespace containing the consumer and private keys.
 +
 [subs="+quotes,+attributes"]
 ----
@@ -49,40 +49,24 @@ $ {orch-cli} apply -f - <<EOF
 kind: Secret
 apiVersion: v1
 metadata:
-  name: github-oauth-credentials
+  name: bitbucket-oauth-config
   namespace: <...> <1>
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
-    app.kubernetes.io/component: che-secret
+    app.kubernetes.io/component: oauth-scm-configuration
   annotations:
-    che.eclipse.org/mount-path: /home/user/eclipse-che/conf/oauth1/bitbucket
-    che.eclipse.org/mount-as: file
-data:
-  private.key: <...> <2>
-  consumer.key: <...> <3>
-  shared_secret: <...> <4>
+    che.eclipse.org/oauth-scm-server: bitbucket
+    che.eclipse.org/scm-server-endpoint: <...> <2>
 type: Opaque
+data:
+  private.key: <...> <3>
+  consumer.key: <...> <4>
 EOF
 ----
 <1> {prod-short} namespace. The default is {prod-namespace}
-<2> base64 encoded content of the __<privatepkcs8.pem>__ file without first and last lines.
-<3> base64 encoded content of the `__<bitbucket_server_consumer_key>__` file.
-<4> base64 encoded content of the `__<bitbucket_shared_secret>__` file.
-
-. Configure the {prod-short} server environment variables:
-+
-[subs="+quotes,macros"]
-----
-spec:
- server:
-   customCheProperties:
-     pass:[CHE_OAUTH1_BITBUCKET_CONSUMERKEYPATH]: '/home/user/eclipse-che/conf/oauth1/bitbucket/consumer.key'
-     pass:[CHE_OAUTH1_BITBUCKET_SHAREDSECRETPATH]: '/home/user/eclipse-che/conf/oauth1/bitbucket/shared_secret'
-     pass:[CHE_OAUTH1_BITBUCKET_PRIVATEKEYPATH]: '/home/user/eclipse-che/conf/oauth1/bitbucket/private.key'
-     pass:[CHE_OAUTH1_BITBUCKET_ENDPOINT]: '__<Bitbucket Server URL>__'
-     pass:[CHE_INTEGRATION_BITBUCKET_SERVER__ENDPOINTS]: '__<Bitbucket Server URL>__'
-
-----
+<2> Bitbucket Server URL
+<3> base64 encoded content of the __<privatepkcs8.pem>__ file without first and last lines.
+<4> base64 encoded content of the `__<bitbucket_server_consumer_key>__` file.
 
 . Configure an link:https://confluence.atlassian.com/adminjiraserver/using-applinks-to-link-to-other-applications-938846918.html[Application Link] in Bitbucket to enable the communication from {prod-short} to Bitbucket Server.
 
@@ -136,5 +120,5 @@ Public Key:: Paste the content of the `__<public-stripped.pub>__` file.
 * link:https://bitbucket.org/product/download[Download Bitbucket Server]
 * link:https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html[Bitbucket Server Personal access tokens]
 * link:https://confluence.atlassian.com/jirakb/how-to-generate-public-key-to-application-link-3rd-party-applications-913214098.html[How to generate public key to application link 3rd party applications]
-* link:https://confluence.atlassian.com/adminjiraserver/using-applinks-to-link-to-other-applications-938846918.html[Using AppLinks to link to other applications] 
+* link:https://confluence.atlassian.com/adminjiraserver/using-applinks-to-link-to-other-applications-938846918.html[Using AppLinks to link to other applications]
 * xref:end-user-guide:authentication-against-bitbucket-server-with-the-personal-access-token.adoc[].
