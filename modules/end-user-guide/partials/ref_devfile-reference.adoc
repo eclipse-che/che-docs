@@ -7,6 +7,56 @@
 
 This section contains devfile reference and instructions on how to use the various elements that devfiles consist of.
 
+[id="adding-schema-version-to-a-devfile_{context}"]
+== Adding schema version to a devfile
+
+.Procedure
+
+* Define the `schemaVersion` attribute in the devfile:
+
+.Adding schema version to a devfile
+====
+[source,yaml]
+----
+schemaVersion: 2.0.0
+----
+====
+
+[id="adding-a-name-to-a-devfile_{context}"]
+== Adding a name to a devfile
+
+Adding a name to a devfile is mandatory. Both `name` and `generateName` are optional attributes, but at least one of them must be defined.
+
+.Procedure
+
+. To specify a static name for the workspace, define the `name` attribute.
++
+.Adding a static name to a devfile
+
+[source,yaml]
+----
+schemaVersion: 2.0.0
+metadata:
+  name: devfile-sample
+----
+
+. To specify a prefix for automatically generated workspace names, define the `generateName` attribute and don't define the `name` attribute. The workspace name will be in the `<generateName>YYYYY` format (for example, `devfile-sample-2y7kp`). `Y` is random `[a-z0-9]` character.
++
+.Adding a generated name to a devfile
+
+[source,yaml]
+----
+schemaVersion: 2.0.0
+metadata:
+  generateName: devfile-sample-
+----
+
+[NOTE]
+====
+For workspaces created using a factory, defining `name` or `generateName` has the same effect. The defined value is used as the name prefix: `<name>YYYYY` or `<generateName>YYYYY`. When both `generateName` and `name` are defined, `generateName` takes precedence.
+====
+
+[id="adding-projects-to-a-devfile_{context}"]
 == Adding projects to a devfile
 
 Usually a devfile contains one or more projects. A workspace is created to develop those projects. Projects are added in the `projects` section of devfiles.
@@ -572,7 +622,7 @@ the {platforms-namespace} to which the workspace is deployed.
 
 * `CHE_MACHINE_AUTH_SIGNATURE__ALGORITHM`: The encryption algorithm used in the secured communication with the {prod-short} server.
 
-A devfiles may only need the `CHE_PROJECTS_ROOT` environment variable to locate the cloned projects in the component's container. More advanced devfiles might use the `CHE_WORKSPACE_LOGS_ROOT__DIR` environment variable to read the logs (for example as part of a devfile command). The environment variables used to securely access the {prod-short} server are mostly out of scope for devfiles and are present only for advanced use cases that are usually handled by the {prod-short} plug-ins.
+A devfiles may only need the `CHE_PROJECTS_ROOT` environment variable to locate the cloned projects in the component's container. More advanced devfiles might use the `CHE_WORKSPACE_LOGS_ROOT__DIR` environment variable to read the logs (for example as part of a devfile command). The environment variables used to securely access the {prod-short} server are out of scope for devfiles and are present only for advanced use cases that are usually handled by the {prod-short} plug-ins.
 
 [id="endpoints_{context}"]
 === Endpoints
@@ -648,7 +698,7 @@ WARNING: Listening on any other interface than the local loopback poses a securi
 +
 WARNING: This setting potentially allows a link:https://en.wikipedia.org/wiki/Cross-site_request_forgery[CSRF] attack when used in conjunction with a server using POST requests.
 
-When starting a new server within a component, {prod-short} autodetects this, and the UI offers to automatically expose this port as a `public` port. This is useful for debugging a web application, for example. It is impossible to do this for servers that autostart with the container (for example, a database server). For such components, specify the endpoints explicitly.
+When starting a new server within a component, {prod-short} automatically detects this, and the UI offers to automatically expose this port as a `public` port. This is useful for debugging a web application, for example. It is impossible to do this for servers that automatically start with the container (for example, a database server). For such components, specify the endpoints explicitly.
 
 Example specifying endpoints for `kubernetes`/`openshift` and `chePlugin`/`cheEditor` types:
 
@@ -835,6 +885,7 @@ components:
 
 Additionally, it is also possible to modify the entrypoints (command and arguments) of the containers present in the resource list. For details of the advanced use case, see xref:creating-and-configuring-a-new-workspace.adoc#defining-specific-container-images_{context}[Defining specific container images].
 
+[id="adding-commands-to-a-devfile_{context}"]
 == Adding commands to a devfile
 
 A devfile allows to specify commands to be available for execution in a workspace. Every command can contain a subset of actions, which are related to a specific component in whose container it will be executed.
@@ -940,7 +991,7 @@ commands:
 
 This example shows association of a `tasks.json` file with a devfile. Notice the `vscode-task` type that instructs the Che-Theia editor to interpret this command as a tasks definition and `referenceContent` attribute that contains the contents of the file itself. You can also save this file separately from the devfile and use `reference` attribute to specify a relative or absolute URL to it.
 
-In addition to the `vscode-task` commands, the Che-Theia editor understands `vscode-launch` type using which you can specify the launch configurations.
+In addition to the `vscode-task` commands, the Che-Theia editor understands `vscode-launch` type using which you can specify the start configurations.
 
 === Command preview URL
 
@@ -980,7 +1031,7 @@ To specify the preferred way of previewing a service URL:
 * `off` -- disables opening the preview URL (automatically and with a notification)
 
 
-== Devfile attributes
+== Adding attributes to a devfile
 
 Devfile attributes can be used to configure various features.
 
