@@ -15,7 +15,7 @@ while [[ "$#" -gt 0 ]]; do
     '-t'|'--trigger-release') TAG_RELEASE=1; docommit=1; shift 0;;
     '-v'|'--version') VERSION="$2"; shift 1;;
     '-n'|'--nocommit') docommit=0; shift 0;;
-    '-tmp'|'--use-tmp-dir') USE_TMP_DIR=0; shift 0;;
+    '-tmp'|'--use-tmp-dir') USE_TMP_DIR=1; shift 0;;
   esac
   shift 1
 done
