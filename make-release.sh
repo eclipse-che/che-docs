@@ -15,7 +15,7 @@ while [[ "$#" -gt 0 ]]; do
     '-t'|'--trigger-release') TAG_RELEASE=1; docommit=1; shift 0;;
     '-v'|'--version') VERSION="$2"; shift 1;;
     '-n'|'--nocommit') docommit=0; shift 0;;
-    '-tmp'|'--use-tmp-dir') USE_TMP_DIR=0; shift 0;;
+    '-tmp'|'--use-tmp-dir') USE_TMP_DIR=1; shift 0;;
   esac
   shift 1
 done
@@ -39,7 +39,7 @@ if [[ ! ${VERSION} ]]; then
   exit 1
 fi
 
-if [[ ${USE_TMP_DIR} ]]; then
+if [[ ${USE_TMP_DIR} -eq 1 ]]; then
   cd /tmp/ && tmpdir=tmp-${0##*/}-$VERSION && git clone $REPO $tmpdir && cd /tmp/$tmpdir
 fi
 
@@ -95,7 +95,9 @@ bump_version() {
     git commit -s -m "${COMMIT_MSG}" $playbookfile
     git pull origin "${BUMP_BRANCH}"
 
+    set +e
     PUSH_TRY="$(git push origin "${BUMP_BRANCH}")"
+
     # shellcheck disable=SC2181
     if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]] || [[ $PUSH_TRY == *"Protected branch update"* ]]; then
     PR_BRANCH=pr-${BUMP_BRANCH}-to-${NEXTVERSION}
@@ -107,6 +109,7 @@ bump_version() {
       lastCommitComment="$(git log -1 --pretty=%B)"
       hub pull-request -f -m "${lastCommitComment}" -b "${BUMP_BRANCH}" -h "${PR_BRANCH}"
     fi 
+    set -e
   fi
   git checkout ${CURRENT_BRANCH}
 }
@@ -150,6 +153,6 @@ if [[ $TAG_RELEASE -eq 1 ]]; then
   git push origin "${VERSION}" || true
 fi
 
-if [[ ${USE_TMP_DIR} ]]; then
+if [[ ${USE_TMP_DIR} -eq 1 ]]; then
   rm -fr /tmp/$tmpdir
 fi
