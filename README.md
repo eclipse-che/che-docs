@@ -1,5 +1,5 @@
 # Eclipse Che documentation project
-[![Contribute](https://www.eclipse.org/che/contribute.svg)](https://che.openshift.io/#https://github.com/eclipse/che-docs)
+[![Contribute](https://www.eclipse.org/che/contribute.svg)](https://che.openshift.io/f?url=https://github.com/eclipse/che-docs)
 
 This repository contains sources for the [documentation for Eclipse Che](https://www.eclipse.org/che/docs/). To contribute to the documentation, see the [Contribution guide](CONTRIBUTING.adoc). We love pull requests and appreciate contributions that make docs more helpful for users.
 
