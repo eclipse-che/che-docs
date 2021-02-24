@@ -1,6 +1,10 @@
+pass:[<!-- vale IBM.Slash = NO -->]
+
+pass:[<!-- vale IBM.Terms = NO -->]
+
 // Module included in the following assemblies:
 //
-// making-a-workspace-portable-using-a-devfile
+// configuring-a-workspace-using-a-devfile
 
 [id="devfile-reference_{context}"]
 = Devfile reference
@@ -9,7 +13,7 @@ This section contains devfile reference and instructions on how to use the vario
 
 == Adding projects to a devfile
 
-Usually a devfile contains one or more projects. A workspace is created to develop those projects. Projects are added in the `projects` section of devfiles.
+A devfile is designed to contain one or more projects. A workspace is created to develop those projects. Projects are added in the `projects` section of devfiles.
 
 Each project in a single devfile must have:
 
@@ -147,7 +151,7 @@ To specify an alternative registry for the `cheEditor` and `chePlugin` component
 
 === Specifying a component by linking to its descriptor
 
-An alternative way of specifying `cheEditor` or `chePlugin`, instead of using the editor or plug-in `id` (and optionally an alternative registry), is to provide a direct link to the component descriptor (typically named `meta.yaml`) by using the `reference` field:
+An alternative way of specifying `cheEditor` or `chePlugin`, rather than a  use of the editor or plug-in `id` (and optionally an alternative registry), is to provide a direct link to the component descriptor (typically named `meta.yaml`) by using the `reference` field:
 
 [source,yaml]
 ----
@@ -181,6 +185,9 @@ Preferences may also be specified as an array:
      go.lintFlags: ["--enable-all", "--new"]
 ----
 
+pass:[<!-- vale Vale.Spelling = NO -->]
+
+pass:[<!-- vale Vale.Terms = NO -->]
 
 === Component type: kubernetes
 
@@ -283,6 +290,10 @@ To specify a project sources directory mount into container(s), use the `mountSo
         reference: app-deployment.yaml
         mountSources: true
 ----
+
+pass:[<!-- vale Vale.Spelling = YES -->]
+
+pass:[<!-- vale Vale.Terms = YES -->]
 
 If enabled, project sources mounts will be applied to every container of the given component.
 This parameter is also applicable for `chePlugin` type components.
@@ -572,12 +583,12 @@ the {platforms-namespace} to which the workspace is deployed.
 
 * `CHE_MACHINE_AUTH_SIGNATURE__ALGORITHM`: The encryption algorithm used in the secured communication with the {prod-short} server.
 
-A devfiles may only need the `CHE_PROJECTS_ROOT` environment variable to locate the cloned projects in the component's container. More advanced devfiles might use the `CHE_WORKSPACE_LOGS_ROOT__DIR` environment variable to read the logs (for example as part of a devfile command). The environment variables used to securely access the {prod-short} server are mostly out of scope for devfiles and are present only for advanced use cases that are usually handled by the {prod-short} plug-ins.
+A devfiles may only need the `CHE_PROJECTS_ROOT` environment variable to locate the cloned projects in the component's container. More advanced devfiles might use the `CHE_WORKSPACE_LOGS_ROOT__DIR` environment variable to read the logs (for example as part of a devfile command). The environment variables used to securely access the {prod-short} server are, for the most part, out of scope for devfiles and are present only for advanced use cases that are handled by the {prod-short} plug-ins.
 
 [id="endpoints_{context}"]
 === Endpoints
 
-Components of any type can specify the endpoints that the Docker image exposes. These endpoints can be made accessible to the users if the {prod-short} cluster is running using a {kubernetes} ingress or an OpenShift route and to the other components within the workspace. You can create an endpoint for your application or database, if your application or database server is listening on a port and you want to be able to directly interact with it yourself or you want other components to interact with it.
+Components of any type can specify the endpoints that the Docker image exposes. These endpoints can be made accessible to the users if the {prod-short} cluster is running using a {kubernetes} ingress or an OpenShift route and to the other components within the workspace. You can create an endpoint for your application or database, if your application or database server is listening on a port and you need to be able to directly interact with it yourself or you allow other components to interact with it.
 
 Endpoints have several properties as shown in the following example:
 
@@ -636,9 +647,9 @@ Here, there are two Docker images, each defining a single endpoint. Endpoint is 
 
 * `protocol`: For public endpoints the protocol is a hint to the UI on how to construct the URL for the endpoint access. Typical values are `http`, `https`, `ws`, `wss`.
 
-* `secure`: A boolean (defaulting to `false`) specifying whether the endpoint is put behind a JWT proxy requiring a JWT workspace token to grant access. The JWT proxy is deployed in the same Pod as the server and assumes the server listens solely on the local loopback interface, such as `127.0.0.1`.
+* `secure`: A boolean value (defaulting to `false`) specifying whether the endpoint is put behind a JWT proxy requiring a JWT workspace token to grant access. The JWT proxy is deployed in the same Pod as the server and assumes the server listens solely on the local loop-back interface, such as `127.0.0.1`.
 +
-WARNING: Listening on any other interface than the local loopback poses a security risk because such server is accessible without the JWT authentication within the cluster network on the corresponding IP addresses.
+WARNING: Listening on any other interface than the local loop-back poses a security risk because such server is accessible without the JWT authentication within the cluster network on the corresponding IP addresses.
 
 * `path`: The path portion of the URL to the endpoint. This defaults to `/`, meaning that the endpoint is assumed to be accessible at the web root of the server defined by the component.
 
@@ -648,7 +659,7 @@ WARNING: Listening on any other interface than the local loopback poses a securi
 +
 WARNING: This setting potentially allows a link:https://en.wikipedia.org/wiki/Cross-site_request_forgery[CSRF] attack when used in conjunction with a server using POST requests.
 
-When starting a new server within a component, {prod-short} autodetects this, and the UI offers to automatically expose this port as a `public` port. This is useful for debugging a web application, for example. It is impossible to do this for servers that autostart with the container (for example, a database server). For such components, specify the endpoints explicitly.
+When starting a new server within a component, {prod-short} detects this automatically, and the UI offers to automatically expose this port as a `public` port. This is useful for debugging a web application, for example. It is impossible to do this for servers that start automatically with the container (for example, a database server). For such components, specify the endpoints explicitly.
 
 Example specifying endpoints for `kubernetes`/`openshift` and `chePlugin`/`cheEditor` types:
 
@@ -833,7 +844,9 @@ components:
       app: postgres
 ----
 
-Additionally, it is also possible to modify the entrypoints (command and arguments) of the containers present in the resource list. For details of the advanced use case, see xref:creating-and-configuring-a-new-workspace.adoc#defining-specific-container-images_{context}[Defining specific container images].
+Additionally, it is also possible to modify the entrypoints (command and arguments) of the containers present in the resource list. 
+
+//For details of the advanced use case, see xref:configuring-a-workspace-with-dashboard.adoc#defining-specific-container-images_configuring-a-workspace-with-dashboard[Defining specific container images].
 
 == Adding commands to a devfile
 
@@ -1060,3 +1073,7 @@ projects:
 attributes:
   mergePlugins: false
 ----
+
+pass:[<!-- vale IBM.Slash = YES -->]
+
+pass:[<!-- vale IBM.Terms = YES -->]
