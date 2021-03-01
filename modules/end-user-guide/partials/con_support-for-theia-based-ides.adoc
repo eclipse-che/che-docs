@@ -5,13 +5,13 @@ This section describes how to provide a custom IDE, based on Eclipse Theia frame
 
 To use a Theia-based IDE in {prod} as an editor, you need to prepare three main components:
 
-* docker image with your IDE
-* Che editor descriptor file - `meta.yaml`
+* a docker image containing your IDE
+* the Che editor descriptor file - `meta.yaml`
 * replace an editor in a Devfile
 
 .Procedure
 
-. Describe your IDE with an editor descriptor - `meta.yaml` file:
+. Describe the IDE with an editor descriptor - `meta.yaml` file:
 +
 [source,yaml]
 ----
@@ -43,9 +43,9 @@ editors:
         memoryLimit: "512M"
 ----
 +
-`targetPort` and `exposedPort` must be the same as your Theia-based IDE is running on, inside a container.
-Replace `<your-ide-image>` with the name of your IDE image.
-Your `meta.yaml` file should accessible by http(s) link.
+`targetPort` and `exposedPort` must be the same as the Theia-based IDE running inside the container.
+Replace `<your-ide-image>` with the name of the IDE image.
+The `meta.yaml` file should be publicly accessible through an HTTP(S) link.
 
 . Add your editor to a Devfile:
 +
@@ -59,4 +59,4 @@ components:
     reference: '<meta.yaml URL>'
 ----
 +
-`<meta.yaml URL>` should point to the `meta.yaml` file described on a previous step.
+`<meta.yaml URL>` should point to the publicly hosted `meta.yaml` file described in the previous step.
