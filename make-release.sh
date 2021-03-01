@@ -95,6 +95,7 @@ bump_version() {
 
     set +e
     PUSH_TRY="$(git push origin "${BUMP_BRANCH}")"
+
     # shellcheck disable=SC2181
     if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]] || [[ $PUSH_TRY == *"Protected branch update"* ]]; then
     PR_BRANCH=pr-${BUMP_BRANCH}-to-${NEXTVERSION}
@@ -106,6 +107,7 @@ bump_version() {
       lastCommitComment="$(git log -1 --pretty=%B)"
       hub pull-request -f -m "${lastCommitComment}" -b "${BUMP_BRANCH}" -h "${PR_BRANCH}"
     fi 
+    set -e
   fi
   git checkout ${CURRENT_BRANCH}
 }
@@ -149,6 +151,6 @@ if [[ $TAG_RELEASE -eq 1 ]]; then
   git push origin "${VERSION}" || true
 fi
 
-if [[ ${USE_TMP_DIR} ]]; then
+if [[ ${USE_TMP_DIR} -eq 1 ]]; then
   rm -fr /tmp/$tmpdir
 fi
