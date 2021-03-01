@@ -12,6 +12,7 @@ To use a Theia-based IDE in {prod} as an editor, you need to prepare three main 
 .Procedure
 
 . Describe your IDE with an editor descriptor - `meta.yaml` file:
++
 [source,yaml]
 ----
 version: 1.0.0
@@ -35,16 +36,19 @@ editors:
           discoverable: false
     containers:
       - name: theia-ide
-        image: "<your_ide-image>"
+        image: "<your-ide-image>"
         mountSources: true
         ports:
           - exposedPort: 3100
         memoryLimit: "512M"
 ----
-Note, `targetPort` and `exposedPort` must be the same as your Theia-based IDE is running on, inside a container.
++
+`targetPort` and `exposedPort` must be the same as your Theia-based IDE is running on, inside a container.
+Replace `<your-ide-image>` with the name of your IDE image.
 Your `meta.yaml` file should accessible by http(s) link.
 
 . Add your editor to a Devfile:
++
 [source,yaml]
 ----
 apiVersion: 1.0.0
@@ -54,5 +58,5 @@ components:
   - type: cheEditor
     reference: '<meta.yaml URL>'
 ----
-
++
 `<meta.yaml URL>` should point to the `meta.yaml` file described on a previous step.
