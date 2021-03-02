@@ -3,7 +3,7 @@
 // installing-{prod-id-short}-with-kubespray
 
 [id="using-kubespray-to-set-up-kubernetes_{context}"]
-= Set up {kubernetes} using Kubespray
+= Configuring {kubernetes} using Kubespray
 
 Commands are given for bash on Ubuntu.
 
@@ -30,7 +30,7 @@ $ sudo apt-get install openssh-server
 
 * Create SSH key pair
 +
-You have to generate one or multiple SSH key pair(s) to allow Kubespray/Ansible automatic login using SSH. You can use a different key pair for each node or use the same for all nodes.
+You have to generate one or multiple SSH key pair(s) to allow the Kubespray/Ansible automatic login using SSH. You can use a different key pair for each node or use the same for all nodes.
 +
 ----
 $ ssh-keygen -b 2048 -t rsa -f /home/<local-user>/.ssh/id_rsa -q -N ""
@@ -189,7 +189,7 @@ ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root 
 The cluster is created but you currently have no access to its API for configuration purpose.
 `{orch-cli} ` has been installed by Kubespray on master nodes of your cluster and configuration files are saved in root home directories of master nodes.
 
-If you want to access the cluster API from another computer on your network, install {orch-cli}  first.
+When you are about to access the cluster API from another computer on your network, install {orch-cli}  first.
 
 ----
 curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
@@ -197,28 +197,29 @@ chmod +x ./kubectl
 sudo mv ./kubectl /usr/local/bin/kubectl
 ----
 
-Then copy the configuration files from the root home directory of a master node:
+. Copy the configuration files from the root home directory of a master node:
 
-* On the master node, copy configurations files from root to your useraccount
+.. On the master node, copy configurations files from root to your user account:
 +
 ----
-ssh <node-user>@<master-node-ip> "sudo cp -R /root/.kube ~ && sudo chown -R <node-user>:<node-user> ~/.kube" 
+$ ssh <node-user>@<master-node-ip> "sudo cp -R /root/.kube ~ && sudo chown -R <node-user>:<node-user> ~/.kube" 
 ----
 
-* Then download the configuration files to a remote computer
+. Download the configuration files to a remote computer:
 +
 ----
-scp -r <node-user>@<master-node-ip>:~/.kube ~
-sudo chown -R <local-user>:<local-user> ~/.kube
+$ scp -r <node-user>@<master-node-ip>:~/.kube ~
+$ sudo chown -R <local-user>:<local-user> ~/.kube
 ----
 
-* Keep secrets protected on the master node
+. Keep secrets protected on the master node:
 +
 ----
-ssh <node-user>@<master-node-ip> "rm -r ~/.kube"
+$ ssh <node-user>@<master-node-ip> "rm -r ~/.kube"
 ----
-
-For sanity, use autocompletion!
++
+Use autocompletion for the sake of sanity:
++
 ----
-echo 'source <(kubectl completion bash)' >>~/.bashrc
+$ echo 'source <(kubectl completion bash)' >>~/.bashrc
 ----
