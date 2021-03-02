@@ -19,7 +19,7 @@ elif command -v docker
 else echo "No installation of podman or docker found in the PATH" ; exit 1
 fi
 
-${RUNNER}  run --rm -ti \
+${RUNNER} run --rm -ti \
   -v "$(pwd):/test:Z" \
   "wjdp/htmltest" \
   -c .htmltest.yml
