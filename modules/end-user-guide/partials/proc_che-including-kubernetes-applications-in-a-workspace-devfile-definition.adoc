@@ -34,47 +34,13 @@ metadata:
 +
 For example, to embed the NodeJS-Mongo application in the `minimal-workspace`:
 +
-[source,yaml]
-----
-apiVersion: 1.0.0
-metadata:
- name: minimal-workspace
-components:
- - type: kubernetes
-   reference: https://raw.githubusercontent.com/.../mongo-db.yaml
- - alias: nodejs-app
-   type: kubernetes
-   reference: https://raw.githubusercontent.com/.../nodejs-app.yaml
-   entrypoints:
-     - command: ['sleep']  <1>
-       args: ['infinity']
-----
+include::example$snip_including-kubernetes-applications-in-a-workspace-devfile-definition-nodejs-minimal.adoc[]
 +
 <1> The `sleep infinity` command is added as the entrypoint of the Node.js application. The command prevents the application from starting at the workspace start phase. This configuration allows the user to start the application when needed for testing or debugging purposes.
 
 . Add the commands in the devfile to make it easier for a developer to test the application:
 +
-[source,yaml]
-----
-apiVersion: 1.0.0
-metadata:
- name: minimal-workspace
-components:
- - type: kubernetes
-   reference: https://raw.githubusercontent.com/.../mongo-db.yaml
- - alias: nodejs-app
-   type: kubernetes
-   reference: https://raw.githubusercontent.com/.../nodejs-app.yaml
-   entrypoints:
-     - command: ['sleep']
-       args: ['infinity']
-commands:
- - name: run  <1>
-   actions:
-     - type: exec
-       component: nodejs-app
-       command: cd ${CHE_PROJECTS_ROOT}/nodejs-mongo-app/EmployeeDB/ && npm install && sed -i -- ''s/localhost/mongo/g'' app.js && node app.js
-----
+include::example$snip_including-kubernetes-applications-in-a-workspace-devfile-definition-nodejs-minimal-added-commands.adoc[]
 +
 <1> The `run` command added to the devfile is available as a task in Che-Theia from the command palette. When executed, the command starts the Node.js application.
 
