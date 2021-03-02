@@ -6,11 +6,11 @@ This section describes how to use the {prod-short} Operator to install the {imag
 .Prerequisites
 
 * xref:defining-the-list-of-images-to-pull.adoc[]
+
 * xref:defining-the-memory-parameters-for-the-image-puller.adoc[]
-ifeval::["{project-context}" == "che"]
-* Operator Lifecycle Manager is available on the {kubernetes} instance.
-endif::[]
-* OperatorHub is available on the OpenShift instance.
+
+include::example$snip_{project-context}-installing-image-puller-using-che-operator-prerequisites.adoc[]
+
 * The {prod-short} Operator is available. See xref:installation-guide:installing-che-on-openshift-4-using-operatorhub.adoc[]
 
 .Procedure
@@ -35,7 +35,7 @@ spec:
 [NOTE]
 .Uninstalling {image-puller-name-short} using {prod-short} Operator
 ====
-* Edit the `CheCluster` Custom Resource and set `.spec.imagePuller.enable` to `false`:
+* Edit the `CheCluster` Custom Resource and set `.spec.imagePuller.enable` to `false`.
 ====
 
 . Edit the `CheCluster` Custom Resource and set the `.spec.imagePuller.spec` to configure the optional {image-puller-name-short} parameters for the {prod-short} Operator.
@@ -62,7 +62,7 @@ spec:
 
 .Verification steps
 
-. {platforms-name} creates a `Subscription` to `kubernetes-imagepuller-operator`.
+. {platforms-name} creates a `{image-puller-operator-id}` Subscription.
 
 . The `eclipse-che namespace` contains a  `{image-puller-operator-name}` `ClusterServiceVersion`:
 +
@@ -71,7 +71,7 @@ spec:
 $ {orch-cli} get clusterserviceversions
 ----
 
-. The `eclipse-che namespace` contains these deployments: `{image-puller-deployment-name}` and `{image-puller-deployment-name}-operator`.
+. The `eclipse-che namespace` contains these deployments: `{image-puller-deployment-name}` and `{image-puller-deployment-id}`.
 +
 [source,shell,subs="+quotes,+attributes"]
 ----
