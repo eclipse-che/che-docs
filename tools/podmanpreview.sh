@@ -17,7 +17,7 @@ elif command -v docker
 else echo "No installation of podman or docker found in the PATH" ; exit 1
 fi
 
-${RUNNER}  run --rm -ti \
+${RUNNER} run --rm -ti \
   --name che-docs \
   -v "$PWD:/projects:Z" -w /projects \
   --entrypoint="./tools/preview.sh" \
