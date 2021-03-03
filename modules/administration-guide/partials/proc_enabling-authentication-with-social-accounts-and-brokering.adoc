@@ -3,9 +3,24 @@
 [id="enabling-authentication-with-social-accounts-and-brokering_{context}"]
 = Enabling authentication with social accounts and brokering
 
-{identity-provider} provides built-in support for GitHub, OpenShift, and most common social networks such as Facebook and Twitter.
+{identity-provider} provides built-in support for GitHub, OpenShift, and most common social networks such as Facebook and Twitter. 
 See {identity-provider} documentation to learn how to link:{link-identity-provider-github}[enable Login with GitHub].
 
+You can also enable the SSH key and upload it to the {prod-short} users’ GitHub accounts.
+
+To enable this feature when you register a GitHub identity provider:
+
+. Set scope to `repo,user,write:public_key`.
+
+. Set store tokens and stored tokens readable to *ON*.
++
+image::git/kc_provider.png[link="../_images/git/kc_provider.png"]
+
+. Add a default read-token role.
++
+image::git/kc_roles.png[link="../_images/git/kc_roles.png"]
+
+This is the default `delegated` OAuth service mode for multiuser {prod-short}. You can configure the OAuth service mode with the property `che.oauth.service_mode`.
 
 // TODO: To use {prod-short}'s OAuth Authenticator, set `che.oauth.service_mode` to `embedded` and use xref:end-user-guide:version-control.adoc[].
 
