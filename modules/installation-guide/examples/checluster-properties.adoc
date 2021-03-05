@@ -6,7 +6,7 @@
  Property: Description 
 airGapContainerRegistryHostname: Optional host name, or URL, to an alternate container registry to pull images from. This value overrides the container registry host name defined in all the default container images involved in a Che deployment. This is particularly useful to install Che in a restricted environment.
 airGapContainerRegistryOrganization: Optional repository name of an alternate container registry to pull images from. This value overrides the container registry organization defined in all the default container images involved in a Che deployment. This is particularly useful to install {prod-short} in a restricted environment.
-allowUserDefinedWorkspaceNamespaces: Defines that a user is allowed to specify a Kubernetes namespace, or an OpenShift project, which differs from the default. It's NOT RECOMMENDED to set to `true` without OpenShift OAuth configured. The OpenShift infrastructure also uses this property.
+allowUserDefinedWorkspaceNamespaces: Defines that a user is allowed to specify a {platforms-namespace}, or an OpenShift project, which differs from the default. It's NOT RECOMMENDED to set to `true` without OpenShift OAuth configured. The OpenShift infrastructure also uses this property.
 cheClusterRoles: A comma-separated list of ClusterRoles that will be assigned to Che ServiceAccount. Be aware that the Che Operator has to already have all permissions in these ClusterRoles to grant them.
 cheDebug: Enables the debug mode for Che server. Defaults to `false`.
 cheFlavor: Specifies a variation of the installation. The options are `che` for upstream Che installations, or `codeready` for link\:https\://developers.redhat.com/products/codeready-workspaces/overview[CodeReady Workspaces] installation. Override the default value only on necessary occasions.
@@ -50,7 +50,7 @@ proxyUser: User name of the proxy server. Only use when configuring a proxy is r
 selfSignedCert: Deprecated. The value of this flag is ignored. The Che Operator will automatically detect whether the router certificate is self-signed and propagate it to other components, such as the Che server.
 serverCpuLimit: Overrides the CPU limit used in the Che server deployment In cores. (500m = .5 cores). Default to 1.
 serverCpuRequest: Overrides the CPU request used in the Che server deployment In cores. (500m = .5 cores). Default to 100m.
-serverExposureStrategy: Sets the server and workspaces exposure type. Possible values are `multi-host`, `single-host`, `default-host`. Defaults to `multi-host`, which creates a separate ingress, or OpenShift routes, for every required endpoint. `single-host` makes Che exposed on a single host name with workspaces exposed on subpaths. Read the docs to learn about the limitations of this approach. Also consult the `singleHostExposureType` property to further configure how the Operator and the Che server make that happen on Kubernetes. `default-host` exposes the Che server on the host of the cluster. Read the docs to learn about the limitations of this approach.
+serverExposureStrategy: Sets the server and workspaces exposure type. Possible values are `multi-host`, `single-host`, `default-host`. Defaults to `multi-host`, which creates a separate ingress, or OpenShift routes, for every required endpoint. `single-host` makes Che exposed on a single host name with workspaces exposed on subpaths. Read the docs to learn about the limitations of this approach. Also consult the `singleHostExposureType` property to further configure how the Operator and the Che server make that happen on {orch-name}. `default-host` exposes the Che server on the host of the cluster. Read the docs to learn about the limitations of this approach.
 serverMemoryLimit: Overrides the memory limit used in the Che server deployment. Defaults to 1Gi.
 serverMemoryRequest: Overrides the memory request used in the Che server deployment. Defaults to 512Mi.
 serverTrustStoreConfigMapName: Name of the ConfigMap with public certificates to add to Java trust store of the Che server. This is often required when adding the OpenShift OAuth provider, which has HTTPS endpoint signed with self-signed cert. The Che server must be aware of its CA cert to be able to request it. This is disabled by default.
@@ -59,7 +59,7 @@ singleHostGatewayConfigSidecarImage: The image used for the gateway sidecar that
 singleHostGatewayImage: The image used for the gateway in the single host mode. Omit it or leave it empty to use the default container image provided by the Operator.
 tlsSupport: Deprecated. Instructs the Operator to deploy Che in TLS mode. This is enabled by default. Disabling TLS sometimes cause malfunction of some Che components.
 useInternalClusterSVCNames: Use internal cluster SVC names to communicate between components to speed up the traffic and avoid proxy issues. The default value is `false`.
-workspaceNamespaceDefault: Defines Kubernetes default namespace in which user's workspaces are created for a case when a user does not override it. It's possible to use `<username>`, `<userid>` and `<workspaceid>` placeholders, such as che-workspace-<username>. In that case, a new namespace will be created for each user or workspace.
+workspaceNamespaceDefault: Defines {orch-name} default namespace in which user's workspaces are created for a case when a user does not override it. It's possible to use `<username>`, `<userid>` and `<workspaceid>` placeholders, such as che-workspace-<username>. In that case, a new namespace will be created for each user or workspace.
 :=== 
 
 [id="checluster-custom-resource-database-settings_{context}"]
@@ -113,7 +113,7 @@ updateAdminPassword: Forces the default `admin` Che user to update password on f
 :=== 
  Property: Description 
 postgresPVCStorageClassName: Storage class for the Persistent Volume Claim dedicated to the PosgreSQL database. When omitted or left blank, a default storage class is used.
-preCreateSubPaths: Instructs the Che server to start a special Pod to pre-create a sub-path in the Persistent Volumes. Defaults to `false`, however it will need to enable it according to the configuration of your Kubernetes cluster.
+preCreateSubPaths: Instructs the Che server to start a special Pod to pre-create a sub-path in the Persistent Volumes. Defaults to `false`, however it will need to enable it according to the configuration of your {orch-name} cluster.
 pvcClaimSize: Size of the persistent volume claim for workspaces. Defaults to `1Gi`.
 pvcJobsImage: Overrides the container image used to create sub-paths in the Persistent Volumes. This includes the image tag. Omit it or leave it empty to use the default container image provided by the Operator. See also the `preCreateSubPaths` field.
 pvcStrategy: Persistent volume claim strategy for the Che server. This Can be\:`common` (all workspaces PVCs in one volume), `per-workspace` (one PVC per workspace for all declared volumes) and `unique` (one PVC per declared volume). Defaults to `common`.
@@ -127,7 +127,7 @@ workspacePVCStorageClassName: Storage class for the Persistent Volume Claims ded
 :=== 
  Property: Description 
 ingressClass: Ingress class that will define the which controller will manage ingresses. Defaults to `nginx`. NB\: This drives the `kubernetes.io/ingress.class` annotation on Che-related ingresses.
-ingressDomain: Global ingress domain for a Kubernetes cluster. This MUST be explicitly specified\: there are no defaults.
+ingressDomain: Global ingress domain for a {orch-name} cluster. This MUST be explicitly specified\: there are no defaults.
 ingressStrategy: Strategy for ingress creation. Options are\: `multi-host` (host is explicitly provided in ingress), `single-host` (host is provided, path-based rules) and `default-host` (no host is provided, path-based rules). Defaults to `multi-host` Deprecated in favor of `serverExposureStrategy` in the `server` section, which defines this regardless of the cluster type. When both are defined, the `serverExposureStrategy` option takes precedence.
 securityContextFsGroup: The FSGroup in which the Che Pod and workspace Pods containers runs in. Default value is `1724`.
 securityContextRunAsUser: ID of the user the Che Pod and workspace Pods containers run as. Default value is `1724`.
