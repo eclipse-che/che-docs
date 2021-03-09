@@ -51,6 +51,27 @@ This namespace contains APIs and types related to {prod-short}. Some sections ar
 | workspace | Allows to work with the {prod-short} workspace API; provides functionality to access workspaces, their lifecycle, and user settings.
 |===
 
+[id="using-the-{prod-id-short}-in-plug-ins_{context}"]
+== Using the `che` {orch-namespace} in plug-ins
+
+VS Code extensions::
++
+. Adding the `@eclipse-che/plugin` dependency for backend plug-ins to a `package.json` file is a possibility.
+. For quick calls, it is simpler to use VS Code extension mechanism because it does not require relying on a third-party party dependency or trying and catching the error.
++
+. Import and use the {orch-namespace}. For example:
++
+[source,typescript]
+----
+const eclipseCheExtPlugin = vscode.extensions.getExtension('@eclipse-che.ext-plugin');
+if (eclipseCheExtPlugin) {
+  // grab user
+  const user = await eclipseCheExtPlugin.exports.user.getCurrentUser();
+ vscode.window.showInformationMessage(`Eclipse Che user information: id ${user.id} with name ${user.name}`);
+} else {
+  vscode.window.showWarningMessage('Not running inside Eclipse Che, not displaying any user information');
+}
+----
 
 [id="using-the-{prod-id-short}-namespace-in-plug-ins_{context}"]
 == Using the `che` {orch-namespace} in plug-ins
