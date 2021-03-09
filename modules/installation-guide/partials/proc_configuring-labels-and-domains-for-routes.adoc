@@ -1,0 +1,137 @@
+
+[id="configuring-labels-for-routes_{context}"]
+= Configuring labels and domains for OpenShift Route to work with Router Sharding
+
+This procedure describes how to configure labels and domains for OpenShift Route to work with link:https://docs.openshift.com/container-platform/4.7/networking/ingress-operator.html#nw-ingress-sharding_configuring-ingress[Router Sharding].
+
+.Prerequisites
+
+* The `oc` tool is available.
+
+.Procedure
+
+. When OperatorHub is used to deploy {prod-short} then set the following values in {prod-checluster} Custom Resource (CR):
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  server:
+    devfileRegistryRoute:
+      labels: <labels> <1>
+      domain: <domain> <2>
+    pluginRegistryRoute:
+      labels: <labels> <1>
+      domain: <domain> <2>
+    cheServerRoute:
+      labels: <labels> <1>
+      domain: <domain> <2>
+    customCheProperties:
+      CHE_INFRA_OPENSHIFT_ROUTE_LABELS: <labels> <1>
+      CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX: <domain> <2>
+  auth:
+    identityProviderRoute:
+      labels: <labels> <1>
+      domain: <domain> <2>
+----
+<1> comma separated list of labels that are used by the target ingress controller to filter the set of Routes to service
+<2> DNS name serviced by the target ingress controller
+
++
+. When `{prod-cli}` tool is used to deploy {prod-short} then use `--che-operator-cr-patch-yaml` flag:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:deploy --che-operator-cr-patch-yaml=patch.yaml ...
+----
++
+`patch.yaml` must contain the following:
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  server:
+    devfileRegistryRoute:
+      labels: <labels> <1>
+      domain: <domain> <2>
+    pluginRegistryRoute:
+      labels: <labels> <1>
+      domain: <domain> <2>
+    cheServerRoute:
+      labels: <labels> <1>
+      domain: <domain> <2>
+    customCheProperties:
+      CHE_INFRA_OPENSHIFT_ROUTE_LABELS: <labels> <1>
+      CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX: <domain> <2>
+  auth:
+    identityProviderRoute:
+      labels: <labels> <1>
+      domain: <domain> <2>
+----
+<1> comma separated list of labels that are used by the target ingress controller to filter the set of Routes to service
+<2> DNS name serviced by the target ingress controller
+
++
+. When {prod-short} is already deployed in the OpenShift cluster then use the following commands:
++
+[subs="+quotes,+attributes"]
+----
+$ oc patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/server/cheServerRoute/labels",'\
+'"value": "__<labels for a {prod-id-short} server route>__"}]'
+----
++
+[subs="+quotes,+attributes"]
+----
+$ oc patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/server/cheServerRoute/domain",'\
+'"value": "__<ingress domain>__"}]'
+----
++
+[subs="+quotes,+attributes"]
+----
+$ oc patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/server/pluginRegistryRoute/labels", '\
+'"value": "__<labels for a plugin registry route>__"}]'
+----
++
+[subs="+quotes,+attributes"]
+----
+$ oc patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/auth/identityProviderRoute/domain", '\
+'"value": "__<ingress domain>__"}]'
+----
++
+[subs="+quotes,+attributes"]
+----
+$ oc patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/server/pluginRegistryRoute/domain", '\
+'"value": "__<ingress domain>__"}]'
+----
++
+[subs="+quotes,+attributes"]
+----
+$ oc patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/server/devfileRegistryRoute/labels", '\
+'"value": "__<labels for a devfile registry route>__"}]'
+----
++
+[subs="+quotes,+attributes"]
+----
+$ oc patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/server/devfileRegistryRoute/domain", '\
+'"value": "__<ingress domain>__"}]'
+----
++
+[subs="+quotes,+attributes"]
+----
+$ oc patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/server/customCheProperties/CHE_INFRA_OPENSHIFT_ROUTE_LABELS", '\
+'"value": "__<labels for a workspace routes>__"}]'
+----
++
+[subs="+quotes,+attributes"]
+----
+$ oc patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/server/customCheProperties/CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN______SUFFIX", '\
+'"value": "__<ingress domain>__"}]'
+----
