@@ -44,12 +44,15 @@ RUN apk add --no-cache --update \
     curl \
     findutils \
     git \
+    grep \
     jq \
     nodejs \
+    perl \
     py3-pip \
     py3-wheel \
     shellcheck \
     tar \
+    xmlstarlet \
     yarn \
     && pip3 install --no-cache-dir --no-input jinja2-cli linkchecker yq \
     && yarnpkg global add --ignore-optional --non-interactive @antora/cli@latest @antora/site-generator-default@latest asciidoctor gulp gulp-connect \
