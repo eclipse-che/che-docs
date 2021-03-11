@@ -2,7 +2,7 @@
 [id="configuring-labels-for-routes_{context}"]
 = Configuring labels and domains for OpenShift Route to work with Router Sharding
 
-This procedure describes how to configure labels and domains for OpenShift Route to work with link:https://docs.openshift.com/container-platform/4.7/networking/ingress-operator.html#nw-ingress-sharding_configuring-ingress[Router Sharding].
+This procedure describes how to configure labels and domains for OpenShift Route to work with link:https://docs.openshift.com/container-platform/4.7/networking/ingress-operator.html#nw-ingress-sharding_configuring-ingress[Router Sharding] and mentions how to do so on existing instances or those about to be installed.
 
 .Prerequisites
 
@@ -10,7 +10,12 @@ This procedure describes how to configure labels and domains for OpenShift Route
 
 .Procedure
 
-. When OperatorHub is used to deploy {prod-short} then set the following values in {prod-checluster} Custom Resource (CR):
+* For a new OperatorHub installation:
++
+. Enter the {prod} Cluster using {ocp} and create CheCluster Custom Resource (CR). See, xref:installing-che-on-openshift-4-using-operatorhub#creating-an-instance-of-the-{prod-id-short}-operator_{context}[Creating an instance of the {prod} Operator]
+
++
+. Set the following values in {prod-checluster} Custom Resource (CR):
 +
 [source,yaml,subs="+quotes"]
 ----
@@ -36,8 +41,9 @@ spec:
 <1> comma separated list of labels that are used by the target ingress controller to filter the set of Routes to service
 <2> DNS name serviced by the target ingress controller
 
+* For a  new `{prod-cli}` installation:
 +
-. When `{prod-cli}` tool is used to deploy {prod-short} then use `--che-operator-cr-patch-yaml` flag:
+. Configure the the `{prod-cli}` installation using:
 +
 [subs="+quotes,+attributes"]
 ----
@@ -70,8 +76,9 @@ spec:
 <1> comma separated list of labels that are used by the target ingress controller to filter the set of Routes to service
 <2> DNS name serviced by the target ingress controller
 
+* For already existing {prod-short} installation:
 +
-. When {prod-short} is already deployed in the OpenShift cluster then use the following commands:
+. Update `{prod-checluster}` CR using the `{orch-cli}` tool:
 +
 [subs="+quotes,+attributes"]
 ----
