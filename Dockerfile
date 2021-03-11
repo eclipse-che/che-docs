@@ -11,7 +11,7 @@
 
 FROM golang:1.15.6-alpine3.12 as vale-builder
 WORKDIR /vale
-RUN wget -qO- https://github.com/errata-ai/vale/archive/v2.8.0.tar.gz | tar --strip-components=1 -zxvf -
+RUN wget -qO- https://github.com/errata-ai/vale/archive/v2.10.0.tar.gz | tar --strip-components=1 -zxvf -
 RUN export ARCH="$(uname -m)" && if [[ ${ARCH} == "x86_64" ]]; then export ARCH="amd64"; elif [[ ${ARCH} == "aarch64" ]]; then export ARCH="arm64"; fi && \
     GOOS=linux GOARCH=${ARCH} CGO_ENABLED=0 go build -tags closed -o bin/vale ./cmd/vale
 
