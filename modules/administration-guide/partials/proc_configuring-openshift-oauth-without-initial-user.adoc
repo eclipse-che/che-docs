@@ -9,14 +9,7 @@ The following procedure describes how to configure OpenShift OAuth without provi
 
 .Procedure
 
-. Deploy and update {prod-short} instance using OperatorHub and wait for the process to finish:
-+
-[subs="+quotes,+attributes"]
-----
-$ {prod-cli} server:deploy --che-operator-cr-patch-yaml=patch.yaml ...
-----
-+
-`patch.yaml` must contain the following:
+. When OperatorHub is used to deploy {prod-short} then set the following values in {prod-checluster} Custom Resource (CR):
 +
 [source,yaml,subs="+quotes"]
 ----
@@ -26,7 +19,14 @@ spec:
     initialOpenShiftOAuthUser: ''
 ----
 +
-. Set the following values in {prod-checluster} Custom Resource (CR):
+. When `{prod-cli}` tool is used to deploy {prod-short} then use `--che-operator-cr-patch-yaml` flag:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:deploy --che-operator-cr-patch-yaml=patch.yaml ...
+----
++
+`patch.yaml` must contain the following:
 +
 [source,yaml,subs="+quotes"]
 ----
