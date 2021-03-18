@@ -1,0 +1,59 @@
+
+[id="enabling-dev-workspace-engine_{context}"]
+= Enabling Dev Workspace engine
+
+This procedure describes how to enable the Dev Workspace engine to support the Devfile 2.0.0 file format and mentions how to do so on existing instances or those about to be installed.
+
+.Prerequisites
+
+* The `{orch-cli}` and `{prod-cli}` tools are available.
+
+
+.Procedure
+
+* For a new OperatorHub installation:
++
+. Enter the {prod} Cluster using {ocp} and create CheCluster Custom Resource (CR). See, xref:installing-che-on-openshift-4-using-operatorhub#creating-an-instance-of-the-{prod-id-short}-operator_{context}[Creating an instance of the {prod} Operator]
+
++
+. Set the following values in {prod-checluster} Custom Resource (CR):
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  devWorkspace:
+    enable: true
+----
+
+
+* For a  new `{prod-cli}` installation:
++
+. Configure the the `{prod-cli}` installation using:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:deploy --che-operator-cr-patch-yaml=patch.yaml ...
+----
++
+`patch.yaml` must contain the following:
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  devWorkspace:
+    enable: true
+----
+
+* For already existing {prod-short} installation:
++
+. Update `{prod-checluster}` CR using the `{orch-cli}` tool:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/devWorkspace/enable", "value": true}]'
+----
+
+.Additional resources
+
+For information about installation methods mentioned in this chapter, see xref:installing-che.adoc[].
