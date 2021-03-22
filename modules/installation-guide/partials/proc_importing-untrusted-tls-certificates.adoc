@@ -2,7 +2,7 @@
 [id="importing-untrusted-tls-certificates_{context}"]
 = Importing untrusted TLS certificates to {prod-short}
 
-Internal communications between {prod-short} components are, by default, encrypted with TLS.
+External communications between {prod-short} components are, by default, encrypted with TLS.
 Communications of {prod-short} components with external services such as proxies, source code repositories, identity providers may require using of TLS.
 Those communications require the use of TLS certificates signed by trusted Certificate Authorities.
 
@@ -28,6 +28,12 @@ the cluster contains cluster-wide trusted CA certificates added through the link
 
 - {prod-short} automatically labels the ConfigMap with the `config.openshift.io/inject-trusted-cabundle="true"` label.
 - Based on this annotation, OpenShift automatically injects the cluster-wide trusted CA certificates inside the `ca-bundle.crt` key of ConfigMap
+====
+
+[IMPORTANT]
+====
+Some {prod-short} components require to have full certificate chain to trust the endpoint.
+If the cluster is configured with an intermediate certificate, then the whole chain (including self-signed root) should be added to {prod-short}.
 ====
 
 == Adding new CA certificates into {prod-short}
