@@ -8,14 +8,9 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-set -ex
+. tools/runner.sh
 
-if command -v podman
-  then RUNNER=podman
-elif command -v docker
-  then RUNNER=docker
-else echo "No installation of podman or docker found in the PATH" ; exit 1
-fi
+set -ex
 
 ${RUNNER} run --rm -ti \
   --name che-docs \

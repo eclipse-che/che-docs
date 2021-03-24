@@ -6,7 +6,15 @@
 # which is available at https://www.eclipse.org/legal/epl-2.0/
 #
 # SPDX-License-Identifier: EPL-2.0
-# 
+#
 
-#linkchecker -f linkcheckerrc http://localhost:4000
-linkchecker -f linkcheckerrc build/site/che-7/
+# Detect runner for containers
+
+if command -v podman
+  then RUNNER=podman
+elif command -v docker
+  then RUNNER=docker
+else echo "No installation of podman or docker found in the PATH" ; exit 1
+fi
+
+export RUNNER

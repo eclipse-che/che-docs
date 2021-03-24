@@ -19,4 +19,9 @@ elif command -v docker
 else echo "No installation of podman or docker found in the PATH" ; exit 1
 fi
 
-${RUNNER} exec -ti che-docs "./tools/linkchecker.sh"
+# ${RUNNER} exec -ti che-docs "./tools/linkchecker.sh"
+${RUNNER} run --rm -ti \
+  --name che-docs-linkchecker \
+  -v "$PWD:/projects:Z" -w /projects \
+  --entrypoint="./tools/linkchecker.sh" \
+  "${CHE_DOCS_IMAGE:-quay.io/eclipse/che-docs}"
