@@ -7,6 +7,9 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
+# GitHub Actions configuration file for htmltest
+# See: https://github.com/wjdp/htmltest
+
 name: linkchecker-pr-check
 on: [push, pull_request]
 jobs:
@@ -14,13 +17,23 @@ jobs:
     name: link checker
     runs-on: ubuntu-20.04
     container: "quay.io/eclipse/che-docs:latest"
+    needs: build
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: run linkchecker
-        run: |
-          # Build and serve
-          gulp &
-          sleep 20
-          # Run link checker
-          linkchecker -f linkcheckerrc http://localhost:4000
+
+      - name: Cache htmltest status code of checked external URLs # See: https://docs.github.com/en/actions/guides/caching-dependencies-to-speed-up-workflows
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-htmltest
+        with:
+          key: refcache.json
+          path: .cache/htmltest
+
+      - name: Get doc-content artifact created by build
+        uses: actions/download-artifact@v2
+        with:
+          name: doc-content
+
+      - name: Check internal and external links using htmltest
+        run: htmltest
