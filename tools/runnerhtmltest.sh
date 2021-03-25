@@ -8,13 +8,15 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
+# Detect available runner
 . tools/runner.sh
 
+# Fail on errors and display commands
 set -ex
 
+# Run htmltest in a container
 ${RUNNER} run --rm -ti \
-  --name che-docs \
+  --name che-docs-htmltest \
   -v "$PWD:/projects:Z" -w /projects \
-  --entrypoint="./tools/preview.sh" \
-  -p 4000:4000 -p 35729:35729 \
+  --entrypoint="htmltest" \
   "${CHE_DOCS_IMAGE:-quay.io/eclipse/che-docs}"

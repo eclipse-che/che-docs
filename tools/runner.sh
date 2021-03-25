@@ -8,11 +8,11 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-# Detect runner for containers
+# Detect available runner for containers
 
-if command -v podman
+if command -v podman > /dev/null
   then RUNNER=podman
-elif command -v docker
+elif command -v docker > /dev/null
   then RUNNER=docker
 else echo "No installation of podman or docker found in the PATH" ; exit 1
 fi
