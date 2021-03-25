@@ -11,7 +11,13 @@
 # See: https://github.com/wjdp/htmltest
 
 name: linkchecker-pr-check
-on: [push, pull_request]
+
+on:
+  workflow_run:
+    workflows: ["build-documentation-pr"]
+    types:
+      - completed
+
 jobs:
   linkchecker:
     name: link checker
@@ -29,9 +35,10 @@ jobs:
           key: refcache.json
           path: .cache/htmltest
 
-      - name: Build using Antora
-        id: antora-build
-        run: antora generate antora-playbook.yml
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: doc-content
 
       - name: Check internal and external links using htmltest
         id: validate-links
