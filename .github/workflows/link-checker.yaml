@@ -17,7 +17,6 @@ jobs:
     name: link checker
     runs-on: ubuntu-20.04
     container: "quay.io/eclipse/che-docs:latest"
-    needs: build
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -30,10 +29,10 @@ jobs:
           key: refcache.json
           path: .cache/htmltest
 
-      - name: Get doc-content artifact created by build
-        uses: actions/download-artifact@v2
-        with:
-          name: doc-content
+      - name: Build using Antora
+        id: antora-build
+        run: antora generate antora-playbook.yml
 
       - name: Check internal and external links using htmltest
+        id: validate-links
         run: htmltest
