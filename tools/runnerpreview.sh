@@ -16,7 +16,7 @@ set -ex
 
 ${RUNNER} run --rm -ti \
   --name che-docs \
-  -v "$PWD:/projects:Z" -w /projects \
+  -v "$PWD:/projects:z" -w /projects \
   --entrypoint="./tools/preview.sh" \
   -p 4000:4000 -p 35729:35729 \
   "${CHE_DOCS_IMAGE:-quay.io/eclipse/che-docs}"

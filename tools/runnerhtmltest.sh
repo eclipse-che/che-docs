@@ -17,6 +17,6 @@ set -ex
 # Run htmltest in a container
 ${RUNNER} run --rm -ti \
   --name che-docs-htmltest \
-  -v "$PWD:/projects:Z" -w /projects \
+  -v "$PWD:/htmltest:z" -w /htmltest \
   --entrypoint="htmltest" \
   "${CHE_DOCS_IMAGE:-quay.io/eclipse/che-docs}"
