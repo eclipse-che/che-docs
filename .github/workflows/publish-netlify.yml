@@ -1,3 +1,4 @@
+---
 #
 # Copyright (c) 2020 Red Hat, Inc.
 # This program and the accompanying materials are made
@@ -7,7 +8,9 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-name: Publish Doc Content
+# NOTE: Because this worklow is using secrets, it cannot run directly on a pull-request workflow, which is running in the context of the forked repository.
+
+name: Publish doc-content using netlify
 
 on:
   workflow_run:
@@ -17,21 +20,23 @@ on:
 
 jobs:
   publish:
-    name: publish
+    name: Publish doc-content using netlify
     runs-on: ubuntu-20.04
     steps:
-      - name: download doc artifact
+      - name: Download doc-content artifact
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: ${{ github.event.workflow_run.workflow_id }}
           name: doc-content
           path: content
-      - name: PR number
+
+      - name: Download pull-request-number artifact
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: ${{ github.event.workflow_run.workflow_id }}
           name: pull-request-number
-      - name: Grab pull request number
+
+      - name: Set PR_NUMBER variable
         run: |
           pr_number=$(cat "PR_NUMBER")
           if ! [[ "$pr_number" =~ ^[0-9]+$ ]]; then
@@ -39,16 +44,19 @@ jobs:
             exit 1
           fi
           echo "PR_NUMBER=$pr_number" >> $GITHUB_ENV
-      - name: PR sha
+
+      - name: Download pull-request-sha artifact
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: ${{ github.event.workflow_run.workflow_id }}
           name: pull-request-sha
-      - name: Grab pull request sha1
+
+      - name: Set PR_SHA variable
         run: |
           pr_sha=$(cat "PR_SHA")
           echo "PR_SHA=$pr_sha" >> $GITHUB_ENV
-      - name: Publish
+
+      - name: Publish doc-content using netlify
         uses: netlify/actions/cli@master
         id: netlify-publish
         with:
@@ -56,10 +64,11 @@ jobs:
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-      - name: 'Comment PR'
+
+      - name: Comment the pull-request
         uses: actions/github-script@v3.0.0
         with:
-         script: |
-           const { repo: { owner, repo } } = context;
-           const netlifyUrl = '${{ steps.netlify-publish.outputs.NETLIFY_URL }}';
-           await github.repos.createCommitStatus({ owner, repo, sha: process.env.PR_SHA, state: "success", target_url: netlifyUrl, description: "Browse PR documentation online", context: "browse built doc"})
+          script: |
+            const { repo: { owner, repo } } = context;
+            const netlifyUrl = '${{ steps.netlify-publish.outputs.NETLIFY_URL }}';
+            await github.repos.createCommitStatus({ owner, repo, sha: process.env.PR_SHA, state: "success", target_url: netlifyUrl, description: "Browse PR documentation online", context: "browse built doc"})
