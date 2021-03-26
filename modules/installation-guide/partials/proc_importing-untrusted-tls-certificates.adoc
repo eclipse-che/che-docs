@@ -2,7 +2,7 @@
 [id="importing-untrusted-tls-certificates_{context}"]
 = Importing untrusted TLS certificates to {prod-short}
 
-Internal communications between {prod-short} components are, by default, encrypted with TLS.
+External communications between {prod-short} components are, by default, encrypted with TLS.
 Communications of {prod-short} components with external services such as proxies, source code repositories, identity providers may require using of TLS.
 Those communications require the use of TLS certificates signed by trusted Certificate Authorities.
 
@@ -30,19 +30,25 @@ the cluster contains cluster-wide trusted CA certificates added through the link
 - Based on this annotation, OpenShift automatically injects the cluster-wide trusted CA certificates inside the `ca-bundle.crt` key of ConfigMap
 ====
 
+[IMPORTANT]
+====
+Some {prod-short} components require to have full certificate chain to trust the endpoint.
+If the cluster is configured with an intermediate certificate, then the whole chain (including self-signed root) should be added to {prod-short}.
+====
+
 == Adding new CA certificates into {prod-short}
 
 This guide can be used before the installations of {prod-short} or when {prod-short} is already installed and running.
 
 ====
-NOTE: If you are using {prod-short} version prior to
+NOTE: If you are using {prod-short} version lower than
 ifeval::["{project-context}" == "che"]
 v7.23.0
 endif::[]
 ifeval::["{project-context}" != "che"]
 2.5.1
 endif::[]
-see xref:importing-untrusted-tls-certificates-old.adoc[this guide] on how to apply additional TLS certiicates.
+see xref:importing-untrusted-tls-certificates-old.adoc[this guide] on how to apply additional TLS certificates.
 ====
 
 .Prerequisites
@@ -120,7 +126,7 @@ endif::[]
 
 If after adding the certificates something does not work as expected, here is a list of things to verify:
 
-- In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operator] deployment, namespace where `CheCluster` located contains labeled ConfigMaps with right content:
+- In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/understanding/olm-what-operators-are.html[Operator] deployment, namespace where `CheCluster` located contains labeled ConfigMaps with right content:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----

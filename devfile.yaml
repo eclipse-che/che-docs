@@ -21,14 +21,19 @@ components:
         port: 4000
         attributes:
           path: /che-7/overview/introduction-to-eclipse-che/
-  - id: errata-ai/vale-server/latest
-    type: chePlugin
+  - type: chePlugin
+    reference: https://che-plugin-registry-main.surge.sh/v3/plugins/errata-ai/vale-server/latest/meta.yaml
+    alias: vale-vscode
+    preferences:
+      vale.core.useCLI: true
   - id: ms-vscode/vscode-github-pullrequest/latest
     type: chePlugin
-  - id: joaompinto/asciidoctor-vscode/latest
-    type: chePlugin
-  - id: timonwong/shellcheck/latest
-    type: chePlugin
+  - type: chePlugin
+    reference: https://che-plugin-registry-main.surge.sh/v3/plugins/joaompinto/asciidoctor-vscode/latest/meta.yaml
+    alias: asciidoctor-vscode
+  - type: chePlugin
+    reference: https://che-plugin-registry-main.surge.sh/v3/plugins/timonwong/shellcheck/latest/meta.yaml
+    alias: shellcheck
 
 commands:
   - name: Generate reference tables for environment variables
@@ -69,7 +74,7 @@ commands:
       - type: exec
         component: che-docs
         workdir: /projects/che-docs
-        command: sh tools/linkchecker.sh
+        command: htmltest
   - name: Detect unused images
     actions:
       - type: exec

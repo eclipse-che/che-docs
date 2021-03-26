@@ -19,7 +19,12 @@ The following commands use the default {platforms-namespace}, `{prod-namespace}`
 
 .Procedure
 
-. Change the default limit of `1` to `-1` to allow an unlimited number of concurrent workspaces per user:
+. Set the `per-workspace` or `unique` PVC strategy if the underlying storage backend does not support or not configured to use the `ReadWriteMany` access mode. See xref:configuring-storage-strategies.adoc[].
++
+IMPORTANT: The default `common` PVC strategy, which uses a single PVC per user, supports running multiple workspaces simultaneously only if the persistent volumes on the cluster are configured to use the `ReadWriteMany` access mode.
+That way, any of the user's concurrent workspaces can read from and write to the common PVC. 
+In some cases, configuring `ReadWriteMany` is not possible due to the storage limitations, for example, link:https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html[EBS] only supports `ReadWriteOnce` access mode.
+. Change the default limit of `1` to `-1` to allow an unlimited number of concurrent workspaces, or to the precise value, for example, `10` to allow running `10` concurrent workspaces per user simultaneously:
 
 ifeval::["{project-context}" == "che"]
 * For Helm Chart deployments:
@@ -36,10 +41,3 @@ endif::[]
 $ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type merge \
   -p '{ "spec": { "server": {"customCheProperties": {"CHE_LIMITS_USER_WORKSPACES_RUN_COUNT": "-1"} } }}'
 ----
-
-. Set the `per-workspace` or `unique` PVC strategy. See xref:configuring-storage-strategies.adoc[].
-+
-[NOTE]
-====
-When using the _common PVC_ strategy, configure the persistent volumes to use the `ReadWriteMany` access mode. That way, any of the user's concurrent workspaces can read from and write to the common PVC.
-====
