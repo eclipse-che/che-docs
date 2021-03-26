@@ -12,7 +12,7 @@ on:
   - pull_request
 jobs:
   build:
-    name: Build and validate
+    name: link checker # This job name is set as mandatory in the GitHub configuration.
     runs-on: ubuntu-20.04
     container: "quay.io/eclipse/che-docs:latest"
     steps:
@@ -70,7 +70,7 @@ jobs:
           key: refcache.json
           path: .cache/htmltest
 
-      - name: link checker # GitHub is configured to enforce checks with this name
+      - name: Validate links using htmltest
         id: validate-links
         run: htmltest
 
