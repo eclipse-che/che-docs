@@ -7,12 +7,12 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-name: Build and validate documentation on pull request
+name: Build and validate PR
 on:
   - pull_request
 jobs:
   build:
-    name: Build the documentation
+    name: Build and validate the documentation
     runs-on: ubuntu-20.04
     container: "quay.io/eclipse/che-docs:latest"
     steps:
@@ -29,31 +29,36 @@ jobs:
           name: doc-content
           path: build/site
 
-      - name: Store PR info
+      - name: Store PR info for publish-netlify
         run: |
           echo "${{ github.event.number }}" > PR_NUMBER
           echo "${{ github.event.pull_request.head.sha }}" > PR_SHA
 
-      - name: Upload artifact pull-request-number
+      - name: Upload artifact pull-request-number for publish-netlify
         uses: actions/upload-artifact@v2
         with:
           name: pull-request-number
           path: PR_NUMBER
 
-      - name: Upload artifact pull-request-sha
+      - name: Upload artifact pull-request-sha for publish-netlify
         uses: actions/upload-artifact@v2
         with:
           name: pull-request-sha
           path: PR_SHA
 
-  htmltest:
-    name: link checker # This name is set as mandatory in the GitHub configuration.
-    runs-on: ubuntu-20.04
-    container: "quay.io/eclipse/che-docs:latest"
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      # htmltest:
+      #   name: link checker # This name is set as mandatory in the GitHub configuration.
+      #   runs-on: ubuntu-20.04
+      #   container: "quay.io/eclipse/che-docs:latest"
+      #   needs: build
+      #   steps:
+      #     - name: Checkout code
+      #       uses: actions/checkout@v2
+
+      #     - name: Download artifacts
+      #       uses: actions/download-artifact@v2
+      #       with:
+      #         name: doc-content
 
       - name: Cache htmltest status code of checked external URLs # See: https://docs.github.com/en/actions/guides/caching-dependencies-to-speed-up-workflows
         uses: actions/cache@v2
@@ -63,93 +68,33 @@ jobs:
           key: refcache.json
           path: .cache/htmltest
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: doc-content
-
       - name: Check internal and external links using htmltest
         id: validate-links
         run: htmltest
 
-  publish:
-    name: Publish
-    runs-on: ubuntu-20.04
-    needs: build
-    steps:
-      - name: download doc artifact
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          workflow: ${{ github.event.workflow_run.workflow_id }}
-          name: doc-content
-          path: content
+      # unusedimages:
+      #   name: Report unused images
+      #   runs-on: ubuntu-20.04
+      #   steps:
+      #     - name: Checkout code
+      #       uses: actions/checkout@v2
 
-      - name: PR number
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          workflow: ${{ github.event.workflow_run.workflow_id }}
-          name: pull-request-number
+      - name: Report Unused Images
+        run: tools/detect-unused-images.sh
 
-      - name: Grab pull request number
-        run: |
-          pr_number=$(cat "PR_NUMBER")
-          if ! [[ "$pr_number" =~ ^[0-9]+$ ]]; then
-            echo "pr number invalid"
-            exit 1
-          fi
-          echo "PR_NUMBER=$pr_number" >> $GITHUB_ENV
+      # vale-diff:
+      #   name: Validate language on new and modified files in PR
+      #   runs-on: ubuntu-20.04
+      #   container: "quay.io/eclipse/che-docs:latest"
+      #   steps:
+      #     - name: Checkout code
+      #       uses: actions/checkout@v2
+      #       with:
+      #         fetch-depth: 0
 
-      - name: PR sha
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          workflow: ${{ github.event.workflow_run.workflow_id }}
-          name: pull-request-sha
-
-      - name: Grab pull request sha1
-        run: |
-          pr_sha=$(cat "PR_SHA")
-          echo "PR_SHA=$pr_sha" >> $GITHUB_ENV
-
-      - name: Publish
-        uses: netlify/actions/cli@master
-        id: netlify-publish
-        with:
-          args: deploy --dir=content --functions=functions
-        env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-
-      - name: "Comment PR"
-        uses: actions/github-script@v3.0.0
-        with:
-          script: |
-            const { repo: { owner, repo } } = context;
-            const netlifyUrl = '${{ steps.netlify-publish.outputs.NETLIFY_URL }}';
-            await github.repos.createCommitStatus({ owner, repo, sha: process.env.PR_SHA, state: "success", target_url: netlifyUrl, description: "Browse PR documentation online", context: "browse built doc"})
-
-  vale-diff:
-    name: Validate language on new and modified files in PR
-    runs-on: ubuntu-20.04
-    container: "quay.io/eclipse/che-docs:latest"
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Vale
+      - name: Validate language on files added or modified
         run: |
           vale -v
           echo "Changed files, in comparison to branch $GITHUB_BASE_REF"
           git diff --name-only --diff-filter=AM origin/$GITHUB_BASE_REF
           vale $(git diff --name-only --diff-filter=AM origin/$GITHUB_BASE_REF)
-
-  unusedimages:
-    name: Report unused images
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Detect Unused Images
-        run: tools/detect-unused-images.sh
