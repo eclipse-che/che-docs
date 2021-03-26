@@ -1,0 +1,85 @@
+#
+# Copyright (c) 2020 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+# GitHub Actions configuration file for htmltest
+# See: https://github.com/wjdp/htmltest
+
+name: Build and validate
+on:
+  - push
+jobs:
+  build:
+    name: Build and validate
+    runs-on: ubuntu-20.04
+    container: "quay.io/eclipse/che-docs:latest"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Build using antora
+        id: antora-build
+        run: CI=true antora generate antora-playbook.yml --stacktrace
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: doc-content
+          path: build/site
+
+      # htmltest:
+      #   name: link checker # This name is set as mandatory in the GitHub configuration.
+      #   runs-on: ubuntu-20.04
+      #   container: "quay.io/eclipse/che-docs:latest"
+      #   needs: build
+      #   steps:
+      #     - name: Checkout code
+      #       uses: actions/checkout@v2
+
+      - name: Cache htmltest status code of checked external URLs # See: https://docs.github.com/en/actions/guides/caching-dependencies-to-speed-up-workflows
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-htmltest
+        with:
+          key: refcache.json
+          path: .cache/htmltest
+
+      # - name: Download artifacts
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: doc-content
+
+      - name: Validate links using htmltest
+        id: validate-links
+        run: htmltest
+
+      # unusedimages:
+      #   name: Report unused images
+      #   runs-on: ubuntu-20.04
+      #   steps:
+      #     - name: Checkout code
+      #       uses: actions/checkout@v2
+
+      - name: Report Unused Images
+        run: tools/detect-unused-images.sh
+
+      # vale-all-content:
+      #   name: Validate style on all content on push
+      #   runs-on: ubuntu-20.04
+      #   container: "quay.io/eclipse/che-docs:latest"
+      #   steps:
+      #     - name: Checkout code
+      #       uses: actions/checkout@v2
+      #       with:
+      #         fetch-depth: 0
+      - name: Count Vale errors
+        run: |
+          vale -v
+          vale --minAlertLevel=error --output=line . | wc -l
