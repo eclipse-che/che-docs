@@ -3,10 +3,12 @@
 
 To use a VS Code extension in a {prod-short} workspace, {prod-short} need to consume metadata describing the extension. The {prod-short} plugin registry is a static website publishing metadata for common VS Code extensions. VS Code extension metadata for the {prod-short} plugin registry is generated from a central file named `che-theia-plugins.yaml`.
 
-In order to add or modify an extension in the {prod-short} plugin registry, edit the `che-theia-plugins.yaml` file and add relevant metadata.
+To add or modify an extension in the {prod-short} plugin registry, edit the `che-theia-plugins.yaml` file and add relevant metadata.
 
 [NOTE]
-This article describes the steps needed to build the plugin registry with a custom plugin definition. If you are looking to create a custom `meta.yaml` file that can be directly referenced in a devfile, please see xref:end-user-guide:publishing-metadata-for-a-vs-code-extension.adoc[]
+====
+This article describes the steps needed to build the plugin registry with a custom plugin definition. If you are looking to create a custom `meta.yaml` file that can be directly referenced in a devfile, see xref:end-user-guide:publishing-metadata-for-a-vs-code-extension.adoc[].
+====
 
 .Prerequisite
 * A working knowledge of customizing the registries, see xref:administration-guide:customizing-the-registries.adoc[]
@@ -51,13 +53,13 @@ This article describes the steps needed to build the plugin registry with a cust
           - https://github.com/redhat-developer/vscode-yaml/releases/download/0.4.0/redhat.vscode-yaml-0.4.0.vsix
           - https://github.com/SonarSource/sonarlint-vscode/releases/download/1.16.0/sonarlint-vscode-1.16.0.vsix
 ----
-<1> (OPTIONAL) The ID of the plugin, useful if a plugin has multiple entries for one repository (for example, Java 8 vs. Java 11)
+<1> (OPTIONAL) The ID of the plugin, useful if a plugin has multiple entries for one repository (for example, Java 8 compared to Java 11)
 <2> Repository information about the plugin. If ID is specified then this field is not a list element.
 <3> The URL to the extension's git repository URL
-<4> Tag or SHA1 ID of the upstream repository that hosts the extension, usually corresponding to a version/snapshot/release
-<5> (OPTIONAL) An alias for this plugin: this means anything listed here will get its own meta.yaml generated
+<4> Tag or SHA1 ID of the upstream repository that hosts the extension, corresponding to a version, snapshot, or release.
+<5> (OPTIONAL) An alias for this plugin: this means anything listed here will get its own `meta.yaml` file generated
 <6> (OPTIONAL) If the plugin runs in a sidecar container, then the sidecar information is specified here
-<7> A location of a container image to be used as this plugin's sidecar. This line cannot be specified concurrently with `directory` (see above).
+<7> A location of a container image to be used as this plugin's sidecar. This line cannot be specified concurrently with `directory` (see above)
 <8> (OPTIONAL) The name of the sidecar container
 <9> (OPTIONAL) The memory limit of the sidecar container
 <10> (OPTIONAL) The memory request of the sidecar container
@@ -70,10 +72,10 @@ This article describes the steps needed to build the plugin registry with a cust
 <17> The path of the mount
 <18> (OPTIONAL) Any endpoint information for the sidecar container
 <19> Endpoint name
-<20> Whether or not the endpoint is exposed publically or not
+<20> Whether or not the endpoint is exposed publicly or not
 <21> The port number
 <22> Attributes relating to the endpoint
-<23> Direct link(s) to the vsix files included with this plugin. The vsix built by the repository specified (i.e. the "main extension) must be listed first
+<23> Direct link(s) to the `vsix` files included with this plugin. The `vsix` built by the repository specified, such as the main extension, must be listed first
 
 . Run the `build.sh` script with the options of your choosing. The build process will generate `meta.yaml` files automatically, based on the entries in the `che-theia-plugins.yaml` file.
 . Use the resulting plugin registry image in {prod-short}, or copy the `meta.yaml` file out of the registry container and reference it directly as an HTTP resource.
