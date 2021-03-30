@@ -1,6 +1,6 @@
 // Module included in the following assemblies:
 //
-// configuring-a-workspace-using-a-devfile
+// creating-a-workspace-from-a-remote-devfile
 
 [id="allowing-users-to-define-workspace-deployment-labels-and-annotations_{context}"]
 = Allowing users to define workspace deployment labels and annotations
@@ -9,14 +9,17 @@ This section describes how to customize workspace deployment labels and annotati
 
 
 .Prerequisites
+
 * A running instance of {prod}. To install an instance of {prod}, see xref:installation-guide:installing-che.adoc[].
 * A publicly accessible standalone `devfile.yaml` file. See xref:configuring-a-workspace-using-a-devfile.adoc[] for detailed information about creating and using devfiles.
 
 .Procedure
+
 . Open the workspace by navigating to the following URL: `pass:c,a,q[{prod-url}/f?url=https://__<hostURL>__/devfile.yaml&workspaceDeploymentLabels=__<url_encoded_comma_separated_key_values>__&workspaceDeploymentAnnotations=__<url_encoded_comma_separated_key_values override>__]`
 
-.Example of overriding the `deployment labels` 
+.Example of overriding the `deployment labels`
 
+====
 Consider the following labels to add:
 
 [subs="+quotes"]
@@ -37,7 +40,6 @@ The resulting workspace has the following deployment labels:
 
 [subs="+quotes"]
 ----
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -57,9 +59,11 @@ metadata:
 spec:
 ...
 ----
+====
 
 .Example of overriding the `deployment annotations`
 
+====
 Consider the following annotations to add:
 
 [subs="+quotes"]
@@ -81,7 +85,6 @@ The resulting workspace has the following deployment annotations:
 
 [subs="+quotes"]
 ----
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -99,4 +102,14 @@ metadata:
   namespace: opentlc-mgr-che
   resourceVersion: "213191"
 ...
+----
+====
+
+.Verification steps
+
+. To display the deployment labels:
++
+[subs="+attributes,+quotes"]
+----
+$ oc get deployment -n {prod-namespace}  --show-labels
 ----
