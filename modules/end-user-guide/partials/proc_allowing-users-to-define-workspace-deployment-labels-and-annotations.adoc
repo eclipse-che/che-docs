@@ -107,9 +107,25 @@ metadata:
 
 .Verification steps
 
-. To display the deployment labels:
+To display the deployment labels and annotations:
+
+. Get the name of the user's namespace:
+
+.. Using {prod-short} Dashboard, move to the *Workspaces* tab and read the name of the {orch-name} Namespace field.
+
+. Display the deployment labels and annotations for all deployments in the namespace using the Namespace name from the previous step:
 +
 [subs="+attributes,+quotes"]
 ----
-$ oc get deployment -n {prod-namespace}  --show-labels
+$ oc get deployment -n __<NAMESPACE>__ -o=custom-columns="NAMESPACE:.metadata.namespace,NAME:.metadata.name,LABELS:.metadata.labels,ANNOTATIONS:.metadata.annotations"
 ----
+
+
+////
+. To display the deployment labels and annotations for a specific deploymen:
++
+[subs="+attributes,+quotes"]
+----
+$ oc get deployment/__<deployment-name>__ -n __<NAMESPACE>__ -o=custom-columns="NAMESPACE:.metadata.namespace,NAME:.metadata.name,LABELS:.metadata.labels,ANNOTATIONS:.metadata.annotations"
+----
+////
