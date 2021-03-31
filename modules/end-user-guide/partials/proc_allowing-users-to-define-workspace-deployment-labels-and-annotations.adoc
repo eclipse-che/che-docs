@@ -113,7 +113,23 @@ To display the deployment labels and annotations:
 
 .. Using {prod-short} Dashboard, move to the *Workspaces* tab and read the name of the {orch-name} Namespace field.
 
-. Display the deployment labels and annotations for all deployments in the namespace using the Namespace name from the previous step:
+. Log in to the cluster:
+
+.. Retrieve the {prod-short} cluster URL from the `checluster` CR (Custom Resource), run:
++
+[options="nowrap",role=white-space-pre]
+----
+$ oc get checluster --output jsonpath='{.items[0].status.cheURL}'
+----
+
+.. Log in:
++
+[subs="+attributes,+quotes"]
+----
+$ oc login -u _<username>_ -p _<password>_ _<cluster_URL>_
+----
+
+. Display the deployment labels and annotations for all deployments in the namespace using the Namespace name from the first step:
 +
 [subs="+attributes,+quotes"]
 ----
