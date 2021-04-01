@@ -1,7 +1,3 @@
-// Module included in the following assemblies:
-//
-// installing-{prod-id-short}-on-aws
-
 [id="preparing-the-aws-system-for-installing-che_{context}"]
 = Preparing the AWS system for installing {prod-short}
 
@@ -67,7 +63,7 @@ $ aws route53 create-hosted-zone --name aws.my-ide.cloud --caller-reference 1
 
 . Configure the four DNS `nameservers` on the `my-ide.cloud` DNS. Note that when a custom DNS provider, updating the record takes a few hours.
 +
-image::installation/dns-nameservers.png[]
+image::installation/dns-nameservers.png[DNS name servers]
 
 . Create the Simple Storage Service (s3) storage to store the `kops` configuration.
 +
@@ -203,7 +199,11 @@ The existing {kubernetes} instance is prepare to host an {prod-short} installati
 
 == Enabling the TLS and DNS challenge
 
+pass:[<!-- vale IBM.Terms = NO -->]
+
 To use the Cloud DNS and TLS, some service accounts must be enabled to have cert-manager managing the DNS challenge for the _Let's Encrypt_ service.
+
+pass:[<!-- vale IBM.Terms = YES -->]
 
 . Create a new `permission` file.
 . Use the following command to obtain the zone ID:
@@ -258,7 +258,7 @@ $ aws route53 list-hosted-zones
 
 . In the *EC2 Dashboard*, identify the *IAM role* used by the master node.
 +
-image::installation/aws-lauch-instance.png[AWS launch instance,link="../_images/installation/aws-lauch-instance.png"]
+image::installation/aws-lauch-instance.png[start AWS instance,link="../_images/installation/aws-lauch-instance.png"]
 +
 It is located under the *Description* tab, in the *IAM role* field.
 +
