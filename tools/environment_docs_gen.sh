@@ -97,6 +97,9 @@ parse_content() {
     fi
   done <<< "$RAW_CONTENT"
   BUFF="$BUFF$TABLE_FOOTER"                             # close last table
+  BUFF="pass:[<!-- vale off -->]
+
+$BUFF" 
   echo "$BUFF" > "$OUTPUT_PATH"                         # flush buffer into file
   echo "Processing done. Output file is $OUTPUT_PATH" >&2
 }
