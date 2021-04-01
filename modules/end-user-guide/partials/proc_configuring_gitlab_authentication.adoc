@@ -2,19 +2,22 @@
 //
 // authenticating-on-scm-server-with-a-personal-access-token
 
-[id="configuring_bitbucket_authentication_{context}"]
-= Authenticating on Bitbucket servers
+[id="configuring_gitlab_authentication_{context}"]
+= Authenticating on GitLab servers
 
-{prod} users may use public or private repositories on Bitbucket SCM (Source Code Management) system as a source of their projects.
+Configuring authentication on the GitLab system is similar to Bitbucket.
 
-The use of private repositories requires additional configuration described below.
+GitLab authentication is based on using personal access tokens. Each GitLab user is able to request several personal access tokens with different names, permissions, expiration times, and so on. Those tokens can be used to sign GitLab REST API calls and perform Git repository operations.
 
-Bitbucket authentication is based on using personal access tokens. Each Bitbucket user is able to request several personal access tokens with different names, permissions, expiration times, and so on. Those tokens can be used to sign Bitbucket REST API calls and perform Git repository operations.
+See the link:https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#personal-access-tokens[GitLab documentation] for more details about personal access tokens.
 
-To allow Bitbucket authentication on {prod-short} side, personal tokens must be stored in the user's namespace in the form of
+To allow GitLab authentication on {prod-short} side, personal tokens must be stored in the user's namespace in the form of
 a secret. The secret must look as follows:
 
-include::example$snip_bitbucket-personal-access-token-secret.adoc[]
+[source,yaml]
+----
+include::example$snip_gitlab-personal-access-token-secret.adoc[]
+----
 
 The main parts of the secret are:
 
@@ -30,15 +33,15 @@ The main parts of the secret are:
 
 | Annotation
 | `che.eclipse.org/scm-userid`
-| Bitbucket user id to which token belongs
+| GitLab user id to which token belongs
 
 | Annotation
 | `che.eclipse.org/scm-username`
-| Bitbucket user name to which token belongs
+| GitlLab user name to which token belongs
 
 | Annotation
 | `che.eclipse.org/scm-url`
-| Bitbucket server URL to which this token belong
+| GitLab server URL to which this token belong
 
 | Annotation
 | `che.eclipse.org/expired-after`
@@ -52,12 +55,12 @@ The main parts of the secret are:
 
 NOTE: Encoding a string into the base64 format using the `base64` tool on Linux machines leads to adding the newline character to the end of the source string and causing a value to be unusable as the authentication header value after decoding. Avoid this by using `base64 -w0`, which removes newly added lines, or strip newlines explicitly using`tr -d \\n`.
 
-. To obtain a user ID from a secret using a call to a REST API URL:
-*  For Bitbucket:
+. To obtain a user ID from a secret, take a look into user profile page on GitLab web UI or make a call to a REST API URL:
+*  For GitLab:
 +
 [subs="+quotes,macros"]
 ----
-++https++://__<bitbucket-hostname>__/rest/api/1.0/users/__<username>__
+++https++://__<gitlab-hostname>__/api/v4/users?username=__<username>__
 ----
 
 * For {prod-short}
@@ -69,4 +72,5 @@ NOTE: Encoding a string into the base64 format using the `base64` tool on Linux 
 
 * With the token credentials obtained from a secret, another secret is automatically created, allowing authorization to Git operations. This secret is mounted into a workspace container as a Git credentials file, and any additional configurations are not required to work with private Git repositories.
 
-* When a remote Git repository uses a self-signed certificate, add an additional server configuration. See xref:installation-guide:deploying-che-with-support-for-git-repositories-with-self-signed-certificates.adoc[].
+* When a remote Git repository uses a self-signed certificate, add an additional server configuration. See:
+xref:installation-guide:deploying-che-with-support-for-git-repositories-with-self-signed-certificates.adoc[].
