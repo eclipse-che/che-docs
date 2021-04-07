@@ -3,35 +3,23 @@
 // upgrading-{prod-id-short}
 
 [id="upgrading-{prod-id-short}-namespace-strategies-other-than-per-user"]
-= Updating {prod-short} that is used namespace strategies other than 'per user'
+= Upgrading {prod-short} that uses namespace strategies other than 'per user'
 
-This section describes how to upgrade {prod-short} that is used namespace strategies other than 'per user'.
+This section describes how to upgrade {prod-short} that uses namespace strategies other than 'per user'.
 
-{prod-short} intend to use {kubernetes} secrets as a storage for all sensitive user's data. One and only one namespace
-per user simplifies a lot the design of the workspaces. That is why namespace strategies other than 'per user' become
-deprecated. The deprecation process happened in two steps. At the `First Step` namespace strategies other than 'per user' are allowed
-but not recommended to use. At the `Second Step` support namespace strategies other than 'per user' are going to be removed.
+{prod-short} intends to use {kubernetes} secrets as a storage for all sensitive user data. One namespace
+per user simplifies the design of the workspaces. This is the reason why namespace strategies other than `per user` become
+deprecated. The deprecation process happens in two steps. In the `First Step` namespace strategies other than `per user` are allowed but not recommended. In the `Second Step` support for namespace strategies other than `per user` is going to be removed.
 
-NOTE: There is no automated upgrade support between `First Step` and `Second Step` for the installations where namespace
-strategies other than 'per user' are used without losing data.
+NOTE: No automated upgrade support exists between `First Step` and `Second Step` for the installations where namespace
+strategies other than `per user` are used without losing data.
 
 .Prerequisites
- * {prod-short} configured with the namespace strategies other than 'per user'
- * Intention to use {prod-short} configured with the 'per user' namespace strategies 'per user'
+ * {prod-short} configured with the namespace strategies other than `per user`.
+ * Intention to use {prod-short} configured with the `per user` namespace strategies `per user`.
 
-.Procedure with the manual backup of user's data
- * All {prod-short} users have to be notified about the upcoming data wipe. As a suggestion can be used the possibility to
-   commit workspace configuration to scm server and later usage of factories to restore it.
- * Reinstall {prod-short} with 'per user' namespace strategies.
-
-.Procedure with losing user's data
- * All {prod-short} users have to be notified about the upcoming data wipe. Workspace configuration and user's preferences
-   are going to be preserved but all runtime data would be wiped out.
- * Change namespace strategy to 'per user'.
-
-
-NOTE: Upgrade with losing user's data has some disadvantages such as. Original PVs with runtime data are going to be
-preserved and will no longer be used. That may lead to intentional waste of resources.
+include::partial$proc_upgrading-{prod-id-short}-and-backing-up-user-data.adoc[leveloffset=+1]
+include::partial$proc_upgrading-{prod-id-short}-and-losing-user-data.adoc[leveloffset=+1]
 
 .Additional resources
 
