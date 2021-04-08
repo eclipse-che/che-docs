@@ -1,0 +1,84 @@
+[id="proc_adding-a-vs-code-extension-to-the-che-plugin-registry_{context}"]
+= Adding a VS Code extension to the Che plugin registry
+
+To use a VS Code extension in a {prod-short} workspace, {prod-short} need to consume metadata describing the extension. The {prod-short} plugin registry is a static website publishing metadata for common VS Code extensions. VS Code extension metadata for the {prod-short} plugin registry is generated from a central file named `che-theia-plugins.yaml`.
+
+To add or modify an extension in the {prod-short} plugin registry, edit the `che-theia-plugins.yaml` file and add relevant metadata.
+
+[NOTE]
+====
+This article describes the steps needed to build the plugin registry with a custom plugin definition. If you are looking to create a custom `meta.yaml` file that can be directly referenced in a devfile, see xref:end-user-guide:publishing-metadata-for-a-vs-code-extension.adoc[].
+====
+
+
+.Prerequisite
+* A working knowledge of customizing the registries, see xref:administration-guide:customizing-the-registries.adoc[]
+* A link to a sidecar container image, should the VS Code extension require one.
+
+
+.Procedure
+
+. Edit the `che-theia-plugins.yaml` file and create a new entry.
+
++
+[source,yaml]
+----
+- id: publisher/my-vscode-ext                                    <1>
+  repository:                                                    <2>
+    url: https://github.com/publisher/my-vscode-ext              <3>
+    revision: 1.7.2                                              <4>
+  aliases:                                                       <5>
+    - publisher/my-vscode-ext-revised
+  sidecar:                                                       <6>
+    image: quay.io/repository/eclipse/che-plugin-sidecar:sonarlint-2fcf341  <7>
+    name: my-vscode-ext-sidecar                                  <8>
+    memoryLimit: "1500Mi"                                        <9>
+    memoryRequest: "1000Mi"                                      <10>
+    cpuLimit: "500m"                                             <11>
+    cpuRequest: "125m"                                           <12>
+    command:                                                     <13>
+        - /bin/sh
+    args:                                                        <14>
+        - "-c"
+        - "./entrypoint.sh"
+    volumeMounts:                                                <15>
+      - name: vscode-ext-volume                                  <16>
+        path: "/home/theia/my-vscode-ext"                        <17>
+    endpoints:                                                   <18>
+      - name: "configuration-endpoint"                           <19>
+        public: true                                             <20>
+        targetPort: 61436                                        <21>
+        attributes:                                              <22>
+          protocol: http
+  extensions:                                                    <23>
+          - https://github.com/redhat-developer/vscode-yaml/releases/download/0.4.0/redhat.vscode-yaml-0.4.0.vsix
+          - https://github.com/SonarSource/sonarlint-vscode/releases/download/1.16.0/sonarlint-vscode-1.16.0.vsix
+----
+
+<1> (OPTIONAL) The ID of the plugin, useful if a plugin has multiple entries for one repository (for example, Java 8 compared to Java 11)
+<2> Repository information about the plugin. If ID is specified then this field is not a list element.
+<3> The URL to the extension's git repository URL
+<4> Tag or SHA1 ID of the upstream repository that hosts the extension, corresponding to a version, snapshot, or release.
+<5> (OPTIONAL) An alias for this plugin: this means anything listed here will get its own `meta.yaml` file generated
+<6> (OPTIONAL) If the plugin runs in a sidecar container, then the sidecar information is specified here
+<7> A location of a container image to be used as this plugin's sidecar. This line cannot be specified concurrently with `directory` (see above)
+<8> (OPTIONAL) The name of the sidecar container
+<9> (OPTIONAL) The memory limit of the sidecar container
+<10> (OPTIONAL) The memory request of the sidecar container
+<11> (OPTIONAL) The CPU limit of the sidecar container
+<12> (OPTIONAL) The CPU request of the sidecar container
+<13> (OPTIONAL) Definitions of root process commands inside container
+<14> (OPTIONAL) Arguments for root process commands inside container
+<15> (OPTIONAL) Any volume mounting information for the sidecar container
+<16> The name of the mount
+<17> The path of the mount
+<18> (OPTIONAL) Any endpoint information for the sidecar container
+<19> Endpoint name
+<20> Whether or not the endpoint is exposed publicly or not
+<21> The port number
+<22> Attributes relating to the endpoint
+<23> Direct link(s) to the `vsix` files included with this plugin. The `vsix` built by the repository specified, such as the main extension, must be listed first
+
+
+. Run the `build.sh` script with the options of your choosing. The build process will generate `meta.yaml` files automatically, based on the entries in the `che-theia-plugins.yaml` file.
+. Use the resulting plugin registry image in {prod-short}, or copy the `meta.yaml` file out of the registry container and reference it directly as an HTTP resource.
