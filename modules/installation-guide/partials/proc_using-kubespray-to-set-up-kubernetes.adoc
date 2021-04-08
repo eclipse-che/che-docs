@@ -16,7 +16,7 @@ $ sudo apt-get update
 $ sudo apt-get upgrade
 ----
 
-NOTE: This step is only required on the machine used to run Kubespray. Kubespray will take care of system updates on the cluster nodes.
+NOTE: This step is only required on the machine used to run Kubespray. Kubespray will handle system updates on the cluster nodes.
 
 .SSH access
 
@@ -52,7 +52,7 @@ You will never be prompted again for password using SSH, the key will be used to
 
 .IPv4 forwarding 
 
-Kubespray requires to turn on IPv4 forwarding. This should be done automatically by Kubepsray.
+Kubespray requires to turn on IPv4 forwarding. This should be done automatically by Kubespray.
 
 To do it manually, run the following command:
 
@@ -80,7 +80,7 @@ Start by installing curl.
 sudo apt-get install curl
 ----
 
-Get the latest Kubespray source code from its repo.
+Get the latest Kubespray source code from its code repository.
 
 WARNING: The latest release when writing this tutorial, v2.12.5, throws error not encountered in the master version.
 
@@ -98,15 +98,15 @@ Kubespray uses Python 3 and several dependencies to be installed.
 
 * Install Python 3
 +
-Install Python 3 but also pip (package installer for Python) and venv to create virtual environnements (see below).
+Install Python 3 but also `pip` (package installer for Python) and `venv` to create virtual environments (see below).
 +
 ----
 sudo apt-get install python3.7 python3-pip python3-venv
 ----
 
-* Create a virtual env
+* Create a virtual environment
 +
-This is a best isolation pratice using Python to use virtual env (or conda env for conda users).
+This is a best isolation practice using Python to use virtual environments (or `conda` environments for `conda` users).
 +
 ----
 python3 -m venv ~/projects/kubespray-venv
@@ -127,7 +127,7 @@ Start creating a copy of the default settings from sample cluster.
 cp -rfp inventory/sample inventory/mycluster
 ----
 
-Be sure you are still in the ~/projects/kubespray/ directory before executing this command!
+Be sure you are still in the `~/projects/kubespray/` directory before executing this command!
 
 Then customize your new cluster
 
@@ -142,7 +142,7 @@ CONFIG_FILE=inventory/mycluster/hosts.yaml python contrib/inventory_builder/inve
 +
 If you skip this step, your cluster host names will be renamed node1, node2, and so on.
 +
-You can either edit the file ~/projects/kubespray/inventory/mycluster/hosts.yaml
+You can either edit the file `~/projects/kubespray/inventory/mycluster/hosts.yaml`
 +
 ----
 sed -e 's/node1/tower/g' -e 's/node2/laptop/g' ... -i inventory/mycluster/hosts.yaml
