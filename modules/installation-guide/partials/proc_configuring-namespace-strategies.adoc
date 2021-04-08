@@ -48,6 +48,8 @@ WARNING: `CHE_INFRA_KUBERNETES_NAMESPACE` and `CHE_INFRA_OPENSHIFT_PROJECT` are 
 
 WARNING: By default, only one workspace in the same {orch-namespace} can be running at one time. See xref:running-more-than-one-workspace-at-a-time.adoc[].
 
+WARNING: The namespace strategies other than per user are deprecated and are subject to removal.
+
 [WARNING]
 ====
 {kubernetes} limits the length of a namespace name to 63 characters (this includes the evaluated placeholders). Additionally, the names (after placeholder evaluation) must be valid DNS names.
@@ -116,6 +118,7 @@ $ helm ... --set global.cheWorkspacesNamespace=__{prod-workspace}__-__<workspace
 ----
 endif::[]
 ====
+WARNING: This strategy is deprecated and is subject to removal.
 
 == One {orch-namespace} for all workspaces strategy
 
@@ -145,6 +148,7 @@ $ helm ... --set global.cheWorkspacesNamespace=__{prod-workspace}__
 ----
 endif::[]
 ====
+WARNING: This strategy is deprecated and is subject to removal.
 
 == Allowing user-defined workspace {orch-namespace}s
 
@@ -167,6 +171,7 @@ server:
   allowUserDefinedWorkspaceNamespaces: true
 ...
 ----
+WARNING: This parameter is deprecated and is subject to removal.
 
 == Handling incompatible usernames or user IDs
 
@@ -192,7 +197,7 @@ To configure the labels, set the `CHE_INFRA_KUBERNETES_NAMESPACE_LABELS` to desi
 
 [WARNING]
 ====
-We do not recommend to create multiple namespaces for single user. It may lead to undefined behavior.
+Avoid creating multiple namespaces for single user. It may lead to undefined behavior.
 ====
 
 [IMPORTANT]

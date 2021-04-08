@@ -2,8 +2,8 @@
 .`CheCluster` Custom Resource `server` settings, related to the {prod-short} server component.
 
 [cols="2,5", options="header"]
-:=== 
- Property: Description 
+:===
+ Property: Description
 airGapContainerRegistryHostname: Optional host name, or URL, to an alternate container registry to pull images from. This value overrides the container registry host name defined in all the default container images involved in a Che deployment. This is particularly useful to install Che in a restricted environment.
 airGapContainerRegistryOrganization: Optional repository name of an alternate container registry to pull images from. This value overrides the container registry organization defined in all the default container images involved in a Che deployment. This is particularly useful to install {prod-short} in a restricted environment.
 allowUserDefinedWorkspaceNamespaces: Defines that a user is allowed to specify a Kubernetes namespace, or an OpenShift project, which differs from the default. It's NOT RECOMMENDED to set to `true` without OpenShift OAuth configured. The OpenShift infrastructure also uses this property.
@@ -58,16 +58,16 @@ singleHostGatewayConfigMapLabels: The labels that need to be present in the Conf
 singleHostGatewayConfigSidecarImage: The image used for the gateway sidecar that provides configuration to the gateway. Omit it or leave it empty to use the default container image provided by the Operator.
 singleHostGatewayImage: The image used for the gateway in the single host mode. Omit it or leave it empty to use the default container image provided by the Operator.
 tlsSupport: Deprecated. Instructs the Operator to deploy Che in TLS mode. This is enabled by default. Disabling TLS sometimes cause malfunction of some Che components.
-useInternalClusterSVCNames: Use internal cluster SVC names to communicate between components to speed up the traffic and avoid proxy issues. The default value is `false`.
+useInternalClusterSVCNames: Use internal cluster SVC names to communicate between components to speed up the traffic and avoid proxy issues. The default value is `true`.
 workspaceNamespaceDefault: Defines Kubernetes default namespace in which user's workspaces are created for a case when a user does not override it. It's possible to use `<username>`, `<userid>` and `<workspaceid>` placeholders, such as che-workspace-<username>. In that case, a new namespace will be created for each user or workspace.
-:=== 
+:===
 
 [id="checluster-custom-resource-database-settings_{context}"]
 .`CheCluster` Custom Resource `database` configuration settings related to the database used by {prod-short}.
 
 [cols="2,5", options="header"]
-:=== 
- Property: Description 
+:===
+ Property: Description
 chePostgresContainerResources: PostgreSQL container custom settings
 chePostgresDb: PostgreSQL database name that the Che server uses to connect to the DB. Defaults to `dbche`.
 chePostgresHostName: PostgreSQL Database host name that the Che server uses to connect to. Defaults is `postgres`. Override this value ONLY when using an external database. See field `externalDb`. In the default case it will be automatically set by the Operator.
@@ -78,14 +78,14 @@ chePostgresUser: PostgreSQL user that the Che server uses to connect to the DB. 
 externalDb: Instructs the Operator on whether to deploy a dedicated database. By default, a dedicated PostgreSQL database is deployed as part of the Che installation. When `externalDb` is `true`, no dedicated database will be deployed by the Operator and you will need to provide connection details to the external DB you are about to use. See also all the fields starting with\: `chePostgres`.
 postgresImage: Overrides the container image used in the PosgreSQL database deployment. This includes the image tag. Omit it or leave it empty to use the default container image provided by the Operator.
 postgresImagePullPolicy: Overrides the image pull policy used in the PosgreSQL database deployment. Default value is `Always` for `nightly` or `latest` images, and `IfNotPresent` in other cases.
-:=== 
+:===
 
 [id="checluster-custom-resource-auth-settings_{context}"]
 .Custom Resource `auth` configuration settings related to authentication used by {prod-short}.
 
 [cols="2,5", options="header"]
-:=== 
- Property: Description 
+:===
+ Property: Description
 externalIdentityProvider: Instructs the Operator on whether to deploy a dedicated Identity Provider (Keycloak or RH-SSO instance). By default, a dedicated Identity Provider server is deployed as part of the Che installation. When `externalIdentityProvider` is `true`, no dedicated identity provider will be deployed by the Operator and you will need to provide details about the external identity provider you are about to use. See also all the other fields starting with\: `identityProvider`.
 identityProviderAdminUserName: Overrides the name of the Identity Provider administrator user. Defaults to `admin`.
 identityProviderClientId: Name of a Identity provider, Keycloak or RH-SSO, `client-id` that is used for Che. Override this when an external Identity Provider is in use. See the `externalIdentityProvider` field. When omitted or left blank, it is set to the value of the `flavour` field suffixed with `-public`.
@@ -104,52 +104,52 @@ oAuthClientName: Name of the OpenShift `OAuthClient` resource used to setup iden
 oAuthSecret: Name of the secret set in the OpenShift `OAuthClient` resource used to setup identity federation on the OpenShift side. Auto-generated when left blank. See also the `OAuthClientName` field.
 openShiftoAuth: Enables the integration of the identity provider (Keycloak / RHSSO) with OpenShift OAuth. Empty value on OpenShift by default. This will allow users to directly login with their OpenShift user through the OpenShift login, and have their workspaces created under personal OpenShift namespaces. WARNING\: the `kubeadmin` user is NOT supported, and logging through it will NOT allow accessing the Che Dashboard.
 updateAdminPassword: Forces the default `admin` Che user to update password on first login. Defaults to `false`.
-:=== 
+:===
 
 [id="checluster-custom-resource-storage-settings_{context}"]
 .`CheCluster` Custom Resource `storage` configuration settings related to persistent storage used by {prod-short}.
 
 [cols="2,5", options="header"]
-:=== 
- Property: Description 
+:===
+ Property: Description
 postgresPVCStorageClassName: Storage class for the Persistent Volume Claim dedicated to the PosgreSQL database. When omitted or left blank, a default storage class is used.
 preCreateSubPaths: Instructs the Che server to start a special Pod to pre-create a sub-path in the Persistent Volumes. Defaults to `false`, however it will need to enable it according to the configuration of your Kubernetes cluster.
 pvcClaimSize: Size of the persistent volume claim for workspaces. Defaults to `1Gi`.
 pvcJobsImage: Overrides the container image used to create sub-paths in the Persistent Volumes. This includes the image tag. Omit it or leave it empty to use the default container image provided by the Operator. See also the `preCreateSubPaths` field.
 pvcStrategy: Persistent volume claim strategy for the Che server. This Can be\:`common` (all workspaces PVCs in one volume), `per-workspace` (one PVC per workspace for all declared volumes) and `unique` (one PVC per declared volume). Defaults to `common`.
 workspacePVCStorageClassName: Storage class for the Persistent Volume Claims dedicated to the Che workspaces. When omitted or left blank, a default storage class is used.
-:=== 
+:===
 
 [id="checluster-custom-resource-k8s-settings_{context}"]
 .`CheCluster` Custom Resource `k8s` configuration settings specific to {prod-short} installations on {platforms-name}.
 
 [cols="2,5", options="header"]
-:=== 
- Property: Description 
+:===
+ Property: Description
 ingressClass: Ingress class that will define the which controller will manage ingresses. Defaults to `nginx`. NB\: This drives the `kubernetes.io/ingress.class` annotation on Che-related ingresses.
 ingressDomain: Global ingress domain for a Kubernetes cluster. This MUST be explicitly specified\: there are no defaults.
 ingressStrategy: Strategy for ingress creation. Options are\: `multi-host` (host is explicitly provided in ingress), `single-host` (host is provided, path-based rules) and `default-host` (no host is provided, path-based rules). Defaults to `multi-host` Deprecated in favor of `serverExposureStrategy` in the `server` section, which defines this regardless of the cluster type. When both are defined, the `serverExposureStrategy` option takes precedence.
 securityContextFsGroup: The FSGroup in which the Che Pod and workspace Pods containers runs in. Default value is `1724`.
 securityContextRunAsUser: ID of the user the Che Pod and workspace Pods containers run as. Default value is `1724`.
-singleHostExposureType: When the serverExposureStrategy is set to `single-host`, the way the server, registries and workspaces are exposed is further configured by this property. The possible values are `native`, which means that the server and workspaces are exposed using ingresses on K8s or `gateway` where the server and workspaces are exposed using a custom gateway based on link\:https\://doc.traefik.io/traefik/[Traefik]. All the endpoints whether backed by the ingress or gateway `route` always point to the subpaths on the same domain. Defaults to `native`.
+singleHostExposureType: When the serverExposureStrategy is set to `single-host`, the way the server, registries and workspaces are exposed is further configured by this property. The possible values are `native`, which means that the server and workspaces are exposed using ingresses on {kubernetes} or `gateway` where the server and workspaces are exposed using a custom gateway based on link\:https\://doc.traefik.io/traefik/[Traefik]. All the endpoints whether backed by the ingress or gateway `route` always point to the subpaths on the same domain. Defaults to `native`.
 tlsSecretName: Name of a secret that will be used to setup ingress TLS termination when TLS is enabled. When the field is empty string, the default cluster certificate will be used. See also the `tlsSupport` field.
-:=== 
+:===
 
 [id="checluster-custom-resource-metrics-settings_{context}"]
 .`CheCluster` Custom Resource `metrics` settings, related to the {prod-short} metrics collection used by {prod-short}.
 
 [cols="2,5", options="header"]
-:=== 
- Property: Description 
+:===
+ Property: Description
 enable: Enables `metrics` the Che server endpoint. Default to `true`.
-:=== 
+:===
 
 [id="checluster-custom-resource-status-settings_{context}"]
 .`CheCluster` Custom Resource `status` defines the observed state of {prod-short} installation
 
 [cols="2,5", options="header"]
-:=== 
- Property: Description 
+:===
+ Property: Description
 cheClusterRunning: Status of a Che installation. Can be `Available`, `Unavailable`, or `Available, Rolling Update in Progress`.
 cheURL: Public URL to the Che server.
 cheVersion: Current installed Che version.
@@ -163,6 +163,6 @@ message: A human readable message indicating details about why the Pod is in thi
 openShiftoAuthProvisioned: Indicates whether an Identity Provider instance, Keycloak or RH-SSO, has been configured to integrate with the OpenShift OAuth.
 pluginRegistryURL: Public URL to the plugin registry.
 reason: A brief CamelCase message indicating details about why the Pod is in this state.
-:=== 
+:===
 
 
