@@ -34,11 +34,13 @@ For production use cases, consider integrating with a third-party telemetry syst
 
 The following Go code starts a server on port 8080 and writes events to standard output:
 
-.main.go
+.`main.go`
+====
 [source,go]
 ----
 include::example$telemetry/main.go[]
 ----
+====
 
 Create a container image based on this code and expose it as a deployment in OpenShift in the {prod-namespace} {orch-namespace}. The code for the example telemetry server is available at link:https://github.com/che-incubator/che-workspace-telemetry-example[che-workspace-telemetry-example]. To deploy the telemetry server, clone the repository and build the container:
 
@@ -70,11 +72,13 @@ $ mvn io.quarkus:quarkus-maven-plugin:1.2.1.Final:create \
 
 . Add a dependency to `org.eclipse.che.incubator.workspace-telemetry.back-end-base` in your `pom.xml`:
 +
-.pom.xml
+.`pom.xml`
+====
 [source,xml]
 ----
 include::example$telemetry/pom_snippet.xml[]
 ----
+====
 
 . Add the Apache HTTP components library to send HTTP requests.
 
@@ -82,11 +86,13 @@ include::example$telemetry/pom_snippet.xml[]
 
 . Create a `settings.xml` file in the repository root and add the coordinates and token to the `che-incubator` packages:
 +
-.settings.xml
+.`settings.xml`
+====
 [source,xml]
 ----
 include::example$telemetry/settings.xml[]
 ----
+====
 +
 This file is used when packaging the application in a container. When running locally, add the information to your personal `settings.xml` file.
 
@@ -118,74 +124,88 @@ $ mvn quarkus:dev -Dquarkus.http.port=${CHE_WORKSPACE_TELEMETRY_BACKEND_PORT} \
 
 Create two new files in your project:
 
-* `AnalyticsManager.java` - contains the logic specific to our telemetry system.
+* `AnalyticsManager.java` - contains the logic specific to the telemetry system.
 * `MainConfiguration.java` - is the main entrypoint that creates an instance of `AnalyticsManager` and starts listening for events.
 
-.AnalyticsManager.java
+.`AnalyticsManager.java`
+====
 [source,java]
 ----
 include::example$telemetry/AnalyticsManagerSkeleton.java[]
 ----
+====
 
-.MainConfiguration.java
+.`MainConfiguration.java`
+====
 [source,java]
 ----
 include::example$telemetry/MainConfiguration.java[]
 ----
+====
 
 == Implementing `isEnabled()`
 
 For the purposes of the example, this method just returns `true` whenever it is called. Whenever the server is running, it is enabled and operational.
 
-.AnalyticsManager.java
+.`AnalyticsManager.java`
+====
 [source,java]
 ----
 include::example$telemetry/isEnabled.java[]
 ----
+====
 
 It is possible to put more a complex login in `isEnabled()`. For example, the service should not be considered operational in certain cases. The link:https://github.com/redhat-developer/che-workspace-telemetry-woopra-backend/blob/master/src/main/java/com/redhat/che/workspace/services/telemetry/woopra/AnalyticsManager.java[hosted {prod-short} woopra back-end] checks that a configuration property exists before determining if the back-end is enabled.
 
 == Implementing `onEvent()`
 
-`onEvent()` sends the event passed to the back-end to the telemetry system. For the example application, it sends an HTTP POST payload to our server. The example telemetry server application is deployed to OpenShift at the following URL: `++http://little-telemetry-back-end-che.apps-crc.testing++`.
+`onEvent()` sends the event passed to the back-end to the telemetry system. For the example application, it sends an HTTP POST payload to the telemetry server. The example telemetry server application is deployed to OpenShift at the following URL: `++http://little-telemetry-back-end-che.apps-crc.testing++`.
 
-.AnalyticsManager.java
+.`AnalyticsManager.java`
+====
 [source,java]
 ----
 include::example$telemetry/onEvent.java[]
 ----
+====
 
-This sends an HTTP request to the telemetry server and automatically debounces identical events in a small time period, where the default value is 1500 milliseconds. It is possible to modify this period by setting subclasses.
+This sends an HTTP request to the telemetry server and automatically delays identical events in a small time period, where the default value is 1500 milliseconds. It is possible to modify this period by setting subclasses.
 
 == Implementing `increaseDuration()`
 
 Many telemetry systems recognize event duration. The `AbstractAnalyticsManager` merges similar events that happen in the same frame of time into one event, so that a user does not get several identical events sent to the server in a small time frame. This implementation of `increaseDuration()` is a no-op. This method uses the APIs of a user's telemetry provider to alter the event or event properties to reflect an event's increased duration.
 
-.AnalyticsManager.java
+.`AnalyticsManager.java`
+====
 [source,java]
 ----
 include::example$telemetry/increaseDuration.java[]
 ----
+====
 
 == Implementing `onActivity()`
 
 Set an inactive timeout limit, and use `onActivity()` to send a `WORKSPACE_INACTIVE` event if the last event time is longer than the inactivity timeout.
 
-.AnalyticsManager.java
+.`AnalyticsManager.java`
+====
 [source,java]
 ----
 include::example$telemetry/onActivity.java[]
 ----
+====
 
 == Implementing `destroy()`
 
 When `destroy()` is called, send a `WORKSPACE_STOPPED` event and shutdown any resources, such as connection pools.
 
-.AnalyticsManager.java
+.`AnalyticsManager.java`
+====
 [source,java]
 ----
 include::example$telemetry/destroy.java[]
 ----
+====
 
 Running `mvn quarkus:dev` as described in xref:running-the-application_{context}[] displays the `WORKSPACE_STOPPED` event, sent to the server when the Quarkus application is terminated.
 
@@ -198,27 +218,31 @@ See link:https://quarkus.io/guides/building-native-image#using-a-multi-stage-doc
 Create a `meta.yaml` definition representing a {prod-short} plug-in that runs your custom back-end in a workspace Pod. For more information about `meta.yaml`, see xref:end-user-guide:what-is-a-che-theia-plug-in.adoc[].
 
 .meta.yaml
+====
 [source,yaml]
 ----
 include::example$telemetry/sample_meta.yaml[]
 ----
+====
 
-In most cases, a user would deploy this file to a corporate web server. For this guide, we create an Apache web server on OpenShift and host the plug-in there.
+In most cases, a user would deploy this file to a corporate web server. For this guide, create an Apache web server on OpenShift and host the plug-in there.
 
-Create a configMap referencing the new `meta.yaml` file.
+Create a ConfigMap referencing the new `meta.yaml` file.
 
 [subs="+attributes"]
 ----
 $ oc create configmap --from-file=meta.yaml -n {prod-namespace} telemetry-plugin-meta
 ----
 
-Create a deployment, a service, and a route to expose the web server. The deployment references this configMap and places it in the `/var/www/html` directory.
+Create a deployment, a service, and a route to expose the web server. The deployment references this ConfigMap and places it in the `/var/www/html` directory.
 
-.manifests.yaml
+.`manifests.yaml`
+====
 [source,yaml,subs="+quotes,+attributes"]
 ----
 include::example$telemetry/webserver.yaml[]
 ----
+====
 
 ----
 $ oc apply -f manifests.yaml
@@ -237,9 +261,11 @@ This command should return the `meta.yaml` file.
 Update the `CheCluster` Custom Resource, and add the `CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR_PLUGINS` environment variable to `spec.server.customCheProperties`. The value of the environment variable must be the URL of the location of the `meta.yaml` file on your web server. This can be accomplished by running `oc edit checluster -n {prod-namespace}` and typing in the change at the terminal, or by editing the CR in the OpenShift console (*Installed Operators -> {prod} -> {prod} Cluster -> {prod-checluster} -> YAML*).
 
 [source,yaml,subs="+quotes,+attributes"]
+====
 ----
 include::example$telemetry/che_cluster_with_custom_plugin.yaml[]
 ----
+====
 
 Wait for the {prod-short} server to restart, and create a new workspace. See a new message stating that the plug-in is being installed into the workspace.
 
