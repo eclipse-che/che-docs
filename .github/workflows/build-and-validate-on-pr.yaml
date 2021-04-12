@@ -7,7 +7,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-# Name is reused in publish-netlify.yml
+# Name is reused in `publish-netlify.yml`
 name: "Build and validate PR"
 
 on:
@@ -51,20 +51,6 @@ jobs:
           name: pull-request-sha
           path: PR_SHA
 
-      # htmltest:
-      #   name: link checker # This name is set as mandatory in the GitHub configuration.
-      #   runs-on: ubuntu-20.04
-      #   container: "quay.io/eclipse/che-docs:latest"
-      #   needs: build
-      #   steps:
-      #     - name: Checkout code
-      #       uses: actions/checkout@v2
-
-      #     - name: Download artifacts
-      #       uses: actions/download-artifact@v2
-      #       with:
-      #         name: doc-content
-
       - name: Cache htmltest status code of checked external URLs # See: https://docs.github.com/en/actions/guides/caching-dependencies-to-speed-up-workflows
         uses: actions/cache@v2
         env:
@@ -77,29 +63,8 @@ jobs:
         id: validate-links
         run: htmltest
 
-      # unusedimages:
-      #   name: Report unused images
-      #   runs-on: ubuntu-20.04
-      #   steps:
-      #     - name: Checkout code
-      #       uses: actions/checkout@v2
-
       - name: Report Unused Images
         run: tools/detect-unused-images.sh
 
-      # vale-diff:
-      #   name: Validate language on new and modified files in PR
-      #   runs-on: ubuntu-20.04
-      #   container: "quay.io/eclipse/che-docs:latest"
-      #   steps:
-      #     - name: Checkout code
-      #       uses: actions/checkout@v2
-      #       with:
-      #         fetch-depth: 0
-
       - name: Validate language on files added or modified
-        run: |
-          vale -v
-          echo "Changed files, in comparison to branch $GITHUB_BASE_REF"
-          git diff --name-only --diff-filter=AM origin/$GITHUB_BASE_REF
-          vale $(git diff --name-only --diff-filter=AM origin/$GITHUB_BASE_REF)
+        run: tools/validate_language_changes.sh
