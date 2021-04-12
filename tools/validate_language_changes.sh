@@ -18,4 +18,5 @@ FILES=$(git diff --name-only --diff-filter=AM "$BRANCH")
 echo "Files added or modified, in comparison to branch $BRANCH:
 $FILES"
 
-vale "${FILES}"
+# shellcheck disable=SC2086 (We want to split on spaces)
+vale ${FILES}
