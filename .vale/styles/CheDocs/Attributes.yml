@@ -2,25 +2,28 @@
 extends: substitution
 ignorecase: true
 level: error
-message: Use the attribute '%s' instead of '%s'.
-scope: raw
+message: Use the attribute %s instead of '%s'.
+# scope: raw
 # swap maps tokens in form of bad: good
 swap:
-  Image Puller: image-puller-name-short
-  "`kubectl` or `oc`": orch-family-cli
-  Kubernetes Image Puller: image-puller-name
-  KubernetesImagePuller: image-puller-cr-name
-  kubernetes-image-puller: image-puller-deployment-name
-  Kubernetes Image Puller Operator: image-puller-operator-name
-  Kubernetes Ingress or OpenShift Route: platforms-ingress
-  "Kubernetes (?:and|or) OpenShift": platforms-name
-  namespace or project: platforms-namespace
-  "OpenShift (?:and|or) Kubernetes": platforms-name
-  Kubernetes Ingress or OpenShift route: platforms-ingress
-  Kubernetes Ingress: platforms-ingress
-  quay.io/eclipse/kubernetes-image-puller: image-puller-image-name
-  '\s[^[:punct:]]keycloak[^[:punct:]\.]': identity-provider
-  '\s[^[:punct:]]kubectl[^[:punct:]]': orch-cli
-  '\s[^[:punct:]]namespace[^[:punct:]]': platforms-namespace or orch-namespace
-  '\s[^[:punct:]]kubernetes[^[:punct:]]': orch-name, platforms-name or kubernetes
+  '\s[^[:punct:]]keycloak[^[:punct:]\.]': "{identity-provider}"
+  '\s[^[:punct:]]kubectl[^[:punct:]]': "{orch-cli}"
+  '\s[^[:punct:]]kubernetes[^[:punct:]]': "{orch-name}, {platforms-name}, or {kubernetes}"
+  '\s[^[:punct:]]namespace[^[:punct:]]': "{platforms-namespace} or {orch-namespace}"
+  '\sche[^-] ': "{prod-short}"
+  '\skubernetes[ ]': "{orch-name}, {platforms-name}, or {kubernetes}"
+  '\snamespace[, ]': "{orch-namespace}, {platforms-namespace}, or {namespace}"
+  "`kubectl` or `oc`": "{orch-family-cli}"
+  "Kubernetes (?:and|or) OpenShift": "{platforms-name}"
+  "OpenShift (?:and|or) Kubernetes": "{platforms-name}"
+  Image Puller: "{image-puller-name-short}"
+  Kubernetes Image Puller Operator: "{image-puller-operator-name}"
+  Kubernetes Image Puller: "{image-puller-name}"
+  Kubernetes Ingress or OpenShift route: "{platforms-ingress}"
+  Kubernetes Ingress or OpenShift Route: "{platforms-ingress}"
+  Kubernetes Ingress: "{orch-ingress} or {platforms-ingress}"
+  kubernetes-image-puller: "{image-puller-deployment-name}"
+  KubernetesImagePuller: "{image-puller-cr-name}"
+  namespace or project: "{platforms-namespace}"
   prod-url-secure: prod-url
+  quay.io/eclipse/kubernetes-image-puller: "{image-puller-image-name}"
