@@ -1,6 +1,6 @@
 // Module included in the following assemblies:
 //
-// configuring-a-workspace-using-a-devfile
+// creating-a-workspace-from-a-remote-devfile
 
 [id="overriding-devfile-values-using-factory-parameters_{context}"]
 = Overriding devfile values using factory parameters
@@ -13,19 +13,21 @@ Values in the following sections of a remote devfile can be overridden using spe
 * `attributes`
 
 .Prerequisites
+
 * A running instance of {prod}. To install an instance of {prod}, see xref:installation-guide:installing-che.adoc[].
 * A publicly accessible standalone `devfile.yaml` file. See xref:configuring-a-workspace-using-a-devfile.adoc[] for detailed information about creating and using devfiles.
 
 .Procedure
+
 . Open the workspace by navigating to the following URL: `pass:c,a,q[{prod-url}/f?url=https://__<hostURL>__/devfile.yaml&override.__<parameter.path>__=__<value>__]`
 
 .Example of overriding the `generateName` property
 
+====
 Consider the following initial devfile:
 
 [subs="+quotes"]
 ----
----
 apiVersion: 1.0.0
 metadata:
   generateName: golang-
@@ -44,21 +46,21 @@ The resulting workspace has the following devfile model:
 
 [subs="+quotes"]
 ----
----
 apiVersion: 1.0.0
 metadata:
   generateName: myprefix
 projects:
 ...
 ----
+====
 
 .Example of overriding project source branch property
 
+====
 Consider the following initial devfile:
 
 [subs="+quotes"]
 ----
----
 apiVersion: 1.0.0
 metadata:
   generateName: java-mysql-
@@ -92,16 +94,16 @@ projects:
       branch: 1.0.x
 ...
 ----
-
+====
 
 
 .Example of overriding or creating an attribute value
 
+====
 Consider the following initial devfile:
 
 [subs="+quotes"]
 ----
----
 apiVersion: 1.0.0
 metadata:
   generateName: golang-
@@ -144,7 +146,6 @@ The resulting workspace has the following devfile model:
 
 [subs="+quotes"]
 ----
----
 apiVersion: 1.0.0
 metadata:
   generateName: golang-
@@ -153,3 +154,8 @@ attributes:
 projects:
 ...
 ----
+====
+
+.Verification steps
+
+. Using {prod-short} Dashboard, move to the *Devfile* tab of the newly created workspace and check its content.

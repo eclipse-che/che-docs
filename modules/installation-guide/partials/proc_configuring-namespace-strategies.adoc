@@ -21,7 +21,7 @@ spec:
   server:
     workspaceNamespaceDefault: __<workspace-namespace>__ <1>
 ----
-<1> - {prod-short} workspace namespace configuration
+<1> - {prod-short} workspace {orch-namespace} configuration
 
 
 ifeval::["{project-context}" == "che"]
@@ -48,11 +48,11 @@ WARNING: `CHE_INFRA_KUBERNETES_NAMESPACE` and `CHE_INFRA_OPENSHIFT_PROJECT` are 
 
 WARNING: By default, only one workspace in the same {orch-namespace} can be running at one time. See xref:running-more-than-one-workspace-at-a-time.adoc[].
 
-WARNING: The namespace strategies other than per user are deprecated and are subject to removal.
+WARNING: The {orch-namespace} strategies other than per user are deprecated and are subject to removal.
 
 [WARNING]
 ====
-{kubernetes} limits the length of a namespace name to 63 characters (this includes the evaluated placeholders). Additionally, the names (after placeholder evaluation) must be valid DNS names.
+{kubernetes} limits the length of a {orch-namespace} name to 63 characters (this includes the evaluated placeholders). Additionally, the names (after placeholder evaluation) must be valid DNS names.
 
 On OpenShift with multi-host server exposure strategy, the length is further limited to 49 characters.
 
@@ -65,7 +65,7 @@ WARNING: For strategies where creating new {orch-namespace} is needed, make sure
 
 The strategy isolates each user in their own {orch-namespace}.
 
-To use the strategy, set the _{prod-short} workspace namespace configuration_ value to contain one or more user identifiers. Currently supported identifiers are `_<username>_` and `_<userid>_`.
+To use the strategy, set the _{prod-short} workspace {orch-namespace} configuration_ value to contain one or more user identifiers. Currently supported identifiers are `_<username>_` and `_<userid>_`.
 
 .One {orch-namespace} per user
 ====
@@ -94,7 +94,7 @@ endif::[]
 
 The strategy creates a new {orch-namespace} for each new workspace.
 
-To use the strategy, set the _{prod-short} workspace namespace configuration_ value to contain the `_<workspaceID>_` identifier. It can be used alone or combined with other identifiers or any string.
+To use the strategy, set the _{prod-short} workspace {orch-namespace} configuration_ value to contain the `_<workspaceID>_` identifier. It can be used alone or combined with other identifiers or any string.
 
 .One {orch-namespace} per workspace
 ====
@@ -124,7 +124,7 @@ WARNING: This strategy is deprecated and is subject to removal.
 
 The strategy uses one predefined {orch-namespace} for all workspaces.
 
-To use the strategy, set the _{prod-short} workspace namespace configuration_ value to the name of the desired {orch-namespace} to use.
+To use the strategy, set the _{prod-short} workspace {orch-namespace} configuration_ value to the name of the desired {orch-namespace} to use.
 
 .One {orch-namespace} for all workspaces
 ====
@@ -179,9 +179,9 @@ WARNING: This parameter is deprecated and is subject to removal.
 Incompatible username or IDs are reduced to the nearest valid name by replacing groups of unsuitable symbols with the `-` symbol. To avoid collisions,
 a random 6-symbol suffix is added and the result is stored in preferences for reuse.
 
-== Pre-creating {orch-namespace}s for users
+== Pre-creating a {orch-namespace} for each user
 
-To pre-create {orch-namespace}s for users, use {orch-namespace} labels and annotations. Such namespace is used in preference to `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable.
+To pre-create a {orch-namespace} for each user, use {orch-name} labels and annotations. Such {orch-namespace} is used in preference to `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable.
 
 ----
 metadata:
@@ -225,7 +225,7 @@ On {kubernetes}, `che` ServiceAccount must have a cluster-wide `list` and `get` 
 ====
 
 == Labeling the namespaces
-{prod-short} updates the workspace's namespace on workspace startup by adding the labels defined in `CHE_INFRA_KUBERNETES_NAMESPACE_LABELS`. To do so, `che` ServiceAccout has to have the following cluster-wide permissions to `update` and `get` `namespaces`:
+{prod-short} updates the workspace's {orch-namespace} on workspace startup by adding the labels defined in `CHE_INFRA_KUBERNETES_NAMESPACE_LABELS`. To do so, `che` ServiceAccout has to have the following cluster-wide permissions to `update` and `get` `namespaces`:
 
 ----
 apiVersion: rbac.authorization.k8s.io/v1
