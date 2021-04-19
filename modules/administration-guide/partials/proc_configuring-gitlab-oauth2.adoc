@@ -1,12 +1,12 @@
 // Module included in the following assemblies:
 //
-// Configuring GitLab OAuth
+// Configuring GitLab OAuth2
 
 
-[id="configuring-gitlab-oauth_{context}"]
-= Configuring GitLab OAuth
+[id="configuring-gitlab-oauth2_{context}"]
+= Configuring GitLab OAuth2
 
-OAuth for GitLab allows accepting factories from private GitLab repositories.
+OAuth2 for GitLab allows accepting factories from private GitLab repositories.
 
 .Prerequisites
 
@@ -14,7 +14,8 @@ OAuth for GitLab allows accepting factories from private GitLab repositories.
 
 .Procedure
 
-* Create a link:https://docs.gitlab.com/ee/integration/oauth_provider.html#authorized-applications[Authorized application in GitLab] using {prod-short}  as the application name and {identity-provider} GitLab endpoint URL as the value for Callback URL. The callback URL default value is `++https://++keycloak-{prod-namespace}.__<DOMAIN>__/auth/realms/{prod-deployment}/broker/gitlab/endpoint`, where `__<DOMAIN>__` is {orch-name} cluster domain. Store the `Application ID` and `Secret` values. 
+* Create a link:https://docs.gitlab.com/ee/integration/oauth_provider.html#authorized-applications[Authorized OAuth2 application in GitLab] using {prod-short} as the application `Name` and {identity-provider} GitLab endpoint URL as the value for `Redirect URI`. The callback URL default value is `++https://++keycloak-{prod-namespace}.__<DOMAIN>__/auth/realms/{prod-deployment}/broker/gitlab/endpoint`, where `__<DOMAIN>__` is {orch-name} cluster domain. Store the `Application ID` and `Secret` values. 
+  All three types of GitLab OAuth2 applications are supported: User owned, Group owned and Instance-wide.
 
 * Create a custom OIDC provider link on {identity-provider} pointing to GitLab server. Fill the following necessary fields:
 
