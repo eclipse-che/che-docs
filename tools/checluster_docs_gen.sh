@@ -107,7 +107,7 @@ parse_section() {
   BUFF="$BUFF$TABLE_FOOTER"
 }
 
-# fetch_current_version
-# fetch_product_name
-# fetch_conf_files_content
+fetch_current_version
+fetch_product_name
+fetch_conf_files_content
 parse_content
