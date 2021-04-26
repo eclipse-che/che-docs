@@ -60,6 +60,11 @@ Be aware that the `_<userid>_` placeholder is evaluated into a 36 character long
 ====
 
 WARNING: For strategies where creating new {orch-namespace} is needed, make sure that `che` ServiceAccount has enough permissions to do so. With OpenShift OAuth, the authenticated User must have privileges to create new {orch-namespace}.
+`self-provisioner` cluster role should be linked to  `system:authenticated:oauth` group.
+
+WARNING: In situations when  `che` ServiceAccount has not enough permissions creating new {orch-namespace} or with OpenShift OAuth
+when `self-provisioner` cluster role isn't linked to  `system:authenticated:oauth` group, or in other situations when {prod-short} is not
+able or undesirable to create namespaces -  <<pre-creating-namespace>> has to be used.
 
 == One {orch-namespace} per user strategy
 
@@ -178,7 +183,7 @@ WARNING: This parameter is deprecated and is subject to removal.
 {prod-short} server automatically checks usernames and IDs for compatibility with {orch-name} objects naming convention before creating a {orch-namespace} from a template.
 Incompatible username or IDs are reduced to the nearest valid name by replacing groups of unsuitable symbols with the `-` symbol. To avoid collisions,
 a random 6-symbol suffix is added and the result is stored in preferences for reuse.
-
+[#pre-creating-namespace]
 == Pre-creating a {orch-namespace} for each user
 
 To pre-create a {orch-namespace} for each user, use {orch-name} labels and annotations. Such {orch-namespace} is used in preference to `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable.
