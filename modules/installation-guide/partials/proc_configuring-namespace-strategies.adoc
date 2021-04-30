@@ -59,10 +59,16 @@ On OpenShift with multi-host server exposure strategy, the length is further lim
 Be aware that the `_<userid>_` placeholder is evaluated into a 36 character long UUID string.
 ====
 
-WARNING: For strategies where creating new {orch-namespace} is needed, make sure that `che` ServiceAccount has enough permissions to do so. With OpenShift OAuth, the authenticated User must have privileges to create new {orch-namespace}.
-the `self-provisioner` cluster role should be linked to the `system:authenticated:oauth` group.
+[WARNING]
+====
+Use <<pre-creating-namespace>> when:
 
-WARNING: Yout must use <<pre-creating-namespace>> if `che` ServiceAccount does not have enought permissions when creating new {orch-namespace}, with OpenShift OAuth when a `self-provisioner` cluster role is not linked to the `system:authenticated:oauth` group, or in other situations when {prod-short} cannot create namespaces.
+* `che` ServiceAccount does not have enought permissions when creating new {orch-namespace}
+
+ * OpenShift OAuth with a `self-provisioner` cluster role is not linked to the`system:authenticated:oauth` group
+ 
+* {prod-short} cannot create namespaces
+====
 
 == One {orch-namespace} per user strategy
 
