@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_websocket_endpoint_{context}"]
+= {prod-short} server parameter: `+CHE_WEBSOCKET_ENDPOINT+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+{prod-short} WebSocket major endpoint. Provides basic communication endpoint for major WebSocket interactions and messaging.
+
+// Default value for `+CHE_WEBSOCKET_ENDPOINT+`:: `+ws://${CHE_HOST}:${CHE_PORT}/api/websocket+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_WEBSOCKET_ENDPOINT+` as set by the Operator:: `+ws://${CHE_HOST}:${CHE_PORT}/api/websocket+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_WEBSOCKET_ENDPOINT+` as set using the `configMap`:: `+ws://${CHE_HOST}:${CHE_PORT}/api/websocket+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_WEBSOCKET_ENDPOINT+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_WEBSOCKET_ENDPOINT: "ws://${CHE_HOST}:${CHE_PORT}/api/websocket"
+----
+====
+
+

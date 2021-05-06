@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_infra_kubernetes_client_http_async__requests_max_{context}"]
+= {prod-short} server parameter: `+CHE_INFRA_KUBERNETES_CLIENT_HTTP_ASYNC__REQUESTS_MAX+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+Number of maximum concurrent asynchronous web requests (HTTP requests or ongoing  WebSocket calls) supported in the underlying shared HTTP client of the `KubernetesClient` instances. Default values: `max=64`, and `max_per_host:5`. Default values are not suitable for multi-user scenarios, as {prod-short} keeps open connections, for example for command or ws-agent logs.
+
+// Default value for `+CHE_INFRA_KUBERNETES_CLIENT_HTTP_ASYNC__REQUESTS_MAX+`:: `+1000+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_INFRA_KUBERNETES_CLIENT_HTTP_ASYNC__REQUESTS_MAX+` as set by the Operator:: `+1000+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_INFRA_KUBERNETES_CLIENT_HTTP_ASYNC__REQUESTS_MAX+` as set using the `configMap`:: `+1000+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_INFRA_KUBERNETES_CLIENT_HTTP_ASYNC__REQUESTS_MAX+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_INFRA_KUBERNETES_CLIENT_HTTP_ASYNC__REQUESTS_MAX: "1000"
+----
+====
+
+

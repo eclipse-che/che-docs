@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_limits_organization_workspaces_run_count_{context}"]
+= {prod-short} server parameter: `+CHE_LIMITS_ORGANIZATION_WORKSPACES_RUN_COUNT+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+The maximum number of running workspaces that a single organization is allowed. If the organization has reached this threshold and they try to start an additional workspace, they will be prompted with an error message. The organization will need to stop a running workspace to activate another.
+
+// Default value for `+CHE_LIMITS_ORGANIZATION_WORKSPACES_RUN_COUNT+`:: `+-1+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_LIMITS_ORGANIZATION_WORKSPACES_RUN_COUNT+` as set by the Operator:: `+-1+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_LIMITS_ORGANIZATION_WORKSPACES_RUN_COUNT+` as set using the `configMap`:: `+-1+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_LIMITS_ORGANIZATION_WORKSPACES_RUN_COUNT+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_LIMITS_ORGANIZATION_WORKSPACES_RUN_COUNT: "-1"
+----
+====
+
+

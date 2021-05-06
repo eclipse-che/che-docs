@@ -1,0 +1,38 @@
+
+[id="{prod-id-short}-server-parameter-${ENV,,}_{context}"]
+= {prod-short} server parameter: \`+${ENV^^}+\`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+$DESCR_BUFF
+
+// Default value for \`+${ENV^^}+\`:: \`+$VALUE+\`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for \`+${ENV^^}+\` as set by the Operator:: \`+$VALUE+\`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for \`+${ENV^^}+\` as set using the \`configMap\`:: \`+$VALUE+\`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for \`+${ENV^^}+\` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      ${ENV^^}: "$VALUE"
+----
+====
+
+
+EOF

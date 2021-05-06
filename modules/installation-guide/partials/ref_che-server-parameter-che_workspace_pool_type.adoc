@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_workspace_pool_type_{context}"]
+= {prod-short} server parameter: `+CHE_WORKSPACE_POOL_TYPE+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+Workspace threads pool configuration. This pool is used for workspace-related operations that require asynchronous execution, for example, starting and stopping. Possible values are `fixed` and `cached`.
+
+// Default value for `+CHE_WORKSPACE_POOL_TYPE+`:: `+fixed+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_WORKSPACE_POOL_TYPE+` as set by the Operator:: `+fixed+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_WORKSPACE_POOL_TYPE+` as set using the `configMap`:: `+fixed+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_WORKSPACE_POOL_TYPE+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_WORKSPACE_POOL_TYPE: "fixed"
+----
+====
+
+

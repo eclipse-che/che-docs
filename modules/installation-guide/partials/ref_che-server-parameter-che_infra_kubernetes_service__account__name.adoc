@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_infra_kubernetes_service__account__name_{context}"]
+= {prod-short} server parameter: `+CHE_INFRA_KUBERNETES_SERVICE__ACCOUNT__NAME+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+Defines Kubernetes Service Account name which should be specified to be bound to all workspaces Pods. the {prod-short} Operator that Kubernetes Infrastructure will not create the service account and it should exist. OpenShift infrastructure will check if project is predefined(if `che.infra.openshift.project` is not empty):  - if it is predefined then service account must exist there  - if it is 'NULL' or empty string then infrastructure will create new OpenShift project per workspace    and prepare workspace service account with needed roles there
+
+// Default value for `+CHE_INFRA_KUBERNETES_SERVICE__ACCOUNT__NAME+`:: `+NULL+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_INFRA_KUBERNETES_SERVICE__ACCOUNT__NAME+` as set by the Operator:: `+NULL+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_INFRA_KUBERNETES_SERVICE__ACCOUNT__NAME+` as set using the `configMap`:: `+NULL+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_INFRA_KUBERNETES_SERVICE__ACCOUNT__NAME+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_INFRA_KUBERNETES_SERVICE__ACCOUNT__NAME: "NULL"
+----
+====
+
+

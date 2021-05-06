@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_infra_kubernetes_pvc_strategy_{context}"]
+= {prod-short} server parameter: `+CHE_INFRA_KUBERNETES_PVC_STRATEGY+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+Defined which strategy will be used while choosing PVC for workspaces. Supported strategies: `common`::        All workspaces in the same {orch-namespace} will reuse the same PVC.        Name of PVC may be configured with `che.infra.kubernetes.pvc.name`.        Existing PVC will be used or a new one will be created if it does not exist. `unique`::        Separate PVC for each workspace's volume will be used.        Name of PVC is evaluated as `'{che.infra.kubernetes.pvc.name} + '-' + {generated_8_chars}'`.        Existing PVC will be used or a new one will be created if it does not exist. `per-workspace`::        Separate PVC for each workspace will be used.        Name of PVC is evaluated as `'{che.infra.kubernetes.pvc.name} + '-' + {WORKSPACE_ID}'`.        Existing PVC will be used or a new one will be created if it doesn't exist.
+
+// Default value for `+CHE_INFRA_KUBERNETES_PVC_STRATEGY+`:: `+common+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_INFRA_KUBERNETES_PVC_STRATEGY+` as set by the Operator:: `+common+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_INFRA_KUBERNETES_PVC_STRATEGY+` as set using the `configMap`:: `+common+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_INFRA_KUBERNETES_PVC_STRATEGY+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_INFRA_KUBERNETES_PVC_STRATEGY: "common"
+----
+====
+
+

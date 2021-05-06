@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_limits_workspace_idle_timeout_{context}"]
+= {prod-short} server parameter: `+CHE_LIMITS_WORKSPACE_IDLE_TIMEOUT+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+The length of time that a user is idle with their workspace when the system will suspend the workspace and then stopping it. Idleness is the length of time that the user has not interacted with the workspace, meaning that one of our agents has not received interaction. Leaving a browser window open counts toward idleness.
+
+// Default value for `+CHE_LIMITS_WORKSPACE_IDLE_TIMEOUT+`:: `+1800000+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_LIMITS_WORKSPACE_IDLE_TIMEOUT+` as set by the Operator:: `+1800000+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_LIMITS_WORKSPACE_IDLE_TIMEOUT+` as set using the `configMap`:: `+1800000+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_LIMITS_WORKSPACE_IDLE_TIMEOUT+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_LIMITS_WORKSPACE_IDLE_TIMEOUT: "1800000"
+----
+====
+
+

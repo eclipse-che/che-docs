@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_workspace_projects_storage_{context}"]
+= {prod-short} server parameter: `+CHE_WORKSPACE_PROJECTS_STORAGE+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+Your projects are synchronized from the {prod-short} server into the machine running each workspace. This is the directory in the machine where your projects are placed.
+
+// Default value for `+CHE_WORKSPACE_PROJECTS_STORAGE+`:: `+/projects+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_WORKSPACE_PROJECTS_STORAGE+` as set by the Operator:: `+/projects+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_WORKSPACE_PROJECTS_STORAGE+` as set using the `configMap`:: `+/projects+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_WORKSPACE_PROJECTS_STORAGE+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_WORKSPACE_PROJECTS_STORAGE: "/projects"
+----
+====
+
+

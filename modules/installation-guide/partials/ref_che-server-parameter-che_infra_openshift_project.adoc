@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_infra_openshift_project_{context}"]
+= {prod-short} server parameter: `+CHE_INFRA_OPENSHIFT_PROJECT+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+DEPRECATED - Do not change the value of this property otherwise the existing workspaces will loose data. Do not set it on new installations. Defines OpenShift namespace in which all workspaces will be created. If not set, every workspace will be created in a new project, where project name = workspace id It's possible to use `<username>` and `<userid>` placeholders (for example: `che-workspace-<username>`). In that case, new project will be created for each user. OpenShift OAuth or service account with permission to create new projects must be used. If the project pointed to by this property exists, it will be used for all workspaces. If it does not exist, the namespace specified by the `che.infra.kubernetes.namespace.default` will be created and used. This parameter is subject to removal in future releases. Legacy workspaces located in this namespace may become unreachable in future releases. See the documentation for possible next steps.
+
+// Default value for `+CHE_INFRA_OPENSHIFT_PROJECT+`:: `+Undefined+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_INFRA_OPENSHIFT_PROJECT+` as set by the Operator:: `+Undefined+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_INFRA_OPENSHIFT_PROJECT+` as set using the `configMap`:: `+Undefined+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_INFRA_OPENSHIFT_PROJECT+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_INFRA_OPENSHIFT_PROJECT: "Undefined"
+----
+====
+
+

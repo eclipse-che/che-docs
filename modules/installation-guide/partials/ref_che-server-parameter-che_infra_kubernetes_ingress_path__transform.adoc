@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_infra_kubernetes_ingress_path__transform_{context}"]
+= {prod-short} server parameter: `+CHE_INFRA_KUBERNETES_INGRESS_PATH__TRANSFORM+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+Defines a "recipe" on how to declare the path of the ingress that should expose a server. The "%s" represents the base public URL of the server and is guaranteed to end with a forward slash. This property must be a valid input to the String.format() method and contain exactly one reference to "%s". See the description of the `che.infra.kubernetes.ingress.annotations_json` property to see how these two properties interplay when specifying the ingress annotations and path. If not defined, this property defaults to "%s" (without the quotes) which means that the path is not transformed in any way for use with the ingress controller.
+
+// Default value for `+CHE_INFRA_KUBERNETES_INGRESS_PATH__TRANSFORM+`:: `+NULL+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_INFRA_KUBERNETES_INGRESS_PATH__TRANSFORM+` as set by the Operator:: `+NULL+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_INFRA_KUBERNETES_INGRESS_PATH__TRANSFORM+` as set using the `configMap`:: `+NULL+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_INFRA_KUBERNETES_INGRESS_PATH__TRANSFORM+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_INFRA_KUBERNETES_INGRESS_PATH__TRANSFORM: "NULL"
+----
+====
+
+

@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_workspace_stop_role_enabled_{context}"]
+= {prod-short} server parameter: `+CHE_WORKSPACE_STOP_ROLE_ENABLED+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+If true, 'stop-workspace' role with the edit privileges will be granted to the 'che' ServiceAccount if OpenShift OAuth is enabled. This configuration is mainly required for workspace idling when the OpenShift OAuth is enabled.
+
+// Default value for `+CHE_WORKSPACE_STOP_ROLE_ENABLED+`:: `+true+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_WORKSPACE_STOP_ROLE_ENABLED+` as set by the Operator:: `+true+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_WORKSPACE_STOP_ROLE_ENABLED+` as set using the `configMap`:: `+true+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_WORKSPACE_STOP_ROLE_ENABLED+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_WORKSPACE_STOP_ROLE_ENABLED: "true"
+----
+====
+
+

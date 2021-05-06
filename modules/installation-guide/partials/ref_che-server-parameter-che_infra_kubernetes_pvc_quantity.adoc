@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_infra_kubernetes_pvc_quantity_{context}"]
+= {prod-short} server parameter: `+CHE_INFRA_KUBERNETES_PVC_QUANTITY+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+Defines the size of Persistent Volume Claim of {prod-short} workspace. Format described here: https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html
+
+// Default value for `+CHE_INFRA_KUBERNETES_PVC_QUANTITY+`:: `+10Gi+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_INFRA_KUBERNETES_PVC_QUANTITY+` as set by the Operator:: `+10Gi+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_INFRA_KUBERNETES_PVC_QUANTITY+` as set using the `configMap`:: `+10Gi+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_INFRA_KUBERNETES_PVC_QUANTITY+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_INFRA_KUBERNETES_PVC_QUANTITY: "10Gi"
+----
+====
+
+

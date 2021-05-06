@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_api_{context}"]
+= {prod-short} server parameter: `+CHE_API+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+API service. Browsers initiate REST communications to {prod-short} server with this URL.
+
+// Default value for `+CHE_API+`:: `+http://${CHE_HOST}:${CHE_PORT}/api+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_API+` as set by the Operator:: `+http://${CHE_HOST}:${CHE_PORT}/api+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_API+` as set using the `configMap`:: `+http://${CHE_HOST}:${CHE_PORT}/api+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_API+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_API: "http://${CHE_HOST}:${CHE_PORT}/api"
+----
+====
+
+

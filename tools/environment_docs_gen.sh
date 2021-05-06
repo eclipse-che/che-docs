@@ -9,101 +9,157 @@
 #
 set -o pipefail
 
+
 CURRENT_VERSION=""
 RAW_CONTENT=""
-NEWLINE=$'\n'
-NEWLINEx2="$NEWLINE$NEWLINE"
-TABLE_HEADER="$NEWLINE,=== $NEWLINE Environment Variable Name,Default value, Description $NEWLINE"
-TABLE_FOOTER=",=== $NEWLINEx2"
-PARENT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")/.." ; pwd -P )
-BUFF=""
-OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/system-variables.adoc"
+TOOLS_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")" || return ; pwd -P )
+PARENT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")/.." || return ; pwd -P )
+OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/partials"
 
-fetch_current_version() {
-  echo "Trying to read current product version from $PARENT_PATH/antora-playbook.yml..." >&2
-  
-  CURRENT_VERSION=$(grep 'prod-ver:' "$PARENT_PATH/antora-playbook.yml" | cut -d: -f2 | sed  's/ //g').x
-  if [ $? -ne 0 ]; then
-    echo "Failure: Cannot read version from $PARENT_PATH/antora-playbook.yml" >&2
-    exit 1
-  fi
-  if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
-     CURRENT_VERSION="master"
-  fi
-  echo "Detected version: $CURRENT_VERSION" >&2
+usage() {
+  echo "
+  Usage: /${BASH_SOURCE[0]} [-h] [-f]  
+  PURPOSE: Create draft reference files for new Che Server parameters.
+  * Lookup for current version in antora-playbook.yml
+  * Fetch the definitions of all Che Server parameters as defined in the che.properties and multiuser.properties files in the che repository.
+  * Create draft reference files for new Che Server parameters.
+  * If invoked with the -f option, force the generation of reference files for *all* parameters.
+    OPTIONS:
+      -h help
+      -f force the generation of reference files for *all* parameters.
+  "
+  exit 0
 }
 
+run() {
+  fetch_current_version
+  fetch_conf_files_content
+  parse_content
+  create_unordered_assembly
+}
+
+fetch_current_version() {
+  CURRENT_VERSION=""
+  # Read current product version from $PARENT_PATH/antora-playbook.yml...
+  CURRENT_VERSION=$(grep 'prod-ver:' "$PARENT_PATH/antora-playbook.yml" | cut -d: -f2 | sed  's/ //g')
+  case $CURRENT_VERSION in
+    '')
+      echo "ERROR: Cannot read version from $PARENT_PATH/antora-playbook.yml" >&2
+      exit 1
+      ;;
+    *)
+      CURRENT_VERSION="$CURRENT_VERSION.x"
+      echo "INFO: Detected version: $CURRENT_VERSION" >&2
+      ;;
+  esac
+}
 
 fetch_conf_files_content() {
-  echo "Fetching property files content from GitHub..." >&2
-  CHE_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse/che/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/che.properties"
-  RAW_CONTENT=$(curl -sf "$CHE_PROPERTIES_URL")
-  if [ $? -ne 0 ]; then
-    echo "Failure: Cannot read che.properties from URL $CHE_PROPERTIES_URL" >&2
-    exit 1
-  fi
-  MULTIUSER_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse/che/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/multiuser.properties"
-  RAW_CONTENT="$RAW_CONTENT $(curl -sf "$MULTIUSER_PROPERTIES_URL")"
-  if [ $? -ne 0 ]; then
-    echo "Failure: Cannot read multiuser.properties from URL $MULTIUSER_PROPERTIES_URL" >&2
-    exit 1
-  fi
-  echo "Fetching content done. Trying to parse it." >&2
+  RAW_CONTENT=""
+  # Fetching property files content
+  for URL in https://raw.githubusercontent.com/eclipse/che/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/che.properties https://raw.githubusercontent.com/eclipse/che/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/multiuser.properties
+  do
+    if ! RAW_CONTENT="$RAW_CONTENT $(curl -sf "$URL")"
+    then
+      echo "ERROR: Cannot read multiuser.properties from URL $URL" >&2
+      exit 1
+    fi
+    echo "INFO: Fetched content from $URL"
+  done
 }
 
 parse_content() {
   while read -r LINE
   do
-    if [[ $LINE == '##'* ]]; then                       # line starting with two or more #s means new topic is started
-      if [[ -n $TOPIC ]]; then
-        BUFF="$BUFF$TABLE_FOOTER"                       # topic changes, closing the table
-      fi
-      TOPIC="${LINE//#}"                                # read topic, stripping #s
-      TOPIC="${TOPIC/ }"                                # trim first space
-      TOPICID="${TOPIC// /-}"                                # create topic ID
-      TOPICID="$(sed 's|-\{2,\}|-|g; s|[\"\/=,.<>?!;:()*]||g; s|\(.*\)|[id="\L\1"]|' <<< $TOPICID)"
-                                                        # replace spaces with dashes, create topic ID, convert to lowercase chars
-                                                        # remove non alpha-num, wrap in AsciiDoc ID markup
-      echo "   Found begin of topic: $TOPIC" >&2
-      BUFF="${BUFF}${TOPICID}$NEWLINE= ${TOPIC}$NEWLINEx2.${TOPIC} $TABLE_HEADER $NEWLINE"      # new topic and table header
-    elif [[ $LINE == '#'* ]] && [[ -n $TOPIC ]]; then   # line starting with single # means property description (can be multi-line)
-      TRIM_LINE=${LINE/\#}                              # read description, stripping first #
-      DESCR_BUFF="$DESCR_BUFF${TRIM_LINE}"              # collect all description lines into buffer
-    elif [[ -z $LINE ]] && [[ -n $TOPIC ]]; then
-      DESCR_BUFF=""                                     # empty line is a separator -> cleanup description and property name + value
+    # A line starting with two or more `#` is a topic title
+    if [[ $LINE == '##'* ]]
+    then 
+      # Topic is the line, without any `#`
+      TOPIC="${LINE//#}"
+    # A line starting with single `#` belongs to a property description (can be multi-line)
+    elif [[ $LINE == '#'* ]] && [[ -n $TOPIC ]]
+    then   
+      # Collect all description lines into buffer, stripping first #
+      DESCR_BUFF="$DESCR_BUFF${LINE/\#}"
+    # An empty line is a separator
+    elif [[ -z $LINE ]] && [[ -n $TOPIC ]]
+    then
+      # Cleanup parameter name, description, and default value
+      DESCR_BUFF=""
       KEY=""
       VALUE=""
-    elif [[ -n $TOPIC ]]; then                          # non-empty line after any topic that doesn't start with # -> treat as property line
-      IFS=$'=' read -r KEY VALUE <<< "$LINE"            # property split into key and value
-      ENV=${KEY^^}                                      # capitalize property name
-      ENV="\`+${ENV//_/__}+\`"                          # replace single underscores with double
-      ENV=${ENV//./_}                                   # replace dots with single underscore
-      VALUE="${VALUE/ }"                                # trim first space
-      VALUE="\`+${VALUE}+\`"                            # make sure asciidoc doesn't mix it up with attributes
-      VALUE="${VALUE/\`++\`}"                           # remove empty value `++`
-      
-      DESCR_BUFF="$(sed 's|\${\([^}]*\)}|$++{\1}++|g' <<< $DESCR_BUFF)"   # make sure asciidoc doesn't mix it up with attributes
-      DESCR_BUFF="$(sed 's|\(Eclipse \)\?\bChe\b|{prod-short}|g' <<< $DESCR_BUFF)"   # (Eclipse) Che -> {prod-short}
-      DESCR_BUFF="$(sed -E 's| http:| \\http:|g' <<< $DESCR_BUFF)"   # Deactivate http links
-      DESCR_BUFF="$(sed -E 's| https:| \\https:|g' <<< $DESCR_BUFF)"   # Deactivate http links
-      DESCR_BUFF="$(sed -E 's|https://docs.openshift.com/container-platform/latest/architecture/additional_concepts/storage.html#pv-access-modes|https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html|' <<< $DESCR_BUFF)"   # Fix broken link
-      DESCR_BUFF="$(sed -E 's|https://docs.openshift.com/container-platform/latest/dev_guide/compute_resources.html#dev-compute-resources|https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html|' <<< $DESCR_BUFF)"   # Fix broken link
-      DESCR_BUFF="$(sed -E 's|https://www.keycloak.org/docs/3.3/server_admin/topics/identity-broker/social/openshift.html|https://www.keycloak.org/docs/latest/server_admin/index.html#openshift-4|' <<< $DESCR_BUFF)"   # Fix broken link
-      DESCR_BUFF="$(sed -E 's|k8s|{orch-name}|g' <<< $DESCR_BUFF)"   # k8s to {orch-name}
-      DESCR_BUFF="$(sed -E 's| openshift| {ocp}|g' <<< $DESCR_BUFF)"   # k8s to {orch-name}
-
-      DESCR_BUFF="${DESCR_BUFF/ }"                      # trim first space
-      BUFF="$BUFF $ENV,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
+    # A non-empty line after any topic that doesn't start with # is a parameter
+    elif [[ -n $TOPIC ]]; then                          
+      handle_parameter
     fi
   done <<< "$RAW_CONTENT"
-  BUFF="$BUFF$TABLE_FOOTER"                             # close last table
-  BUFF="pass:[<!-- vale off -->]
-
-$BUFF" 
-  echo "$BUFF" > "$OUTPUT_PATH"                         # flush buffer into file
-  echo "Processing done. Output file is $OUTPUT_PATH" >&2
 }
 
-fetch_current_version
-fetch_conf_files_content
-parse_content
+handle_parameter() {
+  # Split property line into key and value
+  IFS=$'=' read -r KEY VALUE <<< "$LINE"
+  # Replace single underscores with double
+  ENV="${KEY//_/__}"
+  # Replace dots with single underscore
+  ENV="${ENV//./_}"
+  # Determine output file name
+  FILENAME="$OUTPUT_PATH/ref_che-server-parameter-${ENV}.adoc" 
+  # If file doesn't exist or the -f option is invoked create draft
+  if [[ ! -f "$FILENAME" ]] || [[ "$GENERATE_ALL" == "true" ]]
+    then create_draft
+  fi
+  PARAMETER_LIST="$PARAMETER_LIST $ENV"
+}
+
+create_draft() {
+  # Trim first space
+  VALUE="${VALUE/ }"
+  # Handle empty value
+  VALUE="${VALUE:-Undefined}"
+  # Trim first space
+  DESCR_BUFF="${DESCR_BUFF/ }"
+  # Escape { when it is a parameter name and not an attribute
+  DESCR_BUFF="${DESCR_BUFF/\$\{/\$\\\{}"
+  # Fix broken link
+  DESCR_BUFF="$(sed -E 's|https://docs.openshift.com/container-platform/latest/architecture/additional_concepts/storage.html#pv-access-modes|https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html|' <<< $DESCR_BUFF)"
+  # Fix broken link
+  DESCR_BUFF="$(sed -E 's|https://docs.openshift.com/container-platform/latest/dev_guide/compute_resources.html#dev-compute-resources|https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html|' <<< $DESCR_BUFF)"
+  # Fix broken link
+  DESCR_BUFF="$(sed -E 's|https://www.keycloak.org/docs/3.3/server_admin/topics/identity-broker/social/openshift.html|https://www.keycloak.org/docs/latest/server_admin/index.html#openshift-4|' <<< $DESCR_BUFF)"
+
+  # Create draft file
+  eval "cat > "$FILENAME" <<EOF
+  $(<$TOOLS_PATH/environment_docs_gen_template_ref_che-server-parameter.adoc)"
+  echo "New draft: $FILENAME"
+}
+
+
+create_unordered_assembly() {
+  ASSEMBLY="$OUTPUT_PATH/assembly_che-server-parameters-reference_raw.adoc"
+  cat > "$ASSEMBLY" <"$TOOLS_PATH/environment_docs_gen_template_assembly_che-server-parameters-reference.adoc"
+  for ENV in $PARAMETER_LIST
+  do
+  echo "include::ref_che-server-parameter-${ENV}.adoc[leveloffset=+1]" >> "$ASSEMBLY"
+  done
+}
+
+# Using getopts to read the options - see http://tldp.org/LDP/abs/html/internal.html#EX33
+while getopts ":hf" Option
+do
+  case "${Option}" in
+    f) 
+      GENERATE_ALL="true" 
+      ;;
+    h)
+      usage
+      ;;
+    *) 
+      GENERATE_ALL="false" 
+      ;;
+  esac
+done
+
+run
+
+# Decrements the argument pointer so it points to next argument.
+shift $((OPTIND - 1))

@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_workspace_pool_exact__size_{context}"]
+= {prod-short} server parameter: `+CHE_WORKSPACE_POOL_EXACT__SIZE+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+This property is ignored when pool type is different from `fixed`. It configures the exact size of the pool. When set, the `multiplier` property is ignored. If this property is not set (`0`, `<0`, `NULL`), then the pool size equals the number of cores. See also `che.workspace.pool.cores_multiplier`.
+
+// Default value for `+CHE_WORKSPACE_POOL_EXACT__SIZE+`:: `+30+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_WORKSPACE_POOL_EXACT__SIZE+` as set by the Operator:: `+30+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_WORKSPACE_POOL_EXACT__SIZE+` as set using the `configMap`:: `+30+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_WORKSPACE_POOL_EXACT__SIZE+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_WORKSPACE_POOL_EXACT__SIZE: "30"
+----
+====
+
+

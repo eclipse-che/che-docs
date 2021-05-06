@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_server_secure__exposer_{context}"]
+= {prod-short} server parameter: `+CHE_SERVER_SECURE__EXPOSER+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+Configures in which way secure servers will be protected with authentication. Suitable values:   - `default`: `jwtproxy` is configured in a pass-through mode. Servers should authenticate requests themselves.   - `jwtproxy`: `jwtproxy` will authenticate requests. Servers will receive only authenticated requests.
+
+// Default value for `+CHE_SERVER_SECURE__EXPOSER+`:: `+jwtproxy+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_SERVER_SECURE__EXPOSER+` as set by the Operator:: `+jwtproxy+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_SERVER_SECURE__EXPOSER+` as set using the `configMap`:: `+jwtproxy+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_SERVER_SECURE__EXPOSER+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_SERVER_SECURE__EXPOSER: "jwtproxy"
+----
+====
+
+

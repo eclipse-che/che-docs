@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_infra_kubernetes_pod_termination__grace__period__sec_{context}"]
+= {prod-short} server parameter: `+CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+Defines grace termination period for Pods that will be created by {orch-name} infrastructures. Default value: `0`. It allows to stop Pods quickly and significantly decrease the time required for stopping a workspace. the {prod-short} Operator: if `terminationGracePeriodSeconds` have been explicitly set in {orch-name} recipe it will not be overridden.
+
+// Default value for `+CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC+`:: `+0+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC+` as set by the Operator:: `+0+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC+` as set using the `configMap`:: `+0+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC: "0"
+----
+====
+
+

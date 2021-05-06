@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_infra_kubernetes_pvc_access__mode_{context}"]
+= {prod-short} server parameter: `+CHE_INFRA_KUBERNETES_PVC_ACCESS__MODE+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+Defines Persistent Volume Claim access mode. the {prod-short} Operator that for common PVC strategy changing of access mode affects the number of simultaneously running workspaces. If the OpenShift instance running {prod-short} is using Persistent Volumes with RWX access mode, then a limit of running workspaces at the same time is bounded only by {prod-short} limits configuration: RAM, CPU, and so on. Detailed information about access mode is described here: https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html
+
+// Default value for `+CHE_INFRA_KUBERNETES_PVC_ACCESS__MODE+`:: `+ReadWriteOnce+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_INFRA_KUBERNETES_PVC_ACCESS__MODE+` as set by the Operator:: `+ReadWriteOnce+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_INFRA_KUBERNETES_PVC_ACCESS__MODE+` as set using the `configMap`:: `+ReadWriteOnce+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_INFRA_KUBERNETES_PVC_ACCESS__MODE+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_INFRA_KUBERNETES_PVC_ACCESS__MODE: "ReadWriteOnce"
+----
+====
+
+

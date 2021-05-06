@@ -1,0 +1,37 @@
+  
+[id="{prod-id-short}-server-parameter-che_workspace_sidecar_image__pull__policy_{context}"]
+= {prod-short} server parameter: `+CHE_WORKSPACE_SIDECAR_IMAGE__PULL__POLICY+`
+
+// FIXME: Fix the language and remove the  vale off statement.
+// pass:[<!-- vale off -->]
+
+Defines image-pulling strategy for sidecars. Possible values are: `Always`, `Never`, `IfNotPresent`. For any other value, `Always` is assumed for images with the `:latest` tag, or `IfNotPresent` for all other cases.
+
+// Default value for `+CHE_WORKSPACE_SIDECAR_IMAGE__PULL__POLICY+`:: `+Always+`
+
+// If the Operator sets a different value, uncomment and complete following block:
+Default value for `+CHE_WORKSPACE_SIDECAR_IMAGE__PULL__POLICY+` as set by the Operator:: `+Always+`
+
+ifeval::["{project-context}" == "che"]
+// If Helm sets a different default value, uncomment and complete following block:
+Default value for `+CHE_WORKSPACE_SIDECAR_IMAGE__PULL__POLICY+` as set using the `configMap`:: `+Always+`
+endif::[]
+
+// FIXME: If the parameter can be set with the simpler syntax defined for CheCluster Custom Resource, replace it here
+
+.Setting the value for `+CHE_WORKSPACE_SIDECAR_IMAGE__PULL__POLICY+` using the Operator
+====
+[source,yaml]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# [...]
+spec:
+  server:
+    # [...]
+    customCheProperties:
+      CHE_WORKSPACE_SIDECAR_IMAGE__PULL__POLICY: "Always"
+----
+====
+
+
