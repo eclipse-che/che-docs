@@ -22,7 +22,7 @@ OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/system-variables.a
 fetch_current_version() {
   echo "Trying to read current product version from $PARENT_PATH/antora-playbook.yml..." >&2
   
-  CURRENT_VERSION=$(grep 'prod-ver:' "$PARENT_PATH/antora-playbook.yml" | cut -d: -f2 | sed  's/ //g').x
+  CURRENT_VERSION=$(grep 'prod-ver:' "$PARENT_PATH/antora-playbook.yml" | cut -d: -f2 | tr -d ' "').x
   if [ $? -ne 0 ]; then
     echo "Failure: Cannot read version from $PARENT_PATH/antora-playbook.yml" >&2
     exit 1
