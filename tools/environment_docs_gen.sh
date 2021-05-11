@@ -61,7 +61,7 @@ parse_content() {
       TOPIC="${LINE//#}"                                # read topic, stripping #s
       TOPIC="${TOPIC/ }"                                # trim first space
       TOPICID="${TOPIC// /-}"                                # create topic ID
-      TOPICID="$(sed 's|-\{2,\}|-|g; s|[\"\/=,.<>?!;:()*]||g; s|\(.*\)|[id="\L\1"]|' <<< $TOPICID)"
+      TOPICID="$(sed 's|-\{2,\}|-|g; s|[\"\/=,.<>?!;:()*]||g; s|\(.*\)|[id="\L\1"]|;s|prod-short|prod-id-short|' <<< $TOPICID)"
                                                         # replace spaces with dashes, create topic ID, convert to lowercase chars
                                                         # remove non alpha-num, wrap in AsciiDoc ID markup
       echo "   Found begin of topic: $TOPIC" >&2
