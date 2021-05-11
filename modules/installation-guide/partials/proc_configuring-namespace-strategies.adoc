@@ -2,7 +2,7 @@
 [id="configuring-namespace-strategies_{context}"]
 = Configuring {orch-namespace} strategies
 
-The {platforms-namespace} where a new workspace Pod is deployed depends on the {prod-short} server configuration. By default, every workspace is deployed in a distinct {platforms-namespace}, but the user can configure the {prod-short} server to deploy all workspaces in one specific {platforms-namespace}. The name of a {platforms-namespace} must be provided as a {prod-short} server configuration property and cannot be changed at runtime.
+The {platforms-namespace} where a new workspace Pod is deployed depends on the {prod-short} server configuration. By default, every workspace is deployed in an individual {orch-namespace} per user. The name of a {platforms-namespace} must be provided as a {prod-short} server configuration property or pre-created by cluster admin.
 
 ifeval::["{project-context}" == "che"]
 NOTE: The term _{orch-namespace}_ ({kubernetes}) is used interchangeably with _project_ (OpenShift).
@@ -44,11 +44,7 @@ endif::[]
 
 NOTE: The underlying environment variable that {prod-short} server uses is `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT`.
 
-WARNING: `CHE_INFRA_KUBERNETES_NAMESPACE` and `CHE_INFRA_OPENSHIFT_PROJECT` are legacy variables. Keep these variables unset for a new installations. Changing these variables during an update can lead to data loss.
-
 WARNING: By default, only one workspace in the same {orch-namespace} can be running at one time. See xref:running-more-than-one-workspace-at-a-time.adoc[].
-
-WARNING: The {orch-namespace} strategies other than per user are deprecated and are subject to removal.
 
 [WARNING]
 ====
@@ -67,7 +63,7 @@ Use <<pre-creating-namespace>> when:
 
 pass:[<!-- vale Vale.Terms = NO -->]
 
-* OpenShift OAuth with a `self-provisioner` cluster role is not linked to the`system:authenticated:oauth` group
+* OpenShift OAuth with a `self-provisioner` cluster role is not linked to the `system:authenticated:oauth` group
 
 pass:[<!-- vale Vale.Terms = YES -->]
 
@@ -102,89 +98,6 @@ $ helm ... --set global.cheWorkspacesNamespace=__{prod-workspace}__-__<username>
 ----
 endif::[]
 ====
-
-== One {orch-namespace} per workspace strategy
-
-The strategy creates a new {orch-namespace} for each new workspace.
-
-To use the strategy, set the _{prod-short} workspace {orch-namespace} configuration_ value to contain the `_<workspaceID>_` identifier. It can be used alone or combined with other identifiers or any string.
-
-.One {orch-namespace} per workspace
-====
-To assign {orch-namespace} names composed of a __`{prod-workspace}`__ prefix and workspace id, set:
-
-*Operator installer (CheCluster CustomResource)*
-[subs="+quotes,+attributes"]
-----
-...
-spec:
-  server:
-    workspaceNamespaceDefault: __{prod-workspace}__-__<workspaceID>__
-...
-----
-
-ifeval::["{project-context}" == "che"]
-*Helm*
-[subs="+quotes,+attributes"]
-----
-$ helm ... --set global.cheWorkspacesNamespace=__{prod-workspace}__-__<workspaceID>__
-----
-endif::[]
-====
-WARNING: This strategy is deprecated and is subject to removal.
-
-== One {orch-namespace} for all workspaces strategy
-
-The strategy uses one predefined {orch-namespace} for all workspaces.
-
-To use the strategy, set the _{prod-short} workspace {orch-namespace} configuration_ value to the name of the desired {orch-namespace} to use.
-
-.One {orch-namespace} for all workspaces
-====
-To have all workspaces created in __`{prod-workspace}`__ {orch-namespace}, set:
-
-*Operator installer (CheCluster CustomResource)*
-[subs="+quotes,+attributes"]
-----
-...
-spec:
-  server:
-    workspaceNamespaceDefault: __{prod-workspace}__
-...
-----
-
-ifeval::["{project-context}" == "che"]
-*Helm*
-[subs="+quotes,+attributes"]
-----
-$ helm ... --set global.cheWorkspacesNamespace=__{prod-workspace}__
-----
-endif::[]
-====
-WARNING: This strategy is deprecated and is subject to removal.
-
-== Allowing user-defined workspace {orch-namespace}s
-
-{prod-short} server can be configured to honor the user selection of a {orch-namespace} when a workspace is created. This feature is disabled by default. To allow user-defined workspace {orch-namespace}s:
-
-ifeval::["{project-context}" == "che"]
-* For Helm Chart deployments, set the following environment variable in the {prod-short} ConfigMap:
-+
-[subs="+quotes,macros"]
-----
-pass:[CHE_INFRA_KUBERNETES_NAMESPACE_ALLOW__USER__DEFINED]=true
-----
-endif::[]
-
-* For Operator deployments, set the following field in the CheCluster Custom Resource:
-+
-----
-...
-server:
-  allowUserDefinedWorkspaceNamespaces: true
-...
-----
-WARNING: This parameter is deprecated and is subject to removal.
 
 == Handling incompatible usernames or user IDs
 
