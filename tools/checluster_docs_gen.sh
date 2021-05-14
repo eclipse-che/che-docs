@@ -23,7 +23,8 @@ OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/checluster-propert
 
 fetch_current_version() {
   echo "Trying to read current product version from $PARENT_PATH/antora-playbook.yml..." >&2
-  CURRENT_VERSION=$(yq -M '.asciidoc.attributes."prod-ver"' "$PARENT_PATH/antora-playbook.yml").x
+  # remove spaces, single and double quotes from the value of prod-ver, then append x.
+  CURRENT_VERSION=$(yq -M '.asciidoc.attributes."prod-ver"' "$PARENT_PATH/antora-playbook.yml" | tr -d " '\"" ).x
   if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
     CURRENT_VERSION="master"
   fi

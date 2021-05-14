@@ -14,19 +14,21 @@
 
 . To install the cert-manager on Azure, create the *cert-manager* namespace:
 +
+[subs="+attributes"]
 ----
 $ {orch-cli} create namespace cert-manager
 namespace/cert-manager created
 
 $ {orch-cli} label namespace cert-manager certmanager.k8s.io/disable-validation=true
 ----
-
 +
+[subs="+attributes"]
 ----
 $ {orch-cli} apply \
   -f https://github.com/jetstack/cert-manager/releases/download/v0.15.0/cert-manager.yaml
 ----
-
++
+[subs="+attributes"]
 ----
 $ {orch-cli} apply \
  --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.15.0/cert-manager.crds.yaml
@@ -43,6 +45,7 @@ namespace/{prod-namespace} created
 
 . Create the certificate issuer. Enter your email address in the *email* field and set *clientID*, *CLIENT_SECRET* *subscriptionID*, *tenantID*, *hostedZoneName*  fields:
 +
+[source,yaml,subs="+attributes"]
 ----
 cat <<EOF | {orch-cli} apply -f -
 apiVersion: cert-manager.io/v1alpha2
@@ -80,6 +83,7 @@ EOF
 
 . Create the certificate. Edit the domain name:
 +
+[source,yaml,subs="+attributes"]
 ----
 cat <<EOF | {orch-cli} apply -f -
 apiVersion: cert-manager.io/v1alpha2
@@ -105,8 +109,9 @@ The cert-manager logs contain information about the DNS challenge.
 
 . Obtain the logs using the following command (here, `cert-manager-8d478bb45-2924h` is the name of the cert-manager Pod):
 +
+[subs="+attributes"]
 ----
-$  {orch-cli} logs -f -n cert-manager cert-manager-8d478bb45-2924h
+$ {orch-cli} logs -f -n cert-manager cert-manager-8d478bb45-2924h
 ----
 
 . Ensure that the certificate is ready:
@@ -133,6 +138,7 @@ Events:
 
 . Wait for the status to show *OK* and ensure that the log contains the following:
 +
+[subs="+attributes"]
 ----
 $ {orch-cli} describe certificate/che-tls -n {prod-namespace}
 Name:         che-tls
