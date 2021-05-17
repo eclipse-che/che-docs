@@ -61,7 +61,7 @@ parse_content() {
       TOPIC="${LINE//#}"                                # read topic, stripping #s
       TOPIC="${TOPIC/ }"                                # trim first space
       TOPICID="${TOPIC// /-}"                                # create topic ID
-      TOPICID="$(sed 's|-\{2,\}|-|g; s|[\"\/=,.<>?!;:()*]||g; s|\(.*\)|[id="\L\1"]|' <<< $TOPICID)"
+      TOPICID="$(sed 's|-\{2,\}|-|g; s|[\"\/=,.<>?!;:()*]||g; s|\(.*\)|[id="\L\1"]|;s|prod-short|prod-id-short|' <<< $TOPICID)"
                                                         # replace spaces with dashes, create topic ID, convert to lowercase chars
                                                         # remove non alpha-num, wrap in AsciiDoc ID markup
       echo "   Found begin of topic: $TOPIC" >&2
@@ -91,6 +91,9 @@ parse_content() {
       DESCR_BUFF="$(sed -E 's|https://www.keycloak.org/docs/3.3/server_admin/topics/identity-broker/social/openshift.html|https://www.keycloak.org/docs/latest/server_admin/index.html#openshift-4|' <<< $DESCR_BUFF)"   # Fix broken link
       DESCR_BUFF="$(sed -E 's|k8s|{orch-name}|g' <<< $DESCR_BUFF)"   # k8s to {orch-name}
       DESCR_BUFF="$(sed -E 's| openshift| {ocp}|g' <<< $DESCR_BUFF)"   # k8s to {orch-name}
+      DESCR_BUFF="$(sed -E 's|che-host|prod-host|g' <<< $DESCR_BUFF)"   # fix missing attribute che-host
+      DESCR_BUFF="$(sed -E 's|\{WORKSPACE_ID|\\\{WORKSPACE_ID|g' <<< $DESCR_BUFF)"   # fix missing attribute WORKSPACE_ID
+      DESCR_BUFF="$(sed -E 's|\{generated_8_chars|\\\{generated_8_chars|g' <<< $DESCR_BUFF)"   # fix missing attribute generated_8_chars
 
       DESCR_BUFF="${DESCR_BUFF/ }"                      # trim first space
       BUFF="$BUFF $ENV,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
