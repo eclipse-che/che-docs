@@ -19,9 +19,6 @@ The image contains plug-ins or extensions metadata.
 * `./node_modules/.bin` is in the `PATH` environment variable.
 
 * A running installation of link:http://podman.io[podman] or link:http://docker.io[docker].
-ifeval::["{project-context}" != "che"]
-* Valid content for the `meta.yaml` file describing the plug-in to add. See: xref:end-user-guide:publishing-metadata-for-a-vs-code-extension.adoc[]
-endif::[]
 
 
 .Procedure
@@ -30,40 +27,10 @@ endif::[]
 +
 include::example$snip_{project-context}-clone-the-plug-in-registry-repository.adoc[]
 
-ifeval::["{project-context}" == "che"]
 . In the `./{che-plugin-registry-directory}/` directory, edit the `che-theia-plugins.yaml` file.
-endif::[]
-ifeval::["{project-context}" != "che"]
-. In the `./{che-plugin-registry-directory}/v3/plugins/` directory, create new directories `__<publisher>__/__<plugin-name>__/__<plugin-version>__/` and a `meta.yaml` file in the last directory.
-endif::[]
 +
 
-ifeval::["{project-context}" == "che"]
 . Add valid content to the `che-theia-plugins.yaml` file, for detailed information see: xref:end-user-guide:adding-a-vs-code-extension-to-the-che-plugin-registry.adoc[].
-endif::[]
-ifeval::["{project-context}" != "che"]
-.File organization for a plugin
-====
-[subs="+attributes,+quotes"]
-----
-./{che-plugin-registry-directory}/v3/plugins/
-├── _<publisher>_
-│   └── _<plugin-name>_
-│       ├── _<plugin-version>_
-│       │   └── meta.yaml
-│       └── latest.txt
-----
-====
-
-. Add valid content to the `meta.yaml` file. See: xref:end-user-guide:publishing-metadata-for-a-vs-code-extension.adoc[].
-
-. Create a file named `latest.txt` with content the name of the latest `_<plugin-version>_` directory.
-+
-.Example plug-in files tree
-====
-include::example$snip_{project-context}-plug-in-tree.adoc[]
-====
-endif::[]
 
 . Build a custom plug-ins registry image:
 +
@@ -75,9 +42,7 @@ To display full options for the `build.sh` script, use the `--help` parameter.
 To include the plug-in binaries in the registry image, add the `--offline` parameter.
 ====
 
-ifeval::["{project-context}" == "che"]
-include::example$snip_{project-context}-plugin-registry-build-output.adoc[]
-endif::[]
+include::example$snip_plugin-registry-build-output.adoc[]
 
 .Additional resources
 
