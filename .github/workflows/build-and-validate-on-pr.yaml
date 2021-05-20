@@ -24,9 +24,9 @@ jobs:
         with:
           fetch-depth: 0 # Necessary for git diff in vale step
 
-      - name: Build using antora
+      - name: Build using antora # and fail on warning
         id: antora-build
-        run: CI=true antora generate antora-playbook.yml --stacktrace
+        run: CI=true antora generate antora-playbook.yml --stacktrace 2>&1 | (tee | grep  WARNING && exit 42 || exit 0)
 
       - name: Upload artifact doc-content
         uses: actions/upload-artifact@v2
