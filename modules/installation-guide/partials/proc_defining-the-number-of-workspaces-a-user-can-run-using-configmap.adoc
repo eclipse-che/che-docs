@@ -3,29 +3,31 @@
 
 This procedure describes how to run more than one workspace simultaneously using ConfigMap. 
 
-.Prerequisites
-* The `{platforms-cli}` tool is available.
-
 .Placeholders used in examples
 [cols="1,2"]
 |===
 | `_<product-namespace>_`
-| The namespace of the product. The default option for {platforms-namespace} is `{prod-namespace}`.
+| The namespace of the product. The default option for `{platforms-namespace}` is `{prod-namespace}`.
 
 | `_<number-of-workspaces>_`
 | The number of workspaces to run simultaneously. The default value is `1`. Set the value to `-1` to allow the user to run an unlimited number of concurrent workspaces. Set it to a precise value to allow running that many concurrent workspaces.
 |===
 
+.Prerequisites
+* The `{platforms-cli}` tool is available.
+
 .Procedure
-. If the persistent volume claim (PVC) strategy of the cluster is `common`, configure the persistent volumes of the cluster to use the `ReadWriteMany` access mode.
+. If the Persistent Volume Claim (PVC) strategy of the cluster is `common`, configure the persistent volumes of the cluster to use the `ReadWriteMany` access mode.
 +
-If you are unable to use the `ReadWriteMany` access mode, configure the PVC strategy to `per-workspace` or `unique`. For more information, see xref:configuring-storage-strategies.adoc[].
+If you are unable to use the `ReadWriteMany` access mode, configure the PVC strategy to `per-workspace` or `unique`. 
++
+For more information, see xref:configuring-storage-strategies.adoc[].
 +
 [NOTE] 
 ==== 
-In some cases, configuring `ReadWriteMany` is not possible due to the storage limitations. For example, link:https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html[EBS] only supports `ReadWriteOnce` access mode. 
+In some cases, using the `ReadWriteMany` access mode is not possible due to the storage limitations. For example, link:https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html[EBS] only supports `ReadWriteOnce` access mode. 
 ====
-. Set the number of workspaces a user can run simultaneously:
+. Define the number of workspaces a user can run simultaneously:
 +
 [subs="+quotes,+attributes"]
 ----
