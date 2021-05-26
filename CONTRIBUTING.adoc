@@ -4,35 +4,48 @@
 
 == Understanding Che Documentation ecosystem
 
-* See the link:CODE_OF_CONDUCT.adoc[Code of conduct].
+* See the xref:CODE_OF_CONDUCT.adoc[Code of conduct].
 
 * Use the following editorial resources:
 
-** Minimalism in writing. See: https://docs.google.com/presentation/d/1Yeql9FrRBgKU-QlRU-nblPJ9pfZKgoKcU8SW6SQ_UqI/edit#slide=id.g1f4790d380_2_257[The Wisdom of Crowds slides] and https://youtu.be/s3Em8QSXyn8[The Wisdom of Crowds video]. See also: https://www.nngroup.com/articles/chunking/[Chunking].
+** Minimalism in writing. 
+*** link:https://docs.google.com/presentation/d/1Yeql9FrRBgKU-QlRU-nblPJ9pfZKgoKcU8SW6SQ_UqI/edit#slide=id.g1f4790d380_2_257[The Wisdom of Crowds slides]
+*** link:https://youtu.be/s3Em8QSXyn8[The Wisdom of Crowds video]
+*** link:https://www.nngroup.com/articles/chunking/[Chunking].
 
-** _IBM Style Guide_. See: link:https://www.oreilly.com/library/view/the-ibm-style/9780132118989/[The IBM Style Guide: Conventions for Writers and Editors] and 
-https://www.ibm.com/developerworks/library/styleguidelines/index.html[developerWorks editorial style guide].
+** _IBM Style Guide_. 
+
+*** link:https://www.oreilly.com/library/view/the-ibm-style/9780132118989/[The IBM Style Guide, Conventions for Writers and Editors] 
+
+*** link:https://github.com/errata-ai/IBM[A Vale-compatible implementation of IBM's _Developer Editorial Style Guide_]
 
 ** Guidelines from the
-https://redhat-documentation.github.io/modular-docs/[Modular Documentation Initiative]. As Antora is using the term of _module_ with a different meaning, this project is referring to modules as _topics_. To understand the nature of topics, see the https://redhat-documentation.github.io/modular-docs/#modular-docs-terms-definitions[Appendix A: Modular Documentation Terms and Definitions].
+link:https://redhat-documentation.github.io/modular-docs/[Modular Documentation Initiative].
++
+[TIP]
+====
+For Antora, a link:https://docs.antora.org/antora/2.3/module-directories/#module[_module_] is a collection of content in a component version. This project is referring to Modular Documentation modules as _topics_. To understand the nature of topics, see the link:https://redhat-documentation.github.io/modular-docs/#modular-docs-terms-definitions[Appendix A: Modular Documentation Terms and Definitions].
+====
 
-* link:https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow[Git Forking Workflow].
+* Use the link:https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow[Git Forking Workflow].
 
-* link:https://www.eclipse.org/che/docs/che-7/hosted-che/[Eclipse Che hosted by Red Hat] edit and builds the content.
+* link:https://www.eclipse.org/che/docs/che-7/hosted-che/[Eclipse Che hosted by Red Hat] is the recommended IDE to edit and builds the content.
 
-* link:https://asciidoctor.org/docs/asciidoc-writers-guide/[AsciiDoc] is the markup language.
+* The relevant tools for all edition, validation and publication workflows are built in the link:https://quay.io/repository/eclipse/che-docs[`che-docs` container].
 
-* link:https://docs.antora.org[Antora] builds the documentation.
+** link:https://docs.antora.org[Antora] builds the documentation.
 
-* link:https://github.com/redhat-documentation/newdoc[Newdoc] generates the topics templates.
+** link:https://asciidoctor.org/docs/asciidoc-writers-guide/[AsciiDoc] is the markup language.
 
-* link:https://docs.errata.ai/vale/about/[Vale] validates the language.
+** link:https://github.com/redhat-documentation/newdoc[Newdoc] generates the topics templates.
 
-* link:https://github.com/jhradilek/check-links[Test-adoc] validates the topic files.
+** link:https://github.com/wjdp/htmltest[htmltest] validates the links.
 
-* link:https://linkchecker.github.io/linkchecker/[Linkchecker] validates the links.
+** link:https://docs.errata.ai/vale/about/[Vale]  validates the language.
 
-* link:https://www.shellcheck.net/[ShellCheck] validates the shell scripts.
+** link:https://www.shellcheck.net/[ShellCheck]  validates the shell scripts.
+
+** link:https://github.com/jhradilek/check-links[Test-adoc] validates the topic files.
 
 
 [id="documentation-workflow"]
@@ -40,9 +53,9 @@ https://redhat-documentation.github.io/modular-docs/[Modular Documentation Initi
 
 .Procedure
 
-. Contributor submits a new code pull request in one of the Che repositories with a `status/doc-impact` label.
+. Contributor submits a code pull request in one of the Che repositories with a `status/doc-impact` label.
 
-. The author of the code pull request or the reviewer ensures that a documentation pull request for the `master` branch of the `che-docs` repository is provided and referenced from the code pull request:
+. The author of the code pull request or the reviewer ensures the code pull request contains a reference to a documentation pull request for the `master` branch of the `che-docs` repository:
 
 .. The author of the code pull request or the reviewer provides a complete documentation pull request that can then be merged by the members of the documentation team without further editing.
 
@@ -108,25 +121,26 @@ To build the Eclipse Che documentation from a Che workspace, follow the steps be
 
 .Procedure
 
-. Open _My Workspace_.
+. To build the documentation and start the preview server: open _My Workspace / User Runtimes / che-docs / Start preview server_.
 
-. To process generated documentation: Open _User Runtimes / bash-curl / Generate reference tables_.
+. To navigate the preview, open _Preview_.
 
-. To build the documentation and start the preview server: open _User Runtimes / che-docs-dev / Start preview server_.
+. To validate links: open _User Runtimes / che-docs / Validate links_.
 
-. To validate the language of the files currently open, look at the _Problems_ panel in the _Bottom Panel_. To toggle the view of this panel use the _View > Problems_ menu entry.
+. To validate language changes: open _My Workspace / User Runtimes / che-docs / Validate language changes_.
+
+. To validate the language of the files currently open, look at the _Problems_ tab in the _Bottom Panel_. To toggle the view of this tab use the _View > Problems_ menu entry.
 
 . To validate the compliance of an AsciiDoc file with Modular Documentation guidelines:
 
 .. In the _Explorer_, right-click on file to validate and select _Copy Path_.
 
-.. Open _User Runtimes / che-docs-dev / Validate Modular Doc_.
+.. Open _My Workspace / User Runtimes / che-docs / Validate Modular Doc_.
 
 .. In the _Validate Modular Doc_ panel in the _Bottom Panel_, paste the path of the file to validate.
 
 .. The tool `+test-adoc+` tests the file and produces some output.
 
-. To validate all links: open _User Runtimes / linkchecker / Validate links_.
 
 
 [id="creating-a-new-topic-using-che"]
@@ -199,7 +213,7 @@ pass:[VARIABLE_NAME__WITH__UNDERSCORES]
 ....
 ====
 
-== Building and validating Documentation on a local environment
+== Building and validating Documentation on a local environment using the `che-docs` container
 
 This section describes how to build and validate the documentation on a local environment.
 
@@ -207,59 +221,46 @@ WARNING: This is not the preferred method. For the supported method, see: xref:b
 
 .Prerequisites:
 
-* A running version of yarn. See link:https://yarnpkg.com/getting-started/install[Installing Yarn].
-* `./node_modules/.bin` is in the `PATH` environment variable.
-
 * A running installation of link:http://podman.io[podman] or link:http://docker.io[docker].
-
-* An installation of link:https://github.com/mrksu/newdoc[newdoc].
-
-* An installation of 
-https://docs.errata.ai/vale/install[vale].
-
-* An installation of https://github.com/linkchecker/linkchecker[linkchecker].
-
 
 .Procedure
 
-. Open a shell into the project directory.
-
-. Install Antora and Gulp using yarn:
+. Open a terminal into the project directory, and build the documentation using and instance of the `che-docs` container:
 +
 ----
-$ yarn
-----
-
-. To build documentation locally, run:
-+
-----
-$ gulp
+$ ./tools/runnerpreview.sh
 ---- 
 
 . Navigate to `+localhost:4000+` in your browser.
 
-. To create a new topic using, run following command:
+. Open a second terminal, and attach to the running `che-docs` container. Run all following steps from this context.
 +
 ----
-$ bash ./tools/newtopic.sh
+$ podman exec -ti che-docs  bash
 ----
 
-. To validate the compliance of an Asciidoc file with Modular Documentation standards, execute following command from a `+bash+` terminal, from the root directory of the project:
+. To validate links, run:
 +
 ----
-$ bash ./tools/test-adoc.sh <PATH_TO_THE_FILE>
+$ htmltest
 ----
 
-. To validate compliance of a file with the style guide, execute following command in a terminal, from the root directory of the project:
+. To validate language on changed files, run:
 +
 ----
-$ vale <PATH_TO_THE_FILE>"
+$ ./tools/validate_language_changes.sh
 ----
 
-. To validate links, execute following command in a terminal, from the root directory of the project:
+. To create a new topic using templates, run following command:
 +
 ----
-$ ./tools/linkchecker.sh
+$ ./tools/newtopic.sh
+----
+
+. To validate the compliance of an AsciiDoc file with Modular Documentation standards, run:
++
+----
+$ ./tools/test-adoc.sh <PATH_TO_THE_FILE>
 ----
 
 
