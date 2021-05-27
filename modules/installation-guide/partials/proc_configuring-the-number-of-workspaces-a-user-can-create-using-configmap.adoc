@@ -1,0 +1,26 @@
+[id="configuring-the-number-of-workspaces-a-user-can-create-using-configmap_{context}"]
+= Configuring the number of workspaces a user can create using ConfigMap
+
+This procedure describes how to configure the number of workspaces a user can create using ConfigMap. 
+
+.Prerequisites
+* An instance of `{prod-short}` installed using ConfigMap.
+* Determine the values of the following placeholders:
++ 
+[cols="1,2"]
+|===
+| `_<product-namespace>_`
+| The namespace of the product. The default option for `{platforms-namespace}` is `{prod-namespace}`.
+
+| `_<number-of-workspaces>_`
+| The number of workspaces a user can create. Set the value to `-1` to enable users to create an unlimited number of workspaces. Set it to a precise positive value to enable users to create that many workspaces. The default value is `-1`.
+|===
+
+.Procedure
+. Configure the number of workspaces a user can create:
++
+[subs="+quotes,+attributes"]
+----
+$ helm upgrade che -n <product-namespace> --set \
+che.limits.userWorkspacesCount=<number-of-workspaces>
+----
