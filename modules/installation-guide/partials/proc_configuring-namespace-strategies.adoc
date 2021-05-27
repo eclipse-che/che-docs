@@ -150,6 +150,32 @@ subjects:
 On {kubernetes}, `che` ServiceAccount must have a cluster-wide `list` and `get` `namespaces` permissions as well as an `admin` role in target namespace.
 ====
 
+[#creating-namespace-with-server-sa]
+== Creating a {orch-namespace} with `che` ServiceAccount
+In situation when users dosn't have enaugh permissions to create a {orch-namespace} and <<pre-creating-namespace>>
+is not sutable - the {orch-namespace} can be created with help of `che` ServiceAccount.
+
+.Prerequisites:
+
+* An instance of {prod} running on OpenShift with enabled OAuth support.
+* OpenShift OAuth with a `self-provisioner` cluster role is not linked to the `system:authenticated:oauth` group or another form of permissions that doesn't allow users to create new {orch-namespace}. 
+
+.Procedure
+
+
+{prod-short} deployed using the {prod-short} Operator on OpenShift defaults to user's ServiceAccount. To change to `che` ServiceAccount:
+
+. Update the `CheCluster` Custom Resource (CR) to set the pass:[CHE_INFRA_OPENSHIFT_PROJECT_INIT__WITH__SERVER_SA] property to `true`:
++
+[source, yaml]
+----
+spec:
+ server:
+   customCheProperties:
+      CHE_INFRA_OPENSHIFT_PROJECT_INIT__WITH__SERVER_SA: "true"
+----
+
+
 == Labeling the namespaces
 {prod-short} updates the workspace's {orch-namespace} on workspace startup by adding the labels defined in `CHE_INFRA_KUBERNETES_NAMESPACE_LABELS`. To do so, `che` ServiceAccount has to have the following cluster-wide permissions to `update` and `get` `namespaces`:
 
@@ -192,3 +218,9 @@ roleRef:
 ====
 {prod-short} does not fail to start a workspace for lack of permissions, it only logs the warning. If you see the warnings in {prod-short} logs, consider disabling the feature with setting `CHE_INFRA_KUBERNETES_NAMESPACE_LABEL=false`.
 ====
+
+.Additional resources
+
+* For the list of all parameters available in the `CheCluster` Custom Resource, see xref:configuring-the-che-installation.adoc[].
+
+* For the list of all parameters available to configure `customCheProperties`, see xref:installation-guide:advanced-configuration-options-for-the-che-server-component.adoc#{prod-id-short}-server-component-system-properties-reference_{context}[{prod-short} server component system properties reference].
