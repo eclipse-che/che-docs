@@ -1,0 +1,76 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-on-codeready-containers
+
+[id="using-{prod-cli}-to-install-{prod-id-short}-on-codeready-containers_{context}"]
+= Using {prod-cli} to install {prod-short} on CodeReady Containers 
+
+This section describes how to install {prod-short} on CodeReady Containers using {prod-cli}.
+
+.Prerequisites
+
+* The `{prod-cli}` management tool is available. See xref:using-the-chectl-management-tool.adoc[].
+* An installation of CodeReady Containers. See link:https://cloud.redhat.com/openshift/install/crc/installer-provisioned[Installing CodeReady Containers].
+
+.Procedure
+
+. To configure your host machine for CodeReady Containers, run:
++
+----
+$ crc setup
+----
+
+. To remove any previous cluster, run:
++
+----
+$ crc delete
+----
+
+. To start the CodeReady Containers virtual machine with at least 12 GB of RAM, run:
++
+----
+$ crc start --memory 12288
+----
+
+. When prompted, supply your user pull secret.
+
+. Take note of the password for the user `kubeadmin` that is displayed at the end of the installation.
+
+. To use the `oc` command line interface, run: 
++
+----
+$ eval $(crc oc-env)
+----
+
+. To log in with the username `developer` and the password `developer`, run:
++
+----
+$ oc login --username="developer" --password="developer"
+----
+
+. To log out, run:
++
+----
+$ oc logout
+----
+
+. To log in with the `kubeadmin` username and the corresponding `__<kubeadmin-password>__` password, run:
++
+[subs="+quotes"]
+----
+$ oc login --username="kubeadmin" --password="__<kubeadmin-password>__"
+----
+
+. To install {prod-shot} on CodeReady Containers, run:
++
+[subs="+attributes"]
+----
+$ {prod-cli} server:deploy --platform crc --multiuser
+----
++
+NOTE: Omit the `--multiuser` option to install a single-user instance of {prod-short}.
+
+.Additional resources
+
+* link:https://access.redhat.com/documentation/en-us/red_hat_codeready_containers/[Product documentation for Red Hat CodeReady Containers].
+* link:https://github.com/code-ready/crc[CodeReady Containers on GitHub].
