@@ -5,7 +5,7 @@ This procedure describes how to run more than one workspace simultaneously using
 
 .Prerequisites
 * An instance of `{prod-short}` installed using ConfigMap.
-* The combination of PVC strategy and access mode meets the following criteria:
+Each new workspace creates at least one new mount point to the storage (PV), in write mode. The default `common` storage strategy in `ReadWriteOnce` access mode reuses the same PV to physically store all data from multiple volumes of all workspaces of the same user, and doesn't support multiple mount points. Therefore to increase the number of simultaneously running workspaces, the combination of PVC strategy and access mode must meet the following criteria:
 +
 --
 ** `ReadWriteMany` access mode and an arbitrary PVC strategy
