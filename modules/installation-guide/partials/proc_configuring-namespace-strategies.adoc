@@ -1,8 +1,8 @@
 
 [id="configuring-namespace-strategies_{context}"]
-= Configuring {orch-namespace} strategies
+= Configuring workspace target {orch-namespace}
 
-The {platforms-namespace} where a new workspace Pod is deployed depends on the {prod-short} server configuration. By default, every workspace is deployed in a distinct {platforms-namespace}, but the user can configure the {prod-short} server to deploy all workspaces in one specific {platforms-namespace}. The name of a {platforms-namespace} must be provided as a {prod-short} server configuration property and cannot be changed at runtime.
+The {platforms-namespace} where a new workspace Pod is deployed depends on the {prod-short} server configuration. By default, every workspace is deployed in an individual {orch-namespace} per user. The name of a {platforms-namespace} must be provided as a {prod-short} server configuration property or pre-created by {prod-short} administrator.
 
 ifeval::["{project-context}" == "che"]
 NOTE: The term _{orch-namespace}_ ({kubernetes}) is used interchangeably with _project_ (OpenShift).
@@ -25,7 +25,7 @@ spec:
 
 
 ifeval::["{project-context}" == "che"]
-With **Helm** installer, Kubernetes namespaces strategies are configured using `global.cheWorkspacesNamespace` property.
+With **Helm** installer, {orch-namespace} strategies are configured using `global.cheWorkspacesNamespace` property.
 
 *Helm*
 [subs="+quotes,+attributes"]
@@ -44,11 +44,7 @@ endif::[]
 
 NOTE: The underlying environment variable that {prod-short} server uses is `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT`.
 
-WARNING: `CHE_INFRA_KUBERNETES_NAMESPACE` and `CHE_INFRA_OPENSHIFT_PROJECT` are legacy variables. Keep these variables unset for a new installations. Changing these variables during an update can lead to data loss.
-
-WARNING: By default, only one workspace in the same {orch-namespace} can be running at one time. See xref:running-more-than-one-workspace-at-a-time.adoc[].
-
-WARNING: The {orch-namespace} strategies other than per user are deprecated and are subject to removal.
+WARNING: By default, only one workspace in the same {orch-namespace} can be running at one time. See xref:configuring-the-number-of-workspaces-a-user-can-run.adoc[].
 
 [WARNING]
 ====
@@ -67,7 +63,7 @@ Use <<pre-creating-namespace>> when:
 
 pass:[<!-- vale Vale.Terms = NO -->]
 
-* OpenShift OAuth with a `self-provisioner` cluster role is not linked to the`system:authenticated:oauth` group
+* OpenShift OAuth with a `self-provisioner` cluster role is not linked to the `system:authenticated:oauth` group
 
 pass:[<!-- vale Vale.Terms = YES -->]
 
