@@ -61,7 +61,9 @@ parse_content() {
   fi
   parse_section "metrics" "\`CheCluster\` Custom Resource \`metrics\` settings, related to the {prod-short} metrics collection used by {prod-short}."
   parse_section "status" "\`CheCluster\` Custom Resource \`status\` defines the observed state of {prod-short} installation"
+  BUFF="pass:[<!-- vale off -->]
 
+$BUFF" 
   echo "$BUFF" > "$OUTPUT_PATH"
   echo "Processing done. Output file is $OUTPUT_PATH" >&2
 }
