@@ -37,7 +37,7 @@ endif::[]
 +
 [subs="+quotes,+attributes"]
 ----
-$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
 '[{"op": "replace", "path": "/spec/server/useInternalClusterSVCNames", "value": false}]'
 ----
 
@@ -45,14 +45,14 @@ $ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json 
 +
 [subs="+quotes,+attributes"]
 ----
-$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json -p \
+$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
 '[{"op": "replace", "path": "/spec/server/useInternalClusterSVCNames", "value": true}]'
 ----
 
 ifeval::["{project-context}" == "che"]
 * For {prod-short} deployed using a Helm Chart
 
-. Clone the https://github.com/eclipse/che[che] project
+. Clone the https://github.com/eclipse-che/che-server[{prod-short} server] project
 . Go to `deploy/kubernetes/helm/che` directory
 . Update the `global.useInternalClusterSVCNames` property. To do that, add the following option to the `helm upgrade` command:
 - To use external {platforms-ingress} in inter-component communication:
