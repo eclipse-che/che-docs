@@ -150,29 +150,30 @@ subjects:
 On {kubernetes}, `che` ServiceAccount must have a cluster-wide `list` and `get` `namespaces` permissions as well as an `admin` role in target namespace.
 ====
 
-[#creating-namespace-with-server-sa]
-== Creating a {orch-namespace} with `che` ServiceAccount
-In situation when users dosn't have enough permissions to create a {orch-namespace} and <<pre-creating-namespace>>
-is not suitable - the {orch-namespace} can be created with help of `che` ServiceAccount.
+[#disabling-creating-namespace-with-server-sa]
+== Disabling creation of {orch-namespace} with `che` ServiceAccount on OpenShift with OAuth
+This section describes how to disable creating  user's {orch-namespace} on behalf of `che` ServiceAccount on OpenShift with enabled OAuth.
+
+
 
 .Prerequisites:
 
 * An instance of {prod} running on OpenShift with enabled OAuth support.
-* OpenShift OAuth with a `self-provisioner` cluster role is not linked to the `system:authenticated:oauth` group or another form of permissions that doesn't allow users to create new {orch-namespace}. 
+
 
 .Procedure
 
 
-{prod-short} deployed using the {prod-short} Operator on OpenShift defaults to user's ServiceAccount. To change to `che` ServiceAccount:
+{prod-short} deployed using the {prod-short} Operator on OpenShift defaults to `che` ServiceAccount. To change to users ServiceAccount:
 
-. Update the `CheCluster` Custom Resource (CR) to set the pass:[CHE_INFRA_OPENSHIFT_PROJECT_INIT__WITH__SERVER_SA] property to `true`:
+. Update the `CheCluster` Custom Resource (CR) to set the pass:[CHE_INFRA_OPENSHIFT_PROJECT_INIT__WITH__SERVER_SA] property to `false`:
 +
 [source, yaml]
 ----
 spec:
  server:
    customCheProperties:
-      CHE_INFRA_OPENSHIFT_PROJECT_INIT__WITH__SERVER_SA: "true"
+      CHE_INFRA_OPENSHIFT_PROJECT_INIT__WITH__SERVER_SA: "false"
 ----
 
 
