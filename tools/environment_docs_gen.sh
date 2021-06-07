@@ -21,8 +21,8 @@ OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/system-variables.a
 
 fetch_current_version() {
   echo "Trying to read current product version from $PARENT_PATH/antora-playbook.yml..." >&2
-  
-  CURRENT_VERSION=$(grep 'prod-ver:' "$PARENT_PATH/antora-playbook.yml" | cut -d: -f2 | sed  's/ //g').x
+  # remove spaces, single and double quotes from the value of prod-ver, then append .x
+  CURRENT_VERSION=$(grep 'prod-ver:' "$PARENT_PATH/antora-playbook.yml" | cut -d: -f2 | tr -d " '\"").x
   if [ $? -ne 0 ]; then
     echo "Failure: Cannot read version from $PARENT_PATH/antora-playbook.yml" >&2
     exit 1
@@ -36,13 +36,13 @@ fetch_current_version() {
 
 fetch_conf_files_content() {
   echo "Fetching property files content from GitHub..." >&2
-  CHE_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse/che/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/che.properties"
+  CHE_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse-che/che-server/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/che.properties"
   RAW_CONTENT=$(curl -sf "$CHE_PROPERTIES_URL")
   if [ $? -ne 0 ]; then
     echo "Failure: Cannot read che.properties from URL $CHE_PROPERTIES_URL" >&2
     exit 1
   fi
-  MULTIUSER_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse/che/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/multiuser.properties"
+  MULTIUSER_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse-che/che-server/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/multiuser.properties"
   RAW_CONTENT="$RAW_CONTENT $(curl -sf "$MULTIUSER_PROPERTIES_URL")"
   if [ $? -ne 0 ]; then
     echo "Failure: Cannot read multiuser.properties from URL $MULTIUSER_PROPERTIES_URL" >&2
@@ -61,7 +61,7 @@ parse_content() {
       TOPIC="${LINE//#}"                                # read topic, stripping #s
       TOPIC="${TOPIC/ }"                                # trim first space
       TOPICID="${TOPIC// /-}"                                # create topic ID
-      TOPICID="$(sed 's|-\{2,\}|-|g; s|[\"\/=,.<>?!;:()*]||g; s|\(.*\)|[id="\L\1"]|' <<< $TOPICID)"
+      TOPICID="$(sed 's|-\{2,\}|-|g; s|[\"\/=,.<>?!;:()*]||g; s|\(.*\)|[id="\L\1"]|;s|prod-short|prod-id-short|' <<< $TOPICID)"
                                                         # replace spaces with dashes, create topic ID, convert to lowercase chars
                                                         # remove non alpha-num, wrap in AsciiDoc ID markup
       echo "   Found begin of topic: $TOPIC" >&2
@@ -91,6 +91,9 @@ parse_content() {
       DESCR_BUFF="$(sed -E 's|https://www.keycloak.org/docs/3.3/server_admin/topics/identity-broker/social/openshift.html|https://www.keycloak.org/docs/latest/server_admin/index.html#openshift-4|' <<< $DESCR_BUFF)"   # Fix broken link
       DESCR_BUFF="$(sed -E 's|k8s|{orch-name}|g' <<< $DESCR_BUFF)"   # k8s to {orch-name}
       DESCR_BUFF="$(sed -E 's| openshift| {ocp}|g' <<< $DESCR_BUFF)"   # k8s to {orch-name}
+      DESCR_BUFF="$(sed -E 's|che-host|prod-host|g' <<< $DESCR_BUFF)"   # fix missing attribute che-host
+      DESCR_BUFF="$(sed -E 's|\{WORKSPACE_ID|\\\{WORKSPACE_ID|g' <<< $DESCR_BUFF)"   # fix missing attribute WORKSPACE_ID
+      DESCR_BUFF="$(sed -E 's|\{generated_8_chars|\\\{generated_8_chars|g' <<< $DESCR_BUFF)"   # fix missing attribute generated_8_chars
 
       DESCR_BUFF="${DESCR_BUFF/ }"                      # trim first space
       BUFF="$BUFF $ENV,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
