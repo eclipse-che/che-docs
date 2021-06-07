@@ -36,13 +36,13 @@ fetch_current_version() {
 
 fetch_conf_files_content() {
   echo "Fetching property files content from GitHub..." >&2
-  CHE_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse/che/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/che.properties"
+  CHE_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse-che/che-server/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/che.properties"
   RAW_CONTENT=$(curl -sf "$CHE_PROPERTIES_URL")
   if [ $? -ne 0 ]; then
     echo "Failure: Cannot read che.properties from URL $CHE_PROPERTIES_URL" >&2
     exit 1
   fi
-  MULTIUSER_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse/che/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/multiuser.properties"
+  MULTIUSER_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse-che/che-server/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/multiuser.properties"
   RAW_CONTENT="$RAW_CONTENT $(curl -sf "$MULTIUSER_PROPERTIES_URL")"
   if [ $? -ne 0 ]; then
     echo "Failure: Cannot read multiuser.properties from URL $MULTIUSER_PROPERTIES_URL" >&2
