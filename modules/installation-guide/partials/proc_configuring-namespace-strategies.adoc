@@ -102,8 +102,8 @@ endif::[]
 == Handling incompatible usernames or user IDs
 
 {prod-short} server automatically checks usernames and IDs for compatibility with {orch-name} objects naming convention before creating a {orch-namespace} from a template.
-Incompatible username or IDs are reduced to the nearest valid name by replacing groups of unsuitable symbols with the `-` symbol. To avoid collisions,
-a random 6-symbol suffix is added and the result is stored in preferences for reuse.
+Incompatible usernames or IDs are reduced to the nearest valid name by replacing groups of unsuitable symbols with the `-` symbol. To avoid collisions,
+a random 6-symbol suffix is added, and the result is stored in preferences for reuse.
 [#pre-creating-namespace]
 == Pre-creating a {orch-namespace} for each user
 
@@ -123,12 +123,12 @@ To configure the labels, set the `CHE_INFRA_KUBERNETES_NAMESPACE_LABELS` to desi
 
 [WARNING]
 ====
-Avoid creating multiple namespaces for single user. It may lead to undefined behavior.
+Do not create multiple namespaces for a single user. It may lead to undefined behavior.
 ====
 
 [IMPORTANT]
 ====
-On OpenShift with OAuth, target user must have `admin` role privileges in target namespace:
+On OpenShift with OAuth, the target user must have `admin` role privileges in the target namespace:
 ----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -190,5 +190,5 @@ roleRef:
 
 [NOTE]
 ====
-{prod-short} does not fail to start a workspace for lack of permissions, it only logs the warning. If you see the warnings in {prod-short} logs, consider disabling the feature with setting `CHE_INFRA_KUBERNETES_NAMESPACE_LABEL=false`.
+A lack of permissions does not prevent a {prod-short} workspace from starting, it only logs the warning. If you see the warnings in {prod-short} logs, consider disabling the feature by defining `CHE_INFRA_KUBERNETES_NAMESPACE_LABEL=false`.
 ====
