@@ -101,9 +101,8 @@ endif::[]
 
 == Handling incompatible usernames or user IDs
 
-{prod-short} server automatically checks usernames and IDs for compatibility with {orch-name} objects naming convention before creating a {orch-namespace} from a template.
-Incompatible usernames or IDs are reduced to the nearest valid name by replacing groups of unsuitable symbols with the `-` symbol. To avoid collisions,
-a random 6-symbol suffix is added, and the result is stored in preferences for reuse.
+{prod-short} server automatically checks usernames and IDs for compatibility with {orch-name} objects naming convention before creating a {orch-namespace} from a template. Incompatible usernames or IDs are reduced to the nearest valid name by replacing groups of unsuitable symbols with the `-` symbol. The addition of a random 6-symbol suffix prevents ID from collisions. The result is stored in preferences for reuse.
+
 [#pre-creating-namespace]
 == Pre-creating a {orch-namespace} for each user
 
@@ -151,6 +150,7 @@ On {kubernetes}, `che` ServiceAccount must have a cluster-wide `list` and `get` 
 ====
 
 == Labeling the namespaces
+
 {prod-short} updates the workspace's {orch-namespace} on workspace startup by adding the labels defined in `CHE_INFRA_KUBERNETES_NAMESPACE_LABELS`. To do so, `che` ServiceAccount has to have the following cluster-wide permissions to `update` and `get` `namespaces`:
 
 ----
