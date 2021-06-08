@@ -14,13 +14,27 @@
 * The `helm` tool is available, with version 2.15 or higher. See link:https://helm.sh/[Helm].
 
 .Procedure
-
-* To install {prod-short} on {k8s-platform}, run the following `{prod-cli}` command:
+ifeval::["{k8s-platform}" == "Google Cloud Platform"]
+. Prepare the helmchart template `patch.yaml` file for the proper Dashboard ingress path exposure:
++
+----
+$ cat >patch.yaml<<EOF
+> dashboard:
+>   ingressPath: /dashboard/*
+> EOF
+----
+endif::[]
+. Run the following `{prod-cli}` command to install {prod-short} on {k8s-platform}:
 +
 [subs="+attributes"]
 ----
+ifeval::["{k8s-platform}" == "Google Cloud Platform"]
+$ {prod-cli} server:deploy --installer=helm --platform=k8s --domain={domain} --multiuser --helm-patch-yaml patch.yaml
+endif::[]
+ifeval::["{k8s-platform}" != "Google Cloud Platform"]
 $ {prod-cli} server:deploy --installer=helm --platform=k8s --domain={domain} --multiuser
-› Current {kubernetes} context: 'minikube'
+endif::[]
+› Current {kubernetes} context: 'current-context'
   ✔ Verify {kubernetes} API...OK
   ✔ 👀  Looking for an already existing {prod} instance
     ✔ Verify if {prod} is deployed into namespace "{prod-namespace}"...it is not
