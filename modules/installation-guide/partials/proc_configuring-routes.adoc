@@ -24,27 +24,27 @@ spec:
     devfileRegistryRoute:
       labels: <labels> <1>
       domain: <domain> <2>
-      annotations:
-        annotation_1: value_1
-        annotation_2: value_2
+      annotations:     <3>
+        key1: value1
+        key2: value2
     pluginRegistryRoute:
       labels: <labels> <1>
       domain: <domain> <2>
-      annotations:
-        annotation_1: value_1
-        annotation_2: value_2
+      annotations:     <3>
+        key1: value1
+        key2: value2
     dashboardRoute:
       labels: <labels> <1>
       domain: <domain> <2>
-      annotations:
-        annotation_1: value_1
-        annotation_2: value_2
+      annotations:     <3>
+        key1: value1
+        key2: value2
     cheServerRoute:
       labels: <labels> <1>
       domain: <domain> <2>
-      annotations:
-        annotation_1: value_1
-        annotation_2: value_2
+      annotations:     <3>
+        key1: value1
+        key2: value2
     customCheProperties:
       CHE_INFRA_OPENSHIFT_ROUTE_LABELS: <labels> <1>
       CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX: <domain> <2>
@@ -52,12 +52,13 @@ spec:
     identityProviderRoute:
       labels: <labels> <1>
       domain: <domain> <2>
-      annotations:
-        annotation_1: value_1
-        annotation_2: value_2
+      annotations:     <3>
+        key1: value1
+        key2: value2
 ----
 <1> comma separated list of labels that are used by the target ingress controller to filter the set of Routes to service
 <2> DNS name serviced by the target ingress controller
+<3> unstructured key value map stored with a resource
 
 * For a  new `{prod-cli}` installation:
 +
@@ -77,27 +78,27 @@ spec:
     devfileRegistryRoute:
       labels: <labels> <1>
       domain: <domain> <2>
-      annotations:
-        annotation_1: value_1
-        annotation_2: value_2
+      annotations:     <3>
+        key1: value1
+        key2: value2
     pluginRegistryRoute:
       labels: <labels> <1>
       domain: <domain> <2>
-      annotations:
-        annotation_1: value_1
-        annotation_2: value_2
+      annotations:     <3>
+        key1: value1
+        key2: value2
     dashboardRoute:
       labels: <labels> <1>
       domain: <domain> <2>
-      annotations:
-        annotation_1: value_1
-        annotation_2: value_2
+      annotations:     <3>
+        key1: value1
+        key2: value2
     cheServerRoute:
       labels: <labels> <1>
       domain: <domain> <2>
-      annotations:
-        annotation_1: value_1
-        annotation_2: value_2
+      annotations:     <3>
+        key1: value1
+        key2: value2
     customCheProperties:
       CHE_INFRA_OPENSHIFT_ROUTE_LABELS: <labels> <1>
       CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX: <domain> <2>
@@ -105,18 +106,21 @@ spec:
     identityProviderRoute:
       labels: <labels> <1>
       domain: <domain> <2>
-      annotations:
-        annotation_1: value_1
-        annotation_2: value_2
+      annotations:     <3>
+        key1: value1
+        key2: value2
 ----
 <1> comma separated list of labels that are used by the target ingress controller to filter the set of Routes to service
 <2> DNS name serviced by the target ingress controller
+<3> unstructured key value map stored with a resource
 
 * For already existing {prod-short} installation:
 +
 . Update `{prod-checluster}` CR using the `{orch-cli}` tool:
 +
 .. To configure labels:
++
+IMPORTANT: Use comma to separate labels: `key1=value1,key2=value2`
 +
 [subs="+quotes,+attributes"]
 ----
@@ -206,7 +210,7 @@ $ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json 
 +
 .. To configure annotations:
 +
-IMPORTANT: Use object to specify annotations: `{"annotation_1": "value_1", "annotation_2" : "value_2"}`
+IMPORTANT: Use object to specify annotations: `{"key1": "value1", "key2" : "value2"}`
 +
 [subs="+quotes,+attributes"]
 ----
