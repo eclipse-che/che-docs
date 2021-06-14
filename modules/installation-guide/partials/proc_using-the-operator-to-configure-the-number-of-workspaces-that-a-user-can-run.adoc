@@ -1,11 +1,11 @@
 
-[id="configuring-the-number-of-workspaces-a-user-can-run-using-the-operator_{context}"]
-= Configuring the number of workspaces a user can run using the Operator
+[id="using-the-operator-to-configure-the-number-of-workspaces-that-a-user-can-run_{context}"]
+= Using the Operator to configure the number of workspaces that a user can run
 
-This procedure describes how to run more than one workspace simultaneously using the Operator. 
+This procedure describes how to run more than one workspace simultaneously by using the Operator. 
 
 .Prerequisites
-* An instance of `{prod-short}` installed using the Operator.
+* An instance of `{prod-short}` installed by using the Operator.
 Each new workspace creates at least one new mount point to the storage (PV), in write mode. The default `common` storage strategy in `ReadWriteOnce` access mode reuses the same PV to physically store all data from multiple volumes of all workspaces of the same user, and doesn't support multiple mount points. Therefore to increase the number of simultaneously running workspaces, the combination of PVC strategy and access mode must meet the following criteria:
 +
 --
@@ -14,12 +14,12 @@ Each new workspace creates at least one new mount point to the storage (PV), in 
 --
 +
 For more information, see xref:configuring-storage-strategies.adoc[].
-* Determine the value of the following placeholder:
+* You have determined the value of the following placeholder:
 +
 [cols="1,2"]
 |===
 | `_<number-of-workspaces>_`
-| The number of workspaces a user can run simultaneously. The default value is `1`. If the value is `-1`, an unlimited number of workspaces can run per user. If it is a precise positive value, that many workspaces can run per user.
+| The number of workspaces that a user can run simultaneously. If the value is `-1`, an unlimited number of workspaces can run per user. If the value is a positive integer, the users can run that many workspaces. The default value is `1`.
 |===
 
 .Procedure
