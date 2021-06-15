@@ -1,30 +1,29 @@
 [id="using-configmap-to-configure-the-number-of-workspaces-that-a-user-can-run_{context}"]
 = Using ConfigMap to configure the number of workspaces that a user can run 
 
-This procedure describes how to run more than one workspace simultaneously by using ConfigMap. 
+This procedure describes how to use ConfigMap to run more than one workspace simultaneously. By running multiple workspaces, users can use different work environments simultaneously.  
 
 .Prerequisites
 
-* An instance of `{prod-short}` installed by using ConfigMap and the default namespace `{prod-namespace}`.
-Each new workspace creates at least one new mount point to the storage (PV), in write mode. The default `common` storage strategy in `ReadWriteOnce` access mode reuses the same PV to physically store all data from multiple volumes of all workspaces of the same user, and doesn't support multiple mount points. Therefore to increase the number of simultaneously running workspaces, the combination of PVC strategy and access mode must meet the following criteria:
+* You have installed an instance of `{prod-short}` by using ConfigMap and the default namespace `{prod-namespace}`.
+* The combination of PVC strategy and access mode meets the following criteria:
 +
 --
 ** `ReadWriteMany` access mode and an arbitrary PVC strategy
 ** `ReadWriteOnce` access mode and `per-workspace` or `unique` PVC strategy
 --
 +
-For more information, see xref:configuring-storage-strategies.adoc[].
-* You have determined the value of the following placeholder:
-+ 
-[cols="1,2"]
-|===
-| `_<number-of-workspaces>_`
-| The number of workspaces that a user can run simultaneously. If the value is `-1`, an unlimited number of workspaces can run per user. If the value is a positive integer, the users can run that many workspaces. The default value is `1`.
-|===
+See xref:configuring-storage-strategies.adoc[].
+* You have determined the value of the `_<number-of-workspaces>_` placeholder.
++
+[NOTE]
+====
+If the value is `-1`, an unlimited number of workspaces can run per user. If the value is a positive integer, users can run a number of workspaces equal to the integer. The default value is `1`.
+====
 
 .Procedure
 
-. Configure the number of workspaces that a user can run simultaneously:
+. To configure the number of workspaces that a user can run simultaneously, run:
 +
 [subs="+quotes,+attributes"]
 ----
