@@ -32,7 +32,7 @@ $ cd {image-puller-repository-name}
 +
 [subs="+quotes,+attributes"]
 ----
-$ {orch-cli} create namespace k8s-image-puller
+$ {orch-cli} create namespace {image-puller-namespace}
 ----
 
 . To configure the installation, edit the `deploy/helm/values.yaml` file using following parameters:
@@ -62,7 +62,7 @@ $ {orch-cli} create namespace k8s-image-puller
 |The name of the ConfigMap to create 
 |`k8s-image-puller`
 
-|configMap.images
+|`configMap.images`
 |The value of IMAGES in the ConfigMap
 |none
 
@@ -76,7 +76,7 @@ $ {orch-cli} create namespace k8s-image-puller
 
 |`configMap.cachingMemoryLimit` 
 |The value of `CACHING_MEMORY_LIMIT` in the ConfigMap 
-|`"20Mi"``
+|`"20Mi"`
 
 |`configMap.cachingCpuRequest` 
 |The value of `CACHING_CPU_REQUEST` in the ConfigMap 
@@ -95,7 +95,7 @@ $ {orch-cli} create namespace k8s-image-puller
 +
 [subs="+attributes"]
 ----
-$ helm install {image-puller-deployment-name} --namespace k8s-image-puller deploy/helm
+$ helm install {image-puller-deployment-name} --namespace {image-puller-namespace} deploy/helm
 ----
 +
 [NOTE]
@@ -109,7 +109,7 @@ Use the `--set property.name=__<value>__` parameter to override the values set i
 +
 [source%nowrap,dummy,subs="+quotes,+attributes"]
 ----
-$ {orch-cli} get deployment,daemonset,pod --namespace k8s-image-puller
+$ {orch-cli} get deployment,daemonset,pod --namespace {image-puller-namespace}
 NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
 deployment.apps/{image-puller-deployment-name}   1/1     1            1           4m21s
 
@@ -136,15 +136,15 @@ data:
   DAEMONSET_NAME: {image-puller-deployment-name}
   IMAGES: java11-maven=quay.io/eclipse/che-java11-maven:nightly; che-theia=eclipse/che-theia:next;
     java-plugin-runner=eclipse/che-remote-plugin-runner-java8:latest;
-  NAMESPACE: k8s-image-puller
+  NAMESPACE: {image-puller-namespace}
   NODE_SELECTOR: '{}'
 kind: ConfigMap
 metadata:
   creationTimestamp: "2020-02-17T22:15:22Z"
   name: k8s-image-puller
-  namespace: k8s-image-puller
+  namespace: {image-puller-namespace}
   resourceVersion: "3078"
-  selfLink: /api/v1/namespaces/k8s-image-puller/configmaps/k8s-image-puller
+  selfLink: /api/v1/namespaces/{image-puller-namespace}/configmaps/k8s-image-puller
   uid: 71bc5ce4-d095-468e-ab7b-23c1e0a36638
 ----
 
