@@ -10,10 +10,15 @@
 set -e
 
 vale -v 
-echo "# Breakdown of vale errors per module:"
 
+echo "= Breakdown of vale infringements per module"
 for module in modules/*
     do
-    printf '%s: ' "$module"
-    vale --minAlertLevel=error --output=line "$module" | wc -l
+    printf "== %s\n" "$module"
+    report=".cache/vale-report-${module#modules/}.json"
+    vale --minAlertLevel=suggestion --output=JSON --no-exit "$module" > "$report"
+    printf "=== Severity\n"
+    jq .[][].Severity "$report" | sort | uniq -c | sort -nr 
+    printf "=== Check\n"
+    jq .[][].Check "$report" | sort | uniq -c | sort -nr
 done
