@@ -1,0 +1,28 @@
+
+[id="{prod-id-short}-architecture-overview-with-dw_{context}"]
+= {prod-short} architecture with the DevWorkspace
+
+include::partial$con_che-with-dw-warning.adoc[]
+
+This section describes the DevWorkspace based architecture of {prod}. {prod} default workspace engine is still the {prod-id-short}-server but from v.7.28.0 of {prod-short} an administrator can configure an alternative workspace engine: the https://github.com/devfile/devworkspace-operator[DevWorkspace {orch-name} Operator]. 
+
+The DevWorkspace based architecture will eventually become the default. Until then an administrator has to explicitly configure {prod-short} to use the DevWorkspace following the instructions in xref:installation-guide:enabling-dev-workspace-engine.adoc[this article].
+
+When {prod} is configured to use the new engine, {prod-short} workspaces are valid {orch-name} objects. They are managed through the {orch-name} API and secured through https://kubernetes.io/docs/reference/access-authn-authz/rbac/[{orch-name} role-based access control (RBAC)].
+
+{prod} components, with the DevWorkspace Operator enabled, are:
+
+* **DevWorkspace Operator**: the DevWorkspace Custom Resource Definition and the associated controller that extend {orch-name} and provide DevWorkpaces native support.
+* **{prod-short} server components**: always-running services on top of the DevWorkspace Operator for multi-tenancy and easier workspaces management.
+* **User workspaces**: container-based IDEs that the server stops when the user stops coding.
+
+.High-level {prod-short} architecture
+image::administration-guide:architecture/{project-context}-architecture-with-dw.png[]
+
+When {prod-short} is installed on a {orch-name} cluster, the DevWorkspace Operator and the {prod} server components are deployed.
+
+{prod-short} workspaces are deployed and stopped at user request. {prod-short} workspaces are automatically stopped after 30 minutes (configurable) of inactivity.
+
+.Additional resources
+
+* xref:administration-guide:che-workspace-controller-with-dw.adoc[]
