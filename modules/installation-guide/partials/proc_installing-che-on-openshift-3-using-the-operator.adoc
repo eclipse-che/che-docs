@@ -34,7 +34,9 @@ This approach is only supported for use with {ocp} and {osd} version 3.11, but a
 
 * To apply settings that the main {prod-cli} command-line parameters cannot set, prepare a configuration file `operator-cr-patch.yaml` that will override the default values in the `CheCluster` Custom Resource used by the Operator. See xref:configuring-the-che-installation.adoc[].
 
-* __<namespace>__ represents the project of the target installation.
+* Use the {prod-namespace} namespace as the default installation project.
+
+* Configure OpenShift to pull images from `registry.redhat.com`. See link:https://access.redhat.com/RegistryAuthentication[Red Hat Container Registry Authentication].
 
 .Procedure
 
@@ -53,22 +55,12 @@ $ oc version
 oc v3.11.0+0cbc58b
 ----
 
-. Run the following command to create the {prod-short} instance
-+
-** In the {prod-namespace} {orch-namespace}:
-+
-[subs="+quotes,+attributes",options="nowrap"]
-----
-$ {prod-cli} server:deploy -n {prod-namespace} -p openshift
-----
-
-** In the default {orch-namespace} called {prod-namespace}:
+. Run the following command to create the {prod-short} instance in the default {orch-namespace} called {prod-namespace}:
 +
 [subs="+quotes,+attributes",options="nowrap"]
 ----
 $ {prod-cli} server:deploy -p openshift
 ----
-
 
 .Verification steps
 
