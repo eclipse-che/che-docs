@@ -2,6 +2,8 @@ pass:[<!-- vale IBM.Slash = NO -->]
 
 pass:[<!-- vale IBM.Terms = NO -->]
 
+pass:[<!-- vale Vale.Avoid = NO -->]
+
 // Module included in the following assemblies:
 //
 // configuring-a-workspace-using-a-devfile
@@ -172,19 +174,19 @@ To specify that a workspace requires no editor, use the xref:attribute-editorfre
 
 === Component type: chePlugin
 
-Describes plug-ins in a workspace by defining their `id`. It is allowed to have several `chePlugin` components.
+Describes plug-ins in a workspace by defining their `id`. A devfile is allowed to have multiple `chePlugin` components.
 
 [source,yaml]
 ----
   components:
    - alias: exec-plugin
      type: chePlugin
-     id: eclipse/che-machine-exec-plugin/0.0.1
+     id: eclipse/che-machine-exec-plugin/latest
 ----
 
-Both types above use an ID, which is slash-separated publisher, name and version of plug-in from the {prod-short} Plug-in registry.
+Both types above use an ID, which is slash-separated publisher, name and version of plug-in from the {prod-short} Plug-in registry. Note that the {prod-short} Plug-in registry uses the `latest` version by default for all plug-ins.
 
-List of available {prod-upstream} plug-ins and more information about registry can be found in the link:https://github.com/eclipse-che/che-plugin-registry[{prod-upstream} plug-in registry] GitHub repository.
+To reference a custom plug-in by ID, build and deploy a custom plug-in registry. See xref:administration-guide:building-custom-registry-images.adoc[].
 
 === Specifying an alternative component registry
 
@@ -196,7 +198,7 @@ To specify an alternative registry for the `cheEditor` and `chePlugin` component
    - alias: exec-plugin
      type: chePlugin
      registryUrl: https://my-customregistry.com
-     id: eclipse/che-machine-exec-plugin/0.0.1
+     id: eclipse/che-machine-exec-plugin/latest
 ----
 
 === Specifying a component by linking to its descriptor
@@ -212,6 +214,8 @@ Rather than using the editor or plug-in `id` to specify `cheEditor` or `chePlugi
      reference: https://raw.githubusercontent.com.../plugin/1.0.1/meta.yaml
 ----
 
+The URL in the `reference` field must be publicly accessible and should directly point to a fetchable `meta.yaml` file. URLs that redirect or do not directly point to a `meta.yaml` file will cause the workspace startup to fail. To learn more about publishing `meta.yaml` files, see xref:publishing-metadata-for-a-vs-code-extension.adoc[].
+
 NOTE: It is impossible to mix the `id` and `reference` fields in a single component definition; they are mutually exclusive.
 
 === Tuning chePlugin component configuration
@@ -220,7 +224,7 @@ A chePlugin component may need to be precisely tuned, and in such case, componen
 
 [source,yaml]
 ----
-  id: redhat/java/0.38.0
+  id: redhat/java/latest
   type: chePlugin
   preferences:
      java.jdt.ls.vmargs: '-noverify -Xmx1G -XX:+UseG1GC -XX:+UseStringDeduplication'
@@ -230,7 +234,7 @@ Preferences may also be specified as an array:
 
 [source,yaml]
 ----
-  id: redhat/java/0.38.0
+  id: redhat/java/latest
   type: chePlugin
   preferences:
      go.lintFlags: ["--enable-all", "--new"]
@@ -486,7 +490,7 @@ To specify a container(s) memory limit for `dockerimage`, `chePlugin` or `cheEdi
   components:
    - alias: exec-plugin
      type: chePlugin
-     id: eclipse/che-machine-exec-plugin/0.0.1
+     id: eclipse/che-machine-exec-plugin/latest
      memoryLimit: 1Gi
    - alias: maven
      type: dockerimage
@@ -510,7 +514,7 @@ To specify a container(s) memory request for `dockerimage`, `chePlugin` or `cheE
   components:
    - alias: exec-plugin
      type: chePlugin
-     id: eclipse/che-machine-exec-plugin/0.0.1
+     id: eclipse/che-machine-exec-plugin/latest
      memoryLimit: 1Gi
      memoryRequest: 512M
    - alias: maven
@@ -536,7 +540,7 @@ To specify a container(s) CPU limit for `chePlugin`, `cheEditor` or `dockerimage
   components:
    - alias: exec-plugin
      type: chePlugin
-     id: eclipse/che-machine-exec-plugin/0.0.1
+     id: eclipse/che-machine-exec-plugin/latest
      cpuLimit: 1.5
    - alias: maven
      type: dockerimage
@@ -560,7 +564,7 @@ To specify a container(s) CPU request for `chePlugin`, `cheEditor` or `dockerima
   components:
    - alias: exec-plugin
      type: chePlugin
-     id: eclipse/che-machine-exec-plugin/0.0.1
+     id: eclipse/che-machine-exec-plugin/latest
      cpuLimit: 1.5
      cpuRequest: 0.225
    - alias: maven
@@ -1131,3 +1135,6 @@ attributes:
 pass:[<!-- vale IBM.Slash = YES -->]
 
 pass:[<!-- vale IBM.Terms = YES -->]
+
+pass:[<!-- vale Vale.Avoid = YES -->]
+
