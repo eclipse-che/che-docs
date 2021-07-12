@@ -5,72 +5,75 @@
 [id="using-{prod-cli}-to-install-{prod-id-short}-on-codeready-containers_{context}"]
 = Using {prod-cli} to install {prod-short} on CodeReady Containers 
 
-This section describes how to install {prod-short} on CodeReady Containers using `{prod-cli}`.
+This section describes how to install {prod-short} on CodeReady Containers (CRC) using `{prod-cli}`.
 
 .Prerequisites
 
 * The `{prod-cli}` management tool is available. See xref:using-the-chectl-management-tool.adoc[].
 * An installation of CodeReady Containers. See link:https://cloud.redhat.com/openshift/install/crc/installer-provisioned[Installing CodeReady Containers].
+* The path to the user's CRC pull secrete is known.
 
 .Procedure
 
-. To configure your host machine for CodeReady Containers, run:
+. Initiate the CRC platform:
+
+.. Configure your host machine for CodeReady Containers:
 +
 ----
 $ crc setup
 ----
 
-. To remove any previous cluster, run:
+.. Remove any previous cluster:
 +
 ----
 $ crc delete
 ----
 
-. To start the CodeReady Containers virtual machine with at least 12 GB of RAM, run:
-+
-----
-$ crc start --memory 12288
-----
-
-. When prompted, supply your user pull secret.
-
-. Take note of the password for the user `kubeadmin` that is displayed at the end of the installation.
-
-. To use the `oc` command line interface, run: 
+.. Initiate the `oc` command line interface within CRC: 
 +
 ----
 $ eval $(crc oc-env)
 ----
 
-. To log in with the username `developer` and the password `developer`, run:
+.. Start the CodeReady Containers virtual machine with at least 12 GB of RAM and specify a path towards your pull secret:
 +
+[subs="+quotes"]
 ----
-$ oc login --username="developer" --password="developer"
+$ crc start --memory 12288 --pull-secret-file __<download-path>__pull-secret.txt
 ----
 
-. To log out, run:
-+
-----
-$ oc logout
-----
+.. Take note of the password for the user `kubeadmin`, displayed at the end of the CRC initiation.
 
-. To log in with the `kubeadmin` username and the corresponding `__<kubeadmin-password>__` password, run:
+. Log into OpenShift cluster using the `kubeadmin` username and the corresponding `__<kubeadmin-password>__` password, displayed during the initiation phase of CRC:
 +
 [subs="+quotes"]
 ----
 $ oc login --username="kubeadmin" --password="__<kubeadmin-password>__"
 ----
 
-. To install `{prod-short}` on CodeReady Containers, run:
+. Install the {prod-short} instance using {prod-cli}:
 +
 [subs="+attributes"]
 ----
-$ {prod-cli} server:deploy --platform crc --multiuser
+$ {prod-cli} server:deploy --platform crc
 ----
+
+. Use the Users Dashoard URL to enter the {prod-short} instance.
+
+. Add the {prod-short} self-signed TLS certificate to a browser.
 +
-NOTE: Omit the `--multiuser` option to install a single-user instance of {prod-short}.
+After the installation, a user needs to import the {prod-short} certificated to the browser of their choice. See, xref:end-user-guide:importing-certificates-to-browsers.adoc[].
++
+[NOTE]
+====
+For a {prod-cli} installation, the browser certificate is copied to the `/tmp/cheCA.crt` folder by the `chectl cacert:export` command during the deployment. This is the same certificate that can be extracted from the User Dashboard of a {prod-short} instance, the export of which is described in the link above, and can be used for the direct browser import.
+====
+
+. Enter the user's credentials and start using {prod-short}.
+
 
 .Additional resources
 
 * link:https://access.redhat.com/documentation/en-us/red_hat_codeready_containers/[Product documentation for Red Hat CodeReady Containers].
 * link:https://github.com/code-ready/crc[CodeReady Containers on GitHub].
+
