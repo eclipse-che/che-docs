@@ -22,7 +22,6 @@ The author and the reviewers validate the content of this Pull Request with this
 
 - Any procedure:
   - [ ] Successfully tested.
-  - [ ] Describes a scenario already covered by QE tests, otherwise Che QE team has acknowledged an issue.
 - Any page or link rename:
   - [ ] The page contains a redirection for the previous URL.
   - Propagate the URL change in:
