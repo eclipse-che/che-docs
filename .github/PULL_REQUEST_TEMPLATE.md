@@ -1,4 +1,3 @@
-# Add here a title for your PR
 
 <!-- 
 Please use one of the following prefixes for the title:
