@@ -1,7 +1,18 @@
 #!/bin/bash
 # Release process automation script.
-# Used to create branch/tag, update versions in pom.xml
-# and and trigger release by force pushing changes to the release branch
+# 0. Verify VERSION is defined as X.Y.Z
+# 1. Start from the accurate branch
+#    * If Z = 0, start from master branch.
+#    * Else, start from X.Y.x release branch
+# 2. Update versions in `antora.yml`:
+#    * `prod-ver` = version to release
+#    * Set other `ver` attributes accordingly.
+# 3. Run scripts generating doc
+#    * checluster_docs_gen.sh
+#    * environment_docs_gen.sh
+# 4. Commit and push to the release branch.
+# 5. (If defined) Tag the release
+
 
 # set to 1 to actually trigger changes in the release branch
 TAG_RELEASE=0 
@@ -40,7 +51,7 @@ if [[ ! ${VERSION} ]]; then
 fi
 
 if [[ ${USE_TMP_DIR} -eq 1 ]]; then
-  cd /tmp/ && tmpdir=tmp-${0##*/}-$VERSION && git clone $REPO $tmpdir && cd /tmp/$tmpdir
+  cd /tmp/ && tmpdir=tmp-${0##*/}-$VERSION && git clone $REPO "$tmpdir" && cd "/tmp/$tmpdir"
 fi
 
 # where in other repos we have a VERSION file, here we have an antora.yml file which contains some keys:
@@ -49,16 +60,16 @@ fi
 #    prod-prev-ver: "7.24" [always prod-ver - 1]
 #    prod-ver: "7.25"
 #    prod-ver-patch: "7.25.2"
-playbookfile=antora.yml
 updateYaml() {
+  playbookfile=antora.yml
   NEWVERSION=${1}
   echo "[INFO] update $playbookfile with prod-ver = $NEWVERSION"
 
   [[ $NEWVERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE1="${BASH_REMATCH[1]}"; BASE2="${BASH_REMATCH[2]}"; # for VERSION=7.25.2, get BASE1=7; BASE2=25
   # prod-ver should never go down, only up
-  OLDVERSION=$(cat $playbookfile | yq -r '.asciidoc.attributes."prod-ver-patch"') # existing prod-ver-patch version 7.yy.z
+  OLDVERSION=$(yq -r '.asciidoc.attributes."prod-ver-patch"' $playbookfile) # existing prod-ver-patch version 7.yy.z
   VERSIONS="${OLDVERSION} ${NEWVERSION}"
-  VERSIONS_SORTED="$(echo $VERSIONS | tr " " "\n" | sort -V | tr "\n" " ")"
+  VERSIONS_SORTED="$(echo "$VERSIONS" | tr " " "\n" | sort -V | tr "\n" " ")"
   # echo "Compare '$VERSIONS_SORTED' with '$VERSIONS '"
   if [[ "${VERSIONS_SORTED}" != "${VERSIONS} " ]] || [[ "${OLDVERSION}" == "${NEWVERSION}" ]]; then # note trailing space after VERSIONS is required!
     echo "[WARN] Existing prod-ver ${OLDVERSION} is greater or equal than planned update to ${NEWVERSION}. Version should not go backwards, so nothing to do!"
@@ -78,7 +89,7 @@ replaceFieldSed()
   updateName=$2
   updateVal=$3
   # echo "[INFO] * ${YAMLFILE} ==> ${updateName}: ${updateVal}"
-  sed -i ${YAMLFILE} -r -e "s#(    $updateName: ).+#\1${updateVal}#"
+  sed -i "${YAMLFILE}" -r -e "s#(    $updateName: ).+#\1${updateVal}#"
 }
 
 bump_version() {
@@ -87,11 +98,11 @@ bump_version() {
   NEXTVERSION=$1
   BUMP_BRANCH=$2
 
-  git checkout ${BUMP_BRANCH}
+  git checkout "${BUMP_BRANCH}"
 
   echo "[INFO] Update project version to ${NEXTVERSION}"
-  if updateYaml ${NEXTVERSION} && [[ ${docommit} -eq 1 ]]; then
-    COMMIT_MSG="chore: Bump to ${NEXTVERSION} in ${BUMP_BRANCH}"
+  if updateYaml "${NEXTVERSION}" && [[ ${docommit} -eq 1 ]]; then
+    COMMIT_MSG="[release] Bump to ${NEXTVERSION} in ${BUMP_BRANCH}"
     git commit -s -m "${COMMIT_MSG}" $playbookfile
     git pull origin "${BUMP_BRANCH}"
 
@@ -111,39 +122,65 @@ bump_version() {
     fi 
     set -e
   fi
-  git checkout ${CURRENT_BRANCH}
+  git checkout "${CURRENT_BRANCH}"
 }
 
 set -x
 
 # derive branch from version
+VERSION_MAJOR=${VERSION%%.*}
+VERSION_MINOR=${VERSION%.*}
+VERSION_PATCH=${VERSION}
+VERSION_Z=${VERSION##*.}
 BRANCH=${VERSION%.*}.x
+# echo "Major: $VERSION_MAJOR
+# Minor: $VERSION_MINOR 
+# Patch: $VERSION_PATCH 
+# Z: $VERSION_Z 
+# Target branch: $BRANCH"
 
 EXISTING_BRANCH=0
 # create new branch off ${BASEBRANCH} (or check out latest commits if branch already exists), then push to origin
-if [[ ${VERSION} == *".0" ]]; then
-  # note: if branch already exists, do not recreate it!
-  if [[ $(git branch "${BRANCH}" 2>&1 || true) == *"already exists"* ]]; then 
-    EXISTING_BRANCH=1
-  fi
 
-  if [[ ${EXISTING_BRANCH} -eq 0 ]]; then
-    git push origin "${BRANCH}"
-  fi
-fi
+# Handle target branch.
+EXISTING_BRANCH=$(git branch --list "${BRANCH}")
+case ${EXISTING_BRANCH} in
+  "") echo "Branch ${BRANCH} does not exist: creating it."
+     git checkout -b "${BRANCH}"
+     ;;
+  *) echo "Branch ${BRANCH} already exists: working on it."
+     git checkout ${BRANCH}
+     git pull --rebase origin master
+     ;;
+esac
+
+
+updateYaml "${VERSION_PATCH}"
+bash -c tools/checluster_docs_gen.sh
+git add "/modules/installation-guide/examples/checluster-properties.adoc"
+git commit -m "Updating checluster-properties.adoc for version $VERSION_PATCH"
+bash -c tools/environment_docs_gen.sh
+git add "modules/installation-guide/examples/system-variables.adoc"
+git commit -m "Updating system-variables.adoc for version $VERSION_PATCH"
+# git push
+exit
 
 # if doing a .0 release, use master; if doing a .z release, use $BRANCH
-if [[ ${VERSION} == *".0" ]]; then
-  # bump the y digit, if it is a major release
-  [[ $BRANCH =~ ^([0-9]+)\.([0-9]+)\.x ]] && BASE=${BASH_REMATCH[1]}; NEXT=${BASH_REMATCH[2]}; # for BRANCH=7.25.x, get BASE=7, NEXT=25 [DO NOT BUMP]
-  NEXTVERSION="${BASE}.${NEXT}.0"
-else
-  # bump the z digit
-  [[ $VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; NEXT="${BASH_REMATCH[3]}"; # for VERSION=7.25.2, get BASE=7.25, NEXT=2 [DO NOT BUMP]
-  NEXTVERSION="${BASE}.${NEXT}"
-fi
-bump_version ${NEXTVERSION} ${MAINBRANCH}
-bump_version ${NEXTVERSION} ${BRANCH}
+case ${VERSION_Z} in
+  "0") echo "First patch version $VERSION_PATCH"
+       # bump the y digit, if it is a major release
+       [[ $BRANCH =~ ^([0-9]+)\.([0-9]+)\.x ]] && BASE=${BASH_REMATCH[1]}; NEXT=${BASH_REMATCH[2]}; # for BRANCH=7.25.x, get BASE=7, NEXT=25 [DO NOT BUMP]
+       NEXTVERSION="${BASE}.${NEXT}.0"
+       ;;
+  *)  echo "Not the fist patch version"
+      # bump the z digit
+      [[ $VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; NEXT="${BASH_REMATCH[3]}"; # for VERSION=7.25.2, get BASE=7.25, NEXT=2 [DO NOT BUMP]
+      NEXTVERSION="${BASE}.${NEXT}"
+      ;;
+esac
+
+bump_version "${NEXTVERSION}" "${MAINBRANCH}"
+bump_version "${NEXTVERSION}" "${BRANCH}"
 echo "[INFO] Project version has been updated"
 
 if [[ $TAG_RELEASE -eq 1 ]]; then
@@ -154,5 +191,5 @@ if [[ $TAG_RELEASE -eq 1 ]]; then
 fi
 
 if [[ ${USE_TMP_DIR} -eq 1 ]]; then
-  rm -fr /tmp/$tmpdir
+  rm -fr "/tmp/$tmpdir"
 fi
