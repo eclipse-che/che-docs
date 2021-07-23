@@ -57,12 +57,12 @@ $ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json 
 ifeval::["{project-context}" == "che"]
 [WARNING]
 ====
-* Enabling {devworkspace} engine on existed {prod-short} installation on Kubernetes requires cert-manager to be installed.
-* Enabling {devworkspace} engine on platforms other than OpenShift requires Kubernetes http gateway to work in a regime
-  when every authenticated {prod-short} user has the same privileges as {prod-short}-server service account.
-  Which is not recommended for production usage and served only for exploring {devworkspace} engine capabilities.
-  To enable Kubernetes http gateway:
+* Before enabling {devworkspace} engine on existed Kubernetes-based {prod-short} installation, install cert-manager.
 
+* Enabling {devworkspace} engine on platforms other than OpenShift requires Kubernetes HTTP gateway to work in a regime when every authenticated {prod-short} user has the same privileges as {prod-short}-server service account. This approach is not recommended for production usage and served only for testing {devworkspace} engine capabilities.
++
+. To enable Kubernetes HTTP gateway:
++
 [subs="+attributes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
@@ -70,7 +70,6 @@ $ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json 
 ----
 ====
 endif::[]
-
 
 .Additional resources
 
