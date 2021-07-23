@@ -62,6 +62,16 @@ spec:
 
 include::example$snip_{project-context}-image-puller-dockerfile.adoc[]
 
+.Default images
+The {prod-short} Operator populates the `.spec.imagePuller.spec.images` field with default images used for workspace startup (Theia images, plugin broker images, sidecar plugin images),
+provided that no images were added to this field before creating the `CheCluster` Custom Resource. The {prod-short} Operator updates the default images in the
+`.spec.imagePuller.spec.images` field after every rollout update of {prod-short}.
+
+However, if images were added to the `.spec.imagePuller.spec.images` field before creating the `CheCluster` Custom Resource, the {prod-short} Operator will not add default images.
+
+[NOTE]
+If user-provided images are added to the `.spec.imagePuller.spec.images` field **after** creating the `CheCluster` Custom Resource, the {prod-short} Operator
+will still update default images on subsequent {prod-short} rollout updates. Non-default images remain unchanged in the `.spec.imagePuller.spec.images` field after rollout updates.
 
 .Verification steps
 
