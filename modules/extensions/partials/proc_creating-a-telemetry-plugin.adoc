@@ -3,7 +3,7 @@
 
 This section shows how to create an `AnalyticsManager` class that extends link:https://github.com/che-incubator/che-workspace-telemetry-client/blob/master/backend-base/src/main/java/org/eclipse/che/incubator/workspace/telemetry/base/AbstractAnalyticsManager.java[`AbstractAnalyticsManager`] and implements the following methods:
 
-* `isEnabled()` - determines whether or not the telemetry back-end is functioning correctly. This could mean always returning `true`, or have more complex checks, for example, returning `false` when a connection property is missing.
+* `isEnabled()` - determines whether the telemetry back-end is functioning correctly. This could mean always returning `true`, or have more complex checks, for example, returning `false` when a connection property is missing.
 * `destroy()` - cleanup method that is run before shutting down the telemetry back-end. This method sends the `WORKSPACE_STOPPED` event.
 * `onActivity()` - notifies that some activity is still happening for a given user. This is mainly used to send `WORKSPACE_INACTIVE` events.
 * `onEvent()` - submits telemetry events to the telemetry server, such as `WORKSPACE_USED` or `WORKSPACE_STARTED`.
@@ -169,11 +169,11 @@ include::example$telemetry/onEvent.java[]
 ----
 ====
 
-This sends an HTTP request to the telemetry server and automatically delays identical events in a small time period, where the default value is 1500 milliseconds. It is possible to modify this period by setting subclasses.
+This sends an HTTP request to the telemetry server and automatically delays identical events in a small period of time, where the default value is 1500 milliseconds. It is possible to modify this period by setting subclasses.
 
 == Implementing `increaseDuration()`
 
-Many telemetry systems recognize event duration. The `AbstractAnalyticsManager` merges similar events that happen in the same frame of time into one event, so that a user does not get several identical events sent to the server in a small time frame. This implementation of `increaseDuration()` is a no-op. This method uses the APIs of a user's telemetry provider to alter the event or event properties to reflect an event's increased duration.
+Many telemetry systems recognize event duration. The `AbstractAnalyticsManager` merges similar events that happen in the same frame of time into one event, so that a user does not get several identical events sent to the server in a short period of time. This implementation of `increaseDuration()` is a no-op. This method uses the APIs of a user's telemetry provider to alter the event or event properties to reflect an event's increased duration.
 
 .`AnalyticsManager.java`
 ====
@@ -213,7 +213,7 @@ Running `mvn quarkus:dev` as described in xref:running-the-application_{context}
 
 See link:https://quarkus.io/guides/building-native-image#using-a-multi-stage-docker-build[the quarkus documentation] for the best instructions to package the application in a container. Build and push the container to a container registry of your choice.
 
-== Creating a `meta.yaml` for your plug-in.
+== Creating a `meta.yaml` for your plug-in
 
 Create a `meta.yaml` definition representing a {prod-short} plug-in that runs your custom back-end in a workspace Pod. For more information about `meta.yaml`, see xref:end-user-guide:what-is-a-che-theia-plug-in.adoc[].
 
@@ -225,7 +225,7 @@ include::example$telemetry/sample_meta.yaml[]
 ----
 ====
 
-In most cases, a user would deploy this file to a corporate web server. This guide demonstrates how to create an Apache web server on OpenShift and host the plug-in there.
+Typically, the user deploys this file to a corporate web server. This guide demonstrates how to create an Apache web server on OpenShift and host the plug-in there.
 
 Create a ConfigMap referencing the new `meta.yaml` file.
 
