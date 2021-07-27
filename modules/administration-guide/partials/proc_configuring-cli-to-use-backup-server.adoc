@@ -1,0 +1,44 @@
+[id="configure-{prod-cli}-to-use-backup-server"]
+= Configure {prod-cli} to use backup server
+
+This section describes how to define environment variables to make {prod-cli} use specific backup server.
+
+.Procedure
+
+. Determine xref:setup-backup-server.adoc[backup server type] and the server URL.
+You may use link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[restic repository documentation] for reference.
+ +
+The URL may be passed as `-r` parameter or defined through `BACKUP_REPOSITORY_URL` environment variable.
+
+. Retrieve or make up backup repository password.
+ +
+The password may be passed as `-p` parameter or defined through `BACKUP_REPOSITORY_PASSWORD` environment variable.
+ +
+[WARNING]
+====
+Backup data are encrypted with this password.
+Losing it means losing the data.
+====
+
+. Depending on your xref:setup-backup-server.adoc[backup server type] set the following environment variables:
+
+* `REST`
+ +
+If optional authentication is turned on, export `REST_SERVER_USERNAME` and `REST_SERVER_PASSWORD` environment variables.
+
+* `AWS S3`
+ +
+Export `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables with AWS user credentials.
+
+* `SFTP`
+ +
+For passwordless login export `SSH_KEY_FILE` environment variable that holds path to a file with corresponding SSH key or provide  `--ssh-key-file` parameter.
+ +
+Alternatively, `SSH_KEY` environment variable that holds SSH key itself may be used.
+
+[NOTE]
+====
+It is possible to point directly to backup server configuration object using `--backup-server-config-name` parameter or `BACKUP_SERVER_CONFIG_NAME` environment variable.
+In such case all the configuration above is not needed.
+For more details, see xref:managing-backups-through-custom-resources.adoc[]
+====

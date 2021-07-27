@@ -1,0 +1,100 @@
+[id="define-backup-server-for-operator"]
+= Configuring {prod-short} to use backup server
+
+To configure a backup server for {prod-short} create `CheBackupServerConfiguration` Custom Resource object in the {prod-namespace} namespace.
+The object's `spec` divided on sections, each corresponds to own xref:setup-backup-server.adoc[backup server type]:
+
+ * xref:configure-rest-server-cr[REST]
+ * xref:configure-awss3-server-cr[AWS S3 or API compatible]
+ * xref:configure-sftp-server-cr[SFTP]
+
+The object must have only one section configured.
+ +
+Referenced secrets must exist and have required fields.
+
+[NOTE]
+====
+It is possible to configure as many backup servers as needed.
+Each in a separate Custom Resource.
+====
+
+[id="configure-rest-server-cr"]
+== Configuring REST server
+
+[source,yaml,subs="+attributes"]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheBackupServerConfiguration
+metadata:
+  name: backup-server-configuration
+spec:
+  rest:
+    protocol: http                                                 <1>
+    hostname: my-domain.net                                        <2>
+    port: 1234                                                     <3>
+    repositoryPath: {prod-short}-backups                           <4>
+    repositoryPasswordSecretRef: backup-encryption-password-secret <5>
+    credentialsSecretRef: rest-server-auth-secret                  <6>
+----
+<1> Protocol to use. Optional, defaults to `https`. Only `http` and `https` allowed.
+<2> Backup server hostname.
+<3> Port on which backup server running. Optional, defaults to `8000`.
+<4> Path on backup server where backup snapshots stored.
+<5> Secret name with repository password under `repo-password` field.
+If the secret contains only one field, its name could be arbitrary.
+The password used to encrypt / decrypt backup snapshots data.
+<6> Secret name with REST server user credentials under `username` and `password` fields. Optional.
+
+[id="configure-awss3-server-cr"]
+== Configuring AWS S3 or API compatible server
+
+[source,yaml,subs="+attributes"]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheBackupServerConfiguration
+metadata:
+  name: backup-server-configuration
+spec:
+  awss3:
+    protocol: https                                                <1>
+    hostname: my-domain.net                                        <2>
+    port: 1234                                                     <3>
+    repositoryPath: {prod-short}-backups                           <4>
+    repositoryPasswordSecretRef: backup-encryption-password-secret <5>
+    awsAccessKeySecretRef: aws-user-credentials-secret             <6>
+----
+<1> Protocol to use. Optional, defaults to `https`.
+<2> S3 hostname. Optional, defaults to `s3.amazonaws.com`.
+<3> Port on which backup server running. Optional.
+<4> Bucket name where backup snapshots stored. The bucket must be pre-created.
+<5> Secret name with repository password under `repo-password` field.
+If the secret contains only one field, its name could be arbitrary.
+The password used to encrypt / decrypt backup snapshots data.
+<6> Secret name with user credentials under `awsAccessKeyId` and `awsSecretAccessKey` fields.
+
+[id="configure-sftp-server-cr"]
+== Configuring SFTP server
+
+[source,yaml,subs="+attributes"]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheBackupServerConfiguration
+metadata:
+  name: backup-server-configuration
+spec:
+  awss3:
+    username: user                                                 <1>
+    hostname: my-domain.net                                        <2>
+    port: 1234                                                     <3>
+    repositoryPath: {prod-short}-backups                           <4>
+    repositoryPasswordSecretRef: backup-encryption-password-secret <5>
+    sshKeySecretRef: ssh-key-secret                                <6>
+----
+<1> User name on remote server to login with through SSH.
+<2> Remote server hostname.
+<3> Port on which SFTP server running. Optional, defaults to `22`.
+<4> Absolute or relative path on the server where backup snapshots stored.
+<5> Secret name with repository password under `repo-password` field.
+If the secret contains only one field, its name could be arbitrary.
+The password used to encrypt / decrypt backup snapshots data.
+<6> Secret name with private SSh key under `ssh-privatekey` field for passwordless login on the SFTP server.
