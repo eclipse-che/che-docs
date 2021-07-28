@@ -1,6 +1,9 @@
 [id="defining-the-list-of-images-to-pull_{context}"]
 = Defining the list of images to pull
 
+The {image-puller-name-short} is able to pre-pull most images, including scratch images. 
+However, container images that mount volumes in their Dockerfile should not be pre-pulled due to limited support.
+
 .Prerequisites
 
 * The `curl` tool is available. See link:https://curl.se/[curl homepage].
@@ -9,14 +12,13 @@
 
 .Procedure
 
-. Get the list of relevant container images.
+. Gather a list of relevant container images depending on the platform.
 +
 include::example$snip_{project-context}-getting-the-list-of-relevant-images.adoc[]
 
 
-. Exclude from the list the container images mounting volumes in Dockerfile.
-
-
+. Determine images from the list for pre-pulling. For faster workspace startup times, workspace-related images such as
+che-theia, che-machine-exec, che-plugin-artifacts-broker, and che-plugin-metadata-broker should be considered for pre-pulling.
 
 .Additional resources
 
