@@ -1,6 +1,14 @@
 [id="defining-the-list-of-images-to-pull_{context}"]
 = Defining the list of images to pull
 
+The {image-puller-name-short} can pre-pull most images, including scratch images such as `che-machine-exec`. However, images that mount volumes in the Dockerfile, such as `traefik`, are not supported for pre-pulling on OpenShift 3.11.
+
+Pre-pulling images involved in workspace startup will reduce workspace start times. For example:
+
+* Che-Theia
+* broker images
+* plug-in sidecar images
+
 .Prerequisites
 
 * The `curl` tool is available. See link:https://curl.se/[curl homepage].
@@ -9,19 +17,16 @@
 
 .Procedure
 
-. Get the list of relevant container images.
+. Gather a list of relevant container images for the {platforms-name} platform:
 +
 include::example$snip_{project-context}-getting-the-list-of-relevant-images.adoc[]
 
 
-. Exclude from the list the container images not containing the `sleep` command.
+. Determine images from the list for pre-pulling. 
 +
-include::example$snip_{project-context}-images-incompatibles-with-image-puller.adoc[]
-
-
-. Exclude from the list the container images mounting volumes in Dockerfile.
-
-
+For faster workspace startup times, consider pre-pulling the workspace-related images:
++
+include::example$snip_{project-context}-list-of-images-for-faster-workspace-start.adoc[]
 
 .Additional resources
 
