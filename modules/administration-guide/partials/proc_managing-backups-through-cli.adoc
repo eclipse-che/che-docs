@@ -1,0 +1,57 @@
+[id="managing-backups-through-cli_{context}"]
+= Managing backups through {prod-cli}
+
+This section describes how to create backups of {prod-short} installation and do recovery using {prod-cli}.
+
+.Prerequisites
+
+include::partial$snip_internal-backup-server-warning.adoc[]
+
+* xref:setup-backup-server.adoc[Set up a backup server].
+
+* xref:configuring-cli-to-use-backup-server.adoc[Configure {prod-cli} to use the backup server]
+
+.Procedure
+
+ * xref:cli-create-new-backup[]
+ * xref:cli-restore-from-backup[]
+
+[id="cli-create-new-backup"]
+== Create a new backup
+
+To create a backup and send it to preconfigured backup server run:
+[source,shell,subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:backup -r backup-server-url -p repository-password
+----
+
+[NOTE]
+====
+Next backups to the same backup server may be created by using `server:backup` command without any arguments.
+====
+
+[NOTE]
+====
+If run `server:backup` command without any arguments for the installation of {prod-short} for the first time, internal backup server will be setup and used.
+====
+
+[id="cli-restore-from-backup"]
+== Restore from a backup
+
+To recover previous state of {prod-short} run:
+[source,shell,subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:restore -r backup-server-url -p repository-password
+----
+
+[NOTE]
+====
+If a backup server was used before, `server:restore` may be run without any arguments.
+====
+
+To recover from a specific snapshot, provide its ID through `-s` option:
+
+[source,shell,subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:restore -s snapshot-id
+----
