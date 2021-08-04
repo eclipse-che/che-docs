@@ -1,21 +1,19 @@
 [id="define-backup-server-for-operator"]
 = Configuring {prod-short} to use backup server
 
-To configure a backup server for {prod-short} create `CheBackupServerConfiguration` Custom Resource object in the {prod-namespace} namespace.
-The object's `spec` divided on sections, each corresponds to own xref:setup-backup-server.adoc[backup server type]:
+To configure a backup server for {prod-short}, a user needs to create the `CheBackupServerConfiguration` Custom Resource object in the {prod-namespace} namespace. The object's `spec` property is divided in several sections where each corresponds to a specific xref:setup-backup-server.adoc[backup server type]:
 
  * xref:configure-rest-server-cr[REST]
  * xref:configure-awss3-server-cr[AWS S3 or API compatible]
  * xref:configure-sftp-server-cr[SFTP]
-
-The object must have only one section configured.
- +
-Referenced secrets must exist and have required fields.
-
++
 [NOTE]
 ====
-It is possible to configure as many backup servers as needed.
-Each in a separate Custom Resource.
+* The Custom Resource object, stored in the `{prod-namespace}` namespace, must have only one section configured in the `spec` property.
+
+* It is possible to configure as many backup servers as needed, but each in a separate `Custom Resource`.
+
+* Referenced secrets for each server type must exist and have required fields specified. See the description of each secret in the corresponding server-type chapters.
 ====
 
 [id="configure-rest-server-cr"]
@@ -36,14 +34,13 @@ spec:
     repositoryPasswordSecretRef: backup-encryption-password-secret <5>
     credentialsSecretRef: rest-server-auth-secret                  <6>
 ----
-<1> Protocol to use. Optional, defaults to `https`. Only `http` and `https` allowed.
+
+<1> Optional property that specifies the protocol which will be used. The default value is `https` with `http` as the second allowed option.
 <2> Backup server hostname.
-<3> Port on which backup server running. Optional, defaults to `8000`.
-<4> Path on backup server where backup snapshots stored.
-<5> Secret name with repository password under `repo-password` field.
-If the secret contains only one field, its name could be arbitrary.
-The password used to encrypt / decrypt backup snapshots data.
-<6> Secret name with REST server user credentials under `username` and `password` fields. Optional.
+<3> Optional property that specifies the port on which the backup server is running. The default value is `8000`.
+<4> Path on the backup server where the backup snapshots are stored.
+<5> Secret name containing a repository password, stored under the `repo-password` field. If the secret contains only one field, its name could be arbitrary. The password is used to encrypt and decrypt backup snapshots data.
+<6> Optional property that specifies the name of the secret with the REST server user credentials, stored in the `username` and `password` fields.
 
 [id="configure-awss3-server-cr"]
 == Configuring AWS S3 or API compatible server
@@ -63,14 +60,13 @@ spec:
     repositoryPasswordSecretRef: backup-encryption-password-secret <5>
     awsAccessKeySecretRef: aws-user-credentials-secret             <6>
 ----
-<1> Protocol to use. Optional, defaults to `https`.
-<2> S3 hostname. Optional, defaults to `s3.amazonaws.com`.
-<3> Port on which backup server running. Optional.
-<4> Bucket name where backup snapshots stored. The bucket must be pre-created.
-<5> Secret name with repository password under `repo-password` field.
-If the secret contains only one field, its name could be arbitrary.
-The password used to encrypt / decrypt backup snapshots data.
-<6> Secret name with user credentials under `awsAccessKeyId` and `awsSecretAccessKey` fields.
+
+<1> Optional property that specifies the protocol which will be used. The default value is `https` with `http` as the second allowed option.
+<2> Optional property that specifies the S3 hostname. The default value is `s3.amazonaws.com`.
+<3> Optional property that specifies the port on which the backup server is running.
+<4> The name of the bucket resource where the backup snapshots are stored. The bucket resource must be manually pre-created.
+<5> The name of the secret containing a repository password, stored under the `repo-password` field. If the secret contains only one field, this name can be arbitrary. The password is used to encrypt and decrypt backup snapshots data.
+<6> The name of the secret containing user credentials stored in `awsAccessKeyId` and `awsSecretAccessKey` fields.
 
 [id="configure-sftp-server-cr"]
 == Configuring SFTP server
@@ -90,11 +86,10 @@ spec:
     repositoryPasswordSecretRef: backup-encryption-password-secret <5>
     sshKeySecretRef: ssh-key-secret                                <6>
 ----
-<1> User name on remote server to login with through SSH.
+
+<1> User name on the remote server to login with using the SSH protocol.
 <2> Remote server hostname.
-<3> Port on which SFTP server running. Optional, defaults to `22`.
-<4> Absolute or relative path on the server where backup snapshots stored.
-<5> Secret name with repository password under `repo-password` field.
-If the secret contains only one field, its name could be arbitrary.
-The password used to encrypt / decrypt backup snapshots data.
-<6> Secret name with private SSh key under `ssh-privatekey` field for passwordless login on the SFTP server.
+<3> Optional property that specifies the port on which an SFTP server is running. The default value is `22`.
+<4> Absolute or relative path on the server where backup snapshots are stored.
+<5> The name of the secret containing a repository password, stored in the `repo-password` field. If the secret contains only one field, this name can be arbitrary. The password is used to encrypt and decrypt backup snapshots data.
+<6> The name of the secret containing a private SSH key, stored in the `ssh-privatekey` field. This SSH key can be used to perform a login without a password on an SFTP server.
