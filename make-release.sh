@@ -91,7 +91,7 @@ bump_version() {
 
   echo "[INFO] Update project version to ${NEXTVERSION}"
   if updateYaml ${NEXTVERSION} && [[ ${docommit} -eq 1 ]]; then
-    COMMIT_MSG="[release] Bump to ${NEXTVERSION} in ${BUMP_BRANCH}"
+    COMMIT_MSG="chore: Bump to ${NEXTVERSION} in ${BUMP_BRANCH}"
     git commit -s -m "${COMMIT_MSG}" $playbookfile
     git pull origin "${BUMP_BRANCH}"
 
