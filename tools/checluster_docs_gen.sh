@@ -41,9 +41,9 @@ fetch_conf_files_content() {
   echo "Fetching property files content from GitHub..." >&2
 
   if [[ $PRODUCT == "che" ]]; then
-    CHECLUSTER_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse/che-operator/$CURRENT_VERSION/deploy/crds/org_v1_che_crd.yaml"
+    CHECLUSTER_PROPERTIES_URL=https://raw.githubusercontent.com/eclipse-che/che-operator/$CURRENT_VERSION/config/crd/bases/org_v1_che_crd.yaml"
   else
-    CHECLUSTER_PROPERTIES_URL="https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/crw-$CURRENT_VERSION-rhel-8/deploy/crds/org_v1_che_crd.yaml"
+    CHECLUSTER_PROPERTIES_URL="https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/$CURRENT_VERSION/config/crd/bases/org_v1_che_crd.yaml"
   fi
 
   RAW_CONTENT=$(curl -sf "$CHECLUSTER_PROPERTIES_URL")
