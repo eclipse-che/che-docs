@@ -1,6 +1,4 @@
-
-= Managing backups using custom resources
-
+[id="managing-backups-using-custom-resources_{context}"]
 = Managing backups using custom resources
 
 The following section describes how to create backups of {prod-short} installation and make a recovery directly through Custom Resource objects.
@@ -21,7 +19,7 @@ include::partial$snip_internal-backup-server-warning.adoc[]
 [id="operator-create-new-backup"]
 == Create a new backup
 
-. Create a `CheClusterBackup` object to create a new backup:
+Create a `CheClusterBackup` object to create a new backup:
 
 [source,yaml,subs="+attributes"]
 ----
@@ -36,7 +34,6 @@ spec:
 <1> Name of the `CheBackupServerConfiguration` object defining what backup server to use.
 
 * A request to create a new backup starts by creating the`CheClusterBackup` object.
-
 * Before reusing the same name for a new backup object, delete the old object first:
 +
 [subs="+attributes,+quotes"]
@@ -113,16 +110,16 @@ status:
   state: InProgress                                         <3>
   snapshotId: ba92c7e0                                      <4>
 ----
-
 <1> Displays the overall state or error message.
 <2> Current phase of backing up process in the human-readable format.
 <3> Backing up process state. One of `InProgress`, `Succeeded` or `Failed`.
 <4> ID of the created backup snapshot. The field appears only when `state` is `Succeeded`.
 
-.Verification
+[id="verify-operator-restore-from-backup"]
+== Verify recovery process state
 
-Check a recovery process state by reading of the `status` section of the `CheClusterRestore` object:
-+
+To check a recovery process state, read `status` section of `CheClusterRestore` object:
+
 [source,yaml,subs="+attributes"]
 ----
 status:
@@ -130,7 +127,6 @@ status:
   stage: Restoring {prod-short} related cluster objects      <2>
   state: InProgress                                          <3>
 ----
-
 <1> Overall state or error message.
 <2> Current phase of the recovery process in the human-readable format.
 <3> Recovery process state. One of `InProgress`, `Succeeded` or `Failed`.
