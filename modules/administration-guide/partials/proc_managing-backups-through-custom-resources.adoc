@@ -1,7 +1,7 @@
+[id="managing-backups-using-custom-resources_{context}"]
+= Managing backups using custom resources
 
-= Managing backups through custom resources
-
-This section describes how to create backups of {prod-short} installation and do recovery directly through Custom Resource objects.
+The following section describes how to create backups of {prod-short} installation and make a recovery directly through Custom Resource objects.
 
 .Prerequisites
 
@@ -19,8 +19,8 @@ include::partial$snip_internal-backup-server-warning.adoc[]
 [id="operator-create-new-backup"]
 == Create a new backup
 
-To create a new backup, create a new object of `CheClusterBackup`:
-
+. Create a `CheClusterBackup` object to create a new backup:
++
 [source,yaml,subs="+attributes"]
 ----
 apiVersion: org.eclipse.che/v1
@@ -30,18 +30,28 @@ metadata:
 spec:
   backupServerConfigRef: backup-server-configuration <1>
 ----
-<1> Name of `CheBackupServerConfiguration` object that defines which backup server to use.
 
-To request a new backup create a new `CheClusterBackup` object.
-To reuse the same name, delete old object first.
+<1> Name of the `CheBackupServerConfiguration` object defining what backup server to use.
+
+* The creation of a `CheClusterBackup` object starts a new backup.
+* Before reusing the same name for a new backup object, delete the old object first:
++
+[subs="+attributes,+quotes"]
+----
+{orch-cli} delete CheClusterBackup _<name>_ -n {prod-namespace}
+----
 
 [NOTE]
 ====
-Editing of `CheClusterBackup` objects has no effect.
+Editing the `CheClusterBackup` objects has no effect.
 ====
 
-To automatically setup and send a backup to internal backup server, instead of configuration reference specify `useInternalBackupServer` property:
+.Alternative
 
+Suppose a user does not want to configure a backup server and agrees to the internal backup server limitations. In that case, it is possible to request automatic configuration from {prod-short} Operator and the preparation mentioned above is not required.
+
+* Configure the automatic setup and sending of a backup to the internal backup server:
++
 [source,yaml,subs="+attributes"]
 ----
 apiVersion: org.eclipse.che/v1
@@ -55,8 +65,8 @@ spec:
 [id="operator-restore-from-backup"]
 == Restore from a backup
 
-To recover {prod-short} installation from a backup, create a new object of `CheClusterRestore`:
-
+. Create a new object of `CheClusterRestore` to recover a {prod-short} installation from a backup: 
++
 [source,yaml,subs="+attributes"]
 ----
 apiVersion: org.eclipse.che/v1
@@ -67,26 +77,34 @@ spec:
   backupServerConfigRef: backup-server-configuration <1>
   snapshotId: ba92c7e0                               <2>
 ----
-<1> Name of `CheBackupServerConfiguration` object that defines which backup server to use.
-<2> Snapshot ID to restore from. Optional, defaults to the last snapshot on the backup server.
 
-Wait until recovery finishes.
-Sometimes, after recovery, it is required to clean up browser data of {prod-short}.
+<1> Name of `CheBackupServerConfiguration` object that defines what backup server to use.
+<2> Optional parameter defining the Snapshot ID to restore from. The default value is the last snapshot on the backup server.
 
-To request a new recovery create a new `CheClusterRestore` object.
-To reuse the same name, delete old object first.
+. Create a new `CheClusterRestore` object to request a new recovery.
+
+* Before reusing the same name for a new backup object, delete the old object first:
++
+[subs="+attributes,+quotes"]
+----
+{orch-cli} delete CheClusterBackup _<name>_ -n {prod-namespace}
+----
+
+. Wait until the recovery process finishes.
++
+In a case of errors occurrences in your browser after the recovery, clean up the browser data for the {prod-short} domain.
 
 [NOTE]
 ====
 Editing of `CheClusterRestore` objects has no effect.
 ====
 
-.Verification steps
+.Verification
 
-[id="verify-operator-create-new-backup"]
-== Verify backup process state
+. Verify backup process state:
 
-To check a backup process state, read `status` section of `CheClusterBackup` object:
+.. Read the `status` section of the `CheClusterBackup` object to check the backup process:
++
 [source,yaml,subs="+attributes"]
 ----
 status:
@@ -95,16 +113,15 @@ status:
   state: InProgress                                         <3>
   snapshotId: ba92c7e0                                      <4>
 ----
-<1> Overall state or error message.
-<2> Current phase of backing up process in human readable format.
+<1> Displays the overall state or error message.
+<2> Current phase of backing up process in the human-readable format.
 <3> Backing up process state. One of `InProgress`, `Succeeded` or `Failed`.
-<4> ID of created backup snapshot. The field appears only when `state` is `Succeeded`.
+<4> ID of the created backup snapshot. The field appears only when `state` is `Succeeded`.
 
-[id="verify-operator-restore-from-backup"]
-== Verify recovery process state
+. Verify recovery process state
 
-To check a recovery process state, read `status` section of `CheClusterRestore` object:
-
+.. Read the `status` section of the `CheClusterRestore` object To check the recovery process:
++
 [source,yaml,subs="+attributes"]
 ----
 status:
@@ -113,5 +130,5 @@ status:
   state: InProgress                                          <3>
 ----
 <1> Overall state or error message.
-<2> Current phase of recovery process in human readable format.
+<2> Current phase of the recovery process in the human-readable format.
 <3> Recovery process state. One of `InProgress`, `Succeeded` or `Failed`.

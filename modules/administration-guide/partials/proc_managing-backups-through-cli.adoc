@@ -1,7 +1,8 @@
 [id="managing-backups-through-cli_{context}"]
 = Managing backups through {prod-cli}
 
-This section describes how to create backups of {prod-short} installation and do recovery using {prod-cli}.
+
+The following section describes how to create backups of {prod-short} installation and do recovery using {prod-cli}.
 
 .Prerequisites
 
@@ -19,39 +20,32 @@ include::partial$snip_internal-backup-server-warning.adoc[]
 [id="cli-create-new-backup"]
 == Create a new backup
 
-To create a backup and send it to preconfigured backup server run:
+. Create a backup and send it to the pre-configured backup server:
++
 [source,shell,subs="+quotes,+attributes"]
 ----
-$ {prod-cli} server:backup -r backup-server-url -p repository-password
+$ {prod-cli} server:backup --repository-url=__<repository-url>__  --repository-password=__<repository-password>__
 ----
 
-[NOTE]
-====
-Next backups to the same backup server may be created by using `server:backup` command without any arguments.
-====
+* It is possible to create other backups to the same backup server using the `server:backup` command with no arguments.
+* After using the`server:backup` command with no arguments for the first time installation of {prod-short}, an internal backup server is configured and used.
 
-[NOTE]
-====
-If run `server:backup` command without any arguments for the installation of {prod-short} for the first time, internal backup server will be setup and used.
-====
 
 [id="cli-restore-from-backup"]
 == Restore from a backup
 
-To recover previous state of {prod-short} run:
+. Recover the previous state of {prod-short}:
++
 [source,shell,subs="+quotes,+attributes"]
 ----
-$ {prod-cli} server:restore -r backup-server-url -p repository-password
+$ {prod-cli} server:restore --repository-url=__<repository-url>__ --repository-password=__<repository-password>__
 ----
 
-[NOTE]
-====
-If a backup server was used before, `server:restore` may be run without any arguments.
-====
+* The `server:restore` command can be run with no arguments when the backup server was ever used before.
 
-To recover from a specific snapshot, provide its ID through `-s` option:
-
+. Recover from a specific snapshot by specifying its ID:
++
 [source,shell,subs="+quotes,+attributes"]
 ----
-$ {prod-cli} server:restore -s snapshot-id
+$ {prod-cli} server:restore --snapshot-id=__<snapshot-id>__
 ----
