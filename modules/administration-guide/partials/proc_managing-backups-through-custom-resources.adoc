@@ -19,8 +19,8 @@ include::partial$snip_internal-backup-server-warning.adoc[]
 [id="operator-create-new-backup"]
 == Create a new backup
 
-Create a `CheClusterBackup` object to create a new backup:
-
+. Create a `CheClusterBackup` object to create a new backup:
++
 [source,yaml,subs="+attributes"]
 ----
 apiVersion: org.eclipse.che/v1
@@ -33,7 +33,7 @@ spec:
 
 <1> Name of the `CheBackupServerConfiguration` object defining what backup server to use.
 
-* A request to create a new backup starts by creating the`CheClusterBackup` object.
+* The creation of a `CheClusterBackup` object starts a new backup.
 * Before reusing the same name for a new backup object, delete the old object first:
 +
 [subs="+attributes,+quotes"]
@@ -45,6 +45,10 @@ spec:
 ====
 Editing the `CheClusterBackup` objects has no effect.
 ====
+
+.Alternative
+
+Suppose a user does not want to configure a backup server and agrees to the internal backup server limitations. In that case, it is possible to request autoconfiguration from {prod-short} Operator using the `{prod-cli} server:backup` command with no arguments. In such a case, the preparation mentioned above is not required.
 
 . Configure the automatic setup and sending of a backup to the internal backup server:
 +
@@ -95,12 +99,11 @@ In a case of errors occurrences in your browser after the recovery, clean up the
 Editing of `CheClusterRestore` objects has no effect.
 ====
 
-.Verification steps
+.Verification
 
-[id="verify-operator-create-new-backup"]
-== Verify backup process state
+. Verify backup process state:
 
-. Read the `status` section of the `CheClusterBackup` object to check the backup process:
+.. Read the `status` section of the `CheClusterBackup` object to check the backup process:
 +
 [source,yaml,subs="+attributes"]
 ----
@@ -115,11 +118,10 @@ status:
 <3> Backing up process state. One of `InProgress`, `Succeeded` or `Failed`.
 <4> ID of the created backup snapshot. The field appears only when `state` is `Succeeded`.
 
-[id="verify-operator-restore-from-backup"]
-== Verify recovery process state
+. Verify recovery process state
 
-To check a recovery process state, read `status` section of `CheClusterRestore` object:
-
+.. Read the `status` section of the `CheClusterRestore` object To check the recovery process:
++
 [source,yaml,subs="+attributes"]
 ----
 status:
