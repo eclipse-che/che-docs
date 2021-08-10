@@ -19,7 +19,7 @@ Che-Theia plug-in metadata is information about individual plug-ins for the plug
 
 The Che-Theia plug-in metadata, for each specific plug-in, is defined in a `meta.yaml` file. These files can be referenced in a devfile to include Che-Theia plug-ins in a workspace.
 
-Here is an overview of all fields that can be available in plugin meta YAML files. This document represents the link:https://github.com/eclipse-che/che-plugin-registry#user-content-plugin-meta-yaml-structure[plugin meta YAML structure (version 3)].
+Here is an overview of all fields that can be available in plug-in meta YAML files. This document represents the link:https://github.com/eclipse-che/che-plugin-registry#user-content-plugin-meta-yaml-structure[plugin meta YAML structure (version 3)].
 
 ifeval::["{project-context}" == "che"]
 In the link:https://github.com/eclipse-che/che-plugin-registry/tree/{prod-ver-patch}[{prod-short} plug-ins registry repository], the `che-theia-plugins.yaml` contains a list of all Che-Theia plug-ins in the registry. Build the registry container image to generate the `meta.yaml` file.
@@ -29,20 +29,20 @@ endif::[]
 |===
 |`apiVersion`| Version 2 and higher where version is 1 supported for backwards compatibility 
 |`category`| Available: Category must be set to one of the followings: `Editor`, `Debugger`, `Formatter`, `Language`, `Linter`, `Snippet`, `Theme`, `Other`
-|`description`| Short description of plugin's purpose
+|`description`| Short description of the plug-in purpose
 |`displayName`| Name shown in user dashboard
-|`deprecate` | Optional; section for deprecating plugins in favor of others
+|`deprecate` | Optional; section for deprecating plug-ins in favor of others
 
             * autoMigrate - boolean 
             
             * migrateTo - new `org/plugin-id/version`, for example `redhat/vscode-apache-camel/latest`
-|`firstPublicationDate`| Not required to be in YAML; if it is not included, the Plugin Registry dockerimage build generates it
-|`latestUpdateDate`| Not required to be in YAML; if it is not included, the Plugin Registry dockerimage build generates it
+|`firstPublicationDate`| Not required to be in YAML; if it is not included, the plug-in registry dockerimage build generates it
+|`latestUpdateDate`| Not required to be in YAML; if it is not included, the plug-in registry dockerimage build generates it
 |`icon`| URL of an SVG or PNG icon
 |`name`| Name (no spaces allowed), must match [-a-z0-9]
 |`publisher`| Name of the publisher, must match [-a-z0-9]
-|`repository`| URL for plugin repository, for example, GitHub
-|`title`|  Plugin title (long)
+|`repository`| URL for plug-in repository, for example, GitHub
+|`title`|  Plug-in title (long)
 |`type`| `Che Plugin`, `VS Code extension`
 |`version`| Version information, for example: 7.5.1, [-.a-z0-9]
 |`spec`| Specifications (see below)
@@ -50,8 +50,8 @@ endif::[]
 
 .`spec` attributes
 |===
-|`endpoints` | Optional; plugin endpoint.
-|`containers`| Optional; sidecar containers for the plug-in. Che Plugin and VS Code extension supports only one container
+|`endpoints` | Optional; plug-in endpoint
+|`containers`| Optional; sidecar containers for the plug-in. Che Plug-in and VS Code extension supports only one container
 |`initContainers`| Optional; sidecar init containers for the plug-in
 |`workspaceEnv`| Optional; environment variables for the workspace
 |`extensions`| Optional; Attribute that is required for VS Code and Che-Theia plug-ins in a form list of URLs to plug-in artefacts, such as .vsix or .theia files
@@ -72,7 +72,7 @@ endif::[]
 |`ports` | Ports exposed by the plug-in (on the container)
 |`commands` | Development commands available to the plug-in container
 |`mountSources` | Boolean flag to bound volume with source code `/projects` to the plug-in container
-|`initContainers` | Optional; init containers for sidecar plugin
+|`initContainers` | Optional; init containers for sidecar plug-in
 |`Lifecycle` | Container lifecycle hooks. See link:https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/[`lifecycle` description]
 |===
 
