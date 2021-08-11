@@ -7,7 +7,7 @@ To add or modify an extension in the {prod-short} plug-ins registry, edit the `c
 
 [NOTE]
 ====
-This article describes the steps needed to build the plug-ins registry with a custom plugin definition. If you are looking to create a custom `meta.yaml` file that can be directly referenced in a devfile, see xref:end-user-guide:publishing-metadata-for-a-vs-code-extension.adoc[].
+This article describes the steps needed to build the plug-ins registry with a custom plug-in definition. If you are looking to create a custom `meta.yaml` file that can be directly referenced in a devfile, see xref:end-user-guide:publishing-metadata-for-a-vs-code-extension.adoc[].
 ====
 
 
@@ -72,35 +72,35 @@ This article describes the steps needed to build the plug-ins registry with a cu
       - id-of/extension2
 ----
 
-<1> (OPTIONAL) The ID of the plugin, useful if a plugin has multiple entries for one repository (for example, Java 8 compared to Java 11)
-<2> Repository information about the plugin. If ID is specified then this field is not a list element.
-<3> The URL to the extension's git repository URL
+<1> (OPTIONAL) The ID of the plug-in, useful if a plug-in has multiple entries for one repository. For example, Java 8 and Java 11.
+<2> Repository information about the plug-in. If ID is specified, then this field is not a list element.
+<3> The URL to the Git repository of the extension.
 <4> Tag or SHA1 ID of the upstream repository that hosts the extension, corresponding to a version, snapshot, or release.
-<5> (OPTIONAL) An alias for this plugin: this means anything listed here will get its own `meta.yaml` file generated
-<6> (OPTIONAL) Plugin preferences in freeform format
-<7> (OPTIONAL) If the plugin runs in a sidecar container, then the sidecar information is specified here
-<8> A location of a container image to be used as this plugin's sidecar. This line cannot be specified concurrently with `directory` (see above)
-<9> (OPTIONAL) The name of the sidecar container
-<10> (OPTIONAL) The memory limit of the sidecar container
-<11> (OPTIONAL) The memory request of the sidecar container
-<12> (OPTIONAL) The CPU limit of the sidecar container
-<13> (OPTIONAL) The CPU request of the sidecar container
-<14> (OPTIONAL) Definitions of root process commands inside container
-<15> (OPTIONAL) Arguments for root process commands inside container
-<16> (OPTIONAL) Any volume mounting information for the sidecar container
-<17> The name of the mount
-<18> The path of the mount
-<19> (OPTIONAL) Any endpoint information for the sidecar container
-<20> Endpoint name
-<21> A Boolean value determining whether the endpoint is exposed publicly
-<22> The port number
-<23> Attributes relating to the endpoint
-<24> Direct link(s) to the `vsix` files included with this plugin. The `vsix` built by the repository specified, such as the main extension, must be listed first
+<5> (OPTIONAL) An alias for this plug-in. For anything listed here, a `meta.yaml` file is generated.
+<6> (OPTIONAL) Plug-in preferences in freeform format.
+<7> (OPTIONAL) If the plug-in runs in a sidecar container, then the sidecar information is specified here.
+<8> A location of a container image to be used as the plug-in sidecar. This line cannot be specified concurrently with `directory`. See above.
+<9> (OPTIONAL) The name of the sidecar container.
+<10> (OPTIONAL) The memory limit of the sidecar container.
+<11> (OPTIONAL) The memory request of the sidecar container.
+<12> (OPTIONAL) The CPU limit of the sidecar container.
+<13> (OPTIONAL) The CPU request of the sidecar container.
+<14> (OPTIONAL) Definitions of root process commands inside container.
+<15> (OPTIONAL) Arguments for root process commands inside container.
+<16> (OPTIONAL) Any volume mounting information for the sidecar container.
+<17> The name of the mount.
+<18> The path to the mount.
+<19> (OPTIONAL) Any endpoint information for the sidecar container.
+<20> Endpoint name.
+<21> A Boolean value determining whether the endpoint is exposed publicly.
+<22> The port number.
+<23> Attributes relating to the endpoint.
+<24> Direct link or links to the `vsix` files included with this plug-in. The `vsix` built by the repository specified, such as the main extension, must be listed first.
 <25> # TODO #
-<26> (OPTIONAL) Extra dependencies in addition to the one listed in extensionDependencies field of package.json
-<27> (OPTIONAL) Do not include this plug-in in index.json if true. Useful in case of dependencies that you do not want to expose as standalone plug-ins
-<28> (OPTIONAL) Do not look at specified dependencies from extensionDependencies field of package.json (only for meta.yaml generation)
-<29> (OPTIONAL) Extra dependencies in addition to the one listed in extensionDependencies field of package.json (only for meta.yaml generation)
+<26> (OPTIONAL) Extra dependencies in addition to the one listed in extensionDependencies field of package.json.
+<27> (OPTIONAL) Do not include this plug-in in index.json if true. Useful in case of dependencies that you do not want to expose as standalone plug-ins.
+<28> (OPTIONAL) Do not look at specified dependencies from extensionDependencies field of package.json (only for meta.yaml generation).
+<29> (OPTIONAL) Extra dependencies in addition to the one listed in extensionDependencies field of package.json (only for meta.yaml generation).
 
 
 . Run the `build.sh` script with the options of your choosing. The build process will generate `meta.yaml` files automatically, based on the entries in the `che-theia-plugins.yaml` file.
