@@ -420,7 +420,7 @@ components:
 
 The sources is mounted on a location stored in the `CHE_PROJECTS_ROOT` environment variable that is made available in the running container of the image. This location defaults to `/projects`.
 
-=== Container Entrypoint
+=== Container entrypoint
 
 The `command` attribute of the `dockerimage` along with other arguments, is used to modify the `entrypoint` command of the container created from the image. In {prod} the container is needed to run indefinitely so that you can connect to it and execute arbitrary commands in it at any time. Because the availability of the `sleep` command and the support for the `infinity` argument for it is different and depends on the base image used in the particular images, {prod-short} cannot insert this behavior automatically on its own. However, you can take advantage of this feature to, for example, start necessary servers with modified configurations, and so on.
 
@@ -639,7 +639,7 @@ the {platforms-namespace} to which the workspace is deployed.
 * `CHE_MACHINE_AUTH_SIGNATURE__ALGORITHM`: The encryption algorithm used in the secured communication with the {prod-short} server.
 
 
-A devfiles may only need the `CHE_PROJECTS_ROOT` environment variable to locate the cloned projects in the component's container. More advanced devfiles might use the `CHE_WORKSPACE_LOGS_ROOT__DIR` environment variable to read the logs (for example as part of a devfile command). The environment variables used to securely access the {prod-short} server are out of scope for devfiles and are present only for advanced use cases, which are handled by the {prod-short} plug-ins.
+A devfile might need the `CHE_PROJECTS_ROOT` environment variable to locate the cloned projects in the component's container. More advanced devfiles might use the `CHE_WORKSPACE_LOGS_ROOT__DIR` environment variable to read the logs. The environment variables for securely accessing the {prod-short} server are out of scope for devfiles. These variables are available only to {prod-short} plug-ins, which use them for advanced use cases.
 
 [id="endpoints_{context}"]
 === Endpoints
@@ -901,7 +901,7 @@ components:
       app: postgres
 ----
 
-Additionally, it is also possible to modify the entrypoints (command and arguments) of the containers present in the resource list. 
+Additionally, you can modify the entrypoints (command and arguments) of the containers in the resource list. 
 
 //For details of the advanced use case, see xref:configuring-a-workspace-with-dashboard.adoc#defining-specific-container-images_configuring-a-workspace-with-dashboard[Defining specific container images].
 
@@ -979,7 +979,7 @@ commands:
 
 === Editor-specific commands
 
-If the editor in the workspace supports it, the devfile can specify additional configuration in the editor-specific format. This is dependent on the integration code present in the workspace editor itself and so is not a generic mechanism. However, the default Che-Theia editor within {prod} is equipped to understand the `tasks.json` and `launch.json` files provided in the devfile.
+If the editor in the workspace supports it, the devfile can specify additional configuration in the editor-specific format. This is dependent on the integration code in the workspace editor itself and so is not a generic mechanism. However, the default Che-Theia editor within {prod} is equipped to understand the `tasks.json` and `launch.json` files provided in the devfile.
 
 [source,yaml]
 ----

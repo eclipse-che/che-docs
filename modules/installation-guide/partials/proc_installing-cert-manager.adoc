@@ -25,13 +25,13 @@ $ {orch-cli} label namespace cert-manager certmanager.k8s.io/disable-validation=
 [subs="+attributes"]
 ----
 $ {orch-cli} apply \
-  -f https://github.com/jetstack/cert-manager/releases/download/v0.15.0/cert-manager.yaml
+  -f https://github.com/jetstack/cert-manager/releases/download/v1.3.2/cert-manager.yaml
 ----
 +
 [subs="+attributes"]
 ----
 $ {orch-cli} apply \
- --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.15.0/cert-manager.crds.yaml
+ --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.3.2/cert-manager.crds.yaml
 ----
 
 
@@ -63,8 +63,7 @@ spec:
           # ref: https://docs.microsoft.com/en-us/azure/container-service/kubernetes/container-service-kubernetes-service-principal
           clientSecretSecretRef:
             name: azuredns-config
-            # CLIENT_SECRET is the value of AZURE_CERT_MANAGER_SP_PASSWORD
-            key: <CLIENT_SECRET>
+            key: CLIENT_SECRET
           # Azure subscription Id that can be obtained with command:
           # $ az account show  | jq -r '.id'
           subscriptionID: <SUBSCRIPTION_ID>
