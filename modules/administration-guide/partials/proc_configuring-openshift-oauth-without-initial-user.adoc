@@ -1,7 +1,7 @@
 [id="proc_configuring_openshift-oauth-without-initial-user_{context}"]
 = Configuring OpenShift OAuth without provisioning OpenShift initial OAuth user
 
-The following procedure describes how to configure OpenShift OAuth without provisioning OpenShift initial OAuth user.
+The following procedure describes how to configure OpenShift OAuth without provisioning the initial OAuth user.
 
 .Prerequisites
 
@@ -9,7 +9,7 @@ The following procedure describes how to configure OpenShift OAuth without provi
 
 .Procedure
 
-. When OperatorHub is used to deploy {prod-short} then set the following values in {prod-checluster} Custom Resource (CR):
+. If you have installed {prod-short} by using the Operator, configure the following values in the {prod-checluster} Custom Resource:
 +
 [source,yaml,subs="+quotes"]
 ----
@@ -19,14 +19,14 @@ spec:
     initialOpenShiftOAuthUser: ''
 ----
 +
-. When `{prod-cli}` tool is used to deploy {prod-short} then use `--che-operator-cr-patch-yaml` flag:
+. If you have installed {prod-short} by using the `{prod-cli}` tool, use the `--che-operator-cr-patch-yaml` flag:
 +
 [subs="+quotes,+attributes"]
 ----
 $ {prod-cli} server:deploy --che-operator-cr-patch-yaml=patch.yaml ...
 ----
 +
-`patch.yaml` must contain the following:
+The `patch.yaml` file must contain the following:
 +
 [source,yaml,subs="+quotes"]
 ----
