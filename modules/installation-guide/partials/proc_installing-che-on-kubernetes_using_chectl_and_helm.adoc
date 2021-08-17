@@ -4,9 +4,10 @@
 // installing-{prod-id-short}-on-aws
 // installing-{prod-id-short}-on-microsoft-azure
 
-
 [id="installing-{prod-id-short}-on-kubernetes-using-{prod-cli}_and_helm_{context}"]
 = Installing {prod-short} on {k8s-platform} using {prod-cli}
+
+Kubernetes is an open-source system for automating deployment, scaling, and managing containerized applications. The following section describes the process of deploying {prod-short} on {k8s-platform} by using the `{prod-cli}` tool.
 
 .Prerequisites
 
@@ -14,6 +15,7 @@
 * The `helm` tool is available, with version 2.15 or higher. See link:https://helm.sh/[Helm].
 
 .Procedure
+
 ifeval::["{k8s-platform}" == "Google Cloud Platform"]
 . Prepare the helmchart template `patch.yaml` file for the proper Dashboard ingress path exposure:
 +
@@ -24,7 +26,7 @@ $ cat >patch.yaml<<EOF
 > EOF
 ----
 endif::[]
-. Run the following `{prod-cli}` command to install {prod-short} on {k8s-platform}:
+. Install {prod-short} on {k8s-platform}:
 +
 [subs="+attributes"]
 ----
@@ -97,17 +99,17 @@ endif::[]
 
 .Verification steps
 
-. Investigate {prod} logs:
+. Investigate the {prod-short} logs:
 +
 [subs="+attributes"]
 ----
 $ {prod-cli} server:logs --namespace {prod-namespace}
 ----
 
-. Verify that certificates are set correctly
-.. Open {prod} server URL from the output above
-.. Click on the lock in address bar
-.. Verify it has **Connection is secure**
+. Verify that the certificate settings are correct.
+.. Open {prod} server URL from the output of the previous command.
+.. Click on the lock icon in the address bar.
+.. Verify that the pop-up window displays the **Connection is secure** message.
 
 .Additional resources
 
