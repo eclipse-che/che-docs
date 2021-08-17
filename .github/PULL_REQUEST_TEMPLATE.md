@@ -15,7 +15,7 @@ fix: Fix build, language, links, or metadata.
 
 ## Specify the version of the product this PR applies to
 
-## Pull Request Checklist
+## Pull Request checklist
 
 The author and the reviewers validate the content of this Pull Request with the following checklist, in addition to the [automated tests](code_review_checklist.adoc).
 
