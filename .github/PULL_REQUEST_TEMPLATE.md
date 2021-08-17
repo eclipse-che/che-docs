@@ -3,7 +3,7 @@
 Please use one of the following prefixes for the title:
 docs: Documentation not including procedures. Engineering review is mandatory.
 procedures: Documentation including procedures. Testing procedures is mandatory. Engineering and QE review is mandatory (Engineering can review on behalf of QE). 
-chore: Choreography, release, tooling, version upgrades.
+chore: Routine, release, tooling, version upgrades.
 fix: Fix build, language, links, or metadata.
 -->
 
