@@ -27,4 +27,4 @@ The author and the reviewers validate the content of this Pull Request with the 
     - [ ] Dashboard [default branding data](https://github.com/eclipse-che/che-dashboard/blob/main/src/services/bootstrap/branding.constant.ts)
     - [ ] Chectl [constants.ts](https://github.com/che-incubator/chectl/blob/master/src/constants.ts)
 - [ ] Builds on [Eclipse Che hosted by Red Hat](https://workspaces.openshift.com).
-- [ ] As much as possible, *`Validate language on files added or modified`* step reports no vale warnings.
+- [ ] As much as possible, the *`Validate language on files added or modified`* step reports no vale warnings.
