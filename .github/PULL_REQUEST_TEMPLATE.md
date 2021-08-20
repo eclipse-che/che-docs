@@ -24,7 +24,7 @@ The author and the reviewers validate the content of this Pull Request with the 
 - Any page or link rename:
   - [ ] The page contains a redirection for the previous URL.
   - Propagate the URL change in:
-    - [ ] Dashboard [default branding data](https://github.com/eclipse-che/che-dashboard/blob/main/src/services/bootstrap/branding.constant.ts)
+    - [ ] Dashboard [default branding data](https://github.com/eclipse-che/che-dashboard/blob/main/packages/dashboard-frontend/src/services/bootstrap/branding.constant.ts)
     - [ ] Chectl [constants.ts](https://github.com/che-incubator/chectl/blob/master/src/constants.ts)
 - [ ] Builds on [Eclipse Che hosted by Red Hat](https://workspaces.openshift.com).
 - [ ] As much as possible, the *`Validate language on files added or modified`* step reports no vale warnings.
