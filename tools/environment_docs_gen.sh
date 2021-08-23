@@ -66,7 +66,7 @@ parse_content() {
                                                         # remove non alpha-num, wrap in AsciiDoc ID markup
       echo "   Found begin of topic: $TOPIC" >&2
       BUFF="${BUFF}${TOPICID}$NEWLINE= ${TOPIC}$NEWLINEx2.${TOPIC} $TABLE_HEADER $NEWLINE"      # new topic and table header
-    elif [[ $LINE == '#'* ]] && [[ -n $TOPIC ]]; then   # line starting with single # means property description (can be multi-line)
+    elif [[ $LINE == '#'* ]] && [[ -n $TOPIC ]]; then   # line starting with single # means property description (can be multiline)
       TRIM_LINE=${LINE/\#}                              # read description, stripping first #
       DESCR_BUFF="$DESCR_BUFF${TRIM_LINE}"              # collect all description lines into buffer
     elif [[ -z $LINE ]] && [[ -n $TOPIC ]]; then
