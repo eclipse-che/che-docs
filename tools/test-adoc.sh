@@ -149,7 +149,7 @@ function detect_type {
 function print_adoc {
   local -r filename="$1"
 
-  # Remove both single-line and multi-line comments from the supplied file:
+  # Remove both single-line and multiline comments from the supplied file:
   perl -0pe 's{^////\s*\n.*?^////\s*\n}{}msg;s{^//.*\n}{}gm;' "$filename"
 }
 
