@@ -16,4 +16,4 @@ set -ex
 #./tools/environment_docs_gen.sh
 #./tools/checluster_docs_gen.sh
 
-CI=true antora generate antora-playbook-publication.yml --stacktrace
+CI=true antora generate antora-playbook-for-publication.yml --stacktrace
