@@ -8,6 +8,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
+# Fail on errors and display commands
 set -ex
 
 LIVERELOAD=true gulp
