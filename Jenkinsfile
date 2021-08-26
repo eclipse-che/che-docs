@@ -23,7 +23,9 @@ spec:
       command:
       - cat
       resources:
-        limits: {}
+        limits:
+          memory: "512Mi"
+          cpu: "100m"
         requests:
           memory: "512Mi"
           cpu: "100m"
