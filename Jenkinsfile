@@ -22,6 +22,7 @@ spec:
       image: quay.io/eclipse/che-docs
       command:
       - cat
+      resourceLimitMemory: 512Mi
       tty: true
   volumes:
   - configMap:
@@ -53,6 +54,7 @@ spec:
     stage('Checkout www repo (master)') {
       when {
           anyOf {
+            branch 'main';
             branch 'master';
             branch 'publication'
           }
@@ -92,7 +94,11 @@ spec:
 
     stage('Push to www repo (master)') {
       when {
-        branch 'master'
+          anyOf {
+            branch 'main';
+            branch 'master';
+            branch 'publication'
+          }
         beforeAgent true
       }
       steps {
