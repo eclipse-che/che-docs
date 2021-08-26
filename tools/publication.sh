@@ -16,6 +16,5 @@ set -ex
 # They should be run by make-release.sh when creating or updating the 7.y.x branch.
 #./tools/environment_docs_gen.sh
 #./tools/checluster_docs_gen.sh
-git fetch
 
 CI=true antora generate antora-playbook-for-publication.yml --stacktrace

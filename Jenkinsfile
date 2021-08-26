@@ -80,7 +80,11 @@ spec:
         milestone 21
         container('che-docs') {
           dir('che-docs') {
-                sh './tools/publication.sh'
+                sh '''
+                git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
+                git fetch
+                ./tools/publication.sh
+                '''
             }
         }
         milestone 22
