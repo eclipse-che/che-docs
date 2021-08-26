@@ -18,16 +18,23 @@ spec:
       env:
       - name: "HOME"
         value: "/home/jenkins/agent"
+      resources:
+        limits:
+          memory: "512Mi"
+          cpu: "100m"
+        requests:
+          memory: "512Mi"
+          cpu: "100m"
     - name: che-docs
       image: quay.io/eclipse/che-docs
       command:
       - cat
       resources:
         limits:
-          memory: "512m"
+          memory: "512Mi"
           cpu: "100m"
         requests:
-          memory: "512m"
+          memory: "512Mi"
           cpu: "100m"
       tty: true
   volumes:
