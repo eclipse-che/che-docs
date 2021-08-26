@@ -54,8 +54,7 @@ spec:
       when {
           anyOf {
             branch 'master';
-            branch 'fix-publication';
-            branch 'PR-2102'
+            branch 'publication'
           }
         beforeAgent true
       }
