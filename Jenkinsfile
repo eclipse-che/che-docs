@@ -90,10 +90,7 @@ spec:
 
     stage('Push to www repo (master)') {
       when {
-        anyOf {
-            branch 'master';
-            branch '7.35.x'
-        }
+        branch 'master'
         beforeAgent true
       }
       steps {
