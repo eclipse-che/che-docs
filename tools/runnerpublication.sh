@@ -14,7 +14,9 @@
 # Fail on errors and display commands
 set -ex
 
-${RUNNER} run --rm -ti \
+# Setting same memory limit as in JenkinsFile
+
+${RUNNER} run --rm -ti --memory 512m \
   --name che-docs \
   -v "$PWD:/projects:z" -w /projects \
   --entrypoint="./tools/publication.sh" \
