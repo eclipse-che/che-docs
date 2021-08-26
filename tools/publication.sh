@@ -18,4 +18,4 @@ set -ex
 #./tools/checluster_docs_gen.sh
 
 CI=true antora generate antora-playbook-for-publication.yml --stacktrace
-htmltest
+htmltest --skip-external
