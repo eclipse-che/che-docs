@@ -22,7 +22,11 @@ spec:
       image: quay.io/eclipse/che-docs
       command:
       - cat
-      resourceLimitMemory: 512Mi
+      resources:
+        limits: {}
+        requests:
+          memory: "512Mi"
+          cpu: "100m"
       tty: true
   volumes:
   - configMap:
