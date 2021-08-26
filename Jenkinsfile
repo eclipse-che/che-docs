@@ -24,10 +24,10 @@ spec:
       - cat
       resources:
         limits:
-          memory: "512Mi"
+          memory: "512m"
           cpu: "100m"
         requests:
-          memory: "512Mi"
+          memory: "512m"
           cpu: "100m"
       tty: true
   volumes:
