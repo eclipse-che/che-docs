@@ -52,7 +52,10 @@ spec:
 
     stage('Checkout www repo (master)') {
       when {
-        branch 'master'
+        anyOf {
+            branch 'master';
+            branch '7.35.x'
+        }
         beforeAgent true
       }
       steps {
