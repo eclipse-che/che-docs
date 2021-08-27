@@ -18,10 +18,24 @@ spec:
       env:
       - name: "HOME"
         value: "/home/jenkins/agent"
+      resources:
+        limits:
+          memory: "512Mi"
+          cpu: "100m"
+        requests:
+          memory: "512Mi"
+          cpu: "100m"
     - name: che-docs
       image: quay.io/eclipse/che-docs
       command:
       - cat
+      resources:
+        limits:
+          memory: "512Mi"
+          cpu: "100m"
+        requests:
+          memory: "512Mi"
+          cpu: "100m"
       tty: true
   volumes:
   - configMap:
@@ -52,7 +66,11 @@ spec:
 
     stage('Checkout www repo (master)') {
       when {
-        branch 'master'
+          anyOf {
+            branch 'main';
+            branch 'master';
+            branch 'publication'
+          }
         beforeAgent true
       }
       steps {
@@ -76,7 +94,11 @@ spec:
         milestone 21
         container('che-docs') {
           dir('che-docs') {
-                sh './tools/publication.sh'
+                sh '''
+                git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
+                git fetch
+                ./tools/publication.sh
+                '''
             }
         }
         milestone 22
@@ -85,7 +107,11 @@ spec:
 
     stage('Push to www repo (master)') {
       when {
-        branch 'master'
+          anyOf {
+            branch 'main';
+            branch 'master';
+            branch 'publication'
+          }
         beforeAgent true
       }
       steps {
