@@ -12,24 +12,44 @@ NOTE: When using an activation code to activate a product, you need to generate 
 
 .Procedure
 
-. Retrieve the activation code from the JetBrains account:
-+
+Retrieve the activation code from the JetBrains account:
+
 image::jetbrains/jetbrains-account.jpg[]
-+
+
 JetBrains provides a zip archive with two types of the activation code. Use the `<License{nbsp}ID>{nbsp}-{nbsp}for{nbsp}2018.1{nbsp}or{nbsp}later.txt` file:
-+
+
 image::jetbrains/activation-code.jpg[]
 
-. Provision the activation code for offline use with {prod-short}. This procedure is performed through the {orch-name} Secrets.
+.Provision activation code to Docker container
 
-. Create a {orch-name} Secret to instruct {prod-short} to mount the activation code into a container based on JetBrains specific product:
-+
+When you run the Docker container on your local machine, it is possible to provide the activation code for offline usage to register the JetBrains IDE. Docker image contains scripts, which perform this operation. The only you need to map the activation code, that locates on your host as volume mount into Docker container, for example:
+
+----
+$ docker run --rm -p 8887:8887 -v <path to text file on your host>:/tmp/<product>.key -it <containerName>
+----
+
+Mount path `+/tmp/<product>.key+` should be used according to the JetBrains product used in the Docker image. For example:
+
+* `+/tmp/idea.key+`
+* `+/tmp/pycharm.key+`
+* `+/tmp/webstorm.key+`
+* `+/tmp/phpstorm.key+`
+* `+/tmp/goland.key+`
+
+.Provision activation code to {prod-short}
+
+Since {prod-short} runs in Kubernetes environment, it is possible to provision the activation code for offline usage through the Kubernetes Secrets.
+
+NOTE: To understand what is Kubernetes Secret and how to operate with the last one, see: link:https://kubernetes.io/docs/concepts/configuration/secret/[Kubernetes Documentation]
+
+Create a Kubernetes Secret, that will instruct {prod-short} to mount the activation code into container which is based on the JetBrains specific product:
+
 [source,yaml,subs="+quotes"]
 ----
 apiVersion: v1
 kind: Secret
 metadata:
-  name: _<secret name>_ <1>
+  name: jetbrains-offline-activation-code
   labels:
     app.kubernetes.io/component: workspace-secret
     app.kubernetes.io/part-of: che.eclipse.org
@@ -38,18 +58,25 @@ metadata:
     che.eclipse.org/mount-path: /tmp/
     che.eclipse.org/mount-as: file
 data:
-  __<product name (ideaIU or WebStorm)>__.key: _<base64-encoded data content>_ <2>
+  idea.key: <base64 encoded data content here> <1>
+  pycharm.key: <base64 encoded data content here> <1>
+  webstorm.key: <base64 encoded data content here> <1>
+  phpstorm.key: <base64 encoded data content here> <1>
+  goland.key: <base64 encoded data content here> <1>
 ----
-<1> `<secret name>` – The section that specifies the secret name. It may have a different name, for example, `ideaiu-offline-activation-code`. Provide the secret name in lowercase.
-<2> Product name and activation code:
-* `<product name (ideaIU or WebStorm)>` – Replace with the JetBrains product name. See section
-xref:jetbrains-product-name-mapping[].
-* `<base64-encoded data content>` – The activation code content encoded in base64.
+<1> `+<base64-encoded data content>+` – The activation code content encoded in base64.
 
-Use the `automount-workspace-secret` option set to `false` to disable the mounting process until it is explicitly requested in a devfile component using the `automountWorkspaceSecrets:true` property. See the `workspace.yaml` example file above. This is the default behavior to avoid mounting the activation code into every container except specific ones that have to work with it.
+Annotation `+automount-workspace-secret+` with the `+false+` value disables the mounting process until it is explicitly requested in a workspace component using the `+automountWorkspaceSecrets:true+` property. So, to mount the activation codes into a Workspace, workspace configuration should be updated by adding `+automountWorkspaceSecrets:true+` property:
 
-As a result, in the Che Editor, the file with the activation code for offline use is mounted to the `/tmp/ideaIU.key` or `/tmp/WebStorm.key` path (or similar - based on the type of the build).
+[source,yaml]
+----
+metadata:
+  name: <workspace name goes here>
+components:
+  - type: cheEditor
+    automountWorkspaceSecrets: true
+    reference: '<url for the meta.yaml goes here>'
+apiVersion: 1.0.0
+----
 
 IntelliJ Idea Community Edition does not require this procedure. This has to be done for JetBrains products that need to be registered.
-
-include::partial$con_jetbrains-product-name-mapping.adoc[leveloffset=+1]

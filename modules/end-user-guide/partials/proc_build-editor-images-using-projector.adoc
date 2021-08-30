@@ -1,0 +1,84 @@
+[id="build-editor-images-using-projector_{context}"]
+= Build editor images using Projector
+
+.Prerequisites
+
+In order to build locally Docker container, make sure, that Docker version is 18.09 or higher, since the build scripts use link:https://docs.docker.com/develop/develop-images/build_enhancements/[Docker BuildKit].
+
+NOTE: For macOS users, it is needed to ensure that `+gnu-getopt+` is installed in the system.
+
+Repository link:https://github.com/che-incubator/jetbrains-editor-images[jetbrains-editor-images] needs to be cloned first before performing any steps in current documentation section.
+
+.Build JetBrains IDE in Docker based on the predefined configuration
+
+It is available to select the predefined IDE distribution from the wizard during the image build. When `+--tag+` or `+--url+` parameters are omitted, then select wizard is called. Predefined configurations, that are currently supported are provided in link:https://github.com/che-incubator/jetbrains-editor-images/blob/main/compatible-ide.json[compatible-ide.json].
+
+The complete command looks:
+
+----
+./projector.sh build
+----
+
+This command will prompt user to select the IDE packaging to build:
+
+----
+[info] Select the IDE package to build (default is 'IntelliJ IDEA Community'):
+       1) IntelliJ IDEA Community
+       2) PyCharm Community
+----
+
+Then prompt to choose IDE packaging version to build (in case of selecting default choice):
+
+----
+[info] Select the IDE package version to build (default is '2020.3.3'):
+       1) 2020.3.3
+       2) 2020.3.2
+       3) 2020.3.1
+----
+
+.Build JetBrains IDE in Docker using custom distribution
+
+In order to build the Docker image with the custom JetBrains IDE distribution, there is an ability to pass particular distribution through the `+--tag+` and `+--url+` parameters to `+./projector.sh build+`.
+
+The complete command looks:
+
+----
+./projector build --tag name:tag --url downloadUrl
+----
+
+This command will perform the build of `+name:tag+` image with the given IDE distribution provided by `+downloadUrl+`. This download URL should point to `+tar.gz+` packaging. For example, navigate to link:https://www.jetbrains.com/idea/download/#section=linux[download page], click "Other versions" and copy the link for the IDE packaging. Please ensure that you select `+tar.gz+` with JBR, not without.
+
+Then, it is only need to call ./projector.sh run command to run the container locally:
+
+----
+./projector.sh run name:tag
+----
+
+After that, navigate to link:http://localhost:8887[http://localhost:8887], to access the JetBrains IDE.
+
+Below you can find a few examples how to build different JetBrains IDEs using `+--url+` parameter:
+
+Build the Docker image with WebStorm 2020.3.3::
+----
+$ git clone https://github.com/che-incubator/jetbrains-editor-images && cd jetbrains-editor-images
+$ ./projector.sh build --tag che-webstorm:latest --url https://download.jetbrains.com/webstorm/WebStorm-2020.3.3.tar.gz
+$ ./projector.sh run che-webstorm:latest
+----
+
+Build the Docker image with PyCharm Community 2020.3.5::
+----
+$ git clone https://github.com/che-incubator/jetbrains-editor-images && cd jetbrains-editor-images
+$ ./projector.sh build --tag che-pycharm:latest --url https://download.jetbrains.com/python/pycharm-community-2020.3.5.tar.gz
+$ ./projector.sh run che-pycharm:latest
+----
+
+Build the Docker image with IntelliJ IDEA Ultimate 2020.2.2::
+----
+$ git clone https://github.com/che-incubator/jetbrains-editor-images && cd jetbrains-editor-images
+$ ./projector.sh build --tag che-idea-ultimate:latest --url https://download.jetbrains.com/idea/ideaIU-2020.2.2.tar.gz
+$ ./projector.sh run che-idea-ultimate:latest
+----
+
+After performing any build scenario, which provided above, navigate to link:http://localhost:8887[http://localhost:8887], to access the JetBrains IDE.
+
+* xref:configuring-an-existing-workspace-to-use-intellij-idea_{context}[]
