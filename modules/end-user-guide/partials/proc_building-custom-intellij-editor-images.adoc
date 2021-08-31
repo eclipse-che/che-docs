@@ -1,0 +1,98 @@
+[id="building-custom-intellij-editor-images_{context}"]
+= Building custom IntelliJ editor images
+
+.Prerequisites
+
+* Docker version is 18.09 or higher, since the build scripts use link:https://docs.docker.com/develop/develop-images/build_enhancements/[Docker BuildKit].
+
+* For macOS users, the `+gnu-getopt+` tool is available.
+
+* Define the build parameters:
++
+`--tag __<name:tag>__`::
+Tag to apply to the image after build.
++
+`--url __<downloadUrl>__`::
+Download URL pointing to the archive of the custom IntelliJ-based distribution, meeting following criteria: 
++
+** Linux platform
+** `+tar.gz+` archive
+** With JBR
+** Supported by Projector. The last version supported by Projector is 2020.3.
++
+.Searching the download URL for IntelliJ IDEA
+====
+. Navigate to link:https://www.jetbrains.com/idea/download/other.html[Download IntelliJ IDEA Other Versions]
+. Copy the download link for the archive: Version 2020.3, IntelliJ IDEA Community Edition, 2020.3.4 - Linux (`tar.gz`).
+====
+
+.Procedure
+
+. Get a local copy of the link:https://github.com/che-incubator/jetbrains-editor-images[JetBrains Projector Editor Images repository].
++
+----
+$ git clone https://github.com/che-incubator/jetbrains-editor-images
+$ cd jetbrains-editor-images
+----
+
+. Build the container.
++
+[subs="+quotes,macros,attributes"]
+----
+$ ./projector build --tag __<name:tag>__ --url __<downloadUrl>__
+----
++
+.Building the Docker image with WebStorm 2020.3.3
+====
+----
+$ ./projector.sh build --tag che-webstorm:latest --url https://download.jetbrains.com/webstorm/WebStorm-2020.3.3.tar.gz
+----
+====
++
+.Building the Docker image with PyCharm Community 2020.3.5
+====
+----
+$ ./projector.sh build --tag che-pycharm:latest --url https://download.jetbrains.com/python/pycharm-community-2020.3.5.tar.gz
+----
+====
++
+.Building the Docker image with IntelliJ IDEA Ultimate 2020.2.2
+====
+----
+$ ./projector.sh build --tag che-idea-ultimate:latest --url https://download.jetbrains.com/idea/ideaIU-2020.2.2.tar.gz
+----
+====
+
+. To test the container, run the container locally, and navigate to ++http://localhost:8887++ to access the JetBrains IDE.
++
+[subs="+quotes,macros,attributes"]
+----
+$ ./projector.sh run __<name:tag>__
+----
++
+.Testing the Docker image with WebStorm
+====
+----
+$ ./projector.sh run che-webstorm:latest
+----
+====
++
+.Testing the Docker image with PyCharm
+====
+----
+$ ./projector.sh run che-pycharm:latest
+----
+====
++
+.Testing the Docker image with IntelliJ IDEA Ultimate
+====
+----
+$ ./projector.sh run che-idea-ultimate:latest
+----
+====
+
+
+.Additional resources
+
+* xref:using-intellij-based-ides.adoc[]
+* link:https://github.com/che-incubator/jetbrains-editor-images[JetBrains Projector Editor Images repository]

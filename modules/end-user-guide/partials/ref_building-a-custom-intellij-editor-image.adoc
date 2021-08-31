@@ -1,0 +1,57 @@
+:_module-type: REFERENCE
+
+[id="building-a-custom-intellij-editor-image_{context}"]
+= Building a custom IntelliJ editor image
+
+To build an IntelliJ editor image using a custom JetBrains IDE distribution, use following parameters:
+
+`+--tag+`:: Tag to apply to the image after build.
+
+`+--url+`:: Download URL pointing to the `+tar.gz+` archive with JBR for Linux of the custom IntelliJ-based distribution, meeting following constraints: 
++
+* `+tar.gz+` archive with JBR
+* The last version supported  by Projector for IntelliJ-based IDEs is 2020.3.
+For example, navigate to link:https://www.jetbrains.com/idea/download/other.html[Download IntelliJ IDEA], click "Other versions" and copy the link for the IDE packaging.
+
+
+* To build the container:
++
+----
+$ ./projector build --tag name:tag --url downloadUrl
+----
+
+To run the container locally:
++
+----
+$ ./projector.sh run name:tag
+----
+
+
+.Building the Docker image with WebStorm 2020.3.3
+====
+----
+$ git clone https://github.com/che-incubator/jetbrains-editor-images && cd jetbrains-editor-images
+$ ./projector.sh build --tag che-webstorm:latest --url https://download.jetbrains.com/webstorm/WebStorm-2020.3.3.tar.gz
+$ ./projector.sh run che-webstorm:latest
+----
+====
+
+.Building the Docker image with PyCharm Community 2020.3.5
+====
+----
+$ git clone https://github.com/che-incubator/jetbrains-editor-images && cd jetbrains-editor-images
+$ ./projector.sh build --tag che-pycharm:latest --url https://download.jetbrains.com/python/pycharm-community-2020.3.5.tar.gz
+$ ./projector.sh run che-pycharm:latest
+----
+====
+
+.Building the Docker image with IntelliJ IDEA Ultimate 2020.2.2
+====
+----
+$ git clone https://github.com/che-incubator/jetbrains-editor-images && cd jetbrains-editor-images
+$ ./projector.sh build --tag che-idea-ultimate:latest --url https://download.jetbrains.com/idea/ideaIU-2020.2.2.tar.gz
+$ ./projector.sh run che-idea-ultimate:latest
+----
+====
+
+.Additional resources

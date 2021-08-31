@@ -1,0 +1,45 @@
+[id="building-default-intellij-editor-images_{context}"]
+= Building default IntelliJ editor images
+
+
+
+.Prerequisites
+
+* Docker version is 18.09 or higher, since the build scripts use link:https://docs.docker.com/develop/develop-images/build_enhancements/[Docker BuildKit].
+
+* For macOS users, the `+gnu-getopt+` tool is available.
+
+
+.Procedure
+
+. Get a local copy of the link:https://github.com/che-incubator/jetbrains-editor-images[JetBrains Projector Editor Images repository].
++
+----
+$ git clone https://github.com/che-incubator/jetbrains-editor-images
+$ cd jetbrains-editor-images
+----
+
+. Build JetBrains IDE based on the predefined configuration, and reply to the prompt to select the IDE and the version to build:
++
+----
+$ ./projector.sh build
+[info] Select the IDE package to build (default is 'IntelliJ IDEA Community'):
+       1) IntelliJ IDEA Community
+       2) PyCharm Community
+[info] Select the IDE package version to build (default is '2020.3.3'):
+       1) 2020.3.3
+       2) 2020.3.2
+       3) 2020.3.1
+----
+
+. To test the container, run it locally and navigate to ++http://localhost:8887++, to access the JetBrains IDE
++
+----
+$ ./projector.sh run
+----
+
+
+.Additional resources
+
+* xref:using-intellij-based-ides.adoc[]
+* link:https://github.com/che-incubator/jetbrains-editor-images[JetBrains Projector Editor Images repository]

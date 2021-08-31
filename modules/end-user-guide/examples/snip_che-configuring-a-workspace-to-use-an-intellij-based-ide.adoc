@@ -1,0 +1,65 @@
+.Prerequisites
+
+* Define the IntelliJ-based IDE container image to use: __<intellij-container-image>__. It can be:
+** A prebuilt IntelliJ-based IDEs image:
++
+quay.io/che-incubator/che-idea:latest:: IntelliJ IDEA Community Edition
++
+quay.io/che-incubator/che-pycharm:latest:: PyCharm Community Edition
+** A custom editor image, see xref:building-intellij-editor-images.adoc[].
+
+.Procedure
+
+. In the root directory of the workspace, create a `+meta.yaml+` file with the following content:
++
+[source,yaml,subs="+quotes,macros,attributes"]
+----
+apiVersion: v2
+publisher: <username>
+name: intellij-ide
+version: latest
+type: Che Editor
+displayName: IntelliJ-based IDE
+title: IntelliJ-based IDE as Editor for Eclipse Che
+description: IntelliJ-based IDE running using Projector
+icon: https://www.jetbrains.com/apple-touch-icon.png
+category: Editor
+repository: https://github.com/che-incubator/jetbrains-editor-images
+firstPublicationDate: "2021-04-10"
+spec:
+  endpoints:
+   -  name: "intellij"
+      public: true
+      targetPort: 8887
+      attributes:
+        protocol: http
+        type: ide
+        path: /projector-client/index.html?backgroundColor=434343&wss
+  containers:
+   - name: intellij-ide
+     image: "__<intellij-container-image>__"
+     mountSources: true
+     volumes:
+         - mountPath: "/home/projector-user"
+           name: projector-user
+     ports:
+         - exposedPort: 8887
+     memoryLimit: "4096M"
+----
+
+. Add the following component to the workspace devfile:
++
+[source,yaml]
+----
+components:
+ - type: cheEditor
+   reference: meta.yaml
+----
+
+.Additional resources
+
+* xref:provisioning-jetbrains-activation-code-for-offline-use.adoc[]
+* xref:building-intellij-editor-images.adoc[]
+* link:https://quay.io/repository/che-incubator/che-idea?tab=tags[Container image for IntelliJ IDEA Community ]
+* link:https://quay.io/repository/che-incubator/che-pycharm?tab=tags[Container image for PyCharm Community Edition]
+
