@@ -1,50 +1,22 @@
 [id="provisioning-jetbrains-activation-code-for-offline-use_{context}"]
 = Provisioning JetBrains activation code for offline use
 
-An activation code for offline use is a file with a license code that can be retrieved from the license management section of your JetBrains account for the license that is assigned to you. When you purchase a personal subscription or are assigned a commercial subscription by your organization, you receive an email prompting you to create a JetBrains account that becomes connected with the license.
-
-NOTE: When using an activation code to activate a product, you need to generate a new activation code and apply it to your product each time the subscription is renewed.
+This section describes how to provision the JetBrains activation code to {prod-short}, when using a JetBrains IDE requesting a registration. You need to generate an activation code and apply it to your product after each subscription renewal.
 
 .Prerequisites
 
-* JetBrains account
-* Personal or organization subscription
+* An active JetBrains account.
+* An active personal or organization subscription.
 
 .Procedure
 
-Retrieve the activation code from the JetBrains account:
+. Retrieve the activation code from the JetBrains account. JetBrains provides a zip archive with two types of the activation code. Use the `<License{nbsp}ID>{nbsp}-{nbsp}for{nbsp}2018.1{nbsp}or{nbsp}later.txt` file.
 
-image::jetbrains/jetbrains-account.jpg[]
+. Create a base64 encoded version of the content of the activation code, and remember it as __<base64_encoded_activation_code>__.
 
-JetBrains provides a zip archive with two types of the activation code. Use the `<License{nbsp}ID>{nbsp}-{nbsp}for{nbsp}2018.1{nbsp}or{nbsp}later.txt` file:
-
-image::jetbrains/activation-code.jpg[]
-
-.Provision activation code to Docker container
-
-When you run the Docker container on your local machine, it is possible to provide the activation code for offline usage to register the JetBrains IDE. Docker image contains scripts, which perform this operation. The only you need to map the activation code, that locates on your host as volume mount into Docker container, for example:
-
-----
-$ docker run --rm -p 8887:8887 -v <path to text file on your host>:/tmp/<product>.key -it <containerName>
-----
-
-Mount path `+/tmp/<product>.key+` should be used according to the JetBrains product used in the Docker image. For example:
-
-* `+/tmp/idea.key+`
-* `+/tmp/pycharm.key+`
-* `+/tmp/webstorm.key+`
-* `+/tmp/phpstorm.key+`
-* `+/tmp/goland.key+`
-
-.Provision activation code to {prod-short}
-
-Since {prod-short} runs in Kubernetes environment, it is possible to provision the activation code for offline usage through the Kubernetes Secrets.
-
-NOTE: To understand what is Kubernetes Secret and how to operate with the last one, see: link:https://kubernetes.io/docs/concepts/configuration/secret/[Kubernetes Documentation]
-
-Create a Kubernetes Secret, that will instruct {prod-short} to mount the activation code into container which is based on the JetBrains specific product:
-
-[source,yaml,subs="+quotes"]
+. Create a {orch-name} Secret to provision the activation code to {prod-short}.
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
 ----
 apiVersion: v1
 kind: Secret
@@ -58,25 +30,27 @@ metadata:
     che.eclipse.org/mount-path: /tmp/
     che.eclipse.org/mount-as: file
 data:
-  idea.key: <base64 encoded data content here> <1>
-  pycharm.key: <base64 encoded data content here> <1>
-  webstorm.key: <base64 encoded data content here> <1>
-  phpstorm.key: <base64 encoded data content here> <1>
-  goland.key: <base64 encoded data content here> <1>
+  idea.key: __<base64_encoded_activation_code>__
+  pycharm.key: __<base64_encoded_activation_code>__
+  webstorm.key: __<base64_encoded_activation_code>__
+  phpstorm.key: __<base64_encoded_activation_code>__
+  goland.key: __<base64_encoded_activation_code>__
 ----
-<1> `+<base64-encoded data content>+` – The activation code content encoded in base64.
++
+`+automount-workspace-secret: false+`:: disables the mounting process until it is explicitly requested in a workspace component using the `+automountWorkspaceSecrets: true+` property.
 
-Annotation `+automount-workspace-secret+` with the `+false+` value disables the mounting process until it is explicitly requested in a workspace component using the `+automountWorkspaceSecrets:true+` property. So, to mount the activation codes into a Workspace, workspace configuration should be updated by adding `+automountWorkspaceSecrets:true+` property:
-
+. To mount the activation codes into a workspace, update the workspace configuration to set `+automountWorkspaceSecrets: true+`:
++
 [source,yaml]
 ----
-metadata:
-  name: <workspace name goes here>
 components:
   - type: cheEditor
     automountWorkspaceSecrets: true
-    reference: '<url for the meta.yaml goes here>'
-apiVersion: 1.0.0
+    reference: "meta.yml"
 ----
 
-IntelliJ Idea Community Edition does not require this procedure. This has to be done for JetBrains products that need to be registered.
+
+.Additional resources
+
+* xref:using-an-intellij-based-ide.adoc[]
+* link:https://kubernetes.io/docs/concepts/configuration/secret/[{orch-name} Secret Documentation]
