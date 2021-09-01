@@ -5,10 +5,17 @@ This procedure describes how to build an IntelliJ-based editor image using the d
 
 .Prerequisites
 
+* Define the following locations to publish the editor image and metadata:
++
+`__<IntelliJ-container-image>__`::
+Location of the IntelliJ editor image in a registry accessible by {prod-short}.
++
+`__<URL_to_meta.yaml>__`::
+HTTPS resource containing the editor metadata.
+
 * A Docker version supporting link:https://docs.docker.com/develop/develop-images/build_enhancements/[Docker BuildKit]. Docker 18.09 or greater.
 
 * On the macOS platform: the `+gnu-getopt+` tool is available.
-
 
 .Procedure
 
@@ -38,7 +45,44 @@ $ ./projector.sh build
 $ ./projector.sh run
 ----
 
-. Publish the container to a registry accessible by {prod-short}, and remember the image location to define the value of __<IntelliJ-container-image>__ for the next step: xref:using-intellij-based-ides.adoc[].
+. Publish the container to __<IntelliJ-container-image>__.
+
+. Create a `+meta.yaml+` file with the following content, and publish it to `__<URL_to_meta.yaml>__`:
++
+[source,yaml,subs="+quotes,macros,attributes"]
+----
+apiVersion: v2
+publisher: <username>
+name: intellij-ide
+version: latest
+type: Che Editor
+displayName: IntelliJ-based IDE
+title: IntelliJ-based IDE as Editor for Eclipse Che
+description: IntelliJ-based IDE running using Projector
+icon: https://www.jetbrains.com/apple-touch-icon.png
+category: Editor
+repository: https://github.com/che-incubator/jetbrains-editor-images
+firstPublicationDate: "2021-04-10"
+spec:
+  endpoints:
+   -  name: "intellij"
+      public: true
+      targetPort: 8887
+      attributes:
+        protocol: http
+        type: ide
+        path: /projector-client/index.html?backgroundColor=434343&wss
+  containers:
+   - name: intellij-ide
+     image: "__<IntelliJ-container-image>__"
+     mountSources: true
+     volumes:
+         - mountPath: "/home/projector-user"
+           name: projector-user
+     ports:
+         - exposedPort: 8887
+     memoryLimit: "4096M"
+----
 
 .Additional resources
 
