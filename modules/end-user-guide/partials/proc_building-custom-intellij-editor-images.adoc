@@ -1,11 +1,13 @@
 [id="building-custom-intellij-editor-images_{context}"]
 = Building custom IntelliJ editor images
 
+This procedure describes how to build an IntelliJ-based editor image using a custom archive and a custom image name.
+
 .Prerequisites
 
-* Docker version is 18.09 or higher, since the build scripts use link:https://docs.docker.com/develop/develop-images/build_enhancements/[Docker BuildKit].
+* A Docker version supporting link:https://docs.docker.com/develop/develop-images/build_enhancements/[Docker BuildKit]. Docker 18.09 or greater.
 
-* For macOS users, the `+gnu-getopt+` tool is available.
+* On the macOS platform: the `+gnu-getopt+` tool is available.
 
 * Define the build parameters:
 +
@@ -15,15 +17,15 @@ Tag to apply to the image after build.
 `--url __<downloadUrl>__`::
 Download URL pointing to the archive of the custom IntelliJ-based distribution, meeting following criteria: 
 +
-** Linux platform
-** `+tar.gz+` archive
-** With JBR
+** Linux platform.
+** Archive in `+tar.gz+` format.
+** With JetBrains Runtime (JBR).
 ** Supported by Projector. The last version supported by Projector is 2020.3.
 +
 .Searching the download URL for IntelliJ IDEA
 ====
 . Navigate to link:https://www.jetbrains.com/idea/download/other.html[Download IntelliJ IDEA Other Versions]
-. Copy the download link for the archive: Version 2020.3, IntelliJ IDEA Community Edition, 2020.3.4 - Linux (`tar.gz`).
+. Copy the download link for the archive: Version 2020.3, IntelliJ IDEA Community Edition, 2020.3.4 - Linux (`tar.gz`) with JBR.
 ====
 
 .Procedure
@@ -63,7 +65,7 @@ $ ./projector.sh build --tag che-idea-ultimate:latest --url https://download.jet
 ----
 ====
 
-. To test the container, run the container locally, and navigate to ++http://localhost:8887++ to access the JetBrains IDE.
+. To test the container, run the container locally, and navigate to `++http://localhost:8887++` to access the JetBrains IDE.
 +
 [subs="+quotes,macros,attributes"]
 ----
@@ -91,9 +93,10 @@ $ ./projector.sh run che-idea-ultimate:latest
 ----
 ====
 
-. Publish the container to a registry accessible by {prod-short}, and remember the image location as a value for __<intellij-container-image>__ for the next step: xref:using-intellij-based-ides.adoc[].
+. Publish the container to a registry accessible by {prod-short}, and remember the image location to define the value for __<IntelliJ-container-image>__ for the next step: xref:using-intellij-based-ides.adoc[].
 
 .Additional resources
 
 * xref:using-intellij-based-ides.adoc[]
 * link:https://github.com/che-incubator/jetbrains-editor-images[JetBrains Projector Editor Images repository]
+* link:https://docs.docker.com/develop/develop-images/build_enhancements/[Docker BuildKit]

@@ -7,12 +7,17 @@ This section describes how to provision the JetBrains activation code to {prod-s
 
 * An active JetBrains account.
 * An active personal or organization subscription.
+* The `base64` tool is available.
 
 .Procedure
 
-. Retrieve the activation code from the JetBrains account. JetBrains provides a zip archive with two types of the activation code. Use the `<License{nbsp}ID>{nbsp}-{nbsp}for{nbsp}2018.1{nbsp}or{nbsp}later.txt` file.
+. Retrieve the activation code from the JetBrains account. JetBrains provides a zip archive with two types of the activation code. Use the `<License{nbsp}ID>{nbsp}-{nbsp}for{nbsp}2018.1{nbsp}or{nbsp}later.txt` file. Save the content in the `jetbrains_license.txt` file.
 
-. Create a base64 encoded version of the content of the activation code, and remember it as __<base64_encoded_activation_code>__.
+. To define __<base64_encoded_activation_code>__, calculate the base64 encoded version of the content of the activation code.
++
+----
+$ base64 jetbrains_license.txt
+----
 
 . Create a {orch-name} Secret to provision the activation code to {prod-short}.
 +
