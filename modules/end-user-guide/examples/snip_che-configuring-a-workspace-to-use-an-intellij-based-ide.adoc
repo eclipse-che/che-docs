@@ -7,10 +7,14 @@
 +
 `quay.io/che-incubator/che-pycharm:latest`:: PyCharm Community Edition
 ** A custom editor image, see xref:building-intellij-editor-images.adoc[].
+* Define the destination to publish the editor metadata.
++
+`__<URL_to_meta.yaml>__`:: HTTPS resource containing the `meta.yaml` file defining the IntelliJ-based IDE.
+
 
 .Procedure
 
-. In the root directory of the workspace, create a `+meta.yaml+` file with the following content:
+. Create a `+meta.yaml+` file with the following content, and publish it to `__<URL_to_meta.yaml>__`:
 +
 [source,yaml,subs="+quotes,macros,attributes"]
 ----
@@ -49,14 +53,14 @@ spec:
 
 . Add the following component to the workspace devfile:
 +
-[source,yaml]
+[source,yaml,subs="+quotes,macros,attributes"]
 ----
 components:
   - type: cheEditor
-    reference: meta.yaml
+    reference: "__<URL_to_meta.yaml>__"
 ----
 
-. Commit and push the changes made in the `devfile.yaml` and `meta.yaml` files, and start a fresh workspace, see xref:importing-the-source-code-of-a-project-into-a-workspace.adoc[].
+. Restart the workspace.
 
 .Additional resources
 
