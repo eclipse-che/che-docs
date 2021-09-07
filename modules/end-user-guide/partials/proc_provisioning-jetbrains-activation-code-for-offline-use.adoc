@@ -31,7 +31,7 @@ metadata:
     app.kubernetes.io/component: workspace-secret
     app.kubernetes.io/part-of: che.eclipse.org
   annotations:
-    che.eclipse.org/automount-workspace-secret: 'false'
+    che.eclipse.org/automount-workspace-secret: 'false' <1>
     che.eclipse.org/mount-path: /tmp/
     che.eclipse.org/mount-as: file
 data:
@@ -42,16 +42,16 @@ data:
   goland.key: __<base64_encoded_activation_code>__
 ----
 +
-`+automount-workspace-secret: false+`:: disables the mounting process until it is explicitly requested in a workspace component using the `+automountWorkspaceSecrets: true+` property.
+<1> `+che.eclipse.org/automount-workspace-secret: 'false'+`: disables the mounting process until a workspace component explicitly requests it using the `+automountWorkspaceSecrets: true+` property.
 
 . To mount the activation codes into a workspace, update the workspace configuration to set `+automountWorkspaceSecrets: true+`:
 +
-[source,yaml]
+[source,yaml,subs="+quotes,+attributes,+macros"]
 ----
 components:
   - type: cheEditor
     automountWorkspaceSecrets: true
-    reference: "meta.yml"
+    reference: "__<URL_to_meta.yaml>__"
 ----
 
 

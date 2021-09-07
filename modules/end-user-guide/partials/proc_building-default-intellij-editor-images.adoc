@@ -5,21 +5,15 @@ This procedure describes how to build an IntelliJ-based editor image using the d
 
 .Prerequisites
 
-* Define the following locations to publish the editor image and metadata:
-+
-`__<IntelliJ-container-image>__`::
-Location of the IntelliJ editor image in a registry accessible by {prod-short}.
-+
-`__<URL_to_meta.yaml>__`::
-HTTPS resource containing the editor metadata.
+* The `git`, `jq`, and `wget` tools are available.
 
-* The following tools are available:
-** A Docker version supporting link:https://docs.docker.com/develop/develop-images/build_enhancements/[Docker BuildKit]. Docker 18.09 or greater.
-** `git`
-** `jq`
-** Java Development Kit (JDK) version 11
-** `wget`
-** On the macOS platform: `+gnu-getopt+`
+* Docker version 18.09 or greater, supporting link:https://docs.docker.com/develop/develop-images/build_enhancements/[Docker BuildKit].
+
+* Java Development Kit (JDK) version 11 is available.
+
+* On the macOS platform: the `+gnu-getopt+` tool is available.
+
+* The build platform has at least 2 GB of RAM.
 
 
 .Procedure
@@ -50,14 +44,14 @@ $ ./projector.sh build
 $ ./projector.sh run
 ----
 
-. Publish the container to __<IntelliJ-container-image>__.
+. Publish the IntelliJ editor image to a registry accessible by {prod-short}, and remember the location: __<IntelliJ-container-image>__.
 
-. Create a `+meta.yaml+` file with the following content, and publish it to `__<URL_to_meta.yaml>__`:
+. Create a `+meta.yaml+` file with the following content:
 +
 [source,yaml,subs="+quotes,macros,attributes"]
 ----
 apiVersion: v2
-publisher: <username>
+publisher: __<publisher>__ <1>
 name: intellij-ide
 version: latest
 type: Che Editor
@@ -79,7 +73,7 @@ spec:
         path: /projector-client/index.html?backgroundColor=434343&wss
   containers:
    - name: intellij-ide
-     image: "__<IntelliJ-container-image>__"
+     image: "__<IntelliJ-container-image>__" <2>
      mountSources: true
      volumes:
          - mountPath: "/home/projector-user"
@@ -88,6 +82,10 @@ spec:
          - exposedPort: 8887
      memoryLimit: "4096M"
 ----
+<1> __<publisher>__: Your publisher name.
+<2> __<IntelliJ-container-image>__: Location of the IntelliJ editor image in a registry accessible by {prod-short}.
+
+. Publish the `meta.yaml` file to an HTTPS resource accessible by {prod-short}: `__<URL_to_meta.yaml>__`.
 
 .Additional resources
 

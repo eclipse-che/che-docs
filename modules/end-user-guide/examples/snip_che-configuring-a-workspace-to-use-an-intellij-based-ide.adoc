@@ -1,20 +1,6 @@
-.Prerequisites
-
-* Define the HTTPS resource defining the editor metadata: `__<URL_to_meta.yaml>__`. It can be:
-
-** Metadata for a prebuilt IntelliJ-based IDEs image:
-+
-`++https://raw.githubusercontent.com/che-incubator/jetbrains-editor-images/meta/che-idea/latest.meta.yaml++`::
-IntelliJ IDEA Community
-+
-`++https://raw.githubusercontent.com/che-incubator/jetbrains-editor-images/meta/che-pycharm/latest.meta.yaml++`::
-PyCharm Community
-
-** Metadata for a custom editor image, see xref:building-intellij-editor-images.adoc[].
-
-* When using a JetBrains IDE requesting a registration, see xref:provisioning-jetbrains-activation-code-for-offline-use.adoc[].
-
 .Procedure
+
+. When using a JetBrains IDE requesting a registration, see xref:provisioning-jetbrains-activation-code-for-offline-use.adoc[].
 
 . Add the following component to the workspace devfile:
 +
@@ -22,8 +8,30 @@ PyCharm Community
 ----
 components:
   - type: cheEditor
-    reference: "__<URL_to_meta.yaml>__"
+    reference: "__<URL_to_meta.yaml>__" <1>
 ----
++
+<1> __<URL_to_meta.yaml>__: HTTPS resource defining the editor metadata. It can be:
++
+* IntelliJ IDEA Community prebuilt IntelliJ-based IDEs image
++
+[source,yaml,subs="+quotes,macros,attributes"]
+----
+components:
+  - type: cheEditor
+    reference: https://raw.githubusercontent.com/che-incubator/jetbrains-editor-images/meta/che-idea/latest.meta.yaml
+----
++
+* PyCharm Community prebuilt IntelliJ-based IDEs image
++
+[source,yaml,subs="+quotes,macros,attributes"]
+----
+components:
+  - type: cheEditor
+    reference: https://raw.githubusercontent.com/che-incubator/jetbrains-editor-images/meta/che-pycharm/latest.meta.yaml
+----
++
+* Metadata for a custom editor image, see xref:building-intellij-editor-images.adoc[].
 
 
 . Restart the workspace.

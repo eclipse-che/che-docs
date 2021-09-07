@@ -5,39 +5,15 @@ This procedure describes how to build an IntelliJ-based editor image using a cus
 
 .Prerequisites
 
-* Define the following locations to publish the editor image and metadata:
-+
-`__<IntelliJ-container-image>__`:: Location of the IntelliJ editor image in a registry accessible by {prod-short}.
-+
-`__<URL_to_meta.yaml>__`:: HTTPS resource containing the editor metadata.
+* The `git`, `jq`, and `wget` tools are available.
 
-* Define the build parameters:
-+
-`--tag __<name:tag>__`::
-Tag to apply to the image after build.
-+
-`--url __<downloadUrl>__`::
-Download URL pointing to the archive of the custom IntelliJ-based distribution, meeting following criteria: 
-+
-** Linux platform.
-** Archive in `+tar.gz+` format.
-** With JetBrains Runtime (JBR).
-** Supported by Projector. The last version supported by Projector is 2020.3.
-+
-.Searching the download URL for IntelliJ IDEA
-====
-. Navigate to link:https://www.jetbrains.com/idea/download/other.html[Download IntelliJ IDEA Other Versions]
-. Copy the download link for the archive: Version 2020.3, IntelliJ IDEA Community Edition, 2020.3.4 - Linux (`tar.gz`) with JBR.
-====
+* Docker version 18.09 or greater, supporting link:https://docs.docker.com/develop/develop-images/build_enhancements/[Docker BuildKit].
 
-* The following tools are available:
-** A Docker version supporting link:https://docs.docker.com/develop/develop-images/build_enhancements/[Docker BuildKit]. Docker 18.09 or greater.
-** `git`
-** `jq`
-** Java Development Kit (JDK) version 11
-** `wget`
-** On the macOS platform: `+gnu-getopt+`
+* Java Development Kit (JDK) version 11 is available.
 
+* On the macOS platform: the `+gnu-getopt+` tool is available.
+
+* The build platform has at least 2 GB of RAM.
 
 .Procedure
 
@@ -48,31 +24,48 @@ $ git clone https://github.com/che-incubator/jetbrains-editor-images
 $ cd jetbrains-editor-images
 ----
 
-. Build the container.
+. Build the container using build parameters:
 +
 [subs="+quotes,macros,attributes"]
 ----
-$ ./projector build --tag __<name:tag>__ --url __<downloadUrl>__
+$ ./projector build --tag __<tag>__ --url __<URL>__
 ----
 +
-.Building the Docker image with WebStorm 2020.3.3
+`--tag __<tag>__`::
+Tag to apply to the image after build.
++
+`--url __<URL>__`::
+URL pointing to an archive of the custom IntelliJ-based distribution. The editor version can be at most 2020.3 because Projector doesn't support later versions. The archive must target the Linux platform, be in `+tar.gz+` format, and include JetBrains Runtime (JBR). 
++
+.Building the Docker image with IntelliJ IDEA Community 2020.3.3
 ====
 ----
-$ ./projector.sh build --tag che-webstorm:latest --url https://download.jetbrains.com/webstorm/WebStorm-2020.3.3.tar.gz
+./projector.sh build --tag che-idea:2020.3.3 \
+  --url https://download-cdn.jetbrains.com/idea/ideaIC-2020.3.3.tar.gz
 ----
 ====
 +
 .Building the Docker image with PyCharm Community 2020.3.5
 ====
 ----
-$ ./projector.sh build --tag che-pycharm:latest --url https://download.jetbrains.com/python/pycharm-community-2020.3.5.tar.gz
+$ ./projector.sh build --tag che-pycharm:2020.3.5 \
+  --url https://download.jetbrains.com/python/pycharm-community-2020.3.5.tar.gz
+----
+====
++
+.Building the Docker image with WebStorm 2020.3.3
+====
+----
+$ ./projector.sh build --tag che-webstorm:2020.3.3 \
+  --url https://download.jetbrains.com/webstorm/WebStorm-2020.3.3.tar.gz
 ----
 ====
 +
 .Building the Docker image with IntelliJ IDEA Ultimate 2020.2.2
 ====
 ----
-$ ./projector.sh build --tag che-idea-ultimate:latest --url https://download.jetbrains.com/idea/ideaIU-2020.2.2.tar.gz
+$ ./projector.sh build --tag che-idea-ultimate:2020.2.2 \
+  --url https://download.jetbrains.com/idea/ideaIU-2020.2.2.tar.gz
 ----
 ====
 
@@ -80,38 +73,45 @@ $ ./projector.sh build --tag che-idea-ultimate:latest --url https://download.jet
 +
 [subs="+quotes,macros,attributes"]
 ----
-$ ./projector.sh run __<name:tag>__
+$ ./projector.sh run __<tag>__
 ----
 +
-.Testing the Docker image with WebStorm
+.Testing the Docker image with IntelliJ IDEA Community 2020.3.3
 ====
 ----
-$ ./projector.sh run che-webstorm:latest
-----
-====
-+
-.Testing the Docker image with PyCharm
-====
-----
-$ ./projector.sh run che-pycharm:latest
+$ ./projector.sh run che-idea:2020.3.3
 ----
 ====
 +
-.Testing the Docker image with IntelliJ IDEA Ultimate
+.Testing the Docker image with PyCharm 2020.3.5
 ====
 ----
-$ ./projector.sh run che-idea-ultimate:latest
+$ ./projector.sh run che-pycharm:2020.3.5
+----
+====
++
+.Testing the Docker image with WebStorm 2020.3.3
+====
+----
+$ ./projector.sh run che-webstorm:2020.3.3
+----
+====
++
+.Testing the Docker image with IntelliJ IDEA Ultimate 2020.2.2
+====
+----
+$ ./projector.sh run che-idea-ultimate:2020.2.2
 ----
 ====
 
-. Publish the container to __<IntelliJ-container-image>__.
+. Publish the IntelliJ editor image to a registry accessible by {prod-short}, and remember the location: __<IntelliJ-container-image>__.
 
-. Create a `+meta.yaml+` file with the following content, and publish it to `__<URL_to_meta.yaml>__`:
+. Create a `+meta.yaml+` file with the following content:
 +
 [source,yaml,subs="+quotes,macros,attributes"]
 ----
 apiVersion: v2
-publisher: <username>
+publisher: __<publisher>__ <1>
 name: intellij-ide
 version: latest
 type: Che Editor
@@ -133,7 +133,7 @@ spec:
         path: /projector-client/index.html?backgroundColor=434343&wss
   containers:
    - name: intellij-ide
-     image: "__<IntelliJ-container-image>__"
+     image: "__<IntelliJ-container-image>__" <2>
      mountSources: true
      volumes:
          - mountPath: "/home/projector-user"
@@ -142,7 +142,10 @@ spec:
          - exposedPort: 8887
      memoryLimit: "4096M"
 ----
+<1> __<publisher>__: Your publisher name.
+<2> __<IntelliJ-container-image>__: Location of the IntelliJ editor image in a registry accessible by {prod-short}.
 
+. Publish the `meta.yaml` file to an HTTPS resource accessible by {prod-short}: `__<URL_to_meta.yaml>__`.
 
 .Additional resources
 
