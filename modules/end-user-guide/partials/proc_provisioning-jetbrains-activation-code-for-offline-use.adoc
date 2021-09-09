@@ -1,13 +1,15 @@
 [id="provisioning-jetbrains-activation-code-for-offline-use_{context}"]
 = Provisioning JetBrains activation code for offline use
 
-This section describes how to provision the JetBrains activation code to {prod-short}, when using a JetBrains IDE requesting a registration. You need to generate an activation code and apply it to your product after each subscription renewal.
+This section describes how to provision the JetBrains activation code to {prod-short}, when using link:https://sales.jetbrains.com/hc/en-gb/articles/206544639-What-is-JetBrains-Toolbox-[a JetBrains IDE requesting a registration]. After each subscription renewal, you need to generate an activation code and apply it to your product.
 
 .Prerequisites
 
-* An active JetBrains account.
-* An active personal or organization subscription.
-* The `base64` tool is available.
+* An active link:https://account.jetbrains.com/login[JetBrains account].
+* An active link:https://sales.jetbrains.com/hc/en-gb[personal or organization subscription].
+* A `base64` conversion tool.
+* An image containing the editor, see xref:building-images-for-ides-based-on-the-intellij-platform.adoc[].
+* A workspace running with the editor, see xref:using-intellij-based-ides.adoc[].
 
 .Procedure
 
@@ -19,7 +21,7 @@ This section describes how to provision the JetBrains activation code to {prod-s
 $ base64 jetbrains_license.txt
 ----
 
-. Create a {orch-name} Secret to provision the activation code to {prod-short}.
+. Create a `secret.yaml` file defining the {orch-name} Secret to provision the activation code to {prod-short}.
 +
 [source,yaml,subs="+quotes,+attributes,+macros"]
 ----
@@ -42,9 +44,16 @@ data:
   goland.key: __<base64_encoded_activation_code>__
 ----
 +
-<1> `+che.eclipse.org/automount-workspace-secret: 'false'+`: disables the mounting process until a workspace component explicitly requests it using the `+automountWorkspaceSecrets: true+` property.
+<1> `+che.eclipse.org/automount-workspace-secret: 'false'+`: disables the mounting process until a workspace component explicitly requests it with the `+automountWorkspaceSecrets: true+` property.
 
-. To mount the activation codes into a workspace, update the workspace configuration to set `+automountWorkspaceSecrets: true+`:
+. Apply the {orch-name} Secret to the {orch-name} {orch-namespace} running the workspace.
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ {orch-cli} apply -f secret.yaml
+----
+
+. To mount the activation codes into a workspace, update the workspace devfile configuration to set `+automountWorkspaceSecrets: true+`.
 +
 [source,yaml,subs="+quotes,+attributes,+macros"]
 ----
@@ -54,8 +63,5 @@ components:
     reference: "__<URL_to_meta.yaml>__"
 ----
 
+. Restart the workspace
 
-.Additional resources
-
-* xref:using-an-intellij-based-ide.adoc[]
-* link:https://kubernetes.io/docs/concepts/configuration/secret/[{orch-name} Secret Documentation]

@@ -1,19 +1,26 @@
-[id="building-custom-intellij-editor-images_{context}"]
-= Building custom IntelliJ editor images
+[id="building-an-image-for-an-ide-based-on-the-intellij-platform_{context}"]
+= Building an image for an IDE based on the IntelliJ Platform
 
-This procedure describes how to build an IntelliJ-based editor image using a custom archive and a custom image name.
+This procedure describes how to build an image for an IDE based on the IntelliJ Platform up to version 2020.3.
 
 .Prerequisites
 
-* The `git`, `jq`, and `wget` tools are available.
+* The build host has at least 2 GB of available RAM.
 
-* Docker version 18.09 or greater, supporting link:https://docs.docker.com/develop/develop-images/build_enhancements/[Docker BuildKit].
+* The build host has a local installation of following tools:
 
-* Java Development Kit (JDK) version 11 is available.
+** link:https://www.docker.com/[Docker] version 18.09 or greater, supporting link:https://docs.docker.com/develop/develop-images/build_enhancements/[Docker BuildKit]
 
-* On the macOS platform: the `+gnu-getopt+` tool is available.
+** link:https://git-scm.com[Git]
 
-* The build platform has at least 2 GB of RAM.
+** link:https://www.gnu.org/software/libc/manual/html_node/Getopt.html[GNU getopt]
+
+** link:https://www.gnu.org/software/wget/[GNU wget]
+
+**  link:https://openjdk.java.net/projects/jdk/11/[Java Development Kit (JDK) version 11]
+
+** link:https://stedolan.github.io/jq/[jq]
+
 
 .Procedure
 
@@ -24,7 +31,7 @@ $ git clone https://github.com/che-incubator/jetbrains-editor-images
 $ cd jetbrains-editor-images
 ----
 
-. Build the container using build parameters:
+. Run the build script with parameters:
 +
 [subs="+quotes,macros,attributes"]
 ----
@@ -32,10 +39,10 @@ $ ./projector build --tag __<tag>__ --url __<URL>__
 ----
 +
 `--tag __<tag>__`::
-Tag to apply to the image after build.
+The name and tag to apply to the image after build in `name:tag` format.
 +
 `--url __<URL>__`::
-URL pointing to an archive of the custom IntelliJ-based distribution. The editor version can be at most 2020.3 because Projector doesn't support later versions. The archive must target the Linux platform, be in `+tar.gz+` format, and include JetBrains Runtime (JBR). 
+The URL pointing to an archive of the custom IntelliJ-based distribution. The editor version can be at most 2020.3 because Projector doesn't support later versions. The archive must target the Linux platform, be in `+tar.gz+` format, and include JetBrains Runtime (JBR). 
 +
 .Building the Docker image with IntelliJ IDEA Community 2020.3.3
 ====
@@ -69,7 +76,7 @@ $ ./projector.sh build --tag che-idea-ultimate:2020.2.2 \
 ----
 ====
 
-. To test the container, run the container locally, and navigate to `++http://localhost:8887++` to access the JetBrains IDE.
+. To test the image, run it locally, and navigate to `++http://localhost:8887++` to access the IDE.
 +
 [subs="+quotes,macros,attributes"]
 ----
@@ -104,7 +111,7 @@ $ ./projector.sh run che-idea-ultimate:2020.2.2
 ----
 ====
 
-. Publish the IntelliJ editor image to a registry accessible by {prod-short}, and remember the location: __<IntelliJ-container-image>__.
+. Publish the image to a registry accessible by {prod-short}, and remember the location: __<image>__.
 
 . Create a `+meta.yaml+` file with the following content:
 +
@@ -115,9 +122,9 @@ publisher: __<publisher>__ <1>
 name: intellij-ide
 version: latest
 type: Che Editor
-displayName: IntelliJ-based IDE
-title: IntelliJ-based IDE as Editor for Eclipse Che
-description: IntelliJ-based IDE running using Projector
+displayName: IntelliJ Platform IDE
+title: IDE based on the IntelliJ Platform as Editor for Eclipse Che
+description: IDE based on the IntelliJ Platform running using Projector
 icon: https://www.jetbrains.com/apple-touch-icon.png
 category: Editor
 repository: https://github.com/che-incubator/jetbrains-editor-images
@@ -133,7 +140,7 @@ spec:
         path: /projector-client/index.html?backgroundColor=434343&wss
   containers:
    - name: intellij-ide
-     image: "__<IntelliJ-container-image>__" <2>
+     image: "__<image>__" <2>
      mountSources: true
      volumes:
          - mountPath: "/home/projector-user"
@@ -143,12 +150,11 @@ spec:
      memoryLimit: "4096M"
 ----
 <1> __<publisher>__: Your publisher name.
-<2> __<IntelliJ-container-image>__: Location of the IntelliJ editor image in a registry accessible by {prod-short}.
+<2> __<image>__: Location of the editor image in a registry accessible by {prod-short}.
 
 . Publish the `meta.yaml` file to an HTTPS resource accessible by {prod-short}: `__<URL_to_meta.yaml>__`.
 
-.Additional resources
+.Next steps
 
 * xref:using-intellij-based-ides.adoc[]
-* link:https://github.com/che-incubator/jetbrains-editor-images[JetBrains Projector Editor Images repository]
-* link:https://docs.docker.com/develop/develop-images/build_enhancements/[Docker BuildKit]
+
