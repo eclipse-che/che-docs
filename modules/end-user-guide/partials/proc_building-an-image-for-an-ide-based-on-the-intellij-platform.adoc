@@ -125,9 +125,9 @@ $ ./projector.sh run che-android-studio:4.2.0.22
 ----
 ====
 
-. Publish the image to a registry accessible by {prod-short}, and remember the location: __<image>__.
+. Publish the image to a registry accessible by {prod-short}, and remember the location: __<registry>/<image>:<tag>__.
 
-. Create a `+meta.yaml+` file with the following content:
+. Create a `+meta.yaml+` file containing the IDE metadata for {prod-short}:
 +
 [source,yaml,subs="+quotes,macros,attributes"]
 ----
@@ -145,7 +145,7 @@ repository: https://github.com/che-incubator/jetbrains-editor-images
 firstPublicationDate: "2021-04-10"
 spec:
   endpoints:
-   -  name: "intellij"
+   -  name: intellij
       public: true
       targetPort: 8887
       attributes:
@@ -154,7 +154,7 @@ spec:
         path: /projector-client/index.html?backgroundColor=434343&wss
   containers:
    - name: intellij-ide
-     image: "__<image>__" <2>
+     image: __<registry>/<image>:<tag>__ <2>
      mountSources: true
      volumes:
          - mountPath: "/home/projector-user"
@@ -164,9 +164,9 @@ spec:
      memoryLimit: "4096M"
 ----
 <1> `__<publisher>__`: Your publisher name.
-<2> `__<image>__`: Location of the IDE image in a registry accessible by {prod-short}.
+<2> `__<registry>/<image>:<tag>__`: Location of the IDE image in a registry accessible by {prod-short}.
 
-. Publish the `meta.yaml` file to an HTTPS resource accessible by {prod-short}: `__<URL_to_meta.yaml>__`.
+. Publish the `meta.yaml` file to an HTTPS resource accessible by {prod-short} and remember the resulting URL as `__<URL_to_meta.yaml>__` when configuring a workspace to use this IDE.
 
 .Next steps
 
