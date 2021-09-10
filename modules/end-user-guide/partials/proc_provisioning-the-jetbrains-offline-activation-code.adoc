@@ -5,22 +5,22 @@ Some editions of JetBrains IDEs require a paid subscription beyond the evaluatio
 
 .Prerequisites
 
-* An active link:https://account.jetbrains.com/login[JetBrains account].
-* An active link:https://www.jetbrains.com/store/comparison.html[subscription for organizations or for personal use].
-* The link:https://www.openssl.org/[`OpenSSL`] tool is installed.
+* An active link:https://www.jetbrains.com/store/comparison.html[JetBrains subscription] associated to an active link:https://account.jetbrains.com/login[JetBrains account].
+* The link:https://www.openssl.org/[OpenSSL] and `{orch-cli}` tools are installed.
 * An image containing the IDE. See xref:building-images-for-ides-based-on-the-intellij-platform.adoc[].
 * A workspace running with the IDE. See xref:configuring-a-workspace-to-use-an-ide-based-on-the-intellij-platform.adoc[].
 
 .Procedure
 
-. Generate the activation code by logging in to your link:https://account.jetbrains.com/login[JetBrains Account] and click the *Download activation code for offline usage* link.
+. Log in to your link:https://account.jetbrains.com/login[JetBrains account], choose the desired subscription, and click on the *Download activation code for offline usage* link.
 
-. Save `<License{nbsp}ID>{nbsp}-{nbsp}for{nbsp}2018.1{nbsp}or{nbsp}later.txt` from the downloaded zip archive as `jetbrains_license.txt`.
+. Extract from the downloaded zip archive the file named `__<License{nbsp}ID>__{nbsp}-{nbsp}for{nbsp}2018.1{nbsp}or{nbsp}later.txt`.
 
-. Convert the activation code to a single line base64 encoded string for use as `__<base64_encoded_activation_code>__` in the next step.
+. Convert the activation code to a base64 encoded single line for use in the next step as `__<base64_encoded_activation_code>__`.
 +
+[subs="+quotes,+attributes,+macros"]
 ----
-$ openssl base64 -e -A -in jetbrains_license.txt
+$ openssl base64 -e -A -in '__<License{nbsp}ID>__{nbsp}-{nbsp}for{nbsp}2018.1{nbsp}or{nbsp}later.txt'
 ----
 
 . Create a `secret.yaml` file defining the {orch-name} Secret to provision the activation code to {prod-short}.
