@@ -7,7 +7,7 @@ Some editions of JetBrains IDEs require a paid subscription beyond the evaluatio
 
 * An active link:https://account.jetbrains.com/login[JetBrains account].
 * An active link:https://www.jetbrains.com/store/comparison.html[subscription for organizations or for personal use].
-* A `base64` conversion tool.
+* The link:https://www.openssl.org/[`OpenSSL`] tool is installed.
 * An image containing the IDE. See xref:building-images-for-ides-based-on-the-intellij-platform.adoc[].
 * A workspace running with the IDE. See xref:configuring-a-workspace-to-use-an-ide-based-on-the-intellij-platform.adoc[].
 
@@ -17,10 +17,10 @@ Some editions of JetBrains IDEs require a paid subscription beyond the evaluatio
 
 . Save `<License{nbsp}ID>{nbsp}-{nbsp}for{nbsp}2018.1{nbsp}or{nbsp}later.txt` from the downloaded zip archive as `jetbrains_license.txt`.
 
-. Run the `base64` command on `jetbrains_license.txt` to convert the activation code to base64 encoding for use as __<base64_encoded_activation_code>__ in the next step.
+. Convert the activation code to a single line base64 encoded string for use as __<base64_encoded_activation_code>__ in the next step.
 +
 ----
-$ base64 jetbrains_license.txt
+$ openssl base64 -e -A -in jetbrains_license.txt
 ----
 
 . Create a `secret.yaml` file defining the {orch-name} Secret to provision the activation code to {prod-short}.
