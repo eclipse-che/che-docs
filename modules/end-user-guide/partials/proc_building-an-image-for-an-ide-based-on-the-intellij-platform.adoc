@@ -9,7 +9,7 @@ This procedure describes how to build an image for an IDE based on the IntelliJ 
 
 * The following tools are installed on the build host:
 
-** link:https://www.docker.com/[Docker] version 18.09 or greater, supporting link:https://docs.docker.com/develop/develop-images/build_enhancements/[Docker BuildKit]
+** link:https://www.docker.com/[Docker] version 18.09 or greater, supporting link:https://docs.docker.com/develop/develop-images/build_enhancements/[BuildKit]
 
 ** link:https://git-scm.com[Git]
 
@@ -41,10 +41,9 @@ $ ./projector build --tag __<tag>__ --url __<URL>__
 `--tag __<tag>__`::
 The name and tag to apply to the image after build in `name:tag` format.
 +
-`--url __<URL>__`::
-The URL pointing to an archive of the custom IntelliJ-based distribution. The editor version can be at most 2020.3 because Projector doesn't support later versions. The archive must target the Linux platform, be in `+tar.gz+` format, and include JetBrains Runtime (JBR). 
+The URL pointing to an archive of the IDE based on the link:https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html#intellij-platform-based-products-of-recent-ide-versions[IntelliJ Platform version 2020.3]. The archive must target the Linux platform, be in `+tar.gz+` format, and include JetBrains Runtime (JBR). 
 +
-.Building the Docker image with IntelliJ IDEA Community 2020.3.3
+.Building the image with IntelliJ IDEA Community 2020.3.3
 ====
 ----
 ./projector.sh build --tag che-idea:2020.3.3 \
@@ -52,7 +51,7 @@ The URL pointing to an archive of the custom IntelliJ-based distribution. The ed
 ----
 ====
 +
-.Building the Docker image with PyCharm Community 2020.3.5
+.Building the image with PyCharm Community 2020.3.5
 ====
 ----
 $ ./projector.sh build --tag che-pycharm:2020.3.5 \
@@ -60,7 +59,7 @@ $ ./projector.sh build --tag che-pycharm:2020.3.5 \
 ----
 ====
 +
-.Building the Docker image with WebStorm 2020.3.3
+.Building the image with WebStorm 2020.3.3
 ====
 ----
 $ ./projector.sh build --tag che-webstorm:2020.3.3 \
@@ -68,11 +67,19 @@ $ ./projector.sh build --tag che-webstorm:2020.3.3 \
 ----
 ====
 +
-.Building the Docker image with IntelliJ IDEA Ultimate 2020.2.2
+.Building the image with IntelliJ IDEA Ultimate 2020.2.2
 ====
 ----
 $ ./projector.sh build --tag che-idea-ultimate:2020.2.2 \
   --url https://download.jetbrains.com/idea/ideaIU-2020.2.2.tar.gz
+----
+====
++
+.Building the image with Android Studio 4.2.0.22
+====
+----
+$ ./projector.sh build --tag che-android-studio:4.2.0.22 \
+  --url https://redirector.gvt1.com/edgedl/android/studio/ide-zips/4.2.0.22/android-studio-ide-202.7188722-linux.tar.gz
 ----
 ====
 
@@ -83,31 +90,38 @@ $ ./projector.sh build --tag che-idea-ultimate:2020.2.2 \
 $ ./projector.sh run __<tag>__
 ----
 +
-.Testing the Docker image with IntelliJ IDEA Community 2020.3.3
+.Testing the image with IntelliJ IDEA Community 2020.3.3
 ====
 ----
 $ ./projector.sh run che-idea:2020.3.3
 ----
 ====
 +
-.Testing the Docker image with PyCharm 2020.3.5
+.Testing the image with PyCharm 2020.3.5
 ====
 ----
 $ ./projector.sh run che-pycharm:2020.3.5
 ----
 ====
 +
-.Testing the Docker image with WebStorm 2020.3.3
+.Testing the image with WebStorm 2020.3.3
 ====
 ----
 $ ./projector.sh run che-webstorm:2020.3.3
 ----
 ====
 +
-.Testing the Docker image with IntelliJ IDEA Ultimate 2020.2.2
+.Testing the image with IntelliJ IDEA Ultimate 2020.2.2
 ====
 ----
 $ ./projector.sh run che-idea-ultimate:2020.2.2
+----
+====
++
+.Testing the image with Android Studio 4.2.0.22
+====
+----
+$ ./projector.sh run che-android-studio:4.2.0.22
 ----
 ====
 
@@ -123,7 +137,7 @@ name: intellij-ide
 version: latest
 type: Che Editor
 displayName: IntelliJ Platform IDE
-title: IDE based on the IntelliJ Platform as Editor for Eclipse Che
+title: IDE based on the IntelliJ Platform
 description: IDE based on the IntelliJ Platform running using Projector
 icon: https://www.jetbrains.com/apple-touch-icon.png
 category: Editor
@@ -156,5 +170,5 @@ spec:
 
 .Next steps
 
-* xref:using-intellij-based-ides.adoc[]
+* xref:configuring-a-workspace-to-use-an-ide-based-on-the-intellij-platform.adoc[]
 
