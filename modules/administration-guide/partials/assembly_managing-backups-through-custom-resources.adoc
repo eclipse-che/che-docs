@@ -5,11 +5,11 @@ This section describes how to create backups of {prod-short} installation and re
 
 .Prerequisites
 
+* xref:setup-backup-server.adoc[A backup server is set up].
+
+* xref:define-backup-server-for-operator.adoc[{prod-short} Operator is configured to use the backup server].
+
 include::partial$snip_internal-backup-server-warning.adoc[]
-
-* xref:setup-backup-server.adoc[Setting up a backup server].
-
-* xref:define-backup-server-for-operator.adoc[Configuring {prod-cli} to use the backup server].
 
 .Procedure
 
@@ -19,7 +19,7 @@ include::partial$snip_internal-backup-server-warning.adoc[]
 [id="operator-creating-a-new-backup"]
 == Creating a new backup
 
-. Create a `CheClusterBackup` object to create a new backup:
+. Create a `CheClusterBackup` backup object to create a new backup:
 +
 [source,yaml,subs="+attributes"]
 ----
@@ -30,21 +30,15 @@ metadata:
 spec:
   backupServerConfigRef: backup-server-configuration <1>
 ----
-
++
 <1> Name of the `CheBackupServerConfiguration` object defining what backup server to use.
 
-* The creation of a `CheClusterBackup` object starts a new backup.
-* Before reusing the same name for a new backup object, delete the old object:
+NOTE: To reusing the name of an existing backup object for a new backup object, delete the old object:
 +
 [subs="+attributes,+quotes"]
 ----
 {orch-cli} delete CheClusterBackup _<name>_ -n {prod-namespace}
 ----
-
-[NOTE]
-====
-Editing the `CheClusterBackup` objects has no effect.
-====
 
 .Alternative
 
