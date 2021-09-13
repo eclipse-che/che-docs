@@ -5,14 +5,41 @@
 [id="configuring_bitbucket_authentication_{context}"]
 = Authenticating on Bitbucket servers
 
-{prod} users may use public or private repositories on Bitbucket SCM (Source Code Management) system as a source of their projects.
+Bitbucket authentication is based on using personal access tokens. Each Bitbucket user is able to request several personal access tokens with different names, permissions, expiration times, and so on. Those tokens can be used to sign Bitbucket REST API calls and perform Git repository operations.
+
+{prod-short} users may use public or private repositories on Bitbucket SCM (Source Code Management) system as a source of their projects.
 
 The use of private repositories requires additional configuration described below.
 
-Bitbucket authentication is based on using personal access tokens. Each Bitbucket user is able to request several personal access tokens with different names, permissions, expiration times, and so on. Those tokens can be used to sign Bitbucket REST API calls and perform Git repository operations.
+.Prerequisities
 
-To allow Bitbucket authentication on {prod-short} side, personal tokens must be stored in the user's {orch-namespace} in the form of
-a secret. The secret must look as follows:
+https://www.eclipse.org/che/docs/che-7/end-user-guide/authenticating-on-scm-server-with-a-personal-access-token/#configuring_bitb[…]thentication_che
+
+https://www.eclipse.org/che/docs/che-7/administration-guide/configuring-authorization/#configuring_bitbucket_servers_che
+
+
+.Procedure
+
+. Obtain a user ID from a secret using a call to a REST API URL:
+
+* For Bitbucket:
++
+[subs="+quotes,macros"]
+----
+++https++://__<bitbucket-hostname>__/rest/api/1.0/users/__<username>__
+----
+
+* For {prod-short}
++
+[subs="+macros,attributes"]
+----
+{prod-url}/api/user
+----
+
+* With the token credentials obtained from a secret, another secret is automatically created, allowing authorization to Git operations. This secret is mounted into a workspace container as a Git credentials file, and any additional configurations are not required to work with private Git repositories.
+
+
+To allow Bitbucket authentication on {prod-short} side, personal tokens must be stored in the user's {orch-namespace} in the form of a secret. The secret must look as follows:
 
 include::example$snip_bitbucket-personal-access-token-secret.adoc[]
 
@@ -52,21 +79,6 @@ The main parts of the secret are:
 
 NOTE: Encoding a string into the base64 format using the `base64` tool on Linux machines leads to adding the newline character to the end of the source string and causing a value to be unusable as the authentication header value after decoding. Avoid this by using `base64 -w0`, which removes newly added lines, or strip newlines explicitly using`tr -d \\n`.
 
-. To obtain a user ID from a secret using a call to a REST API URL:
-*  For Bitbucket:
-+
-[subs="+quotes,macros"]
-----
-++https++://__<bitbucket-hostname>__/rest/api/1.0/users/__<username>__
-----
-
-* For {prod-short}
-+
-[subs="+macros,attributes"]
-----
-{prod-url}/api/user
-----
-
-* With the token credentials obtained from a secret, another secret is automatically created, allowing authorization to Git operations. This secret is mounted into a workspace container as a Git credentials file, and any additional configurations are not required to work with private Git repositories.
+.Additional resources
 
 * When a remote Git repository uses a self-signed certificate, add an additional server configuration. See xref:installation-guide:deploying-che-with-support-for-git-repositories-with-self-signed-certificates.adoc[].
