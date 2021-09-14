@@ -118,7 +118,7 @@ gitCommit() {
 
 gitPush() {
   if  [[ ${DOPUSH} -eq 1 ]]; then 
-    git pull origin "${TARGET_BRANCH}"
+    git pull origin "${TARGET_BRANCH}" || true
     git push origin "${TARGET_BRANCH}"
     case ${TARGET_BRANCH} in
       "release-${VERSION}")
@@ -131,7 +131,7 @@ gitPush() {
 
 gitPullRequest() {
   if  [[ ${DOCOMMIT} -eq 1 ]]; then 
-    git pull origin "${TARGET_BRANCH}"
+    git pull origin "${TARGET_BRANCH}" || true
     git push origin "${TARGET_BRANCH}"
     LASTCOMMITCOMMENT="$(git log -1 --pretty=%B)"
     hub pull-request --force --message "${LASTCOMMITCOMMENT}" --base "${TARGET_BRANCH}" --head  "${MAIN_BRANCH}"
