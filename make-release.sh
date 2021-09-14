@@ -123,7 +123,7 @@ gitPush() {
     case ${TARGET_BRANCH} in
       "release-${VERSION}")
         LASTCOMMITCOMMENT="$(git log -1 --pretty=%B)"
-        hub pull-request --force --message "${LASTCOMMITCOMMENT}" --base "${TARGET_BRANCH}" --head  "${MAIN_BRANCH}"
+        hub pull-request --force --message "${LASTCOMMITCOMMENT}" --base "${MAIN_BRANCH}" --head "${TARGET_BRANCH}"
         ;;
     esac
   fi
@@ -134,7 +134,7 @@ gitPullRequest() {
     git pull origin "${TARGET_BRANCH}" || true
     git push origin "${TARGET_BRANCH}"
     LASTCOMMITCOMMENT="$(git log -1 --pretty=%B)"
-    hub pull-request --force --message "${LASTCOMMITCOMMENT}" --base "${TARGET_BRANCH}" --head  "${MAIN_BRANCH}"
+    hub pull-request --force --message "${LASTCOMMITCOMMENT}" --base "${MAIN_BRANCH}" --head "${TARGET_BRANCH}"
   fi
 }
 
