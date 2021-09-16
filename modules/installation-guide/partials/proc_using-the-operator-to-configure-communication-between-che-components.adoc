@@ -1,7 +1,7 @@
 [id="using-the-operator-to-configure-communication-between-{prod-id-short}-components_{context}"]
 = Using the Operator to configure communication between {prod-short} components
 
-To change between external and internal inter-component communication, update the Custom Resource (CR).
+To change between external and internal inter-component communication, update the Custom Resource.
 
 .Prerequisites
 
@@ -28,3 +28,10 @@ spec:
     disableInternalClusterSVCNames: __<property-value>__
 ----
 ====
+
+.Verification steps
+  . Navigate to *Workloads* and select *ConfigMaps*.
+  . Select `che` and navigate to the *YAML* tab.  
+  . Inspect the YAML file to determine, which communication method {prod-short} uses. 
+  * To verify that the {prod-short} components communicate externally, ensure that the YAML file does not contain the `+CHE_KEYCLOAK_AUTH__INTERNAL__SERVER__URL+` and `+CHE_WORKSPACE_PLUGIN__REGISTRY__INTERNAL__URL+` properties. 
+  * To verify that the {prod-short} components communicate internally, ensure that the YAML file contains the `+CHE_KEYCLOAK_AUTH__INTERNAL__SERVER__URL+` and `+CHE_WORKSPACE_PLUGIN__REGISTRY__INTERNAL__URL+` properties. 
