@@ -1,63 +1,18 @@
-[id="managing-backups-using-custom-resources_{context}"]
-= Managing backups using custom resources
+[id="restoring-a-backup-using-an-object"]
+== Restoring a backup using an object
 
-This section describes how to create backups of {prod-short} installation and recover directly using Custom Resource objects.
+This section describes how to recover a backup using Custom Resource objects.
+
+WARNING: Backup snapshots are bound to the specific cluster and must only be recovered in that cluster.
 
 .Prerequisites
 
-* xref:setup-backup-server.adoc[A backup server is set up].
+* xref:proc_creating-a-new-backup-using-an-object.adoc or xref:proc_creating-a-new-backup-using-the-internal-backup-server.adoc
 
-* xref:define-backup-server-for-operator.adoc[{prod-short} Operator is configured to use the backup server].
-
+//is this necessary here?
 include::partial$snip_internal-backup-server-warning.adoc[]
 
 .Procedure
-
- * xref:operator-creating-a-new-backup[]
- * xref:operator-restoring-from-a-backup[]
-
-[id="operator-creating-a-new-backup"]
-== Creating a new backup
-
-. Create a `CheClusterBackup` backup object to create a new backup:
-+
-[source,yaml,subs="+attributes"]
-----
-apiVersion: org.eclipse.che/v1
-kind: CheClusterBackup
-metadata:
-  name: {prod-short}-backup
-spec:
-  backupServerConfigRef: backup-server-configuration <1>
-----
-+
-<1> Name of the `CheBackupServerConfiguration` object defining what backup server to use.
-
-NOTE: To reusing the name of an existing backup object for a new backup object, delete the old object:
-+
-[subs="+attributes,+quotes"]
-----
-{orch-cli} delete CheClusterBackup _<name>_ -n {prod-namespace}
-----
-
-.Alternative
-
-To use the internal backup server, request automatic configuration from {prod-short} Operator. The preparation described above is not required.
-
-* Configure the automatic setup and sending of the backup to the internal backup server:
-+
-[source,yaml,subs="+attributes"]
-----
-apiVersion: org.eclipse.che/v1
-kind: CheClusterBackup
-metadata:
-  name: {prod-short}-backup
-spec:
-  useInternalBackupServer: true
-----
-
-[id="operator-restoring-from-a-backup"]
-== Restoring a backup using an object
 
 . Create a new object of `CheClusterRestore` to recover a {prod-short} installation from a backup:
 +
