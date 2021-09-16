@@ -3,13 +3,16 @@
 [id="configuring-prod-short-to-work-with-external-postgresql_{context}"]
 = Configuring {prod-short} to work with external PostgreSQL
 
+To make workspace metadata and user information persistent, you must configure {prod-short} to work with the configured external PostgreSQL.
+
 .Prerequisites
 
-* The `{orch-cli}` tool is available.
+* xref:[Configured external PostgreSQL]
+* `{orch-cli}`
 
 .Procedure
 
-. Pre-create a {orch-namespace} for {prod-short}:
+. Create a {orch-namespace} for {prod-short}:
 +
 [subs="+quotes,attributes"]
 ----
@@ -47,7 +50,7 @@ $ {orch-cli} create secret generic <identity-database-credentials> \ <1>
 $ {prod-cli} server:deploy --che-operator-cr-patch-yaml=patch.yaml ...
 ----
 
-patch.yaml should contain the following to make the Operator skip deploying a database and pass connection details of an existing database to a {prod-short} server:
+. Ensure that `patch.yaml` contains the following lines to make the Operator skip deploying a database and pass connection details of an existing database to a {prod-short} server:
 
 [source,yaml,subs="+quotes"]
 ----
