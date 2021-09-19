@@ -3,33 +3,33 @@
 
 This section describes how to define environment variables for a specific backup server using the {prod-cli} tool.
 
+[NOTE]
+====
+As an alternative to the following procedure, you can point directly to the backup server configuration object using `--backup-server-config-name` parameter or `BACKUP_SERVER_CONFIG_NAME` environment variable. See xref:managing-backups-using-custom-resources.adoc[].
+====
+
 .Procedure
 
-. Determine xref:setting-up-a-backup-server.adoc#supported-backup-servers_{context}[backup server type] and the server URL, using the link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[restic repository documentation] as the reference.
+//xref:setting-up-a-backup-server.adoc#supported-backup-servers_{context}[backup server type]
+. Determine xref:supported-backup-servers[backup server type] and the server URL, using the link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[restic repository documentation] as the reference.
 
 . Specify the URL using the `-r` parameter or the `BACKUP_REPOSITORY_URL` environment variable.
 
 . Retrieve or create a password for the backup repository.
-+
-The password can be specified with the `-p` parameter or defined using the `BACKUP_REPOSITORY_PASSWORD` environment variable.
+
+. Specify the password using the `-p` parameter or the `BACKUP_REPOSITORY_PASSWORD` environment variable.
 +
 [WARNING]
 ====
-Backup data are encrypted with this password. The loss of the backup repository password will cause losing the data.
+The backup repository password is used to encrypt the backup data. If you lose this password, you will lose the backup data.
 ====
 
-. Set the following environment variables for the chosen xref:con_setting-up-a-backup-server.adoc#supported-backup-servers_{context}[backup server type]:
+. Set the environment variables applicable to the chosen xref:con_setting-up-a-backup-server.adoc#supported-backup-servers_{context}[backup server type]:
 
-REST:: When optional authentication is turned on, export `REST_SERVER_USERNAME` and `REST_SERVER_PASSWORD` environment variables.
+For the REST server:: When optional authentication is turned on, export `REST_SERVER_USERNAME` and `REST_SERVER_PASSWORD` environment variables.
 
-AWS S3:: Export the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables with AWS user credentials.
+For the Amazon S3 server:: Export the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables with AWS user credentials.
 
-SFTP:: For login without a password, export the `SSH_KEY_FILE` environment variable that holds the path to a file with a corresponding SSH key, or provide the `--ssh-key-file` parameter.
+For the SFTP server:: For logging in without a password, either (a) export the `SSH_KEY_FILE` environment variable that holds the path to a file with a corresponding SSH key or (b) provide the `--ssh-key-file` parameter.
 +
-Alternatively, the `SSH_KEY` environment variable that holds an SSH key itself can be used.
-
-[NOTE]
-====
-It is possible to point directly to the backup server configuration object using `--backup-server-config-name` parameter or `BACKUP_SERVER_CONFIG_NAME` environment variable.
-In such a case, all the configuration above is not needed. For more details, see xref:managing-backups-using-custom-resources.adoc[]
-====
+Alternatively, use the `SSH_KEY` environment variable that holds an SSH key.
