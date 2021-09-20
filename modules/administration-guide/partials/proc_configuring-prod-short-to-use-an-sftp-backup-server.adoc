@@ -1,17 +1,12 @@
 [id="configuring-prod-short-to-use-an-sftp-backup-server"]
 = Configuring {prod-short} to use an SFTP backup server
 
-[NOTE]
-====
-* The Custom Resource object, stored in the `{prod-namespace}` namespace, must have only one section configured in the `spec` property.
-====
-
 To configure an SFTP backup server for {prod-short}:
 
 .Procedure
 
 . Create the `CheBackupServerConfiguration` Custom Resource object in the {prod-namespace} namespace.
-
++
 [source,yaml,subs="+attributes"]
 ----
 apiVersion: org.eclipse.che/v1
@@ -27,12 +22,13 @@ spec:
     repositoryPasswordSecretRef: backup-encryption-password-secret <5>
     sshKeySecretRef: ssh-key-secret                                <6>
 ----
-
 <1> User name on the remote server to login with using the SSH protocol.
 <2> Remote server hostname.
 <3> Optional property that specifies the port on which an SFTP server is running. The default value is `22`.
 <4> Absolute or relative path on the server where backup snapshots are stored.
 <5> The name of the secret containing a repository password, stored in the `repo-password` field. If the secret contains only one field, this name is arbitrary. The password is used to encrypt and decrypt backup snapshots data.
 <6> The name of the secret containing a private SSH key, stored in the `ssh-privatekey` field. This SSH key can be used to perform a login without a password on an SFTP server.
++
+NOTE: The Custom Resource object, stored in the `{prod-namespace}` namespace, must have only one section configured in the `spec` property.
 
 . To configure multiple backup servers, create a separate `CheBackupServerConfiguration` custom resource object for each backup server.
