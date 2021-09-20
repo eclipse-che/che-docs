@@ -28,43 +28,19 @@ spec:
 <2> Optional parameter defining the Snapshot ID to restore from. The default value is the last snapshot on the backup server.
 
 . Create a new `CheClusterRestore` object to request a new recovery.
-
-* Before reusing the same name for a new backup object, delete the old object first:
++
+If reusing the same name for a new backup object, delete the old object first:
 +
 [subs="+attributes,+quotes"]
 ----
 {orch-cli} delete CheClusterBackup _<name>_ -n {prod-namespace}
 ----
 
-. Wait until the recovery process finishes.
+. Wait until the recovery process ends.
 +
-In a case of errors occurrences in your browser after the recovery, clean up the browser data for the {prod-short} domain.
+If errors occur in your browser after the recovery, clean up the browser data for the {prod-short} domain.
 
-[NOTE]
-====
-Editing of `CheClusterRestore` objects has no effect.
-====
-
-. Verify backup process state:
-
-.. Read the `status` section of the `CheClusterBackup` object to check the backup process:
-+
-[source,yaml,subs="+attributes"]
-----
-status:
-  message: 'Backup is in progress. Start time: <timestamp>' <1>
-  stage: Collecting {prod-short} installation data          <2>
-  state: InProgress                                         <3>
-  snapshotId: ba92c7e0                                      <4>
-----
-<1> Displays the overall state or error message.
-<2> Current phase of the backup process in a human-readable format.
-<3> Backup process state. One of `InProgress`, `Succeeded`, or `Failed`.
-<4> ID of the created backup snapshot. The field appears only when `state` is `Succeeded`.
-
-. Verify recovery process state:
-
-.. Read the `status` section of the `CheClusterRestore` object to check the recovery process:
+. Read the `status` section of the `CheClusterRestore` object to verify the recovery process:
 +
 [source,yaml,subs="+attributes"]
 ----
