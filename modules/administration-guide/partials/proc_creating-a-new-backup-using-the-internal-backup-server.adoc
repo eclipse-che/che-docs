@@ -16,7 +16,7 @@ NOTE: Configuring a backup server inside the same cluster, as described in this 
 
 .Procedure
 
-* Configure the automatic setup and sending of the backup to the internal backup server:
+. Configure the automatic setup and sending of the backup to the internal backup server:
 +
 [source,yaml,subs="+attributes"]
 ----
@@ -27,3 +27,18 @@ metadata:
 spec:
   useInternalBackupServer: true
 ----
+
+. Read the `status` section of the `CheClusterBackup` object to verify the backup process:
++
+[source,yaml,subs="+attributes"]
+----
+status:
+  message: 'Backup is in progress. Start time: <timestamp>' <1>
+  stage: Collecting {prod-short} installation data          <2>
+  state: InProgress                                         <3>
+  snapshotId: ba92c7e0                                      <4>
+----
+<1> Displays the overall state or error message.
+<2> Current phase of the backup process in a human-readable format.
+<3> Backup process state. One of `InProgress`, `Succeeded`, or `Failed`.
+<4> ID of the created backup snapshot. The field appears only when `state` is `Succeeded`.
