@@ -1,0 +1,30 @@
+// Module included in the following assemblies:
+//
+// hosted-che
+
+[id="adding-the-action-to-a-github-repository-workflow_{context}"]
+= Adding the action to a GitHub repository workflow
+
+This section describes how to integrate the Try in Web IDE GitHub action to a GitHub repository workflow.
+
+.Prerequisites
+
+* A GitHub repository
+* A xref:end-user-guide:authoring-devfiles-version-1.adoc[devfile] in the root of the GitHub repository (see xref:providing-a-devfile_{context}[Providing a devfile])
+
+.Procedure
+
+. In the GitHub repository, create a `.github/workflows` directory if it does not exist already.
+
+. Create an `example.yml` file in the `.github/workflows` directory with the following content:
++
+include::example$snip_github-action-yaml-example.adoc[]
+This code snippet creates a workflow named `Try in Web IDE example`, with a job that runs the `v1` version of the `redhat-actions/try-in-web-ide` community action.
+The workflow is triggered on the link:https://docs.github.com/en/actions/reference/events-that-trigger-workflows[`pull_request_target` event],
+ on the `opened` activity type.
+
+. Optionally configure the activity types from the `on.pull_request_target.types` field to customize when workflow trigger. Activity types such as `reopened` and `synchronize` can be useful.
++
+include::example$snip_github-action-yaml-example-activity-types.adoc[]
+
+. Optionally configure the `add_comment` and `add_status` GitHub action inputs within `example.yml`. These inputs are sent to the Try in Web IDE GitHub action to customize whether comments and status checks are to be made.

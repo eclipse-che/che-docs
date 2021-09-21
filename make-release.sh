@@ -104,7 +104,6 @@ gitBranch() {
       ;;
     *) echo "[INFO] Updating branch: ${TARGET_BRANCH} from branch: ${MAIN_BRANCH}."
       git checkout "${TARGET_BRANCH}"
-      git pull --rebase origin "${MAIN_BRANCH}"
       ;;
   esac
 }
@@ -118,23 +117,17 @@ gitCommit() {
 
 gitPush() {
   if  [[ ${DOPUSH} -eq 1 ]]; then 
-    git pull origin "${TARGET_BRANCH}"
+    git pull origin "${TARGET_BRANCH}" || true
     git push origin "${TARGET_BRANCH}"
-    case ${TARGET_BRANCH} in
-      "release-${VERSION}")
-        LASTCOMMITCOMMENT="$(git log -1 --pretty=%B)"
-        hub pull-request --force --message "${LASTCOMMITCOMMENT}" --base "${TARGET_BRANCH}" --head  "${MAIN_BRANCH}"
-        ;;
-    esac
   fi
 }
 
 gitPullRequest() {
   if  [[ ${DOCOMMIT} -eq 1 ]]; then 
-    git pull origin "${TARGET_BRANCH}"
+    git pull origin "${TARGET_BRANCH}" || true
     git push origin "${TARGET_BRANCH}"
     LASTCOMMITCOMMENT="$(git log -1 --pretty=%B)"
-    hub pull-request --force --message "${LASTCOMMITCOMMENT}" --base "${TARGET_BRANCH}" --head  "${MAIN_BRANCH}"
+    hub pull-request --force --message "${LASTCOMMITCOMMENT}" --base "${MAIN_BRANCH}" --head "${TARGET_BRANCH}"
   fi
 }
 
