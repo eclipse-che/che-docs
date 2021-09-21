@@ -1,0 +1,24 @@
+[id="creating-a-backup-using-prod-cli"]
+= Creating a backup using {prod-cli}
+
+This section describes how to create backups of {prod-short}.
+
+WARNING: This procedure does not back up the content of users' workspaces. To back up the content of users' workspaces, see xref:managing-backups-of-persistent-volumes.adoc[Managing backups of persistent volumes].
+
+.Prerequisites
+
+* xref:con_setting-up-a-backup-server.adoc[Setting up a backup server]
+
+* xref:proc_configuring-prod-cli-to-use-a-backup-server.adoc[Configuring {prod-cli} to use a backup server]
+
+.Procedure
+
+* Use the following command to create a backup and send it to the pre-configured backup server:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:backup --repository-url=__<repository-url>__  --repository-password=__<repository-password>__
+----
+
+NOTE: It is possible to create other backups to the same backup server using the `server:backup` command with no arguments. After running the `server:backup` command with no arguments for the first time on installation of {prod-short}, an internal backup server is configured and used.
+//The second/last sentence on the previous line is not clear at all. max-cx
