@@ -50,7 +50,7 @@ CHE_POSTGRES_DB=$({orch-cli} get checluster/{prod-checluster} -n {prod-namespace
 {orch-cli} scale deployment postgres --replicas=0 -n {prod-namespace}
 ----
 
-. Delete the corresponding PVC unit to clean up old data:
+. Delete the corresponding PVC unit to clean up old data, a new one will appear in a few seconds:
 +
 [subs="+quotes,+attributes"]
 ----
@@ -69,7 +69,7 @@ CHE_POSTGRES_DB=$({orch-cli} get checluster/{prod-checluster} -n {prod-namespace
 [subs="+quotes,+attributes"]
 ----
 {orch-cli} scale deployment postgres --replicas=1 -n {prod-namespace}
-{orch-cli} wait --for=condition=ready pod -l app.kubernetes.io/component=postgres -n {prod-namespace}
+{orch-cli} wait --for=condition=ready pod -l app.kubernetes.io/component=postgres -n {prod-namespace} --timeout=120s
 ----
 
 . Provision a database:
@@ -78,13 +78,16 @@ CHE_POSTGRES_DB=$({orch-cli} get checluster/{prod-checluster} -n {prod-namespace
 ----
 POSTGRES_POD=$({orch-cli} get pods -n {prod-namespace} | grep postgres | awk '{print $1}')
 OPERATOR_POD=$({orch-cli} get pods -n {prod-namespace} | grep {prod-operator} | awk '{print $1}')
-IDENTITY_POSTGRES_SECRET=$({orch-cli} exec -it $OPERATOR_POD -n {prod-namespace}  -- bash  -c "printenv CHE_IDENTITY_POSTGRES_SECRET" | tr -d '\r')
-IDENTITY_POSTGRES_PASSWORD=$({orch-cli} get secret $IDENTITY_POSTGRES_SECRET -n {prod-namespace} -o json | jq -r '.data.password' | base64 -d)
+
+IDENTITY_POSTGRES_SECRET=$({orch-cli} get checluster/{prod-checluster} -n {prod-namespace} -o json | jq -r '.spec.auth.identityProviderPostgresSecret')
+IDENTITY_POSTGRES_PASSWORD=$(if [ -z "$IDENTITY_POSTGRES_SECRET" ] || [ $IDENTITY_POSTGRES_SECRET = "null" ]; then {orch-cli} get checluster/{prod-checluster}  -n {prod-namespace} -o json | jq -r '.spec.auth.identityProviderPostgresPassword'; else {orch-cli} get secret $IDENTITY_POSTGRES_SECRET -n {prod-namespace} -o json | jq -r '.data.password' | base64 -d; fi)
+
 {orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"CREATE USER keycloak WITH PASSWORD '$IDENTITY_POSTGRES_PASSWORD'\""
 {orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"CREATE DATABASE keycloak\""
 {orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"GRANT ALL PRIVILEGES ON DATABASE keycloak TO keycloak\""
-POSTGRES_SECRET=$({orch-cli} exec -it $OPERATOR_POD -n {prod-namespace}  -- bash  -c "printenv CHE_POSTGRES_SECRET" | tr -d '\r')
-CHE_USER=$({orch-cli} get secret $POSTGRES_SECRET -n {prod-namespace} -o json | jq -r '.data.user' | base64 -d)
+
+POSTGRES_SECRET=$({orch-cli} get checluster/{prod-checluster} -n {prod-namespace} -o json | jq -r '.spec.database.chePostgresSecret')
+CHE_USER=$(if [ -z "$POSTGRES_SECRET" ] || [ $POSTGRES_SECRET = "null" ]; then {orch-cli} get checluster/{prod-checluster}  -n {prod-namespace} -o json | jq -r '.spec.database.chePostgresUser'; else {orch-cli} get secret $POSTGRES_SECRET -n {prod-namespace} -o json | jq -r '.data.user' | base64 -d; fi)
 {orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"ALTER USER $CHE_USER WITH SUPERUSER\""
 ----
 
