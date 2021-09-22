@@ -30,8 +30,25 @@ spec:
 ====
 
 .Verification steps
-  . Navigate to *Workloads* and select *ConfigMaps*.
-  . Select `che` and navigate to the *YAML* tab.  
-  . Inspect the YAML file to determine, which communication method {prod-short} uses. 
-  * To verify that the {prod-short} components communicate externally, ensure that the YAML file does not contain the `+CHE_KEYCLOAK_AUTH__INTERNAL__SERVER__URL+` and `+CHE_WORKSPACE_PLUGIN__REGISTRY__INTERNAL__URL+` properties. 
-  * To verify that the {prod-short} components communicate internally, ensure that the YAML file contains the `+CHE_KEYCLOAK_AUTH__INTERNAL__SERVER__URL+` and `+CHE_WORKSPACE_PLUGIN__REGISTRY__INTERNAL__URL+` properties. 
+. Specify {prod-short} as the default project:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} project {prod-namespace}
+----
+. Inspect the ConfigMap properties to determine, which communication method {prod-short} uses. Run the following commands and take note of the output:
++
+[subs="+quotes,attributes,macros"]
+----
+$ {orch-cli} get configmap che -o \ 
+jsonpath='{.data.pass:[CHE_KEYCLOAK_AUTH__INTERNAL__SERVER__URL]}'
+$ {orch-cli} get configmap che -o \ 
+jsonpath='{.data.pass:[CHE_WORKSPACE_PLUGIN__REGISTRY__INTERNAL__URL]}'
+----
+* If {prod-short} components communicate externally, the output is empty.
+* If {prod-short} components communicate internally, the output is following:
++
+----
+http://keycloak.eclipse-che.svc:8080/auth
+http://plugin-registry.eclipse-che.svc:8080/v3
+----
