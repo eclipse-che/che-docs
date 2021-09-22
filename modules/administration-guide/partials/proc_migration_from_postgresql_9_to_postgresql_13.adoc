@@ -13,7 +13,7 @@ Follow the procedure below to migrate to a newer version of PostgreSQL successfu
 
 .Procedure
 
-. In all running workspaces in the {prod-short} instance, save and push changes back to the Git repositories.
+. Save and push changes back to the Git repositories for all running workspaces of the {prod-short} instance.
 +
 . Stop all workspaces in the {prod-short} instance.
 +
@@ -50,14 +50,16 @@ CHE_POSTGRES_DB=$({orch-cli} get checluster/{prod-checluster} -n {prod-namespace
 {orch-cli} scale deployment postgres --replicas=0 -n {prod-namespace}
 ----
 
-. Delete the corresponding PVC unit to clean up old data, a new one will appear in a few seconds:
+. Delete the corresponding PVC unit to clean up old data:
 +
 [subs="+quotes,+attributes"]
 ----
 {orch-cli} delete pvc postgres-data -n {prod-namespace}
 ----
++
+After deleting the PVC from the step above, a new PVC will automatically appear in a few seconds.
 
-. Set a new PostgreSQL version to use:
+. Set the version of the new PostgreSQL database to 13.3:
 +
 [subs="+quotes,+attributes"]
 ----
