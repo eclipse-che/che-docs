@@ -88,6 +88,7 @@ IDENTITY_POSTGRES_PASSWORD=$(if [ -z "$IDENTITY_POSTGRES_SECRET" ] || [ $IDENTIT
 
 POSTGRES_SECRET=$({orch-cli} get checluster/{prod-checluster} -n {prod-namespace} -o json | jq -r '.spec.database.chePostgresSecret')
 CHE_USER=$(if [ -z "$POSTGRES_SECRET" ] || [ $POSTGRES_SECRET = "null" ]; then {orch-cli} get checluster/{prod-checluster}  -n {prod-namespace} -o json | jq -r '.spec.database.chePostgresUser'; else {orch-cli} get secret $POSTGRES_SECRET -n {prod-namespace} -o json | jq -r '.data.user' | base64 -d; fi)
+
 {orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"ALTER USER $CHE_USER WITH SUPERUSER\""
 ----
 
