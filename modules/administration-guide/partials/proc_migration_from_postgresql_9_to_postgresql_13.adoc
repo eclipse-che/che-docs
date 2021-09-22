@@ -2,7 +2,7 @@
 [id="migration-from-postgresql-9-to-postgresql-13_{context}"]
 = Migration from PostgreSQL 9 to PostgreSQL 13
 
-By the 11th of November, 2021, the PostgreSQL version 9.6 came out of support, and {prod-short} team recommends that all users undergo immediate migrating to version 13.
+By the 11th of November, 2021, the PostgreSQL version 9.6 came out of support, and {prod-short} team recommends that all users undergo migrating to version 13.
 
 Follow the procedure below to migrate to a newer version of PostgreSQL successfully without any data loss.
 
@@ -13,7 +13,11 @@ Follow the procedure below to migrate to a newer version of PostgreSQL successfu
 
 .Procedure
 
-. Scale down the {prod-deployment} and {identity-provider} deployments:
+. In all running workspaces in the {prod-short} instance, save and push changes back to the Git repositories.
++
+. Stop all workspaces in the {prod-short} instance.
++
+. Scale down the {prod-short} and {identity-provider} deployments:
 +
 [subs="+quotes,+attributes"]
 ----
@@ -27,16 +31,16 @@ Follow the procedure below to migrate to a newer version of PostgreSQL successfu
 ----
 POSTGRES_POD=$({orch-cli} get pods -n {prod-namespace} | grep postgres | awk '{print $1}')
 CHE_POSTGRES_DB=$({orch-cli} get checluster/{prod-checluster} -n {prod-namespace} -o json  | jq '.spec.database.chePostgresDb')
-{orch-cli} exec -it ${POSTGRES_POD} -n {prod-namespace}  -- bash  -c "pg_dump ${CHE_POSTGRES_DB} > /tmp/che.sql"
-{orch-cli} exec -it ${POSTGRES_POD} -n {prod-namespace}  -- bash  -c "pg_dump keycloak > /tmp/keycloak.sql"
+{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "pg_dump $CHE_POSTGRES_DB > /tmp/che.sql"
+{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "pg_dump keycloak > /tmp/keycloak.sql"
 ----
 
 . Copy the obtained backups to a local file system:
 +
 [subs="+quotes,+attributes"]
 ----
-{orch-cli} cp {prod-namespace}/${POSTGRES_POD}:/tmp/che.sql che.sql
-{orch-cli} cp {prod-namespace}/${POSTGRES_POD}:/tmp/keycloak.sql keycloak.sql
+{orch-cli} cp {prod-namespace}/$POSTGRES_POD:/tmp/che.sql che.sql
+{orch-cli} cp {prod-namespace}/$POSTGRES_POD:/tmp/keycloak.sql keycloak.sql
 ----
 
 . Scale down the PostgreSQL deployment:
@@ -74,33 +78,33 @@ CHE_POSTGRES_DB=$({orch-cli} get checluster/{prod-checluster} -n {prod-namespace
 ----
 POSTGRES_POD=$({orch-cli} get pods -n {prod-namespace} | grep postgres | awk '{print $1}')
 OPERATOR_POD=$({orch-cli} get pods -n {prod-namespace} | grep {prod-operator} | awk '{print $1}')
-IDENTITY_POSTGRES_SECRET=$({orch-cli} exec -it ${OPERATOR_POD} -n {prod-namespace}  -- bash  -c "printenv CHE_IDENTITY_POSTGRES_SECRET" | tr -d '\r')
-IDENTITY_POSTGRES_PASSWORD=$({orch-cli} get secret ${IDENTITY_POSTGRES_SECRET} -n {prod-namespace} -o json | jq -r '.data.password' | base64 -d)
-{orch-cli} exec -it ${POSTGRES_POD} -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"CREATE USER keycloak WITH PASSWORD '${IDENTITY_POSTGRES_PASSWORD}'\""
-{orch-cli} exec -it ${POSTGRES_POD} -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"CREATE DATABASE keycloak\""
-{orch-cli} exec -it ${POSTGRES_POD} -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"GRANT ALL PRIVILEGES ON DATABASE keycloak TO keycloak\""
-POSTGRES_SECRET=$({orch-cli} exec -it ${OPERATOR_POD} -n {prod-namespace}  -- bash  -c "printenv CHE_POSTGRES_SECRET" | tr -d '\r')
-CHE_USER=$({orch-cli} get secret ${POSTGRES_SECRET} -n {prod-namespace} -o json | jq -r '.data.user' | base64 -d)
-{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"ALTER USER ${CHE_USER} WITH SUPERUSER\""
+IDENTITY_POSTGRES_SECRET=$({orch-cli} exec -it $OPERATOR_POD -n {prod-namespace}  -- bash  -c "printenv CHE_IDENTITY_POSTGRES_SECRET" | tr -d '\r')
+IDENTITY_POSTGRES_PASSWORD=$({orch-cli} get secret $IDENTITY_POSTGRES_SECRET -n {prod-namespace} -o json | jq -r '.data.password' | base64 -d)
+{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"CREATE USER keycloak WITH PASSWORD '$IDENTITY_POSTGRES_PASSWORD'\""
+{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"CREATE DATABASE keycloak\""
+{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"GRANT ALL PRIVILEGES ON DATABASE keycloak TO keycloak\""
+POSTGRES_SECRET=$({orch-cli} exec -it $OPERATOR_POD -n {prod-namespace}  -- bash  -c "printenv CHE_POSTGRES_SECRET" | tr -d '\r')
+CHE_USER=$({orch-cli} get secret $POSTGRES_SECRET -n {prod-namespace} -o json | jq -r '.data.user' | base64 -d)
+{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"ALTER USER $CHE_USER WITH SUPERUSER\""
 ----
 
 . Copy the backups to the PostgreSQL Pod:
 +
 [subs="+quotes,+attributes"]
 ----
-{orch-cli} cp che.sql {prod-namespace}/${POSTGRES_POD}:/tmp/che.sql
-{orch-cli} cp keycloak.sql {prod-namespace}/${POSTGRES_POD}:/tmp/keycloak.sql
+{orch-cli} cp che.sql {prod-namespace}/$POSTGRES_POD:/tmp/che.sql
+{orch-cli} cp keycloak.sql {prod-namespace}/$POSTGRES_POD:/tmp/keycloak.sql
 ----
 
 . Restore the database:
 +
 [subs="+quotes,+attributes"]
 ----
-{orch-cli} exec -it ${POSTGRES_POD} -n {prod-namespace}  -- bash  -c "psql keycloak < /tmp/keycloak.sql"
-{orch-cli} exec -it ${POSTGRES_POD} -n {prod-namespace}  -- bash  -c "psql ${CHE_POSTGRES_DB} < /tmp/che.sql"
+{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql keycloak < /tmp/keycloak.sql"
+{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql $CHE_POSTGRES_DB < /tmp/che.sql"
 ----
 
-. Scale up the {identity-provider} and {prod-namespace} deployments:
+. Scale up the {identity-provider} and {prod-short} deployments:
 +
 [subs="+quotes,+attributes"]
 ----
