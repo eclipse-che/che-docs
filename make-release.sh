@@ -104,7 +104,6 @@ gitBranch() {
       ;;
     *) echo "[INFO] Updating branch: ${TARGET_BRANCH} from branch: ${MAIN_BRANCH}."
       git checkout "${TARGET_BRANCH}"
-      git pull --rebase origin "${MAIN_BRANCH}"
       ;;
   esac
 }
