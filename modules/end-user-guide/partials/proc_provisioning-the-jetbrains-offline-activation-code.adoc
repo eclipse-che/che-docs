@@ -1,0 +1,68 @@
+[id="provisioning-the-jetbrains-offline-activation-code_{context}"]
+= Provisioning the JetBrains offline activation code
+
+Some editions of JetBrains IDEs require a paid subscription beyond the evaluation period, which means buying a license from JetBrains. To register a license, you need to provision to {prod-short} the JetBrains activation code for offline usage. When you renew your subscription, you will need to generate and provision a new offline activation code.
+
+.Prerequisites
+
+* An active link:https://www.jetbrains.com/store/comparison.html[JetBrains subscription] associated to an active link:https://account.jetbrains.com/login[JetBrains account].
+* The link:https://www.openssl.org/[OpenSSL] and `{orch-cli}` tools are installed.
+* An image containing the IDE. See xref:building-images-for-ides-based-on-the-intellij-platform.adoc[].
+* A workspace running with the IDE. See xref:configuring-a-workspace-to-use-an-ide-based-on-the-intellij-platform.adoc[].
+
+.Procedure
+
+. Log in to your link:https://account.jetbrains.com/login[JetBrains account], choose the desired subscription, and click on the *Download activation code for offline usage* link.
+
+. Extract from the downloaded zip archive the file named `__<License{nbsp}ID>__{nbsp}-{nbsp}for{nbsp}2018.1{nbsp}or{nbsp}later.txt`.
+
+. Convert the activation code to a base64 encoded single line for use in the next step as `__<base64_encoded_activation_code>__`.
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ openssl base64 -e -A -in '__<License{nbsp}ID>__{nbsp}-{nbsp}for{nbsp}2018.1{nbsp}or{nbsp}later.txt'
+----
+
+. Create a `secret.yaml` file defining the {orch-name} Secret to provision the activation code to {prod-short}.
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: jetbrains-offline-activation-code
+  labels:
+    app.kubernetes.io/component: workspace-secret
+    app.kubernetes.io/part-of: che.eclipse.org
+  annotations:
+    che.eclipse.org/automount-workspace-secret: 'false' <1>
+    che.eclipse.org/mount-path: /tmp/
+    che.eclipse.org/mount-as: file
+data:
+  idea.key: __<base64_encoded_activation_code>__
+  pycharm.key: __<base64_encoded_activation_code>__
+  webstorm.key: __<base64_encoded_activation_code>__
+  phpstorm.key: __<base64_encoded_activation_code>__
+  goland.key: __<base64_encoded_activation_code>__
+----
++
+<1> `+che.eclipse.org/automount-workspace-secret: 'false'+`: disables the mounting process until a workspace component explicitly requests it with the `+automountWorkspaceSecrets: true+` property.
+
+. Apply the {orch-name} Secret to the {orch-name} {orch-namespace} running the workspace.
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ {orch-cli} apply -f secret.yaml
+----
+
+. To mount the activation codes into a workspace, update the workspace devfile configuration to set `+automountWorkspaceSecrets: true+`.
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+components:
+  - type: cheEditor
+    automountWorkspaceSecrets: true
+    reference: "__<URL_to_meta.yaml>__"
+----
+
+. Restart the workspace.
