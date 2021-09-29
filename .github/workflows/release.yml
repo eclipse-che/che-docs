@@ -47,3 +47,18 @@ jobs:
           git config --global user.email "mkuznets@redhat.com"
           export GITHUB_TOKEN=${{ secrets.CHE_BOT_GITHUB_TOKEN }}
           /bin/bash make-release.sh --version ${{ github.event.inputs.version }} --trigger-release
+      - name: Create failure MM message
+        if: ${{ failure() }}
+        run: |
+          echo "{\"text\":\":no_entry_sign: Che Docs ${{ github.event.inputs.version }} release PR creation failed: https://github.com/eclipse/che-docs/actions/workflows/release.yml\"}" > mattermost.json
+      - name: Create success MM message
+        run: |
+          echo "{\"text\":\":white_check_mark: Che Docs ${{ github.event.inputs.version }} release PR has been created: https://github.com/eclipse/che-docs/pulls?q=is%3Apr+${{ github.event.inputs.version }}\"}" > mattermost.json
+      - name: Send MM message
+        if: ${{ success() }} || ${{ failure() }}
+        uses: mattermost/action-mattermost-notify@1.1.0
+        env:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_CHANNEL: eclipse-che-releases
+          MATTERMOST_USERNAME: che-bot
+
