@@ -34,18 +34,43 @@ $ {prod-cli} server:backup --repository-url=__<repository-url>__  --repository-p
 [id="cli-restoring-from-backup"]
 == Restoring from a backup
 
-. Recover the previous state of {prod-short}:
+. Recover to the previous state of {prod-short}:
 +
 [source,shell,subs="+quotes,+attributes"]
 ----
-$ {prod-cli} server:restore --repository-url=__<repository-url>__ --repository-password=__<repository-password>__
+$ {prod-cli} server:restore --repository-url=__<repository-url>__ --repository-password=__<repository-password>__ --snapshot-id=__<snapshot-id>__
 ----
 
-* The `server:restore` command can be run with no arguments when the backup server was used before.
+* It is possible to omit `--repository-url` and `--repository-password` arguments for the `server:restore` command if the same backup server should be used.
 
-. Recover from a specific snapshot by specifying its ID:
+. Recover to different than exiting version of {prod-short}:
 +
 [source,shell,subs="+quotes,+attributes"]
 ----
-$ {prod-cli} server:restore --snapshot-id=__<snapshot-id>__
+$ {prod-cli} server:restore --version=__<version>__ --snapshot-id=__<snapshot-id>__
+----
++
+[NOTE]
+====
+Provided snapshot must be created from the version of {prod-short} to which recover is requested.
+====
+
+* If you have a dedicated backup repository for each {prod-short} version and want to use the most recent backup for the version,
+you may provide `latest` as snapshot ID and it will be converted to the latest ID in the given repository.
+
+. Recover to the state described by an existing backup Custom Resource object:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:restore --backup-cr-name=__<CheClusterBackupCRName>__
+----
+
+. Recover to the previous version after update:
++
+{prod} automatically creates a backup when upgrading to a newer version.
+To return to the previous installed version run:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:restore --rollback
 ----
