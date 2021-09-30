@@ -1,15 +1,20 @@
 [id="configuring-communication-between-{prod-id-short}-components_{context}"]
 = Configuring communication between {prod-short} components
 
-To communicate together, {prod-short} components use the internal services names, which are exposed in the internal {platforms-name} network.
+You can select whether {prod-short} components communicate by using the internal network or external Kubernetes Ingress or OpenShift Route.
 
-The administration can disable the use of the internal services names to force {prod-short} components to use external {platforms-ingress}. Using the external {platforms-ingress} might slow the traffic and lead to issues because it uses proxies, certificates, and firewalls.
+To communicate, {prod-short} components use their internal services names, which are exposed in the internal {platforms-name} network.
 
-Using the external {platforms-ingress} is necessary in the following situations:
+As the administrator, you must disable the use of the internal services names to force the {prod-short} components to use external {platforms-ingress} in the following situations:
 
 * To deploy {prod-short} across multiple {platforms-name} clusters. The internal services names are not shared between distinct clusters.
 * To deploy {prod-short} across multiple namespaces. The {orch-name} NetworkPolicies restricts communication between namespaces.
 * To deploy {prod-short} with the multitenant network plugin.
+
+[IMPORTANT]
+====
+Using the external {platforms-ingress} might slow the traffic and lead to issues because it uses proxies, certificates, and firewalls.
+====
 
 .Prerequisites
 
@@ -18,7 +23,7 @@ Using the external {platforms-ingress} is necessary in the following situations:
 
 .Procedure
 
-* Configure the `__<property-value>__` value of the `disableInternalClusterSVCNames` property in the CheCluster Custom Resource server settings. Set the value of `__<property-value>__` to:
+* In the CheCluster Custom Resource server settings, for the `disableInternalClusterSVCNames` property, set `__<property-value>__` to:
 [horizontal]
 `true`:: To use external {platforms-ingress}.
 `false`:: To use internal {orch-name} DNS names.
@@ -44,7 +49,7 @@ spec:
 ----
 $ {orch-cli} project {prod-namespace}
 ----
-. Inspect the ConfigMap properties to determine, which communication method {prod-short} uses. Run the following commands and take note of the output:
+. Inspect the ConfigMap properties to determine which communication method {prod-short} uses:
 +
 [subs="+quotes,attributes,macros"]
 ----
@@ -53,10 +58,10 @@ jsonpath='{.data.pass:[CHE_KEYCLOAK_AUTH__INTERNAL__SERVER__URL]}'
 $ {orch-cli} get configmap che -o \ 
 jsonpath='{.data.pass:[CHE_WORKSPACE_PLUGIN__REGISTRY__INTERNAL__URL]}'
 ----
-* If {prod-short} components communicate externally, the output is empty.
 * If {prod-short} components communicate internally, the output is following:
 +
 ----
 http://keycloak.eclipse-che.svc:8080/auth
 http://plugin-registry.eclipse-che.svc:8080/v3
 ----
+* Otherwise, if the components communicate externally, the output is empty.
