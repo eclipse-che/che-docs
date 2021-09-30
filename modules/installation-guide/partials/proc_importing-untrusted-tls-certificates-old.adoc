@@ -25,7 +25,7 @@ endif::[]
 ifeval::["{project-context}" != "che"]
 When
 endif::[]
-the cluster contains cluster-wide trusted CA certificates added through the link:https://docs.openshift.com/container-platform/4.4/networking/configuring-a-custom-pki.html#nw-proxy-configure-object_configuring-a-custom-pki[cluster-wide-proxy configuration], {prod-short} Operator detects them and automatically injects them into this ConfigMap:
+the cluster contains cluster-wide trusted CA certificates added using the link:https://docs.openshift.com/container-platform/4.4/networking/configuring-a-custom-pki.html#nw-proxy-configure-object_configuring-a-custom-pki[cluster-wide-proxy configuration], {prod-short} Operator detects them and automatically injects them into this ConfigMap:
 
 - {prod-short} automatically labels the ConfigMap with the `config.openshift.io/inject-trusted-cabundle="true"` label.
 - Based on this annotation, OpenShift automatically injects the cluster-wide trusted CA certificates inside the `ca-bundle.crt` key of ConfigMap
@@ -231,16 +231,16 @@ SHA1 Fingerprint=3F:DA:BF:E7:A7:A7:90:62:CA:CF:C7:55:0E:1D:7D:05:16:7D:45:60
 
 == Verification at the workspace level
 
-. Start a workspace, get the {orch-namespace} in which it has been created, and wait for it to be started
+. Start a workspace, get the {orch-namespace} in which it has been created, and wait for it to be started.
 
-. Get the name of the workspace Pod with the following command:
+. Get the name of the workspace Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get pods -o=jsonpath='{.items[0].metadata.name}' -n __<workspace namespace>__ | grep '^workspace.*'
 ----
 
-. Get the name of the Theia IDE container in the workspace Pod with the following command:
+. Get the name of the Che-Theia IDE container in the workspace Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -248,14 +248,14 @@ $ {orch-cli} get -o json pod __<workspace pod name>__  -n __<workspace namespace
     jq -r '.spec.containers[] | select(.name | startswith("theia-ide")).name'
 ----
 
-. Look for a `ca-certs` ConfigMap that should have been created inside the workspace namespace:
+. Look for a `ca-certs` ConfigMap inside the workspace namespace:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get cm ca-certs __<workspace namespace>__
 ----
 
-. Check that the entries in the `ca-certs` ConfigMap contain all the additional entries you added in the certificate ConfigMap at the {prod-short} installation level, in addition to the `ca-bundl.crt` entry which is a reserved one:
+. Check that the entries in the `ca-certs` ConfigMap contain all the additional entries you added in the certificate ConfigMap at the {prod-short} installation level, in addition to the reserved `ca-bundle.crt` entry:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -279,7 +279,7 @@ $ {orch-cli} get -o json pod __<workspace pod name>__ -n {prod-namespace} | \
 }
 ----
 
-. Confirm that the volume has been mounted into containers, especially in the Theia IDE container:
+. Confirm that the volume has been mounted into containers, especially in the Che-Theia IDE container:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -292,7 +292,7 @@ $ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>
 }
 ----
 
-. Inspect `/public-certs` folder on the Theia IDE container and check that its contents match the list of entries in the `ca-certs` ConfigMap:
+. Inspect `/public-certs` folder on the Che-Theia IDE container and check that its contents match the list of entries in the `ca-certs` ConfigMap:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
