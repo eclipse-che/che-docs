@@ -1,14 +1,73 @@
 // configuring-bitbucket-servers
-
+ 
 [id="configuring_bitbucket_servers_{context}"]
 = Configuring Bitbucket servers
+ 
+The following chapter describes how to configure the Bitbucket (BB) server so that you can use it with public repositories and as a project source supplier for {prod-short}. This includes the following processes:
 
-To use the Bitbucket server as a project sources supplier:
+* Creating ConfigMaps for additional TLS and `gitSelfSign` certificates. This enables:
 
-. Register the Bitbucket server URL on {prod-short} by using the `CHE_INTEGRATION_BITBUCKET_SERVER__ENDPOINTS` property.
+** Launching a factory using a devfile URL.
+** Importing and cloning a project.
+
+* Registering the BB server URL with the {prod-short} server using the CR `CHE_INTEGRATION_BITBUCKET_SERVER__ENDPOINTS` property.
+
+To configure BB for {prod-short}, configure the related CheCluster Custom Resource (CR) and {prod-short} instance YAML file.
+
+[NOTE]
+====
+Configuring BB for the use with private repositories includes:
+
+* Configure `CHE_INTEGRATION_BITBUCKET_SERVER__ENDPOINTS`.
+* Configure the OAuth 1 authentication on the BB server side. For more information, see xref:configuring-authorization#proc_configuring-bitbucket-server-oauth1_{context}[Configuring Bitbucket Server OAuth 1]
+====
+
+ 
+.Prerequisites
+
+* A value of the BB server certification authority (CA) exported in the Base64 ASCII format and stored in a file named `ca.crt`.
+* An instance of {prod-short}.
+ 
+.Procedure
+ 
+. Provision the CA of the BB server to the {prod-short} server to enable it to read the devfiles stored in the BB server. To do so, add the following ConfigMap to the `{prod-namespace}` {orch-namespace}:
 +
-* The value of the property must contain the hostname of the server to register.
+[subs="+attributes,+quotes"]
+----
+$ {orch-cli} create configmap bitbucket-ca-cert-for-factory --from-file=ca.crt -n {prod-namespace}
+----
 +
-* For the configuration options changing examples, see xref:installation-guide:advanced-configuration-options-for-the-che-server-component.adoc[].
-
-. Add the Bitbucket CA certificate into {prod-short}, see xref:installation-guide:importing-untrusted-tls-certificates.adoc[].
+[subs="+attributes,+quotes"]
+----
+$ {orch-cli} label configmap bitbucket-ca-cert-for-factory app.kubernetes.io/part-of=che.eclipse.org app.kubernetes.io/component=ca-bundle -n {prod-namespace}
+----
+ 
+. Provision the CA of the BB server to the {prod-short} server to be able to use Git operations. To do so, add a new ConfigMap to the `{prod-namespace}` {orch-namespace}:
++
+[subs="+attributes,+quotes"]
+----
+$ {orch-cli} create configmap bitbucket-ca-for-git --from-file=ca.crt --from-literal=githost=__<bitbucket_server_url>__ -n {prod-namespace}
+----
+ 
+. Edit the CheCluster Custom Resource (CR) to configure the {prod-short} server. 
++
+[source,yaml,subs="+attributes"]
+----
+spec:
+  server:
+    # …
+    gitSelfSignedCert: __<boolean>__ <1>
+    customCheProperties:
+      CHE_INTEGRATION_BITBUCKET_SERVER__ENDPOINTS:  "__<bitbucket_server_url>__" <2>
+----
+<1> `true`: if BB is using a self-signed cert. Default value: `false`.
+<2> BB server URL is an HTTPS resource.
++
+* Example: `CHE_INTEGRATION_BITBUCKET_SERVER__ENDPOINTS: "https://bitbucket-bitbucket.apps.ocp48-aws.crw-qe.com/"``
++
+* For more information, see xref:installation-guide:advanced-configuration-options-for-the-che-server-component.adoc[].
+ 
+ 
+.Reference
+ 
+* For adding a Bitbucket CA certificate into {prod-short}, see xref:installation-guide:importing-untrusted-tls-certificates.adoc[].
