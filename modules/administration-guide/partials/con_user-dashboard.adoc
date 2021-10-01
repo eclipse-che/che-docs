@@ -1,0 +1,39 @@
+// Module included in the following assemblies:
+//
+// {prod-id-short}-workspace-controller-with-devworkspace
+
+[id="user-dashboard_{context}"]
+= User dashboard
+
+The user dashboard is the landing page of {prod}.
+{prod-short} end-users browse the user dashboard to access and manage their workspaces.
+It is a React application. 
+The {prod-short} deployment starts it in the `{prod-deployment}-dashboard` Deployment.
+
+It need access to:
+
+* xref:che-server.adoc[]
+* xref:devfile-registries.adoc[]
+* xref:plug-in-registries.adoc[]
+* xref:devworkspace-engine.adoc[]
+* xref:user-workspaces.adoc[]
+
+.User dashboard interactions with other components
+image::architecture/{project-context}-user-dashboard-interactions.png[User dashboard interactions with other components]
+
+To start a user workspace the user dashboard:
+
+. Reads the devfile describing the workspace.
+. Collects the additional metadata from the devfile and plug-in registries.
+. Converts the information into a {devworkspace} Custom Resource.
+. Creates the {devworkspace} Custom Resource in the user {orch-namespace}.
+. Watches the {devworkspace} Custom Resource status.
+. Displays the running workspace to the user.
+
+
+.Additional resources
+
+* xref:end-user-guide:navigating-che.adoc[]
+
+include::example$snip_{project-context}-user-dashboard-additional-resources.adoc[]
+

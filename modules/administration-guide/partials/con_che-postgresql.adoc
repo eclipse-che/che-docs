@@ -5,17 +5,24 @@
 [id="{prod-id-short}-postgresql_{context}"]
 = {prod-short} and PostgreSQL
 
-The PostgreSQL database is a prerequisite to configure {prod-short}. The {prod-short} administrator can choose to connect {prod-short} to an existing PostgreSQL instance or let the {prod-short} deployment start a new dedicated PostgreSQL instance.
+The PostgreSQL database is a prerequisite for {prod-short} server and {identity-provider}.
 
-The {prod-id-short}-server uses the database to persist user configurations (workspaces metadata, Git credentials). {identity-provider} uses the database as its back end to persist user information.
+The {prod-short} administrator can choose to connect {prod-short} to: 
 
-[cols=2*]
-|===
-ifeval::["{project-context}" == "che"]
-| Source code
-| link:{link-postgres-dockerfile-location}[{prod-short} Postgres]
-endif::[]
+* An existing PostgreSQL instance. 
+* Let the {prod-short} deployment start a new dedicated PostgreSQL instance.
 
-| Container image
-| `{postgresql-image-url}`
-|===
+Services are consuming the database for following purposes:
+
+{prod-short} server:: 
+Persist user configurations: workspaces metadata, Git credentials.
+
+{identity-provider}:: 
+Persist user information.
+
+.Additional resources
+
+* xref:administration-guide:external-database-setup.adoc[]
+
+include::example$snip_che-postgresql-additional-resources.adoc[]
+
