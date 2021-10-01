@@ -90,6 +90,7 @@ chePostgresUser: PostgreSQL user that the Che server uses to connect to the DB. 
 externalDb: Instructs the Operator on whether to deploy a dedicated database. By default, a dedicated PostgreSQL database is deployed as part of the Che installation. When `externalDb` is `true`, no dedicated database will be deployed by the Operator and you will need to provide connection details to the external DB you are about to use. See also all the fields starting with\: `chePostgres`.
 postgresImage: Overrides the container image used in the PostgreSQL database deployment. This includes the image tag. Omit it or leave it empty to use the default container image provided by the Operator.
 postgresImagePullPolicy: Overrides the image pull policy used in the PostgreSQL database deployment. Default value is `Always` for `nightly`, `next` or `latest` images, and `IfNotPresent` in other cases.
+postgresVersion: Indicates a PostgreSQL version image to use. Allowed values are\: `9.6` and `13.3`. Migrate your PostgreSQL database to switch from one version to another.
 :=== 
 
 [id="checluster-custom-resource-auth-settings_{context}"]
@@ -98,6 +99,7 @@ postgresImagePullPolicy: Overrides the image pull policy used in the PostgreSQL 
 [cols="2,5", options="header"]
 :=== 
  Property: Description 
+debug: Debug internal identity provider.
 externalIdentityProvider: Instructs the Operator on whether or not to deploy a dedicated Identity Provider (Keycloak or RH SSO instance). Instructs the Operator on whether to deploy a dedicated Identity Provider (Keycloak or RH-SSO instance). By default, a dedicated Identity Provider server is deployed as part of the Che installation. When `externalIdentityProvider` is `true`, no dedicated identity provider will be deployed by the Operator and you will need to provide details about the external identity provider you are about to use. See also all the other fields starting with\: `identityProvider`.
 gatewayAuthenticationSidecarImage: Gateway sidecar responsible for authentication when NativeUserMode is enabled. See link\:https\://github.com/oauth2-proxy/oauth2-proxy[oauth2-proxy] or link\:https\://github.com/openshift/oauth-proxy[openshift/oauth-proxy].
 gatewayAuthorizationSidecarImage: Gateway sidecar responsible for authorization when NativeUserMode is enabled. See link\:https\://github.com/brancz/kube-rbac-proxy[kube-rbac-proxy] or link\:https\://github.com/openshift/kube-rbac-proxy[openshift/kube-rbac-proxy]
