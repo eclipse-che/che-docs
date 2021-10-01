@@ -7,7 +7,7 @@
 
 Bitbucket authentication is based on using personal access tokens. Each Bitbucket user is able to request several personal access tokens with different names, permissions, expiration times, and so on. Those tokens can be used to sign Bitbucket REST API calls and perform Git repository operations.
 
-{prod-short} users may use public or private repositories on Bitbucket SCM (Source Code Management) system as a source of their projects.
+{prod-short} users may use public or private repositories on the Bitbucket SCM (Source Code Management) system as a source of their projects.
 
 The use of private repositories requires the additional configuration described below.
 
@@ -30,17 +30,16 @@ The use of private repositories requires the additional configuration described 
 ++https++://__<bitbucket-hostname>__/rest/api/1.0/users/__<username>__
 ----
 
-* For {prod-short}
+* For {prod-short}:
 +
 [subs="+macros,attributes"]
 ----
 {prod-url}/api/user
 ----
 
-* With the token credentials obtained from a secret, another secret is automatically created, allowing authorization to Git operations. This secret is mounted into a workspace container as a Git credentials file, and any additional configurations are not required to work with private Git repositories.
+NOTE: With the token credentials obtained from the secret, another secret is automatically created. This second secret is mounted into a workspace container as a Git credentials file allowing authorization to Git operations. The BB private Git repositories configuration is then complete.
 
-
-To allow Bitbucket authentication on {prod-short} side, personal tokens must be stored in the user's {orch-namespace} in the form of a secret. The secret must look as follows:
+To allow Bitbucket authentication on the {prod-short} side, personal tokens must be stored in the user's {orch-namespace} in the form of a secret. The secret must look as follows:
 
 include::example$snip_bitbucket-personal-access-token-secret.adoc[]
 
