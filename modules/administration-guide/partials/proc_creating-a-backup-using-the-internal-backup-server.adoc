@@ -1,23 +1,15 @@
 [id="creating-a-backup-using-the-internal-backup-server_{context}"]
 = Creating a backup using the internal backup server
 
-To use the internal backup server, request automatic configuration from {prod-short} Operator.
-//"The preparation described above is not required."???
+To use the internal backup server, request automatic configuration from {prod-short} Operator as follows.
 
 include::warning_does-not-back-up-content-of-workspaces.adoc[]
 
-NOTE: Configuring a backup server inside the same cluster, as described in this procedure, is not recommended for production use. See the recommended procedure: xref:proc_creating-a-new-backup-using-an-object.adoc[Creating a new backup using an object].
-//xref:managing-backups-using-custom-resources.adoc#assembly_creating-a-backup-using-custom-resources.adoc\proc_creating-a-new-backup-using-an-object.adoc[Creating a new backup using an object].
-
-//CHECK WITH SME IF THESE PREREQS ARE NOT REQUIRED
-.Prerequisites
-
-* xref:backup-server-setup.adoc[Backup server setup]
-
-* xref:managing-backups-using-custom-resources.adoc#configuring-prod-short-to-use-a-backup-server_{context}[Configuring {prod-short} to use a backup server]
+NOTE: Configuring a backup server inside the same cluster, as described in this procedure, is not recommended for a production environment. See the recommended procedure: xref:managing-backups-using-custom-resources.adoc#creating-a-backup-using-an-object_{context}[Creating a new backup using an object].
 
 .Procedure
 
+//Create a CustomResourceDefinition to configure ...? max-cx
 . Configure the automatic setup and sending of the backup to the internal backup server:
 +
 [source,yaml,subs="+attributes"]
@@ -42,5 +34,5 @@ status:
 ----
 <1> Displays the overall state or error message.
 <2> Current phase of the backup process in a human-readable format.
-<3> Backup process state. One of `InProgress`, `Succeeded`, or `Failed`.
+<3> Backup process state: `InProgress` or `Succeeded` or `Failed`.
 <4> ID of the created backup snapshot. The field appears only when `state` is `Succeeded`.
