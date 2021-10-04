@@ -22,11 +22,10 @@
 ====
 
 {prod} Operator creates a new backup on every {prod-short} update.
-Depending on the xref:define-backup-server-for-operator.adoc[configuration], backups before {prod-short} update are stored in:
-
-* The only configured backup server
-* Backup server which configuration marked with `che.eclipse.org/backup-before-update: true` annotation if there is more than one configuration
-* Internal backup server if no backup servers configured or configured several and `che.eclipse.org/backup-before-update: true` annotation missing
+If a backup server is xref:define-backup-server-for-operator.adoc[configured], then it is used to store the backup.
+If no backup server configured, then internal backup server is used.
+If there is more than one backup server configured, the server with `che.eclipse.org/backup-before-update: true` annotation is used.
+If none have the annotation, then internal backup server is used.
 
 .Additional resources
 
