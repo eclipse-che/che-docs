@@ -81,7 +81,8 @@ pass:[<!-- vale IBM.PassiveVoice = NO -->]
 pass:[<!-- vale IBM.PassiveVoice = YES -->]
 
 .. Fill-in the *Link Applications* form and click the btn:[Continue] button.
-
++
+====
 Application Name::  `__<{prod-short}>__`
 
 Application Type:: Generic Application.
@@ -99,14 +100,17 @@ Access token URL:: `__<Bitbucket Server URL>__/plugins/servlet/oauth/access-toke
 Authorize URL:: `__<Bitbucket Server URL>__/plugins/servlet/oauth/access-token`
 
 Create incoming link:: Enabled.
+====
 
 .. Fill-in the *Link Applications* form and click the btn:[Continue] button.
-
++
+====
 Consumer Key::  Paste the content of the `__<bitbucket_server_consumer_key>__` file.
 
 Consumer name::  `__<{prod-short}>__`
 
 Public Key:: Paste the content of the `__<public-stripped.pub>__` file.
+====
 
 . Prepare the `secret.yaml` file with specific values as follows:
 
@@ -146,7 +150,6 @@ The main parts of the secret are:
 
 |===
 
-
 NOTE: Encoding a string into the base64 format using the `base64` tool on Linux machines leads to adding the newline character to the end of the source string and causing a value to be unusable as the authentication header value after decoding. Avoid this by using `base64 -w0`, which removes newly added lines, or strip newlines explicitly using`tr -d \\n`.
 
 
@@ -158,14 +161,17 @@ $ {orch-cli} apply -f secret.yaml
 ----
 
 . Restart the {prod-short} server:
-
++
 [subs="+quotes,+attributes"]
 +
+----
 $ {orch-cli} scale deploy {prod-deployment} --replicas=0
+----
 +
 [subs="+quotes,+attributes"]
+----
 $ {orch-cli} scale deploy {prod-deployment} --replicas=1
-
+----
 
 .Reference
 
