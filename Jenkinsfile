@@ -134,13 +134,14 @@ spec:
                 '''
             }
         }
+      }
       post {
         always {
           archiveArtifacts artifacts: 'che-docs/build/**', fingerprint: true
-      }
-  }
-        milestone 22
-      }
+        }
+      } 
+      milestone 22
+      
     }
 
     stage('Push to www repo (master)') {
