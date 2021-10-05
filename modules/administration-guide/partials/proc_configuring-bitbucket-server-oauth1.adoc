@@ -59,6 +59,7 @@ data:
   consumer.key: <...> <4>
 EOF
 ----
++
 <1> {prod-short} namespace. The default is {prod-namespace}
 <2> Bitbucket Server URL
 <3> base64 encoded content of the __<privatepkcs8.pem>__ file without first and last lines.
@@ -68,17 +69,9 @@ EOF
 
 .. In Bitbucket Server, click the cog in the top navigation bar to navigate to *Administration*  > *Application Links*.
 
-pass:[<!-- vale IBM.Usage = NO -->]
-
 .. Enter the application URL: `pass:c,a,q[{prod-url}]` and click the btn:[Create new link] button.
 
-pass:[<!-- vale IBM.Usage = YES -->]
-
-pass:[<!-- vale IBM.PassiveVoice = NO -->]
-
-.. On the warning message stating "No response was received from the URL" click the btn:[Continue] button.
-
-pass:[<!-- vale IBM.PassiveVoice = YES -->]
+.. In the warning message stating `No response was received from the URL`, click the btn:[Continue] button.
 
 .. Fill-in the *Link Applications* form and click the btn:[Continue] button.
 +
@@ -113,43 +106,42 @@ Public Key:: Paste the content of the `__<public-stripped.pub>__` file.
 ====
 
 . Prepare the `secret.yaml` file with specific values as follows:
-
++
 include::example$snip_bitbucket-personal-access-token-secret.adoc[]
-
++
 The main parts of the secret are:
-
++
 [cols=3*]
 |===
-| <1> Label
+| (1) Label
 | `app.kubernetes.io/component`
 | Indicates it is an SCM personal token secret. 
 
-| <2> Annotation
+| (2) Annotation
 | `che.eclipse.org/che-userid`
 | {prod} id of the user token belongs to.
 
-| <3> Annotation
+| (3) Annotation
 | `che.eclipse.org/scm-userid`
 | Bitbucket user id to which token belongs.
 
-| <4> Annotation
+| (4) Annotation
 | `che.eclipse.org/scm-username`
 | Bitbucket user name to which token belongs.
 
-| <5> Annotation
+| (5) Annotation
 | `che.eclipse.org/scm-url`
 | Bitbucket server URL to which this token belongs.
 
-| <6> Annotation
+| (6) Annotation
 | `che.eclipse.org/expired-after`
 | Personal access token expiration time (UNIX).
 
-| <7> Data entry
+| (7) Data entry
 | `token`
 | Base-64 encoded value of the personal access token. Example:TlRnNE1UazRORFl5TWpNeU9sMTI1aDFFT2dRbXBlTUYvbmhiLzNQUC9hT08=
-
 |===
-
++
 NOTE: Encoding a string into the base64 format using the `base64` tool on Linux machines leads to adding the newline character to the end of the source string and causing a value to be unusable as the authentication header value after decoding. Avoid this by using `base64 -w0`, which removes newly added lines, or strip newlines explicitly using`tr -d \\n`.
 
 
