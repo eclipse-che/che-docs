@@ -51,9 +51,34 @@ spec:
     CI = true
   }
 
-  triggers { pollSCM('H/10 * * * *')
-
- }
+  triggers { cron('@daily') 
+  // The Jenkins Pipeline builds Eclipse Che documentation for the publication to Eclipse website https://www.eclipse.org/che/docs/.
+  //
+  // It is: 
+  // * Executing the build from the *Execution branch*.
+  // * Using the content from the *Publication branches*.
+  // * Pushing the build artifacts to the `che` repository on Eclipse Git server.
+  //
+  // Eclipse infrastructure then publishes to Eclipse website: https://www.eclipse.org/che/docs/.
+  //
+  // Execution branch::
+  //
+  // The build runs on a branch containing at least the `Jenkinsfile` and `antora-playbook.yml` files.
+  // It does not need to run at all on other branches.
+  // By convention: restrict the build to the `main`, `master` and `publication` branches.
+  //
+  // Publication branch(es)::
+  //
+  // The build is using the content from the publication branch(es) defined in the `antora-playbook.yml` file.
+  //
+  // Triggers::
+  //
+  // Ideally, run the build when a change in the publication branch happened. 
+  // But it impossible to implement in current context with the available `pollSCM` or `upstream` triggers https://www.jenkins.io/doc/book/pipeline/syntax/#triggers
+  // It would be possible to implement using the `upstream` trigger with a dedicated Jenkins job for the Publication branch, and a dedicated Jenkins job for the Execution branch.
+  // Pragmatic solution: run daily with the `cron` trigger.
+  //
+  }
 
   options {
     buildDiscarder(logRotator(numToKeepStr: '5'))
@@ -90,6 +115,14 @@ spec:
     }
 
     stage('Build che-docs website') {
+      when {
+          anyOf {
+            branch 'main';
+            branch 'master';
+            branch 'publication'
+          }
+        beforeAgent true
+      }
       steps {
         milestone 21
         container('che-docs') {
