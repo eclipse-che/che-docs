@@ -108,6 +108,68 @@ Consumer name::  `__<{prod-short}>__`
 
 Public Key:: Paste the content of the `__<public-stripped.pub>__` file.
 
+. Prepare the `secret.yaml` file with specific values as follows:
+
+include::example$snip_bitbucket-personal-access-token-secret.adoc[]
+
+The main parts of the secret are:
+
+[cols=3*]
+|===
+| <1> Label
+| `app.kubernetes.io/component`
+| Indicates it is an SCM personal token secret. 
+
+| <2> Annotation
+| `che.eclipse.org/che-userid`
+| {prod} id of the user token belongs to.
+
+| <3> Annotation
+| `che.eclipse.org/scm-userid`
+| Bitbucket user id to which token belongs.
+
+| <4> Annotation
+| `che.eclipse.org/scm-username`
+| Bitbucket user name to which token belongs.
+
+| <5> Annotation
+| `che.eclipse.org/scm-url`
+| Bitbucket server URL to which this token belongs.
+
+| <6> Annotation
+| `che.eclipse.org/expired-after`
+| Personal access token expiration time (UNIX).
+
+| <7> Data entry
+| `token`
+| Base-64 encoded value of the personal access token. Example:TlRnNE1UazRORFl5TWpNeU9sMTI1aDFFT2dRbXBlTUYvbmhiLzNQUC9hT08=
+
+|===
+
+
+NOTE: Encoding a string into the base64 format using the `base64` tool on Linux machines leads to adding the newline character to the end of the source string and causing a value to be unusable as the authentication header value after decoding. Avoid this by using `base64 -w0`, which removes newly added lines, or strip newlines explicitly using`tr -d \\n`.
+
+
+. Apply the {orch-name} Secret to the {orch-name} {orch-namespace} running the workspace.
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ {orch-cli} apply -f secret.yaml
+----
+
+. Restart the {prod-short} server:
+
+[subs="+quotes,+attributes"]
++
+$ {orch-cli} scale deploy {prod-deployment} --replicas=0
++
+[subs="+quotes,+attributes"]
+$ {orch-cli} scale deploy {prod-deployment} --replicas=1
+
+
+.Reference
+
+https://www.eclipse.org/che/docs/che-7/administration-guide/configuring-authorization/#proc_configuring-bitbucket-server-oauth1_che
 
 
 .Additional resources
