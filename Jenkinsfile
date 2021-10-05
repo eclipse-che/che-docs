@@ -134,6 +134,11 @@ spec:
                 '''
             }
         }
+      post {
+        always {
+          archiveArtifacts artifacts: 'che-docs/build/**', fingerprint: true
+      }
+  }
         milestone 22
       }
     }
@@ -178,12 +183,4 @@ spec:
 
   }
 
-  post {
-    always {
-      archiveArtifacts artifacts: 'che-docs/build/**', fingerprint: true
-    }
-  }
-
 }
-
-
