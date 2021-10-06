@@ -34,20 +34,36 @@ This procedure also describes how to activate OAuth 1 for Bitbucket Server to:
 
 . Generate an RSA key pair and a stripped-down version of the public key:
 +
-[subs="+quotes,+attributes"]
+[subs="+quotes"]
 ----
-openssl genrsa -out __<private.pem>__ 2048
-openssl rsa -in __<private.pem>__ -pubout > __<public.pub>__
-openssl pkcs8 -topk8 -inform pem -outform pem -nocrypt -in __<private.pem>__ -out __<privatepkcs8.pem>__
-cat __<public.pub>__ | sed 's/-----BEGIN PUBLIC KEY-----//g' | sed 's/-----END PUBLIC KEY-----//g' | tr -d '\n' > __<public-stripped.pub>__
+$ openssl genrsa -out __<private.pem>__ 2048
+----
++
+[subs="+quotes"]
+----
+$ openssl rsa -in __<private.pem>__ -pubout > __<public.pub>__
+----
++
+[subs="+quotes"]
+----
+$ openssl pkcs8 -topk8 -inform pem -outform pem -nocrypt -in __<private.pem>__ -out __<privatepkcs8.pem>__
+----
++
+[subs="+quotes"]
+----
+$ cat __<public.pub>__ | sed 's/-----BEGIN PUBLIC KEY-----//g' | sed 's/-----END PUBLIC KEY-----//g' | tr -d '\n' > __<public-stripped.pub>__
 ----
 
 . Generate a consumer key and a shared secret.
 +
-[subs="+quotes,+attributes"]
+[subs="+quotes"]
 ----
-openssl rand -base64 24 > __<bitbucket_server_consumer_key>__
-openssl rand -base64 24 > __<bitbucket_shared_secret>__
+$ openssl rand -base64 24 > __<bitbucket_server_consumer_key>__
+----
++
+[subs="+quotes"]
+----
+$ openssl rand -base64 24 > __<bitbucket_shared_secret>__
 ----
 
 . Create a {orch-name} Secret in {prod-short} {orch-namespace} containing the consumer and private keys.
@@ -79,6 +95,8 @@ EOF
 <4> base64 encoded content of the `__<bitbucket_server_consumer_key>__` file.
 +
 .Example
++
+[source,yaml,subs="+quotes,+attributes"]
 ----
 #!/usr/bin/env bash
 
