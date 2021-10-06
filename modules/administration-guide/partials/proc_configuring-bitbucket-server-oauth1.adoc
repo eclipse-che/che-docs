@@ -3,19 +3,31 @@
 // Configuring Bitbucket server OAuth1
 
 [id="proc_configuring-bitbucket-server-oauth1_{context}"]
-= Configuring Bitbucket Server OAuth 1
+= Using Bitbucket with OAuth 1 authentication
+
+The following section describes configuration of the OAuth 1 authentication that is needed for performing read and write operations with Bitbucket repositories. To use BB repositories with allowed Git operations, such as `clone` and `push`, register a BB endpoint with {prod-short} first, and configure the OAuth 1 authentication.
+
+[NOTE] 
+====
+This procedure requires:
+
+* generating RSA key pairs
+* generating a consumer key-secret pair
+* creating an application link on the Bitbucket side
+====
 
 This procedure describes how to activate OAuth 1 for Bitbucket Server to:
 
 * Use devfiles hosted on a Bitbucket Server.
+* Enable {prod-short} to obtain and renew link:https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html[Bitbucket Server Personal access tokens].
 * xref:end-user-guide:authenticating-on-scm-server-with-a-personal-access-token.adoc[].
 
-It enables {prod-short} to obtain and renew link:https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html[Bitbucket Server Personal access tokens].
 
 .Prerequisites
 
 * The `{orch-cli}` tool is available.
 * Bitbucket Server is available from {prod-short} server.
+* An instance of {prod-short}.
 
 .Procedure
 
@@ -39,24 +51,24 @@ openssl rand -base64 24 > __<bitbucket_shared_secret>__
 
 . Create a {orch-name} Secret in {prod-short} {orch-namespace} containing the consumer and private keys.
 +
-[subs="+quotes,+attributes"]
+[source,yaml,subs="+quotes,+attributes"]
 ----
 $ {orch-cli} apply -f - <<EOF
 kind: Secret
 apiVersion: v1
 metadata:
   name: bitbucket-oauth-config
-  namespace: <...> <1>
+  namespace: __<{prod-short}-namespace>__ <1>
   labels:
+    app.kubernetes.io/component: 'oauth-scm-configuration'
     app.kubernetes.io/part-of: che.eclipse.org
-    app.kubernetes.io/component: oauth-scm-configuration
   annotations:
     che.eclipse.org/oauth-scm-server: bitbucket
-    che.eclipse.org/scm-server-endpoint: <...> <2>
+    che.eclipse.org/scm-server-endpoint: '__<scm-server-endpoint>__' <2>
 type: Opaque
 data:
-  private.key: <...> <3>
-  consumer.key: <...> <4>
+  private.key: '__<user-private-key>__' <3>
+  consumer.key: '__<customer-key>__' <4>
 EOF
 ----
 +
@@ -105,65 +117,6 @@ Consumer name::  `__<{prod-short}>__`
 Public Key:: Paste the content of the `__<public-stripped.pub>__` file.
 ====
 
-. Prepare the `secret.yaml` file with specific values as follows:
-+
-include::example$snip_bitbucket-personal-access-token-secret.adoc[]
-+
-The main parts of the secret are:
-+
-[cols=3*]
-|===
-| (1) Label
-| `app.kubernetes.io/component`
-| Indicates it is an SCM personal token secret. 
-
-| (2) Annotation
-| `che.eclipse.org/che-userid`
-| {prod} id of the user token belongs to.
-
-| (3) Annotation
-| `che.eclipse.org/scm-userid`
-| Bitbucket user id to which token belongs.
-
-| (4) Annotation
-| `che.eclipse.org/scm-username`
-| Bitbucket user name to which token belongs.
-
-| (5) Annotation
-| `che.eclipse.org/scm-url`
-| Bitbucket server URL to which this token belongs.
-
-| (6) Annotation
-| `che.eclipse.org/expired-after`
-| Personal access token expiration time (UNIX).
-
-| (7) Data entry
-| `token`
-| Base-64 encoded value of the personal access token. Example:TlRnNE1UazRORFl5TWpNeU9sMTI1aDFFT2dRbXBlTUYvbmhiLzNQUC9hT08=
-|===
-+
-NOTE: Encoding a string into the base64 format using the `base64` tool on Linux machines leads to adding the newline character to the end of the source string and causing a value to be unusable as the authentication header value after decoding. Avoid this by using `base64 -w0`, which removes newly added lines, or strip newlines explicitly using`tr -d \\n`.
-
-
-. Apply the {orch-name} Secret to the {orch-name} {orch-namespace} running the workspace.
-+
-[subs="+quotes,+attributes,+macros"]
-----
-$ {orch-cli} apply -f secret.yaml -n {prod-namespace}
-----
-
-. Restart the {prod-short} server:
-+
-[subs="+quotes,+attributes"]
-+
-----
-$ {orch-cli} scale deploy {prod-deployment} --replicas=0
-----
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} scale deploy {prod-deployment} --replicas=1
-----
 
 .Reference
 
