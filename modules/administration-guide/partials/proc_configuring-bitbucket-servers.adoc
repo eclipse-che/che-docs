@@ -13,7 +13,7 @@ The following chapter describes how to configure a Bitbucket (BB) server that us
 [NOTE]
 ====
 * Configure the OAuth 1 authentication on the BB server side. For more information, see xref:configuring-authorization#proc_configuring-bitbucket-server-oauth1_{context}[Configuring Bitbucket Server OAuth 1]
-* Creating a ConfigMap for importing additional certificates is necessary only if a BB server is set up with self-signed TLS certificates. These certificates are needed for the proper functionality of {prod-short} server and tools inside of a workspace, which use them for performing Git operations related to a specific repository.
+* Creating a ConfigMap for importing additional certificates is necessary only if a BB server is setup with self-signed TLS certificates. These certificates are needed for the proper functionality of {prod-short} server and tools inside of a workspace, which use them for performing Git operations related to a specific repository.
 ====
 
  
@@ -40,7 +40,7 @@ $ {orch-cli} label configmap bitbucket-ca-cert-for-factory app.kubernetes.io/par
 +
 [subs="+attributes,+quotes"]
 ----
-$ {orch-cli} create configmap bitbucket-ca-for-git --from-file=ca.crt --from-literal=githost=__<bitbucket_server_url>__ -n {prod-namespace}
+$ {orch-cli} create configmap che-git-self-signed-cert --from-file=ca.crt --from-literal=githost=__<bitbucket_server_url>__ -n {prod-namespace}
 ----
  
 . Edit the CheCluster Custom Resource (CR) to configure the {prod-short} server. 

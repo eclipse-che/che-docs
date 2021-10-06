@@ -61,7 +61,7 @@ metadata:
   name: bitbucket-oauth-config
   namespace: __<{prod-short}-namespace>__ <1>
   labels:
-    app.kubernetes.io/component: 'oauth-scm-configuration'
+    app.kubernetes.io/component: oauth-scm-configuration
     app.kubernetes.io/part-of: che.eclipse.org
   annotations:
     che.eclipse.org/oauth-scm-server: bitbucket
@@ -77,6 +77,44 @@ EOF
 <2> Bitbucket Server URL
 <3> base64 encoded content of the `__<privatepkcs8.pem>__` file without first and last lines.
 <4> base64 encoded content of the `__<bitbucket_server_consumer_key>__` file.
++
+.Example
+----
+#!/usr/bin/env bash
+
+NS=${1:-eclipse-che}
+CONSUMER_KEY=$(cat ./certs/bitbucket_server_consumer_key)
+PRIVATE_KEY=$(cat ./certs/privatepkcs8.pem | sed 's/-----BEGIN PRIVATE KEY-----//g' |  sed 's/-----END PRIVATE KEY-----//g' | tr -d '\n')
+BITBUCKET_HOST='http://bitbucket-host.com'
+unameOut="$(uname -s)"
+
+case "${unameOut}" in
+    Linux*)     BASE64_FUNC='base64 -w 0';;
+    Darwin*)    BASE64_FUNC='base64';;
+    CYGWIN*)    BASE64_FUNC='base64 -w 0';;
+    MINGW*)     BASE64_FUNC='base64 -w 0';;
+    *)          BASE64_FUNC='base64 -w 0'
+esac
+
+cat <<EOF | oc apply -n $NS -f -
+kind: Secret
+apiVersion: v1
+metadata:
+  name: bitbucket-oauth-config
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: oauth-scm-configuration
+  annotations:
+    che.eclipse.org/oauth-scm-server: bitbucket
+    che.eclipse.org/scm-server-endpoint: https://$BITBUCKET_HOST
+type: Opaque
+data:
+  private.key: $(echo -n $PRIVATE_KEY | $BASE64_FUNC) 
+  consumer.key: $(echo -n $CONSUMER_KEY | $BASE64_FUNC) 
+EOF
+----
++
+* See the whole script in this link:https://github.com/skabashnyuk/gitsrv/blob/main/bitbucket/4_setupche.sh[GitHub example].
 
 
 .Additional resources
