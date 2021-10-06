@@ -3,9 +3,9 @@
 // Configuring Bitbucket server OAuth1
 
 [id="proc_configuring-bitbucket-server-oauth1_{context}"]
-= Using Bitbucket with the OAuth 1 authentication
+= Configuring the Bitbucket and {prot-short} integration to use OAuth1
 
-The following section describes configuration of the OAuth 1 authentication that is needed for performing read and write operations with Bitbucket repositories. To use BB repositories with allowed Git operations, such as `clone` and `push`, register a BB endpoint with {prod-short} first, and configure the OAuth 1 authentication.
+The following section describes the configuration of the OAuth 1 authentication that is needed for performing read and write operations with Bitbucket (BB) repositories. To use BB repositories with allowed Git operations, such as `clone` and `push`, register a BB endpoint with {prod-short} first, and configure the OAuth 1 authentication.
 
 [NOTE] 
 ====
@@ -13,10 +13,11 @@ This procedure requires:
 
 * generating RSA key pairs
 * generating a consumer key-secret pair
-* creating an application link on the Bitbucket side
+* creating an application link on the BB side
+* configuring BB on the {prod-short}-server side
 ====
 
-This procedure describes how to activate OAuth 1 for Bitbucket Server to:
+This procedure also describes how to activate OAuth 1 for Bitbucket Server to:
 
 * Use devfiles hosted on a Bitbucket Server.
 * Enable {prod-short} to obtain and renew link:https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html[Bitbucket Server Personal access tokens].
@@ -31,7 +32,7 @@ This procedure describes how to activate OAuth 1 for Bitbucket Server to:
 
 .Procedure
 
-. Generate a RSA key pair and a stripped down version of the public key:
+. Generate an RSA key pair and a stripped-down version of the public key:
 +
 [subs="+quotes,+attributes"]
 ----
@@ -74,48 +75,8 @@ EOF
 +
 <1> {prod-short} namespace. The default is {prod-namespace}
 <2> Bitbucket Server URL
-<3> base64 encoded content of the __<privatepkcs8.pem>__ file without first and last lines.
+<3> base64 encoded content of the `__<privatepkcs8.pem>__` file without first and last lines.
 <4> base64 encoded content of the `__<bitbucket_server_consumer_key>__` file.
-
-. Configure an link:https://confluence.atlassian.com/adminjiraserver/using-applinks-to-link-to-other-applications-938846918.html[Application Link] in Bitbucket to enable the communication from {prod-short} to Bitbucket Server.
-
-.. In Bitbucket Server, click the cog in the top navigation bar to navigate to *Administration*  > *Application Links*.
-
-.. Enter the application URL: `pass:c,a,q[{prod-url}]` and click the btn:[Create new link] button.
-
-.. In the warning message stating `No response was received from the URL`, click the btn:[Continue] button.
-
-.. Fill-in the *Link Applications* form and click the btn:[Continue] button.
-+
-====
-Application Name::  `__<{prod-short}>__`
-
-Application Type:: Generic Application.
-
-Service Provider Name:: `__<{prod-short}>__`
-
-Consumer Key:: Paste the content of the `__<bitbucket_server_consumer_key>__` file.
-
-Shared secret:: Paste the content of the `__<bitbucket_shared_secret>__` file.
-
-Request Token URL:: `__<Bitbucket Server URL>__/plugins/servlet/oauth/request-token`
-
-Access token URL:: `__<Bitbucket Server URL>__/plugins/servlet/oauth/access-token`
-
-Authorize URL:: `__<Bitbucket Server URL>__/plugins/servlet/oauth/access-token`
-
-Create incoming link:: Enabled.
-====
-
-.. Fill-in the *Link Applications* form and click the btn:[Continue] button.
-+
-====
-Consumer Key::  Paste the content of the `__<bitbucket_server_consumer_key>__` file.
-
-Consumer name::  `__<{prod-short}>__`
-
-Public Key:: Paste the content of the `__<public-stripped.pub>__` file.
-====
 
 
 .Additional resources
