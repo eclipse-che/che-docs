@@ -11,11 +11,9 @@
 # Fail on errors and display commands
 set -ex
 
-# These 2 scripts run in current branch.
-# We need to run them from the publication branch context (7.y.x).
-# They should be run by make-release.sh when creating or updating the 7.y.x branch.
-#./tools/environment_docs_gen.sh
-#./tools/checluster_docs_gen.sh
+# Fetch all branches (on Jenkins)
+git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
+git fetch
 
 CI=true antora generate antora-playbook-for-publication.yml --stacktrace
 htmltest --skip-external
