@@ -2,19 +2,16 @@
 [id="importing-untrusted-tls-certificates_{context}"]
 = Importing untrusted TLS certificates to {prod-short}
 
-External communications between {prod-short} components are, by default, encrypted with TLS.
-Communications of {prod-short} components with external services such as proxies, source code repositories, identity providers may require using of TLS.
-Those communications require the use of TLS certificates signed by trusted Certificate Authorities.
+External communications between {prod-short} components are, by default, encrypted with TLS. Communications of {prod-short} components with external services such as proxies, source code repositories, and {platforms-identity-provider} may require using TLS. Those communications require the use of TLS certificates signed by trusted Certificate Authorities.
 
-When the certificates used by {prod-short} components or by an external service are signed by an untrusted CA it can be necessary to import the CA certificate in the {prod-short} installation, so that every {prod-short} component will consider them as signed by a trusted CA.
+NOTE: When the certificates used by {prod-short} components or by an external service are signed by an untrusted CA, it can be necessary to import the CA certificate in the {prod-short} installation so that every {prod-short} component will consider them as signed by a trusted CA.
 
 Typical cases that may require this addition are:
 
-* when the underlying {orch-name} cluster uses TLS certificates signed by a CA that is not trusted,
-* when {prod-short} server or workspace components connect to external services such as {identity-provider} or a Git server that use TLS certificates signed by an untrusted CA.
+* When the underlying {orch-name} cluster that uses TLS certificates signed by a CA that is not trusted.
+* When {prod-short} server or workspace components connect to external services such as {identity-provider} or a Git server that use TLS certificates signed by an untrusted CA.
 
-{prod-short} uses labeled ConfigMaps in {orch-namespace} as sources for TLS certificates.
-The ConfigMaps can have arbitrary number of keys with arbitrary number of certificates each.
+{prod-short} uses labeled ConfigMaps in {orch-namespace} as sources for TLS certificates. The ConfigMaps can have an arbitrary number of keys with a random number of certificates each.
 
 [NOTE]
 ====
@@ -32,13 +29,13 @@ the cluster contains cluster-wide trusted CA certificates added through the link
 
 [IMPORTANT]
 ====
-Some {prod-short} components require to have full certificate chain to trust the endpoint.
+Some {prod-short} components require to have a full certificate chain to trust the endpoint.
 If the cluster is configured with an intermediate certificate, then the whole chain (including self-signed root) should be added to {prod-short}.
 ====
 
 == Adding new CA certificates into {prod-short}
 
-This guide can be used before the installations of {prod-short} or when {prod-short} is already installed and running.
+The following procedure is applicable for already installed and running instances and for instances that are to be installed.
 
 ====
 NOTE: If you are using {prod-short} version lower than
@@ -67,8 +64,7 @@ include::example$snip_importing-untrusted-tls-certificates_1.adoc[]
 $ {orch-cli} create configmap custom-certs --from-file=__<bundle-file-path>__ -n={prod-namespace}
 ----
 +
-To apply more than one bundle, add another `--from-file=_<bundle-file-path>_` flag to the above command.
-Or you may create another ConfigMap.
+Add another `-from-file=_<bundle-file-path>_` flag to apply more than one bundle. Otherwise, create another ConfigMap.
 
 . Label created ConfigMaps with both `app.kubernetes.io/part-of=che.eclipse.org` and `app.kubernetes.io/component=ca-bundle` labels:
 +
@@ -77,8 +73,7 @@ Or you may create another ConfigMap.
 $ {orch-cli} label configmap custom-certs app.kubernetes.io/part-of=che.eclipse.org app.kubernetes.io/component=ca-bundle -n <{project-context}-namespace-name>
 ----
 
-. Deploy {prod-short} if it has not been deployed before otherwise wait until rollout of {prod-short} components finishes.
-If there are running workspaces, they should be restarted in order the changes take effect.
+. Deploy {prod-short} if it has not been deployed before. Otherwise wait until the rollout of {prod-short} components finishes. If there are running workspaces, they should be restarted for the changes to take effect.
 
 ifeval::["{project-context}" == "che"]
 
@@ -91,12 +86,13 @@ It is recommended to add the certificates at installation time.
 
 The ConfigMap should be pre-created in the {prod} installation namespace.
 Ensure you override the `global.tls.serverTrustStoreConfigMapName` Helm Chart field with the name of the ConfigMap when installing the {prod-short} Helm Chart. For this you should add the following arguments to the Helm command line:
+
 [subs="+quotes",options="nowrap",role=white-space-pre]
 ----
 --set global.tls.serverTrustStoreConfigMapName=custom-certs
 ----
 
-Or, in case of `{prod-cli}` usage, provide a Helm patch `--helm-patch-yaml` flag that points to an yaml file with:
+When you use `{prod-cli}` usage, provide the Helm patch `--helm-patch-yaml` flag that points to a yaml file with:
 [subs="+quotes",options="nowrap",role=white-space-pre]
 ----
 global:
@@ -124,16 +120,16 @@ endif::[]
 
 == Verification at the {prod-short} installation level
 
-If after adding the certificates something does not work as expected, here is a list of things to verify:
+When something does not work as expected after adding the certificates, here is a list of things to verify:
 
-- In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/understanding/olm-what-operators-are.html[Operator] deployment, namespace where `CheCluster` located contains labeled ConfigMaps with right content:
+- In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/understanding/olm-what-operators-are.html[Operator] deployment, the namespace where the `CheCluster` is located contains labeled ConfigMaps with the right content:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get cm --selector=app.kubernetes.io/component=ca-bundle,app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
 ----
 +
-And to check content of ConfigMap:
+Check the content of ConfigMap by running:
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get cm __<name>__ -n {prod-namespace} -o yaml
@@ -154,7 +150,7 @@ $ {orch-cli} get pod -o json __<{prod-id-short}-pod-name>__ -n {prod-namespace} 
 $ {orch-cli} exec -t __<{prod-id-short}-pod-name>__ -n {prod-namespace} -- ls /public-certs/
 ----
 +
-- In the {prod-short} server logs there is a line for every certificate added to the Java truststore, including configured {prod-short} certificates.
+- In the {prod-short} server logs, there is a line for every certificate added to the Java truststore, including configured {prod-short} certificates.
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -166,8 +162,8 @@ $ {orch-cli} logs __<{prod-id-short}-pod-name>__ -n {prod-namespace}
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} exec -t __<{prod-id-short}-pod-name>__ -n {prod-namespace} -- keytool -list -keystore {prod-home}/cacerts
-Your keystore contains 141 entries
-
+Your keystore contains 141 entries:
++
 (...)
 ----
 +
@@ -181,7 +177,7 @@ SHA1 Fingerprint=3F:DA:BF:E7:A7:A7:90:62:CA:CF:C7:55:0E:1D:7D:05:16:7D:45:60
 
 == Verification at the workspace level
 
-- Start a workspace, get the {orch-namespace} in which it has been created, and wait for it to be started
+- Start a workspace, obtain the {orch-namespace} name in which it has been created, and wait for the workspace to be started.
 
 - Get the name of the workspace Pod with the following command:
 +
@@ -190,7 +186,7 @@ SHA1 Fingerprint=3F:DA:BF:E7:A7:A7:90:62:CA:CF:C7:55:0E:1D:7D:05:16:7D:45:60
 $ {orch-cli} get pods -o=jsonpath='{.items[0].metadata.name}' -n __<workspace namespace>__ | grep '^workspace.*'
 ----
 
-- Get the name of the Theia IDE container in the workspace Pod with the following command:
+- Get the name of the Che-Theia IDE container in the workspace Pod with the following command:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -205,7 +201,7 @@ $ {orch-cli} get -o json pod __<workspace pod name>__  -n __<workspace namespace
 $ {orch-cli} get cm ca-certs __<workspace namespace>__
 ----
 
-- Check that the entries in the `ca-certs` ConfigMap contain all the additional entries you added before. In addition it may contain `ca-bundl.crt` entry which is a reserved one:
+- Check that the entries in the `ca-certs` ConfigMap contain all the additional entries you added before. In addition, it can contain `ca-bundle.crt` entry which is a reserved one:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -214,7 +210,7 @@ ca-bundle.crt
 source-config-map-name.data-key.crt
 ----
 
-- Make sure that the `ca-certs` ConfigMap has been added as a volume in the workspace Pod:
+- Confirm that the `ca-certs` ConfigMap has been added as a volume in the workspace Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -229,7 +225,7 @@ $ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>
 }
 ----
 
-- Confirm that the volume has been mounted into containers, especially in the Theia IDE container:
+- Confirm that the volume is mounted into containers, especially in the Che-Theia IDE container:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -242,7 +238,7 @@ $ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>
 }
 ----
 
-- Inspect `/public-certs` folder in the Theia IDE container and check that its contents match the list of entries in the `ca-certs` ConfigMap:
+- Inspect the `/public-certs` folder in the Che-Theia IDE container and check that its contents match the list of entries in the `ca-certs` ConfigMap:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
