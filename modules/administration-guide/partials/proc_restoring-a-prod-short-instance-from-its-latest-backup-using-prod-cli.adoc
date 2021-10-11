@@ -1,0 +1,21 @@
+[id="restoring-a-prod-short-instance-from-its-latest-backup-using-prod-cli_{context}"]
+= Restoring a {prod-short} instance from its latest backup using {prod-cli}
+
+To restore the latest backed up state of a {prod-short} instance using {prod-cli}:
+
+include::warning_backup-snapshots-are-bound-to-specific-cluster.adoc[]
+
+.Prerequisites
+
+* A backup. See xref:managing-backups-of-prod-short-instances-using-prod-cli.adoc#creating-a-backup-of-a-prod-short-instance-using-prod-cli_{context}[Creating a backup using {prod-cli}].
+
+.Procedure
+
+* Run the following command to recover the {prod-short} instance from its latest backup:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:restore --snapshot-id=latest --repository-url=__<repository-url>__ --repository-password=__<repository-password>__
+----
+
+NOTE: If the `server:backup` or `server:restore` command was invoked before with `--repository-url` and `--repository-password` parameters, these parameters can be omitted. In that case, {prod-cli} will use the backup server that it was using before (unless new parameters are specified or environment variables set).

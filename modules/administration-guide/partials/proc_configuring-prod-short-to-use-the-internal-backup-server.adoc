@@ -15,22 +15,39 @@ WARNING: Configuring a backup server inside the same cluster, for example the in
 apiVersion: org.eclipse.che/v1
 kind: CheClusterBackup
 metadata:
-  name: {prod-short}-backup
+  name: eclipse-che-backup
+  namespace: eclipse-che
 spec:
   useInternalBackupServer: true
 ----
+//check if the `eclipse-che` value appears in `name` and `namespace` in the downstream product UI.If different, check if there is a variable for `eclipse-che`, and if not, then consider ifdeval or other solution. max-cx
 
 . Read the `status` section of the `CheClusterBackup` object to verify the backup process:
 +
-[source,yaml,subs="+attributes"]
+[source,yaml,subs="+attributes"] 
 ----
 status:
   message: 'Backup is in progress. Start time: <timestamp>' <1>
-  stage: Collecting {prod-short} installation data          <2>
-  state: InProgress                                         <3>
-  snapshotId: ba92c7e0                                      <4>
+  stage: Collecting {prod-short} installation data <2>
+  state: InProgress <3>
 ----
 <1> Displays the overall state or error message.
 <2> Current phase of the backup process in a human-readable format.
 <3> Backup process state: `InProgress` or `Succeeded` or `Failed`.
-<4> ID of the created backup snapshot. The field appears only when `state` is `Succeeded`.
++
+[source,yaml,subs="+attributes"] 
+----
+status:
+  cheVersion: 7.37.0 <1>
+  message: >- <2>
+    Backup successfully finished at 2021-10-07 11:18:28.116103737 +0000 UTC
+    m=+2384.430366711
+  snapshotId: 40a09756 <3>
+  state: Succeeded <4>
+----
+<1> The version of Che from which the backup snapshot was created. This field appears only when `state` is `Succeeded`.
+<2> Displays the overall state or error message.
+<3> The ID of the created backup snapshot. This field appears only when `state` is `Succeeded`.
+<4> Backup process state: `InProgress` or `Succeeded` or `Failed`.
+
+

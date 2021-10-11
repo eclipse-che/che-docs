@@ -1,5 +1,5 @@
-[id="restoring-a-backup-using-a-checlusterrestore-object_{context}"]
-= Restoring a backup using a CheClusterRestore object
+[id="restoring-a-prod-short-instance-from-a-backup-using-a-checlusterrestore-object_{context}"]
+= Restoring a {prod-short} instance from a backup using a CheClusterRestore object
 
 To recover a backup using a custom resource object:
 
@@ -7,7 +7,7 @@ WARNING: Backup snapshots are bound to the specific cluster and must only be rec
 
 .Prerequisites
 
-* A backup. See xref:managing-backups-using-custom-resources.adoc#creating-a-backup-using-a-checlusterbackup-object_{context}[Creating a backup using a CheClusterBackup object].
+* A backup. See xref:managing-backups-of-prod-short-instances-using-custom-resources.adoc#creating-a-backup-of-a-prod-short-instance-using-a-checlusterbackup-object_{context}[Creating a backup using a CheClusterBackup object].
 
 .Procedure
 
@@ -21,7 +21,7 @@ metadata:
   name: {prod-short}-restore
 spec:
   backupServerConfigRef: backup-server-configuration <1>
-  snapshotId: ba92c7e0                               <2>
+  snapshotId: ba92c7e0 <2>
 ----
 <1> Name of the `CheBackupServerConfiguration` object that defines what backup server to use.
 <2> Optional parameter defining the Snapshot ID to restore from. The default value is the last snapshot on the backup server.
@@ -46,8 +46,8 @@ If errors occur in your browser after the recovery, clean up the browser data fo
 ----
 status:
   message: 'Restore is in progress. Start time: <timestamp>' <1>
-  stage: Restoring {prod-short} related cluster objects      <2>
-  state: InProgress                                          <3>
+  stage: Restoring {prod-short} related cluster objects <2>
+  state: InProgress <3>
 ----
 <1> Overall state or error message.
 <2> Current phase of the recovery process in a human-readable format.
