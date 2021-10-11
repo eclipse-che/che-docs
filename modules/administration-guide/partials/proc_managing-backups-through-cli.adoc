@@ -1,8 +1,10 @@
-[id="managing-backups-using-{prod-cli}"]
+[id="managing-backups-using-{prod-cli}_{context}"]
 = Managing backups using {prod-cli}
 
+The following section describes how to create and use backups of a {prod-short} installation to perform a recovery or a rollback to a previous version using `{prod-cli}`.
 
-The following section describes how to create backups of {prod-short} installation and do recovery using {prod-cli}.
+ * xref:creating-a-new-backup-using-{prod-cli}_{context}[]
+ * xref:restoring-from-a-backup-using-{prod-cli}_{context}[]
 
 .Prerequisites
 
@@ -10,65 +12,64 @@ include::partial$snip_internal-backup-server-warning.adoc[]
 
 * xref:setup-backup-server.adoc[Set up a backup server].
 
-* xref:configuring-cli-to-use-backup-server.adoc[Configure {prod-cli} to use the backup server]
+* xref:configuring-cli-to-use-backup-server.adoc[Configure {prod-cli} to use the backup server].
 
-.Procedure
 
- * xref:cli-creating-a-new-backup[]
- * xref:cli-restoring-from-backup[]
 
-[id="cli-creating-a-new-backup"]
-== Creating a new backup
+[id="creating-a-new-backup-using-{prod-cli}_{context}"]
+== Creating a {prod-short} backup
 
-. Create a backup and send it to the pre-configured backup server:
+. To create a backup snapshot and send it to a pre-configured backup server:
 +
 [source,shell,subs="+quotes,+attributes"]
 ----
-$ {prod-cli} server:backup --repository-url=__<repository-url>__  --repository-password=__<repository-password>__
+$ {prod-cli} server:backup --repository-url=__<repository-url>__ --repository-password=__<repository-password>__
 ----
-
-* It is possible to create other backups to the same backup server using the `server:backup` command with no arguments.
-* After using the `server:backup` command with no arguments for the first time on installation of {prod-short}, an internal backup server is configured and used.
-
-
-[id="cli-restoring-from-backup"]
-== Restoring from a backup
-
-. Recover to the previous state of {prod-short}:
 +
-[source,shell,subs="+quotes,+attributes"]
+* You can create other backups to the same backup server using the `server:backup` command with no arguments.
+* Using the `server:backup` command with no arguments for the first time will configure and use an internal backup server.
+
+
+[id="restoring-from-a-backup-using-{prod-cli}_{context}"]
+== Restoring {prod-short} from a backup
+
+A {prod-short} admin can use an existing snapshot of a particular {prod-short} version to restore  a desired state or version. The following instructions describe several variations of the restoration command. Adjust the command arguments according to your use case.
+
+* To restore the previous functional state of the same version of {prod-short}:
++
+[subs="+quotes,+attributes"]
 ----
 $ {prod-cli} server:restore --repository-url=__<repository-url>__ --repository-password=__<repository-password>__ --snapshot-id=__<snapshot-id>__
 ----
 
-. Recover to different than exiting version of {prod-short}:
-+
-[source,shell,subs="+quotes,+attributes"]
-----
-$ {prod-cli} server:restore --version=__<version>__ --snapshot-id=__<snapshot-id>__
-----
-+
-[NOTE]
-====
-Provided snapshot must be created from the version of {prod-short} to which recover is requested.
-====
 
-* If you have a dedicated backup repository for each {prod-short} version and want to use the most recent backup for the version,
-you may provide `latest` as snapshot ID and it will be converted to the latest ID in the given repository.
-
-. Recover to the state described by an existing backup Custom Resource object:
+* To roll back to a version different from the current version of {prod-short}:
 +
-[source,shell,subs="+quotes,+attributes"]
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:restore --version=__<version>__ --snapshot-id=__<snapshot-id>__ --repository-url=__<repository-url>__ --repository-password=__<repository-password>__
+----
++
+This performs a version rollback and restores a snapshot made from a previous version of {prod-short}. The provided snapshot must be created from the version of {prod-short} to which you want to roll back.
++
+NOTE: If you have a dedicated backup repository for each {prod-short} version and want to use the most recent backup for the version, you can provide the `latest` argument as a snapshot ID. By doing so, the `latest` argument will be converted to the latest known ID in the given repository, which will be then used by the {prod-short} Operator to recover.
+
+
+* To restore a state described by an existing backup Custom Resource:
++
+[subs="+quotes,+attributes"]
 ----
 $ {prod-cli} server:restore --backup-cr-name=__<CheClusterBackupCRName>__
 ----
 
-. Recover to the previous version after update:
+
+* To roll back a version upgrade of {prod-short}:
 +
-{prod} automatically creates a backup when upgrading to a newer version.
-To return to the previous installed version run:
-+
-[source,shell,subs="+quotes,+attributes"]
+[subs="+quotes,+attributes"]
 ----
 $ {prod-cli} server:restore --rollback
 ----
++
+This recovers the version that {prod-short} was using before upgrading to a later version. 
++
+NOTE: {prod-short} Operator automatically creates a backup before every upgrade.
