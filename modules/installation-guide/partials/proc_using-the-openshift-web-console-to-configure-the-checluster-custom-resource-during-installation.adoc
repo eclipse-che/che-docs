@@ -1,0 +1,37 @@
+
+[id="using-the-openshift-web-console-to-configure-the-checluster-custom-resource-during-installation_{context}"]
+= Using the OpenShift web console to configure the CheCluster Custom Resource during installation
+
+.Procedure
+
+. Follow steps 1 - 3 of xref:creating-an-instance-of-the-che-operator.adoc[]. 
+. On the Create CheCluster page, click *YAML view*.
+. In the YAML file, find or add the property to configure. Set the property to a suitable value:
++
+====
+[source,yaml,subs="+quotes"]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# ...
+spec:
+  __<component>__:
+    # ...
+      __<property-to-configure>__: __<value>__
+----
+====
+. Follow the remaining steps of xref:creating-an-instance-of-the-che-operator.adoc[].
+
+
+.Verification
+
+. In the left panel, click *Workloads*, then click *ConfigMaps*.
+. On the ConfigMaps page, click *{prod-deployment}*.
+. Navigate to the *YAML* tab.
+. Verify that the YAML file contains the configured property and value.
+
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:installation-guide:configuring-the-che-installation.adoc[].
