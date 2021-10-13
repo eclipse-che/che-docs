@@ -2,20 +2,23 @@
 ----
 apiVersion: 1.0.0
 metadata:
- generateName: guestbook-nodejs-sample-
+  generateName: nodejs-web-app-
 projects:
- - name: guestbook-nodejs-sample
-   source:
-     type: git
-     location: 'https://github.com/che-samples/nodejs-mongodb-sample'
+  -
+    name: react-web-app
+    source:
+      type: git
+      location: "https://github.com/che-samples/react-web-app"
 components:
- - type: chePlugin
-   id: vscode/typescript-language-features/latest
- - type: kubernetes
-   alias: guestbook-frontend
-   reference: 'https://raw.githubusercontent.com/che-samples/nodejs-mongodb-sample/master/kubernetes-manifests/guestbook-app.deployment.yaml'
-   mountSources: true
-   entrypoints:
-     - command: ['sleep']
-       args: ['infinity']
+  -
+    type: chePlugin
+    id: vscode/typescript-language-features/latest
+  -
+    type: dockerimage
+    alias: nodejs
+    image: quay.io/eclipse/che-nodejs12-community:ce0526f
+    endpoints:
+      - name: 'nodejs'
+        port: 3000
+    mountSources: true
 ----
