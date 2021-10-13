@@ -1,0 +1,21 @@
+[source,yaml]
+----
+apiVersion: 1.0.0
+metadata:
+ generateName: guestbook-nodejs-sample-
+projects:
+ - name: guestbook-nodejs-sample
+   source:
+     type: git
+     location: 'https://github.com/che-samples/nodejs-mongodb-sample'
+components:
+ - type: chePlugin
+   id: vscode/typescript-language-features/latest
+ - type: kubernetes
+   alias: guestbook-frontend
+   reference: 'https://raw.githubusercontent.com/che-samples/nodejs-mongodb-sample/master/kubernetes-manifests/guestbook-app.deployment.yaml'
+   mountSources: true
+   entrypoints:
+     - command: ['sleep']
+       args: ['infinity']
+----
