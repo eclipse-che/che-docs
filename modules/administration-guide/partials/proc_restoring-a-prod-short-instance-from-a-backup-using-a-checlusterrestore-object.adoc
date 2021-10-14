@@ -3,7 +3,7 @@
 
 To recover a backup using a custom resource object:
 
-WARNING: Backup snapshots are bound to the specific cluster and must only be recovered in that cluster.
+include::warning_backup-snapshots-are-bound-to-specific-cluster.adoc[]
 
 .Prerequisites
 
@@ -18,13 +18,14 @@ WARNING: Backup snapshots are bound to the specific cluster and must only be rec
 apiVersion: org.eclipse.che/v1
 kind: CheClusterRestore
 metadata:
-  name: {prod-short}-restore
+  name: {prod-id}-restore
+  namespace: {prod-namespace}
 spec:
   backupServerConfigRef: backup-server-configuration <1>
   snapshotId: ba92c7e0 <2>
 ----
 <1> Name of the `CheBackupServerConfiguration` object that defines what backup server to use.
-<2> Optional parameter defining the Snapshot ID to restore from. The default value is the last snapshot on the backup server.
+<2> Optional parameter defining the Snapshot ID to restore from. The default value is the last snapshot in the backup repository on the backup server.
 +
 [NOTE]
 ====
@@ -52,3 +53,9 @@ status:
 <1> Overall state or error message.
 <2> Current phase of the recovery process in a human-readable format.
 <3> Recovery process state. One of `InProgress`, `Succeeded`, or `Failed`.
+
+//here add the status Succeeded?
+
+. Check that the {prod-short} instance has been recovered.
+
+. Delete the `CheClusterRestore` object.

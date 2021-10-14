@@ -1,0 +1,32 @@
+[id="configuring-prod-cli-to-use-a-backup-server_{context}"]
+= Configuring {prod-cli} to use a backup server
+
+You can configure {prod-cli} to use a backup server by passing in relevant environment variables for the chosen backup server.
+
+NOTE: As an alternative to the following procedure, you can point directly to the backup server configuration object using the `--backup-server-config-name` command argument or the `BACKUP_SERVER_CONFIG_NAME` environment variable. See xref:managing-backups-of-prod-short-instances-using-custom-resources.adoc[].
+
+.Procedure
+
+. Determine the xref:backup-server-setup.adoc[backup server type] and the server URL, using the link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[restic repository documentation] as the reference.
+
+. Specify the URL using the `-r` command argument or the `BACKUP_REPOSITORY_URL` environment variable.
+
+. Retrieve or create a password for the backup repository.
+
+. Specify the password using the `-p` command argument or the `BACKUP_REPOSITORY_PASSWORD` environment variable.
++
+WARNING: The backup repository password is used to encrypt the backup data. If you lose this password, you will lose the backup data.
+
+. Set the environment variables applicable to the backup server type chosen in step 1:
++
+For the REST server:: When optional authentication is turned on, export the `REST_SERVER_USERNAME` and `REST_SERVER_PASSWORD` environment variables.
+//Add here as a cli alternative to the environment variables: `--username=**** --password=****`
++
+For the Amazon S3 server:: Export the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables with AWS user credentials.
+//Add here as a cli alternative to the environment variables: `--aws-access-key-id=**** --aws-secret-access-key==****`
++
+For the SFTP server:: Use one of the following options for logging in without a password:
++
+* Export the `SSH_KEY_FILE` environment variable that holds the path to a file with a corresponding SSH key.
+* Pass in the `--ssh-key-file` command argument.
+* Alternatively, use the `SSH_KEY` environment variable that holds an SSH key.
