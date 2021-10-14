@@ -1,0 +1,51 @@
+
+[id="using-{prod-cli}-to-configure-the-checluster-custom-resource-during-installation_{context}"]
+= Using {prod-cli} to configure the `CheCluster` Custom Resource during installation
+
+The CheCluster Custom Resource is a YAML document describing the configuration of a {prod-short} installation. It contains sections to configure each component: `auth`, `database`, `server`, `storage`.
+
+.Prerequisites
+* Access to an administrator account on an instance of {platforms-name}.
+* The {prod-cli} tool is available.
+
+
+.Procedure
+* Create a `che-operator-cr-patch.yaml` YAML file containing the subset of the CheCluster Custom Resource to configure:
++
+====
+[source,yaml,subs="+quotes"]
+----
+spec:
+  __<component>__:
+      __<property-to-configure>__: __<value>__
+----
+====
+* Deploy {prod-short} and apply the changes described in `che-operator-cr-patch.yaml`:
++
+[subs="+quotes"]
+----
+{prod-cli} server:deploy \
+--che-operator-cr-patch-yaml=che-operator-cr-patch.yaml \
+--platform __<chosen-platform>__
+----
+
+
+.Verification
+
+. Specify {prod-short} as the default project:
++
+[subs="+attributes"]
+----
+oc project {prod-namespace}
+----
+. Verify the value of the configured property:
++
+[subs="+attributes,quotes"]
+----
+oc get configmap che -o jsonpath='{.data._<configured-property>_}'
+----
+
+[role="_additional-resources"]
+.Additional resources
+* xref:configuring-the-che-installation.adoc[].
+* xref:advanced-configuration-options-for-the-che-server-component.adoc[].
