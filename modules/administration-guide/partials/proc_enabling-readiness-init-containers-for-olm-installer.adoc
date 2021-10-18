@@ -1,0 +1,42 @@
+:_module-type: PROCEDURE
+
+[id="enabling-readiness-init-containers-for-olm-installer_{context}"]
+= Enabling readiness init containers for OLM installer
+
+This section describes how to enable (disable) components readiness init containers for {prod-short} in case of OLM installer.
+
+.Prerequisites
+
+. {prod} installed with OLM installer.
+
+.Procedure
+
+. Find {prod-short} Operator subscription name:
++
+```sh
+$ {orch-cli} get subscriptions -n {prod-namespace}
+```
+
+. Find CSV name in {prod-short} Operator subscription:
++
+```sh
+$ {orch-cli} get subscription <subscription-name> -n {prod-namespace} -o yaml | grep installedCSV
+```
+
+. Edit the CSV
++
+```sh
+$ {orch-cli} edit csv <csv-name> -n {prod-namespace}
+```
++
+by adding (removing) the following:
++
+```yaml
+ - name: ADD_COMPONENT_READINESS_INIT_CONTAINERS
+   value: "true"
+```
+
+. Wait while {prod-short} Operator restarts some components.
+
+[NOTE]
+When {prod} version is updated, OLM will create a new CSV and the procedure above should be repeated.

@@ -1,0 +1,24 @@
+:_module-type: PROCEDURE
+
+[id="enabling-readiness-init-containers-for-operator-installer_{context}"]
+= Enabling readiness init containers for Operator installer
+
+This section describes how to enable (disable) components readiness init containers for {prod-short} in case of Operator installer.
+
+.Prerequisites
+
+. {prod} installed with Operator installer.
+
+.Procedure
+
+. Find {prod-short} Operator deployment name.
+
+. Edit the deployment by adding `ADD_COMPONENT_READINESS_INIT_CONTAINERS` environment variable.
+Insert (remove) the following under `spec.template.spec.containers[0].env` section of the Operator deployment:
++
+```yaml
+ - name: ADD_COMPONENT_READINESS_INIT_CONTAINERS
+   value: "true"
+```
+
+. Wait while {prod-short} Operator restarts some components.
