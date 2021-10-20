@@ -1,17 +1,29 @@
+//The misleading thing are title and intro sentence: they say 'configure', but the command does a backup! mykola
+
 [id="configuring-prod-cli-with-command-line-options-to-use-a-rest-backup-server_{context}"]
 = Configuring {prod-cli} with command-line options to use a REST backup server
 
 To configure {prod-cli} with command-line options to use a REST backup server:
 
-.Procedure
-
-. Enter the server URL as an argument using the `-r` option.
-
-. Retrieve or create a password for the backup repository.
-
-. Enter the backup repository password as an argument using the `-p` option.
+.Prerequisites
+* Backup repository. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
+* Password set for the backup repository.
 +
 WARNING: The backup repository password is used to encrypt the backup data. If you lose this password, you will lose the backup data.
 
-. When optional authentication is turned on, add the `--username=_<username>_` and `--password=_<password>_` arguments to the command.
-//which command? max-cx
+.Procedure
+
+. Enter the {prod-cli} command with the following arguments:
+
+[source,shell,subs="+quotes,+attributes"]
+----
+chectl server:backup \
+--repository-url=_<repository_url>_ \ <1>
+--repository-password=_<repository_password>_ \ <2>
+--username=_<username>_ \ <3>
+--password=_<password>_ <4>
+----
+<1> Backup repository URL as an argument using the `--repository-url` or `-r` option.
+<2> Backup repository password as an argument using the `--repository-password` or `-p` option.
+<3> When authentication is required, the username for authenticating to the backup REST server as the `--username=_<username>_` argument.
+<4> When authentication is required, the password for authenticating to the backup REST server as the `--password=_<password>_` argument.

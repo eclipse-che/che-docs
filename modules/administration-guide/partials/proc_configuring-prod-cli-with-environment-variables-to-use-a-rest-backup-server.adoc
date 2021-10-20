@@ -1,16 +1,20 @@
+//The misleading thing are title and intro sentence: they say 'configure', but the command does a backup! mykola
+
 [id="configuring-prod-cli-with-environment-variables-to-use-a-rest-backup-server_{context}"]
 = Configuring {prod-cli} with environment variables to use a REST backup server
 
 To configure {prod-cli} with environment variables to use a REST backup server:
 
-.Procedure
-
-. Set the server URL as the `BACKUP_REPOSITORY_URL` environment variable.
-
-. Retrieve or create a password for the backup repository.
-
-. Set the backup repository password as the `BACKUP_REPOSITORY_PASSWORD` environment variable.
+.Prerequisites
+* Backup repository. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
+* Password set for the backup repository.
 +
 WARNING: The backup repository password is used to encrypt the backup data. If you lose this password, you will lose the backup data.
 
-. When optional authentication is turned on, set the `REST_SERVER_USERNAME` and `REST_SERVER_PASSWORD` environment variables.
+.Procedure
+
+* Set the following environment variables:
+** `BACKUP_REPOSITORY_URL` for the backup repository.
+** `BACKUP_REPOSITORY_PASSWORD` for the backup repository password.
+** When authentication is required, `REST_SERVER_USERNAME` for the username for authenticating to the backup REST server.
+** When authentication is required, `REST_SERVER_PASSWORD` for the password for authenticating to the backup REST server.
