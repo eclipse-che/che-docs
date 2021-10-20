@@ -2,39 +2,31 @@
 [id="using-cli-to-configure-the-checluster-custom-resource_{context}"]
 = Using CLI to configure the CheCluster Custom Resource
 
-The CheCluster Custom Resource is a YAML document describing the configuration of a {prod-short} installation. It contains sections to configure each component: `auth`, `database`, `server`, `storage`.
-
+Edit the `CheCluster` Custom Resource YAML file while {prod-short} is running to apply the changes to the running instance.
 
 .Prerequisites
 * An instance of {prod-short} on {platforms-name}.
+* Access to an administrator account on the instance of {platforms-name}.
 * The `oc` tool is available.
 
-
 .Procedure
-. Open the CheCluster Custom Resource YAML file:
+. Edit the CheCluster Custom Resource YAML file:
 +
 [subs="+attributes"]
 ----
-oc edit checluster/eclipse-che -n {prod-namespace}
+$ oc edit checluster/eclipse-che -n {prod-namespace}
 ----
-. Find or add the property to configure. Set the property to a suitable value.
-. Save the changes and close the file.
+. Save and close the file to apply the changes.
 
 .Verification
 
-. Specify {prod-short} as the default project:
-+
-[subs="+attributes"]
-----
-oc project {prod-namespace}
-----
 . Verify the value of the configured property:
 +
 [subs="+attributes,quotes"]
 ----
-oc get configmap che -o jsonpath='{.data._<configured-property>_}'
+$ oc get configmap che -o jsonpath='{.data._<configured-property>_}' \
+-n {prod-namespace}
 ----
-
 
 [role="_additional-resources"]
 .Additional resources
