@@ -7,27 +7,11 @@ This section describes a {prod-short} workspace example.
 
 The following devfile defines the {prod-short} workspace:
 
-[source,yaml]
-----
-apiVersion: 1.0.0
-metadata:
- generateName: guestbook-nodejs-sample-
-projects:
- - name: guestbook-nodejs-sample
-   source:
-     type: git
-     location: "https://github.com/l0rd/nodejs-sample"
-components:
- - type: chePlugin
-   id: che-incubator/typescript/latest
- - type: kubernetes
-   alias: guestbook-frontend
-   reference: https://raw.githubusercontent.com/l0rd/nodejs-sample/master/kubernetes-manifests/guestbook-frontend.deployment.yaml
-   mountSources: true
-   entrypoints:
-     - command: ['sleep']
-       args: ['infinity']
-----
+include::example$snip_a-{project-context}-workspace-example.adoc[]
+
+pass:[<!-- vale Vale.Spelling = NO -->]
+
+pass:[<!-- vale Vale.Terms = NO -->]
 
 This table provides the memory requirements for each workspace component:
 
@@ -47,7 +31,7 @@ This table provides the memory requirements for each workspace component:
 |Workspace
 |machine-exec (default `chePlugin`)
 |128 MiB
-|128 MiB
+|32 MiB
 
 |Workspace
 |vscode-typescript (`chePlugin`)
@@ -55,7 +39,7 @@ This table provides the memory requirements for each workspace component:
 |512 MiB
 
 |Workspace
-|frontend (`kubernetes`)
+|nodejs (`dockerimage`)
 |1 GiB
 |512 MiB
 
@@ -66,14 +50,18 @@ This table provides the memory requirements for each workspace component:
 
 2+>s|Total
 >s|2.25 GiB
->s|1.75 GiB
+>s|1.38 GiB
 |===
+
+pass:[<!-- vale Vale.Spelling = YES -->]
+
+pass:[<!-- vale Vale.Terms = YES -->]
 
 * The `theia-ide` and `machine-exec` components are implicitly added to the workspace, even when not included in the devfile.
 * The resources required by `machine-exec` are the default for `chePlugin`.
 * The resources for `theia-ide` are specifically set in the `cheEditor` `meta.yaml` to *512 MiB* as `memoryLimit`.
 * The Typescript VS Code extension has also overridden the default memory limits. In its `meta.yaml` file, the limits are explicitly specified to *512 MiB*.
-* {prod-short} is applying the defaults for the `kubernetes` component type: a memory limit of *1 GiB* and a memory request of *512 MiB*. This is because the `kubernetes` component references a `Deployment` manifest that has a container specification with no resource limits or requests.
+* {prod-short} is applying the defaults for the dockerimage component type: a memory limit of *1 GiB* and a memory request of *512 MiB*.
 * The JWT container requires *128 MiB* of memory.
 
-Adding all together results in *1.75 GiB* of memory requests with a *2.25 GiB* limit.
+Adding all together results in *1.38 GiB* of memory requests with a *2.25 GiB* limit.
