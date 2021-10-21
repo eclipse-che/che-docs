@@ -3,14 +3,16 @@
 
 To restore a {prod-short} instance from a particular backup snapshot, you can specify the snapshot ID with {prod-cli}.
 
-include::warning_backup-snapshots-are-bound-to-specific-cluster.adoc[]
+include::snip_warning-backup-snapshots-are-bound-to-specific-cluster.adoc[]
 
 .Prerequisites
 
 * A backup. See xref:managing-backups-of-prod-short-instances-using-prod-cli.adoc#creating-a-backup-of-a-prod-short-instance-using-prod-cli_{context}[Creating a backup using {prod-cli}].
 
-* The ID of the backup snapshot.
-//Here we need to ask the author how we as the user can obtain such snapshot ID (for example, are there any commands that list snapshot IDs? Let me check if creating a snapshot outputs its ID, but the reader will still need to view a list of snapshots to choose from. max-cx
+* Backup snapshot ID, which can be found in:
+** Command-line output when creating a backup
+** Custom resource status
+** Command-line output of the restic command that can link:https://restic.readthedocs.io/en/stable/045_working_with_repos.html[list snapshots in the backup repository]
 
 .Procedure
 
@@ -21,12 +23,4 @@ include::warning_backup-snapshots-are-bound-to-specific-cluster.adoc[]
 $ {prod-cli} server:restore --snapshot-id=__<snapshot-id>__ --repository-url=__<repository-url>__ --repository-password=__<repository-password>__
 ----
 
-[NOTE]
-====
-Where to find the snapshot ID of a backup snapshot:
-
-* Command line output when creating a backup
-* Custom Resource status
-* restic command to link:https://restic.readthedocs.io/en/stable/045_working_with_repos.html[list snapshots in the backup repository]
-
-====
+include::snip_tip-omitting-prod-cli-options-for-server-backup-and-server-restore-onward-when-using-same-backup-server.adoc[]
