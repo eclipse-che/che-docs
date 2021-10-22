@@ -1,13 +1,18 @@
-[id="configuring-prod-short-to-use-the-internal-backup-server_{context}"]
-= Configuring {prod-short} to use the internal backup server
+[id="backing-up-a-prod-short-instance-to-the-internal-server-using-a-checlusterbackup-object_{context}"]
+= Backing up a {prod-short} instance to the internal server using a CheClusterBackup object
 
-The internal backup server is an optional REST backup server that is managed by Che Operator and intended for testing purposes. To use the internal backup server, you must request automatic configuration from Che Operator as follows:
+//issues: object vs custom resource? max-cx
+
+The internal backup server is an optional REST backup server that is managed by Che Operator and intended for testing purposes.
+
+When creating a custom resource to back up a {prod-short} instance to the internal backup server, as described in the following procedure, {prod-short} Operator configures the internal backup server.
+//issues:{prod-short} Operator configures the internal backup server or {prod-short} or both? ask Mykola. max-cx
 
 WARNING: Configuring a backup server inside the same cluster, for example the internal backup server, is not recommended for a production environment.
 
 .Procedure
 
-Create a Custom Resource to configure the automatic setup and sending of the backup to the internal backup server:
+. Create a custom resource to configure the automatic setup and to sending the backup snapshot to the internal backup server:
 +
 [source,yaml,subs="+attributes"]
 ----
@@ -19,7 +24,6 @@ metadata:
 spec:
   useInternalBackupServer: true
 ----
-//check if the `eclipse-che` value appears in `name` and `namespace` in the downstream product UI.If different, check if there is a variable for `eclipse-che`, and if not, then consider ifdeval or other solution. max-cx
 
 . Read the `status` section of the `CheClusterBackup` object to verify the backup process:
 +
@@ -48,7 +52,7 @@ status:
   state: Succeeded <4>
 ...
 ----
-<1> The version of Che from which the backup snapshot was created. This field appears only when `state` is `Succeeded`.
+<1> The version of {prod-short} from which the backup snapshot was created. This field appears only when `state` is `Succeeded`.
 <2> Displays the overall state or error message.
 <3> The ID of the created backup snapshot. This field appears only when `state` is `Succeeded`.
 <4> Backup process state: `InProgress` or `Succeeded` or `Failed`.
