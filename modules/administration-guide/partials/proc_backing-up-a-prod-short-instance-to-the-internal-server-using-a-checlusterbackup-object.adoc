@@ -3,8 +3,6 @@
 
 //issues: object vs custom resource? max-cx
 
-The internal backup server is an optional REST backup server that is managed by Che Operator and intended for testing purposes.
-
 When creating a custom resource to back up a {prod-short} instance to the internal backup server, as described in the following procedure, {prod-short} Operator configures the internal backup server.
 //issues:{prod-short} Operator configures the internal backup server or {prod-short} or both? ask Mykola. max-cx
 
@@ -12,7 +10,7 @@ WARNING: Configuring a backup server inside the same cluster, for example the in
 
 .Procedure
 
-. Create a custom resource to configure the automatic setup and to sending the backup snapshot to the internal backup server:
+. Create a custom resource to send a backup snapshot to the internal backup server:
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
@@ -22,8 +20,9 @@ metadata:
   name: {prod-id}-backup
   namespace: {prod-namespace}
 spec:
-  useInternalBackupServer: true
+  useInternalBackupServer: true <1>
 ----
+<1> Configures the `CheClusterBackup` object to back up to the internal backup server.
 
 . Read the `status` section of the `CheClusterBackup` object to verify the backup process:
 +
