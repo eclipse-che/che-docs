@@ -25,7 +25,7 @@ jobs:
           git checkout ${BASE_BRANCH}
           ./tools/environment_docs_gen.sh
           
-          if git status --porcelain; then
+          if git diff --quiet; then
             PR_BRANCH="pr-update-base-images-$(date +%s)"
             git checkout -b ${PR_BRANCH}
             git add -A
