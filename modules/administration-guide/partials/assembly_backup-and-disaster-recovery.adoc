@@ -7,8 +7,7 @@
 
 :context: backup-and-disaster-recovery
 
-
-{prod} Operator can create backups of {prod-short} instances and restore them from a backup snapshot if needed. The following chapter describes ways of preparing such backups and their use in the follow-up recovery phase:
+{prod-short} Operator can create backups of {prod-short} instances and restore them from a backup snapshot if needed. The following chapter describes ways of preparing such backups and their use in the follow-up recovery phase:
 
 * xref:managing-backups-using-cli.adoc[]
 * xref:managing-backups-using-custom-resources.adoc[]
@@ -20,6 +19,13 @@
 
 * Backup snapshots are bound to their own specific cluster and must be used only there.
 ====
+
+* {prod-short} Operator creates a new backup on every {prod-short} update.
+* xref:define-backup-server-for-operator.adoc[Configured] backup server is automatically used to store the backup.
+* When a {prod-short} administrator configures more than one backup server, the {prod-short} Operator uses the server with the `che.eclipse.org/backup-before-update: true` annotation by default.
+* {prod-short} Operator uses the internal backup server:
+** Every time the {prod-short} administrator does not configure the backup server.
+** When several backup servers do not have any annotation.
 
 .Additional resources
 
