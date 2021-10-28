@@ -26,12 +26,12 @@ jobs:
           ./tools/environment_docs_gen.sh
           
           if git diff --quiet; then
+            echo "[INFO] no changes detected, pull request will not be created"
+          else           
             PR_BRANCH="pr-update-base-images-$(date +%s)"
             git checkout -b ${PR_BRANCH}
             git add -A
             git commit -sm "chore: Update Che variables"
             git push origin ${PR_BRANCH}
             hub pull-request --base ${BASE_BRANCH} --head ${PR_BRANCH} -m "chore: Update Che variables in ${PR_BRANCH}"
-          else
-            echo "[INFO] no changes detected, pull request will not be created"
           fi
