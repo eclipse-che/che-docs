@@ -1,10 +1,12 @@
 'use strict'
 
 const connect = require('gulp-connect')
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 const fs = require('fs')
 const generator = require('@antora/site-generator-default')
 const { reload: livereload } = process.env.LIVERELOAD === 'true' ? require('gulp-connect') : {}
-const { series, src, watch } = require('gulp')
+const { parallel, series, src, watch } = require('gulp')
 const yaml = require('js-yaml')
 
 const playbookFilename = 'antora-playbook-for-development.yml'
@@ -18,8 +20,7 @@ const watchPatterns = playbook.content.sources.filter((source) => !source.url.in
   return accum
 }, [])
 
-
-function generate (done) {
+function generate(done) {
   generator(antoraArgs, process.env)
     .then(() => done())
     .catch((err) => {
@@ -28,12 +29,73 @@ function generate (done) {
     })
 }
 
-function serve (done) {
+async function serve(done) {
   connect.server(serverConfig, function () {
     this.server.on('close', done)
-    watch(watchPatterns, generate)
+    watch(watchPatterns, series(generate, testlang, testhtml))
     if (livereload) watch(this.root).on('change', (filepath) => src(filepath, { read: false }).pipe(livereload()))
   })
 }
 
-module.exports = { serve, generate, default: series(generate, serve) }
+async function checluster_docs_gen() {
+  // Report script errors but don't make gulp fail.
+  try {
+    const { stdout, stderr } = await exec('tools/checluster_docs_gen.sh')
+    console.log(stdout);
+    console.error(stderr);
+  }
+  catch (error) {
+    console.log(error.stdout);
+    console.log(error.stderr);
+    return;
+  }
+}
+
+async function environment_docs_gen() {
+  // Report script errors but don't make gulp fail.
+  try {
+    const { stdout, stderr } = await exec('tools/environment_docs_gen.sh')
+    console.log(stdout);
+    console.error(stderr);
+  }
+  catch (error) {
+    console.log(error.stdout);
+    console.log(error.stderr);
+    return;
+  }
+}
+
+async function testhtml() {
+  // Report links errors but don't make gulp fail.
+  try {
+    const { stdout, stderr } = await exec('htmltest')
+    console.log(stdout);
+    console.error(stderr);
+  }
+  catch (error) {
+    console.log(error.stdout);
+    console.log(error.stderr);
+    return;
+  }
+}
+
+async function testlang() {
+  // Report language errors but don't make gulp fail.
+  try {
+    const { stdout, stderr } = await exec('./tools/validate_language_changes.sh')
+    console.log(stdout);
+    console.error(stderr);
+  }
+  catch (error) {
+    console.log(error.stdout);
+    console.log(error.stderr);
+    return;
+  }
+}
+
+exports.default = series(
+  parallel(checluster_docs_gen, environment_docs_gen),
+  generate,
+  serve,
+  parallel(testlang, testhtml)
+);
