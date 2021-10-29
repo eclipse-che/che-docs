@@ -9,20 +9,27 @@ This procedure describes how to configure `{prod-short}` to run more than one wo
 * The combination of persistent volume claim (PVC) strategy and access mode matches one of the following cases:
 +
 .Multiple workspaces compatibility list
+[width="100%",cols="2,1,1,1",options="header"]
 |===
-| PVC Strategy | `ReadWriteMany` access mode | `ReadWriteOnce` access mode
-| `common` (default) | yes | no
-| `per-workspace` | yes | yes
-| `unique` | yes | yes
+| Storage strategy
+| `common` (default)
+| `per-workspace`
+| `unique` 
+
+
+|`ReadWriteMany` access mode 
+| no
+| yes
+| yes
+
+| `ReadWriteOnce` access mode
+| yes
+| yes
+| yes
 |===
-+
-** To determine the access modes supported by your storage, see link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[Kubernetes documentation - Access Modes].
-** To determine the PVC strategy, see xref:configuring-storage-strategies.adoc[]. 
-+
-.Preparing to run multiple workspaces on Amazon Elastic Block Store (Amazon EBS)
-====
-link:https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html[Amazon EBS] only supports the `ReadWriteOnce` access mode. Use the `per-workspace` or `unique` PVC strategy.
-====
+
+** To determine the access modes supported by your storage, see link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[Kubernetes documentation - Access Modes]. For example, link:https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html[Amazon EBS] only supports the `ReadWriteOnce` access mode.
+** To determine the storage strategy, see xref:configuring-storage-strategies.adoc[]. 
 
 * You have determined the value of the `_<number-of-workspaces>_` placeholder.
 +
