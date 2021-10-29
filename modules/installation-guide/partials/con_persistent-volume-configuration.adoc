@@ -5,40 +5,62 @@
 [id="storage-strategies-for-{prod-id-short}-workspaces_{context}"]
 = Storage strategies for {prod-id-short} workspaces
 
-Storage strategy (PVC strategy):: A configurable method defining how {prod-short} workspaces uses persistent volume claims (PVCs). It defines the default data storage when storing data such as the following in their declared volumes:
-
+Storage strategy (PVC strategy):: A configurable method defining how {prod-short} workspaces uses persistent volume claims (PVCs). It defines the default data storage when storing in the workspace volumes data such as:
++
 * projects
 * workspace logs
 * additional Volumes defined by a user
+
+.Storage strategies comparison
+[width="100%",cols="1,1,1,1",options="header"]
+|===
+| Storage strategy name
+| `common`
+| `per-workspace`
+| `unique`
+
+| PVC count
+| One per user
+| One per non-ephemeral workspace
+| One per workspace volume and user-defined PVC
+
+| Default
+| yes
+| no
+| no
+
+| Storage isolation
+| no
+| no
+| yes
+
+| Control storage
+| easy
+| complex 
+| most complex
+
+| User count
+| < 10
+| > 100
+| < 100
+
+| Cluster size
+| single node cluster
+| multinode cluster
+| multinode cluster
+
+| Limitations
+| Maximum one running workspace per user when the PV is in `ReadWriteOnce` access mode
+| Somewhat unpredictable PV count
+| Unpredictable PV count
+
+|===
 
 Persistent volumes (PVs) access mode::
 The PVCs are bound to the physical persistent volumes (PVs).
 The nature of the PV determines the available access mode: `ReadWriteMany` or `ReadWriteOnce`. See link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[Kubernetes documentation - access mode].
 For example, link:https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html[Amazon EBS] supports only the `ReadWriteOnce` access mode.
 
-[width="100%",cols="^,^,^,^",options="header"]
-|===
-| Strategy
-| Details
-| Pros 
-| Cons
-
-| `common` (default)
-| One PVC per user
-| Easy to manage and control storage 
-| Maximum one running workspace per user when the PV is in `ReadWriteOnce` access mode.
-
-| `per-workspace`
-| One PVC per workspace
-| Easier to manage and control storage than `unique` strategy  
-| Unknown PV count, depending on the number of workspaces
-
-| `unique`
-| One PVC per workspace volume or user-defined PVC
-| Storage isolation 
-| Unknown PV count
-
-|===
 
 [id="the-common-pvc-strategy_{context}"]
 == The `common` PVC strategy
@@ -46,22 +68,21 @@ For example, link:https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.
 This is the default storage strategy.
 For each user, all workspaces use the same Persistent Volume Claim (PVC) as the default data storage.
 
-{prod-short} creates the common PVC when it starts a non-ephemeral workspace.
+When the user starts a first non-ephemeral workspace, the workspace engine creates the common PVC.
 
-{prod-short} removes the common PVC when the user deletes all his workspaces. 
-
-When the user runs a workspace, it only binds simultaneously to one node in the {orch-name} cluster.
-
-When creating a workspace, {prod-short} ignores user-defined PVCs. 
+When the user starts a non-ephemeral workspace, the workspace engine uses the common PVC.
+The workspace only binds simultaneously to one node in the {orch-name} cluster.
+The workspace engine ignores user-defined PVCs. 
 It replaces volumes related to user-defined PVCs with a subpath in the common volume. 
 Subpaths have a `_<workspace-ID>_` or `__<original-PVC-name>__` prefix.
 See xref:how-subpaths-are-used-in-pvcs_{context}[].
-
 The {prod-short} Volume name is identical to the name of the user-defined PVC.
 It means that if a machine is configured to use a {prod-short} volume with the same name as the user-defined
 PVC has, they will use the same shared folder in the common PVC.
 
-When deleting a workspace, {prod-short} deletes the corresponding subdirectory (`$\{ws-id}`) in the PV directory.
+When the user deletes a workspace, the workspace engine deletes the corresponding subdirectory (`$\{ws-id}`) in the PV directory.
+
+When the user deletes the last workspace, the workspace engine removes the common PVC. 
 
 .Restrictions on using the `common` PVC strategy
 
