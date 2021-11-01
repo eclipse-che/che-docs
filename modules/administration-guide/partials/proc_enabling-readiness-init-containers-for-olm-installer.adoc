@@ -3,40 +3,43 @@
 [id="enabling-readiness-init-containers-for-olm-installer_{context}"]
 = Enabling readiness init containers for OLM installer
 
-This section describes how to enable (disable) components readiness init containers for {prod-short} in case of OLM installer.
+The following section describes how to enable and disable readiness init containers components for {prod-short} for the Operator Lifecycle Manager (OLM) installation method.
 
 .Prerequisites
 
-. {prod} installed with OLM installer.
+* {prod-short} is installed with OLM installer.
 
 .Procedure
 
-. Find {prod-short} Operator subscription name:
+. Find the {prod-short} Operator subscription name:
 +
-```sh
+[subs="+attributes,+quotes"]
+----
 $ {orch-cli} get subscriptions -n {prod-namespace}
-```
+----
 
-. Find CSV name in {prod-short} Operator subscription:
+. Find the CSV name in the {prod-short} Operator subscription:
 +
-```sh
+[subs="+attributes,+quotes"]
+----
 $ {orch-cli} get subscription <subscription-name> -n {prod-namespace} -o yaml | grep installedCSV
-```
+----
 
-. Edit the CSV
+. Edit the CSV:
 +
-```sh
+[subs="+attributes,+quotes"]
+----
 $ {orch-cli} edit csv <csv-name> -n {prod-namespace}
-```
+----
 +
 by adding (removing) the following:
 +
-```yaml
+[subs="+attributes,+quotes"]
+----
  - name: ADD_COMPONENT_READINESS_INIT_CONTAINERS
    value: "true"
-```
+----
 
-. Wait while {prod-short} Operator restarts some components.
+. Wait for the {prod-short} Operator restart to finish. The restarted Operator will then continue with restarting some of its components.
 
-[NOTE]
-When {prod} version is updated, OLM will create a new CSV and the procedure above should be repeated.
+NOTE: Repeat these steps after each {prod-short} upgrade when a new CSV is created by OLM.
