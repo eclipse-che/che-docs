@@ -5,9 +5,9 @@
 
 :context: assembly_enabling-startup-init-containers
 
-{prod-short} Operator installs {prod-short} and starts its containers in the right order. However, suppose a node with {prod-short} gets restarted. In that case, all {prod-short} containers start simultaneously, causing some containers to fail because of the dependent component that might not be ready yet. To handle such a case, enable readiness init containers for {prod-short} components.
+{prod-short} Operator installs {prod-short} and starts its containers in the right order. If a node with {prod-short} is restarted and all {prod-short} containers start simultaneously, some containers may fail because some other component they depend on is not ready. To avoid such failures, queue init containers queue the containers for {prod-short} components to start in the right order.
 
-To prevent this situation from happening, enable readiness init containers by following the procedure that matches the used installation method:
+Queue init containers are not enabled by default. You can enable and disable them according to the installation method used to install {prod-short}:
 
 * xref:enabling-readiness-init-containers.adoc#enabling-readiness-init-containers-for-operator-installer_{context}[]
 * xref:enabling-readiness-init-containers.adoc#enabling-readiness-init-containers-for-olm-installer_{context}[]

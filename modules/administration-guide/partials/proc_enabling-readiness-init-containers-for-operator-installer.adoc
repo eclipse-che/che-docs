@@ -3,24 +3,24 @@
 [id="enabling-readiness-init-containers-for-operator-installer_{context}"]
 = Enabling readiness init containers for Operator installer
 
-This section describes how to enable (disable) components readiness init containers for {prod-short} in case of Operator installer.
+To enable or disable queue init containers for {prod-short} installed using the Operator installer:
 
 .Prerequisites
 
-. {prod} installed with Operator installer.
+* {prod} installed with Operator installer.
 
 .Procedure
 
-. Find {prod-short} Operator deployment name.
+. Find {prod-short} Operator Deployment name.
 
-. Edit the deployment by adding `ADD_COMPONENT_READINESS_INIT_CONTAINERS` environment variable.
-Insert (remove) the following under `spec.template.spec.containers[0].env` section of the Operator deployment:
+. Edit the Deployment as follows: Under `spec.template.spec.containers[0].env` of the Operator Deployment, insert (remove) the following lines with the `ADD_QUEUE_INIT_CONTAINERS` environment variable:
 +
-```yaml
+[source,yaml,subs="+quotes,+attributes"]
+----
  - name: ADD_COMPONENT_READINESS_INIT_CONTAINERS
    value: "true"
-```
+----
 
 . Wait while {prod-short} Operator restarts some components.
 
-NOTE: Repeat these steps after each {prod-short} upgrade when a new Operator deployment is created.
+NOTE: Repeat these steps after each {prod-short} upgrade when a new Operator Deployment is created.

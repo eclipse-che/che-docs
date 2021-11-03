@@ -3,7 +3,7 @@
 [id="enabling-readiness-init-containers-for-olm-installer_{context}"]
 = Enabling readiness init containers for OLM installer
 
-The following section describes how to enable and disable readiness init containers components for {prod-short} for the Operator Lifecycle Manager (OLM) installation method.
+To enable or disable queue init containers for {prod-short} installed using the Operator Lifecycle Manager (OLM) installer:
 
 .Prerequisites
 
@@ -20,21 +20,20 @@ $ {orch-cli} get subscriptions -n {prod-namespace}
 
 . Find the CSV name in the {prod-short} Operator subscription:
 +
-[subs="+attributes,+quotes"]
+[source,shell,subs="+quotes,+attributes"]
 ----
 $ {orch-cli} get subscription <subscription-name> -n {prod-namespace} -o yaml | grep installedCSV
 ----
 
 . Edit the CSV:
 +
-[subs="+attributes,+quotes"]
+[source,shell,subs="+quotes,+attributes"]
 ----
 $ {orch-cli} edit csv <csv-name> -n {prod-namespace}
 ----
+. Add (remove) the following environment variable to (from) the Operator Deployment spec:
 +
-by adding (removing) the following environment variable to (from) the Operator deployment spec:
-+
-[subs="+attributes,+quotes"]
+[source,yaml,subs="+quotes,+attributes"]
 ----
  - name: ADD_COMPONENT_READINESS_INIT_CONTAINERS
    value: "true"
