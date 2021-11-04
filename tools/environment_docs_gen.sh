@@ -61,9 +61,10 @@ parse_content() {
       TOPIC="${LINE//#}"                                # read topic, stripping #s
       TOPIC="${TOPIC/ }"                                # trim first space
       TOPICID="${TOPIC// /-}"                                # create topic ID
-      TOPICID="$(sed 's|-\{2,\}|-|g; s|[\"\/=,.<>?!;:()*]||g; s|\(.*\)|[id="\L\1"]|;s|prod-short|prod-id-short|' <<< $TOPICID)"
+      TOPICID="$(sed 's|-\{2,\}|-|g; s|[\"\/=,.<>?!;:()*]||g; s|\(.*\)|[id="\1"]|;s|prod-short|prod-id-short|' <<< $TOPICID)"
                                                         # replace spaces with dashes, create topic ID, convert to lowercase chars
                                                         # remove non alpha-num, wrap in AsciiDoc ID markup
+      TOPICID=${TOPICID,,}                                                     
       echo "   Found begin of topic: $TOPIC" >&2
       BUFF="${BUFF}${TOPICID}$NEWLINE= ${TOPIC}$NEWLINEx2.${TOPIC} $TABLE_HEADER $NEWLINE"      # new topic and table header
     elif [[ $LINE == '#'* ]] && [[ -n $TOPIC ]]; then   # line starting with single # means property description (can be multiline)
