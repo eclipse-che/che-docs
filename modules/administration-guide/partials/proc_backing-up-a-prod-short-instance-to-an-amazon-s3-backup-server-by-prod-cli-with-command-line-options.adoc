@@ -1,17 +1,32 @@
 [id="backing-up-a-prod-short-instance-to-an-amazon-s3-backup-server-by-prod-cli-with-command-line-options_{context}"]
 = Backing up a {prod-short} instance to an Amazon S3 backup server by {prod-cli} with command-line options
 
-To back up a {prod-short} instance to an Amazon S3 backup server by {prod-cli} with command-line options:
+You can use {prod-cli} with command-line options to take a backup snapshot of a {prod-short} instance and to send the backup snapshot to a configured Amazon S3 backup server.
+
+include::snip_warning-does-not-back-up-content-of-workspaces.adoc[]
+
+.Prerequisites
+* Configured external backup server. See xref:supported-restic-compatible-backup-servers.adoc[]
+* Created backup repository. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
+* Created backup repository password. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
++
+include::snip_warning-about-losing-backup-repo-password.adoc[]
 
 .Procedure
 
-. Enter the server URL as an argument using the `-r` option.
-
-. Retrieve or create a password for the backup repository.
-
-. Enter the backup repository password as an argument using the `-p` option.
+. Enter the {prod-cli} command with the following arguments:
 +
-WARNING: The backup repository password is used to encrypt the backup data. If you lose this password, you will lose the backup data.
+[source,shell,subs="+quotes,+attributes"]
+----
+$ chectl server:backup \
+--repository-url=_<repository_url>_ \ <1>
+--repository-password=_<repository_password>_ \ <2>
+--aws-access-key-id=_<aws-access-key-id>_ \ <3>
+--aws-secret-access-key==_<aws-secret-access-key>_ <4>
+----
+<1> Backup repository URL as an argument using the `--repository-url` or `-r` option.
+<2> Backup repository password as an argument using the `--repository-password` or `-p` option.
+<3> User’s AWS access key ID
+<4> User’s AWS secret access key
 
-. Enter the AWS user credentials as the `--aws-access-key-id=_<aws-access-key-id>_` and `--aws-secret-access-key==_<aws-secret-access-key>_` arguments.
-//which command? same question as for rest. max-cx
+include::snip_tip-omitting-prod-cli-options-for-server-backup-and-server-restore-onward-when-using-same-backup-server.adoc[]

@@ -5,11 +5,17 @@ To configure {prod-short} to use an Amazon S3 backup server:
 
 .Prerequisites
 
-* Configured backup server. See xref:supported-restic-compatible-backup-servers.adoc[]
-* Backup repository. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
-* Password for the backup repository.
+* Configured external backup server. See xref:supported-restic-compatible-backup-servers.adoc[]
+* Created backup repository. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
+* Created backup repository password. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
 
 .Procedure
+
+. Create a secret with the name `backup-encryption-password-secret` containing the `repo-password` key with the backup repository password as the value.
+
+. Create a secret with the name `aws-user-credentials-secret` containing:
+.. `awsAccessKeyId` key with the user's AWS access key ID
+.. `awsSecretAccessKey` key with the user's AWS secret access key
 
 . Create the `CheBackupServerConfiguration` custom object in the {prod-namespace} namespace.
 +
@@ -28,12 +34,12 @@ spec:
     repositoryPasswordSecretRef: backup-encryption-password-secret <5>
     awsAccessKeySecretRef: aws-user-credentials-secret <6>
 ----
-<1> Optional property that specifies the protocol to be used. The default value is `https` with `http` as the second allowed option.
+<1> Optional property that specifies the protocol to be used: `https` is the default value; `http` is a permitted value.
 <2> Optional property that specifies the S3 hostname. The default value is `s3.amazonaws.com`.
 <3> Optional property that specifies the port on which the backup server is running.
 <4> The name of the bucket resource where the backup snapshots are stored. The bucket resource must be manually pre-created.
-<5> The name of the secret containing a repository password, stored in the `repo-password` key. If the secret contains only one key, this name is arbitrary. The password is used to encrypt and decrypt backup snapshots data.
-<6> The name of the secret containing user credentials stored in the `awsAccessKeyId` and `awsSecretAccessKey` keys.
+<5> The secret created in step 1.
+<6> The secret created in step 2.
 +
 NOTE: The custom object, stored in the `{prod-namespace}` namespace, must have only one section configured in the `spec` property.
 

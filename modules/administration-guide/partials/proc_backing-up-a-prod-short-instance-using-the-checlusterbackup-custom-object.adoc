@@ -8,17 +8,11 @@ include::snip_warning-does-not-back-up-content-of-workspaces.adoc[]
 .Prerequisites
 
 * Configured backup server. See xref:supported-restic-compatible-backup-servers.adoc[].
-* Created `CheBackupServerConfiguration` custom object. See
-ifeval::[ "{context}" == "backups-of-prod-short-instances-to-a-rest-backup-server"]
-???
-endif::[]
-//* xref:backups-of-prod-short-instances-to-a-rest-backup-server.adoc#configuring-prod-short-with-custom-resources-to-use-a-rest-backup-server_{context}[]
-//* xref:backups-of-prod-short-instances-to-an-amazon-s3-backup-server.adoc#configuring-prod-short-with-custom-resources-to-use-an-amazon-s3-backup-server_{context}[]
-//* xref:backups-of-prod-short-instances-to-an-sftp-backup-server.adoc#configuring-prod-short-with-custom-resources-to-use-an-sftp-backup-server_{context}[]
+* Created `CheBackupServerConfiguration` custom object. See the previous section of this guide.
 
 .Procedure
 
-. Create the `CheClusterBackup` custom object to create a backup snapshot:
+. Create the `CheClusterBackup` custom object, which creates a backup snapshot:
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
@@ -30,10 +24,10 @@ spec:
   backupServerConfigRef: backup-server-configuration <1>
   useInternalBackupServer: false <2>
 ----
-<1> Name of the `CheBackupServerConfiguration` object defining what backup server to use.
+<1> Name of the `CheBackupServerConfiguration` custom object defining what backup server to use.
 <2> Configures the custom resource to back up to an external backup server.
 
-. Read the `status` section of the `CheClusterBackup` object to verify the backup process:
+. Read the `status` section of the `CheClusterBackup` custom object to verify the backup process, for example:
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
@@ -50,10 +44,9 @@ status:
 
 [NOTE]
 ====
-To reuse the name of an existing backup object for a new backup object, delete the old object:
-
+If reusing the name of an existing backup custom object for a new backup custom object, first delete the old custom object. To delete it on the command line, use {orch-cli}:
 [source,shell,subs="+attributes,+quotes"]
 ----
-{orch-cli} delete CheClusterBackup _<name>_ -n {prod-namespace}
+$ {orch-cli} delete CheClusterBackup _<name>_ -n {prod-namespace}
 ----
 ====

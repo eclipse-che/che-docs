@@ -1,7 +1,7 @@
-[id="restoring-a-prod-short-instance-from-a-backup-using-a-checlusterrestore-object_{context}"]
-= Restoring a {prod-short} instance from a backup using a CheClusterRestore object
+[id="restoring-a-prod-short-instance-from-a-backup-using-the-checlusterrestore-object_{context}"]
+= Restoring a {prod-short} instance from a backup using the CheClusterRestore custom object
 
-To recover a backup using a custom resource object:
+You can restore a {prod-short} instance from a backup using custom resouces.
 
 include::snip_warning-backup-snapshots-are-bound-to-specific-cluster.adoc[]
 
@@ -11,9 +11,9 @@ include::snip_warning-backup-snapshots-are-bound-to-specific-cluster.adoc[]
 
 .Procedure
 
-. Create a `CheClusterRestore` object to restore a backup:
+. Create the `CheClusterRestore` custom object, which restores a backup:
 +
-[source,yaml,subs="+attributes"]
+[source,yaml,subs="+attributes,+quotes"]
 ----
 apiVersion: org.eclipse.che/v1
 kind: CheClusterRestore
@@ -22,14 +22,14 @@ metadata:
   namespace: {prod-namespace}
 spec:
   backupServerConfigRef: backup-server-configuration <1>
-  snapshotId: ba92c7e0 <2>
+  snapshotId: _<snapshot_id>_ <2>
 ----
 <1> Name of the `CheBackupServerConfiguration` object that defines what backup server to use.
 <2> Optional parameter defining the Snapshot ID to restore from. The default value is the last snapshot in the backup repository on the backup server.
 +
 [NOTE]
 ====
-If you intend to reuse the object `name` for a new backup object, delete the old object first:
+If you intend to reuse the custom object `name` for a new backup object, delete the old object first:
 
 [subs="+attributes,+quotes"]
 ----
@@ -53,7 +53,7 @@ status:
 <1> Overall state or error message.
 <2> Current phase of the recovery process in a human-readable format.
 <3> Recovery process state. One of `InProgress`, `Succeeded`, or `Failed`.
-
++
 //here add the status Succeeded?
 
 . Check that the {prod-short} instance has been recovered.

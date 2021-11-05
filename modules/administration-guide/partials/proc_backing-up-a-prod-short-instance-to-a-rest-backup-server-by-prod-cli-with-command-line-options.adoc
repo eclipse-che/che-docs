@@ -6,18 +6,19 @@ You can use {prod-cli} with command-line options to take a backup snapshot of a 
 include::snip_warning-does-not-back-up-content-of-workspaces.adoc[]
 
 .Prerequisites
-* Backup repository. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
-* Password for the backup repository.
+* Configured external backup server. See xref:supported-restic-compatible-backup-servers.adoc[]
+* Created backup repository. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
+* Created backup repository password. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
 +
-WARNING: The backup repository password is used to encrypt the backup data. If you lose this password, you will lose the backup data.
+include::snip_warning-about-losing-backup-repo-password.adoc[]
 
 .Procedure
 
 . Enter the {prod-cli} command with the following arguments:
-
++
 [source,shell,subs="+quotes,+attributes"]
 ----
-chectl server:backup \
+$ chectl server:backup \
 --repository-url=_<repository_url>_ \ <1>
 --repository-password=_<repository_password>_ \ <2>
 --username=_<username>_ \ <3>
