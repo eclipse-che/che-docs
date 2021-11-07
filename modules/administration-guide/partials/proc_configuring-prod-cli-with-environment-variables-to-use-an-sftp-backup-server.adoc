@@ -1,22 +1,20 @@
 [id="configuring-prod-cli-for-an-sftp-backup-server-with-environment-variables_{context}"]
 = Configuring {prod-cli} for an SFTP backup server with environment variables
 
-To configure {prod-short} with environment variables to use an SFTP backup server:
+As an alternative to using command-line options for `{prod-cli} server:backup`, you can configure {prod-cli} for an external SFTP backup server with environment variables that will allow you to run `{prod-cli} server:backup` without having to enter those arguments as options.
 
 .Prerequisites
-* Configured backup server. See xref:supported-restic-compatible-backup-servers.adoc[].
+* Configured external SFTP backup server. See xref:supported-restic-compatible-backup-servers.adoc[].
+* Created backup repository. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
+* Created backup repository password. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
++
+include::snip_warning-about-losing-backup-repo-password.adoc[]
 
 .Procedure
 
-. Set the server URL as the `BACKUP_REPOSITORY_URL` environment variable.
-
-. Retrieve or create a password for the backup repository.
-
-. Enter the backup repository password as an argument using the `-p` option or as the `BACKUP_REPOSITORY_PASSWORD` environment variable.
-+
-WARNING: The backup repository password is used to encrypt the backup data. If you lose this password, you will lose the backup data.
-
-. To log in without a password, set the SSH key using one of the following environment variables:
-** The `SSH_KEY_FILE` environment variable for the path to the SSH key file
-** The `SSH_KEY` environment variable for the SSH key
-//the second option is a bit vague. max-cx
+* Set the following environment variables:
+** `BACKUP_REPOSITORY_URL` for the backup repository.
+** `BACKUP_REPOSITORY_PASSWORD` for the backup repository password.
+** To log in without a password, set the SSH key using either environment variable:
+*** `SSH_KEY_FILE` for the path to the SSH key file.
+*** `SSH_KEY` for the SSH key.

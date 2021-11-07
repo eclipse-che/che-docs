@@ -14,14 +14,14 @@ To make workspace metadata and user information persistent, you must configure {
 
 . Create a {orch-namespace} for {prod-short}:
 +
-[subs="+quotes,attributes"]
+[source,shell,subs="+quotes,attributes"]
 ----
 $ {orch-cli} create namespace {prod-namespace}
 ----
 
 . Create a secret to store {prod-short} server database credentials:
 +
-[subs="+quotes,attributes"]
+[source,shell,subs="+quotes,attributes"]
 ----
 $ {orch-cli} create secret generic _<server-database-credentials>_ \ <1>
 --from-literal=user=_<database-user>_ \ <2>
@@ -34,7 +34,7 @@ $ {orch-cli} create secret generic _<server-database-credentials>_ \ <1>
 
 . Create a secret to store {identity-provider} database credentials:
 +
-[subs="+quotes,attributes"]
+[source,shell,subs="+quotes,attributes"]
 ----
 $ {orch-cli} create secret generic _<identity-database-credentials>_ \ <1>
 --from-literal=password=_<identity-database-password>_ \ <2>
@@ -45,7 +45,7 @@ $ {orch-cli} create secret generic _<identity-database-credentials>_ \ <1>
 
 . Deploy {prod} by executing the `{prod-cli}` command with applying a patch. For example:
 +
-[subs="+quotes,+attributes"]
+[source,shell,subs="+quotes,+attributes"]
 ----
 $ {prod-cli} server:deploy --che-operator-cr-patch-yaml=patch.yaml ...
 ----

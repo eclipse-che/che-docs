@@ -1,11 +1,11 @@
 [id="configuring-prod-short-with-custom-resources-to-use-an-sftp-backup-server_{context}"]
 = Configuring {prod-short} with custom resources to use an SFTP backup server
 
-To configure {prod-short} to use an SFTP backup server:
+To configure {prod-short} to use an external SFTP backup server:
 
 .Prerequisites
 
-* Configured external backup server. See xref:supported-restic-compatible-backup-servers.adoc[]
+* Configured external SFTP backup server. See xref:supported-restic-compatible-backup-servers.adoc[]
 * Created backup repository. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
 * Created backup repository password. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
 
@@ -23,22 +23,24 @@ apiVersion: org.eclipse.che/v1
 kind: CheBackupServerConfiguration
 metadata:
   name: backup-server-configuration
-spec:
+  namespace: {prod-namespace}
+spec: <1>
   awss3:
-    username: user <1>
-    hostname: my-domain.net <2>
-    port: 1234 <3>
-    repositoryPath: {prod-id}-backups <4>
-    repositoryPasswordSecretRef: backup-encryption-password-secret <5>
-    sshKeySecretRef: ssh-key-secret <6>
+    username: user <2>
+    hostname: my-domain.net <3>
+    port: 1234 <4>
+    repositoryPath: {prod-id}-backups <5>
+    repositoryPasswordSecretRef: backup-encryption-password-secret <6>
+    sshKeySecretRef: ssh-key-secret <7>
 ----
-<1> User name on the remote server to login with using the SSH protocol.
-<2> Remote server hostname.
-<3> Optional property that specifies the port on which an SFTP server is running. The default value is `22`.
-<4> Absolute or relative path on the server where backup snapshots are stored.
-<5> The secret created in step 1.
-<6> The secret created in step 2.
-+
-NOTE: The custom object, stored in the `{prod-namespace}` namespace, must have only one section configured in the `spec` property.
+<1> The `spec` property of this custom object must only have one section configured.
+<2> User name on the remote server to login with using the SSH protocol.
+<3> Remote server hostname.
+<4> Optional property that specifies the port on which an SFTP server is running. The default value is `22`.
+<5> Absolute or relative path on the server where backup snapshots are stored.
+<6> The secret created in step 1.
+<7> The secret created in step 2.
 
 . To configure multiple backup servers, create a separate `CheBackupServerConfiguration` custom object for each backup server.
+
+//Check with Mykola whether the `awss3` line is where it should be (looks like an Amazon S3 config line). It's already in the published docs https://www.eclipse.org/che/docs/che-7/administration-guide/define-backup-server-for-operator/ max-cx

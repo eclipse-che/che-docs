@@ -5,7 +5,7 @@ To configure {prod-short} to use an Amazon S3 backup server:
 
 .Prerequisites
 
-* Configured external backup server. See xref:supported-restic-compatible-backup-servers.adoc[]
+* Configured Amazon S3 backup server. See xref:supported-restic-compatible-backup-servers.adoc[]
 * Created backup repository. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
 * Created backup repository password. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
 
@@ -25,22 +25,22 @@ apiVersion: org.eclipse.che/v1
 kind: CheBackupServerConfiguration
 metadata:
   name: backup-server-configuration
-spec:
+  namespace: {prod-namespace}
+spec: <1>
   awss3:
-    protocol: https <1>
-    hostname: my-domain.net <2>
-    port: 1234 <3>
-    repositoryPath: {prod-id}-backups <4>
-    repositoryPasswordSecretRef: backup-encryption-password-secret <5>
-    awsAccessKeySecretRef: aws-user-credentials-secret <6>
+    protocol: https <2>
+    hostname: my-domain.net <3>
+    port: 1234 <4>
+    repositoryPath: {prod-id}-backups <5>
+    repositoryPasswordSecretRef: backup-encryption-password-secret <6>
+    awsAccessKeySecretRef: aws-user-credentials-secret <7>
 ----
-<1> Optional property that specifies the protocol to be used: `https` is the default value; `http` is a permitted value.
-<2> Optional property that specifies the S3 hostname. The default value is `s3.amazonaws.com`.
-<3> Optional property that specifies the port on which the backup server is running.
-<4> The name of the bucket resource where the backup snapshots are stored. The bucket resource must be manually pre-created.
-<5> The secret created in step 1.
-<6> The secret created in step 2.
-+
-NOTE: The custom object, stored in the `{prod-namespace}` namespace, must have only one section configured in the `spec` property.
+<1> The `spec` property of this custom object must only have one section configured.
+<2> Optional property that specifies the protocol to be used: `https` is the default value; `http` is a permitted value.
+<3> Optional property that specifies the S3 hostname. The default value is `s3.amazonaws.com`.
+<4> Optional property that specifies the port on which the backup server is running.
+<5> The name of the bucket resource where the backup snapshots are stored. The bucket resource must be manually pre-created.
+<6> The secret created in step 1.
+<7> The secret created in step 2.
 
 . To configure multiple backup servers, create a separate `CheBackupServerConfiguration` custom object for each backup server.
