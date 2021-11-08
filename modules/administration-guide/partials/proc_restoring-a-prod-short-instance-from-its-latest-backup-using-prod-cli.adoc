@@ -1,21 +1,32 @@
 [id="restoring-a-prod-short-instance-from-its-latest-backup-using-prod-cli_{context}"]
 = Restoring a {prod-short} instance from its latest backup using {prod-cli}
 
-To restore the latest backed up state of a {prod-short} instance using {prod-cli}:
+To restore the {prod-short} instance from its latest backup using `{prod-cli}`, you can enter `latest` as the snapshot ID.
 
 include::snip_warning-backup-snapshots-are-bound-to-specific-cluster.adoc[]
 
 .Prerequisites
 
-* A backup. See xref:managing-backups-of-prod-short-instances-using-prod-cli.adoc#creating-a-backup-of-a-prod-short-instance-using-prod-cli_{context}[Creating a backup using {prod-cli}].
+* Installed `{prod-cli}`.
+* Backup snapshot of a {prod-short} instance on any of the following:
+** xref:backups-of-prod-short-instances-to-a-rest-backup-server.adoc[External REST backup server]
+** xref:backups-of-prod-short-instances-to-an-sftp-backup-server.adoc[External SFTP backup server]
+** xref:backups-of-prod-short-instances-to-amazon-s3.adoc[Amazon S3]
+** xref:backups-of-prod-short-instances-to-the-internal-backup-server.adoc[Internal backup server]
 
 .Procedure
 
-* Run the following command to recover the {prod-short} instance from its latest backup:
+* Run the `{prod-cli} server:restore` command with the following arguments:
 +
 [source,shell,subs="+quotes,+attributes"]
 ----
-$ {prod-cli} server:restore --snapshot-id=latest --repository-url=__<repository-url>__ --repository-password=__<repository-password>__
+$ {prod-cli} server:restore \
+--snapshot-id=latest \ <1>
+--repository-url=_<repository-url>_ \ <2>
+--repository-password=_<repository-password>_ <3>
 ----
+<1> Specifies the latest snapshot.
+<2> Backup repository URL as an argument using the `--repository-url` or `-r` option.
+<3> Backup repository password as an argument using the `--repository-password` or `-p` option.
 
 include::snip_tip-omitting-prod-cli-options-for-server-backup-and-server-restore-onward-when-using-same-backup-server.adoc[]
