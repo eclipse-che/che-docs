@@ -1,0 +1,273 @@
+
+[id="migration-olm-stable-channel-to-stable-all-namespace_{context}"]
+= Migration {prod} from "che-server" workspace engine to "dev-workspace" using OLM 
+
+For {prod} instances installed using Operator lifecycle manager(OLM) with "stable" channel
+there is opportunity to make migration with new channel "tech-preview-stable-all-namespaces".
+"stable" OLM channel provides {prod} with old "che-server" engine.
+This engine is not under active development any more.
+"tech-preview-stable-all-namespaces" channel provides {prod-short} with modern "dev-workspace" engine.
+
+> Warning: Migration process is not back compatible. All previously created workspaces will be
+not working any more after migration. Before this procedure all users should be notified to save their source code
+changes to prevent losing data.
+
+.Prerequisites
+
+* The `{orch-cli}` tool is available.
+* An instance of {prod-short} running in Openshift 4 cluster.
+
+.Procedure
+
+Scale {prod-deployment} deployment to zero to stop users interaction with this service:
+
+[subs="+quotes,+attributes"]
+----
+{orch-cli} scale deployment {prod-deployment} --replicas=0 -n {prod-namespace}
+----
+
+If you have enabled Openshift OAuth you have to migrate existed users. This migration is required to reuse existed Openshift users with "dev-workspace" native authentication mode.
+
+> Warning: If your {prod} instance didn't use OAuth, then you can't migrate users.
+There is no mechanism to migrate native Keycloak users to Openshift users.
+
+## Migrate Openshift OAuth users
+
+Create {prod} backup using the xref:managing-backups-using-chectl.adoc[] or che-operator itself xref:managing-backups-using-custom-resources.adoc[].
+
+Create migration script MigrateUsers.sh:
+
+[subs="+quotes,+attributes"]
+----
+$ touch MigrateUsers.sh && chmod +x MigrateUsers.sh
+----
+
+MigrateUsers.sh script content
+[source,shell,subs="+attributes"]
+----
+#!/bin/bash
+
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    '--n') namespace=$2; shift 1;;
+    '--cr') clusterName=$2; shift 1;;
+  esac
+  shift 1
+done
+
+if [ -z "${namespace}" ]; then
+  echo "[ERROR] You have to specify namespace using '--n' flag"
+  exit 11
+fi
+
+if [ -z "${clusterName}" ]; then
+  echo "[ERROR] You have to specify custom resource name using '--cr' flag"
+  exit 11
+fi
+
+namespace="eclipse-che"
+clusterName="eclipse-che"
+# Keycloak admin name
+keycloakAdmin=admin
+realm="che"
+
+identityURL=$(oc get checluster "${clusterName}" -n "$namespace" -o jsonpath="{.status.keycloakURL}" )
+echo "[INFO] Identity url is: '${identityURL}'"
+identitySecretName=$(oc get checluster "${clusterName}" -n "$namespace" -o jsonpath="{.spec.auth.identityProviderSecret}")
+echo "[INFO] Secret with identity auth info is: '${identitySecretName}'"
+password=$(oc get secret "${identitySecretName}" -n "$namespace" -o jsonpath="{.data.password}" | base64 -d)
+
+# Get admin token to retrieve users information.
+updateToken() {
+    TOKEN=$(curl -k \
+    -d "client_id=admin-cli" \
+    -d "username=${keycloakAdmin}" \
+    -d "password=${password}" \
+    -d "grant_type=password" \
+    "${identityURL}/realms/master/protocol/openid-connect/token" | jq -r ".access_token")
+}
+
+updateToken
+
+userIds=($(curl -k -H "Authorization: bearer ${TOKEN}" "${identityURL}/${keycloakAdmin}/realms/${realm}/users" | jq ".[] | .id" | tr "\r\n" " "))
+
+usersIdToMigrate=""
+for userId in "${userIds[@]}"; do
+    updateToken
+
+    userId=$(echo "${userId}" | tr -d "\"")
+    echo "${userId}"
+    echo "${identityURL}/${keycloakAdmin}/realms/${realm}/users/${userId}/federated-identity"
+    userFederation=$(curl -k -H "Authorization: bearer ${TOKEN}" "${identityURL}/${keycloakAdmin}/realms/${realm}/users/${userId}/federated-identity")
+    provider=$(echo "${userFederation}" | jq -r ".[] | select(.identityProvider == \"openshift-v4\")")
+    if [ -n "${provider}" ]; then
+        openshiftUserId=$(echo "${provider}" | jq ".userId" | tr -d "\"")
+        usersIdToMigrate="${usersIdToMigrate} ${userId}@${openshiftUserId}"
+    fi
+done
+
+echo "[INFO] Migration stuff: ${usersIdToMigrate}"
+
+# check that postgre is non external
+postgreImage=$(kubectl get deployment postgres -n "$namespace" -o jsonpath="{.spec.template.spec.containers[0].image}")
+podIP=$(oc get pod -l component=postgres -n "$namespace" -o jsonpath="{.items[0].status.podIP}")
+
+cat <<EOF | oc apply -n "$namespace" -f -
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: migrate-users-db
+spec:
+  parallelism: 1
+  completions: 1
+  backoffLimit: 6
+  template:
+    metadata:
+      name: migrate-users-db
+    spec:
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-data
+      containers:
+        - name: postgre
+          image: >-
+            ${postgreImage}
+          env:
+            - name: POSTGRESQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: che-postgres-secret
+                  key: user
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: che-postgres-secret
+                  key: password
+            - name: USER_IDS_TO_MIGRATE
+              value: "${usersIdToMigrate}"
+            - name: POSTGRESQL_POD_IP
+              value: "${podIP}"
+          command:
+            - /bin/bash
+          args:
+            - "-c"
+            - >-
+              DUMP_FILE="/tmp/dbdump.sql";
+              DB_NAME="dbche";
+              DB_OWNER="pgche";
+              touch "\${DUMP_FILE}";
+              echo "[INFO] Create database dump: \${DUMP_FILE}";
+              export PGPASSWORD="\$(POSTGRESQL_PASSWORD)";
+              pg_dump -d \${DB_NAME} -h \$(POSTGRESQL_POD_IP) -U \$(POSTGRESQL_USER) > "\${DUMP_FILE}";
+              userMappings=(\$(USER_IDS_TO_MIGRATE));
+              echo "[INFO] Mappings array is:  \${userMappings[@]}";
+              for userIdMapping in "\${userMappings[@]}"; do
+                currentUserId=\${userIdMapping%@*}
+                openshiftUserId=\${userIdMapping#*@}
+                echo "[INFO] Replace \${currentUserId} to \${openshiftUserId} in the dump."
+                sed -i "s|\${currentUserId}|\${openshiftUserId}|g" "\${DUMP_FILE}"
+              done;
+              echo "[INFO] Replace database dump...";
+              echo "[INFO] Set up connection limit: 0";
+              psql -h \$(POSTGRESQL_POD_IP) -U \$(POSTGRESQL_USER) -q -d template1 -c "ALTER DATABASE \${DB_NAME} CONNECTION LIMIT 0;";
+              echo "Disconnect database: '\${DB_NAME}'";
+              psql -h \$(POSTGRESQL_POD_IP) -U \$(POSTGRESQL_USER) -q -d template1 -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '\${DB_NAME}';";
+              echo "Drop database... '\${DB_NAME}'";
+              psql -h \$(POSTGRESQL_POD_IP) -U \$(POSTGRESQL_USER) -q -d template1 -c "DROP DATABASE \${DB_NAME};";
+              echo "[INFO] Create an empty database '\${DB_NAME}'";
+              createdb -h \${POSTGRESQL_POD_IP} -U \${POSTGRESQL_USER} "\${DB_NAME}" --owner="\${DB_OWNER}";
+              echo "[INFO] Apply database dump.";
+              psql -h \${POSTGRESQL_POD_IP} -U \${POSTGRESQL_USER} "\${DB_NAME}" < "\${DUMP_FILE}";
+              rm -f "\${DUMP_FILE}";
+              echo "done!";
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/pgsql/data
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+                - KILL
+                - MKNOD
+                - SETGID
+                - SETUID
+            # runAsUser: 1000620000
+      terminationMessagePolicy: File
+      restartPolicy: OnFailure
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      schedulerName: default-scheduler
+EOF
+----
+
+Execute script to migration existed Openshift OAuth users. This script will execute migration job.
+
+[subs="+quotes,+attributes"]
+----
+$ ./MigrateUsers.sh --n {prod-namespace} --cr {prod-checluster}
+----
+
+Where are:
+
+- `--n` namespace
+- `--cr` custom resource name
+
+To track when migration job will be completed use the command:
+
+[subs="+quotes,+attributes"]
+---- 
+$ kubectl wait --for=condition=complete job/migrate-users-db -n {prod-namespace}
+----
+
+If migration job was successfull cli should provide output:
+
+[subs="+quotes,+attributes"]
+----
+job.batch/migrate-users-db condition met
+----
+
+# Switch from "stable" OLM channel to the "tech-preview-stable-all-namespaces" channel.
+
+Delete OLM subscription "{prod-checluster}":
+
+[subs="+quotes,+attributes"]
+----
+$ oc delete subscription {prod-checluster} -n {prod-namespace}
+----
+
+Delete current cluster service version by name:
+
+[subs="+quotes,+attributes"]
+----
+$ CSV_VERSION_NAME=$(oc get clusterserviceversion -n {prod-namespace} -o jsonpath="{.status.currentCSV}")
+$ oc delete clusterserviceversion "${CSV_VERSION_NAME}" -n {prod-namespace}
+----
+
+Create new subscription:
+
+[subs="+quotes,+attributes"]
+----
+$ oc apply -f - <<EOF
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: {prod-checluster}
+  namespace: openshift-operators
+spec:
+  channel: tech-preview-stable-all-namespaces
+  installPlanApproval: Automatic
+  name: {prod-checluster}
+  source: community-operators
+  sourceNamespace: openshift-marketplace
+EOF
+----
+
+Enable "dev-workspace" engine in the custom resource:
+
+[subs="+quotes,+attributes"]
+----
+$ oc patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/devWorkspace/enable", "value": true}]'
+----
