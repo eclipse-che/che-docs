@@ -230,18 +230,12 @@ job.batch/migrate-users-db condition met
 
 # Switch from "stable" OLM channel to the "tech-preview-stable-all-namespaces" channel.
 
-Delete OLM subscription "{prod-checluster}":
+Delete OLM subscription "{prod-checluster}" and current cluster service version by name:
 
 [subs="+quotes,+attributes"]
 ----
+$ CSV_VERSION_NAME=$(oc get subscription {prod-checluster} -n {prod-namespace} -o jsonpath="{.status.currentCSV}")
 $ oc delete subscription {prod-checluster} -n {prod-namespace}
-----
-
-Delete current cluster service version by name:
-
-[subs="+quotes,+attributes"]
-----
-$ CSV_VERSION_NAME=$(oc get clusterserviceversion -n {prod-namespace} -o jsonpath="{.status.currentCSV}")
 $ oc delete clusterserviceversion "${CSV_VERSION_NAME}" -n {prod-namespace}
 ----
 
