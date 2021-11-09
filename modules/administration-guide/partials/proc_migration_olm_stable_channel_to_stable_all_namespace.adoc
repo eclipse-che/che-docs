@@ -180,6 +180,11 @@ spec:
               echo "[INFO] Apply database dump.";
               psql -h \${POSTGRESQL_POD_IP} -U \${POSTGRESQL_USER} "\${DB_NAME}" < "\${DUMP_FILE}";
               rm -f "\${DUMP_FILE}";
+              for userIdMapping in "\${userMappings[@]}"; do
+                openshiftUserId=\${userIdMapping#*@}
+                echo "[INFO] Update user profile info for user with id \${openshiftUserId}."
+                psql -h \$(POSTGRESQL_POD_IP) -U \$(POSTGRESQL_USER) -q -d \${DB_NAME} -c "insert into profile(userid) values ('\${openshiftUserId}');";
+              done;
               echo "done!";
           imagePullPolicy: IfNotPresent
           volumeMounts:
@@ -193,7 +198,6 @@ spec:
                 - MKNOD
                 - SETGID
                 - SETUID
-            # runAsUser: 1000620000
       terminationMessagePolicy: File
       restartPolicy: OnFailure
       terminationGracePeriodSeconds: 30
