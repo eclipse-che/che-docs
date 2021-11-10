@@ -86,7 +86,7 @@ spec:
   options {
     buildDiscarder(logRotator(numToKeepStr: '5'))
     checkoutToSubdirectory('che-docs')
-    disableConcurrentBuilds()
+    disableConcurrentBuilds(abortPrevious: true)
     timeout(time: 15, unit: 'MINUTES')
   }
 
