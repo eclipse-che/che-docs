@@ -1,7 +1,7 @@
 [id="backing-up-a-prod-short-instance-using-the-checlusterbackup-custom-object_{context}"]
 = Backing up a {prod-short} instance using the CheClusterBackup custom object
 
-You can use a custom object to take a backup snapshot of a {prod-short} instance and to send the snapshot to the configured external backup server:
+You can use a `CheClusterBackup` custom object to take a backup snapshot of a {prod-short} instance and to send the snapshot to the configured external backup server. To create each and every backup snapshot requires a new `CheClusterBackup` custom object; that is, editing an already consumed `CheClusterBackup` custom object, during or after backing up, has no effect.
 
 include::snip_warning-does-not-back-up-content-of-workspaces.adoc[]
 
@@ -28,7 +28,7 @@ spec:
 <1> Name of the `CheBackupServerConfiguration` custom object defining what backup server to use.
 <2> Configures the custom resource to back up to an external backup server.
 +
-[NOTE]
+[TIP]
 ====
 If you intend to reuse a `name` for `CheClusterBackup` custom objects, first make sure to delete any existing custom object with the same `name`. To delete it on the command line, use {orch-cli}:
 [source,shell,subs="+attributes,+quotes"]
