@@ -1,14 +1,14 @@
-[id="backing-up-a-prod-short-instance-to-amazon-s3-by-prod-cli-with-command-line-options_{context}"]
-= Backing up a {prod-short} instance to Amazon S3 by {prod-cli} with command-line options
+[id="backing-up-a-{prod-id-short}-instance-to-a-rest-backup-server-by-prod-cli-with-command-line-options_{context}"]
+= Backing up a {prod-short} instance to a REST backup server by {prod-cli} with command-line options
 
-To take a backup snapshot of a {prod-short} instance and to send the snapshot to the configured Amazon S3, run {prod-cli} with the command-line options.
+To take a backup snapshot of a {prod-short} instance and to send the snapshot to a configured external REST backup server, run {prod-cli} with the command-line options.
 
 include::snip_warning-does-not-back-up-content-of-workspaces.adoc[]
 
 .Prerequisites
 
 * Installed `{prod-cli}`.
-* Configured Amazon S3. See xref:supported-restic-compatible-backup-servers.adoc[]
+* Configured external REST backup server. See xref:supported-restic-compatible-backup-servers.adoc[]
 * Created backup repository. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
 * Created backup repository password. See link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html[Preparing a new repository].
 +
@@ -23,12 +23,12 @@ include::snip_warning-about-losing-backup-repo-password.adoc[]
 $ chectl server:backup \
 --repository-url=_<repository_url>_ \ <1>
 --repository-password=_<repository_password>_ \ <2>
---aws-access-key-id=_<aws-access-key-id>_ \ <3>
---aws-secret-access-key==_<aws-secret-access-key>_ <4>
+--username=_<username>_ \ <3>
+--password=_<password>_ <4>
 ----
 <1> Backup repository URL as an argument using the `--repository-url` or `-r` option.
 <2> Backup repository password as an argument using the `--repository-password` or `-p` option.
-<3> User’s AWS access key ID.
-<4> User’s AWS secret access key.
+<3> When authentication is required, the username for authenticating to the backup REST server as the `--username=_<username>_` argument.
+<4> When authentication is required, the password for authenticating to the backup REST server as the `--password=_<password>_` argument.
 
 include::snip_tip-omitting-prod-cli-options-for-server-backup-and-server-restore-onward-when-using-same-backup-server.adoc[]
