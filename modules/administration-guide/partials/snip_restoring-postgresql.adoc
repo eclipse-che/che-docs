@@ -1,0 +1,21 @@
+include::partial$snip_finding-postgresql-pod.adoc[]
+
+include::partial$snip_finding-che-database-name.adoc[]
+
+. Restore {identity-provider} database:
++
+[subs="+quotes,+attributes"]
+----
+{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql keycloak < /tmp/keycloak.sql"
+----
+
+. Restore {prod-short} database:
++
+[subs="+quotes,+attributes"]
+----
+{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql $CHE_POSTGRES_DB < /tmp/che.sql"
+----
+
+include::partial$snip_scaling-up-keycloak.adoc[]
+
+include::partial$snip_scaling-up-che.adoc[]

@@ -1,0 +1,17 @@
+[id="updating-postgresql-version{context}"]
+= Updating PostgreSQL version
+
+.Procedure
+
+include::partial$snip_scaling-down-postgresql.adoc[]
+
+include::partial$snip_deleting-postgresql-pvc.adoc[]
+
+. Set the version of the new PostgreSQL database to 13.3:
++
+[subs="+quotes,+attributes"]
+----
+{orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json -p '[{"op": "replace", "path": "/spec/database/postgresVersion", "value": "13.3"}]'
+----
+
+include::partial$snip_scaling-up-postgresql.adoc[]

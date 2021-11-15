@@ -1,0 +1,32 @@
+[id="backuping-postgresql{context}"]
+= Backuping PostgreSQL
+
+.Procedure
+
+. Save and push changes back to the Git repositories for all running workspaces of the {prod-short} instance.
++
+. Stop all workspaces in the {prod-short} instance.
++
+include::partial$snip_scaling-down-che.adoc[]
+
+include::partial$snip_scaling-down-keycloak.adoc[]
+
+include::partial$snip_finding-postgresql-pod.adoc[]
+
+include::partial$snip_finding-che-database-name.adoc[]
+
+. Backup {prod-short} database:
++
+[subs="+quotes,+attributes"]
+----
+{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "pg_dump $CHE_POSTGRES_DB > /tmp/che.sql"
+{orch-cli} cp {prod-namespace}/$POSTGRES_POD:/tmp/che.sql che.sql
+----
+
+. Backup {identity-provider} database:
++
+[subs="+quotes,+attributes"]
+----
+{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "pg_dump keycloak > /tmp/keycloak.sql"
+{orch-cli} cp {prod-namespace}/$POSTGRES_POD:/tmp/keycloak.sql keycloak.sql
+----
