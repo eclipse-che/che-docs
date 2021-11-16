@@ -30,17 +30,12 @@ include::partial$snip_finding-che-database-name.adoc[]
 [subs="+quotes,+attributes"]
 ----
 {orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"CREATE DATABASE keycloak\""
-{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"GRANT ALL PRIVILEGES ON DATABASE keycloak TO keycloak\""
 ----
 
 . Create {prod-short} database:
 +
 [subs="+quotes,+attributes"]
 ----
-POSTGRES_SECRET=$({orch-cli} get checluster/{prod-checluster} -n {prod-namespace} -o json | jq -r '.spec.database.chePostgresSecret')
-CHE_USER=$(if [ -z "$POSTGRES_SECRET" ] || [ $POSTGRES_SECRET = "null" ]; then {orch-cli} get checluster/{prod-checluster}  -n {prod-namespace} -o json | jq -r '.spec.database.chePostgresUser'; else {orch-cli} get secret $POSTGRES_SECRET -n {prod-namespace} -o json | jq -r '.data.user' | base64 -d; fi)
-
 {orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"CREATE DATABASE $CHE_POSTGRES_DB\""
-{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"GRANT ALL PRIVILEGES ON DATABASE $CHE_POSTGRES_DB TO $CHE_USER\""
 ----
 
