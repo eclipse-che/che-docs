@@ -5,6 +5,8 @@
 
 .Procedure
 
+include::partial$snip_scaling-down-postgresql.adoc[]
+
 include::partial$snip_scaling-down-operator.adoc[]
 
 . Create a secret to store {prod-short} server database credentials:
@@ -35,22 +37,22 @@ $ {orch-cli} create secret generic <identity-database-credentials> \ <1>
 +
 [subs="+quotes,attributes"]
 ----
-$ oc patch checluster/{prod-checluster} -n {prod-namespace} --type=json \
+$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json \
   -p '[{"op": "replace", "path": "/spec/database/externalDb", "value": true}]'
 
-$ oc patch checluster/{prod-checluster} -n {prod-namespace} --type=json \
+$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json \
   -p '[{"op": "replace", "path": "/spec/database/chePostgresHostName", "value": __<hostname>__}]' <1>
 
-$ oc patch checluster/{prod-checluster} -n {prod-namespace} --type=json \
+$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json \
   -p '[{"op": "replace", "path": "/spec/database/chePostgresPort", "value": __<port>__}]' <2>
 
-$ oc patch checluster/{prod-checluster} -n {prod-namespace} --type=json \
+$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json \
   -p '[{"op": "replace", "path": "/spec/database/chePostgresSecret", "value": __<server-database-credentials>__}]' <3>
 
-$ oc patch checluster/{prod-checluster} -n {prod-namespace} --type=json \
+$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json \
   -p '[{"op": "replace", "path": "/spec/database/chePostgresDb", "value": __<database> __}]' <4>
 
-$ oc patch checluster/{prod-checluster} -n {prod-namespace} --type=json \
+$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json \
   -p '[{"op": "replace", "path": "/spec/auth/identityProviderPostgresSecret", "value": __<identity-database-credentials> __}]' <5>
 ----
 <1> External database host name
@@ -58,5 +60,3 @@ $ oc patch checluster/{prod-checluster} -n {prod-namespace} --type=json \
 <3> Secret name with {prod-short} server database credentials
 <4> {prod-short} server database name
 <5> Secret name with {identity-provider} database credentials
-
-include::partial$snip_scaling-up-operator.adoc[]

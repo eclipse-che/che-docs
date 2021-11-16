@@ -18,8 +18,7 @@ OPERATOR_POD=$({orch-cli} get pods -n {prod-namespace} | grep {prod-operator} | 
 ----
 IDENTITY_POSTGRES_SECRET=$({orch-cli} get checluster/{prod-checluster} -n {prod-namespace} -o json | jq -r '.spec.auth.identityProviderPostgresSecret')
 IDENTITY_POSTGRES_PASSWORD=$(if [ -z "$IDENTITY_POSTGRES_SECRET" ] || [ $IDENTITY_POSTGRES_SECRET = "null" ]; then {orch-cli} get checluster/{prod-checluster}  -n {prod-namespace} -o json | jq -r '.spec.auth.identityProviderPostgresPassword'; else {orch-cli} get secret $IDENTITY_POSTGRES_SECRET -n {prod-namespace} -o json | jq -r '.data.password' | base64 -d; fi)
-POSTGRES_SECRET=$({orch-cli} get checluster/{prod-checluster} -n {prod-namespace} -o json | jq -r '.spec.database.chePostgresSecret')
-CHE_USER=$(if [ -z "$POSTGRES_SECRET" ] || [ $POSTGRES_SECRET = "null" ]; then {orch-cli} get checluster/{prod-checluster}  -n {prod-namespace} -o json | jq -r '.spec.database.chePostgresUser'; else {orch-cli} get secret $POSTGRES_SECRET -n {prod-namespace} -o json | jq -r '.data.user' | base64 -d; fi)
+include::partial$snip_finding-che-user-name.adoc[]
 ----
 
 . Provision a database:
@@ -29,5 +28,5 @@ CHE_USER=$(if [ -z "$POSTGRES_SECRET" ] || [ $POSTGRES_SECRET = "null" ]; then {
 {orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"CREATE USER keycloak WITH PASSWORD '$IDENTITY_POSTGRES_PASSWORD'\""
 {orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"CREATE DATABASE keycloak\""
 {orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"GRANT ALL PRIVILEGES ON DATABASE keycloak TO keycloak\""
-{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"ALTER USER $CHE_USER WITH SUPERUSER\""
+{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"ALTER USER $CHE_USER_NAME WITH SUPERUSER\""
 ----

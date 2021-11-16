@@ -18,18 +18,18 @@ include::partial$snip_finding-che-database-name.adoc[]
 {orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "dropdb keycloak"
 ----
 
-. Drop {prod-short} database:
-+
-[subs="+quotes,+attributes"]
-----
-{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "dropdb $CHE_POSTGRES_DB"
-----
-
 . Create {identity-provider} database:
 +
 [subs="+quotes,+attributes"]
 ----
 {orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql postgres -tAc \"CREATE DATABASE keycloak\""
+----
+
+. Drop {prod-short} database:
++
+[subs="+quotes,+attributes"]
+----
+{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "dropdb $CHE_POSTGRES_DB"
 ----
 
 . Create {prod-short} database:
