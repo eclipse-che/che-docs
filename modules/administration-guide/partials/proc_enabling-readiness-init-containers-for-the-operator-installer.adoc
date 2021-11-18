@@ -1,4 +1,4 @@
-[id="enabling-readiness-init-containers-for-operator-installer_{context}"]
+[id="enabling-readiness-init-containers-for-the-operator-installer_{context}"]
 = Enabling the readiness init containers for the Operator installer
 
 The readiness init containers are not enabled by default, so to use them you first have to enable them. To enable the readiness init containers for {prod-short} installed by the Operator installer:
@@ -11,13 +11,14 @@ The readiness init containers are not enabled by default, so to use them you fir
 
 . Find {prod-short} Operator Deployment name.
 
-. Edit the Deployment as follows: Under `spec.template.spec.containers[0].env` of the Operator Deployment, insert the following lines with the `ADD_COMPONENT_READINESS_INIT_CONTAINERS` environment variable:
+. Edit the Deployment as follows: Under `spec.template.spec.containers[0].env` of the Operator Deployment, insert the following lines:
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
- - name: ADD_COMPONENT_READINESS_INIT_CONTAINERS
+ - name: ADD_COMPONENT_READINESS_INIT_CONTAINERS <1>
    value: "true"
 ----
+<1> `ADD_COMPONENT_READINESS_INIT_CONTAINERS` is an environment variable.
 
 . Wait while {prod-short} Operator restarts some components.
 
