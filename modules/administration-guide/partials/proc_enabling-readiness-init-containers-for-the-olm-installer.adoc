@@ -1,15 +1,13 @@
 :_module-type: PROCEDURE
 
-[id="enabling-and-disabling-readiness-init-containers-for-olm-installer_{context}"]
-= Enabling and disabling readiness init containers for OLM installer
+[id="enabling-readiness-init-containers-for-the-olm-installer_{context}"]
+= Enabling the readiness init containers for the OLM installer
 
-Readiness init containers are not enabled by default.
-
-To enable or disable readiness init containers for {prod-short} installed using the Operator Lifecycle Manager (OLM) installer:
+The readiness init containers are not enabled by default, so to use them you first have to enable them. To enable the readiness init containers for {prod-short} installed by the OLM installer:
 
 .Prerequisites
 
-* {prod-short} is installed with OLM installer.
+* {prod-short} is installed by the OLM installer.
 
 .Procedure
 
@@ -20,20 +18,20 @@ To enable or disable readiness init containers for {prod-short} installed using 
 $ {orch-cli} get subscriptions -n {prod-namespace}
 ----
 
-. Find the CSV name in the {prod-short} Operator subscription:
+. Get the CSV (Cluster Service Version) name from the {prod-short} Operator subscription:
 +
 [source,shell,subs="+quotes,+attributes"]
 ----
 $ {orch-cli} get subscription <subscription-name> -n {prod-namespace} -o yaml | grep installedCSV
 ----
 
-. Edit the `ClusterServiceVersion` (CSV) YAML manifest:
+. Edit the `ClusterServiceVersion` YAML manifest:
 +
 [source,shell,subs="+quotes,+attributes"]
 ----
 $ {orch-cli} edit csv _<csv-name>_ -n {prod-namespace}
 ----
-. Add (remove) the following environment variable to (from) the Operator Deployment spec:
+. Add the following environment variable to the Operator Deployment spec:
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
