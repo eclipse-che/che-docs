@@ -10,6 +10,11 @@ To disable the previously enabled readiness init containers for {prod-short} ins
 .Procedure
 
 . Find {prod-short} Operator Deployment name.
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+$ {orch-cli} get deployments -n {prod-namespace}
+----
 
 . Edit the Deployment as follows: Under `spec.template.spec.containers[0].env` of the Operator Deployment, remove the following lines:
 +
@@ -21,5 +26,3 @@ To disable the previously enabled readiness init containers for {prod-short} ins
 <1> `ADD_COMPONENT_READINESS_INIT_CONTAINERS` is an environment variable.
 
 . Wait while {prod-short} Operator restarts some components.
-
-NOTE: Repeat these steps after each {prod-short} upgrade when a new Operator Deployment is created.
