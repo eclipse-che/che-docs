@@ -6,20 +6,21 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Add Web IDE link on PRs
-name: web-ide
+# Automate pull requests triage
+
+name: Pull request opened
 
 on:
   pull_request_target:
-    types: 
+    types:
       - opened
 
 jobs:
-  add-link:
-    runs-on: ubuntu-20.04
+  automate-project-columns:
+    runs-on: ubuntu-latest
     steps:
-      - name: Web IDE Pull Request Check
-        id: try-in-web-ide
-        uses: redhat-actions/try-in-web-ide@main
+      - uses: alex-page/github-project-automation-plus@v0.8.1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          project: Reviews
+          column: Triage
+          repo-token: ${{ secrets.CHE_BOT_GITHUB_TOKEN }}
