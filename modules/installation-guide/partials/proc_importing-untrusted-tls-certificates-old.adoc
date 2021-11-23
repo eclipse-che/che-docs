@@ -51,6 +51,13 @@ $ {orch-cli} create configmap ca-certs --from-file=__<certificate-file-path>__ -
 +
 To apply more than one certificate, add another `--from-file=_<certificate-file-path>_` option to the above command.
 
+. Add required labels to the ConfigMap:
++
+[subs="+attributes,+quotes"]
+----
+$ {orch-cli} label configmap ca-certs app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
+----
+
 . During the installation process, when creating the `CheCluster` custom resource, configure the right name for the created ConfigMap.
 +
 ====
@@ -122,6 +129,13 @@ $ {orch-cli} create configmap __<config-map-name>__ --from-file=__<certificate-f
 ----
 +
 To apply more than one certificate, add another `--from-file=_<certificate-file-path>_` option to the above command.
+
+. Add required labels to the ConfigMap:
++
+[subs="+attributes,+quotes"]
+----
+$ {orch-cli} label configmap ca-certs app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
+----
 
 . Configure the {prod-short} installation to use the ConfigMap:
 +

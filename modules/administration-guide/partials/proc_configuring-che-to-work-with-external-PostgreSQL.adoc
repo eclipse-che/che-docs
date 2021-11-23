@@ -16,7 +16,7 @@
 $ {orch-cli} create namespace {prod-namespace}
 ----
 
-. Create a secret to store {prod-short} server database credentials:
+. Create a secret to store {prod-short} server database credentials and label it:
 +
 [subs="+quotes,attributes"]
 ----
@@ -24,18 +24,20 @@ $ {orch-cli} create secret generic <server-database-credentials> \ <1>
 --from-literal=user=<database-user> \                            <2>
 --from-literal=password=<database-password> \                    <3>
 -n {prod-namespace}
+$ {orch-cli} label secret <server-database-credentials> app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
 ----
 <1> Secret name to store {prod-short} server database credentials
 <2> {prod-short} server database username
 <3> {prod-short} server database password
 
-. Create a secret to store {identity-provider} database credentials:
+. Create a secret to store {identity-provider} database credentials and label it:
 +
 [subs="+quotes,attributes"]
 ----
 $ {orch-cli} create secret generic <identity-database-credentials> \ <1>
 --from-literal=password=<identity-database-password> \             <2>
 -n {prod-namespace}
+$ {orch-cli} label secret _<identity-database-credentials>_ app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
 ----
 <1> Secret name to store {identity-provider} database credentials
 <2> {identity-provider} database password

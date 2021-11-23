@@ -58,11 +58,18 @@ endif::[]
 ====
 
 ifeval::["{project-context}" == "che"]
-.For {prod-short} deployed using Operators
+.For {prod-short} deployed using Operator
 endif::[]
 
-Update the `gitSelfSignedCert` property. To do that, execute:
+. Add required labels to the ConfigMap:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} label configmap che-git-self-signed-cert app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
+----
 
+. Update the `gitSelfSignedCert` property. To do that, execute:
++
 [subs="+attributes"]
 ----
 $ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json \

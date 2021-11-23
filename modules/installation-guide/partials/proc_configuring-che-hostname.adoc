@@ -25,7 +25,7 @@ IMPORTANT: Ask a DNS provider to point the custom hostname to the cluster ingres
 $ {orch-cli} create {orch-namespace} {prod-namespace}
 ----
 
-. Create a TLS secret:
+. Create a TLS secret and label it:
 +
 [subs="+quotes,attributes"]
 ----
@@ -33,6 +33,7 @@ $ {orch-cli} create secret TLS $\{secret} \  <1>
 --key $\{key_file} \                       <2>
 --cert $\{cert_file} \                     <3>
 -n {prod-namespace}
+$ {orch-cli} label secret $\{secret} app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
 ----
 <1> The TLS secret name
 <2> A file with the private key
