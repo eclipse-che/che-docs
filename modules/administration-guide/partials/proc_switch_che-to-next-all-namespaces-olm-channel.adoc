@@ -1,0 +1,89 @@
+[id="switch_che-to-next-all-namespaces-olm-channel_{context}"]
+= Switch {prod} Che to next all namespace OLM channel
+
+{prod} instance installed using OLM can be switched to use "next-all-namespaces" OLM channel for testing new features or bug fixes purpose.
+
+> Alert: {prod} installed from "stable" OLM channel before migration to "next-all-namespace" should be migrated to {devworkspace} engine and this process is not backward compatible. 
+
+.Prerequisites
+
+* The `{orch-cli}` tool is available.
+* An instance of {prod-short} running in OpenShift 4 cluster.
+
+.Procedure
+
+Make user migration {link} if your previous OLM channel was "stable" or "next".
+
+.Delete current {prod} operator.
+
+Set up namespace "CHE_NAMESPACE" for "stable" or "next" OLM channels:
+
+[source,shell,subs="+attributes"]
+----
+$ CHE_NAMESPACE="{prod-namespace}"
+----
+
+or "openshift-operators" for "tech-preview-stable-all-namespaces" channel:
+
+[source,shell,subs="+attributes"]
+----
+$ CHE_NAMESPACE="openshift-operators"
+----
+
+Delete OLM subscription "{prod-checluster}" and current cluster service version.
+
+[subs="+attributes"]
+----
+$ SUBSCRIPTION=$(oc get subscription -n ${CHE_NAMESPACE} -o custom-columns=POD:.metadata.name --no-headers | grep eclipse-che)
+$ CSV_VERSION_NAME=$(oc get subscription ${SUBSCRIPTION} -n ${CHE_NAMESPACE} -o jsonpath="{.status.currentCSV}")
+$ oc delete subscription ${SUBSCRIPTION} -n ${CHE_NAMESPACE}
+$ oc delete clusterserviceversion "${CSV_VERSION_NAME}" -n ${CHE_NAMESPACE}
+----
+
+.Switch to "tech-preview-stable-all-namespaces" OLM channel.
+
+Create "next" catalog source:
+
+[subs="+quotes,+attributes"]
+----
+$ oc apply -f - <<EOF
+apiVersion:  operators.coreos.com/v1alpha1
+kind:         CatalogSource
+metadata:
+  name:         eclipse-che-next-catalog
+  namespace:    openshift-operators
+spec:
+  image:         quay.io/eclipse/eclipse-che-openshift-opm-catalog:next
+  sourceType:  grpc
+  updateStrategy:
+    registryPoll:
+      interval: 5m
+EOF
+----
+
+Create new subscription for "next-all-namespaces" OLM channel:
+
+[subs="+quotes,+attributes"]
+----
+$ oc apply -f - <<EOF
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: {prod-checluster}
+  namespace: openshift-operators
+spec:
+  channel: next-all-namespaces
+  installPlanApproval: Automatic
+  name: eclipse-che-preview-openshift
+  source: eclipse-che-next-catalog
+  sourceNamespace: openshift-operators
+EOF
+----
+
+Enable single host and {devworkspace} engine in the custom resource:
+
+[subs="+attributes"]
+----
+$ oc patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/devWorkspace/enable", "value": true}, {"op": "replace", "path": "/spec/server/serverExposureStrategy", "value": "single-host"}]'
+----
