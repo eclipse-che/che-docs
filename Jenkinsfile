@@ -87,7 +87,7 @@ spec:
     buildDiscarder(logRotator(numToKeepStr: '5'))
     checkoutToSubdirectory('che-docs')
     disableConcurrentBuilds(abortPrevious: true)
-    timeout(time: 15, unit: 'MINUTES')
+    timeout(time: 30, unit: 'MINUTES')
   }
 
   stages {
