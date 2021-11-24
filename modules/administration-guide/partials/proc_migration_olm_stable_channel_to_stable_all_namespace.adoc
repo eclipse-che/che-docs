@@ -19,6 +19,8 @@ changes to prevent losing data.
 
 .Procedure
 
+.Migrate Openshift OAuth users
+
 Scale {prod-deployment} deployment to zero to stop users interaction with this service:
 
 [subs="+quotes,+attributes"]
@@ -30,8 +32,6 @@ If you have enabled Openshift OAuth you have to migrate existed users. This migr
 
 > Warning: If your {prod} instance didn't use OAuth, then you can't migrate users.
 There is no mechanism to migrate native Keycloak users to Openshift users.
-
-## Migrate Openshift OAuth users
 
 Create {prod} backup using the xref:managing-backups-using-chectl.adoc[] or che-operator itself xref:managing-backups-using-custom-resources.adoc[].
 
@@ -46,7 +46,7 @@ MigrateUsers.sh script content
 [source,shell,subs="+attributes"]
 ----
 #!/bin/bash
-
+set -e
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '--n') namespace=$2; shift 1;;
@@ -153,6 +153,7 @@ spec:
           args:
             - "-c"
             - >-
+              set -e;
               DUMP_FILE="/tmp/dbdump.sql";
               DB_NAME="dbche";
               DB_OWNER="pgche";
@@ -231,15 +232,15 @@ If migration job was successfull cli should provide output:
 ----
 job.batch/migrate-users-db condition met
 ----
-
-# Switch from "stable" OLM channel to the "tech-preview-stable-all-namespaces" channel.
+.Switch from "stable" OLM channel to the "tech-preview-stable-all-namespaces" channel.
 
 Delete OLM subscription "{prod-checluster}" and current cluster service version by name:
 
 [subs="+quotes,+attributes"]
 ----
-$ CSV_VERSION_NAME=$(oc get subscription {prod-checluster} -n {prod-namespace} -o jsonpath="{.status.currentCSV}")
-$ oc delete subscription {prod-checluster} -n {prod-namespace}
+$ SUBSCRIPTION=$(oc get subscription -n {prod-namespace} -o custom-columns=POD:.metadata.name --no-headers | grep eclipse-che)
+$ CSV_VERSION_NAME=$(oc get subscription ${SUBSCRIPTION} -n {prod-namespace} -o jsonpath="{.status.currentCSV}")
+$ oc delete subscription ${SUBSCRIPTION} -n {prod-namespace}
 $ oc delete clusterserviceversion "${CSV_VERSION_NAME}" -n {prod-namespace}
 ----
 
@@ -267,5 +268,5 @@ Enable {devworkspace} engine in the custom resource:
 [subs="+quotes,+attributes"]
 ----
 $ oc patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/devWorkspace/enable", "value": true}]'
+'[{"op": "replace", "path": "/spec/devWorkspace/enable", "value": true}, {"op": "replace", "path": "/spec/server/serverExposureStrategy", "value": "single-host"}]'
 ----
