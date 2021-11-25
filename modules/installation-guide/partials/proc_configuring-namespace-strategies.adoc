@@ -8,7 +8,7 @@ ifeval::["{project-context}" == "che"]
 NOTE: The term _{orch-namespace}_ ({kubernetes}) is used interchangeably with _project_ (OpenShift).
 endif::[]
 
-With **Operator** installer, {platforms-namespace} strategies are configured using `server.workspaceNamespaceDefault` property.
+{platforms-namespace} strategies are configured using `server.workspaceNamespaceDefault` property.
 
 *Operator CheCluster CR patch*
 [subs="+quotes,+attributes"]
@@ -23,24 +23,6 @@ spec:
 ----
 <1> - {prod-short} workspace {orch-namespace} configuration
 
-
-ifeval::["{project-context}" == "che"]
-With **Helm** installer, {orch-namespace} strategies are configured using `global.cheWorkspacesNamespace` property.
-
-*Helm*
-[subs="+quotes,+attributes"]
-----
-$ helm install --namespace <namespace>
-  --set global.cheWorkspacesNamespace=__<workspace-namespace>__ <1>
-----
-or
-[subs="+quotes,+attributes"]
-----
-$ helm upgrade --namespace <namespace>
-  --set global.cheWorkspacesNamespace=__<workspace-namespace>__ <1>
-----
-<1> - {prod-short} workspace namespace configuration
-endif::[]
 
 NOTE: The underlying environment variable that {prod-short} server uses is `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT`.
 
@@ -78,9 +60,8 @@ To use the strategy, set the _{prod-short} workspace {orch-namespace} configurat
 
 .One {orch-namespace} per user
 ====
-To assign {orch-namespace} names composed of a __`{prod-workspace}`__ prefix and individual usernames (`__{prod-workspace}__-user1`, `__{prod-workspace}__-user2`), set:
+To assign {orch-namespace} names composed of a __`{prod-workspace}`__ prefix and individual usernames (`__{prod-workspace}__-user1`, `__{prod-workspace}__-user2`), set in CheCluster Custom Resource:
 
-*Operator installer (CheCluster CustomResource)*
 [subs="+quotes,+attributes"]
 ----
 ...
@@ -89,14 +70,6 @@ spec:
     workspaceNamespaceDefault: __{prod-workspace}__-__<username>__
 ...
 ----
-
-ifeval::["{project-context}" == "che"]
-*Helm*
-[subs="+quotes,+attributes"]
-----
-$ helm ... --set global.cheWorkspacesNamespace=__{prod-workspace}__-__<username>__
-----
-endif::[]
 ====
 
 == Handling incompatible usernames or user IDs
