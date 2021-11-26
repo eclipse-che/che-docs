@@ -3,7 +3,7 @@
 = Migration {prod} from "che-server" workspace engine to "{devworkspace}" using OLM 
 
 For {prod} instances installed using Operator lifecycle manager(OLM) with "stable" channel
-there is opportunity to make migration with new channel "tech-preview-stable-all-namespaces".
+you can make migration with new channel "tech-preview-stable-all-namespaces".
 "stable" OLM channel provides {prod} with old "che-server" engine.
 This engine is not under active development any more.
 "tech-preview-stable-all-namespaces" channel provides {prod-short} with modern {devworkspace} engine.
@@ -15,11 +15,11 @@ changes to prevent losing data.
 .Prerequisites
 
 * The `{orch-cli}` tool is available.
-* An instance of {prod-short} running in Openshift 4 cluster.
+* An instance of {prod-short} running in OpenShift 4 cluster.
 
 .Procedure
 
-.Migrate Openshift OAuth users
+.Migrate OpenShift OAuth users
 
 Scale {prod-deployment} deployment to zero to stop users interaction with this service:
 
@@ -28,12 +28,12 @@ Scale {prod-deployment} deployment to zero to stop users interaction with this s
 {orch-cli} scale deployment {prod-deployment} --replicas=0 -n {prod-namespace}
 ----
 
-If you have enabled Openshift OAuth you have to migrate existed users. This migration is required to reuse existed Openshift users with "{devworkspace}" native authentication mode.
+If you have enabled OpenShift OAuth you have to migrate existed users. This migration is required to reuse existed OpenShift users with "{devworkspace}" native authentication mode.
 
 > Warning: If your {prod} instance didn't use OAuth, then you can't migrate users.
-There is no mechanism to migrate native Keycloak users to Openshift users.
+There is no mechanism to migrate native Keycloak users to OpenShift users.
 
-Create {prod} backup using the xref:managing-backups-using-chectl.adoc[] or che-operator itself xref:managing-backups-using-custom-resources.adoc[].
+Create {prod} backup using the xref:managing-backups-using-chectl.adoc[] or {prod-operator} itself xref:managing-backups-using-custom-resources.adoc[].
 
 Create migration script MigrateUsers.sh:
 
@@ -55,27 +55,34 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-if [ -z "${namespace}" ]; then
-  echo "[ERROR] You have to specify namespace using '--n' flag"
-  exit 11
+if [ -z "$namespace" ]; then
+  namespace="openshift-workspaces"
+  oc get "namespace/$namespace" > /dev/null 2>&1
+  exitCode="$?"
+  if [[ ! "${exitCode}" -eq "0" ]]; then
+      echo "[ERROR] You have to specify namespace using '--n' flag"
+      exit 11
+  fi
 fi
 
 if [ -z "${clusterName}" ]; then
-  echo "[ERROR] You have to specify custom resource name using '--cr' flag"
-  exit 11
+    clusterName="codeready-workspaces"
+    oc get checluster "${clusterName}" -n "$namespace" > /dev/null 2>&1
+    exitCode="$?"
+    if [[ ! "${exitCode}" -eq "0" ]]; then
+      echo "[ERROR] You have to specify custom resource name using '--cr' flag"
+      exit 11
+    fi
 fi
 
-namespace="eclipse-che"
-clusterName="eclipse-che"
-# Keycloak admin name
-keycloakAdmin=admin
-realm="che"
-
-identityURL=$(oc get checluster "${clusterName}" -n "$namespace" -o jsonpath="{.status.keycloakURL}" )
+identityURL=$(oc get checluster "${clusterName}" -n "${namespace}" -o jsonpath="{.status.keycloakURL}" )
 echo "[INFO] Identity url is: '${identityURL}'"
 identitySecretName=$(oc get checluster "${clusterName}" -n "$namespace" -o jsonpath="{.spec.auth.identityProviderSecret}")
 echo "[INFO] Secret with identity auth info is: '${identitySecretName}'"
+keycloakAdmin=$(oc get secret "${identitySecretName}" -n "$namespace" -o jsonpath="{.data.user}" | base64 -d)
 password=$(oc get secret "${identitySecretName}" -n "$namespace" -o jsonpath="{.data.password}" | base64 -d)
+realm=$(oc get checluster "${clusterName}" -n "$namespace" -o jsonpath="{.spec.auth.identityProviderRealm}")
+postgreSecret=$(oc get checluster "${clusterName}" -n "$namespace" -o jsonpath="{.spec.database.chePostgresSecret}")
 
 # Get admin token to retrieve users information.
 updateToken() {
@@ -137,12 +144,12 @@ spec:
             - name: POSTGRESQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: che-postgres-secret
+                  name: ${postgreSecret}
                   key: user
             - name: POSTGRESQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: che-postgres-secret
+                  name: ${postgreSecret}
                   key: password
             - name: USER_IDS_TO_MIGRATE
               value: "${usersIdToMigrate}"
@@ -207,7 +214,7 @@ spec:
 EOF
 ----
 
-Execute script to migration existed Openshift OAuth users. This script will execute migration job.
+Execute script to migration existed OpenShift OAuth users. This script will execute migration job.
 
 [subs="+quotes,+attributes"]
 ----
@@ -223,10 +230,10 @@ To track when migration job will be completed use the command:
 
 [subs="+quotes,+attributes"]
 ---- 
-$ kubectl wait --for=condition=complete job/migrate-users-db -n {prod-namespace}
+$ {orch-cli} wait --for=condition=complete job/migrate-users-db -n {prod-namespace}
 ----
 
-If migration job was successfull cli should provide output:
+If migration job was successful {orch-cli} should provide output:
 
 [subs="+quotes,+attributes"]
 ----
@@ -234,31 +241,31 @@ job.batch/migrate-users-db condition met
 ----
 .Switch from "stable" OLM channel to the "tech-preview-stable-all-namespaces" channel.
 
-Delete OLM subscription "{prod-checluster}" and current cluster service version by name:
+Delete OLM subscription and current cluster service version by name:
 
 [subs="+quotes,+attributes"]
 ----
-$ SUBSCRIPTION=$(oc get subscription -n {prod-namespace} -o custom-columns=POD:.metadata.name --no-headers | grep eclipse-che)
+$ SUBSCRIPTION=$(oc get subscription -n {prod-namespace} -o custom-columns=POD:.metadata.name --no-headers | grep {prod-checluster})
 $ CSV_VERSION_NAME=$(oc get subscription ${SUBSCRIPTION} -n {prod-namespace} -o jsonpath="{.status.currentCSV}")
-$ oc delete subscription ${SUBSCRIPTION} -n {prod-namespace}
-$ oc delete clusterserviceversion "${CSV_VERSION_NAME}" -n {prod-namespace}
+$ {orch-cli} delete subscription ${SUBSCRIPTION} -n {prod-namespace}
+$ {orch-cli} delete clusterserviceversion "${CSV_VERSION_NAME}" -n {prod-namespace}
 ----
 
 Create new subscription:
 
 [subs="+quotes,+attributes"]
 ----
-$ oc apply -f - <<EOF
+$ {orch-cli} apply -f - <<EOF
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: {prod-checluster}
   namespace: openshift-operators
 spec:
-  channel: tech-preview-stable-all-namespaces
+  channel: {all-namespaces-olm-channel}
   installPlanApproval: Automatic
-  name: {prod-checluster}
-  source: community-operators
+  name: {all-namespaces-olm-package}
+  source: {stable-olm-catalog-source}
   sourceNamespace: openshift-marketplace
 EOF
 ----
@@ -267,6 +274,6 @@ Enable {devworkspace} engine in the custom resource:
 
 [subs="+quotes,+attributes"]
 ----
-$ oc patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
+$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
 '[{"op": "replace", "path": "/spec/devWorkspace/enable", "value": true}, {"op": "replace", "path": "/spec/server/serverExposureStrategy", "value": "single-host"}]'
 ----
