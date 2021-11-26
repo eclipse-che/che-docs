@@ -1,0 +1,2 @@
+POSTGRES_SECRET=$({orch-cli} get checluster/{prod-checluster} -n {prod-namespace} -o json | jq -r '.spec.database.chePostgresSecret')
+CHE_USER_NAME=$(if [ -z "$POSTGRES_SECRET" ] || [ $POSTGRES_SECRET = "null" ]; then {orch-cli} get checluster/{prod-checluster}  -n {prod-namespace} -o json | jq -r '.spec.database.chePostgresUser'; else {orch-cli} get secret $POSTGRES_SECRET -n {prod-namespace} -o json | jq -r '.data.user' | base64 -d; fi)

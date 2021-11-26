@@ -1,0 +1,173 @@
+
+[id="migration-to-devworkspace-engine_{context}"]
+= Migration to {devworkspace} engine.
+
+This procedure describes how to migration to {devworkspace} engine using https://docs.openshift.com/container-platform/latest/operators/understanding/olm/olm-understanding-olm.html[OLM] to support the Devfile 2.0.0 file format and mentions how to do so on existing instances.
+
+.Prerequisites
+
+* The `{orch-cli}` tool is available.
+* An instance of {prod-short} running in OpenShift 4 cluster.
+* OpenShift OAuth is enabled. See xref:configuring-openshift-oauth.adoc[].
+
+.Procedure
+
+. Save and push changes back to the Git repositories for all running workspaces of the {prod-short} instance.
+
+. Stop all workspaces in the {prod-short} instance.
+
+. Backup {prod-short} data. See xref:managing-backups-using-chectl.adoc[].
+
+include::partial$snip_scaling-down-che.adoc[]
+
+include::partial$snip_finding-postgresql-pod.adoc[]
+
+. Create the migration script
++
+[source,shell,subs="+attributes"]
+----
+cat >migration.sh<<EOF
+#!/bin/bash
+set -e
+
+IDENTITY_PROVIDER_URL=\$({orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath="{.status.keycloakURL}" )
+IDENTITY_PROVIDER_SECRET=\$({orch-cli} get checluster/{prod-checluster} -n {prod-namespace} -o jsonpath="{.spec.auth.identityProviderSecret}")
+IDENTITY_PROVIDER_PASSWORD=\$(if [ -z "\$IDENTITY_PROVIDER_SECRET" ] || [ \$IDENTITY_PROVIDER_SECRET = "null" ]; then {orch-cli} get checluster/{prod-checluster}  -n {prod-namespace} -o jsonpath="{.spec.auth.identityProviderPassword}"; else {orch-cli} get secret \$IDENTITY_PROVIDER_SECRET -n {prod-namespace} -o jsonpath="{.data.password}" | base64 -d; fi)
+IDENTITY_PROVIDER_USERNAME=\$(if [ -z "\$IDENTITY_PROVIDER_SECRET" ] || [ \$IDENTITY_PROVIDER_SECRET = "null" ]; then {orch-cli} get checluster/{prod-checluster}  -n {prod-namespace} -o jsonpath="{.spec.auth.IdentityProviderAdminUserName}"; else {orch-cli} get secret \$IDENTITY_PROVIDER_SECRET -n {prod-namespace} -o jsonpath="{.data.user}" | base64 -d; fi)
+IDENTITY_PROVIDER_REALM=\$({orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath="{.spec.auth.identityProviderRealm}")
+
+init() {
+  unset DUMP
+  unset ADD_PROFILES
+  unset MIGRATE_USERS
+
+  while [[ "\$#" -gt 0 ]]; do
+    case \$1 in
+      '--dump') DUMP="\$2"; shift 1;;
+      '--add-profiles'|'-p') ADD_PROFILES=TRUE;;
+      '--migrate-users'|'-i') MIGRATE_USERS=TRUE;;
+    esac
+    shift 1
+  done
+}
+
+refreshToken() {
+    IDENTITY_PROVIDER_TOKEN=\$(curl -ks \
+    -d "client_id=admin-cli" \
+    -d "username=\${IDENTITY_PROVIDER_USERNAME}" \
+    -d "password=\${IDENTITY_PROVIDER_PASSWORD}" \
+    -d "grant_type=password" \
+    "\${IDENTITY_PROVIDER_URL}/realms/master/protocol/openid-connect/token" | jq -r ".access_token")
+}
+
+run() {
+  refreshToken
+  USER_IDS=(\$(curl -ks  -H "Authorization: bearer \${IDENTITY_PROVIDER_TOKEN}" "\${IDENTITY_PROVIDER_URL}/\${IDENTITY_PROVIDER_USERNAME}/realms/\${IDENTITY_PROVIDER_REALM}/users" | jq ".[] | .id" | tr "\r\n" " "))
+
+  for USER_ID in "\${USER_IDS[@]}"; do
+      refreshToken
+
+      USER_ID=\$(echo "\${USER_ID}" | tr -d "\"")
+      FEDERATED_IDENTITY=\$(curl -ks -H "Authorization: bearer \${IDENTITY_PROVIDER_TOKEN}" "\${IDENTITY_PROVIDER_URL}/\${IDENTITY_PROVIDER_USERNAME}/realms/\${IDENTITY_PROVIDER_REALM}/users/\${USER_ID}/federated-identity")
+      IDENTITY_PROVIDER=\$(echo "\${FEDERATED_IDENTITY}" | jq -r ".[] | select(.identityProvider == \"openshift-v4\")")
+      if [ -n "\${IDENTITY_PROVIDER}" ]; then
+        OPENSHIFT_USER_ID=\$(echo "\${IDENTITY_PROVIDER}" | jq ".userId" | tr -d "\"")
+
+        if [[ \${MIGRATE_USER}} == TRUE ]]; then
+          sed -i "s|\${USER_ID}|\${OPENSHIFT_USER_ID}|g" "\${DUMP}"
+          echo "[INFO] Migrated User ID from \"\${USER_ID}\" to \"\${OPENSHIFT_USER_ID}\""
+        elif [[ \${ADD_PROFILES} == TRUE ]]; then
+          {orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql \${CHE_POSTGRES_DB} -tAc \"insert into profile(userid) values ('\${OPENSHIFT_USER_ID}');\""
+          echo "[INFO] Added profile for User ID \"\${OPENSHIFT_USER_ID}\""
+        fi
+      fi
+  done
+}
+
+init
+run
+echo "[INFO] Done."
+EOF
+----
+
+include::partial$snip_finding-che-database-name.adoc[]
+
+include::partial$snip_dumping-che-database.adoc[]
+
+include::partial$snip_droping-che-database.adoc[]
+
+include::partial$snip_creating-che-database.adoc[]
+
+. Migrate Users ID:
++
+[subs="+quotes,+attributes"]
+----
+bash migration.sh --migrate-users --dump che.sql
+----
+
+include::partial$snip_restoring-che-database.adoc[]
+
+. Add Users Profiles:
++
+[subs="+quotes,+attributes"]
+----
+bash migration.sh --add-profiles
+----
+
+. Find Cluster Service Version name:
++
+[subs="+quotes,+attributes"]
+----
+CSV=$({orch-cli} get subscription {prod-id} -n {prod-namespace} -o jsonpath="{.status.currentCSV}")
+----
+
+. Delete Subscription from `{prod-channel}` channel:
++
+[subs="+quotes,+attributes"]
+----
+{orch-cli} delete subscription {prod-id} -n {prod-namespace}
+----
+
+. Delete Cluster Service Version:
++
+[subs="+quotes,+attributes"]
+----
+{orch-cli} delete csv ${CSV} -n {prod-namespace}
+----
+
+. Enable {devworkspace} engine:
++
+[subs="+quotes,+attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/devWorkspace/enable", "value": true}]'
+----
+
+. Set single-host exposure strategy:
++
+[subs="+quotes,+attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/server/serverExposureStrategy", "value": "single-host"}]'
+----
+
+. Create a OLM new subscription to `{prod-tech-preview-channel}` channel:
++
+[subs="+quotes,+attributes"]
+----
+{orch-cli} apply -f - <<EOF
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: {prod-id}
+  namespace: openshift-operators
+spec:
+  channel: {prod-tech-preview-channel}
+  installPlanApproval: Automatic
+  name: {prod-tech-preview-olm-package}
+  source: {prod-catalog-source}
+  sourceNamespace: openshift-marketplace
+EOF
+----
+
+

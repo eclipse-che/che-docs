@@ -1,0 +1,7 @@
+. Find {prod-short} database name:
++
+[subs="+quotes,+attributes"]
+----
+CHE_POSTGRES_DB=$({orch-cli} get cm/che -n {prod-namespace} -o json  | jq -r '.data.CHE_JDBC_URL' | awk -F '/' '{print $NF}')
+if [ -z "$CHE_POSTGRES_DB" ] || [ $CHE_POSTGRES_DB = "null" ]; then CHE_POSTGRES_DB="dbche"; fi
+----
