@@ -1,0 +1,24 @@
+["id=restoring-a-che-instance-by-chectl-using-a-checluserbackup-custom-object_{context}"]
+= Restoring a Che instance by {prod-cli} using a CheClusterBackup custom object
+
+//To restore a state described by an existing backup Custom Resource:
+
+If a `CheClusterBackup` custom object is used to create the backup snapshot of a {prod-short} instance, you can restore the {prod-short} instance by entering the name of the `CheClusterBackup` custom object as an argument with the `{prod-cli} server:restore` command:
+
+.Prerequisites
+* Installed `{prod-cli}`.
+* The `CheClusterBackup` custom object used to create the backup snapshot from which the {prod-short} is to be restored.
+* Backup snapshot of a {prod-short} instance taken using a `CheClusterBackup` custom object and stored on any of the following:
+** xref:backups-of-che-instances-to-an-sftp-backup-server.adoc#backing-up-a-che-instance-using-the-checlusterbackup-custom-object_{context}[External SFTP backup server]
+** xref:backups-of-che-instances-to-amazon-s3.adoc#backing-up-a-che-instance-using-the-checlusterbackup-custom-object_{context}[Amazon S3]
+** xref:backups-of-che-instances-to-a-rest-backup-server.adoc#backing-up-a-che-instance-using-the-checlusterbackup-custom-object_{context}[External REST backup server]
+** xref:backups-of-che-instances-to-the-internal-backup-server.adoc[Internal backup server]
+
+.Procedure
+
+* Run the following command on a comman line:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:restore --backup-cr-name=__<CheClusterBackup_name>__
+----
