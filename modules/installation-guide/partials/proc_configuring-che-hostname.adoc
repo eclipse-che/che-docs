@@ -29,15 +29,23 @@ $ {orch-cli} create {orch-namespace} {prod-namespace}
 +
 [subs="+quotes,attributes"]
 ----
-$ {orch-cli} create secret TLS $\{secret} \  <1>
---key $\{key_file} \                       <2>
---cert $\{cert_file} \                     <3>
+$ {orch-cli} create secret TLS __<tls-secret-name>__ \ <1>
+--key __<key-file>__ \ <2>
+--cert __<cert-file>__ \ <3>
 -n {prod-namespace}
 ----
 <1> The TLS secret name
 <2> A file with the private key
 <3> A file with the certificate
 
+. Add the required labels to the secret:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} label secret __<tls-secret-name>__ \ <1>
+app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
+----
+<1> The TLS secret name
 
 . Set the following values in the Custom Resource:
 +
