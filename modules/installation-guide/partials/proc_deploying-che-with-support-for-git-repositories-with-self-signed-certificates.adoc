@@ -30,6 +30,14 @@ $ {orch-cli} create configmap che-git-self-signed-cert \
 * Certificate files are typically stored as Base64 ASCII files, such as. `.pem`, `.crt`, `.ca-bundle`. Also, they can be encoded as binary data, for example, `.cer`.  All `Secrets` that hold certificate files should use the Base64 ASCII certificate rather than the binary data certificate.
 ====
 
+. Add the required labels to the ConfigMap:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} label configmap che-git-self-signed-cert \
+app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
+----
+
 . Configure {prod-short} to use self-signed certificates for git repositories:
 +
 Update the `gitSelfSignedCert` property. To do that, execute:
