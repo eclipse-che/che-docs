@@ -1,0 +1,33 @@
+#
+# Copyright (c) 2021 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Automate pull requests triage
+
+name: Pull request opened
+
+on:
+  pull_request_target:
+    types:
+      - opened
+
+jobs:
+  pull-request-opened:
+    runs-on: ubuntu-20.4
+    steps:
+      - name: Automate project columns
+        id: add-to-project
+        uses: alex-page/github-project-automation-plus@v0.8.1
+        with:
+          project: Reviews
+          column: Triage
+          repo-token: ${{ secrets.CHE_BOT_GITHUB_TOKEN }}
+      - name: Add Web IDE link
+        id: try-in-web-ide
+        uses: redhat-actions/try-in-web-ide@main
+        with:
+          github_token: ${{ secrets.CHE_BOT_GITHUB_TOKEN }}
