@@ -1,0 +1,39 @@
+[id="restoring-a-backed-up-instance-of-an-earlier-version-of-che_{context}"]
+= Restoring a backed up instance of an earlier version of {prod-short}
+
+You can restore a {prod-short} instance from a backup snapshot that was taken in an earlier version of {prod-short}, and you can roll back {prod-short} to that earlier version.
+
+include::snip_warning-backup-snapshots-are-bound-to-specific-cluster.adoc[]
+
+.Prerequisites
+
+* Installed `{prod-cli}`.
+* Backup snapshot of a {prod-short} instance of an earlier version of {prod-short} on any of the following:
+** xref:backups-of-che-instances-to-an-sftp-backup-server.adoc[External SFTP backup server]
+** xref:backups-of-che-instances-to-amazon-s3.adoc[Amazon S3]
+** xref:backups-of-che-instances-to-a-rest-backup-server.adoc[External REST backup server]
+** xref:backups-of-che-instances-to-the-internal-backup-server.adoc[Internal backup server]
+* Backup snapshot ID, which can be found in:
+** Command-line output when creating a backup
+** Custom resource status
+** Command-line output of the restic command that can link:https://restic.readthedocs.io/en/stable/045_working_with_repos.html[list snapshots in the backup repository]
+* Version number of {prod-short} in which the backup snapshot was taken.
+
+.Procedure
+
+* Run the `{prod-cli} server:restore` command with the version of {prod-short} specified using the `--version=` option:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:restore \
+--version=__<earlier_version_number>__ \ <1>
+--snapshot-id=_<snapshot-id>_ \ <2>
+--repository-url=_<repository-url>_ \ <3>
+--repository-password=_<repository-password>_ <4>
+----
+<1> Specifies the earlier version of {prod-short} in which the backup snapshot was taken.
+<2> Specifies the snapshot ID.
+<3> Backup repository URL as an argument using the `--repository-url` or `-r` option.
+<4> Backup repository password as an argument using the `--repository-password` or `-p` option.
+
+include::snip_tip-omitting-prod-cli-options-for-server-backup-and-server-restore-onward-when-using-same-backup-server.adoc[]
