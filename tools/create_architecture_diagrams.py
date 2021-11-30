@@ -10,12 +10,14 @@
 
 from diagrams import *
 import diagrams
+from diagrams.azure.compute import Workspaces
 from diagrams.custom import Custom
 from diagrams.k8s.controlplane import APIServer
-from diagrams.k8s.network import SVC
-from diagrams.k8s.others import CRD
 from diagrams.k8s.rbac import User, Role
-from diagrams.programming.flowchart import Database, MultipleDocuments
+from diagrams.onprem.database import PostgreSQL
+from diagrams.onprem.network import Traefik
+from diagrams.onprem.vcs import Git
+from diagrams.outscale.storage import SimpleStorageService
 import os
 
 
@@ -45,21 +47,22 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
                  outformat="png",
                  edge_attr={"constraint": "false"},
                  ):
-        controller = Custom('Workspace controller', prod_icon)
+        controller = Custom(prod_short + ' server', prod_icon)
         kubernetes = APIServer(orch_name + ' API')
-        workspace = MultipleDocuments('User workspaces')
+        workspace = Workspaces('User workspaces')
         controller >> kubernetes >> workspace
 
     filename = file_path + 'interacting-with-devworkspace'
     with Diagram(filename=filename,
                  show=False,
-                 direction="TB",
+                 direction="LR",
                  outformat="png",
-                 edge_attr={"constraint": "false"},
+                 #  edge_attr={"constraint": "false"},
                  ):
-        che_server_components = Custom('Server components', prod_icon)
-        devworkspace_engine = CRD('DevWorkspace')
-        workspace = MultipleDocuments('User workspaces')
+        che_server_components = Custom(
+            prod_short + ' server components', prod_icon)
+        devworkspace_engine = APIServer('DevWorkspace')
+        workspace = Workspaces('User workspaces')
         che_server_components >> devworkspace_engine >> workspace
 
     filename = file_path + 'deployments-interacting-with-devworkspace'
@@ -69,22 +72,22 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
                  outformat="png",
                  graph_attr=graph_attr):
         user = User('User')
-        role = Role('Role')
-        che_gateway = SVC('Gateway')
+        role = Role('RBAC policies')
+        che_gateway = Traefik('Gateway')
         che_dashboard = Custom('User dashboard', icon_path=prod_icon)
         che_host = Custom(prod_short + ' server', icon_path=prod_icon)
-        postgres = Database('PostgreSQL')
-        registries = MultipleDocuments(
-            'Devfile and plug-in registries')
-        devworkspace_engine = CRD('DevWorkspace engine')
-        user_workspace = MultipleDocuments('User workspaces')
-        user >> role >> che_gateway >> [
-            user_workspace, che_dashboard]
-        che_dashboard >> che_host >> postgres
-        [che_dashboard, che_host,
-            devworkspace_engine] >> registries
-        che_dashboard >> devworkspace_engine >> user_workspace
-        che_dashboard >> user_workspace
+        postgres = PostgreSQL('PostgreSQL')
+        git = Git('Git provider')
+        devfile_registries = SimpleStorageService('Devfile registries')
+        plugin_registries = SimpleStorageService(
+            'Plug-in registries')
+        devworkspace_engine = APIServer('DevWorkspace engine')
+        user_workspace = Workspaces('User workspaces')
+        user >> role >> che_gateway >> [che_dashboard, user_workspace]
+        che_dashboard >> [devfile_registries, che_host,
+                          plugin_registries, devworkspace_engine]
+        che_host >> [postgres, git]
+        user_workspace >> devworkspace_engine
 
     filename = file_path + 'gateway-interactions'
     with Diagram(filename=filename,
@@ -93,47 +96,43 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
                  outformat="png",
                  graph_attr=graph_attr):
         user = User('User')
-        role = Role('Role')
-        che_gateway = SVC('Gateway')
+        role = Role('RBAC policies')
+        che_gateway = Traefik('Gateway')
         che_services = Custom(
             prod_short + ' services', icon_path=prod_icon)
-        cr_devworkspace = CRD('DevWorkspace engine')
-        user_workspace = MultipleDocuments('User workspaces')
-        user >> role >> che_gateway >> [che_services,
-                                        cr_devworkspace, user_workspace]
+        user_workspace = Workspaces('User workspaces')
+        user >> role >> che_gateway >> [che_services, user_workspace]
 
     filename = file_path + 'user-dashboard-interactions'
     with Diagram(filename=filename,
                  show=False,
                  direction="LR",
                  outformat="png",
-                 graph_attr=graph_attr_neato):
+                 graph_attr=graph_attr):
         che_dashboard = Custom('User dashboard', icon_path=prod_icon)
         che_host = Custom(prod_short + ' server', icon_path=prod_icon)
-        devfile_registry = MultipleDocuments('Devfile registries')
-        plugin_registry = MultipleDocuments('Plug-in registries')
-        crd_workspace = CRD('DevWorkspace Custom Resources')
-        user_workspace = MultipleDocuments('User workspaces')
+        git = Git('Git repositories')
+        devfile_registry = SimpleStorageService('Devfile registries')
+        plugin_registry = SimpleStorageService('Plug-in registries')
+        crd_workspace = APIServer('DevWorkspace engine')
         che_dashboard >> che_host,
         che_dashboard >> [
-            devfile_registry, plugin_registry]
+            devfile_registry, git, plugin_registry]
         che_dashboard >> crd_workspace
-        che_dashboard >> user_workspace
 
     filename = file_path + 'server-interactions'
     with Diagram(filename=filename,
                  show=False,
                  direction="LR",
                  outformat="png",
-                 graph_attr=graph_attr_neato):
+                 graph_attr=graph_attr):
         che_host = Custom(prod_short + ' server', icon_path=prod_icon)
-        postgres = Database('PostgreSQL')
-        devfile_registry = MultipleDocuments('Devfile registries')
-        plugin_registry = MultipleDocuments('Plug-in registries')
-        crd_workspace = CRD('DevWorkspace engine')
+        postgres = PostgreSQL('PostgreSQL')
+        git_provider = Git('Git provider')
+        crd_workspace = APIServer('API')
         che_dashboard = Custom('User dashboard', icon_path=prod_icon)
         che_dashboard >> che_host
-        che_host >> [devfile_registry, plugin_registry]
+        che_host >> [git_provider]
         che_host >> crd_workspace
         che_host >> postgres
 
@@ -144,7 +143,7 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
                  outformat="png",
                  graph_attr=graph_attr):
         che_host = Custom(prod_short + ' server', icon_path=prod_icon)
-        postgres = Database('PostgreSQL')
+        postgres = PostgreSQL('PostgreSQL')
         che_host >> Edge(
             label='persists user configurations') >> postgres
 
@@ -153,41 +152,32 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
                  show=False,
                  direction="LR",
                  outformat="png",
-                 graph_attr=graph_attr_neato):
+                 graph_attr=graph_attr):
         che_dashboard = Custom('User dashboard', icon_path=prod_icon)
-        che_host = Custom(prod_short + ' server', icon_path=prod_icon)
-        devworkspace_engine = CRD('DevWorkspace engine')
-        devfile_registry = MultipleDocuments('Devfile registries')
-        [che_dashboard, che_host,
-            devworkspace_engine] >> devfile_registry
+        devfile_registry = SimpleStorageService('Devfile registries')
+        che_dashboard >> devfile_registry
 
     filename = file_path + 'plugin-registry-interactions'
     with Diagram(filename=filename,
                  show=False,
                  direction="LR",
                  outformat="png",
-                 graph_attr=graph_attr_neato):
+                 graph_attr=graph_attr):
         che_dashboard = Custom('User dashboard', icon_path=prod_icon)
-        che_host = Custom(prod_short + ' server', icon_path=prod_icon)
-        devworkspace_engine = CRD('DevWorkspace engine')
-        plugin_registry = MultipleDocuments('Plug-in registries')
-        [che_dashboard, che_host,
-            devworkspace_engine] >> plugin_registry
+        plugin_registry = SimpleStorageService('Plug-in registries')
+        che_dashboard >> plugin_registry
 
     filename = file_path + 'user-workspaces-interactions'
     with Diagram(filename=filename,
                  show=False,
-                 direction="TB",
+                 direction="LR",
                  outformat="png",
-                 edge_attr={"constraint": "false"},
-                 graph_attr=graph_attr_neato):
-        dashboard = Custom('User dashboard', prod_icon)
-        devworkspace_engine = CRD('DevWorkspace engine')
-        workspace = MultipleDocuments('User workspaces')
-        dashboard << Edge(
-        ) >> [devworkspace_engine, workspace]
-        workspace << Edge(
-        ) >> devworkspace_engine
+                 #  edge_attr={"constraint": "false"},
+                 graph_attr=graph_attr):
+        devworkspace_engine = APIServer('DevWorkspace engine')
+        workspace = Workspaces('User workspaces')
+        devworkspace_engine << Edge(
+        ) >> workspace
 
 
 ArchitectureDiagrams(project_context='che',
