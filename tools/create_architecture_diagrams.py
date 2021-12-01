@@ -10,7 +10,6 @@
 
 from diagrams import *
 import diagrams
-from diagrams.azure.compute import Workspaces
 from diagrams.custom import Custom
 from diagrams.k8s.controlplane import APIServer
 from diagrams.k8s.rbac import User
@@ -33,45 +32,41 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
         "overlap": "false",
         # "splines": "curved"
     }
-    # Use neato for more complex diagrams
-    graph_attr_neato = {
-        "bgcolor": "white",
-        "layout": "neato",
-        "overlap": "false",
-        "splines": "curved"
-    }
 
-    filename = file_path + 'architecture-with-che-server-operator'
+    filename = file_path + 'architecture-with-che-server-engine'
     with Diagram(filename=filename,
                  show=False,
                  direction="TB",
                  outformat="png",
                  edge_attr={"constraint": "false"},
-                 ):
-        controller = Custom(prod_short + ' server', prod_icon)
-        kubernetes = APIServer(orch_name + ' API')
-        workspace = Compute('User workspaces')
-        controller >> kubernetes >> workspace
+                 graph_attr=graph_attr):
+        devfile = Git('Devfile v1')
+        dashboard = Custom('User dashboard', prod_icon)
+        che_host = Custom(prod_short + ' server', prod_icon)
+        with Cluster(orch_name + ' API'):
+            workspace = Compute('User workspace')
+        devfile >> dashboard >> che_host >> workspace
 
     filename = file_path + 'interacting-with-devworkspace'
     with Diagram(filename=filename,
                  show=False,
                  direction="LR",
                  outformat="png",
-                 #  edge_attr={"constraint": "false"},
-                 ):
-        che_server_components = Custom(
-            prod_short + ' server components', prod_icon)
-        devworkspace_operator = APIServer('DevWorkspace')
-        workspace = Compute('User workspaces')
-        che_server_components >> devworkspace_operator >> workspace
+                 graph_attr=graph_attr):
+        devfile = Git('Devfile v2')
+        dashboard = Custom('User dashboard', prod_icon)
+        with Cluster(orch_name + ' API'):
+            devworkspace_operator = Compute('DevWorkspace')
+            workspace = Compute('User workspace')
+        devfile >> dashboard >> devworkspace_operator >> workspace
 
     filename = file_path + 'deployments-interacting-with-devworkspace'
     with Diagram(filename=filename,
                  show=False,
                  direction="TB",
                  outformat="png",
-                 graph_attr=graph_attr):
+                 graph_attr=graph_attr
+                 ):
         che_dashboard = Custom('User dashboard', icon_path=prod_icon)
         che_gateway = Traefik('Gateway')
         devfile_registries = SimpleStorageService('Devfile registries')
@@ -93,11 +88,11 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
                  outformat="png",
                  graph_attr=graph_attr):
         user = User('User')
+        che_gateway = Traefik('Gateway')
         che_dashboard = Custom('User dashboard', icon_path=prod_icon)
         devfile_registries = SimpleStorageService('Devfile registry')
-        plugin_registry = SimpleStorageService('Plug-in registry')
-        che_gateway = Traefik('Gateway')
         che_host = Custom(prod_short + ' server', icon_path=prod_icon)
+        plugin_registry = SimpleStorageService('Plug-in registry')
         user_workspace = Compute('User workspaces')
         user >> che_gateway >> [
             che_dashboard, che_host, devfile_registries, plugin_registry, user_workspace]
@@ -169,19 +164,15 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
                  show=False,
                  direction="TB",
                  outformat="png",
-                 #  edge_attr={"constraint": "false"},
                  graph_attr=graph_attr):
         che_gateway = Traefik('Gateway')
-        # devworkspace_operator = APIServer('DevWorkspace operator')
         git = Git('Git provider')
         container_registries = SimpleStorageService('Container registries')
         artifact_management = SimpleStorageService('Dependency provider')
 
         user = User('User')
         user_workspace = Compute('User workspaces')
-        # user_ide = Workspaces('User IDE')
         user >> che_gateway >> user_workspace
-        # devworkspace_operator >> user_workspace
         user_workspace >> [git, container_registries, artifact_management]
 
 

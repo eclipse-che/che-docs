@@ -12,22 +12,22 @@ The {prod-short} deployment starts it in the `{prod-deployment}-dashboard` Deplo
 
 It need access to:
 
-* xref:che-server.adoc[]
 * xref:devfile-registries.adoc[] 
+* xref:che-server.adoc[]
 * xref:plug-in-registry.adoc[]
 * {orch-name} API
 
 .User dashboard interactions with other components
 image::architecture/{project-context}-dashboard-interactions.png[User dashboard interactions with other components]
 
-To start a user workspace, the user dashboard:
+When the user requests the user dashboard to start a workspace, the user dashboard executes this sequence of actions:
 
-. When the user starts a sample: collects the devfile from the devfile registries.
-. When the user imports a Git repository: sends the repository URL to {prod-short} server and expects a devfile in return.
+. Collects the devfile from the xref:devfile-registries.adoc[], when the user is xref:end-user-guide:creating-a-workspace-from-a-code-sample.adoc[].
+. Sends the repository URL to xref:che-server.adoc[] and expects a devfile in return, when the user is xref:end-user-guide:creating-a-workspace-from-remote-devfile.adoc[].
 . Reads the devfile describing the workspace.
-. Collects the additional metadata from the plug-in registries.
+. Collects the additional metadata from the xref:plug-in-registry.adoc[].
 . Converts the information into a {devworkspace} Custom Resource.
-. Creates the {devworkspace} Custom Resource in the user {orch-namespace}.
+. Creates the {devworkspace} Custom Resource in the user {orch-namespace} using the {orch-name} API.
 . Watches the {devworkspace} Custom Resource status.
 . Redirects the user to the running workspace IDE.
 
