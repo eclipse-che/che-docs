@@ -195,14 +195,12 @@ EOF
 
 . Wait until Operator is ready:
 +
-[subs="+quotes,+attributes"]
-----
-{orch-cli} wait --for=condition=ready pod -l app.kubernetes.io/component={prod-operator} -n openshift-operators --timeout=120s
-----
+:k8s-component: {prod-operator}
+include::partial$snip_waiting-for-component.adoc[]
 
 . Wait until {prod-short} is ready:
 +
-[subs="+quotes,+attributes"]
-----
-{orch-cli} wait --for=condition=ready pod -l app.kubernetes.io/component={prod-deployment} -n {prod-namespace} --timeout=240s
-----
+:k8s-component: {prod-deployment}
+include::partial$snip_waiting-for-component.adoc[]
+
+include::partial$snip_verification-che-working.adoc[]
