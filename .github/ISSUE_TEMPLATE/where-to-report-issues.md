@@ -7,10 +7,10 @@ assignees: ''
 
 ---
 
-## Where to report issues?
+## Where to report issues
 
 This repository is not the primary repository of Eclipse Che.
 
-🚨 Please don't submit new issues here. 🚨
+🚨 Don't submit issues here. 🚨
 
-All issues for Eclipse Che are managed at [https://github.com/eclipse/che/issues](https://github.com/eclipse/che/issues).
+Report issues in the [https://github.com/eclipse/che/issues](Eclipse Che issues tracker).

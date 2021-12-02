@@ -1,8 +1,12 @@
 :toc:
 
+pass:[<!-- vale RedHat.Headings = NO -->]
+
 = Contributing to the Eclipse Che Documentation
 
-== Understanding Che Documentation ecosystem
+== Understanding the Che Documentation ecosystem
+
+pass:[<!-- vale RedHat.Headings = NO -->]
 
 * See the xref:CODE_OF_CONDUCT.adoc[Code of conduct].
 
@@ -13,22 +17,26 @@
 *** link:https://youtu.be/s3Em8QSXyn8[The Wisdom of Crowds video]
 *** link:https://www.nngroup.com/articles/chunking/[Chunking].
 
-** _IBM Style Guide_. 
+** Style Guide
 
-*** link:https://www.oreilly.com/library/view/the-ibm-style/9780132118989/[The IBM Style Guide, Conventions for Writers and Editors] 
+*** link:https://redhat-documentation.github.io/supplementary-style-guide/[Red Hat Style Guide] 
 
-*** link:https://github.com/errata-ai/IBM[A Vale-compatible implementation of IBM's _Developer Editorial Style Guide_]
+*** link:https://vale-at-redhat.github.io[A Vale-compatible implementation of Red Hat Style Guide]
+
+pass:[<!-- vale RedHat.As = NO -->]
 
 ** Guidelines from the
 link:https://redhat-documentation.github.io/modular-docs/[Modular Documentation Initiative].
 +
-TIP: For Antora, a link:https://docs.antora.org/antora/2.3/module-directories/#module[_module_] is a collection of content in a component version. This project is referring to Modular Documentation modules as _topics_. To understand the nature of topics, see the link:https://redhat-documentation.github.io/modular-docs/#modular-docs-terms-definitions[Appendix A: Modular Documentation Terms and Definitions].
+TIP: For Antora, a link:https://docs.antora.org/antora/2.3/module-directories/#module[_module_] is a collection of content in a component version. This project is referring to Modular Documentation modules as _content type_. To understand the nature of topics, see the link:https://redhat-documentation.github.io/modular-docs/#modular-docs-terms-definitions[Appendix A: Modular Documentation Terms and Definitions].
+
+pass:[<!-- vale RedHat.As = YES -->]
 
 * Use the link:https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow[Git Forking Workflow].
 
 * link:https://www.eclipse.org/che/docs/che-7/hosted-che/[Eclipse Che hosted by Red Hat] is the recommended IDE to edit and builds the content.
 
-* The relevant tools for editing, validation, and publication workflows are built in the link:https://quay.io/repository/eclipse/che-docs[`che-docs` container].
+* The relevant tools for editing, validation, and publication workflows are available in the link:https://quay.io/repository/eclipse/che-docs[`che-docs` container].
 
 ** link:https://docs.antora.org[Antora] builds the documentation.
 
@@ -42,25 +50,25 @@ TIP: For Antora, a link:https://docs.antora.org/antora/2.3/module-directories/#m
 
 ** link:https://www.shellcheck.net/[ShellCheck]  validates the shell scripts.
 
-** link:https://github.com/jhradilek/check-links[Test-adoc] validates the topic files.
-
 
 [id="documentation-workflow"]
 == The documentation workflow
 
 .Procedure
 
+pass:[<!-- vale RedHat.write = NO -->]
+
 . Contributor submits a code pull request in one of the Che repositories with a `status/doc-impact` label.
 
-. The author of the code pull request or the reviewer ensures the code pull request contains a reference to a documentation pull request for the `master` branch of the `che-docs` repository:
+. The author of the code pull request or the reviewer ensures the code pull request contains a reference to a documentation pull request for the `main` branch of the `che-docs` repository:
 
-.. The author of the code pull request or the reviewer provides a complete documentation pull request that can then be merged by the members of the documentation team without further editing.
+.. The author of the code pull request or the reviewer provides a documentation pull request that the members of the documentation team can merge without further editing.
 
-.. Or, the author of the code pull request or the reviewer provides at least an initial draft of the content and reaches out to the documentation-team members for assistance with editing, so that the documentation pull request can be finalized.
+.. Or, the author of the code pull request or the reviewer provides at least an initial draft of the content and reaches out to the documentation-team members for assistance with editing, to help finalizing the documentation pull request.
 
 .. Or, the author of the code pull request or the reviewer reaches out to the members of the documentation team and work with them on submitting a documentation pull request.
 
-. Review the documentation pull request. See xref:editing-submitting-and-reviewing-new-content[].
+. Review the documentation pull request. See xref:reviewing-a-documentation-pull-request[Reviewing a documentation pull request].
 
 . Merge the code pull request into the `che` repository, for next milestone `x.y.z`.
 
@@ -68,13 +76,40 @@ TIP: For Antora, a link:https://docs.antora.org/antora/2.3/module-directories/#m
 
 . Release `che` milestone `x.y.z`.
 
-. Merge the documentation content for milestone `x.y.z` into the `master` branch of the `che-docs` repository. 
+. Merge the documentation content for milestone `x.y.z` into the `main` branch of the `che-docs` repository. 
 
-. Publish the `che-docs` `master` branch to https://www.eclipse.org/che/docs.
+. Use the `che-docs` `publication` branch to orchestrate the publication to https://www.eclipse.org/che/docs.
 
 
-[id="editing-submitting-and-reviewing-new-content"]
-== Editing, submitting and reviewing new content
+pass:[<!-- vale RedHat.write = YES -->]
+
+[id="reviewing-a-documentation-pull-request"]
+== Reviewing a documentation pull request
+
+Review the pull request in the Eclipse Che hosted by Red Hat IDE.
+
+.Procedure
+
+. Navigate to the pull request 
+
+. Click on the btn:[Eclipse Che hosted by Red Hat] link in the comments.
+
+. Build and validate the documentation, and start the preview server: open _My Workspace > User Runtimes > che-docs > Start preview server_.
+
+. Watch the output of the _Start preview server_ task to validate the build: internal and external links, language on created and changed files.
+
+. Navigate to the preview: open _Preview_.
+
+pass:[<!-- vale RedHat.Usage = NO -->]
+
+. Open created and changed files, and examine the _Problems Panel_ to validate the language. Toggle the view of the _Problems Panel_ using the _View > Problems_ menu entry.
+
+pass:[<!-- vale RedHat.Usage = YES -->]
+
+. Review the pull request. See the xref:code_review_checklist.adoc[code review checklist].
+
+[id="editing-submitting-and-reviewing-content"]
+== Editing, submitting and reviewing content
 
 .Prerequisites
 
@@ -87,140 +122,149 @@ TIP: For Antora, a link:https://docs.antora.org/antora/2.3/module-directories/#m
 . Create a branch `__<branch-name>__` for your work.
 
 . Edit the content.
++ 
+* xref:creating-a-page[]
+* xref:creating-a-partial[]
+* xref:creating-a-partial[]
+* xref:adding-a-contextual-example[]
+* xref:adding-an-image[]
+* xref:using-special-characters[]
 
-. Build and validate the new content. See: xref:building-and-validating-the-documentation-using-che[].
+. Build and validate the documentation, and start the preview server: open _My Workspace > User Runtimes > che-docs > Start preview server_.
 
-. To merge the content, open a pull request. Submit the pull request against the default `+master+` branch. Specify as much information as possible in the pull request template.
+. Watch the output of the _Start preview server_ task to validate the build: internal and external links, language on created and changed files.
 
-. When you intend to review a pull request, click Assignees in the GitHub pull request view. This indicates you are the reviewer and avoids duplication of efforts.
+. Navigate to the preview: open _Preview_.
 
-. To review the pull request:
+pass:[<!-- vale RedHat.Usage = NO -->]
 
-.. See the xref:code_review_checklist.adoc[code review checklist].
+. Open created and changed files, and examine the _Problems Panel_ to validate the language. Toggle the view of the _Problems Panel_ using the _View > Problems_ menu entry.
 
-.. For documentation updates containing testable steps, the documentation pull request needs to have the `team/che-qe` label set and get reviewed by both the documentation team and the Che QA team.
+pass:[<!-- vale RedHat.Usage = YES -->]
 
-.. For documentation updates not containing testable steps, the documentation pull request needs to get reviewed by the documentation team.
+. To merge the content, open a pull request to the default `+main+` branch.
 
-.. For more information, see xref:building-and-validating-the-documentation-using-che[].
+. When you intend to review a pull request, assign yourself in the GitHub pull request view.
 
-. The continuous integration process is publishing content once merged in the `+master+` publication branch.
+. Review the pull request. See xref:reviewing-a-documentation-pull-request[Reviewing a documentation pull request].
+
+. The documentation pull request needs a review by the documentation team and by engineering.
+
+. The continuous integration process is publishing content after merge in the release branch.
 
 .Verification steps
 
 * Navigate to the publication URL of Eclipse Che Documentation: link:https://www.eclipse.org/che/docs/[] and search for your changes.
 
 
-[id="building-and-validating-the-documentation-using-che"]
-== Building and validating the documentation using Che
+[id="creating-a-page"]
+== Creating a page
 
-To build the Eclipse Che documentation from a Che workspace, follow the steps below.
+Create a link:https://docs.antora.org/antora/2.3/page/[page] and add it to the navigation when it may receive link:https://docs.antora.org/antora/2.3/page/page-id/[cross references]. Avoid cross references to a page link:https://docs.antora.org/antora/2.3/page/page-id/#id-fragment[fragment].
+The page content type can be:
 
-.Prerequisites
-
-* Open a Che workspace containing a fork of the documentation. See xref:editing-submitting-and-reviewing-new-content[].
-
-.Procedure
-
-pass:[<!-- vale IBM.Slash = NO -->]
-
-. To build the documentation and start the preview server: open _My Workspace / User Runtimes / che-docs / Start preview server_.
-
-. To navigate to the preview, open _Preview_.
-
-. To validate the links: open _User Runtimes / che-docs / Validate links_.
-
-. To validate the language changes: open _My Workspace / User Runtimes / che-docs / Validate language changes_.
-
-. To validate the language of the currently open files, look at the _Problems_ tab in the _Bottom Panel_. To toggle the view of this tab use the _View > Problems_ menu entry.
-
-. To validate the compliance of an AsciiDoc file with Modular Documentation guidelines:
-
-.. In the _Explorer_, right-click on file to validate and select _Copy Path_.
-
-.. Open _My Workspace / User Runtimes / che-docs / Validate Modular Doc_.
-
-.. In the _Validate Modular Doc_ panel in the _Bottom Panel_, paste the path of the file to validate.
-
-.. The tool `+test-adoc+` tests the file and produces some output.
-
-
-[id="creating-a-new-topic-using-che"]
-== Creating a new topic using Che
-
-To create a new topic using a Che workspace:
+* An assembly
+* A concept
+* A procedure
+* A reference
 
 .Procedure
 
-. Open _My Workspace_.
-. Open _User Runtimes / tools / Create a new topic_.
-. Choose the target guide among the available guides:
-+
-* `+overview+`: introductory section
-* `+end-user-guide+`: documentation for developers: navigating
-dashboard, working in Che-Theia, and so on
-* `+installation-guide+`: installation guides
-* `+administration-guide+`: documentation for administrators of the
-clusters: configuring Che on a cluster, managing users, monitoring
-resources, security and data recovery
-* `+contributor-guide+`: how to develop plug-ins for Che, add new
-debuggers, languages, and so on
-* `+extensions+`: documentation about extensions for Che, such as
-Eclipse Che4z, OpenShift Connector.
+. Copy one of the templates in the `templates/pages` directory to `modules/__<guide_name>__/pages/__<lowercase_title>__.adoc`.
 
-. Choose the topic nature:
-+
-* `+assembly+`
-* `+concept+`
-* `+procedure+`
-* `+reference+`
+. Add a cross reference to the file in `modules/__<guide_name>__/nav.adoc` to create the navigation entry.
 
-. Enter the title for the new topic.
+. Edit the metadata in the file.
 
-.Verification steps
+. Author the content.
 
-. The file is generated in the `+src/main/pages-che-7/<guide_name>/+` directory and the script displays related information.
 
-pass:[<!-- vale IBM.Slash = YES -->]
+[id="creating-a-partial"]
+== Creating a partial
 
-== Adding images
+Create a link:https://docs.antora.org/antora/2.3/page/partials-and-content-snippets/[partial] and add it to an assembly page when it may not receive cross references.
+The partial content type can be:
+
+* A concept
+* A procedure
+* A reference
 
 .Procedure
 
-. Add images to one of the subdirectories in the `+src/main/che/docs/images/+` directory. Create a new subdirectory if none of the existing ones fits the new image.
+. Copy one of the templates in the `templates/partials` directory to `modules/__<guide_name>__/partials/__<lowercase_title>__.adoc`.
 
-. To publish an image, use the following syntax:
+. Add an include statement in the corresponding page `modules/__<guide_name>__/pages/__<title>__.adoc`.
 +
-....
-image::directory/img.png[alt text]
-....
-+
-Images are sized automatically. You can provide a URL to a full-size image, as well as a caption and alt text:
-+
-....
-.Click to view a larger image
-[link=che/docs/images/devel/js_flow.png
-image::devel/js_flow.png[Alt text]
-....
+`pass:a,c,m[include::partial$__<file_name>__.adoc[leveloffset=+1]]`
 
-Do not post too many images unless it is absolutely necessary. Animated `+.gif+` images are preferred, especially when explaining how to use complex UI features.
+. Edit the metadata in the file.
 
+. Author the content.
+
+
+[id="adding-a-contextual-example"]
+== Adding a contextual example
+
+Create a contextual link:https://docs.antora.org/antora/2.3/page/examples-and-source-snippets/[example] when upstream and downstream need a different content. The include statement contains the `project-context` attribute to ensure upstream and downstream use a different file.
+
+.Procedure
+
+. Copy  `templates/examples/snip/che/title.adoc` template to `modules/__<guide_name>__/examples/__<snip_che_lowercase_title>__.adoc`.
+
+. Add an include statement in the corresponding page `templates` directory to `modules/__<guide_name>__/pages/__<title>__.adoc`.
++
+`pass:a,c,m[include::example$snip_{project-context_}__<file_name>__.adoc[leveloffset=+1]]`
+
+
+. Edit the metadata in the file.
+
+. Author the content.
+
+
+[id="adding-an-image"]
+== Adding an image
+
+Avoid using images unless necessary.
+
+.Procedure
+
+. Add the image the `+modules/__<guide_name>__/images/+` directory for the guide including the image.
+
+. To publish a block image, use the following syntax. See link:https://docs.antora.org/antora/2.3/page/block-images/[Antora documentation - Add block images] and link:https://docs.asciidoctor.org/asciidoc/latest/macros/images/[Asciidoctor documantation - Images].
++
+----
+.__<Image caption>__
+image::__<image_name>__.png[__<Image title>__]
+----
+
+. The publication tool resizes images. To provide a link to a full-size image, add a `link` attribute:
++
+----
+.__<Image caption>__
+image::__<image_file_name>__[__<Image title>__,link="../_images/__<image_file_name>__"]
+----
+
+[id="using-special-characters"]
 == Using special characters
 
-* To prevent special characters from being interpreted as formatting mark-up, use pass-through macros. 
+.Procedure
+
+* To exclude special characters from markup  substitutions, use the link:https://docs.asciidoctor.org/asciidoc/latest/pass/pass-macro/#custom-substitutions[inline `pass` macro]. 
 +
-.To escape underscores, asterisks, or backticks, use:
+.Displaying a variable name containing underscores
 ====
-....
-pass:[VARIABLE_NAME__WITH__UNDERSCORES]
-....
+----
+pass:a,c,m[VARIABLE_NAME__WITH__UNDERSCORES]
+----
+Result::
+pass:a,c,m[VARIABLE_NAME__WITH__UNDERSCORES]
 ====
 
-== Building and validating Documentation on a local environment using the `che-docs` container
+== Building and validating Documentation on a local environment
 
-This section describes how to build and validate the documentation on a local environment.
+This section describes how to build and validate the documentation on a local environment using the `che-docs` container.
 
-WARNING: This is not the preferred method. For the supported method, see: xref:building-and-validating-the-documentation-using-che[].
+WARNING: This is not the preferred method. For the supported method, see: xref:editing-submitting-and-reviewing-content[].
 
 .Prerequisites:
 
@@ -228,54 +272,23 @@ WARNING: This is not the preferred method. For the supported method, see: xref:b
 
 .Procedure
 
-. Open a terminal into the project directory, and build the documentation using and instance of the `che-docs` container:
+. Open a shell prompt into the project directory, and build and validate the documentation using and instance of the `che-docs` container.
 +
 ----
 $ ./tools/runnerpreview.sh
 ---- 
 
+. Read the output for the results of the links and language validation steps.
+
 . Navigate to `+localhost:4000+` in your browser.
-
-. Open a second terminal, and attach to the running `che-docs` container. Run all following steps from this context.
-+
-----
-$ podman exec -ti che-docs  bash
-----
-
-. To validate links, run:
-+
-----
-$ htmltest
-----
-
-. To validate language on changed files, run:
-+
-----
-$ ./tools/validate_language_changes.sh
-----
-
-. To create a new topic using templates, run following command:
-+
-----
-$ ./tools/newtopic.sh
-----
-
-. To validate the compliance of an AsciiDoc file with Modular Documentation standards, run:
-+
-----
-$ ./tools/test-adoc.sh <PATH_TO_THE_FILE>
-----
-
 
 == Getting support
 
 .GitHub issue
 
-* https://github.com/eclipse/che/issues/new?labels=area/doc,kind/question[image:https://img.shields.io/badge/New-question-blue.svg?style=flat-curved[New
-questions]]
+* https://github.com/eclipse/che/issues/new?labels=area/doc,kind/question[image:https://img.shields.io/badge/New-question-blue.svg?style=flat-curved[Ask a question]]
 
-* https://github.com/eclipse/che/issues/new?labels=area/doc,kind/bug[image:https://img.shields.io/badge/New-bug-red.svg?style=flat-curved[New
-bug]]
+* https://github.com/eclipse/che/issues/new?labels=area/doc,kind/bug[image:https://img.shields.io/badge/New-bug-red.svg?style=flat-curved[Open a bug]]
 
 .Public Chat
  

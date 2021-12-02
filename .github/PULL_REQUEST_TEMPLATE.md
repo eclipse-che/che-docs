@@ -9,13 +9,13 @@ fix: Fix build, language, links, or metadata.
 
 <!-- Read our [Contribution guide](https://github.com/eclipse/che-docs/blob/master/CONTRIBUTING.adoc) before submitting a PR. -->
 
-## What does this pull request change?
+## What does this pull request change
 
-## What issues does this pull request fix or reference?
+## What issues does this pull request fix or reference
 
 ## Specify the version of the product this pull request applies to
 
-## Pull Request checklist
+## Pull request checklist
 
 The author and the reviewers validate the content of this pull request with the following checklist, in addition to the [automated tests](code_review_checklist.adoc).
 
