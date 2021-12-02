@@ -9,6 +9,7 @@ This procedure describes how to migration to {devworkspace} engine using https:/
 * The `{orch-cli}` tool is available.
 * An instance of {prod-short} deployed using xref:installation-guide:installing-che-on-openshift-4-using-operatorhub.adoc[Operator Hub] from `{prod-channel}` channel on OpenShift cluster version greater or equal to 4.8
 * OpenShift OAuth is enabled. See xref:configuring-openshift-oauth.adoc[].
+* Bundled PostgreSQL
 
 .Procedure
 
@@ -196,11 +197,13 @@ EOF
 . Wait until Operator is ready:
 +
 :k8s-component: {prod-operator}
+:k8s-namespace: openshift-operators
 include::partial$snip_waiting-for-component.adoc[]
 
 . Wait until {prod-short} is ready:
 +
 :k8s-component: {prod-deployment}
+:k8s-namespace: {prod-namespace}
 include::partial$snip_waiting-for-component.adoc[]
 
 include::partial$snip_verification-che-working.adoc[]

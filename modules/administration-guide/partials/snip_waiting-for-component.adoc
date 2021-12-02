@@ -1,9 +1,9 @@
 [subs="+quotes,+attributes"]
 ----
-while [[ $({orch-cli} get pod -l app.kubernetes.io/component={k8s-component} -n {prod-namespace} -o go-template='{{len .items}}') == 0 ]]
+while [[ $({orch-cli} get pod -l app.kubernetes.io/component={k8s-component} -n {k8s-namespace} -o go-template='{{len .items}}') == 0 ]]
 do
   echo "Waiting..."
   sleep 10s
 done
-{orch-cli} wait --for=condition=ready pod -l app.kubernetes.io/component={k8s-component} -n openshift-operators --timeout=120s
+{orch-cli} wait --for=condition=ready pod -l app.kubernetes.io/component={k8s-component} -n {k8s-namespace} --timeout=120s
 ----
