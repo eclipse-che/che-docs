@@ -65,16 +65,6 @@ spec:
     spec.server.ServerTrustStoreConfigMapName: ca-certs
 ----
 ====
-ifeval::["{project-context}" == "che"]
-+
-====
-For a {prod-short} link:https://helm.sh/[Helm Chart] deployment, ensure you override the `global.tls.serverTrustStoreConfigMapName` Helm Chart property with the name of the ConfigMap when installing the {prod-short} Helm Chart. For this you should add the following arguments to the Helm command line:
-[subs="+quotes",options="nowrap",role=white-space-pre]
-----
---set global.tls.serverTrustStoreConfigMapName=ca-certs
-----
-====
-endif::[]
 
 == On already-running {prod-short} installations
 
@@ -93,17 +83,6 @@ retrieve the name of the ConfigMap by reading the `spec.server.ServerTrustStoreC
 $ {orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath={.spec.server.serverTrustStoreConfigMapName}
 ----
 ====
-ifeval::["{project-context}" == "che"]
-+
-====
-On instances of {prod-short} deployed with the {prod-short} link:https://helm.sh/[Helm Chart] deployment, retrieve the name of the ConfigMap by reading the `global.tls.serverTrustStoreConfigMapName` property from the Helm Chart:
-
-[subs="+quotes",options="nowrap",role=white-space-pre]
-----
-$ helm get values che --all --output json | jq -r '.global.tls.serverTrustStoreConfigMapName'
-----
-====
-endif::[]
 +
 [NOTE]
 ====
@@ -136,24 +115,6 @@ $ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json 
 ----
 +
 ====
-ifeval::["{project-context}" == "che"]
-+
-====
-For a {prod-short} link:https://helm.sh/[Helm Chart] deployment:
-
-. Clone the https://github.com/eclipse-che/che-server[{prod-short} server] project.
-. Go to the `deploy/kubernetes/helm/che` directory.
-. Update the name of the configMap {prod-short} will use, by editing the `global.tls.serverTrustStoreConfigMapName` Helm Chart property to match the created or updated ConfigMap:
-+
-[subs="+quotes,+attributes",options="nowrap",role=white-space-pre]
-----
-$ helm upgrade che -n {prod-namespace} --set global.tls.serverTrustStoreConfigMapName=<config-map-name> \
-   --set global.ingressDomain=__<kubernetes-cluster-domain>__ .
-----
-+
-When using Minikube to run {prod-short}, substitute _<kubernetes-cluster-domain>_ with `$(minikube ip).nip.io`.
-====
-endif::[]
 
 . Restart the {prod-short} Operator, the {prod-short} server and {identity-provider} to load the new certificates:
 +

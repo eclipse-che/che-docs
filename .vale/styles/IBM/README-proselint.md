@@ -1,3 +1,4 @@
+<!-- vale off -->
 Copyright © 2014–2015, Jordan Suchow, Michael Pacer, and Lara A. Ross
 All rights reserved.
 
