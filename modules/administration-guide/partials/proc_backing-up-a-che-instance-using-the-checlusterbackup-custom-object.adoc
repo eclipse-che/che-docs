@@ -45,9 +45,23 @@ status:
   message: 'Backup is in progress. Start time: <timestamp>' <1>
   stage: Collecting {prod-short} installation data <2>
   state: InProgress <3>
-  snapshotId: ba92c7e0 <4>
 ----
-<1> Displays the overall state or error message.
-<2> Current phase of the backup process in a human-readable format.
+<1> Summary of the latest state of the backup process.
+<2> Current stage of the backup process in a human-readable format.
 <3> Backup process state: `InProgress` or `Succeeded` or `Failed`.
-<4> ID of the created backup snapshot. The field appears only when `state` is `Succeeded`.
++
+The {prod-short} instance is backed up in a snapshot when `state` is `Succeeded`:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+status:
+  ...
+  message: >-
+    Backup successfully finished at 2021-12-03 10:07:51.151090621 +0000 UTC
+    m=+999.553272281 <1>
+  snapshotId: 9f0adce2 <2>
+  state: Succeeded <3>
+----
+<1> Summary of the latest state of the backup process.
+<2> ID of the created backup snapshot. This field appears only when `state` is `Succeeded`.
+<3> Backup process state: `Succeeded` (or `Failed`).
