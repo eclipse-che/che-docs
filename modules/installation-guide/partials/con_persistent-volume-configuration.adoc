@@ -17,7 +17,7 @@ This method defines the storage for workspace data, for example, projects, works
 | `per-workspace`
 | `unique`
 
-| Persistent volume count
+| PV count
 | One per user
 | One per workspace
 | Multiple PVs per workspace
@@ -30,8 +30,8 @@ This method defines the storage for workspace data, for example, projects, works
 
 | Limitations
 | Maximum one running workspace per user when the PV is in the `ReadWriteOnce` access mode
-| Persistent volume count depends on the number of workspaces
-| Unpredictable persistent volume count
+| PV count depends on the number of workspaces
+| Unpredictable PV count
 
 |===
 
@@ -49,7 +49,7 @@ For each user, all workspaces use the same PV for the default data storage.
 
 When the user starts a first non-ephemeral workspace, the workspace engine creates a common PV.
 
-When the user starts a non-ephemeral workspace, the workspace engine uses the common persistent volume.
+When the user starts another non-ephemeral workspace, the workspace engine uses the same common PV.
 The workspace only binds simultaneously to one node in the {orch-name} cluster.
 The workspace engine ignores user-defined volumes. 
 The workspace engine replaces volumes related to user-defined volumes with a subPath in the common volume. 
