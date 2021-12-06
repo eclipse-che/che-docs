@@ -76,7 +76,7 @@ RUN apk add --no-cache --update \
     tar \
     xmlstarlet \
     yarn \
-    && pip3 install --no-cache-dir --no-input jinja2-cli linkchecker yq \
+    && pip3 install --no-cache-dir --no-input diagrams jinja2-cli yq \
     && yarnpkg global add --ignore-optional --non-interactive @antora/cli@latest @antora/site-generator-default@latest asciidoctor gulp gulp-connect \
     && rm -rf $(yarnpkg cache dir)/* \
     && rm -rf /tmp/* \
