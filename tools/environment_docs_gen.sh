@@ -66,7 +66,7 @@ parse_content() {
                                                         # remove non alpha-num, wrap in AsciiDoc ID markup
       TOPICID=${TOPICID,,}                                                     
       echo "   Found begin of topic: $TOPIC" >&2
-      BUFF="${BUFF}${TOPICID}$NEWLINE= ${TOPIC}$NEWLINEx2"      # new topic and table header
+      BUFF="${BUFF}${NEWLINE}${TOPICID}${NEWLINE}= ${TOPIC}${NEWLINEx2}"      # new topic and table header
     elif [[ $LINE == '#'* ]] && [[ -n $TOPIC ]]; then   # line starting with single # means property description (can be multiline)
       TRIM_LINE=${LINE/\#}                              # read description, stripping first #
       DESCR_BUFF="$DESCR_BUFF${TRIM_LINE}"              # collect all description lines into buffer
@@ -98,7 +98,7 @@ parse_content() {
 
       DESCR_BUFF="${DESCR_BUFF/ }"                      # trim first space
       DESCR_BUFF="${DESCR_BUFF//::/:}"              # cleanup double colons
-      BUFF="${BUFF}${NEWLINE}== ${ENV}${NEWLINEx2}${DESCR_BUFF}${NEWLINEx2}Default::: ${VALUE}${NEWLINEx2}"   # apply key value and description buffer
+      BUFF="${BUFF}${NEWLINE}== ${ENV}${NEWLINEx2}${DESCR_BUFF}${NEWLINEx2}Default::: ${VALUE}${NEWLINEx2}'''${NEWLINEx2}"   # apply key value and description buffer
     fi
   done <<< "$RAW_CONTENT"
   # BUFF="$BUFF$TABLE_FOOTER"                             # close last table
