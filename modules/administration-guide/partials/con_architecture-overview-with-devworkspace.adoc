@@ -1,0 +1,36 @@
+[id="{prod-id-short}-architecture-overview-with-devworkspace{context}"]
+= {prod-short} architecture with {devworkspace}
+
+include::example$snip_using-devworkspace-warning.adoc[]
+
+.High-level {prod-short} architecture with the {devworkspace} operator
+image::architecture/che-interacting-with-devworkspace.png[]
+
+When {prod-short} is running with the {devworkspace} operator, it runs on three groups of components:
+
+{prod-short} server components::
+Manage User {orch-namespace} and workspaces. The main component is the User dashboard, from which users control their workspaces.
+
+{devworkspace} operator::
+Creates and controls the necessary {orch-name} objects to run User workspaces. Including `Pods`, `Services`, and `PeristentVolumes`.
+
+User workspaces:: 
+Container-based development environments, the IDE included.
+
+The role of these {orch-name} features is central:
+
+{devworkspace} Custom Resources::
+Valid {orch-name} objects representing the User workspaces and manipulated by {prod-short}. It is the communication channel for the three groups of components.
+
+{orch-name} role-based access control (RBAC):: 
+Controls access to all resources.
+
+.Additional resources
+
+* xref:server-components.adoc[]
+* xref:devworkspace-operator.adoc[]
+* xref:user-workspaces.adoc[]
+* xref:installation-guide:enabling-dev-workspace-operator.adoc[]
+* link:https://github.com/devfile/devworkspace-operator[{devworkspace} Operator repository]
+include::example$snip_che-architecture-overview-with-devworkspace-additional-resources.adoc[]
+
