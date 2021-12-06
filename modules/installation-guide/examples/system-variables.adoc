@@ -710,6 +710,15 @@ Default::: `+NULL+`
 '''
 
 
+== `+CHE_INFRA_KUBERNETES_USER__CLUSTER__ROLES+`
+
+Cluster roles to assign to user in his namespace
+
+Default::: `+NULL+`
+
+'''
+
+
 == `+CHE_INFRA_KUBERNETES_WORKSPACE__START__TIMEOUT__MIN+`
 
 Defines wait time that limits the Kubernetes workspace start time.
@@ -1003,15 +1012,6 @@ Default::: `+/public-certs+`
 Comma separated list of labels to add to the CA certificates ConfigMap in user workspace. See the `che.infra.kubernetes.trusted_ca.dest_configmap` property.
 
 Default::: empty
-
-'''
-
-
-== `+CHE_INFRA_KUBERNETES_ENABLE__UNSUPPORTED__K8S+`
-
-Enables the `/unsupported/{orch-name}` endpoint to resolve calls on Kubernetes infrastructure. Provides direct access to the underlying infrastructure REST API. This results in huge privilege escalation. It impacts only Kubernetes infrastructure. Therefore it implies no security risk on OpenShift with OAuth. Do not enable this, unless you understand the risks.
-
-Default::: `+false+`
 
 '''
 
@@ -1591,26 +1591,57 @@ Default::: `+NULL+`
 '''
 
 
-[id="keycloak-configuration"]
-= Keycloak configuration
+[id="oidc-configuration"]
+= OIDC configuration
 
 
-== `+CHE_KEYCLOAK_AUTH__SERVER__URL+`
+== `+CHE_OIDC_AUTH__SERVER__URL+`
 
-Url to keycloak identity provider server Can be set to NULL only if `che.keycloak.oidcProvider` is used
+Url to OIDC identity provider server Can be set to NULL only if `che.oidc.oidcProvider` is used
 
 Default::: `+http://${CHE_HOST}:5050/auth+`
 
 '''
 
 
-== `+CHE_KEYCLOAK_AUTH__INTERNAL__SERVER__URL+`
+== `+CHE_OIDC_AUTH__INTERNAL__SERVER__URL+`
 
-Internal network service Url to keycloak identity provider server
+Internal network service Url to OIDC identity provider server
 
 Default::: `+NULL+`
 
 '''
+
+
+== `+CHE_OIDC_ALLOWED__CLOCK__SKEW__SEC+`
+
+The number of seconds to tolerate for clock skew when verifying `exp` or `nbf` claims.
+
+Default::: `+3+`
+
+'''
+
+
+== `+CHE_OIDC_USERNAME__CLAIM+`
+
+Username claim to be used as user display name when parsing JWT token if not defined the fallback value is 'preferred_username' in Keycloak installations and `name` in Dex installations.
+
+Default::: `+NULL+`
+
+'''
+
+
+== `+CHE_OIDC_OIDC__PROVIDER+`
+
+Base URL of an alternate OIDC provider that provides a discovery endpoint as detailed in the following specification link:https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig[Obtaining OpenID Provider Configuration Information] Deprecated, use `che.oidc.auth_server_url` and `che.oidc.auth_internal_server_url` instead.
+
+Default::: `+NULL+`
+
+'''
+
+
+[id="keycloak-configuration"]
+= Keycloak configuration
 
 
 == `+CHE_KEYCLOAK_REALM+`
@@ -1649,15 +1680,6 @@ Default::: `+NULL+`
 '''
 
 
-== `+CHE_KEYCLOAK_ALLOWED__CLOCK__SKEW__SEC+`
-
-The number of seconds to tolerate for clock skew when verifying `exp` or `nbf` claims.
-
-Default::: `+3+`
-
-'''
-
-
 == `+CHE_KEYCLOAK_USE__NONCE+`
 
 Use the OIDC optional `nonce` feature to increase security.
@@ -1676,29 +1698,11 @@ Default::: `+NULL+`
 '''
 
 
-== `+CHE_KEYCLOAK_OIDC__PROVIDER+`
-
-Base URL of an alternate OIDC provider that provides a discovery endpoint as detailed in the following specification link:https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig[Obtaining OpenID Provider Configuration Information]
-
-Default::: `+NULL+`
-
-'''
-
-
 == `+CHE_KEYCLOAK_USE__FIXED__REDIRECT__URLS+`
 
 Set to true when using an alternate OIDC provider that only supports fixed redirect Urls This property is ignored when `che.keycloak.oidc_provider` is NULL
 
 Default::: `+false+`
-
-'''
-
-
-== `+CHE_KEYCLOAK_USERNAME__CLAIM+`
-
-Username claim to be used as user display name when parsing JWT token if not defined the fallback value is 'preferred_username'
-
-Default::: `+NULL+`
 
 '''
 
