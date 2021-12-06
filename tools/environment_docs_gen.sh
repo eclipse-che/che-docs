@@ -13,8 +13,8 @@ CURRENT_VERSION=""
 RAW_CONTENT=""
 NEWLINE=$'\n'
 NEWLINEx2="$NEWLINE$NEWLINE"
-TABLE_HEADER="$NEWLINE,=== $NEWLINE Environment Variable Name,Default value, Description $NEWLINE"
-TABLE_FOOTER=",=== $NEWLINEx2"
+# TABLE_HEADER="$NEWLINE,=== $NEWLINE Environment Variable Name,Default value, Description $NEWLINE"
+# TABLE_FOOTER=",=== $NEWLINEx2"
 PARENT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")/.." ; pwd -P )
 BUFF=""
 OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/system-variables.adoc"
@@ -66,7 +66,7 @@ parse_content() {
                                                         # remove non alpha-num, wrap in AsciiDoc ID markup
       TOPICID=${TOPICID,,}                                                     
       echo "   Found begin of topic: $TOPIC" >&2
-      BUFF="${BUFF}${TOPICID}$NEWLINE= ${TOPIC}$NEWLINEx2.${TOPIC} $TABLE_HEADER $NEWLINE"      # new topic and table header
+      BUFF="${BUFF}${TOPICID}$NEWLINE= ${TOPIC}$NEWLINEx2"      # new topic and table header
     elif [[ $LINE == '#'* ]] && [[ -n $TOPIC ]]; then   # line starting with single # means property description (can be multiline)
       TRIM_LINE=${LINE/\#}                              # read description, stripping first #
       DESCR_BUFF="$DESCR_BUFF${TRIM_LINE}"              # collect all description lines into buffer
@@ -81,7 +81,7 @@ parse_content() {
       ENV=${ENV//./_}                                   # replace dots with single underscore
       VALUE="${VALUE/ }"                                # trim first space
       VALUE="\`+${VALUE}+\`"                            # make sure asciidoc doesn't mix it up with attributes
-      VALUE="${VALUE/\`++\`}"                           # remove empty value `++`
+      VALUE="${VALUE/\`++\`/empty}"                           # remove empty value `++`
       
       DESCR_BUFF="$(sed 's|\${\([^}]*\)}|$++{\1}++|g' <<< $DESCR_BUFF)"   # make sure asciidoc doesn't mix it up with attributes
       DESCR_BUFF="$(sed 's|\(Eclipse \)\?\bChe\b|{prod-short}|g' <<< $DESCR_BUFF)"   # (Eclipse) Che -> {prod-short}
@@ -97,10 +97,11 @@ parse_content() {
       DESCR_BUFF="$(sed -E 's|\{generated_8_chars|\\\{generated_8_chars|g' <<< $DESCR_BUFF)"   # fix missing attribute generated_8_chars
 
       DESCR_BUFF="${DESCR_BUFF/ }"                      # trim first space
-      BUFF="$BUFF $ENV,\"$VALUE\",\"${DESCR_BUFF//\"/\'}\" $NEWLINE"   # apply key value and description buffer
+      DESCR_BUFF="${DESCR_BUFF//::/:}"              # cleanup double colons
+      BUFF="${BUFF}${NEWLINE}== ${ENV}${NEWLINEx2}${DESCR_BUFF}${NEWLINEx2}Default::: ${VALUE}${NEWLINEx2}"   # apply key value and description buffer
     fi
   done <<< "$RAW_CONTENT"
-  BUFF="$BUFF$TABLE_FOOTER"                             # close last table
+  # BUFF="$BUFF$TABLE_FOOTER"                             # close last table
   BUFF="pass:[<!-- vale off -->]
 
 $BUFF" 
