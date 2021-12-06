@@ -92,7 +92,7 @@ Review the pull request in the Eclipse Che hosted by Red Hat IDE.
 
 . Navigate to the pull request 
 
-. Click on the btn:[Eclipse Che hosted by Red Hat] link in the comments.
+. Click on the _Eclipse Che hosted by Red Hat_ link in the comments.
 
 . Build and validate the documentation, and start the preview server: open _My Workspace > User Runtimes > che-docs > Start preview server_.
 
@@ -100,11 +100,7 @@ Review the pull request in the Eclipse Che hosted by Red Hat IDE.
 
 . Navigate to the preview: open _Preview_.
 
-pass:[<!-- vale RedHat.Usage = NO -->]
-
 . Open created and changed files, and examine the _Problems Panel_ to validate the language. Toggle the view of the _Problems Panel_ using the _View > Problems_ menu entry.
-
-pass:[<!-- vale RedHat.Usage = YES -->]
 
 . Review the pull request. See the xref:code_review_checklist.adoc[code review checklist].
 
@@ -136,11 +132,7 @@ pass:[<!-- vale RedHat.Usage = YES -->]
 
 . Navigate to the preview: open _Preview_.
 
-pass:[<!-- vale RedHat.Usage = NO -->]
-
 . Open created and changed files, and examine the _Problems Panel_ to validate the language. Toggle the view of the _Problems Panel_ using the _View > Problems_ menu entry.
-
-pass:[<!-- vale RedHat.Usage = YES -->]
 
 . To merge the content, open a pull request to the default `+main+` branch.
 
@@ -160,21 +152,48 @@ pass:[<!-- vale RedHat.Usage = YES -->]
 [id="creating-a-page"]
 == Creating a page
 
-Create a link:https://docs.antora.org/antora/2.3/page/[page] and add it to the navigation when it may receive link:https://docs.antora.org/antora/2.3/page/page-id/[cross references]. Avoid cross references to a page link:https://docs.antora.org/antora/2.3/page/page-id/#id-fragment[fragment].
+Create a link:https://docs.antora.org/antora/2.3/page/[page] and add it to the navigation when it is meaningful to have a navigation entry, or when it may receive link:https://docs.antora.org/antora/2.3/page/page-id/[cross references]. Avoid cross references to a page link:https://docs.antora.org/antora/2.3/page/page-id/#id-fragment[fragment]. The file name determines the page URL. Therefore an AsciiDoc attribute defines the content type, rather than a file name prefix. 
 The page content type can be:
 
-* An assembly
-* A concept
-* A procedure
-* A reference
+* link:https://redhat-documentation.github.io/modular-docs/#forming-assemblies[:_content-type: ASSEMBLY]
+* link:https://redhat-documentation.github.io/modular-docs/#creating-concept-modules[:_content-type: CONCEPT]
+* link:https://redhat-documentation.github.io/modular-docs/#creating-procedure-modules[:_content-type: PROCEDURE]
+* link:https://redhat-documentation.github.io/modular-docs/#creating-reference-modules[:_content-type: REFERENCE]
 
 .Procedure
 
 . Copy one of the templates in the `templates/pages` directory to `modules/__<guide_name>__/pages/__<lowercase_title>__.adoc`.
++
+* link:https://github.com/eclipse/che-docs/blob/main/templates/pages/assembly.adoc[Assembly page template]
+* link:https://github.com/eclipse/che-docs/blob/main/templates/pages/concept.adoc[Concept page template]
+* https://github.com/eclipse/che-docs/blob/main/templates/pages/procedure.adoc[Procedure page template]
+* https://github.com/eclipse/che-docs/blob/main/templates/pages/reference.adoc[Reference page template]
 
-. Add a cross reference to the file in `modules/__<guide_name>__/nav.adoc` to create the navigation entry.
+. Add a cross reference to the page in the `modules/__<guide_name>__/nav.adoc` navigation file to create the link:https://docs.antora.org/antora/2.3/navigation/xrefs-and-link-text/#default-link-text[navigation entry].
++
+.Navigation entry
+====
+[subs="+attributes,quotes"]
+----
+* xref:__<file_name>__.adoc[]
+----
+====
 
 . Edit the metadata in the file.
++
+.Template metadata for a page
+====
+[subs="+attributes,quotes"]
+----
+:description: A description of the page stored in an HTML meta tag.
+:keywords: comma-separated values, stored, in an HTML, meta, tag
+:navtitle: Title
+// :page-aliases:
+
+[id="title_{context}"]
+= Title
+----
+====
 
 . Author the content.
 
@@ -182,22 +201,38 @@ The page content type can be:
 [id="creating-a-partial"]
 == Creating a partial
 
-Create a link:https://docs.antora.org/antora/2.3/page/partials-and-content-snippets/[partial] and add it to an assembly page when it may not receive cross references.
+Create a link:https://docs.antora.org/antora/2.3/page/partials-and-content-snippets/[partial] and add it to an assembly page when it may not receive cross references. For consistency with the pages, an AsciiDoc attribute defines the content type.
 The partial content type can be:
 
-* A concept
-* A procedure
-* A reference
+* link:https://redhat-documentation.github.io/modular-docs/#creating-concept-modules[:_content-type: CONCEPT]
+* link:https://redhat-documentation.github.io/modular-docs/#creating-procedure-modules[:_content-type: PROCEDURE]
+* link:https://redhat-documentation.github.io/modular-docs/#creating-reference-modules[:_content-type: REFERENCE]
 
 .Procedure
 
 . Copy one of the templates in the `templates/partials` directory to `modules/__<guide_name>__/partials/__<lowercase_title>__.adoc`.
-
-. Add an include statement in the corresponding page `modules/__<guide_name>__/pages/__<title>__.adoc`.
 +
+* link:https://github.com/eclipse/che-docs/blob/main/templates/partials/concept.adoc[Concept partial template]
+* https://github.com/eclipse/che-docs/blob/main/templates/partials/procedure.adoc[Procedure partial template]
+* https://github.com/eclipse/che-docs/blob/main/templates/partials/reference.adoc[Reference partial template]
+
+. Add an include statement in the corresponding page `modules/__<guide_name>__/pages/__<title>__.adoc`:
++
+.Include statement to a partial, in a page
+====
 `pass:a,c,m[include::partial$__<file_name>__.adoc[leveloffset=+1]]`
+====
 
 . Edit the metadata in the file.
++
+.Template metadata for a partial
+====
+[subs="+attributes,quotes"]
+----
+[id="title_{context}"]
+= Title
+----
+====
 
 . Author the content.
 
@@ -206,17 +241,17 @@ The partial content type can be:
 == Adding a contextual example
 
 Create a contextual link:https://docs.antora.org/antora/2.3/page/examples-and-source-snippets/[example] when upstream and downstream need a different content. The include statement contains the `project-context` attribute to ensure upstream and downstream use a different file.
+These link:https://redhat-documentation.github.io/modular-docs/#using-text-snippets[snippets] have no content type.
 
 .Procedure
 
-. Copy  `templates/examples/snip/che/title.adoc` template to `modules/__<guide_name>__/examples/__<snip_che_lowercase_title>__.adoc`.
+. Create an empty file `modules/__<guide_name>__/examples/snip_che___<lowercase_title>__.adoc`.
 
 . Add an include statement in the corresponding page `templates` directory to `modules/__<guide_name>__/pages/__<title>__.adoc`.
 +
+====
 `pass:a,c,m[include::example$snip_{project-context_}__<file_name>__.adoc[leveloffset=+1]]`
-
-
-. Edit the metadata in the file.
+====
 
 . Author the content.
 
@@ -228,21 +263,27 @@ Avoid using images unless necessary.
 
 .Procedure
 
-. Add the image the `+modules/__<guide_name>__/images/+` directory for the guide including the image.
+. Add the image to the `+modules/__<guide_name>__/images/+` directory corresponding to the guide including the image.
 
 . To publish a block image, use the following syntax. See link:https://docs.antora.org/antora/2.3/page/block-images/[Antora documentation - Add block images] and link:https://docs.asciidoctor.org/asciidoc/latest/macros/images/[Asciidoctor documantation - Images].
 +
+.Block image
+====
 ----
 .__<Image caption>__
 image::__<image_name>__.png[__<Image title>__]
 ----
+====
 
 . The publication tool resizes images. To provide a link to a full-size image, add a `link` attribute:
 +
+.Block image with a link to the full size image
+====
 ----
 .__<Image caption>__
 image::__<image_file_name>__[__<Image title>__,link="../_images/__<image_file_name>__"]
 ----
+====
 
 [id="using-special-characters"]
 == Using special characters
