@@ -1,0 +1,41 @@
+[id="user-workspaces_{context}"]
+= User workspaces
+
+.User workspaces interactions with other components
+image::architecture/{project-context}-user-workspaces-interactions.png[User workspaces interactions with other components]
+
+User workspaces are web IDEs running in containers.
+
+A User workspace is a web application. It consists of microservices running in containers providing all the services of a modern IDE running in your browser:
+
+* Editor
+* Language auto-completion
+* Language server
+* Debugging tools
+* Plug-ins
+* Application runtimes
+
+A workspace is one {orch-name} Deployment containing the workspace containers and enabled plug-ins, plus related {orch-name} components:
+
+* Containers
+* ConfigMaps
+* Services
+* Endpoints
+* Ingresses or Routes
+* Secrets
+* Persistent Volumes (PVs)
+
+A {prod-short} workspace contains the source code of the projects, persisted in a {platforms-name} Persistent Volume (PV). Microservices have read-write access to this shared directory.
+
+Use the devfile v2 format to specify the tools and runtime applications of a {prod-short} workspace.
+
+The following diagram shows one running {prod-short} workspace and its components.
+
+.{prod-short} workspace components
+image::architecture/workspace-components-with-dw.png[]
+
+In the diagram, there is one running workspaces.
+
+
+.Additional resources
+
