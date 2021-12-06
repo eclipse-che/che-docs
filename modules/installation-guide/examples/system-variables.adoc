@@ -1,5 +1,6 @@
 pass:[<!-- vale off -->]
 
+
 [id="{prod-id-short}-server"]
 = {prod-short} server
 
@@ -10,12 +11,16 @@ API service. Browsers initiate REST communications to {prod-short} server with t
 
 Default::: `+http://${CHE_HOST}:${CHE_PORT}/api+`
 
+'''
+
 
 == `+CHE_API_INTERNAL+`
 
 API service internal network URL. Back-end services should initiate REST communications to {prod-short} server with this URL
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_WEBSOCKET_ENDPOINT+`
@@ -24,12 +29,16 @@ Default::: `+NULL+`
 
 Default::: `+ws://${CHE_HOST}:${CHE_PORT}/api/websocket+`
 
+'''
+
 
 == `+CHE_WEBSOCKET_INTERNAL_ENDPOINT+`
 
 {prod-short} WebSocket major internal endpoint. Provides basic communication endpoint for major WebSocket interactions and messaging.
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_WORKSPACE_PROJECTS_STORAGE+`
@@ -38,12 +47,16 @@ Your projects are synchronized from the {prod-short} server into the machine run
 
 Default::: `+/projects+`
 
+'''
+
 
 == `+CHE_WORKSPACE_PROJECTS_STORAGE_DEFAULT_SIZE+`
 
 Used when {orch-name}-type components in a devfile request project PVC creation (Applied in case of `unique` and `per workspace` PVC strategy. In case of the `common` PVC strategy, it is rewritten with the value of the `che.infra.kubernetes.pvc.quantity` property.)
 
 Default::: `+1Gi+`
+
+'''
 
 
 == `+CHE_WORKSPACE_LOGS_ROOT__DIR+`
@@ -52,12 +65,16 @@ Defines the directory inside the machine where all the workspace logs are placed
 
 Default::: `+/workspace_logs+`
 
+'''
+
 
 == `+CHE_WORKSPACE_HTTP__PROXY+`
 
 Configures environment variable HTTP_PROXY to a specified value in containers powering workspaces.
 
 Default::: empty
+
+'''
 
 
 == `+CHE_WORKSPACE_HTTPS__PROXY+`
@@ -66,12 +83,16 @@ Configures environment variable HTTPS_PROXY to a specified value in containers p
 
 Default::: empty
 
+'''
+
 
 == `+CHE_WORKSPACE_NO__PROXY+`
 
 Configures environment variable NO_PROXY to a specified value in containers powering workspaces.
 
 Default::: empty
+
+'''
 
 
 == `+CHE_WORKSPACE_AUTO__START+`
@@ -80,12 +101,16 @@ By default, when users access a workspace with its URL, the workspace automatica
 
 Default::: `+true+`
 
+'''
+
 
 == `+CHE_WORKSPACE_POOL_TYPE+`
 
 Workspace threads pool configuration. This pool is used for workspace-related operations that require asynchronous execution, for example, starting and stopping. Possible values are `fixed` and `cached`.
 
 Default::: `+fixed+`
+
+'''
 
 
 == `+CHE_WORKSPACE_POOL_EXACT__SIZE+`
@@ -94,12 +119,16 @@ This property is ignored when pool type is different from `fixed`. It configures
 
 Default::: `+30+`
 
+'''
+
 
 == `+CHE_WORKSPACE_POOL_CORES__MULTIPLIER+`
 
 This property is ignored when pool type is not set to `fixed`, `che.workspace.pool.exact_size` is set. When set, the pool size is `N_CORES * multiplier`.
 
 Default::: `+2+`
+
+'''
 
 
 == `+CHE_WORKSPACE_PROBE__POOL__SIZE+`
@@ -108,12 +137,16 @@ This property specifies how many threads to use for workspace server liveness pr
 
 Default::: `+10+`
 
+'''
+
 
 == `+CHE_WORKSPACE_HTTP__PROXY__JAVA__OPTIONS+`
 
 HTTP proxy setting for workspace JVM.
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_WORKSPACE_JAVA__OPTIONS+`
@@ -122,12 +155,16 @@ Java command-line options added to JVMs running in workspaces.
 
 Default::: `+-XX:MaxRAM=150m-XX:MaxRAMFraction=2 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom+`
 
+'''
+
 
 == `+CHE_WORKSPACE_MAVEN__OPTIONS+`
 
 Maven command-line options added to JVMs running agents in workspaces.
 
 Default::: `+-XX:MaxRAM=150m-XX:MaxRAMFraction=2 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom+`
+
+'''
 
 
 == `+CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB+`
@@ -136,12 +173,16 @@ RAM limit default for each machine that has no RAM settings in its environment. 
 
 Default::: `+1024+`
 
+'''
+
 
 == `+CHE_WORKSPACE_DEFAULT__MEMORY__REQUEST__MB+`
 
 RAM request for each container that has no explicit RAM settings in its environment. This amount is allocated when the workspace container is created. This property may not be supported by all infrastructure implementations. Currently it is supported by {orch-name}. A memory request exceeding the memory limit is ignored, and only the limit size is used. Value less or equal to 0 is interpreted as disabling the limit.
 
 Default::: `+200+`
+
+'''
 
 
 == `+CHE_WORKSPACE_DEFAULT__CPU__LIMIT__CORES+`
@@ -150,12 +191,16 @@ CPU limit for each container that has no CPU settings in its environment. Specif
 
 Default::: `+-1+`
 
+'''
+
 
 == `+CHE_WORKSPACE_DEFAULT__CPU__REQUEST__CORES+`
 
 CPU request for each container that has no CPU settings in environment. A CPU request exceeding the CPU limit is ignored, and only limit number is used. Value less or equal to 0 is interpreted as disabling the limit.
 
 Default::: `+-1+`
+
+'''
 
 
 == `+CHE_WORKSPACE_SIDECAR_DEFAULT__MEMORY__LIMIT__MB+`
@@ -164,12 +209,16 @@ RAM limit for each sidecar that has no RAM settings in the {prod-short} plug-in 
 
 Default::: `+128+`
 
+'''
+
 
 == `+CHE_WORKSPACE_SIDECAR_DEFAULT__MEMORY__REQUEST__MB+`
 
 RAM request for each sidecar that has no RAM settings in the {prod-short} plug-in configuration.
 
 Default::: `+64+`
+
+'''
 
 
 == `+CHE_WORKSPACE_SIDECAR_DEFAULT__CPU__LIMIT__CORES+`
@@ -178,12 +227,16 @@ CPU limit default for each sidecar that has no CPU settings in the {prod-short} 
 
 Default::: `+-1+`
 
+'''
+
 
 == `+CHE_WORKSPACE_SIDECAR_DEFAULT__CPU__REQUEST__CORES+`
 
 CPU request default for each sidecar that has no CPU settings in the {prod-short} plug-in configuration. Specify either in floating point cores number, for example, `0.125`, or using the Kubernetes format, integer millicores, for example, `125m`.
 
 Default::: `+-1+`
+
+'''
 
 
 == `+CHE_WORKSPACE_SIDECAR_IMAGE__PULL__POLICY+`
@@ -192,12 +245,16 @@ Defines image-pulling strategy for sidecars. Possible values are: `Always`, `Nev
 
 Default::: `+Always+`
 
+'''
+
 
 == `+CHE_WORKSPACE_ACTIVITY__CHECK__SCHEDULER__PERIOD__S+`
 
 Period of inactive workspaces suspend job execution.
 
 Default::: `+60+`
+
+'''
 
 
 == `+CHE_WORKSPACE_ACTIVITY__CLEANUP__SCHEDULER__PERIOD__S+`
@@ -206,12 +263,16 @@ The period of the cleanup of the activity table. The activity table can contain 
 
 Default::: `+3600+`
 
+'''
+
 
 == `+CHE_WORKSPACE_ACTIVITY__CLEANUP__SCHEDULER__INITIAL__DELAY__S+`
 
 The delay after server startup to start the first activity clean up job.
 
 Default::: `+60+`
+
+'''
 
 
 == `+CHE_WORKSPACE_ACTIVITY__CHECK__SCHEDULER__DELAY__S+`
@@ -220,12 +281,16 @@ Delay before first workspace idleness check job started to avoid mass suspend if
 
 Default::: `+180+`
 
+'''
+
 
 == `+CHE_WORKSPACE_CLEANUP__TEMPORARY__INITIAL__DELAY__MIN+`
 
 Time to delay the first execution of temporary workspaces cleanup job.
 
 Default::: `+5+`
+
+'''
 
 
 == `+CHE_WORKSPACE_CLEANUP__TEMPORARY__PERIOD__MIN+`
@@ -234,12 +299,16 @@ Time to delay between the termination of one execution and the commencement of t
 
 Default::: `+180+`
 
+'''
+
 
 == `+CHE_WORKSPACE_SERVER_PING__SUCCESS__THRESHOLD+`
 
 Number of sequential successful pings to server after which it is treated as available. the {prod-short} Operator: the property is common for all servers, for example, workspace agent, terminal, exec.
 
 Default::: `+1+`
+
+'''
 
 
 == `+CHE_WORKSPACE_SERVER_PING__INTERVAL__MILLISECONDS+`
@@ -248,12 +317,16 @@ Interval, in milliseconds, between successive pings to workspace server.
 
 Default::: `+3000+`
 
+'''
+
 
 == `+CHE_WORKSPACE_SERVER_LIVENESS__PROBES+`
 
 List of servers names which require liveness probes
 
 Default::: `+wsagent/http,exec-agent/http,terminal,theia,jupyter,dirigible,cloud-shell,intellij+`
+
+'''
 
 
 == `+CHE_WORKSPACE_STARTUP__DEBUG__LOG__LIMIT__BYTES+`
@@ -262,6 +335,8 @@ Limit size of the logs collected from single container that can be observed by c
 
 Default::: `+10485760+`
 
+'''
+
 
 == `+CHE_WORKSPACE_STOP_ROLE_ENABLED+`
 
@@ -269,12 +344,17 @@ If true, 'stop-workspace' role with the edit privileges will be granted to the '
 
 Default::: `+true+`
 
+'''
+
 
 == `+CHE_DEVWORKSPACES_ENABLED+`
 
 Specifies whether {prod-short} is deployed with DevWorkspaces enabled. This property is set by the {prod-short} Operator if it also installed the support for DevWorkspaces. This property is used to advertise this fact to the {prod-short} dashboard. It does not make sense to change the value of this property manually.
 
 Default::: `+false+`
+
+'''
+
 
 [id="authentication-parameters"]
 = Authentication parameters
@@ -286,12 +366,16 @@ Default::: `+false+`
 
 Default::: `+false+`
 
+'''
+
 
 == `+CHE_AUTH_ACCESS__DENIED__ERROR__PAGE+`
 
 Authentication error page address
 
 Default::: `+/error-oauth+`
+
+'''
 
 
 == `+CHE_AUTH_RESERVED__USER__NAMES+`
@@ -300,12 +384,16 @@ Reserved user names
 
 Default::: empty
 
+'''
+
 
 == `+CHE_OAUTH_GITHUB_CLIENTID+`
 
 Configuration of GitHub OAuth client. You can setup GitHub OAuth to automate authentication to remote repositories. You need to first register this application with GitHub OAuth. GitHub OAuth client ID.
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_OAUTH_GITHUB_CLIENTSECRET+`
@@ -314,12 +402,16 @@ GitHub OAuth client secret.
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_OAUTH_GITHUB_AUTHURI+`
 
 GitHub OAuth authorization URI.
 
 Default::: `+https://github.com/login/oauth/authorize+`
+
+'''
 
 
 == `+CHE_OAUTH_GITHUB_TOKENURI+`
@@ -328,12 +420,16 @@ GitHub OAuth token URI.
 
 Default::: `+https://github.com/login/oauth/access_token+`
 
+'''
+
 
 == `+CHE_OAUTH_GITHUB_REDIRECTURIS+`
 
 GitHub OAuth redirect URIs. Separate multiple values with comma, for example: URI,URI,URI
 
 Default::: `+http://localhost:${CHE_PORT}/api/oauth/callback+`
+
+'''
 
 
 == `+CHE_OAUTH_OPENSHIFT_CLIENTID+`
@@ -342,12 +438,16 @@ Configuration of OpenShift OAuth client. Used to obtain OpenShift OAuth token. O
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_OAUTH_OPENSHIFT_CLIENTSECRET+`
 
 Configurationof OpenShift OAuth client. Used to obtain OpenShift OAuth token. OpenShift OAuth client ID. OpenShift OAuth client secret.
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_OAUTH_OPENSHIFT_OAUTH__ENDPOINT+`
@@ -356,12 +456,16 @@ ConfigurationofOpenShift OAuth client. Used to obtain OpenShift OAuth token. Ope
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_OAUTH_OPENSHIFT_VERIFY__TOKEN__URL+`
 
 ConfigurationofOpenShiftOAuth client. Used to obtain OpenShift OAuth token. OpenShift OAuth client ID. OpenShift OAuth client secret. OpenShift OAuth endpoint. OpenShift OAuth verification token URL.
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_OAUTH1_BITBUCKET_CONSUMERKEYPATH+`
@@ -370,6 +474,8 @@ Configuration of Bitbucket Server OAuth1 client. Used to obtain Personal access 
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_OAUTH1_BITBUCKET_PRIVATEKEYPATH+`
 
@@ -377,12 +483,17 @@ Configurationof Bitbucket Server OAuth1 client. Used to obtain Personal access t
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_OAUTH1_BITBUCKET_ENDPOINT+`
 
 ConfigurationofBitbucket Server OAuth1 client. Used to obtain Personal access tokens. Location of the file with Bitbucket Server application consumer key (equivalent to a username). Location of the file with Bitbucket Server application private key Bitbucket Server URL. To work correctly with factories the same URL has to be part of `che.integration.bitbucket.server_endpoints` too.
 
 Default::: `+NULL+`
+
+'''
+
 
 [id="internal"]
 = Internal
@@ -394,12 +505,16 @@ Default::: `+NULL+`
 
 Default::: `+10+`
 
+'''
+
 
 == `+DB_SCHEMA_FLYWAY_BASELINE_ENABLED+`
 
 DB initialization and migration configuration If true, ignore scripts up to the version configured by baseline.version.
 
 Default::: `+true+`
+
+'''
 
 
 == `+DB_SCHEMA_FLYWAY_BASELINE_VERSION+`
@@ -408,12 +523,16 @@ Scripts with version up to this are ignored. Note that scripts with version equa
 
 Default::: `+5.0.0.8.1+`
 
+'''
+
 
 == `+DB_SCHEMA_FLYWAY_SCRIPTS_PREFIX+`
 
 Prefix of migration scripts.
 
 Default::: empty
+
+'''
 
 
 == `+DB_SCHEMA_FLYWAY_SCRIPTS_SUFFIX+`
@@ -422,6 +541,8 @@ Suffix of migration scripts.
 
 Default::: `+.sql+`
 
+'''
+
 
 == `+DB_SCHEMA_FLYWAY_SCRIPTS_VERSION__SEPARATOR+`
 
@@ -429,12 +550,17 @@ Separator of version from the other part of script name.
 
 Default::: `+__+`
 
+'''
+
 
 == `+DB_SCHEMA_FLYWAY_SCRIPTS_LOCATIONS+`
 
 Locations where to search migration scripts.
 
 Default::: `+classpath:che-schema+`
+
+'''
+
 
 [id="kubernetes-infra-parameters"]
 = Kubernetes Infra parameters
@@ -446,12 +572,16 @@ Configuration of Kubernetes client master URL that Infra will use.
 
 Default::: empty
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_TRUST__CERTS+`
 
 Boolean to configure Kubernetes client to use trusted certificates.
 
 Default::: `+false+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_CLUSTER__DOMAIN+`
@@ -460,12 +590,16 @@ Kubernetes cluster domain. If not set, svc names will not contain information ab
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_SERVER__STRATEGY+`
 
 Defines the way how servers are exposed to the world in Kubernetes infra. List of strategies implemented in {prod-short}: `default-host`, `multi-host`, `single-host`.
 
 Default::: `+multi-host+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_SINGLEHOST_WORKSPACE_EXPOSURE+`
@@ -474,12 +608,16 @@ Defines the way in which the workspace plugins and editors are exposed in the si
 
 Default::: `+native+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_SINGLEHOST_WORKSPACE_DEVFILE__ENDPOINT__EXPOSURE+`
 
 Defines the way how to expose devfile endpoints, as end-user's applications, in single-host server strategy. They can either follow the single-host strategy and be exposed on subpaths, or they can be exposed on subdomains. `multi-host`: expose on subdomains `single-host`: expose on subpaths
 
 Default::: `+multi-host+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_SINGLEHOST_GATEWAY_CONFIGMAP__LABELS+`
@@ -488,12 +626,16 @@ Defines labels which will be set to ConfigMaps configuring single-host gateway.
 
 Default::: `+app=che,component=che-gateway-config+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_INGRESS_DOMAIN+`
 
 Used to generate domain for a server in a workspace in case property `che.infra.kubernetes.server_strategy` is set to `multi-host`
 
 Default::: empty
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_NAMESPACE_CREATION__ALLOWED+`
@@ -502,12 +644,16 @@ Indicates whether {prod-short} server is allowed to create {orch-namespace} for 
 
 Default::: `+true+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT+`
 
 Defines Kubernetes default namespace in which user's workspaces are created if user does not override it. It's possible to use `<username>` and `<userid>` placeholders (for example: `che-workspace-<username>`). In that case, new namespace will be created for each user. Used by OpenShift infra as well to specify a Project. The `<username>` or `<userid>` placeholder is mandatory.
 
 Default::: `+<username>-che+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_NAMESPACE_LABEL+`
@@ -516,12 +662,16 @@ Defines whether che-server should try to label the workspace namespaces.
 
 Default::: `+true+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_NAMESPACE_ANNOTATE+`
 
 Defines whether che-server should try to annotate the workspace namespaces.
 
 Default::: `+true+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_NAMESPACE_LABELS+`
@@ -530,12 +680,16 @@ List of labels to find {orch-namespace} that are used for {prod-short} Workspace
 
 Default::: `+app.kubernetes.io/part-of=che.eclipse.org,app.kubernetes.io/component=workspaces-namespace+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_NAMESPACE_ANNOTATIONS+`
 
 List of annotations to find {orch-namespace} prepared for {prod-short} users workspaces. Only {orch-namespace} matching the `che.infra.kubernetes.namespace.labels` will be matched against these annotations. {orch-namespace} that matches both `che.infra.kubernetes.namespace.labels` and `che.infra.kubernetes.namespace.annotations` will be preferentially used for User's workspaces. It's possible to use `<username>` placeholder to specify the {orch-namespace} to concrete user. They are used to:  - find prepared {orch-namespace} for users in combination with `che.infra.kubernetes.namespace.labels`.  - actively annotate {orch-namespace} with any workspace.
 
 Default::: `+che.eclipse.org/username=<username>+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_SERVICE__ACCOUNT__NAME+`
@@ -544,12 +698,16 @@ Defines Kubernetes Service Account name which should be specified to be bound to
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_WORKSPACE__SA__CLUSTER__ROLES+`
 
 Specifies optional, additional cluster roles to use with the workspace service account. the {prod-short} Operator that the cluster role names must already exist, and the {prod-short} service account needs to be able to create a Role Binding to associate these cluster roles with the workspace service account. The names are comma separated. This property deprecates `che.infra.kubernetes.cluster_role_name`.
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_WORKSPACE__START__TIMEOUT__MIN+`
@@ -558,12 +716,16 @@ Defines wait time that limits the Kubernetes workspace start time.
 
 Default::: `+8+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_INGRESS__START__TIMEOUT__MIN+`
 
 Defines the timeout in minutes that limits the period for which Kubernetes Ingress become ready
 
 Default::: `+5+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_WORKSPACE__UNRECOVERABLE__EVENTS+`
@@ -572,12 +734,16 @@ If during workspace startup an unrecoverable event defined in the property occur
 
 Default::: `+FailedMount,FailedScheduling,MountVolume.SetUpfailed,Failed to pull image,FailedCreate,ReplicaSetCreateError+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_PVC_ENABLED+`
 
 Defines whether use the Persistent Volume Claim for {prod-short} workspace needs, for example: backup projects, logs, or disable it.
 
 Default::: `+true+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_PVC_STRATEGY+`
@@ -586,12 +752,16 @@ Defined which strategy will be used while choosing PVC for workspaces. Supported
 
 Default::: `+common+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS+`
 
 Defines whether to run a job that creates workspace's subpath directories in persistent volume for the `common` strategy before launching a workspace. Necessary in some versions of {orch-name} as workspace subpath volume mounts are created with root permissions, and therefore cannot be modified by workspaces running as a user (presents an error importing projects into a workspace in {prod-short}). The default is `true`, but should be set to `false` if the version of {orch-name} creates subdirectories with user permissions. See: link:https://github.com/kubernetes/kubernetes/issues/41638[subPath in volumeMount is not writable for non-root users #41638] the {prod-short} Operator that this property has effect only if the `common` PVC strategy used.
 
 Default::: `+true+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_PVC_NAME+`
@@ -600,12 +770,16 @@ Defines the settings of PVC name for {prod-short} workspaces. Each PVC strategy 
 
 Default::: `+claim-che-workspace+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_PVC_STORAGE__CLASS__NAME+`
 
 Defines the storage class of Persistent Volume Claim for the workspaces. Empty strings means "use default".
 
 Default::: empty
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_PVC_QUANTITY+`
@@ -614,12 +788,16 @@ Defines the size of Persistent Volume Claim of {prod-short} workspace. See: link
 
 Default::: `+10Gi+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_PVC_JOBS_IMAGE+`
 
 Pod that is launched when performing persistent volume claim maintenance jobs on OpenShift
 
 Default::: `+registry.access.redhat.com/ubi8-minimal:8.3-230+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_PVC_JOBS_IMAGE_PULL__POLICY+`
@@ -628,12 +806,16 @@ Image pull policy of container that used for the maintenance jobs on {orch-name}
 
 Default::: `+IfNotPresent+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_PVC_JOBS_MEMORYLIMIT+`
 
 Defines Pod memory limit for persistent volume claim maintenance jobs
 
 Default::: `+250Mi+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_PVC_ACCESS__MODE+`
@@ -642,12 +824,16 @@ Defines Persistent Volume Claim access mode. the {prod-short} Operator that for 
 
 Default::: `+ReadWriteOnce+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_PVC_WAIT__BOUND+`
 
 Defines if {prod-short} Server should wait workspaces Persistent Volume Claims to become bound after creating. Default value is `true`. The parameter is used by all Persistent Volume Claim strategies. It should be set to `false` when `volumeBindingMode` is configured to `WaitForFirstConsumer` otherwise workspace starts will hangs up on phase of waiting PVCs.
 
 Default::: `+true+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_INGRESS_ANNOTATIONS__JSON+`
@@ -656,12 +842,16 @@ Defines annotations for ingresses which are used for servers exposing. Value dep
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_INGRESS_PATH__TRANSFORM+`
 
 Defines a recipe on how to declare the path of the ingress that should expose a server. The `%s` represents the base public URL of the server and is guaranteed to end with a forward slash. This property must be a valid input to the `String.format()` method and contain exactly one reference to `%s`. See the description of the `che.infra.kubernetes.ingress.annotations_json` property to see how these two properties interplay when specifying the ingress annotations and path. If not defined, this property defaults to `%s` (without the quotes) which means that the path is not transformed in any way for use with the ingress controller.
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_INGRESS_LABELS+`
@@ -670,12 +860,16 @@ Additional labels to add into every Ingress created by {prod-short} server to al
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_POD_SECURITY__CONTEXT_RUN__AS__USER+`
 
 Defines security context for Pods that will be created by Kubernetes Infra This is ignored by OpenShift infra
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_POD_SECURITY__CONTEXT_FS__GROUP+`
@@ -684,12 +878,16 @@ Defines security context for Pods that will be created by Kubernetes Infra. A sp
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC+`
 
 Defines grace termination period for Pods that will be created by {orch-name} infrastructures. Default value: `0`. It allows to stop Pods quickly and significantly decrease the time required for stopping a workspace. the {prod-short} Operator: if `terminationGracePeriodSeconds` have been explicitly set in {orch-name} recipe it will not be overridden.
 
 Default::: `+0+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_CLIENT_HTTP_ASYNC__REQUESTS_MAX+`
@@ -698,12 +896,16 @@ Number of maximum concurrent asynchronous web requests (HTTP requests or ongoing
 
 Default::: `+1000+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_CLIENT_HTTP_ASYNC__REQUESTS_MAX__PER__HOST+`
 
 Number of maximum concurrent asynchronous web requests per host.
 
 Default::: `+1000+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_CLIENT_HTTP_CONNECTION__POOL_MAX__IDLE+`
@@ -712,12 +914,16 @@ Max number of idle connections in the connection pool of the Kubernetes-client s
 
 Default::: `+5+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_CLIENT_HTTP_CONNECTION__POOL_KEEP__ALIVE__MIN+`
 
 Keep-alive timeout of the connection pool of the Kubernetes-client shared HTTP client in minutes.
 
 Default::: `+5+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_TLS__ENABLED+`
@@ -726,12 +932,16 @@ Creates Ingresses with Transport Layer Security (TLS) enabled. In OpenShift infr
 
 Default::: `+false+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_TLS__SECRET+`
 
 Name of a secret that should be used when creating workspace ingresses with TLS. This property is ignored by OpenShift infrastructure.
 
 Default::: empty
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_TLS__KEY+`
@@ -740,12 +950,16 @@ Data for TLS Secret that should be used for workspaces Ingresses. `cert` and `ke
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_TLS__CERT+`
 
 Certificate data for TLS Secret that should be used for workspaces Ingresses. Certificate should be encoded with Base64 algorithm. This property is ignored by OpenShift infrastructure.
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_RUNTIMES__CONSISTENCY__CHECK__PERIOD__MIN+`
@@ -754,12 +968,16 @@ Defines the period with which runtimes consistency checks will be performed. If 
 
 Default::: `+-1+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_TRUSTED__CA_SRC__CONFIGMAP+`
 
 Name of the ConfigMap in {prod-short} server namespace with additional CA TLS certificates to be propagated into all user's workspaces. If the property is set on OpenShift 4 infrastructure, and `che.infra.openshift.trusted_ca.dest_configmap_labels` includes the `config.openshift.io/inject-trusted-cabundle=true` label, then cluster CA bundle will be propagated too.
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_TRUSTED__CA_DEST__CONFIGMAP+`
@@ -768,12 +986,16 @@ Name of the ConfigMap in a workspace namespace with additional CA TLS certificat
 
 Default::: `+ca-certs+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_TRUSTED__CA_MOUNT__PATH+`
 
 Configures path on workspace containers where the CA bundle should be mounted. Content of ConfigMap specified by `che.infra.kubernetes.trusted_ca.dest_configmap` is mounted.
 
 Default::: `+/public-certs+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_TRUSTED__CA_DEST__CONFIGMAP__LABELS+`
@@ -782,12 +1004,17 @@ Comma separated list of labels to add to the CA certificates ConfigMap in user w
 
 Default::: empty
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_ENABLE__UNSUPPORTED__K8S+`
 
 Enables the `/unsupported/{orch-name}` endpoint to resolve calls on Kubernetes infrastructure. Provides direct access to the underlying infrastructure REST API. This results in huge privilege escalation. It impacts only Kubernetes infrastructure. Therefore it implies no security risk on OpenShift with OAuth. Do not enable this, unless you understand the risks.
 
 Default::: `+false+`
+
+'''
+
 
 [id="openshift-infra-parameters"]
 = OpenShift Infra parameters
@@ -799,12 +1026,16 @@ Comma separated list of labels to add to the CA certificates ConfigMap in user w
 
 Default::: `+config.openshift.io/inject-trusted-cabundle=true+`
 
+'''
+
 
 == `+CHE_INFRA_OPENSHIFT_ROUTE_LABELS+`
 
 Additional labels to add into every Route created by {prod-short} server to allow clear identification.
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX+`
@@ -813,12 +1044,17 @@ The hostname that should be used as a suffix for the workspace routes. For examp
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_INFRA_OPENSHIFT_PROJECT_INIT__WITH__SERVER__SA+`
 
 Initialize OpenShift project with {prod-short} server's service account if OpenShift OAuth is enabled.
 
 Default::: `+true+`
+
+'''
+
 
 [id="experimental-properties"]
 = Experimental properties
@@ -830,12 +1066,16 @@ Docker image of {prod-short} plugin broker app that resolves workspace tools con
 
 Default::: `+quay.io/eclipse/che-plugin-metadata-broker:v3.4.0+`
 
+'''
+
 
 == `+CHE_WORKSPACE_PLUGIN__BROKER_ARTIFACTS_IMAGE+`
 
 Docker image of {prod-short} plugin artifacts broker. This broker runs as an init container on the workspace Pod. Its job is to take in a list of plugin identifiers (either references to a plugin in the registry or a link to a plugin meta.yaml) and ensure that the correct .vsix and .theia extensions are downloaded into the /plugins directory, for each plugin requested for the workspace.
 
 Default::: `+quay.io/eclipse/che-plugin-artifacts-broker:v3.4.0+`
+
+'''
 
 
 == `+CHE_WORKSPACE_PLUGIN__BROKER_DEFAULT__MERGE__PLUGINS+`
@@ -844,12 +1084,16 @@ Configures the default behavior of the plugin brokers when provisioning plugins 
 
 Default::: `+false+`
 
+'''
+
 
 == `+CHE_WORKSPACE_PLUGIN__BROKER_PULL__POLICY+`
 
 Docker image of {prod-short} plugin broker app that resolves workspace tools configuration and copies plugins dependencies to a workspace
 
 Default::: `+Always+`
+
+'''
 
 
 == `+CHE_WORKSPACE_PLUGIN__BROKER_WAIT__TIMEOUT__MIN+`
@@ -858,12 +1102,16 @@ Defines the timeout in minutes that limits the max period of result waiting for 
 
 Default::: `+3+`
 
+'''
+
 
 == `+CHE_WORKSPACE_PLUGIN__REGISTRY__URL+`
 
 Workspace plug-ins registry endpoint. Should be a valid HTTP URL. Example: ++http://che-plugin-registry-eclipse-che.192.168.65.2.nip.io++ In case {prod-short} plug-ins registry is not needed value 'NULL' should be used
 
 Default::: `+https://che-plugin-registry.prod-preview.openshift.io/v3+`
+
+'''
 
 
 == `+CHE_WORKSPACE_PLUGIN__REGISTRY__INTERNAL__URL+`
@@ -872,12 +1120,16 @@ Workspace plugins registry internal endpoint. Should be a valid HTTP URL. Exampl
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_WORKSPACE_DEVFILE__REGISTRY__URL+`
 
 Devfile Registry endpoint. Should be a valid HTTP URL. Example: ++http://che-devfile-registry-eclipse-che.192.168.65.2.nip.io++ In case {prod-short} plug-ins registry is not needed value 'NULL' should be used
 
 Default::: `+https://che-devfile-registry.prod-preview.openshift.io/+`
+
+'''
 
 
 == `+CHE_WORKSPACE_DEVFILE__REGISTRY__INTERNAL__URL+`
@@ -886,12 +1138,16 @@ Devfile Registry "internal" endpoint. Should be a valid HTTP URL. Example: ++htt
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_WORKSPACE_STORAGE_AVAILABLE__TYPES+`
 
 The configuration property that defines available values for storage types that clients such as the Dashboard should propose to users during workspace creation and update. Available values:   - `persistent`: Persistent Storage slow I/O but persistent.   - `ephemeral`: Ephemeral Storage allows for faster I/O but may have limited storage       and is not persistent.   - `async`: Experimental feature: Asynchronous storage is combination of Ephemeral       and Persistent storage. Allows for faster I/O and keep your changes, will backup on stop       and restore on start workspace.       Will work only if:           - `che.infra.kubernetes.pvc.strategy='common'`           - `che.limits.user.workspaces.run.count=1`           - `che.infra.kubernetes.namespace.default` contains `<username>`      in other cases remove `async` from the list.
 
 Default::: `+persistent,ephemeral,async+`
+
+'''
 
 
 == `+CHE_WORKSPACE_STORAGE_PREFERRED__TYPE+`
@@ -900,12 +1156,16 @@ The configuration property that defines a default value for storage type that cl
 
 Default::: `+persistent+`
 
+'''
+
 
 == `+CHE_SERVER_SECURE__EXPOSER+`
 
 Configures in which way secure servers will be protected with authentication. Suitable values:   - `default`: `jwtproxy` is configured in a pass-through mode. Servers should authenticate requests themselves.   - `jwtproxy`: `jwtproxy` will authenticate requests. Servers will receive only authenticated requests.
 
 Default::: `+jwtproxy+`
+
+'''
 
 
 == `+CHE_SERVER_SECURE__EXPOSER_JWTPROXY_TOKEN_ISSUER+`
@@ -914,12 +1174,16 @@ Default::: `+jwtproxy+`
 
 Default::: `+wsmaster+`
 
+'''
+
 
 == `+CHE_SERVER_SECURE__EXPOSER_JWTPROXY_TOKEN_TTL+`
 
 JWTProxy issuer token lifetime.
 
 Default::: `+8800h+`
+
+'''
 
 
 == `+CHE_SERVER_SECURE__EXPOSER_JWTPROXY_AUTH_LOADER_PATH+`
@@ -928,12 +1192,16 @@ Optional authentication page path to route unsigned requests to.
 
 Default::: `+/_app/loader.html+`
 
+'''
+
 
 == `+CHE_SERVER_SECURE__EXPOSER_JWTPROXY_IMAGE+`
 
 JWTProxy image.
 
 Default::: `+quay.io/eclipse/che-jwtproxy:0.10.0+`
+
+'''
 
 
 == `+CHE_SERVER_SECURE__EXPOSER_JWTPROXY_MEMORY__REQUEST+`
@@ -942,12 +1210,16 @@ JWTProxy memory request.
 
 Default::: `+15mb+`
 
+'''
+
 
 == `+CHE_SERVER_SECURE__EXPOSER_JWTPROXY_MEMORY__LIMIT+`
 
 JWTProxy memory limit.
 
 Default::: `+128mb+`
+
+'''
 
 
 == `+CHE_SERVER_SECURE__EXPOSER_JWTPROXY_CPU__REQUEST+`
@@ -956,12 +1228,17 @@ JWTProxy CPU request.
 
 Default::: `+0.03+`
 
+'''
+
 
 == `+CHE_SERVER_SECURE__EXPOSER_JWTPROXY_CPU__LIMIT+`
 
 JWTProxy CPU limit.
 
 Default::: `+0.5+`
+
+'''
+
 
 [id="configuration-of-the-major-websocket-endpoint"]
 = Configuration of the major WebSocket endpoint
@@ -973,12 +1250,16 @@ Maximum size of the JSON RPC processing pool in case if pool size would be excee
 
 Default::: `+50+`
 
+'''
+
 
 == `+CHE_CORE_JSONRPC_PROCESSOR__CORE__POOL__SIZE+`
 
 Initial JSON processing pool. Minimum number of threads that used to process major JSON RPC messages.
 
 Default::: `+5+`
+
+'''
 
 
 == `+CHE_CORE_JSONRPC_PROCESSOR__QUEUE__CAPACITY+`
@@ -987,12 +1268,17 @@ Configuration of queue used to process JSON RPC messages.
 
 Default::: `+100000+`
 
+'''
+
 
 == `+CHE_METRICS_PORT+`
 
 Port the HTTP server endpoint that would be exposed with Prometheus metrics.
 
 Default::: `+8087+`
+
+'''
+
 
 [id="cors-settings"]
 = CORS settings
@@ -1004,12 +1290,17 @@ Indicates which request origins are allowed. CORS filter on WS Master is turned 
 
 Default::: `+*+`
 
+'''
+
 
 == `+CHE_CORS_ALLOW__CREDENTIALS+`
 
 Indicates if it allows processing of requests with credentials (in cookies, headers, TLS client certificates).
 
 Default::: `+false+`
+
+'''
+
 
 [id="factory-defaults"]
 = Factory defaults
@@ -1021,12 +1312,17 @@ Editor and plugin which will be used for factories that are created from a remot
 
 Default::: `+redhat/vscode-commons/latest+`
 
+'''
+
 
 == `+CHE_FACTORY_DEFAULT__DEVFILE__FILENAMES+`
 
 Devfile filenames to look on repository-based factories (for example GitHub). Factory will try to locate those files in the order they enumerated in the property.
 
 Default::: `+devfile.yaml,.devfile.yaml+`
+
+'''
+
 
 [id="devfile-defaults"]
 = Devfile defaults
@@ -1038,12 +1334,16 @@ Editor that will be used for factories that are created from a remote Git reposi
 
 Default::: `+eclipse/che-theia/latest+`
 
+'''
+
 
 == `+CHE_FACTORY_SCM__FILE__FETCHER__LIMIT__BYTES+`
 
 File size limit for the URL fetcher which fetch files from the SCM repository.
 
 Default::: `+102400+`
+
+'''
 
 
 == `+CHE_FACTORY_DEVFILE2__FILES__RESOLUTION__LIST+`
@@ -1052,12 +1352,16 @@ Additional files which may be present in repository to complement devfile v2, an
 
 Default::: `+.che/che-editor.yaml,.che/che-theia-plugins.yaml,.vscode/extensions.json+`
 
+'''
+
 
 == `+CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR+`
 
 Default Editor that should be provisioned into Devfile if there is no specified Editor Format is `editorPublisher/editorName/editorVersion` value. `NULL` or absence of value means that default editor should not be provisioned.
 
 Default::: `+eclipse/che-theia/latest+`
+
+'''
 
 
 == `+CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR_PLUGINS+`
@@ -1066,12 +1370,16 @@ Default Plug-ins which should be provisioned for Default Editor. All the plugins
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_WORKSPACE_PROVISION_SECRET_LABELS+`
 
 Defines comma-separated list of labels for selecting secrets from a user namespace, which will be mount into workspace containers as a files or environment variables. Only secrets that match ALL given labels will be selected.
 
 Default::: `+app.kubernetes.io/part-of=che.eclipse.org,app.kubernetes.io/component=workspace-secret+`
+
+'''
 
 
 == `+CHE_WORKSPACE_DEVFILE_ASYNC_STORAGE_PLUGIN+`
@@ -1080,12 +1388,16 @@ Plugin is added in case asynchronous storage feature will be enabled in workspac
 
 Default::: `+eclipse/che-async-pv-plugin/latest+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_ASYNC_STORAGE_IMAGE+`
 
 Docker image for the {prod-short} asynchronous storage
 
 Default::: `+quay.io/eclipse/che-workspace-data-sync-storage:0.0.1+`
+
+'''
 
 
 == `+CHE_WORKSPACE_POD_NODE__SELECTOR+`
@@ -1094,12 +1406,16 @@ Optionally configures node selector for workspace Pod. Format is comma-separated
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_WORKSPACE_POD_TOLERATIONS__JSON+`
 
 Optionally configures tolerations for workspace Pod. Format is a string representing a JSON Array of taint tolerations, or `NULL` to disable it. The objects contained in the array have to follow the link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#toleration-v1-core[toleration v1 core specifications]. Example: `[{"effect":"NoExecute","key":"aNodeTaint","operator":"Equal","value":"aValue"}]`
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_INFRA_KUBERNETES_ASYNC_STORAGE_SHUTDOWN__TIMEOUT__MIN+`
@@ -1108,12 +1424,16 @@ The timeout for the Asynchronous Storage Pod shutdown after stopping the last us
 
 Default::: `+120+`
 
+'''
+
 
 == `+CHE_INFRA_KUBERNETES_ASYNC_STORAGE_SHUTDOWN__CHECK__PERIOD__MIN+`
 
 Defines the period with which the Asynchronous Storage Pod stopping ability will be performed (once in 30 minutes by default)
 
 Default::: `+30+`
+
+'''
 
 
 == `+CHE_INTEGRATION_BITBUCKET_SERVER__ENDPOINTS+`
@@ -1122,6 +1442,8 @@ Bitbucket endpoints used for factory integrations. Comma separated list of Bitbu
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_INTEGRATION_GITLAB_SERVER__ENDPOINTS+`
 
@@ -1129,12 +1451,17 @@ GitLab endpoints used for factory integrations. Comma separated list of GitLab s
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_INTEGRATION_GITLAB_OAUTH__ENDPOINT+`
 
 Address of the GitLab server with configured OAuth 2 integration
 
 Default::: `+NULL#+`
+
+'''
+
 
 [id="che-system"]
 = Che system
@@ -1146,12 +1473,17 @@ System Super Privileged Mode. Grants users with the manageSystem permission addi
 
 Default::: `+false+`
 
+'''
+
 
 == `+CHE_SYSTEM_ADMIN__NAME+`
 
 Grant system permission for `che.admin.name` user. If the user already exists it'll happen on component startup, if not - during the first login when user is persisted in the database.
 
 Default::: `+admin+`
+
+'''
+
 
 [id="workspace-limits"]
 = Workspace limits
@@ -1163,6 +1495,8 @@ Workspaces are the fundamental runtime for users when doing development. You can
 
 Default::: `+16gb+`
 
+'''
+
 
 == `+CHE_LIMITS_WORKSPACE_IDLE_TIMEOUT+`
 
@@ -1170,12 +1504,17 @@ The length of time in milliseconds that a user is idle with their workspace when
 
 Default::: `+1800000+`
 
+'''
+
 
 == `+CHE_LIMITS_WORKSPACE_RUN_TIMEOUT+`
 
 The length of time in milliseconds that a workspace will run, regardless of activity, before the system will suspend it. Set this property if you want to automatically stop workspaces after a period of time. The default is zero, meaning that there is no run timeout.
 
 Default::: `+0+`
+
+'''
+
 
 [id="users-workspace-limits"]
 = Users workspace limits
@@ -1187,6 +1526,8 @@ The total amount of RAM that a single user is allowed to allocate to running wor
 
 Default::: `+-1+`
 
+'''
+
 
 == `+CHE_LIMITS_USER_WORKSPACES_COUNT+`
 
@@ -1194,12 +1535,17 @@ The maximum number of workspaces that a user is allowed to create. The user will
 
 Default::: `+-1+`
 
+'''
+
 
 == `+CHE_LIMITS_USER_WORKSPACES_RUN_COUNT+`
 
 The maximum number of running workspaces that a single user is allowed to have. If the user has reached this threshold and they try to start an additional workspace, they will be prompted with an error message. The user will need to stop a running workspace to activate another.
 
 Default::: `+1+`
+
+'''
+
 
 [id="organizations-workspace-limits"]
 = Organizations workspace limits
@@ -1211,6 +1557,8 @@ The total amount of RAM that a single organization (team) is allowed to allocate
 
 Default::: `+-1+`
 
+'''
+
 
 == `+CHE_LIMITS_ORGANIZATION_WORKSPACES_COUNT+`
 
@@ -1218,12 +1566,17 @@ The maximum number of workspaces that a organization is allowed to own. The orga
 
 Default::: `+-1+`
 
+'''
+
 
 == `+CHE_LIMITS_ORGANIZATION_WORKSPACES_RUN_COUNT+`
 
 The maximum number of running workspaces that a single organization is allowed. If the organization has reached this threshold and they try to start an additional workspace, they will be prompted with an error message. The organization will need to stop a running workspace to activate another.
 
 Default::: `+-1+`
+
+'''
+
 
 [id="multi-user-specific-openshift-infrastructure-configuration"]
 = Multi-user-specific OpenShift infrastructure configuration
@@ -1235,6 +1588,9 @@ Alias of the OpenShift identity provider registered in Keycloak, that should be 
 
 Default::: `+NULL+`
 
+'''
+
+
 [id="keycloak-configuration"]
 = Keycloak configuration
 
@@ -1245,12 +1601,16 @@ Url to keycloak identity provider server Can be set to NULL only if `che.keycloa
 
 Default::: `+http://${CHE_HOST}:5050/auth+`
 
+'''
+
 
 == `+CHE_KEYCLOAK_AUTH__INTERNAL__SERVER__URL+`
 
 Internal network service Url to keycloak identity provider server
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_KEYCLOAK_REALM+`
@@ -1259,12 +1619,16 @@ Keycloak realm is used to authenticate users Can be set to NULL only if `che.key
 
 Default::: `+che+`
 
+'''
+
 
 == `+CHE_KEYCLOAK_CLIENT__ID+`
 
 Keycloak client identifier in `che.keycloak.realm` to authenticate users in the dashboard, the IDE, and the CLI.
 
 Default::: `+che-public+`
+
+'''
 
 
 == `+CHE_KEYCLOAK_OSO_ENDPOINT+`
@@ -1273,12 +1637,16 @@ URL to access OSO OAuth tokens
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_KEYCLOAK_GITHUB_ENDPOINT+`
 
 URL to access Github OAuth tokens
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_KEYCLOAK_ALLOWED__CLOCK__SKEW__SEC+`
@@ -1287,12 +1655,16 @@ The number of seconds to tolerate for clock skew when verifying `exp` or `nbf` c
 
 Default::: `+3+`
 
+'''
+
 
 == `+CHE_KEYCLOAK_USE__NONCE+`
 
 Use the OIDC optional `nonce` feature to increase security.
 
 Default::: `+true+`
+
+'''
 
 
 == `+CHE_KEYCLOAK_JS__ADAPTER__URL+`
@@ -1301,12 +1673,16 @@ URL to the Keycloak Javascript adapter to use. if set to NULL, then the default 
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_KEYCLOAK_OIDC__PROVIDER+`
 
 Base URL of an alternate OIDC provider that provides a discovery endpoint as detailed in the following specification link:https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig[Obtaining OpenID Provider Configuration Information]
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_KEYCLOAK_USE__FIXED__REDIRECT__URLS+`
@@ -1315,12 +1691,16 @@ Set to true when using an alternate OIDC provider that only supports fixed redir
 
 Default::: `+false+`
 
+'''
+
 
 == `+CHE_KEYCLOAK_USERNAME__CLAIM+`
 
 Username claim to be used as user display name when parsing JWT token if not defined the fallback value is 'preferred_username'
 
 Default::: `+NULL+`
+
+'''
 
 
 == `+CHE_OAUTH_SERVICE__MODE+`
@@ -1329,12 +1709,16 @@ Configuration of OAuth Authentication Service that can be used in "embedded" or 
 
 Default::: `+delegated+`
 
+'''
+
 
 == `+CHE_KEYCLOAK_CASCADE__USER__REMOVAL__ENABLED+`
 
 Configuration for enabling removing user from Keycloak server on removing user from {prod-short} database. By default it's disabled. Can be enabled in some special cases when deleting a user in {prod-short} database should execute removing related-user from Keycloak. For correct work need to set administrator username $++{che.keycloak.admin_username}++ and password $++{che.keycloak.admin_password}++.
 
 Default::: `+false+`
+
+'''
 
 
 == `+CHE_KEYCLOAK_ADMIN__USERNAME+`
@@ -1343,6 +1727,8 @@ Keycloak administrator username. Will be used for deleting user from Keycloak on
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_KEYCLOAK_ADMIN__PASSWORD+`
 
@@ -1350,11 +1736,15 @@ Keycloak administrator password. Will be used for deleting user from Keycloak on
 
 Default::: `+NULL+`
 
+'''
+
 
 == `+CHE_KEYCLOAK_USERNAME_REPLACEMENT__PATTERNS+`
 
 User name adjustment configuration. {prod-short} needs to use the usernames as part of Kubernetes object names and labels and therefore has stricter requirements on their format than the identity providers usually allow (it needs them to be DNS-compliant). The adjustment is represented by comma-separated key-value pairs. These are sequentially used as arguments to the String.replaceAll function on the original username. The keys are regular expressions, values are replacement strings that replace the characters in the username that match the regular expression. The modified username will only be stored in the {prod-short} database and will not be advertised back to the identity provider. It is recommended to use DNS-compliant characters as replacement strings (values in the key-value pairs). Example: `\\=-,@=-at-` changes `\` to `-` and `@` to `-at-` so the username `org\user@com` becomes `org-user-at-com.`
 
 Default::: `+NULL+`
+
+'''
 
 
