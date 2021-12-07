@@ -20,11 +20,7 @@ By default, {prod-short} installation includes the deployment of a dedicated {id
 
 .Prerequisites
 
-ifeval::["{project-context}" == "che"]
-* This procedure is only applicable to {prod-short} installations done using Che Operator. When using the `{prod-cli}` management tool and Helm to install {prod-short}, no supported method is available to use an external {identity-provider} instance.
-endif::[]
-
-*  In the administration console of the external installation of {identity-provider}, define a link:https://www.keycloak.org/docs/latest/server_admin/#_create-realm[realm] containing the users intended to connect to {prod-short}:
+*  In the administration console of the external installation of {identity-provider}, define a link:https://www.keycloak.org/docs/latest/server_admin/#_create-realm[realm] that contains the users to connect to {prod-short}:
 +
 image::keycloak/external_keycloak_realm.png[External {identity-provider} realm,link="../_images/keycloak/external_keycloak_realm.png"]
 
@@ -34,7 +30,7 @@ image::keycloak/external_keycloak_public_client.png[External {identity-provider}
 +
 [NOTE]
 ====
-* *Client Protocol* must be `openid-connect`. 
+* *Client Protocol* must be `openid-connect`.
 * *Access Type*  must be `public`. {prod-short} only supports the `public` access type.
 * *Valid Redirect URIs* must contain at least two URIs related to the {prod-short} server, one using the `http` protocol and the other `https`. These URIs must contain the base URL of the {prod-short} server, followed by `/*` wildcards.
 * *Web Origins* must contain at least two URIs related to the {prod-short} server, one using the `http` protocol and the other `https`. These URIs must contain the base URL of the {prod-short} server, without any path after the host.
@@ -83,4 +79,3 @@ server:
   customCheProperties:
     CHE_INFRA_OPENSHIFT_OAUTH__IDENTITY__PROVIDER: <OpenShift {platforms-identity-provider} alias>
 ----
- 
