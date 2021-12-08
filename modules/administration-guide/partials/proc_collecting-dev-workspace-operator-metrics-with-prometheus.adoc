@@ -8,14 +8,14 @@ This section describes how to use the Prometheus to collect, store, and query me
 
 * The link:https://github.com/devfile/devworkspace-operator/blob/v0.10.0/deploy/deployment/kubernetes/objects/devworkspace-controller-metrics.Service.yaml[`devworkspace-controller-metrics` service] is exposing metrics on port `8443`.
 
-* The `devworkspace-webhookserver` service is exposing metrics on port `9443`. This is the default configuration.
+* The `devworkspace-webhookserver` service is exposing metrics on port `9443`. By default, the service exposes metrics on port `9443`.
 
-* Prometheus 2.26.0 or later is running and the Prometheus console is running on port `9090` with a corresponding *service* and *route*. See link:https://prometheus.io/docs/introduction/first_steps/[First steps with Prometheus].
+* Prometheus 2.26.0 or later is running. The Prometheus console is running on port `9090` with a corresponding *service* and *route*. See link:https://prometheus.io/docs/introduction/first_steps/[First steps with Prometheus].
 
 .Procedure
 
 . Create a `ClusterRoleBinding` to bind the `ServiceAccount` associated with Prometheus to the link:https://github.com/devfile/devworkspace-operator/blob/main/deploy/deployment/kubernetes/objects/devworkspace-controller-metrics-reader.ClusterRole.yaml[devworkspace-controller-metrics-reader] `ClusterRole`.
-This step is required to access {devworkspace} metrics because access is protected with role-based access control (RBAC).
+Without the `ClusterRoleBinding`, you cannot access {devworkspace} metrics because they are protected with role-based access control (RBAC).
 +
 .ClusterRole example
 ====
@@ -54,7 +54,7 @@ roleRef:
 ----
 ====
 
-. Configure Prometheus to scrape metrics from the `8443` port exposed by the `devworkspace-controller-metrics` service and `9443` port exposed by the `devworkspace-webhookserver` service.
+. Configure Prometheus to scrape metrics from the `8443` port exposed by the `devworkspace-controller-metrics` service, and `9443` port exposed by the `devworkspace-webhookserver` service.
 +
 .Prometheus configuration example
 ====
@@ -99,7 +99,7 @@ data:
 
 * Use the Prometheus console to view targets and metrics.
 +
-For more information, see link:https://prometheus.io/docs/introduction/first_steps/#using-the-expression-browser[Using the expression browser] in the Prometheus documentation.
+For more information, see link:https://prometheus.io/docs/introduction/first_steps/#using-the-expression-browser[Using the expression browser].
 
 
 [role="_additional-resources"]
