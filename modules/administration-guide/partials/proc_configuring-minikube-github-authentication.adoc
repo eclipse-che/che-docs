@@ -1,0 +1,59 @@
+[id="configuring-minikube-github-authentication_{context}"]
+= Configuring Minikube with GitHub Authentication
+
+== Authentication on Kubernetes
+On Kubernetes, link:https://github.com/oauth2-proxy/oauth2-proxy[OAuth2 Proxy] is deployed as che-gateway sidecar ensuring requests authentication. Then Kubernetes apiserver must have configured OIDC issuer to know about users identities and CheCluster CR must be configured with:
+```
+spec:
+  auth:
+    identityProviderURL: <oidc-issuer-url>
+    oAuthClientName: <oauth-client-id>
+    oAuthSecret: <oauth-client-secret>
+```
+
+Chectl can configure minikube with link:https://dexidp.io/[Dex] as OIDC issuer with preconfigured static users. This is the default setup when deploying on minikube with devworkspace engine `chectl server:deploy --platform minikube --workspace-engine=dev-workspace`. Dex can serve as a bridge to 3rd party Identity Providers, like GitHub.
+
+=== Setup GitHub as identity provider on Kubernetes
+To setup GitHub as {prod-short} identity provider
+
+. Create OAuth App in GitHub at https://github.com/settings/applications/new (see link:https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app[GitHub documentation]):
++
+[source]
+----
+Application name: Eclipse Che <1>
+Homepage URL: https://<minikube_ip>.nip.io <2>
+Authorization callback URL: https://dex.<minikube_ip>.nip.io/callback <3>
+----
++
+<1> Name is only displayed on GitHub. It is not used internally so it can be any name.
+<2> Main URL to Che instance.
+<3> Callback URL to Dex. Chectl deploys Dex on `dex.` subdomain.
++
+Note: To get minikube ip, run `$ minikube ip` in the terminal.
+
+
+. On GitHub Generate new client secret for just created OAuth application
+
+. edit dex configmap `kubectl edit configmap dex -n dex`
+```
+connectors:
+- type: github
+  id: github
+  name: GitHub
+  config:
+    clientID: <client_id> <1>
+    clientSecret: <client_secret> <2>
+    redirectURI: https://dex.<minikube_ip>.nip.io/callback <3>
+```
++
+<1> OAuth client id copied from GitHub OAuth application
+<2> OAuth client secret, generated at GitHub in previous step
+<3> Callback URL to Dex. This must match configuration in GitHub OAuth application from step 1.
++
+See link:https://dexidp.io/docs/connectors/github/[Dex documentation] for details
+
+Note: To remove dex static users, delete all `enablePasswordDB` and `staticPasswords` sections.
+
+. restart Dex pod to load new configuration `kubectl delete pod dex -n dex`
+
+. On next opening {prod-short} URL, user will be prompted with GitHub login
