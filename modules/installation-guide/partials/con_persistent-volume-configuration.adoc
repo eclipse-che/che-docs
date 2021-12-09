@@ -5,95 +5,121 @@
 [id="storage-strategies-for-{prod-id-short}-workspaces_{context}"]
 = Storage strategies for {prod-id-short} workspaces
 
-Workspace Pods use Persistent Volume Claims (PVCs), which are bound to the physical Persistent Volumes (PVs) with link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[ReadWriteOnce access mode]. It is possible to configure how the {prod-short} server uses PVCs for workspaces. The individual methods for this configuration are called PVC strategies:
+Storage strategy::
+A configurable method defining how {prod-short} workspaces use persistent volume claims (PVCs) and persistent volumes (PVs). 
+This method defines the storage for workspace data, for example, projects, workspace logs, or additional volumes defined by a user.
 
-include::example${project-context}-pvc-strategies.adoc[]
+.Storage strategies comparison
+[width="100%",cols="1,1,1,1",options="header"]
+|===
+| Storage strategy name
+| `common`
+| `per-workspace`
+| `unique`
 
-{prod-short} uses the `common` PVC strategy in combination with the "one {orch-namespace} per user" {orch-namespace} strategy when all {prod-short} workspaces operate in the user's {orch-namespace}, sharing one PVC.
+| PV count
+| One per user
+| One per workspace
+| Multiple PVs per workspace
 
-[id="the-common-pvc-strategy_{context}"]
-== The `common` PVC strategy
-
-All workspaces inside a {platforms-namespace} use the same Persistent Volume Claim (PVC) as the default data storage when storing data such as the following in their declared volumes:
-
-* projects
-* workspace logs
-* additional Volumes defined by a use
-
-When the `common` PVC strategy is in use, user-defined PVCs are ignored, and volumes related to these user-defined PVCs are replaced with a volume that refers to the common PVC.
-In this strategy, all {prod-short} workspaces use the same PVC. When the user runs one workspace, it only binds to one node in the cluster at a time.
-
-The corresponding containers volume mounts link to a common volume, and sub-paths are prefixed with `_<workspace-ID>_` or `__<original-PVC-name>__`. For more details, see xref:how-subpaths-are-used-in-pvcs_{context}[].
-
-The {prod-short} Volume name is identical to the name of the user-defined PVC. It means that if a machine is configured to use a {prod-short} volume with the same name as the user-defined
-PVC has, they will use the same shared folder in the common PVC.
-
-When a workspace is deleted, a corresponding subdirectory (`$\{ws-id}`) is deleted in the PV directory.
-
-NOTE: The common PVC will be removed when a user's workspaces are all deleted. The PVC will be re-created when a non-ephemeral workspace is started.
-
-.Restrictions on using the `common` PVC strategy
-
-When the `common` strategy is used, and a workspace PVC access mode is ReadWriteOnce (RWO), only one node can simultaneously use the PVC.
-
-If there are several nodes, you can use the `common` strategy, but:
-
-* The workspace PVC access mode must be reconfigured to `ReadWriteMany` (RWM), so multiple nodes can use this PVC simultaneously.
-
-* Only one workspace in the same {orch-namespace} may be running. See xref:installation-guide:configuring-the-number-of-workspaces-that-a-user-can-run.adoc[].
-
-The `common` PVC strategy is not suitable for large multi-node clusters. Therefore, it is best to use it in single-node clusters. However, in combination with the `per-workspace` {orch-namespace} strategy, the `common` PVC strategy is usable for clusters with not more than 75 nodes. The PVC used with this strategy must be large enough to accommodate all projects to prevent a situation in which one project depletes the resources of others.
-
-[id="the-per-workspace-pvc-strategy_{context}"]
-== The `per-workspace` PVC strategy
-
-The `per-workspace` strategy is similar to the `common` PVC strategy. The only difference is that all workspace Volumes, but not all the workspaces, use the same PVC as the default data storage for:
-
-* projects
-* workspace logs
-* additional Volumes defined by a user
-
-With this strategy, {prod-short} keeps its workspace data in assigned PVs that are allocated by a single PVC.
-
-The `per-workspace` PVC strategy is the universal strategy out of the PVC strategies available and acts as a proper option for large multi-node clusters with a higher amount of users. Using the `per-workspace` PVC strategy, users can run multiple workspaces simultaneously, which results in more PVCs being created.
-
-[id="the-unique-pvc-strategy_{context}"]
-== The `unique` PVC strategy
-
-Using the `unique `PVC strategy, every {prod-short} Volume of a workspace has its own PVC. The workspace PVCs are then:
-
-* Created when a workspace starts for the first time.
-* Deleted when a corresponding workspace is deleted.
-
-User-defined PVCs are created with the following specifics:
-
-* They are provisioned with generated names to prevent naming conflicts with other PVCs in a {orch-namespace}.
-
-* Subpaths of the mounted Physical persistent volumes that reference user-defined PVCs are prefixed with `_<workspace-ID>_` or `__<PVC-name>__`. This ensures that the same PV data structure is configured with different PVC strategies. For details, see xref:how-subpaths-are-used-in-pvcs_{context}[].
-
-The `unique` PVC strategy is suitable for larger multi-node clusters with a lesser amount of users. Since this strategy operates with separate PVCs for each volume in a workspace, vastly more PVCs are created.
+| Default
+| yes
+| no
+| no
 
 
-[id="how-subpaths-are-used-in-pvcs_{context}"]
-== How subpaths are used in PVCs
+| Limitations
+| Maximum one running workspace per user when the PV is in the `ReadWriteOnce` access mode
+| PV count depends on the number of workspaces
+| Unpredictable PV count
 
-Subpaths illustrate the folder hierarchy in the Persistent Volumes (PV).
+|===
 
+Persistent volumes (PVs) access mode::
+The nature of the PV determines the available access mode: `ReadWriteMany` or `ReadWriteOnce`.
+See link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[Kubernetes documentation - access mode].
+For example, link:https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html[Amazon EBS] supports only the `ReadWriteOnce` access mode.
+
+
+[id="the-common-storage-strategy_{context}"]
+== The `common` storage strategy
+
+This is the default storage strategy.
+For each user, all workspaces use the same PV for the default data storage.
+
+When the user starts a first non-ephemeral workspace, the workspace engine creates a common PV.
+
+When the user starts another non-ephemeral workspace, the workspace engine uses the same common PV.
+The workspace only binds simultaneously to one node in the {orch-name} cluster.
+The workspace engine ignores user-defined volumes. 
+The workspace engine replaces volumes related to user-defined volumes with a subPath in the common volume. 
+SubPaths have a `_<workspace-ID>_` or `__<original-volume-name>__` prefix.
+See xref:how-subpaths-are-used-in-persistent-volumes_{context}[].
+The {prod-short} volume name is identical to the name of the user-defined PV.
+Therefore, if a workspace container uses a {prod-short} volume with the same name as the user-defined PV, they will use the same shared folder in the common PV.
+
+When the user deletes a workspace, the workspace engine deletes the corresponding subdirectory (`$\{ws-id}`) in the PV directory.
+
+When the user deletes the last workspace, the workspace engine removes the common PV. 
+
+Restrictions on the `common` storage strategy with the `ReadWriteOnce` access mode::
+The `ReadWriteOnce` access mode limits each user to run only one concurrent workspace.
+See xref:installation-guide:configuring-the-number-of-workspaces-that-a-user-can-run.adoc[].
+
+Scalability::
+The `common` storage strategy is not suitable for multi-node clusters with the 'ReadWriteOnce' access mode for PVs if the number of concurrently running workspaces per user is more than 1.
+
+Persistent volumes (PV) provisioning::
+Create a large enough PV to accommodate all projects to prevent a situation in which one project depletes the resources of others.
+
+[id="the-per-workspace-storage-strategy_{context}"]
+== The `per-workspace` storage strategy
+
+Each workspace uses one dedicated PV. 
+All {prod-short} volumes defined within a single workspace use the same PV.
+
+
+Persistent volumes (PV) provisioning::
+Users can run multiple workspaces simultaneously. This action results in more PVs.
+
+[id="the-unique-storage-strategy_{context}"]
+== The `unique` storage strategy
+
+Each {prod-short} volume defined in a workspace has its own PV.
+
+When the user starts a workspace, the workspace engine creates the workspace PVs.
+
+The workspace engine generates a unique name for each PV to prevent name conflicts with other PVs in the same {orch-namespace}.
+
+To ensure that different storage strategies use the same PV data structure, subPaths of the mounted PVs that reference user-defined PVs are prefixed with `_<workspace-ID>_` or `__<persistent-volume-name>__`. 
+See xref:how-subpaths-are-used-in-persistent-volumes_{context}[].
+
+When the user deletes a workspace, the workspace engine deletes all workspace PVs.
+
+PV provisioning::
+This is the strategy, which creates the highest volume counts.
+
+
+[id="how-subpaths-are-used-in-persistent-volumes_{context}"]
+== How subPaths are used in persistent volumes (PVs)
+
+SubPaths illustrate the folder hierarchy in the PV.
+
+[subs="+quotes,+attributes"]
 ----
-/pv0001
-  /workspaceID1
-  /workspaceID2
-  /workspaceIDn
+/__<pv0001>__
+  /__<workspaceID1>__
+  /__<workspaceID2>__
+  /__<workspaceIDn>__
     /che-logs
     /projects
-    /<volume1>
-    /<volume2>
-    /<User-defined PVC name 1 | volume 3>
+    /__<volume1>__
+    /__<volume2>__
+    /__<user-defined-volume-name-1>__
+    /__<user-defined-volume-name-2>__
+    /__<user-defined-volume-name-3|volume3>__
     ...
 ----
 
-When a user defines volumes for components in the devfile, all components that define the volume of the same name will be backed by the same directory in the PV as `__<PV-name>__`, `__<workspace-ID>__, or `__<original-PVC-name>__`. Each component can have this location mounted on a different path in its containers.
-
-
-.Example
-Using the `common` PVC strategy, user-defined PVCs are replaced with subpaths on the common PVC. When the user references a volume as `my-volume`, it is mounted in the common-pvc with the `/workspace-id/my-volume` subpath.
+When a user defines volumes for components in the devfile, all components that define the volume of the same name will be backed by the same directory in the PV as `__<persistent-volume-name>__`, `__<workspace-ID>__`, or `__<original-volume-name>__`.
+Each component can have this location mounted on a different path in its containers.
