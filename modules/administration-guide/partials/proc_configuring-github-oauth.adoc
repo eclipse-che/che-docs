@@ -14,7 +14,16 @@ OAuth for GitHub allows for automatic SSH key upload to GitHub.
 
 .Procedure
 
-* Create a link:https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app[OAuth application in GitHub] using {prod-short} URL as the value for the application `Homepage URL` and {identity-provider} GitHub endpoint URL as the value for Authorization callback URL. The default values are `++https://++{prod-deployment}-{prod-namespace}.__<DOMAIN>__/` and `++https://++keycloak-{prod-namespace}.__<DOMAIN>__/auth/realms/{prod-deployment}/broker/github/endpoint` respectively, where `__<DOMAIN>__` is {orch-name} cluster domain.
+. Create an link:https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app[OAuth application in GitHub] with the following URLs:
+
+* Enter the {prod-short} URL as `Homepage URL`. The default value is `++https://++{prod-deployment}-{prod-namespace}.__<domain>__/`.
+
+* Enter the `Authorization callback URL` as follows:
+
+** If the {devworkspace} engine is not enabled, enter the {identity-provider} GitHub endpoint URL as `Authorization callback URL`. The default value is `++https://++keycloak-{prod-namespace}.__<domain>__/auth/realms/{prod-deployment}/broker/github/endpoint`.
+
+** If the {devworkspace} engine is enabled, enter the {prod-short} OAuth callback URL as `Authorization callback URL`. The default value is `++https://++{prod-deployment}-{prod-namespace}.__<domain>__/api/oauth/callback`.
+
 
 . Create a new secret in the {orch-namespace} where {prod-short} is deployed.
 +
