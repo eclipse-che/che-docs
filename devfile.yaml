@@ -1,0 +1,54 @@
+#
+# Copyright (c) 2020 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+apiVersion: 1.0.0
+metadata:
+  generateName: che-docs-
+
+components:
+  - alias: che-docs
+    type: dockerimage
+    image: "quay.io/eclipse/che-docs:latest"
+    memoryLimit: 512M
+    mountSources: true
+    command:
+      - tail
+    args:
+      - "-f"
+      - /dev/null
+    endpoints:
+      - name: Open-Livereload
+        port: 35729
+      - name: Open-Preview-server
+        port: 4000
+        attributes:
+          path: /che-7/overview/introduction-to-eclipse-che/
+  - type: chePlugin
+    reference: https://che-plugin-registry-main.surge.sh/v3/plugins/errata-ai/vale-server/latest/meta.yaml
+    alias: vale-vscode
+    preferences:
+      vale.core.useCLI: true
+  - id: ms-vscode/vscode-github-pullrequest/latest
+    type: chePlugin
+  - type: chePlugin
+    reference: https://che-plugin-registry-main.surge.sh/v3/plugins/joaompinto/asciidoctor-vscode/latest/meta.yaml
+    alias: asciidoctor-vscode
+  - type: chePlugin
+    reference: https://che-plugin-registry-main.surge.sh/v3/plugins/timonwong/shellcheck/latest/meta.yaml
+    alias: shellcheck
+  - type: chePlugin
+    id: redhat/vscode-yaml/latest
+
+commands:
+  - name: Build for publication
+    actions:
+      - type: exec
+        component: che-docs
+        workdir: /projects/che-docs
+        command: sh tools/build-for-publication.sh

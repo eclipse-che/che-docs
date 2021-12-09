@@ -1,0 +1,109 @@
+:toc: 
+
+pass:[<!-- vale RedHat.Headings = NO -->]
+
+= Publishing Eclipse Che documentation
+
+pass:[<!-- vale RedHat.Headings = YES -->]
+
+== Understanding the publication workflow
+
+The publication workflow is the following:
+
+_Source Repository_ => _Publication repository_ => _Publication website_
+
+Publication website (https://www.eclipse.org/che/docs/):: 
+Website containing the public facing Eclipse Che website containing:
+
+Eclipse Che website::: 
+https://www.eclipse.org/che/
+PHP website
+
+Eclipse Che documentation:::
+Documentation in HTML format, for multiple versions:
+
+`7.40.x`:::: https://www.eclipse.org/che/docs/che-7/ last version with the Che server engine
+Stable:::: https://www.eclipse.org/che/docs/stable/
+Next:::: https://www.eclipse.org/che/docs/main/
+
+Publication repository (`https://git.eclipse.org/c/www.eclipse.org/che.git/`):: 
+Git repository containing:
+
+`docs` directory:::
+Eclipse Che documentation content in HTML format.
+
+`_` directory::: 
+Eclipse Che documentation UI requirements.
+
+other directories:::
+Eclipse Che website.
+
+A process managed by the Eclipse Infrastructure team pushes the content of the _Publication repository_ to the _Publication website_.
+
+Source repository (`https://github.com/eclipse/che-docs/`):: 
+Git repository containing the sources for the Eclipse Che documentation in the form of a Modular Documentation compliant Antora component.
+
+`publication` branch:::
+Git branch containing the docs content to publish to the _publication repository_.
+
+`publication-builder` branch:::
+Git branch building, validation and publishing the documentation website to the `publication` branch.
+
+Antora playbook (`xref:publication-builder-antora-playbook.yml[]`)::::
+link:https://docs.antora.org/antora/2.3/playbook/[Antora playbook] defining how to assemble the documentation.
+
+Antora UI (`xref:supplemental-ui[]`)::::
+Additions to the default Antora UI, defining the menu and style refinements.
+
+GitHub workflow (`xref:.github/workflows/publication-builder.yml[]`)::::
+GitHub workflow orchestrating the publication.
+
+`main` and release branches (`7.42.x` pattern):::
+These branches contain the documentation content in the form of a Modular Documentation compliant Antora component.
+
+`antora.yml`::::
+link:https://docs.antora.org/antora/2.3/component-version-descriptor/[Antora component version descriptor]
+
+
+
+== Changing the versions to publish
+
+After an Eclipse Che release, after the creation of the release branch in the _Source repository_, update the Antora playbook in the `publication-builder` branch to publish the new documentation.
+
+.Prerequisites
+
+* The release branch exists on the _Source repository_.
+
+
+.Procedure
+
+* Edit the branch version in the `xref:publication-builder-antora-playbook.yml[]` file in the `publication-builder` branch.
++
+[source,yaml]
+----
+content:
+  sources:
+    - url: https://github.com/eclipse/che-docs
+      branches:
+        - "main"
+        - "7.42.x" <1>
+----
+<1> Edit the branch version.
+
+== Building for publication on a local environment
+
+.Procedure
+
+. Checkout the _Source repository_ `publication-builder` branch to get the publication instructions.
+
+. Run the `xref:tools/runnerpublication-builder.sh[]` script to assemble the documentation in HTML format and validate the build artifacts in the `build/site` directory:
++
+----
+$ ./tools/runnerpublication-builder.sh
+----
+
+. Copy the build artifacts to the `publication` branch.
++
+----
+$ ./tools/publication-commiter.sh
+----

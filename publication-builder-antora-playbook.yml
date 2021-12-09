@@ -1,0 +1,42 @@
+---
+#
+# Copyright (c) 2020 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+# Use this Antora Playbook for publication, to build the released version branch.
+site:
+  title: Eclipse Che Documentation
+  # The url property is mandatory to generate the 404 and sitemap files.
+  url: https://www.eclipse.org/che/docs
+  start_page: docs:user-guide:starting-a-workspace-using-the-dashboard.adoc
+  keys:
+    google_analytics: "UA-37306001-2"
+  robots: allow
+content:
+  sources:
+    - url: https://github.com/eclipse/che-docs
+      branches:
+        - "main"
+        - "7.40.x-new-publication"
+      edit_url: "{web_url}/edit/{refname}/{path}"
+output:
+  destinations:
+    - provider: fs
+      clean: true
+      path: build/site
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+  supplemental_files: ./supplemental-ui
+urls:
+  html_extension_style: indexify
+  redirect_facility: static
+runtime:
+  cache_dir: ./.cache/antora
+  fetch: true
