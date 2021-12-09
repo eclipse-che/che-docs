@@ -1,0 +1,33 @@
+[id="ref_devworkspace-specific-metrics_{context}"]
+= {devworkspace}-specific metrics
+
+[role="_abstract"]
+This section describes the {devworkspace}-specific metrics exposed by the `devworkspace-controller-metrics` service.
+
+.Metrics
+,=== 
+ Name, Type, Description, Labels 
+ 
+ `devworkspace_started_total`,"Counter","Number of {devworkspace} starting events.", "`source`, `routingclass`" 
+ `devworkspace_started_success_total`,"Counter","Number of {devworkspace}s successfully entering the `Running` phase.", "`source`, `routingclass`" 
+ `devworkspace_fail_total`,"Counter","Number of failed {devworkspace}s.", "`source`, `reason`" 
+ `devworkspace_startup_time`,"Histogram","Total time taken to start a {devworkspace}, in seconds.", "`source`, `routingclass`" 
+,=== 
+
+.Labels
+,=== 
+ Name, Description, Values 
+ 
+ `source`,"The `controller.devfile.io/devworkspace-source` label of the {devworkspace}.",`string` 
+ `routingclass`,"The `spec.routingclass` of the {devworkspace}.",`"basic|cluster|cluster-tls|web-terminal"` 
+ `reason`,"The workspace startup failure reason.",`"BadRequest|InfrastructureFailure|Unknown"` 
+,=== 
+
+.Startup failure reasons
+,=== 
+ Name, Description 
+ 
+ `BadRequest`,"Startup failure due to an invalid devfile used to create a {devworkspace}." 
+ `InfrastructureFailure`,"Startup failure due to the following errors: `CreateContainerError`, `RunContainerError`, `FailedScheduling`, `FailedMount`." 
+ `Unknown`,"Unknown failure reason." 
+,=== 
