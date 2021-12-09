@@ -1,0 +1,34 @@
+[id="ref_grafana-dashboards-for-the-dev-workspace-operator_{context}"]
+= Grafana dashboards for the {devworkspace} operator
+
+This section describes the example Grafana dashboard, see link:https://github.com/devfile/devworkspace-operator/blob/main/docs/grafana/grafana-dashboard.json[grafana-dashboard.json], which displays metrics collected from the {devworkspace} operator.
+
+.The *{devworkspace}-specific metrics* panel
+image::monitoring/monitoring-dev-workspace-metrics-panel.png[Grafana dashboard panels that contain metrics related to `DevWorkspace startup]
+The *{devworkspace}-specific metrics* panel contains information related to `DevWorkspace` startup.
+
+Average workspace start time:: The average start time of a workspace.
+Workspace starts:: The number successful and failed workspace starts.
+Workspace startup duration:: A heatmap that displays workspace startup duration.
+{devworkspace} successes / failures:: A comparison between successful and failed {devworkspace} startups
+{devworkspace} failure rate:: The ratio between the number of failed workspace startups and the number of total workspace startups.
+{devworkspace} startup failure reasons:: A pie chart that displays the distribution of workspace startup failures. The possible failure reasons are:
+* `BadRequest`
+* `InfrastructureFailure`
+* `Unknown`
+
+.The *Operator metrics* panel, part 1
+image::monitoring/monitoring-dev-workspace-operator-metrics-panel-1.png[Grafana dashboard panels that contain Operator metrics part 1]
+
+Webhooks in flight:: A comparison between the number of different webhook requests.
+Work queue duration:: A heatmap that displays how long the reconcile requests stay in the work queue before they are handled.
+Webhooks latency (/mutate):: A heatmap that displays `/mutate` webhook latency.
+Reconcile time:: A heatmap that displays the reconcile duration.
+
+.The *Operator metrics* panel, part 2
+image::monitoring/monitoring-dev-workspace-operator-metrics-panel-2.png[Grafana dashboard panels that contain Operator metrics part 2]
+
+Webhooks latency (/convert):: A heatmap that displays `/convert` webhook latency.
+Work queue depth:: The number of reconcile requests that are in the work queue.
+Memory:: Memory usage for the {devworkspace} controller and the {devworkspace} webhook server.
+Reconcile counts (DWO):: The average per-second number of reconcile counts for the {devworkspace} controller.
