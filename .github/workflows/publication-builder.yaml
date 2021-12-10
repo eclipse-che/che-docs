@@ -12,6 +12,10 @@
 
 name: Publication builder
 on:
+  # Reusable workflow
+  workflow_call:
+  # Manual run: 'Run workflow' button on the Actions tab
+  workflow_dispatch:
   # Run when the publication-builder branch reeive a push
   push:
     branches:
@@ -45,6 +49,7 @@ jobs:
         id: get-date
         run: |
           echo "::set-output name=yearweek::$(/bin/date -u "+%Y%U")"
+          echo "::set-output name=timestamp::$(/bin/date -Iminutes)"
         shell: bash
       - name: Restore cache
         uses: actions/cache@v2
@@ -61,6 +66,7 @@ jobs:
       - name: Commit artifact to publication branch
         uses: peaceiris/actions-gh-pages@v3
         with:
+          commit_message: "Publication at ${{ steps.get-date.outputs.timestamp }}"
           force_orphan: true # publish branch with only the latest commit
           github_token: ${{ secrets.CHE_BOT_GITHUB_TOKEN }}
           publish_branch: publication
