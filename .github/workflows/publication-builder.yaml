@@ -12,23 +12,15 @@
 
 name: Publication builder
 on:
-  # Reusable workflow
+  # Reusable workflow. Called on push on the content branches.
   workflow_call:
     secrets:
       CHE_BOT_GITHUB_TOKEN:
         required: true
-  # Manual run: 'Run workflow' button on the Actions tab
-  workflow_dispatch:
-  # Run when one of the these branches receives a push
+  # Run on push on the publication-builder branch.
   push:
     branches:
       - publication-builder
-      - main
-      - "7.*"
-  # Run at least one time per day
-  schedule:
-    - cron: "42 7 * * *"
-  # Ideally, run when the main or release branch receive a push
 
 jobs:
   build:

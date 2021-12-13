@@ -22,13 +22,13 @@ components:
     args:
       - "-f"
       - /dev/null
-    endpoints:
-      - name: Open-Livereload
-        port: 35729
-      - name: Open-Preview-server
-        port: 4000
-        attributes:
-          path: /che-7/overview/introduction-to-eclipse-che/
+    # endpoints:
+    #   - name: Open-Livereload
+    #     port: 35729
+    #   - name: Open-Preview-server
+    #     port: 4000
+    #     attributes:
+    #       path: /che-7/overview/introduction-to-eclipse-che/
   - type: chePlugin
     reference: https://che-plugin-registry-main.surge.sh/v3/plugins/errata-ai/vale-server/latest/meta.yaml
     alias: vale-vscode
@@ -46,9 +46,15 @@ components:
     id: redhat/vscode-yaml/latest
 
 commands:
-  - name: Build for publication
+  - name: Publication builder
     actions:
       - type: exec
         component: che-docs
         workdir: /projects/che-docs
-        command: sh tools/build-for-publication.sh
+        command: sh tools/publication-builder.sh
+  - name: Run website
+    actions:
+      - type: exec
+        component: che-docs
+        workdir: /projects/che-docs
+        command: yarn run serve build/docs

@@ -24,7 +24,7 @@ Documentation in HTML format, for multiple versions:
 
 `7.40.x`:::: https://www.eclipse.org/che/docs/che-7/ last version with the Che server engine
 Stable:::: https://www.eclipse.org/che/docs/stable/
-Next:::: https://www.eclipse.org/che/docs/main/
+Next:::: https://www.eclipse.org/che/docs/next/
 
 Publication repository (`https://git.eclipse.org/c/www.eclipse.org/che.git/`):: 
 Git repository containing:
@@ -65,6 +65,9 @@ These branches contain the documentation content in the form of a Modular Docume
 link:https://docs.antora.org/antora/2.3/component-version-descriptor/[Antora component version descriptor]
 
 
+`.github/workflows/call-publication-builder.yaml`::::
+GitHub workflow calling the _Publication builder_ workflow. See: link:https://github.com/eclipse/che-docs/actions/workflows/call-publication-builder.yaml[Call publication builder runs].
+
 
 == Changing the versions to publish
 
@@ -90,20 +93,27 @@ content:
 ----
 <1> Edit the branch version.
 
+== Building for publication on Eclipse Che hosted by Red Hat
+
+.Procedure
+
+. link:https://workspaces.openshift.com#https://github.com/eclipse/che-docs/tree/publication-builder[Open a workspace containing the _Source repository_ `publication-builder` branch]
+
+. Run the _Publication builder_ task to assemble the documentation in HTML format.
+
+. Validate the build artifacts in the `build/site` directory.
+
+
 == Building for publication on a local environment
 
 .Procedure
 
 . Checkout the _Source repository_ `publication-builder` branch to get the publication instructions.
 
-. Run the `xref:tools/runnerpublication-builder.sh[]` script to assemble the documentation in HTML format and validate the build artifacts in the `build/site` directory:
+. Run the `xref:tools/runnerpublication-builder.sh[]` script to assemble the documentation in HTML format:
 +
 ----
 $ ./tools/runnerpublication-builder.sh
 ----
 
-. Copy the build artifacts to the `publication` branch.
-+
-----
-$ ./tools/publication-commiter.sh
-----
+. Validate the build artifacts in the `build/site` directory.
