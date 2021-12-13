@@ -1,7 +1,7 @@
 [id="installing-image-puller-using-che-operator_{context}"]
-= Installing {image-puller-name-short} using Che Operator
+= Installing {image-puller-name-short} using the {prod-short} Operator
 
-This section describes how to use Che Operator to install the {image-puller-name-short}, which is a community-supported feature in the technology preview state.
+This section describes how to use the {prod-short} Operator to install the {image-puller-name-short}, which is a community-supported feature in the technology preview state.
 
 .Prerequisites
 
@@ -11,7 +11,7 @@ This section describes how to use Che Operator to install the {image-puller-name
 
 include::example$snip_{project-context}-installing-image-puller-using-che-operator-prerequisites.adoc[]
 
-* The Che Operator is available. See xref:installation-guide:installing-che-on-openshift-4-using-operatorhub.adoc[]
+* The {prod-short} Operator is available. See xref:installation-guide:installing-che-on-openshift-4-using-operatorhub.adoc[]
 
 .Procedure
 
@@ -57,9 +57,9 @@ include::example$snip_{project-context}-image-puller-dockerfile.adoc[]
 
 .Default images
 
-* Che Operator populates the `.spec.imagePuller.spec.images` field with default images used for workspace startup (Theia images, plugin broker images, sidecar plugin images), provided that no images were added to this field before creating the `CheCluster` Custom Resource. Che Operator updates the default images in the `.spec.imagePuller.spec.images` field after every rollout update of {prod-short}. However, if images were added to the `.spec.imagePuller.spec.images` field before creating the `CheCluster` Custom Resource, Che Operator will not add default images.
+* The {prod-short} Operator populates the `.spec.imagePuller.spec.images` field with default images used for workspace startup (Theia images, plugin broker images, sidecar plugin images), provided that no images were added to this field before creating the `CheCluster` Custom Resource. The {prod-short} Operator updates the default images in the `.spec.imagePuller.spec.images` field after every rollout update of {prod-short}. However, if images were added to the `.spec.imagePuller.spec.images` field before creating the `CheCluster` Custom Resource, the {prod-short} Operator will not add default images.
 
-* If user-provided images are added to the `.spec.imagePuller.spec.images` field **after** creating the `CheCluster` Custom Resource, Che Operator
+* If user-provided images are added to the `.spec.imagePuller.spec.images` field **after** creating the `CheCluster` Custom Resource, the {prod-short} Operator
 will still update default images on subsequent {prod-short} rollout updates. Non-default images remain unchanged in the `.spec.imagePuller.spec.images` field after rollout updates.
 
 
@@ -88,8 +88,8 @@ $ {orch-cli} get deployments
 $ {orch-cli} get kubernetesimagepullers
 ----
 
-.Uninstalling {image-puller-name-short} using Che Operator
+.Uninstalling {image-puller-name-short} using {prod-short} Operator
 
 . Edit the `CheCluster` Custom Resource and set `.spec.imagePuller.enable` to `false`.
 
-. Edit the `CheCluster` Custom Resource and set the `.spec.imagePuller.spec` to configure the optional {image-puller-name-short} parameters for Che Operator.
+. Edit the `CheCluster` Custom Resource and set the `.spec.imagePuller.spec` to configure the optional {image-puller-name-short} parameters for the {prod-short} Operator.
