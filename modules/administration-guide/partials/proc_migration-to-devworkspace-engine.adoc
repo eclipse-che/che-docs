@@ -27,7 +27,7 @@ cat >get-all-{prod-id}-users.sh<<EOF
 #!/bin/bash
 set -e
 
-ALL_USERS={prod-id}-users.txt
+ALL_USERS_DUMP={prod-id}-users.txt
 IDENTITY_PROVIDER_URL=\$({orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath="{.status.keycloakURL}" )
 IDENTITY_PROVIDER_SECRET=\$({orch-cli} get checluster/{prod-checluster} -n {prod-namespace} -o jsonpath="{.spec.auth.identityProviderSecret}")
 IDENTITY_PROVIDER_PASSWORD=\$(if [ -z "\$IDENTITY_PROVIDER_SECRET" ] || [ \$IDENTITY_PROVIDER_SECRET = "null" ]; then {orch-cli} get checluster/{prod-checluster}  -n {prod-namespace} -o jsonpath="{.spec.auth.identityProviderPassword}"; else {orch-cli} get secret \$IDENTITY_PROVIDER_SECRET -n {prod-namespace} -o jsonpath="{.data.password}" | base64 -d; fi)
@@ -44,20 +44,27 @@ refreshToken() {
 }
 
 run() {
-  rm -f \${ALL_USERS}
+  rm -f \${ALL_USERS_DUMP}
   refreshToken
-  USER_IDS=(\$(curl -ks  -H "Authorization: bearer \${IDENTITY_PROVIDER_TOKEN}" "\${IDENTITY_PROVIDER_URL}/\${IDENTITY_PROVIDER_USERNAME}/realms/\${IDENTITY_PROVIDER_REALM}/users" | jq ".[] | .id" | tr "\r\n" " "))
+  ALL_USERS=\$(curl -ks  -H "Authorization: bearer \${IDENTITY_PROVIDER_TOKEN}" "\${IDENTITY_PROVIDER_URL}/\${IDENTITY_PROVIDER_USERNAME}/realms/\${IDENTITY_PROVIDER_REALM}/users")
+  ALL_USERS_IDS=(\$(echo "\${ALL_USERS}" | jq ".[] | .id" | tr "\r\n" " "))
 
-  for USER_ID in "\${USER_IDS[@]}"; do
+  for USER_ID in "\${ALL_USERS_IDS[@]}"; do
       refreshToken
 
       USER_ID=\$(echo "\${USER_ID}" | tr -d "\"")
       FEDERATED_IDENTITY=\$(curl -ks -H "Authorization: bearer \${IDENTITY_PROVIDER_TOKEN}" "\${IDENTITY_PROVIDER_URL}/\${IDENTITY_PROVIDER_USERNAME}/realms/\${IDENTITY_PROVIDER_REALM}/users/\${USER_ID}/federated-identity")
       IDENTITY_PROVIDER=\$(echo "\${FEDERATED_IDENTITY}" | jq -r ".[] | select(.identityProvider == \"openshift-v4\")")
       if [ -n "\${IDENTITY_PROVIDER}" ]; then
+        USER_PROFILE=\$(echo "\${ALL_USERS}" | jq -r ".[] | select(.id == \"\${USER_ID}\")")
+        USER_EMAIL=\$(echo "\${USER_PROFILE}" | jq -r ".email")
+        USER_NAME=\$(echo "\${USER_PROFILE}" | jq -r ".username")
+        USER_FIRST_NAME=\$(echo "\${USER_PROFILE}" | jq -r ".firstName")
+        USER_LAST_NAME=\$(echo "\${USER_PROFILE}" | jq -r ".lastName")
+
         OPENSHIFT_USER_ID=\$(echo "\${IDENTITY_PROVIDER}" | jq ".userId" | tr -d "\"")
         echo "[INFO] Find {prod-short} user: \${USER_ID} and corresponding OpenShift user: \${OPENSHIFT_USER_ID}"
-        echo "\${USER_ID} \${OPENSHIFT_USER_ID}" >> \${ALL_USERS}
+        echo "\${USER_ID} \${OPENSHIFT_USER_ID} username:\"\${USER_NAME}\" email:\"\${USER_EMAIL}\" firstName:\"\${USER_FIRST_NAME}\" lastName:\"\${USER_LAST_NAME}\"" >> \${ALL_USERS_DUMP}
       fi
   done
 }
@@ -86,7 +93,7 @@ include::partial$snip_creating-che-database.adoc[]
 [subs="+quotes,+attributes"]
 ----
 DUMP="che.sql"
-ALL_USERS={prod-id}-users.txt
+ALL_USERS_DUMP={prod-id}-users.txt
 while IFS= read -r line
 do
   IDS=($line)
@@ -96,25 +103,29 @@ do
   sed -i -e "s|${USER_ID}|${OPENSHIFT_USER_ID}|g" "${DUMP}"
 
   echo "[INFO] Migrated User ID from \"${USER_ID}\" to \"${OPENSHIFT_USER_ID}\""
-done < "${ALL_USERS}"
+done < "${ALL_USERS_DUMP}"
 ----
 
 include::partial$snip_restoring-che-database.adoc[]
 
-. Add empty users profiles:
+. Migrate users profiles:
 +
 [subs="+quotes,+attributes"]
 ----
-ALL_USERS={prod-id}-users.txt
+ALL_USERS_DUMP={prod-id}-users.txt
 while IFS= read -r line
 do
   IDS=($line)
   OPENSHIFT_USER_ID=${IDS[1]}
+  USER_EMAIL=$(echo ${IDS[3]} | cut -d ":" -f 2)
+  USER_EMAIL=${USER_EMAIL:1:-1}
 
-  {orch-cli} exec $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql ${CHE_POSTGRES_DB} -tAc \"insert into profile(userid) values ('${OPENSHIFT_USER_ID}');\""
+  {orch-cli} exec $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql ${CHE_POSTGRES_DB} -tAc \"INSERT INTO profile(userid) VALUES ('${OPENSHIFT_USER_ID}');\""
+  {orch-cli} exec $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql ${CHE_POSTGRES_DB} -tAc \"UPDATE usr SET email = '${USER_EMAIL}' WHERE id='${OPENSHIFT_USER_ID}';\""
+  {orch-cli} exec $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql ${CHE_POSTGRES_DB} -tAc \"INSERT INTO profile_attributes(user_id,value, name) VALUES ('${OPENSHIFT_USER_ID}', 'email', '${USER_EMAIL}');\""
 
   echo "[INFO] Added profile for \"${OPENSHIFT_USER_ID}\""
-done < "${ALL_USERS}"
+done < "${ALL_USERS_DUMP}"
 ----
 
 . Find Cluster Service Version name:
