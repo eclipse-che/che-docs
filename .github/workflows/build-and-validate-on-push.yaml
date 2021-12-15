@@ -12,7 +12,10 @@
 
 name: Build and validate
 on:
-  - push
+  push:
+    branches:
+      - main
+      - master
 jobs:
   build:
     name: Build and validate
@@ -24,60 +27,42 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Cache for Antora UI and Htmltest.
+      # See: https://docs.github.com/en/actions/guides/caching-dependencies-to-speed-up-workflows
+      # Htmltest accepts 2 weeks old cache for the status code of checked external URLs
+      # See: https://github.com/wjdp/htmltest
+      # Refresh the cache every week to avoid a stale cache for htmltest
+      # See: https://github.com/actions/cache
+      # See: http://man7.org/linux/man-pages/man1/date.1.html
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "::set-output name=yearweek::$(/bin/date -u "+%Y%U")"
+        shell: bash
+      - name: Restore cache
+        uses: actions/cache@v2
+        env:
+          cache-name: cache
+        with:
+          path: .cache
+          key: ${{ steps.get-date.outputs.yearweek }}
+
       - name: Build using antora
         id: antora-build
         run: CI=true antora generate antora-playbook-for-development.yml --stacktrace
 
-      - name: Upload artifact
+      - name: Upload artifact doc-content
         uses: actions/upload-artifact@v2
         with:
           name: doc-content
           path: build/site
 
-      # htmltest:
-      #   name: link checker # This name is set as mandatory in the GitHub configuration.
-      #   runs-on: ubuntu-20.04
-      #   container: "quay.io/eclipse/che-docs:latest"
-      #   needs: build
-      #   steps:
-      #     - name: Checkout code
-      #       uses: actions/checkout@v2
-
-      - name: Cache htmltest status code of checked external URLs # See: https://docs.github.com/en/actions/guides/caching-dependencies-to-speed-up-workflows
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-htmltest
-        with:
-          key: refcache.json
-          path: .cache/htmltest
-
-      # - name: Download artifacts
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: doc-content
-
       - name: Validate links using htmltest
         id: validate-links
         run: htmltest
 
-      # unusedimages:
-      #   name: Report unused images
-      #   runs-on: ubuntu-20.04
-      #   steps:
-      #     - name: Checkout code
-      #       uses: actions/checkout@v2
-
       - name: Report Unused Images
         run: tools/detect-unused-images.sh
 
-      # vale-all-content:
-      #   name: Validate style on all content on push
-      #   runs-on: ubuntu-20.04
-      #   container: "quay.io/eclipse/che-docs:latest"
-      #   steps:
-      #     - name: Checkout code
-      #       uses: actions/checkout@v2
-      #       with:
-      #         fetch-depth: 0
-      - name: Count Vale infringements
+      - name: Count Vale alerts
         run: tools/count_vale_errors.sh
