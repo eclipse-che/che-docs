@@ -1,11 +1,15 @@
 [id="gateway_{context}"]
 = Gateway
 
-The {prod-short} gateway consists of 3 main parts:
+The {prod-short} gateway has three main roles:
 
-* *link:https://github.com/traefik/traefik[Traefik]* instance responsible for requests routing
-* *link:https://github.com/oauth2-proxy/oauth2-proxy[OAuth2-proxy]* ensuring authentication and initiating OAuth flow
-* *link:https://github.com/brancz/kube-rbac-proxy[kube-rbac-proxy]* applying {orch-name} Role based access control (RBAC) policies to control access to any {prod-short} resource.
+* Routing requests. It uses link:https://github.com/traefik/traefik[Traefik].
+
+* Ensuring authentication with OpenID Connect (OIDC). It uses {link-oauth2-proxy}.
+
+* Applying {orch-name} Role based access control (RBAC) policies to control access to any {prod-short} resource. It uses {link-kube-rbac-proxy}.
+
+{link-oidc} is the default OIDC issuer. The {prod-short} operator deploys it with preconfigured static users. It can serve as a bridge to third party {identity-provider}, such as GitHub.
 
 The {prod-short} operator manages it as the `che-gateway` Deployment.
 
