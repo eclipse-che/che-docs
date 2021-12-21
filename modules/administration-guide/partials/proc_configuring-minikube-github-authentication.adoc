@@ -13,10 +13,21 @@ spec:
 
 Chectl can configure Minikube with link:https://dexidp.io/[Dex] as OIDC issuer with preconfigured static users. This is the default setup when deploying on Minikube with {devworkspace} engine `chectl server:deploy --platform minikube --workspace-engine=dev-workspace`. Dex can serve as a bridge to 3rd party {identity-provider}, like GitHub.
 
-=== Setup GitHub as identity provider on Kubernetes
-To setup GitHub as {prod-short} identity provider
+{prod-short} is preconfigured with static users. Configure the OpenID Connect (OIDC) provider to use GitHub authentication.
 
-. Create OAuth App in GitHub at https://github.com/settings/applications/new (see link:https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app[GitHub documentation]):
+.Prerequisites
+
+* {prod-short} is installed on Minikube. See xref:installation-guide:installing-che-on-minikube.adoc[].
+
+
+.Procedure
+. Get Minikube IP and remember it as `_<minikube_ip>_`:
++
+----
+$ minikube ip
+----
+
+. link:https://github.com/settings/applications/new[Create an OAuth App] for your Minikube instance in GitHub. See link:https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app[GitHub documentation].
 +
 [source]
 ----
@@ -28,11 +39,9 @@ Authorization callback URL: https://dex.<minikube_ip>.nip.io/callback <3>
 <1> Name is only displayed on GitHub. It is not used internally so it can be any name.
 <2> Main URL to Che instance.
 <3> Callback URL to Dex. Chectl deploys Dex on `dex.` subdomain.
-+
-Note: To get Minikube IP, run `$ minikube ip` in the terminal.
 
 
-. On GitHub Generate new client secret for just created OAuth application
+. In the GitHub OAuth application page, click btn:[Generate a new client secret] and remember the value of the generated client secret as `_<client_secret>_`.
 
 . edit Dex configmap `kubectl edit configmap dex -n dex`
 ```
