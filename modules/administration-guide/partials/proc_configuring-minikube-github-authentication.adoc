@@ -32,17 +32,23 @@ Authorization callback URL: https://dex.<minikube_ip>.nip.io/callback <3>
 
 . In the GitHub OAuth application page, click btn:[Generate a new client secret] and remember the value of the generated client secret as `_<client_secret>_`.
 
-. edit Dex configmap `kubectl edit configmap dex -n dex`
-```
+. Edit the {link-oidc-issuer} config map:
++
+----
+$ kubectl edit configmap dex -n dex
+----
++
+[source,yaml,subs="+attributes,macros,quotes"]
+----
 connectors:
 - type: github
   id: github
   name: GitHub
   config:
-    clientID: <client_id> <1>
-    clientSecret: <client_secret> <2>
-    redirectURI: https://dex.<minikube_ip>.nip.io/callback <3>
-```
+    clientID: _<client_id>_ <1>
+    clientSecret: _<client_secret>_ <2>
+    redirectURI: https://dex._<minikube_ip>_.nip.io/callback <3>
+----
 +
 <1> OAuth client id copied from GitHub OAuth application
 <2> OAuth client secret, generated at GitHub in previous step
