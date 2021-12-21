@@ -1,17 +1,6 @@
 [id="configuring-minikube-github-authentication_{context}"]
 = Configuring Minikube with GitHub Authentication
 
-== Authentication on Kubernetes
-On {kubernetes}, link:https://github.com/oauth2-proxy/oauth2-proxy[OAuth2 Proxy] is deployed as che-gateway sidecar ensuring requests authentication. Then {kubernetes} must have configured OIDC issuer to know about users identities and CheCluster CR must be configured with:
-```
-spec:
-  auth:
-    identityProviderURL: <oidc-issuer-url>
-    oAuthClientName: <oauth-client-id>
-    oAuthSecret: <oauth-client-secret>
-```
-
-Chectl can configure Minikube with link:https://dexidp.io/[Dex] as OIDC issuer with preconfigured static users. This is the default setup when deploying on Minikube with {devworkspace} engine `chectl server:deploy --platform minikube --workspace-engine=dev-workspace`. Dex can serve as a bridge to 3rd party {identity-provider}, like GitHub.
 
 {prod-short} is preconfigured with static users. Configure the OpenID Connect (OIDC) provider to use GitHub authentication.
 
