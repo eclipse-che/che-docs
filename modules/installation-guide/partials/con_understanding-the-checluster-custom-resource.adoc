@@ -1,35 +1,34 @@
 [id="understanding-the-checluster-custom-resource_{context}"]
 = Understanding the `CheCluster` Custom Resource
 
-A default deployment of {prod-short} consist in the application of a parametrized `CheCluster` Custom Resource by the {prod} Operator.
+A default deployment of {prod-short} consists of a `CheCluster` Custom Resource parameterized by the {prod} Operator.
 
-`CheCluster` Custom Resource:: 
+The `CheCluster` Custom Resource is a {kubernetes} object. You can configure it by editing the `CheCluster` Custom Resource YAML file. This file contains sections to configure each component: `auth`, `database`, `server`, `storage`.
 
-* A YAML document describing the configuration of the overall {prod-short} installation.
-* Contains sections to configure each component: `auth`, `database`, `server`, `storage`.
+The {prod} Operator translates the `CheCluster` Custom Resource into a config map usable by each component of the {prod-short} installation.
 
-
-Role of the {prod} Operator::
-
-* To translate the `CheCluster` Custom Resource into configuration (ConfigMap) usable by each component of the {prod-short} installation.
-
-Role of the {orch-name} platform::
-
-* To apply the configuration (ConfigMap) for each component.
-* To create the necessary Pods.
-* When {orch-name} detects a change in the configuration of a component, it restarts the Pods accordingly.
+The {orch-name} platform applies the configuration to each component, and creates the necessary Pods. When {orch-name} detects changes in the configuration of a component, it restarts the Pods accordingly.
 
 .Configuring the main properties of the {prod-short} server component
 ====
-. The user applies a `CheCluster` Custom Resource containing some configuration related to the `server`.
-. The Operator generates a necessary ConfigMap, called `che`. 
-. {orch-name} detects change in the ConfigMap and triggers a restart of the {prod-short} Pod.
+. Apply the `CheCluster` Custom Resource YAML file with suitable modifications in the `server` component section.
+. The Operator generates the `che` `ConfigMap`. 
+. {orch-name} detects changes in the `ConfigMap` and triggers a restart of the {prod-short} Pod.
 ====
 
 .Additional resources
 
 * link:https://docs.openshift.com/container-platform/latest/operators/understanding/olm-what-operators-are.html[Understanding Operators].
 
+ifeval::["{project-context}" == "crw"]
+
 * link:https://docs.openshift.com/container-platform/latest/operators/understanding/crds/crd-managing-resources-from-crds.html[Understanding Custom Resources].
 
-* To learn how to modify the `CheCluster` Custom Resource, see the chosen installation procedure.
+endif::[]
+
+ifeval::["{project-context}" == "che"]
+
+* link:https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[Understanding Custom Resources].
+
+endif::[]
+
