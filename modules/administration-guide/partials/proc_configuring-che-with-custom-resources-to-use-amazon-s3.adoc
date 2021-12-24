@@ -9,7 +9,7 @@ To configure {prod-short} to use Amazon S3:
 
 .Procedure
 
-. Create a secret containing the `repo-password` key with a password:
+. Create a Secret containing the `repo-password` key with a password:
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
@@ -27,7 +27,7 @@ stringData:
 +
 include::snip_warning-about-losing-backup-repo-password.adoc[]
 
-. Create a secret (for example, `name: aws-user-credentials-secret`) containing:
+. Create a Secret (for example, `name: aws-user-credentials-secret`) containing:
 ** `awsAccessKeyId` key with the AWS access key ID of the user
 ** `awsSecretAccessKey` key with the AWS secret access key of the user
 
@@ -49,7 +49,7 @@ spec: <1>
     repositoryPasswordSecretRef: backup-encryption-password-secret <6>
     awsAccessKeySecretRef: aws-user-credentials-secret <7>
 ----
-<1> `spec` property of this custom object must only have one section configured.
+<1> Must only contain one section (such as `awss3`).
 <2> Optional property that specifies the protocol to be used. `https` is the default value; `http` is a permitted value.
 <3> Optional property that specifies the S3 hostname. The default value is `s3.amazonaws.com`.
 <4> Optional property that specifies the port on which the backup server is running. The default value is `443`.

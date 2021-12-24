@@ -1,7 +1,7 @@
 [id="restoring-a-{prod-id-short}-instance-from-a-backup-by-using-the-checlusterrestore-object_{context}"]
 = Restoring a {prod-short} instance from a backup by using the CheClusterRestore custom object
 
-You can restore a {prod-short} instance from a backup snapshot by using custom resources. A new `CheClusterRestore` custom object is required every time you restore a {prod-short} instance from a backup snapshot; that is, editing an already consumed `CheClusterRestore` custom object, during or after backing up, has no effect.
+You can restore a {prod-short} instance from a backup snapshot by using custom resources. A new `CheClusterRestore` custom object is required every time you restore a {prod-short} instance from a backup snapshot. (So editing an already consumed `CheClusterRestore` custom object, during or after backing up, has no effect.)
 
 include::snip_warning-backup-snapshots-are-bound-to-specific-cluster.adoc[]
 
@@ -35,7 +35,7 @@ spec:
 +
 [TIP]
 ====
-If you intend to reuse a `name` for `CheClusterRestore` custom objects, first make sure to delete any existing custom object with the same `name`. To delete it on the command line, use {orch-cli}:
+To reuse a `name` for `CheClusterRestore` custom objects, first delete any existing custom object with the same `name`. To delete it on the command line, use {orch-cli}:
 [source,shell,subs="+attributes,+quotes"]
 ----
 $ {orch-cli} delete CheClusterRestore _<name>_ -n {prod-namespace}
