@@ -9,7 +9,7 @@ To configure {prod-short} to use Amazon S3:
 
 .Procedure
 
-. Create a secret containing the `repo-password` key with a Base64 encoded password:
+. Create a secret containing the `repo-password` key with a password:
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
@@ -20,7 +20,7 @@ metadata:
   namespace: eclipse-che
 type: Opaque
 stringData:
-  repo-password: __<base64_encoded_password>__
+  repo-password: __<password>__
 ----
 +
 (The {prod-short} Operator will set up this password for the backup repository that the {prod-short} Operator will create from this custom object on the backup server.)
@@ -28,8 +28,8 @@ stringData:
 include::snip_warning-about-losing-backup-repo-password.adoc[]
 
 . Create a secret (for example, `name: aws-user-credentials-secret`) containing:
-** `awsAccessKeyId` key with the Base64 encoded AWS access key ID of the user
-** `awsSecretAccessKey` key with the Base64 encoded AWS secret access key of the user
+** `awsAccessKeyId` key with the AWS access key ID of the user
+** `awsSecretAccessKey` key with the AWS secret access key of the user
 
 . Create the `CheBackupServerConfiguration` custom object:
 +

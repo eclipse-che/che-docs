@@ -9,7 +9,7 @@ To configure {prod-short} to use a REST backup server:
 
 .Procedure
 
-. Create a secret containing the `repo-password` key with a Base64 encoded password:
+. Create a secret containing the `repo-password` key with a password:
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
@@ -20,14 +20,14 @@ metadata:
   namespace: eclipse-che
 type: Opaque
 stringData:
-  repo-password: __<base64_encoded_password>__
+  repo-password: __<password>__
 ----
 +
-(The {prod-short} Operator setup up this password for the backup repository that the {prod-short} Operator will create from this custom object on the backup server.)
+(The {prod-short} Operator will set up this password for the backup repository that the {prod-short} Operator will create from this custom object on the backup server.)
 +
 include::snip_warning-about-losing-backup-repo-password.adoc[]
 
-. Create a secret (for example, `name: rest-server-auth-secret`) containing the `username` and `password` keys for the REST server user credentials, using Base64 encoded username and password values.
+. Optional: Create a secret (for example, `name: rest-server-auth-secret`) containing the `username` and `password` keys for the REST server user credentials.
 +
 NOTE: Skip this step if not using the REST server user credentials.
 
@@ -55,7 +55,7 @@ spec: <1>
 <4> Optional property that specifies the port on which the backup server is running. The default value is `8000`.
 <5> Path on the backup server where the backup snapshots are stored.
 <6> Secret created in step 1.
-<7> Secret created in step 2.
+<7> Optional property that specifies the secret created in step 2.
 
 . Optional: To configure multiple backup servers, create a separate `CheBackupServerConfiguration` custom object for each backup server.
 

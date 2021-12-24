@@ -9,7 +9,7 @@ To configure {prod-short} to use an SFTP backup server:
 
 .Procedure
 
-. Create a secret containing the `repo-password` key with a Base64 encoded password:
+. Create a secret containing the `repo-password` key with a password:
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
@@ -20,14 +20,14 @@ metadata:
   namespace: eclipse-che
 type: Opaque
 stringData:
-  repo-password: __<base64_encoded_password>__
+  repo-password: __<password>__
 ----
 +
 (The {prod-short} Operator will set up this password for the backup repository that the {prod-short} Operator will create from this custom object on the backup server.)
 +
 include::snip_warning-about-losing-backup-repo-password.adoc[]
 
-. Create a secret (for example, `name: ssh-key-secret`) containing the `ssh-privatekey` key with a Base64 encoded private SSH key for logging in to the SFTP server without a password.
+. Create a secret (for example, `name: ssh-key-secret`) containing the `ssh-privatekey` key with a private SSH key for logging in to the SFTP server without a password.
 
 . Create the `CheBackupServerConfiguration` custom object:
 +
@@ -48,7 +48,7 @@ spec: <1>
     sshKeySecretRef: ssh-key-secret <7>
 ----
 <1> `spec` property of this custom object must only have one section configured.
-<2> User name on the remote server to login with using the SSH protocol.
+<2> User name on the remote server to log in using the SSH protocol.
 <3> Remote server hostname.
 <4> Optional property that specifies the port on which an SFTP server is running. The default value is `22`.
 <5> Absolute or relative path on the server where backup snapshots are stored.
