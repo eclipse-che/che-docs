@@ -2,12 +2,12 @@
 +
 [subs="+quotes,+attributes"]
 ----
-{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "pg_dump $CHE_POSTGRES_DB > /tmp/che.sql"
+{orch-cli} exec deploy/postgres -n {prod-namespace}  -- bash  -c "pg_dump $CHE_POSTGRES_DB > /tmp/che.sql"
 ----
 
 . Copy {prod-short} database to a local file system:
 +
 [subs="+quotes,+attributes"]
 ----
-{orch-cli} cp {prod-namespace}/$POSTGRES_POD:/tmp/che.sql che.sql
+{orch-cli} cp {prod-namespace}/$({orch-cli} get pods -l app.kubernetes.io/component=postgres -n {prod-namespace} --no-headers=true  -o custom-columns=":metadata.name"):/tmp/che.sql che.sql
 ----

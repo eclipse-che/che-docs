@@ -2,12 +2,12 @@
 +
 [subs="+quotes,+attributes"]
 ----
-{orch-cli} cp che.sql {prod-namespace}/$POSTGRES_POD:/tmp/che.sql
+{orch-cli} cp che.sql {prod-namespace}/$({orch-cli} get pods -l app.kubernetes.io/component=postgres -n {prod-namespace} --no-headers=true  -o custom-columns=":metadata.name"):/tmp/che.sql
 ----
 
 . Restore {prod-short} database:
 +
 [subs="+quotes,+attributes"]
 ----
-{orch-cli} exec -it $POSTGRES_POD -n {prod-namespace}  -- bash  -c "psql $CHE_POSTGRES_DB < /tmp/che.sql"
+{orch-cli} exec deploy/postgres -n {prod-namespace}  -- bash  -c "psql $CHE_POSTGRES_DB < /tmp/che.sql"
 ----
