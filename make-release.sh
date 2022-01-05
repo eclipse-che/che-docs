@@ -111,7 +111,7 @@ gitBranch() {
 gitCommit() {
   if  [[ ${DOCOMMIT} -eq 1 ]]; then 
     git add "antora*.yml" "modules/installation-guide/examples/*" 
-    git commit -s -m "release: Bump version to ${VERSION}"
+    git commit -s -m "chore: release: bump version to ${VERSION}"
   fi
 }
 
