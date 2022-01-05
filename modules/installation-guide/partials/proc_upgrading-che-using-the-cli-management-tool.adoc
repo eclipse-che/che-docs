@@ -5,27 +5,36 @@
 [id="upgrading-{prod-id-short}-using-the-cli-management-tool_{context}"]
 = Upgrading {prod-short} using the CLI management tool
 
-This section describes how to upgrade from previous minor version using the CLI management tool.
+This section describes how to upgrade from the previous minor version using the CLI management tool.
 
 .Prerequisites
 
-* And administrative account on an OpenShift instance.
+* An administrative account on {platforms-name}.
 
-* A running instance of a previous minor version of {prod}, installed using the CLI management tool on the same instance of OpenShift, in the `__<{prod-namespace}>__` project.
+* A running instance of a previous minor version of {prod}, installed using the CLI management tool on the same instance of {platforms-name}, in the `__<{prod-namespace}>__` project.
 
-* An installation of the `{prod-cli}` {prod-ver} version management tool. See xref:overview:using-the-chectl-management-tool.adoc[].
+* `{prod-cli}` is available and updated. See xref:using-the-chectl-management-tool.adoc[].
+
 
 .Procedure
 
-. In all running workspaces in the {prod-short} {prod-prev-ver} instance, save and push changes back to the Git repositories.
+. Save and push changes back to the Git repositories for all running {prod-short} {prod-prev-ver} workspaces.
 
 . Shut down all workspaces in the {prod-short} {prod-prev-ver} instance.
 
-. Run the following command:
+ifeval::["{project-context}" == "che"]
+. Update to the latest version of `{prod-cli}`:
++
+----
+$ chectl update
+----
+endif::[]
+
+. Upgrade {prod-short}:
 +
 [subs="+attributes,+quotes"]
 ----
-$ {prod-cli} server:update -n __<{prod-namespace}>__
+$ {prod-cli} server:update -n {prod-namespace}
 ----
 
 [NOTE]

@@ -7,16 +7,16 @@
 
 :context: using-npm-artifact-repositories
 
-npm is usually configured using the `npm config` command, writing values to the `.npmrc` files. However, configuration values can also be set using the environment variables beginning with `NPM_CONFIG_`.
+The npm (Node Package Manager) package manager for the JavaScript programming language is configured using the `npm config` command, by writing values to the `.npmrc` files. However, configuration values can also be set using the environment variables beginning with `NPM_CONFIG_`.
 
-The Javascript/Typescript plug-in used in {prod} does not download any artifacts. It is enough to configure npm in the dev-machine component. 
+The Typescript plug-in used in {prod} does not download any artifacts. It is enough to configure npm in the dev-machine component. 
 
 Use the following environment variables for configuration:
 
 * The URL for the artifact repository: `NPM_CONFIG_REGISTRY`
 * For using a certificate from a file: `NODE_EXTRA_CA_CERTS`
 
-Obtain a server certificate file from the repository server. It is customary for administrators to provide certificates of internal artifact servers as Kubernetes secrets (see xref:installation-guide:importing-untrusted-tls-certificates.adoc[]). The relevant server certificates will be mounted in `/public-certs` in every container in the workspace.
+Obtain a server certificate file from the repository server. It is customary for administrators to provide certificates of internal artifact servers as {orch-name} secrets (see xref:installation-guide:importing-untrusted-tls-certificates.adoc[]). The relevant server certificates will be mounted in `/public-certs` in every container in the workspace.
 
 . An example configuration for the use of an internal repository with a self-signed certificate:
 +

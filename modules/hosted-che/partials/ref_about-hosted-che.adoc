@@ -4,36 +4,42 @@
 
 
 [id="about-hosted-che_{context}"]
-= About Hosted Che
+= About Eclipse Che hosted by Red Hat
 
-Hosted Che is link:https://www.eclipse.org/che/[Eclipse {prod-short}] hosted by Red Hat.
-A {prod-short} server is running on OpenShift Dedicated, and the user base is spread across multiple OpenShift Online clusters where workspaces are created.
+Eclipse Che hosted by Red Hat is an open-source product based on link:https://www.eclipse.org/che/[Eclipse {prod-short}] that is running on link:https://www.openshift.com/products/dedicated/[OpenShift Dedicated].
+The new service is part of the link:https://developers.redhat.com/developer-sandbox[Developer Sandbox for Red Hat OpenShift] offering, and is using link:https://developers.redhat.com/products/codeready-workspaces/overview[CodeReady Workspaces], which is built upon Eclipse Che and is optimized for Red Hat OpenShift and Red Hat Linux.
+
+== Differences between Eclipse Che and CodeReady Workspaces
+
+Red Hat CodeReady Workspaces is the product that is built from the Eclipse Che project. The product is normally two versions behind the project. Red Hat also provides licensing, packaging, and support, so CodeReady Workspaces is considered a more stable product than the upstream Eclipse Che project. More details about the difference between Eclipse Che and Red Hat CodeReady Workspaces can be found on the official link:https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/2.8/html/release_notes_and_known_issues/installing_and_deploying_codeready_workspaces#difference-between-che-and-codready-workspaces[documentation].
+
+NOTE: link:https://workspaces.openshift.com/[Eclipse Che hosted by Red Hat] provides both CodeReady Workspaces product-specific, as well as, Eclipse Che community devfiles on the "Get Started" tab of the User Dashboard.
+
+image::hosted-che/get-started-product-and-community-devfiles.png[]
+
+[IMPORTANT]
+====
+Eclipse Che and Red Hat CodeReady Workspaces share all the features - all the product's functionality is available in the project and vice versa. However, not all the upstream plugins are available in the CodeReady Workspaces. To use an unsupported plugin inside the CodeReady Workspaces, one must explicitly point to the raw `meta.yaml` of the plugin from the devfile. The procedure is described in the xref:end-user-guide:adding-a-vs-code-extension-to-a-workspace.adoc#adding-the-vs-code-extension-using-the-workspace-configuration_che[Adding a VS Code extension using the workspace configuration] section.
+====
 
 [id="terms-of-service_{context}"]
 == Terms of service
 
-Hosted Che has the following usage limits and terms of service:
+Eclipse Che hosted by Red Hat has the following usage limits and terms of service:
 
-* Storage: 2 GB
+* Storage: 10 GB
 * RAM: 7 GB
 * Concurrent workspaces: 1
 * Number of workspaces: Unlimited
 * Number of projects per workspace: Unlimited
-* Usage time limit: None
+* Usage time limit: 30 days
++ 
+NOTE: The account will be active for 30 days. At the end of the active period, the access will be revoked and all the data will be deleted. All existing workspaces will be lost. To start using Eclipse Che hosted by Red Hat again, a user must re-register.
+
 * Maximum time for a running workspace: 8 hours
 +
-NOTE: Hosted Che automatically stops workspaces that run more than 8 hours regardless of activity.
+NOTE: Eclipse Che hosted by Red Hat automatically stops workspaces that run more than 8 hours regardless of activity.
 
-* Maximum account inactivity period: 30 days
+* Workspace idling time: 30 minutes
 +
-NOTE: Hosted Che automatically deactivates accounts that have been inactive for more than 30 days. All existing workspaces in a deactivated account are lost. To start using Hosted Che again, a user must re-register.
-
-* Workspace idling time: 15 minutes
-+
-NOTE: A started workspace can be used for an unlimited period of time. When there are no interactions with the IDE, the workspace is stopped after 15 minutes.
-
-* Temporary Storage: Defaults to *Active*
-+
-NOTE: In the temporary storage mode, workspaces have no persistent storage attached. All content changes are lost when the workspace is stopped unless they are pushed to a source-code repository first. This is done to improve the performance of workspace starts and file-system operations in the IDE.
-
-It is possible to disable the temporary storage mode while xref:#creating-a-workspace-from-the-user-dashboard_{context}[creating a workspace from the user dashboard].
+NOTE: If there are no interactions with the IDE, the workspace will be stopped after 30 minutes.

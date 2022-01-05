@@ -3,15 +3,7 @@
 = Importing untrusted TLS certificates to {prod-short}
 
 ====
-NOTE: Starting from {prod-short} version
-ifeval::["{project-context}" == "che"]
-v7.23.0
-endif::[]
-ifeval::["{project-context}" != "che"]
-2.5.1
-endif::[]
-there is xref:importing-untrusted-tls-certificates.adoc[newer way] to apply additional TLS certificates.
-This method is kept for backward compatibility.
+NOTE: This obsolete method is kept for backward compatibility . See xref:importing-untrusted-tls-certificates.adoc[]
 ====
 
 Internal communications between {prod-short} components are, by default, encrypted with TLS. Communications of {prod-short} components with external services such as proxies, source code repositories, identity providers may require TLS tool. Those communications require the use of TLS certificates signed by trusted Certificate Authorities.
@@ -20,7 +12,7 @@ When the certificates used by {prod-short} components or by an external service 
 
 Typical cases that may require this addition are:
 
-* when the underlying Kubernetes cluster uses TLS certificates signed by a CA that is not trusted,
+* when the underlying {orch-name} cluster uses TLS certificates signed by a CA that is not trusted,
 * when {prod-short} server or workspace components connect to external services such as {identity-provider} or a Git server that use TLS certificates signed by an untrusted CA.
 
 To store those certificates, {prod-short} uses a dedicated ConfigMap. Its default name is `ca-certs` but {prod-short} allows configuring its name.
@@ -33,7 +25,7 @@ endif::[]
 ifeval::["{project-context}" != "che"]
 When
 endif::[]
-the cluster contains cluster-wide trusted CA certificates added through the link:https://docs.openshift.com/container-platform/4.4/networking/configuring-a-custom-pki.html#nw-proxy-configure-object_configuring-a-custom-pki[cluster-wide-proxy configuration], {prod-short} Operator detects them and automatically injects them into this ConfigMap:
+the cluster contains cluster-wide trusted CA certificates added using the link:https://docs.openshift.com/container-platform/4.4/networking/configuring-a-custom-pki.html#nw-proxy-configure-object_configuring-a-custom-pki[cluster-wide-proxy configuration], {prod-short} Operator detects them and automatically injects them into this ConfigMap:
 
 - {prod-short} automatically labels the ConfigMap with the `config.openshift.io/inject-trusted-cabundle="true"` label.
 - Based on this annotation, OpenShift automatically injects the cluster-wide trusted CA certificates inside the `ca-bundle.crt` key of ConfigMap
@@ -59,10 +51,10 @@ $ {orch-cli} create configmap ca-certs --from-file=__<certificate-file-path>__ -
 +
 To apply more than one certificate, add another `--from-file=_<certificate-file-path>_` option to the above command.
 
-. During the installation process, when creating the `CheCluster` custom resource, take care of configuring the right name for the created ConfigMap.
+. During the installation process, when creating the `CheCluster` custom resource, configure the right name for the created ConfigMap.
 +
 ====
-For a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operator] deployment,
+For a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/understanding/olm-what-operators-are.html[Operator] deployment,
 ensure you add the `spec.server.ServerTrustStoreConfigMapName` field with the name of the ConfigMap, to the `CheCluster` Custom Resource you will create during the installation:
 
 [source,yaml,subs="+quotes",options="nowrap",role=white-space-pre]
@@ -73,16 +65,6 @@ spec:
     spec.server.ServerTrustStoreConfigMapName: ca-certs
 ----
 ====
-ifeval::["{project-context}" == "che"]
-+
-====
-For a {prod-short} link:https://helm.sh/[Helm Chart] deployment, ensure you override the `global.tls.serverTrustStoreConfigMapName` Helm Chart property with the name of the ConfigMap when installing the {prod-short} Helm Chart. For this you should add the following arguments to the Helm command line:
-[subs="+quotes",options="nowrap",role=white-space-pre]
-----
---set global.tls.serverTrustStoreConfigMapName=ca-certs
-----
-====
-endif::[]
 
 == On already-running {prod-short} installations
 
@@ -93,7 +75,7 @@ endif::[]
 * You should first gather the name of the ConfigMap used to import certificates:
 +
 ====
-On instances of {prod-short} deployed with the {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operator],
+On instances of {prod-short} deployed with the {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/understanding/olm-what-operators-are.html[Operator],
 retrieve the name of the ConfigMap by reading the `spec.server.ServerTrustStoreConfigMapName` `CheCluster` Custom Resource property:
 
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
@@ -101,17 +83,6 @@ retrieve the name of the ConfigMap by reading the `spec.server.ServerTrustStoreC
 $ {orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath={.spec.server.serverTrustStoreConfigMapName}
 ----
 ====
-ifeval::["{project-context}" == "che"]
-+
-====
-On instances of {prod-short} deployed with the {prod-short} link:https://helm.sh/[Helm Chart] deployment, retrieve the name of the ConfigMap by reading the `global.tls.serverTrustStoreConfigMapName` property from the Helm Chart:
-
-[subs="+quotes",options="nowrap",role=white-space-pre]
-----
-$ helm get values che --all --output json | jq -r '.global.tls.serverTrustStoreConfigMapName'
-----
-====
-endif::[]
 +
 [NOTE]
 ====
@@ -134,34 +105,16 @@ To apply more than one certificate, add another `--from-file=_<certificate-file-
 . Configure the {prod-short} installation to use the ConfigMap:
 +
 ====
-For a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators] deployment:
+For a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/understanding/olm-what-operators-are.html[Operators] deployment:
 
 . Edit the `spec.server.ServerTrustStoreConfigMapName` `CheCluster` Custom Resource property to match the name of the ConfigMap:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type=json -p '[{"op": "replace", "path": "/spec/server/serverTrustStoreConfigMapName", "value": "<config-map-name>"}]'
+$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p '[{"op": "replace", "path": "/spec/server/serverTrustStoreConfigMapName", "value": "<config-map-name>"}]'
 ----
 +
 ====
-ifeval::["{project-context}" == "che"]
-+
-====
-For a {prod-short} link:https://helm.sh/[Helm Chart] deployment:
-
-. Clone the https://github.com/eclipse/che[che] project.
-. Go to the `deploy/kubernetes/helm/che` directory.
-. Update the name of the configMap {prod-short} will use, by editing the `global.tls.serverTrustStoreConfigMapName` Helm Chart property to match the created or updated ConfigMap:
-+
-[subs="+quotes,+attributes",options="nowrap",role=white-space-pre]
-----
-$ helm upgrade che -n {prod-namespace} --set global.tls.serverTrustStoreConfigMapName=<config-map-name> \
-   --set global.ingressDomain=__<kubernetes-cluster-domain>__ .
-----
-+
-When using Minikube to run {prod-short}, substitute _<kubernetes-cluster-domain>_ with `$(minikube ip).nip.io`.
-====
-endif::[]
 
 . Restart the {prod-short} Operator, the {prod-short} server and {identity-provider} to load the new certificates:
 +
@@ -188,7 +141,7 @@ and higher.
 
 If you added the certificates without error, the {prod-short} server starts and obtains {identity-provider} configuration over https. Otherwise here is a list of things to verify:
 
-. In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operator] deployment, the `CheCluster` attribute `serverTrustStoreConfigMapName` value matches the name of the ConfigMap. Get the value using the following command :
+. In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/understanding/olm-what-operators-are.html[Operator] deployment, the `CheCluster` attribute `serverTrustStoreConfigMapName` value matches the name of the ConfigMap. Get the value using the following command :
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -239,16 +192,16 @@ SHA1 Fingerprint=3F:DA:BF:E7:A7:A7:90:62:CA:CF:C7:55:0E:1D:7D:05:16:7D:45:60
 
 == Verification at the workspace level
 
-. Start a workspace, get the Kubernetes namespace in which it has been created, and wait for it to be started
+. Start a workspace, get the {orch-namespace} in which it has been created, and wait for it to be started.
 
-. Get the name of the workspace Pod with the following command:
+. Get the name of the workspace Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get pods -o=jsonpath='{.items[0].metadata.name}' -n __<workspace namespace>__ | grep '^workspace.*'
 ----
 
-. Get the name of the Theia IDE container in the workspace Pod with the following command:
+. Get the name of the Che-Theia IDE container in the workspace Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -256,14 +209,14 @@ $ {orch-cli} get -o json pod __<workspace pod name>__  -n __<workspace namespace
     jq -r '.spec.containers[] | select(.name | startswith("theia-ide")).name'
 ----
 
-. Look for a `ca-certs` ConfigMap that should have been created inside the workspace namespace:
+. Look for a `ca-certs` ConfigMap inside the workspace namespace:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get cm ca-certs __<workspace namespace>__
 ----
 
-. Check that the entries in the `ca-certs` ConfigMap contain all the additional entries you added in the certificate ConfigMap at the {prod-short} installation level, in addition to the `ca-bundl.crt` entry which is a reserved one:
+. Check that the entries in the `ca-certs` ConfigMap contain all the additional entries you added in the certificate ConfigMap at the {prod-short} installation level, in addition to the reserved `ca-bundle.crt` entry:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -287,7 +240,7 @@ $ {orch-cli} get -o json pod __<workspace pod name>__ -n {prod-namespace} | \
 }
 ----
 
-. Confirm that the volume has been mounted into containers, especially in the Theia IDE container:
+. Confirm that the volume has been mounted into containers, especially in the Che-Theia IDE container:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -300,7 +253,7 @@ $ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>
 }
 ----
 
-. Inspect `/public-certs` folder on the Theia IDE container and check that its contents match the list of entries in the `ca-certs` ConfigMap:
+. Inspect `/public-certs` folder on the Che-Theia IDE container and check that its contents match the list of entries in the `ca-certs` ConfigMap:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----

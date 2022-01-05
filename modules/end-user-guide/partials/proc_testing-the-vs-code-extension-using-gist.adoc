@@ -20,7 +20,7 @@ To add a plug-in that is not in the default plug-in registry, build a custom plu
 
 .Prerequisites
 
-* A running instance of {prod}. To install an instance of {prod}, see {link-installing-an-instance}.
+* A running instance of {prod-short}. To install an instance of {prod-short}, see {link-installing-an-instance}.
 
 * A GitHub account.
 
@@ -73,7 +73,7 @@ type: VS Code extension
 displayName: Bracket Pair Colorizer
 title: Bracket Pair Colorizer
 description: Bracket Pair Colorizer
-icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
+icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
 repository: https://github.com/CoenraadS/BracketPair
 category: Language
 firstPublicationDate: '2020-07-30'
@@ -147,7 +147,7 @@ commands:
         command: "mvn clean install && java -jar ./target/*.jar"
         workdir: ${CHE_PROJECTS_ROOT}/console-java-simple
 ----
-<1> Any other devfile definition is also accepted. The important information in this devfile are the lines defining this external component. It means that an external reference defines the plug-in (instead of an ID pointing to a definition in the default plug-in registry).
+<1> Any other devfile definition is also accepted. The important information in this devfile are the lines defining this external component. It means that an external reference defines the plug-in and not an ID, which pointing to a definition in the default plug-in registry.
 
 . Verify there are 4 files in the current Git directory:
 +
@@ -209,7 +209,7 @@ $ git add *
 
 # Commit
 $ git commit -m "Initial Commit for the test of our extension"
-[master 98dd370] Initial Commit for the test of our extension
+[main 98dd370] Initial Commit for the test of our extension
  3 files changed, 61 insertions(+)
  create mode 100644 CoenraadS.bracket-pair-colorizer-1.0.61.vsix
  create mode 100644 devfile.yaml
@@ -230,5 +230,5 @@ or:
 +
 [subs="+quotes"]
 ----
-$ echo "https://__<che-server>__/f?url=$(git config --get remote.origin.url)/raw/devfile.yaml"
+$ echo "https://__<che-server>__/#$(git config --get remote.origin.url)/raw/devfile.yaml"
 ----

@@ -47,7 +47,7 @@ Use the `{prod-cli}` `server:deploy` command with the `--postgres-pvc-storage-cl
 +
 [subs="+quotes,+attributes"]
 ----
-$ {prod-cli} server:deploy -m -p minikube -a operator --postgres-pvc-storage-class-name=postgress-storage
+$ {prod-cli} server:deploy -p minikube -a operator --postgres-pvc-storage-class-name=postgress-storage
 ----
 
 ... Provide the storage class name for the {prod-short} workspaces
@@ -56,16 +56,11 @@ Use the `server:deploy` command with the `--workspace-pvc-storage-class-name` fl
 +
 [subs="+quotes,+attributes"]
 ----
-$ {prod-cli} server:deploy -m -p minikube -a operator --workspace-pvc-storage-class-name=workspace-storage
+$ {prod-cli} server:deploy -p minikube -a operator --workspace-pvc-storage-class-name=workspace-storage
 ----
 +
 For  {prod-short} workspaces, the storage class name has different behavior depending on the workspace PVC strategy.
 +
-[NOTE]
-====
-`postgres-pvc-storage-class-name=postgress-storage` and `workspace-pvc-storage-class-name` work for the Operator installer and the Helm installer.
-====
-
 
 ** *Define storage class names using a Custom Resources YAML file:*
 
@@ -95,7 +90,7 @@ spec:
 +
 [subs="+quotes,+attributes"]
 ----
-$ {prod-cli} server:deploy -m -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
+$ {prod-cli} server:deploy -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
 ----
 
 . Configure {prod-short} to store workspaces in one persistent volume and a PostreSQL database in the second one:
@@ -119,7 +114,7 @@ metadata:
 spec:
   server:
     # ...
-    workspaceNamespaceDefault: 'che'
+    workspaceNamespaceDefault: __{prod-workspace}__-__<username>__
     # ...
   storage:
     # ...
@@ -138,7 +133,7 @@ spec:
 +
 [subs="+quotes,+attributes"]
 ----
-$ {prod-cli} server:deploy -m -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
+$ {prod-cli} server:deploy -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
 ----
 
 . Bind static provisioned volumes using class names:

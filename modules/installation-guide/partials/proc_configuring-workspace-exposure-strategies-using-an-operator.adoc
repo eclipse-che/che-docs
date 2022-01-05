@@ -5,7 +5,7 @@
 [id="configuring-workspace-exposure-strategies-using-an-operator_{context}"]
 = Configuring workspace exposure strategies using an Operator
 
-link:https://docs.openshift.com/container-platform/latest/operators/olm-what-operators-are.html[Operators] are software extensions to {platforms-name} that use link:https://docs.openshift.com/container-platform/latest/operators/understanding/crds/crd-managing-resources-from-crds.html[Custom Resources] to manage applications and their components.
+link:https://docs.openshift.com/container-platform/latest/operators/understanding/olm-what-operators-are.html[Operators] are software extensions to {platforms-name} that use link:https://docs.openshift.com/container-platform/latest/operators/understanding/crds/crd-managing-resources-from-crds.html[Custom Resources] to manage applications and their components.
 
 .Prerequisites
 
@@ -60,7 +60,7 @@ spec:
 +
 [subs="+quotes,+attributes"]
 ----
-$ {orch-cli} patch checluster {prod-checluster} --type=json \
+$ {orch-cli} patch checluster/{prod-checluster} --type=json \
   -p '[{"op": "replace",
   "path": "/spec/server/serverExposureStrategy",
   "value": "__<exposure-strategy>__"}]' \ <1>
@@ -70,8 +70,8 @@ $ {orch-cli} patch checluster {prod-checluster} --type=json \
 
 ifeval::["{project-context}" == "che"]
 
-.Gateway single-host on Kubernetes
-Single-host on Kubernetes has two implementations, `native`(default) and `gateway`. To deploy with `gateway` set the `k8s.singleHostExposureType` of CheCluster Custom Resource to `gateway`, or use this patch:
+.Gateway single-host on {orch-name}
+Single-host on {orch-name} has two implementations, `native`(default) and `gateway`. To deploy with `gateway` set the `k8s.singleHostExposureType` of CheCluster Custom Resource to `gateway`, or use this patch:
 
 [source,yaml,subs="+quotes"]
 ----

@@ -1,14 +1,14 @@
 
 [id="configuring-namespace-strategies_{context}"]
-= Configuring {orch-namespace} strategies
+= Configuring workspace target {orch-namespace}
 
-The {platforms-namespace} where a new workspace Pod is deployed depends on the {prod-short} server configuration. By default, every workspace is deployed in a distinct {platforms-namespace}, but the user can configure the {prod-short} server to deploy all workspaces in one specific {platforms-namespace}. The name of a {platforms-namespace} must be provided as a {prod-short} server configuration property and cannot be changed at runtime.
+The {platforms-namespace} where a new workspace is deployed depends on the {prod-short} server configuration. {prod-short} deploys each workspace into a user's dedicated {orch-namespace}, which hosts all {prod-short} workspaces created by the user. The name of a {platforms-namespace} must be provided as a {prod-short} server configuration property or pre-created by {prod-short} administrator.
 
 ifeval::["{project-context}" == "che"]
 NOTE: The term _{orch-namespace}_ ({kubernetes}) is used interchangeably with _project_ (OpenShift).
 endif::[]
 
-With **Operator** installer, {platforms-namespace} strategies are configured using `server.workspaceNamespaceDefault` property.
+{platforms-namespace} strategies are configured using `server.workspaceNamespaceDefault` property.
 
 *Operator CheCluster CR patch*
 [subs="+quotes,+attributes"]
@@ -21,55 +21,47 @@ spec:
   server:
     workspaceNamespaceDefault: __<workspace-namespace>__ <1>
 ----
-<1> - {prod-short} workspace namespace configuration
+<1> - {prod-short} workspace {orch-namespace} configuration
 
-
-ifeval::["{project-context}" == "che"]
-With **Helm** installer, Kubernetes namespaces strategies are configured using `global.cheWorkspacesNamespace` property.
-
-*Helm*
-[subs="+quotes,+attributes"]
-----
-$ helm install --namespace <namespace>
-  --set global.cheWorkspacesNamespace=__<workspace-namespace>__ <1>
-----
-or
-[subs="+quotes,+attributes"]
-----
-$ helm upgrade --namespace <namespace>
-  --set global.cheWorkspacesNamespace=__<workspace-namespace>__ <1>
-----
-<1> - {prod-short} workspace namespace configuration
-endif::[]
 
 NOTE: The underlying environment variable that {prod-short} server uses is `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT`.
 
-WARNING: `CHE_INFRA_KUBERNETES_NAMESPACE` and `CHE_INFRA_OPENSHIFT_PROJECT` are legacy variables. Keep these variables unset for a new installations. Changing these variables during an update can lead to data loss.
-
-WARNING: By default, only one workspace in the same {orch-namespace} can be running at one time. See xref:running-more-than-one-workspace-at-a-time.adoc[].
+WARNING: By default, only one workspace in the same {orch-namespace} can be running at one time. See xref:configuring-the-number-of-workspaces-that-a-user-can-run.adoc[].
 
 [WARNING]
 ====
-{kubernetes} limits the length of a namespace name to 63 characters (this includes the evaluated placeholders). Additionally, the names (after placeholder evaluation) must be valid DNS names.
+{kubernetes} limits the length of a {orch-namespace} name to 63 characters (this includes the evaluated placeholders). Additionally, the names (after placeholder evaluation) must be valid DNS names.
 
-On OpenShift with multi-host server exposure strategy, the length is further limited to 49 characters.
+On OpenShift with multihost server exposure strategy, the length is further limited to 49 characters.
 
 Be aware that the `_<userid>_` placeholder is evaluated into a 36 character long UUID string.
 ====
 
-WARNING: For strategies where creating new {orch-namespace} is needed, make sure that `che` ServiceAccount has enough permissions to do so. With OpenShift OAuth, the authenticated User must have privileges to create new {orch-namespace}.
+[WARNING]
+====
+Use <<pre-creating-namespace>> when:
+
+* `che` ServiceAccount does not have enough permissions when creating new {orch-namespace}
+
+pass:[<!-- vale Vale.Terms = NO -->]
+
+* OpenShift OAuth with a `self-provisioner` cluster role is not linked to the `system:authenticated:oauth` group
+
+pass:[<!-- vale Vale.Terms = YES -->]
+
+* {prod-short} cannot create namespaces
+====
 
 == One {orch-namespace} per user strategy
 
 The strategy isolates each user in their own {orch-namespace}.
 
-To use the strategy, set the _{prod-short} workspace namespace configuration_ value to contain one or more user identifiers. Currently supported identifiers are `_<username>_` and `_<userid>_`.
+To use the strategy, set the _{prod-short} workspace {orch-namespace} configuration_ value to contain one or more user identifiers. Currently supported identifiers are `_<username>_` and `_<userid>_`.
 
 .One {orch-namespace} per user
 ====
-To assign {orch-namespace} names composed of a __`{prod-workspace}`__ prefix and individual usernames (`__{prod-workspace}__-user1`, `__{prod-workspace}__-user2`), set:
+To assign {orch-namespace} names composed of a __`{prod-workspace}`__ prefix and individual usernames (`__{prod-workspace}__-user1`, `__{prod-workspace}__-user2`), set in CheCluster Custom Resource:
 
-*Operator installer (CheCluster CustomResource)*
 [subs="+quotes,+attributes"]
 ----
 ...
@@ -78,105 +70,16 @@ spec:
     workspaceNamespaceDefault: __{prod-workspace}__-__<username>__
 ...
 ----
-
-ifeval::["{project-context}" == "che"]
-*Helm*
-[subs="+quotes,+attributes"]
-----
-$ helm ... --set global.cheWorkspacesNamespace=__{prod-workspace}__-__<username>__
-----
-endif::[]
 ====
-
-== One {orch-namespace} per workspace strategy
-
-The strategy creates a new {orch-namespace} for each new workspace.
-
-To use the strategy, set the _{prod-short} workspace namespace configuration_ value to contain the `_<workspaceID>_` identifier. It can be used alone or combined with other identifiers or any string.
-
-.One {orch-namespace} per workspace
-====
-To assign {orch-namespace} names composed of a __`{prod-workspace}`__ prefix and workspace id, set:
-
-*Operator installer (CheCluster CustomResource)*
-[subs="+quotes,+attributes"]
-----
-...
-spec:
-  server:
-    workspaceNamespaceDefault: __{prod-workspace}__-__<workspaceID>__
-...
-----
-
-ifeval::["{project-context}" == "che"]
-*Helm*
-[subs="+quotes,+attributes"]
-----
-$ helm ... --set global.cheWorkspacesNamespace=__{prod-workspace}__-__<workspaceID>__
-----
-endif::[]
-====
-
-== One {orch-namespace} for all workspaces strategy
-
-The strategy uses one predefined {orch-namespace} for all workspaces.
-
-To use the strategy, set the _{prod-short} workspace namespace configuration_ value to the name of the desired {orch-namespace} to use.
-
-.One {orch-namespace} for all workspaces
-====
-To have all workspaces created in __`{prod-workspace}`__ {orch-namespace}, set:
-
-*Operator installer (CheCluster CustomResource)*
-[subs="+quotes,+attributes"]
-----
-...
-spec:
-  server:
-    workspaceNamespaceDefault: __{prod-workspace}__
-...
-----
-
-ifeval::["{project-context}" == "che"]
-*Helm*
-[subs="+quotes,+attributes"]
-----
-$ helm ... --set global.cheWorkspacesNamespace=__{prod-workspace}__
-----
-endif::[]
-====
-
-== Allowing user-defined workspace {orch-namespace}s
-
-{prod-short} server can be configured to honor the user selection of a {orch-namespace} when a workspace is created. This feature is disabled by default. To allow user-defined workspace {orch-namespace}s:
-
-ifeval::["{project-context}" == "che"]
-* For Helm Chart deployments, set the following environment variable in the {prod-short} ConfigMap:
-+
-[subs="+quotes,macros"]
-----
-pass:[CHE_INFRA_KUBERNETES_NAMESPACE_ALLOW__USER__DEFINED]=true
-----
-endif::[]
-
-* For Operator deployments, set the following field in the CheCluster Custom Resource:
-+
-----
-...
-server:
-  allowUserDefinedWorkspaceNamespaces: true
-...
-----
 
 == Handling incompatible usernames or user IDs
 
-{prod-short} server automatically checks usernames and IDs for compatibility with Kubernetes objects naming convention before creating a {orch-namespace} from a template.
-Incompatible username or IDs are reduced to the nearest valid name by replacing groups of unsuitable symbols with the `-` symbol. To avoid collisions,
-a random 6-symbol suffix is added and the result is stored in preferences for reuse.
+{prod-short} server automatically checks usernames and IDs for compatibility with {orch-name} objects naming convention before creating a {orch-namespace} from a template. Incompatible usernames or IDs are reduced to the nearest valid name by replacing groups of unsuitable symbols with the `-` symbol. The addition of a random 6-symbol suffix prevents IDs from collisions. The result is stored in preferences for reuse.
 
-== Pre-creating {orch-namespace}s for users
+[#pre-creating-namespace]
+== Pre-creating a {orch-namespace} for each user
 
-To pre-create {orch-namespace}s for users, use {orch-namespace} labels and annotations. Such namespace is used in preference to `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable.
+To pre-create a {orch-namespace} for each user, use {orch-name} labels and annotations. Such {orch-namespace} is used in preference to `CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT` variable.
 
 ----
 metadata:
@@ -192,12 +95,12 @@ To configure the labels, set the `CHE_INFRA_KUBERNETES_NAMESPACE_LABELS` to desi
 
 [WARNING]
 ====
-We do not recommend to create multiple namespaces for single user. It may lead to undefined behavior.
+Do not create multiple namespaces for a single user. It may lead to undefined behavior.
 ====
 
 [IMPORTANT]
 ====
-On OpenShift with OAuth, target user must have `admin` role privileges in target namespace:
+On OpenShift with OAuth, the target user must have `admin` role privileges in the target namespace:
 ----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -220,7 +123,8 @@ On {kubernetes}, `che` ServiceAccount must have a cluster-wide `list` and `get` 
 ====
 
 == Labeling the namespaces
-{prod-short} updates the workspace's namespace on workspace startup by adding the labels defined in `CHE_INFRA_KUBERNETES_NAMESPACE_LABELS`. To do so, `che` ServiceAccout has to have the following cluster-wide permissions to `update` and `get` `namespaces`:
+
+{prod-short} updates the workspace's {orch-namespace} on workspace startup by adding the labels defined in `CHE_INFRA_KUBERNETES_NAMESPACE_LABELS`. To do so, `che` ServiceAccount has to have the following cluster-wide permissions to `update` and `get` `namespaces`:
 
 ----
 apiVersion: rbac.authorization.k8s.io/v1
@@ -253,11 +157,11 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ----
 <1> name of the cluster role binding
-<2> name of the che service account
+<2> name of the `che` ServiceAccount
 <3> {prod-short} installation namespace
 <4> name of the cluster role created in previous step
 
 [NOTE]
 ====
-{prod-short} does not fail to start a workspace for lack of permissions, it only logs the warning. If you see the warnings in {prod-short} logs, consider disabling the feature with setting `CHE_INFRA_KUBERNETES_NAMESPACE_LABEL=false`.
+A lack of permissions does not prevent a {prod-short} workspace from starting, it only logs the warning. If you see the warnings in {prod-short} logs, consider disabling the feature by defining `CHE_INFRA_KUBERNETES_NAMESPACE_LABEL=false`.
 ====

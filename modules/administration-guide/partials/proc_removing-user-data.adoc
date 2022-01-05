@@ -29,7 +29,7 @@ If needed, use commands below for creating the `admin` user:
 +
 [subs="+quotes,macros,attributes"]
 ----
-$ oc patch checluster {prod-checluster} \
+$ {orch-cli} patch checluster/{prod-checluster} \
   --type merge \
   -p '{ "spec": { "server": {"customCheProperties": {"pass:[CHE_SYSTEM_SUPER__PRIVILEGED__MODE]": "true"} } }}' \
   -n __{prod-namespace}__
@@ -37,7 +37,7 @@ $ oc patch checluster {prod-checluster} \
 +
 [subs="+quotes,macros,attributes"]
 ----
-$ oc patch checluster {prod-checluster} \
+$ {orch-cli} patch checluster/{prod-checluster} \
   --type merge \
   -p '{ "spec": { "server": {"customCheProperties": {"pass:[CHE_SYSTEM_ADMIN__NAME]": "__<admin-name>__"} } }}' \
   -n __{prod-namespace}__
@@ -45,7 +45,7 @@ $ oc patch checluster {prod-checluster} \
 +
 [NOTE]
 ====
-All system permissions are granted to the administrative user who is configured in the `CHE_SYSTEM_ADMIN__NAME` property (the default is `admin`). The system permissions are granted when the {prod-short} server starts. If the user is not present in the {prod-short} user database, it happens after the first user’s login.
+All system permissions are granted to the administrative user. To configure the administrative user, use the `CHE_SYSTEM_ADMIN__NAME` property. The default value is `admin`. The system permissions are granted when the {prod-short} server starts. If the user record is not in the {prod-short} user database, the permissions are granted after the first login of the user.
 
 .Authorization token privileges:
 
@@ -98,6 +98,7 @@ $ curl -X GET \
 
 The user ID is at the bottom of the curl command output.
 
+[source,json]
 ----
 {
  "name": "vparfono",
@@ -120,7 +121,7 @@ The user ID is at the bottom of the curl command output.
 +
 [subs="+quotes,macros,attributes"]
 ----
-$ oc patch checluster/{prod-checluster} \
+$ {orch-cli} patch checluster/{prod-checluster} \
   --patch "{\"spec\":{\"server\":{\"customCheProperties\": {\"pass:[CHE_KEYCLOAK_CASCADE__USER__REMOVAL__ENABLED]\": \"true\"}}}}" \
   --type=merge -n _{prod-namespace}_
 ----

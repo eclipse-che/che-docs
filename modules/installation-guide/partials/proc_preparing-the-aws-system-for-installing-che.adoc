@@ -1,36 +1,35 @@
-// Module included in the following assemblies:
-//
-// installing-{prod-id-short}-on-aws
-
 [id="preparing-the-aws-system-for-installing-che_{context}"]
 = Preparing the AWS system for installing {prod-short}
 
-The following sections describe how to set up {kubernetes} for {prod}
+The following sections describe how to Configure {kubernetes} for {prod}
 on Amazon Elastic Compute Cloud (Amazon EC2).
+
 
 .Prerequisites
 
-* A running instance of {kubernetes}, version 1.9 or higher, and Ingress.
+* A running instance of {kubernetes}, version {kube-ver-min} or higher, and Ingress.
 * The `{orch-cli}` tool installed.
 * The `{prod-cli}` tool installed.
 
 
 == Installing {kubernetes} on Amazon EC2
 
-. Set up the AWS Command Line Interface (AWS CLI). For detailed installation instructions, see link:https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html[Installing the AWS CLI].
+. Configure the AWS Command Line Interface (AWS CLI). For detailed installation instructions, see link:https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html[Installing the AWS CLI].
 
 . Check the `PATH` environment variable if the `aws` tool is not available.
 
 . Install {kubernetes} on EC2. There are several ways to have a running {kubernetes} instance on EC2. Here, the `kops` tool is used to install {kubernetes}. For details, see link:https://kubernetes.io/docs/setup/production-environment/tools/kops/[Installing {kubernetes} with `kops`].
 
-This document assumes that {prod} must be configured to run at link:http://che.aws.my-ide.cloud[{prod-short} AWS Cloud].
+This document assumes that {prod} must be configured to run on the following domain:
++
+`++http://che.aws.my-ide.cloud++`
 
 
 == Setting up DNS
 
-One way to set up Domain Name System (DNS) is to create the Amazon Route53 to manage the `aws.my-ide.cloud` domain.
+One way to Configure Domain Name System (DNS) is to create the Amazon Route53 to manage the `aws.my-ide.cloud` domain.
 
-To set up DNS:
+To Configure DNS:
 
 . Create the zone on AWS:
 +
@@ -65,9 +64,9 @@ $ aws route53 create-hosted-zone --name aws.my-ide.cloud --caller-reference 1
 }
 ----
 
-. Configure the four DNS nameservers on the `my-ide.cloud` DNS. Note that when a custom DNS provider, updating the record takes a few hours.
+. Configure the four DNS `nameservers` on the `my-ide.cloud` DNS. Note that when a custom DNS provider, updating the record takes a few hours.
 +
-image::installation/dns-nameservers.png[]
+image::installation/dns-nameservers.png[DNS name servers]
 
 . Create the Simple Storage Service (s3) storage to store the `kops` configuration.
 +
@@ -180,7 +179,7 @@ Run the following command to create the role:
 $ aws iam create-service-linked-role --aws-service-name "elasticloadbalancing.amazonaws.com"
 ----
 
-. Add hosts on route 53 with this given host name ++https://console.aws.amazon.com/route53/home?region=eu-west-1#hosted-zones:++. Ensure that you include the colon (`:`) at the end of this URL.
+. Add hosts on route 53 with this given host name `https://console.aws.amazon.com/route53/home?region=eu-west-1#hosted-zones:`. Ensure that you include the colon (`:`) at the end of this URL.
 . Create the wildcard DNS `*` (for `*.aws-my-ide.cloud`) with the previous host name and ensure to add the dot (`.`) at the end of the host name. In the *Type* drop-down list, select *CNAME*.
 +
 image::installation/create-record-set.png[link="../_images/installation/create-record-set.png"]
@@ -197,13 +196,17 @@ $ host che.aws.my-ide.cloud
 che.aws.my-ide.cloud is an alias for ade9c9f48b2cd11e9a28c0611bc28f24-1591254057.eu-west-1.elb.amazonaws.com.
 ade9c9f48b2cd11e9a28c0611bc28f24-1591254057.eu-west-1.elb.amazonaws.com has address 54.77.155.195
 ----
-
-It is now possible to install {prod} on this existing {kubernetes} instance.
++
+The existing {kubernetes} instance is prepare to host an {prod-short} installation.
 
 
 == Enabling the TLS and DNS challenge
 
+pass:[<!-- vale IBM.Terms = NO -->]
+
 To use the Cloud DNS and TLS, some service accounts must be enabled to have cert-manager managing the DNS challenge for the _Let's Encrypt_ service.
+
+pass:[<!-- vale IBM.Terms = YES -->]
 
 . Create a new `permission` file.
 . Use the following command to obtain the zone ID:
@@ -258,16 +261,16 @@ $ aws route53 list-hosted-zones
 
 . In the *EC2 Dashboard*, identify the *IAM role* used by the master node.
 +
-image::installation/aws-lauch-instance.png[link="../_images/installation/aws-lauch-instance.png"]
+image::installation/aws-lauch-instance.png[start AWS instance,link="../_images/installation/aws-lauch-instance.png"]
 +
 It is located under the *Description* tab, in the *IAM role* field.
 +
-image::installation/describtion-tab-iam-role.png[link="../_images/installation/describtion-tab-iam-role.png"]
+image::installation/describtion-tab-iam-role.png[Description tab IAM role,link="../_images/installation/describtion-tab-iam-role.png"]
 
 . Click the *IAM role* link (`masters.eu.aws.my-ide.cloud`, in this case).
 . Click the *Add inline policy* link at the bottom of the window.
 +
-image::installation/aws-summary-iam-role.png[link="../_images/installation/aws-summary-iam-role.png"]
+image::installation/aws-summary-iam-role.png[AWS summary IAM role,link="../_images/installation/aws-summary-iam-role.png"]
 
 . In the *Create policy* window, on the *JSON* tab, paste the content of the JSON file created earlier and click the *Review policy* button.
 +
@@ -280,7 +283,7 @@ image::installation/create-policy-review-policy.png[link="../_images/installatio
 
 == Installing cert-manager
 
-. To install cert-manager, run the following commands (for details, see link:https://docs.cert-manager.io/en/latest/getting-started/install/kubernetes.html[Installing Cert on {kubernetes}]):
+. To install cert-manager, run the following commands (for details, see link:https://cert-manager.io/docs/installation/[Installing Cert on {kubernetes}]):
 +
 [subs="+quotes",options="nowrap"]
 ----
@@ -351,7 +354,7 @@ $ {orch-cli} create secret generic aws-cert-manager-access-key \
 
 . Use the *Add inline policy* link to add the inline policy to link:https://console.aws.amazon.com/iam/home#/users/cert-manager[AWS Cert-Manager].
 +
-image::installation/aws-summary-iam-role.png[link="../_images/installation/aws-summary-iam-role.png"]
+image::installation/aws-summary-iam-role.png[AWS summary IAM role,link="../_images/installation/aws-summary-iam-role.png"]
 
 . Paste the following inline policy in the *JSON* tab:
 +
@@ -443,7 +446,7 @@ EOF
 
 . Check if the `issuerRef` name is the same as the `ClusterIssuer`. A new DNS challenge is being added to the DNS zone for _Let’s encrypt_.
 +
-image::installation/aws-hosted-zones-dns.png[link="../_images/installation/aws-hosted-zones-dns.png"]
+image::installation/aws-hosted-zones-dns.png[AWS hosted zones DNS,link="../_images/installation/aws-hosted-zones-dns.png"]
 +
 The cert-manager logs contain information about the DNS challenge.
 

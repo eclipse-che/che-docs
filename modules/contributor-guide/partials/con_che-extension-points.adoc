@@ -107,7 +107,7 @@ pluginPrefs.inspect('logLevel');
 [id="view-containers_{context}"]
 == View containers
 
-A *view container* is a container that holds xref:views_{context}[views]. In Che-Theia, views are usually in the form of panels. All view containers are divided in three sections: *left*, *bottom*, and *right*. The position of a view container depends on the section to which it belongs. This defines the default position of a view container, which can be changed at runtime by dragging and dropping.
+A *view container* is a container that holds xref:views_{context}[views]. In Che-Theia, views are typically in the form of panels. All view containers are divided in three sections: *left*, *bottom*, and *right*. The position of a view container depends on the section to which it belongs. This defines the default position of a view container, which can be changed at runtime by dragging and dropping.
 
 To add a view container into Che-Theia, add the appropriate record into the `viewsContainers` object located under the `contributes` object in the plug-in `package.json` file:
 
@@ -253,7 +253,6 @@ Note that kbd:[Ctrl+f] kbd:[Alt+b] defines a _chord_: the command is invoked aft
 
 Plug-ins can add new *debuggers* by implementing the link:https://microsoft.github.io/debug-adapter-protocol/[Debugger Adapter Protocol] (DAP) for a specific debugger. The debugger can then register in the `contributes.debuggers` debuggers of a plug-in `package.json` file.
 
-// TODO: For instruction on how to add a debugger, see link:link[Adding support for a new debugger].
 
 See the link:https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/[list of debuggers] from the official DAP site for reference and examples.
 
@@ -288,8 +287,8 @@ To add a language server into Che-Theia using a plug-in:
 <1> The ID of the language for which the language server is created.
 <2> Other names for the language.
 <3> File-name extensions for which this language server is added.
-<4> Hashbang (first line) for which this language server is added.
-<5> Path to a JSON file with the language configuration (TODO: our section or just link to link:https://code.visualstudio.com/api/language-extensions/language-configuration-guide[VS Code docs]?).
+<4> `Hashbang` (first line) for which this language server is added.
+<5> Path to a JSON file with the language configuration. See: link:https://code.visualstudio.com/api/language-extensions/language-configuration-guide[Language configurationn guide].
 
 . Register the language server using the following API call:
 +
@@ -336,7 +335,7 @@ webViewPanel.webview.html ='<html><body><h1>Hello from web view</h1></body></htm
 
 [NOTE]
 ====
-Web view content is destroyed when hidden. To restore its state, register a serializer, or set the `retainContextWhenHidden` option for the web view. Even with this option set, hiding a web view pauses all scripts, and the web view will not process messages from the plug-in.
+Web view content is removed when hidden. To restore its state, register a serializer, or set the `retainContextWhenHidden` option for the web view. Even with this option set, hiding a web view pauses all scripts, and the web view will not process messages from the plug-in.
 
 The current state of a web view can be read from the web view panel object.
 

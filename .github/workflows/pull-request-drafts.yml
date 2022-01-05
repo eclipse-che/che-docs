@@ -1,0 +1,26 @@
+#
+# Copyright (c) 2021 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Automate pull requests triage
+
+name: Pull request opened
+
+on:
+  pull_request_target:
+    types:
+      - converted_to_draft
+
+jobs:
+  automate-project-columns:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: alex-page/github-project-automation-plus@v0.8.1
+        with:
+          project: Reviews
+          column: Drafts
+          repo-token: ${{ secrets.CHE_BOT_GITHUB_TOKEN }}

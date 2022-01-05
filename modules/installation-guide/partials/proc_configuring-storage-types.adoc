@@ -47,7 +47,7 @@ attributes:
 |===
 |Command
 |Ephemeral
-|Persitent
+|Persistent
 
 |Clone {prod}
 |0 m 19 s
@@ -67,7 +67,7 @@ Asynchronous storage is a combination of persistent and ephemeral modes. The ini
 
 Synchronization is performed by the link:https://rsync.samba.org/[rsync] tool using the link:https://www.openssh.com/[SSH] protocol. When a workspace is configured with asynchronous storage, the link:https://github.com/che-incubator/workspace-data-sync/[workspace-data-sync] plug-in is automatically added to the workspace configuration. The plug-in runs the `rsync` command on workspace start to restore changes. When a workspace is stopped, it sends changes to the permanent storage.
 
-For relatively small projects, the restore procedure is fast, and project source files are immediately available after Che-Theia is initialized. In case `rsync` takes longer, the synchronization process is shown in the Che-Theia status-bar area. (link:https://github.com/eclipse/che-theia/tree/master/extensions/eclipse-che-theia-file-sync-tracker[Extension in Che-Theia repository]).
+For relatively small projects, the restore procedure is fast, and project source files are immediately available after Che-Theia is initialized. In case `rsync` takes longer, the synchronization process is shown in the Che-Theia status-bar area. (link:https://github.com/eclipse-che/che-theia/tree/master/extensions/eclipse-che-theia-file-sync-tracker[Extension in Che-Theia repository]).
 
 image::troubleshooting/status-bar-file-sync.png[link="../_images/troubleshooting/status-bar-file-sync.png",Files synchronization progress]
 
@@ -117,3 +117,10 @@ Use these configuration properties to adjust the behavior:
 `che.infra.kubernetes.async.storage.shutdown_timeout_min`:: Defines the idle time after which the asynchronous storage Pod is stopped following the stopping of the last active workspace. The default value is 120 minutes.
 
 `che.infra.kubernetes.async.storage.shutdown_check_period_min`:: Defines the frequency with which the asynchronous storage Pod is checked for idleness. The default value is 30 minutes.
+
+To increase the timeout of a {prod-short} workspace, use the following example, which sets the workspace timeout for 1800000 milliseconds that correspond to the interval of 30 minutes.
++
+[subs="+attributes",options="nowrap",role=white-space-pre]
+----
+ $ {orch-cli} patch checluster/{prod-checluster} --patch "{\"spec\":{\"server\":{\"customCheProperties\": {\"CHE_LIMITS_WORKSPACE_IDLE_TIMEOUT\": \"1800000\"}}}}" --type=merge -n {prod-namespace}
+----

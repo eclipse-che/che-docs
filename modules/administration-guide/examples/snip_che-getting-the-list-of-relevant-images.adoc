@@ -2,8 +2,9 @@
 ====
 [subs="+attributes,+quotes,+macros"]
 ----
-$ curl -sSLo- https://raw.githubusercontent.com/eclipse/che-operator/master/olm/eclipse-che-preview-kubernetes/deploy/olm-catalog/eclipse-che-preview-kubernetes/{prod-ver-patch}/eclipse-che-preview-kubernetes.v{prod-ver-patch}.clusterserviceversion.yaml | \
-  yq -r '.spec.relatedImages[]'
+$ curl -sSLo- https://raw.githubusercontent.com/eclipse-che/che-operator/{prod-ver}.x/deploy/olm-catalog/stable/eclipse-che-preview-kubernetes/manifests/che-operator.clusterserviceversion.yaml | \
+yq -r '.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | select(.name | test("RELATED_IMAGE_.*"; "g")) | .value' | \
+sort -u 
 ----
 ====
 +
@@ -11,7 +12,8 @@ $ curl -sSLo- https://raw.githubusercontent.com/eclipse/che-operator/master/olm/
 ====
 [subs="+attributes,+quotes,+macros"]
 ----
-$ curl -sSLo- https://raw.githubusercontent.com/eclipse/che-operator/master/olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/{prod-ver-patch}/eclipse-che-preview-openshift.v{prod-ver-patch}.clusterserviceversion.yaml | \
-  yq -r '.spec.relatedImages[]'
+$ curl -sSLo- https://raw.githubusercontent.com/eclipse-che/che-operator/{prod-ver}.x/deploy/olm-catalog/stable/eclipse-che-preview-openshift/manifests/che-operator.clusterserviceversion.yaml | \
+yq -r '.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | select(.name | test("RELATED_IMAGE_.*"; "g")) | .value' | \
+sort -u 
 ----
 ====

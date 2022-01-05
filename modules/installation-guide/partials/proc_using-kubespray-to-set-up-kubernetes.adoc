@@ -3,7 +3,7 @@
 // installing-{prod-id-short}-with-kubespray
 
 [id="using-kubespray-to-set-up-kubernetes_{context}"]
-= Set up {kubernetes} using Kubespray
+= Configuring {kubernetes} using Kubespray
 
 Commands are given for bash on Ubuntu.
 
@@ -16,7 +16,7 @@ $ sudo apt-get update
 $ sudo apt-get upgrade
 ----
 
-NOTE: This step is only required on the machine used to run Kubespray. Kubespray will take care of system updates on the cluster nodes.
+NOTE: This step is only required on the machine used to run Kubespray. Kubespray will handle system updates on the cluster nodes.
 
 .SSH access
 
@@ -30,7 +30,7 @@ $ sudo apt-get install openssh-server
 
 * Create SSH key pair
 +
-You have to generate one or multiple SSH key pair(s) to allow Kubespray/Ansible automatic login using SSH. You can use a different key pair for each node or use the same for all nodes.
+You have to generate one or multiple SSH key pair(s) to allow the Kubespray or Ansible automatic login using SSH. You can use a different key pair for each node or use the same for all nodes.
 +
 ----
 $ ssh-keygen -b 2048 -t rsa -f /home/<local-user>/.ssh/id_rsa -q -N ""
@@ -38,7 +38,7 @@ $ ssh-keygen -b 2048 -t rsa -f /home/<local-user>/.ssh/id_rsa -q -N ""
 
 * Copy your public key(s) on nodes
 +
-Copy your public key(s) in the ~/.ssh/authorized_keys file of the user accounts you will use on each node for deployment.
+Copy your public key(s) in the `~/.ssh/authorized_keys` file of the user accounts you will use on each node for deployment.
 You will be prompted twice for the password corresponding to account, the first time for the public key upload using SSH and the second time for adding the public key in the authorized_keys file.
 +
 ----
@@ -52,7 +52,7 @@ You will never be prompted again for password using SSH, the key will be used to
 
 .IPv4 forwarding 
 
-Kubespray requires to turn on IPv4 forwarding. This should be done automatically by Kubepsray.
+Kubespray requires to turn on IPv4 forwarding. This should be done automatically by Kubespray.
 
 To do it manually, run the following command:
 
@@ -80,7 +80,7 @@ Start by installing curl.
 sudo apt-get install curl
 ----
 
-Get the latest Kubespray source code from its repo.
+Get the latest Kubespray source code from its code repository.
 
 WARNING: The latest release when writing this tutorial, v2.12.5, throws error not encountered in the master version.
 
@@ -98,15 +98,15 @@ Kubespray uses Python 3 and several dependencies to be installed.
 
 * Install Python 3
 +
-Install Python 3 but also pip (package installer for Python) and venv to create virtual environnements (see below).
+Install Python 3 but also `pip` (package installer for Python) and `venv` to create virtual environments (see below).
 +
 ----
 sudo apt-get install python3.7 python3-pip python3-venv
 ----
 
-* Create a virtual env
+* Create a virtual environment
 +
-This is a best isolation pratice using Python to use virtual env (or conda env for conda users).
+This is a best isolation practice using Python to use virtual environments (or `conda` environments for `conda` users).
 +
 ----
 python3 -m venv ~/projects/kubespray-venv
@@ -127,7 +127,7 @@ Start creating a copy of the default settings from sample cluster.
 cp -rfp inventory/sample inventory/mycluster
 ----
 
-Be sure you are still in the ~/projects/kubespray/ directory before executing this command!
+Be sure you are still in the `~/projects/kubespray/` directory before executing this command!
 
 Then customize your new cluster
 
@@ -142,7 +142,7 @@ CONFIG_FILE=inventory/mycluster/hosts.yaml python contrib/inventory_builder/inve
 +
 If you skip this step, your cluster host names will be renamed node1, node2, and so on.
 +
-You can either edit the file ~/projects/kubespray/inventory/mycluster/hosts.yaml
+You can either edit the file `~/projects/kubespray/inventory/mycluster/hosts.yaml`
 +
 ----
 sed -e 's/node1/tower/g' -e 's/node2/laptop/g' ... -i inventory/mycluster/hosts.yaml
@@ -189,7 +189,7 @@ ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root 
 The cluster is created but you currently have no access to its API for configuration purpose.
 `{orch-cli} ` has been installed by Kubespray on master nodes of your cluster and configuration files are saved in root home directories of master nodes.
 
-If you want to access the cluster API from another computer on your network, install {orch-cli}  first.
+When you are about to access the cluster API from another computer on your network, install {orch-cli}  first.
 
 ----
 curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
@@ -197,28 +197,29 @@ chmod +x ./kubectl
 sudo mv ./kubectl /usr/local/bin/kubectl
 ----
 
-Then copy the configuration files from the root home directory of a master node:
+. Copy the configuration files from the root home directory of a master node:
 
-* On the master node, copy configurations files from root to your useraccount
+.. On the master node, copy configurations files from root to your user account:
 +
 ----
-ssh <node-user>@<master-node-ip> "sudo cp -R /root/.kube ~ && sudo chown -R <node-user>:<node-user> ~/.kube" 
+$ ssh <node-user>@<master-node-ip> "sudo cp -R /root/.kube ~ && sudo chown -R <node-user>:<node-user> ~/.kube" 
 ----
 
-* Then download the configuration files to a remote computer
+. Download the configuration files to a remote computer:
 +
 ----
-scp -r <node-user>@<master-node-ip>:~/.kube ~
-sudo chown -R <local-user>:<local-user> ~/.kube
+$ scp -r <node-user>@<master-node-ip>:~/.kube ~
+$ sudo chown -R <local-user>:<local-user> ~/.kube
 ----
 
-* Keep secrets protected on the master node
+. Keep secrets protected on the master node:
 +
 ----
-ssh <node-user>@<master-node-ip> "rm -r ~/.kube"
+$ ssh <node-user>@<master-node-ip> "rm -r ~/.kube"
 ----
-
-For sanity, use autocompletion!
++
+Use autocompletion for the sake of sanity:
++
 ----
-echo 'source <(kubectl completion bash)' >>~/.bashrc
+$ echo 'source <(kubectl completion bash)' >>~/.bashrc
 ----

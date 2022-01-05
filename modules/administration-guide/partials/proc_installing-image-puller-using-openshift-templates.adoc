@@ -40,7 +40,7 @@ include::example$snip_{project-context}-cloning-image-puller-project.adoc[]
 
 |`SERVICEACCOUNT_NAME` 
 |The name of the ServiceAccount created and used by the deployment
-|`{image-puller-serviceaccount-name}`
+|`kubernetes-image-puller`
 
 |===
 +
@@ -63,7 +63,7 @@ include::example$snip_{project-context}-cloning-image-puller-project.adoc[]
 
 |`CACHING_MEMORY_LIMIT` 
 |The value of `CACHING_MEMORY_LIMIT` in the ConfigMap 
-|`"20Mi"``
+|`"20Mi"`
 
 |`CACHING_MEMORY_REQUEST` 
 |The value of `CACHING_MEMORY_REQUEST` in the ConfigMap 
@@ -81,6 +81,10 @@ include::example$snip_{project-context}-cloning-image-puller-project.adoc[]
 |The value of `IMAGES` in the ConfigMap  
 |`{image-puller-images}`
 
+|`NAMESPACE` 
+|The value of `NAMESPACE` in the ConfigMap  
+|`{image-puller-namespace}`
+
 |`NODE_SELECTOR` 
 |The value of `NODE_SELECTOR` in the ConfigMap 
 |`"{}"`
@@ -93,7 +97,7 @@ include::example$snip_{project-context}-cloning-image-puller-project.adoc[]
 
 |`SERVICEACCOUNT_NAME` 
 |The name of the ServiceAccount created and used by the deployment
-|`{image-puller-serviceaccount-name}`
+|`kubernetes-image-puller`
 
 |===
 
@@ -103,7 +107,7 @@ include::example$snip_{project-context}-cloning-image-puller-project.adoc[]
 +
 [subs="+attributes,+quotes"]
 ----
-$ oc new-project __<{image-puller-deployment-name}>__
+$ oc new-project __<{image-puller-namespace}>__
 ----
 
 . Process and apply the templates to install the puller:
@@ -122,7 +126,7 @@ $ oc process -f app.yaml | oc apply -f -
 +
 [source%nowrap,dummy,subs="+quotes,+attributes"]
 ----
-$ oc get deployment,daemonset,pod --namespace __<{image-puller-deployment-name}>__
+$ oc get deployment,daemonset,pod --namespace __<{image-puller-namespace}>__
 ----
 
 . Verify the values of the __<{image-puller-deployment-name}>__ `ConfigMap`.

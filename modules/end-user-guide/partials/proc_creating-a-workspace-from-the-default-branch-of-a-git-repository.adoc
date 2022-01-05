@@ -1,25 +1,42 @@
 // Module included in the following assemblies:
 //
-// configuring-a-workspace-using-a-devfile
+// creating-a-workspace-from-a-remote-devfile
 
 [id="creating-a-workspace-from-the-default-branch-of-a-git-repository_{context}"]
 = Creating a workspace from the default branch of a Git repository
 
-It is possible to create a {prod-short} workspace by pointing to a devfile that is stored in a Git source repository. The {prod-short} instance then uses the discovered link:https://github.com/eclipse/che/blob/master/devfile.yaml[devfile.yaml] file to build a workspace using the factory URL (`/f?url=`) API.
+This section describes how to start a {prod-short} workspace using a factory URL. The factory URL is a link pointing {prod-short} to a Git source repository containing a devfile. 
 
+The factory URL exist in two forms:
+
+* the short form `/#$URL`
+* long `/f?url=$URL` form that supports additional configuration parameters used in previous versions of {prod-short}
 
 .Prerequisites
 
-* A running instance of {prod}. To install an instance of {prod}, see xref:installation-guide:installing-che.adoc[].
-* The `devfile.yaml` or `.devfile.yaml` file is located in the root folder of a Git repository that is available over HTTPS. See xref:making-a-workspace-portable-using-a-devfile.adoc[] for detailed information about creating and using devfiles.
+* A running instance of {prod}. See xref:installation-guide:installing-che.adoc[].
+* The Git repository __<GIT_REPOSITORY_URL>__ is available over HTTPS and contains a `devfile.yaml` or `.devfile.yaml` in the root folder. See xref:authoring-devfiles-version-2.adoc[].
 
 
 .Procedure
 
-Run the workspace by opening the following URL: `pass:c,a,q[{prod-url}/f?url=https://__<GitRepository>__]`
+pass:[<!-- vale CheDocs.TechnicalTerms = NO -->]
 
-.Example
+* Run the workspace by opening the factory URL. Two formats are available:
++
+`pass:c,a,q[{prod-url}/#__<GIT_REPOSITORY_URL>__]`:: This is the short format.
+`pass:c,a,q[{prod-url}/f?url=__<GIT_REPOSITORY_URL>__]`:: This long format supports additional configuration parameters.
++
+.Create a workspace on Eclipse Che hosted by Red Hat from the default branch of the `https://github.com/eclipse-che/che-server` repository using the short factory URL format.
 [subs="+quotes"]
-----
-https://che.openshift.io/f?url=https://github.com/eclipse/che
-----
+====
+link:https://workspaces.openshift.com/#https://github.com/eclipse-che/che-server[]
+====
++
+.Create a workspace on Eclipse Che hosted by Red Hat from the default branch of the `https://github.com/eclipse-che/che-server` repository using the long factory URL format.
+[subs="+quotes"]
+====
+link:https://workspaces.openshift.com/f?url=https://github.com/eclipse-che/che-server[]
+====
+
+pass:[<!-- vale CheDocs.TechnicalTerms = YES -->]

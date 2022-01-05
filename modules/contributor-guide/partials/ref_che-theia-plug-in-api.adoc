@@ -20,29 +20,28 @@ The Che-Theia plug-in API consists of two {namespace}s:
 [id="theia-{namespace}_{context}"]
 == `theia` {namespace}
 
-The available resources of the `theia` namespace are described in the link:https://github.com/theia-ide/theia/blob/master/packages/plugin/src/theia.d.ts[`theia.d.ts`] file in the link:https://github.com/theia-ide/theia[Theia repository]. The root of the namespace contains types declaration and the following API sections:
+The available resources of the `theia` {namespace} are described in the link:https://raw.githubusercontent.com/theia-ide/theia/master/packages/plugin/src/theia.d.ts[`theia.d.ts`] file in the link:https://github.com/theia-ide/theia[Theia repository]. The root of the {namespace} contains types declaration and the following API sections:
 
 |===
-| commands | API for adding new and executing existing Che-Theia commands
-| debug | API for debugger configuration and debugger events
-| env | API for accessing environment variables and query parameters of the Che-Theia IDE
-| languages | API and events related to language support; typically is used by language servers
-| languageServer (experimental) | API for language-server integration
-| plugins | API for retrieving information about loaded plug-ins
-| tasks | API for providing custom task runners
-| window | API to control visual components of the IDE. It allows to manipulate the editor tabs, terminals, status bar, and so on. The section contains events for changing the state of selected components and the whole IDE. Dialog popups.
-| workspace | API related to the Che-Theia workspace with information about the current workspace state, documents in it, file-related operations including watching, finding, and so on. The section contains state-change events.
+| `commands` | API for adding new and executing existing Che-Theia commands
+| `debug` | API for debugger configuration and debugger events
+| `env` | API for accessing environment variables and query parameters of the Che-Theia IDE
+| `languages` | API and events related to language support; typically is used by language servers
+| `languageServer` (experimental) | API for language-server integration
+| `plugins` | API for retrieving information about loaded plug-ins
+| `tasks` | API for providing custom task runners
+| `window` | API to control visual components of the IDE. It allows to manipulate the editor tabs, terminals, status bar, and so on. The section contains events for changing the state of selected components and the whole IDE. Dialog popups.
+| `workspace` | API related to the Che-Theia workspace with information about the current workspace state, documents in it, file-related operations including watching, finding, and so on. The section contains state-change events.
 |===
 
 
 [id="{prod-id-short}-{namespace}_{context}"]
 == `che` {namespace}
 
-NOTE: Many APIs in the namespace are experimental and can change in the future.
+NOTE: Many APIs in the {namespace} are experimental and can change in the future.
 
-Available resources of the `che` {orch-namespace} are described in the link:https://github.com/eclipse/che-theia/blob/master/extensions/eclipse-che-theia-plugin/src/che.d.ts[`che.d.ts`] file in the link:https://github.com/eclipse/che-theia[Che-Theia repository].
 
-This namespace contains APIs and types related to {prod-short}. Some sections are a bridge to {prod-short} API. The following is a list of the sections:
+This {namespace} contains APIs and types related to {prod-short}. Some sections are a bridge to {prod-short} API. The following is a list of the sections:
 
 |===
 | factory | Allows to work with the {prod-short} factory API; provides functionality to retrieve specified factory configuration
@@ -51,6 +50,27 @@ This namespace contains APIs and types related to {prod-short}. Some sections ar
 | workspace | Allows to work with the {prod-short} workspace API; provides functionality to access workspaces, their lifecycle, and user settings.
 |===
 
+[id="using-the-{prod-id-short}-in-plug-ins_{context}"]
+== Using the `che` {orch-namespace} in plug-ins
+
+VS Code extensions::
++
+. Adding the `@eclipse-che/plugin` dependency for backend plug-ins to a `package.json` file is a possibility.
+. For quick calls, it is simpler to use VS Code extension mechanism because it does not require relying on a third-party party dependency or trying and catching the error.
++
+. Import and use the {orch-namespace}. For example:
++
+[source,typescript]
+----
+const eclipseCheExtPlugin = vscode.extensions.getExtension('@eclipse-che.ext-plugin');
+if (eclipseCheExtPlugin) {
+  // grab user
+  const user = await eclipseCheExtPlugin.exports.user.getCurrentUser();
+ vscode.window.showInformationMessage(`Eclipse Che user information: id ${user.id} with name ${user.name}`);
+} else {
+  vscode.window.showWarningMessage('Not running inside Eclipse Che, not displaying any user information');
+}
+----
 
 [id="using-the-{prod-id-short}-namespace-in-plug-ins_{context}"]
 == Using the `che` {orch-namespace} in plug-ins
@@ -82,6 +102,6 @@ externals: {
  }
 ----
 
-NOTE: It is possible to add a new API namespace for plug-ins using a separate extension.
+NOTE: It is possible to add a new API {namespace} for plug-ins using a separate extension.
 
 :context: {parent-context-of-che-theia-plug-in-api}
