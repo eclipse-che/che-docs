@@ -189,7 +189,8 @@ replaceFieldSed()
 minorVersionUpdate() {
   git checkout main
   git pull origin main
-  git checkout 
+  local HEAD_BRANCH=pr-${MAJOR}.$((MINOR + 1)).x-to-main
+  git checkout -b ${HEAD_BRANCH}
   # Update the version, defined in the antora.yml file, in following keys:
   #    prod-prev-ver-major: "6" [never changes]
   #    prod-ver-major: "7" [never changes]
@@ -212,6 +213,7 @@ minorVersionUpdate() {
   ./tools/checluster_docs_gen.sh
   ./tools/environment_docs_gen.sh
   echo "[INFO] Finished handling version update on branch: ${MAIN_BRANCH}."
+  gitPullRequest ${MAIN_BRANCH} ${HEAD_BRANCH}
 }
 
 publicationsBuilderUpdate() {
@@ -219,10 +221,11 @@ publicationsBuilderUpdate() {
   YAMLFILE=antora-playbook-for-publication.yml
   if [ -f "${YAMLFILE}" ]
   then
-    sed "/   annotations:/a ${MAJOR}.${MINOR}.x\}" ${YAMLFILE}
+    sed "/   - branches:/a ${MAJOR}.${MINOR}.x\}" ${YAMLFILE}
   else
     echo "[WARNING] Cannot find file: ${YAMLFILE} on branch: ${MAIN_BRANCH}. Skipping."
   echo "[INFO] Finished handling version update on branch: ${PUBLICATION_BRANCH}"
+  gitPush ${PUBLICATION_BRANCH}
 }
 
 patchVersionUpdate() {
