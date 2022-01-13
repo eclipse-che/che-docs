@@ -103,7 +103,7 @@ checkoutVersionBranch() {
       git checkout "${MAIN_BRANCH}"
       git checkout -b "${BUGFIX_BRANCH}"
       ;;
-    *) echo "[INFO] Updating branch: ${BUGFIX_BRANCH} from branch: ${MAIN_BRANCH}."
+    *) echo "[INFO] Updating branch: ${BUGFIX_BRANCH}."
       git checkout "${BUGFIX_BRANCH}"
       ;;
   esac
