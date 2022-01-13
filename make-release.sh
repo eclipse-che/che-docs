@@ -252,7 +252,6 @@ gitClone
 # Update version in the version branch and in the main branch.
 if [[ ${PATCH} -eq 0 ]]; then
   patchVersionUpdate
-  minorVersionUpdate
   publicationsBuilderUpdate
 else
   patchVersionUpdate  
