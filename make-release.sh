@@ -241,7 +241,6 @@ patchVersionUpdate() {
   replaceFieldSed "${YAMLFILE}" 'prod-ver-major' "\"${MAJOR}\""
   replaceFieldSed "${YAMLFILE}" 'prod-ver' "\"${MAJOR}.${MINOR}\""
   replaceFieldSed "${YAMLFILE}" 'prod-ver-patch' "\"${MAJOR}.${MINOR}.${PATCH}\""
-  replaceFieldSed "${YAMLFILE}" 'prod-prev-ver' "\"${MAJOR}.$((MINOR - 1))\""
   ./tools/checluster_docs_gen.sh
   ./tools/environment_docs_gen.sh
   gitTag
