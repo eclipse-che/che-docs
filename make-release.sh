@@ -167,14 +167,18 @@ echo "[INFO] Version format for: ${VERSION} is in form MAJOR.MINOR.PATCH."
 versionIsIncremented() {
   # Validation version is incremented, never decremented
   OLDVERSION="$(yq -r '.asciidoc.attributes."prod-ver-patch"' "${YAMLFILE}")" # existing prod-ver-patch version 7.yy.z
-  VERSIONS="${OLDVERSION} ${VERSION}"
-  VERSIONS_SORTED="$(echo "${VERSIONS}" | tr " " "\n" | sort -V | tr "\n" " ")"
-  # echo "Compare '${VERSIONS_SORTED}' with '${VERSIONS} '"
-  if [[ "${VERSIONS_SORTED}" != "${VERSIONS} " ]] || [[ "${OLDVERSION}" == "${VERSION}" ]]; then # note trailing space after VERSIONS is required!
-    echo "[ERROR] Target version ${VERSION} is smaller than existing version: ${OLDVERSION}. Version should not go backwards, so nothing to do!"
-    return 1
+  if [[ "${OLDVERSION}"=="main" ]]; then
+    VERSIONS="${OLDVERSION} ${VERSION}"
+    VERSIONS_SORTED="$(echo "${VERSIONS}" | tr " " "\n" | sort -V | tr "\n" " ")"
+    # echo "Compare '${VERSIONS_SORTED}' with '${VERSIONS} '"
+    if [[ "${VERSIONS_SORTED}" != "${VERSIONS} " ]] || [[ "${OLDVERSION}" == "${VERSION}" ]]; then # note trailing space after VERSIONS is required!
+      echo "[ERROR] Target version ${VERSION} is smaller than existing version: ${OLDVERSION}. Version should not go backwards, so nothing to do!"
+      return 1
+    fi
+    echo "[INFO] Target version: ${VERSION} is an increment for current version: ${OLDVERSION}."
+  else
+    echo "[INFO] Target version: ${VERSION} "
   fi
-  echo "[INFO] Target version: ${VERSION} is an increment for current version: ${OLDVERSION}."
 }
 
 replaceFieldSed()
@@ -221,7 +225,10 @@ publicationsBuilderUpdate() {
   YAMLFILE=antora-playbook-for-publication.yml
   if [ -f "${YAMLFILE}" ]
   then
-    sed "/   - branches:/a ${MAJOR}.${MINOR}.x\}" ${YAMLFILE}
+    # replace branches values, to reference 7.41.x version, and the current bugfix version
+    sed -i '/branches/,/edit_url/{//!d}' ${YAMLFILE}
+    sed -i "/branches:/a\ \ \ \ \ \ \ \ - \"${MAJOR}.${MINOR}.x\"" ${YAMLFILE}
+    sed -i "/branches:/a\ \ \ \ \ \ \ \ - \"7.41.x\"" ${YAMLFILE}
   else
     echo "[WARNING] Cannot find file: ${YAMLFILE} on branch: ${MAIN_BRANCH}. Skipping."
   echo "[INFO] Finished handling version update on branch: ${PUBLICATION_BRANCH}"
@@ -242,7 +249,7 @@ patchVersionUpdate() {
   echo "[INFO] Finished handling version update on branch: ${MAJOR}.${MINOR}.x"
 }
 
-Patch
+BUGFIX_BRANCH=${MAJOR}.${MINOR}.x
 # Validate the version format.
 versionFormatIsValid
 
