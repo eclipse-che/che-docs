@@ -20,22 +20,22 @@ BUFF=""
 OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/system-variables.adoc"
 
 fetch_current_version() {
-  echo "Trying to read current product version from $PARENT_PATH/antora.yml..." >&2
+  # echo "Trying to read current product version from $PARENT_PATH/antora.yml..." >&2
   # remove spaces, single and double quotes from the value of prod-ver, then append .x
   CURRENT_VERSION=$(grep 'prod-ver:' "$PARENT_PATH/antora.yml" | cut -d: -f2 | tr -d " '\"").x
   if [ $? -ne 0 ]; then
     echo "Failure: Cannot read version from $PARENT_PATH/antora.yml" >&2
     exit 1
   fi
-  if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
-     CURRENT_VERSION="master"
+  if [[ "$CURRENT_VERSION" == 'main.x' ]]; then
+     CURRENT_VERSION="main"
   fi
   echo "Detected version: $CURRENT_VERSION" >&2
 }
 
 
 fetch_conf_files_content() {
-  echo "Fetching property files content from GitHub..." >&2
+  # echo "Fetching property files content from GitHub..." >&2
   CHE_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse-che/che-server/$CURRENT_VERSION/assembly/assembly-wsmaster-war/src/main/webapp/WEB-INF/classes/che/che.properties"
   RAW_CONTENT=$(curl -sf "$CHE_PROPERTIES_URL")
   if [ $? -ne 0 ]; then
@@ -48,7 +48,7 @@ fetch_conf_files_content() {
     echo "Failure: Cannot read multiuser.properties from URL $MULTIUSER_PROPERTIES_URL" >&2
     exit 1
   fi
-  echo "Fetching content done. Trying to parse it." >&2
+  # echo "Fetching content done. Trying to parse it." >&2
 }
 
 parse_content() {
@@ -65,7 +65,7 @@ parse_content() {
                                                         # replace spaces with dashes, create topic ID, convert to lowercase chars
                                                         # remove non alpha-num, wrap in AsciiDoc ID markup
       TOPICID=${TOPICID,,}                                                     
-      echo "   Found begin of topic: $TOPIC" >&2
+      # echo "   Found begin of topic: $TOPIC" >&2
       BUFF="${BUFF}${TOPICID}$NEWLINE= ${TOPIC}$NEWLINEx2.${TOPIC} $TABLE_HEADER $NEWLINE"      # new topic and table header
     elif [[ $LINE == '#'* ]] && [[ -n $TOPIC ]]; then   # line starting with single # means property description (can be multiline)
       TRIM_LINE=${LINE/\#}                              # read description, stripping first #
