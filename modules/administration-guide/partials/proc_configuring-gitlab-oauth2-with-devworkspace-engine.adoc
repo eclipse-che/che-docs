@@ -1,0 +1,48 @@
+
+[id="configuring-gitlab-oauth2-with-devworkspace-engine_{context}"]
+= Configuring GitLab OAuth2 with {devworkspace} engine
+
+.Prerequisites
+
+* GitLab server is running and available from {prod-short}
+
+.Procedure
+
+. Create an OAuth2 link:https://docs.gitlab.com/ee/integration/oauth_provider.html#authorized-applications[Authorized application] in Gitlab:
+
+* Enter Che as the application `Name`
+
+* Enter the {prod-short} OAuth callback URL as `Redirect URI`. The default value is `++https://++{prod-deployment}-{prod-namespace}.__<domain>__/api/oauth/callback`.
+
+* Check the `Confidential` and `Expire access tokens` checkboxes.
+
+* Check `api`, `write_repository`, `openid` scopes.
+
+. Click `Save application` and store the `Application ID` and `Secret` values.
+
+. Create a new secret in the {orch-namespace} where {prod-short} is deployed.
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f - <<EOF
+kind: Secret
+apiVersion: v1
+metadata:
+  name: gitlab-oauth-config
+  namespace: <...> <1>
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: oauth-scm-configuration
+  annotations:
+    che.eclipse.org/oauth-scm-server: gitlab
+    che.eclipse.org/scm-server-endpoint: <...> <2>
+type: Opaque
+data:
+  id: <...> <3>
+  secret: <...> <4>
+EOF
+----
+<1> {prod-short} namespace. The default is {prod-namespace}
+<2> URL of your GitLab service
+<3> base64 encoded GitLab `Application ID`
+<4> base64 encoded GitLab `Secret`
