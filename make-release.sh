@@ -198,6 +198,9 @@ publicationsBuilderUpdate() {
 patchVersionUpdate() {
   checkoutVersionBranch
   versionIsIncremented
+  replaceFieldSed "${YAMLFILE}" 'prerelease' "false"
+  replaceFieldSed "${YAMLFILE}" 'version' "stable"
+  replaceFieldSed "${YAMLFILE}" 'display_version' "\"${MAJOR}.${MINOR}.x\""
   replaceFieldSed "${YAMLFILE}" 'prod-ver-major' "\"${MAJOR}\""
   replaceFieldSed "${YAMLFILE}" 'prod-ver' "\"${MAJOR}.${MINOR}\""
   replaceFieldSed "${YAMLFILE}" 'prod-ver-patch' "\"${MAJOR}.${MINOR}.${PATCH}\""
@@ -224,7 +227,6 @@ if [[ ${PATCH} -eq 0 ]]; then
 fi
 
 echo "[INFO] Project version has been updated"
-
 
 if [[ ${USE_TMP_DIR} -eq 1 ]]; then
   rm -fr "/tmp/${TMPDIR}"
