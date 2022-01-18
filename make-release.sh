@@ -124,17 +124,6 @@ gitPush() {
   fi
 }
 
-gitPullRequest() {
-  local HEAD_BRANCH=$1
-  local BASE_BRANCH=$2
-  if  [[ ${DOCOMMIT} -eq 1 ]]; then 
-    git pull origin "${HEAD_BRANCH}" || true
-    git push origin "${BASE_BRANCH}"
-    LASTCOMMITCOMMENT="$(git log -1 --pretty=%B)"
-    hub pull-request --force --message "${LASTCOMMITCOMMENT}" --head "${HEAD_BRANCH}"
-  fi
-}
-
 gitTag() {
   if [[ ${TAG_RELEASE} -eq 1 ]]; then
     echo "[INFO] Creating release tag"
@@ -167,7 +156,7 @@ echo "[INFO] Version format for: ${VERSION} is in form MAJOR.MINOR.PATCH."
 versionIsIncremented() {
   # Validation version is incremented, never decremented
   OLDVERSION="$(yq -r '.asciidoc.attributes."prod-ver-patch"' "${YAMLFILE}")" # existing prod-ver-patch version 7.yy.z
-  if [[ "${OLDVERSION}"=="main" ]]; then
+  if [[ "${OLDVERSION}" == "main" ]]; then
     VERSIONS="${OLDVERSION} ${VERSION}"
     VERSIONS_SORTED="$(echo "${VERSIONS}" | tr " " "\n" | sort -V | tr "\n" " ")"
     # echo "Compare '${VERSIONS_SORTED}' with '${VERSIONS} '"
@@ -190,36 +179,6 @@ replaceFieldSed()
   sed -i "${YAMLFILE}" -r -e "s#( ${YAMLKEY}: ).+#\1${YAMLVALUE}#"
 }
 
-minorVersionUpdate() {
-  git checkout main
-  git pull origin main
-  local HEAD_BRANCH=pr-${MAJOR}.$((MINOR + 1)).x-to-main
-  git checkout -b ${HEAD_BRANCH}
-  # Update the version, defined in the antora.yml file, in following keys:
-  #    prod-prev-ver-major: "6" [never changes]
-  #    prod-ver-major: "7" [never changes]
-  #    prod-prev-ver: "7.42" [always prod-ver - 1]
-  #    prod-ver: "7.42"
-  #    prod-ver-patch: "7.25.2"
-  # Major version upgrade is expected to fail.
-  local YAMLFILE=antora.yml
-  # prod-ver should never go down, only up
-  versionIsIncremented
-  replaceFieldSed "${YAMLFILE}" 'prod-ver-major' "\"${MAJOR}\""
-  replaceFieldSed "${YAMLFILE}" 'prod-ver' "\"${MAJOR}.$((MINOR + 1))\""
-  replaceFieldSed "${YAMLFILE}" 'prod-ver-patch' "\"${MAJOR}.$((MINOR + 1)).0\""
-  replaceFieldSed "${YAMLFILE}" 'prod-prev-ver' "\"${MAJOR}.${MINOR}\""
-  # Update the version, defined in the antora-playbook-for-publication.yml file, in following keys:
-  #    branches: 7.32.x
-  #    edit_url: "https://github.com/eclipse/che-docs/edit/7.35.x/{path}"
-  fi  
-  echo "[INFO] Generating single-sourced docs on branch: ${MAIN_BRANCH}."
-  ./tools/checluster_docs_gen.sh
-  ./tools/environment_docs_gen.sh
-  echo "[INFO] Finished handling version update on branch: ${MAIN_BRANCH}."
-  gitPullRequest ${MAIN_BRANCH} ${HEAD_BRANCH}
-}
-
 publicationsBuilderUpdate() {
   git checkout ${PUBLICATION_BRANCH}
   YAMLFILE=antora-playbook-for-publication.yml
@@ -233,6 +192,7 @@ publicationsBuilderUpdate() {
     echo "[WARNING] Cannot find file: ${YAMLFILE} on branch: ${MAIN_BRANCH}. Skipping."
   echo "[INFO] Finished handling version update on branch: ${PUBLICATION_BRANCH}"
   gitPush ${PUBLICATION_BRANCH}
+  fi
 }
 
 patchVersionUpdate() {
@@ -244,7 +204,7 @@ patchVersionUpdate() {
   ./tools/checluster_docs_gen.sh
   ./tools/environment_docs_gen.sh
   gitTag
-  gitPush ${MAJOR}.${MINOR}.x
+  gitPush "${MAJOR}.${MINOR}.x"
   echo "[INFO] Finished handling version update on branch: ${MAJOR}.${MINOR}.x"
 }
 
@@ -255,12 +215,12 @@ versionFormatIsValid
 # Get a working copy if necessary.
 gitClone
 
-# Update version in the version branch and in the main branch.
+# Update version in the version branch
+patchVersionUpdate
+
+# Update version in the publication-builder branch
 if [[ ${PATCH} -eq 0 ]]; then
-  patchVersionUpdate
   publicationsBuilderUpdate
-else
-  patchVersionUpdate  
 fi
 
 echo "[INFO] Project version has been updated"
