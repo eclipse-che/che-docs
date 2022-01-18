@@ -5,23 +5,3 @@
        <a href="https://www.eclipse.org/legal/epl-2.0/" target="_blank">Eclipse Public License</a> |
        <a href="https://www.eclipse.org/legal" target="_blank">Legal Resources</a></div>
 </footer>
-
-{{#if env.ALGOLIA_API_KEY}}
-<script src="{{uiRootPath}}/js/vendor/docsearch.min.js"></script>
-<!-- fetched from https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js -->
-<script>
-var search = docsearch({
-  {{#with env.ALGOLIA_APP_ID}}
-  appId: '{{this}}',
-  {{/with}}
-  apiKey: '{{env.ALGOLIA_API_KEY}}',
-  indexName: '{{env.ALGOLIA_IDX_NAME}}',
-  inputSelector: '#search-input',
-  autocompleteOptions: { hint: false, keyboardShortcuts: ['s'] },
-  algoliaOptions: { hitsPerPage: 10 }
-}).autocomplete
-search.on('autocomplete:closed', function () { search.autocomplete.setVal() })
-function focusSearchInput () { document.querySelector('#search-input').focus() }
-if (document.querySelector('.home-link.is-current')) window.addEventListener('load', focusSearchInput)
-</script>
-{{/if}}
