@@ -8,18 +8,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 # Release process automation script.
-# 0. Verify VERSION is defined as X.Y.Z
-# 1. Start from the accurate branch
-#    * If Z = 0, start from master branch.
-#    * Else, start from X.Y.x release branch
-# 2. Update versions in `antora.yml`:
-#    * `prod-ver` = version to release
-#    * Set other `ver` attributes accordingly.
-# 3. Run scripts generating doc
-#    * checluster_docs_gen.sh
-#    * environment_docs_gen.sh
-# 4. Commit and push to the release branch.
-# 5. (If defined) Tag the release
+# See: RELEASE.adoc
 
 # Fail on error
 set -e
@@ -97,9 +86,10 @@ checkoutVersionBranch() {
   # Check if the branch exists, locally or on the remote.
   EXISTING_BRANCH=0
   git fetch
+  local BUGFIX_BRANCH=${MAJOR}.${MINOR}.x
   EXISTING_BRANCH=$(git ls-remote --heads origin "${BUGFIX_BRANCH}")
   case ${EXISTING_BRANCH} in
-    "") echo "[INFO] Creating new branch: ${TARGET_BRANCH} from branch: ${MAIN_BRANCH}."
+    "") echo "[INFO] Creating new branch: ${BUGFIX_BRANCH} from branch: ${MAIN_BRANCH}."
       git checkout "${MAIN_BRANCH}"
       git checkout -b "${BUGFIX_BRANCH}"
       ;;
@@ -117,10 +107,10 @@ gitCommit() {
 }
 
 gitPush() {
-  local TARGET_BRANCH=$1
+  local BUGFIX_BRANCH=$1
   if  [[ ${DOPUSH} -eq 1 ]]; then 
-    git pull origin "${TARGET_BRANCH}" || true
-    git push origin "${TARGET_BRANCH}"
+    git pull origin "${BUGFIX_BRANCH}" || true
+    git push origin "${BUGFIX_BRANCH}"
   fi
 }
 
@@ -153,51 +143,18 @@ esac
 echo "[INFO] Version format for: ${VERSION} is in form MAJOR.MINOR.PATCH."
 }
 
-versionIsIncremented() {
-  # Validation version is incremented, never decremented
-  OLDVERSION="$(yq -r '.asciidoc.attributes."prod-ver-patch"' "${YAMLFILE}")" # existing prod-ver-patch version 7.yy.z
-  if [[ "${OLDVERSION}" == "main" ]]; then
-    VERSIONS="${OLDVERSION} ${VERSION}"
-    VERSIONS_SORTED="$(echo "${VERSIONS}" | tr " " "\n" | sort -V | tr "\n" " ")"
-    # echo "Compare '${VERSIONS_SORTED}' with '${VERSIONS} '"
-    if [[ "${VERSIONS_SORTED}" != "${VERSIONS} " ]] || [[ "${OLDVERSION}" == "${VERSION}" ]]; then # note trailing space after VERSIONS is required!
-      echo "[ERROR] Target version ${VERSION} is smaller than existing version: ${OLDVERSION}. Version should not go backwards, so nothing to do!"
-      return 1
-    fi
-    echo "[INFO] Target version: ${VERSION} is an increment for current version: ${OLDVERSION}."
-  else
-    echo "[INFO] Target version: ${VERSION} "
-  fi
-}
-
 replaceFieldSed()
 {
-  YAMLFILE=$1
-  YAMLKEY=$2
-  YAMLVALUE=$3
-  echo "[INFO] Updating file: ${YAMLFILE} on branch: ${TARGET_BRANCH}: setting attribute: ${YAMLKEY}: ${YAMLVALUE}"
+  local YAMLFILE=$1
+  local YAMLKEY=$2
+  local YAMLVALUE=$3
+  echo "[INFO] Updating file: ${YAMLFILE}: setting attribute: ${YAMLKEY}: ${YAMLVALUE}"
   sed -i "${YAMLFILE}" -r -e "s#( ${YAMLKEY}: ).+#\1${YAMLVALUE}#"
 }
 
-# publicationsBuilderUpdate() {
-#   git checkout ${PUBLICATION_BRANCH}
-#   YAMLFILE=antora-playbook-for-publication.yml
-#   if [ -f "${YAMLFILE}" ]
-#   then
-#     # replace branches values, to reference 7.41.x version, and the current bugfix version
-#     sed -i '/branches/,/edit_url/{//!d}' ${YAMLFILE}
-#     sed -i "/branches:/a\ \ \ \ \ \ \ \ - \"${MAJOR}.${MINOR}.x\"" ${YAMLFILE}
-#     sed -i "/branches:/a\ \ \ \ \ \ \ \ - \"7.41.x\"" ${YAMLFILE}
-#   else
-#     echo "[WARNING] Cannot find file: ${YAMLFILE} on branch: ${MAIN_BRANCH}. Skipping."
-#   echo "[INFO] Finished handling version update on branch: ${PUBLICATION_BRANCH}"
-#   gitPush ${PUBLICATION_BRANCH}
-#   fi
-# }
-
 patchVersionUpdate() {
   checkoutVersionBranch
-  versionIsIncremented
+  local YAMLFILE="antora.yml"
   replaceFieldSed "${YAMLFILE}" 'prerelease' "false"
   replaceFieldSed "${YAMLFILE}" 'version' "\"${MAJOR}.${MINOR}.x\""
   replaceFieldSed "${YAMLFILE}" 'display_version' "\"${MAJOR}.${MINOR}.x\""
@@ -211,7 +168,6 @@ patchVersionUpdate() {
   echo "[INFO] Finished handling version update on branch: ${MAJOR}.${MINOR}.x"
 }
 
-BUGFIX_BRANCH=${MAJOR}.${MINOR}.x
 # Validate the version format.
 versionFormatIsValid
 
@@ -220,11 +176,6 @@ gitClone
 
 # Update version in the version branch
 patchVersionUpdate
-
-# # Update version in the publication-builder branch
-# if [[ ${PATCH} -eq 0 ]]; then
-#   publicationsBuilderUpdate
-# fi
 
 echo "[INFO] Project version has been updated"
 
