@@ -179,27 +179,27 @@ replaceFieldSed()
   sed -i "${YAMLFILE}" -r -e "s#( ${YAMLKEY}: ).+#\1${YAMLVALUE}#"
 }
 
-publicationsBuilderUpdate() {
-  git checkout ${PUBLICATION_BRANCH}
-  YAMLFILE=antora-playbook-for-publication.yml
-  if [ -f "${YAMLFILE}" ]
-  then
-    # replace branches values, to reference 7.41.x version, and the current bugfix version
-    sed -i '/branches/,/edit_url/{//!d}' ${YAMLFILE}
-    sed -i "/branches:/a\ \ \ \ \ \ \ \ - \"${MAJOR}.${MINOR}.x\"" ${YAMLFILE}
-    sed -i "/branches:/a\ \ \ \ \ \ \ \ - \"7.41.x\"" ${YAMLFILE}
-  else
-    echo "[WARNING] Cannot find file: ${YAMLFILE} on branch: ${MAIN_BRANCH}. Skipping."
-  echo "[INFO] Finished handling version update on branch: ${PUBLICATION_BRANCH}"
-  gitPush ${PUBLICATION_BRANCH}
-  fi
-}
+# publicationsBuilderUpdate() {
+#   git checkout ${PUBLICATION_BRANCH}
+#   YAMLFILE=antora-playbook-for-publication.yml
+#   if [ -f "${YAMLFILE}" ]
+#   then
+#     # replace branches values, to reference 7.41.x version, and the current bugfix version
+#     sed -i '/branches/,/edit_url/{//!d}' ${YAMLFILE}
+#     sed -i "/branches:/a\ \ \ \ \ \ \ \ - \"${MAJOR}.${MINOR}.x\"" ${YAMLFILE}
+#     sed -i "/branches:/a\ \ \ \ \ \ \ \ - \"7.41.x\"" ${YAMLFILE}
+#   else
+#     echo "[WARNING] Cannot find file: ${YAMLFILE} on branch: ${MAIN_BRANCH}. Skipping."
+#   echo "[INFO] Finished handling version update on branch: ${PUBLICATION_BRANCH}"
+#   gitPush ${PUBLICATION_BRANCH}
+#   fi
+# }
 
 patchVersionUpdate() {
   checkoutVersionBranch
   versionIsIncremented
   replaceFieldSed "${YAMLFILE}" 'prerelease' "false"
-  replaceFieldSed "${YAMLFILE}" 'version' "stable"
+  replaceFieldSed "${YAMLFILE}" 'version' "\"${MAJOR}.${MINOR}.x\""
   replaceFieldSed "${YAMLFILE}" 'display_version' "\"${MAJOR}.${MINOR}.x\""
   replaceFieldSed "${YAMLFILE}" 'prod-ver-major' "\"${MAJOR}\""
   replaceFieldSed "${YAMLFILE}" 'prod-ver' "\"${MAJOR}.${MINOR}\""
@@ -221,10 +221,10 @@ gitClone
 # Update version in the version branch
 patchVersionUpdate
 
-# Update version in the publication-builder branch
-if [[ ${PATCH} -eq 0 ]]; then
-  publicationsBuilderUpdate
-fi
+# # Update version in the publication-builder branch
+# if [[ ${PATCH} -eq 0 ]]; then
+#   publicationsBuilderUpdate
+# fi
 
 echo "[INFO] Project version has been updated"
 
