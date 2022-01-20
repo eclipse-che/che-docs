@@ -101,4 +101,4 @@ ENV HOME="/projects" \
     NODE_PATH="/usr/local/share/.config/yarn/global/node_modules" \
     USER_NAME=che-docs
 
-USER 1000
+USER 1001
