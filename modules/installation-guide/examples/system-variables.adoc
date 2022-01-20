@@ -58,8 +58,8 @@ pass:[<!-- vale off -->]
  `+CHE_AUTH_USER__SELF__CREATION+`,"`+false+`","{prod-short} has a single identity implementation, so this does not change the user experience. If true, enables user creation at API level" 
  `+CHE_AUTH_ACCESS__DENIED__ERROR__PAGE+`,"`+/error-oauth+`","Authentication error page address" 
  `+CHE_AUTH_RESERVED__USER__NAMES+`,"","Reserved user names" 
- `+CHE_OAUTH_GITHUB_CLIENTID+`,"`+NULL+`","Configuration of GitHub OAuth client. You can setup GitHub OAuth to automate authentication to remote repositories. You need to first register this application with GitHub OAuth. GitHub OAuth client ID." 
- `+CHE_OAUTH_GITHUB_CLIENTSECRET+`,"`+NULL+`","GitHub OAuth client secret." 
+ `+CHE_OAUTH2_GITHUB_CLIENTID__FILEPATH+`,"`+NULL+`","Configuration of GitHub OAuth2 client. Used to obtain Personal access tokens. Location of the file with GitHub client id." 
+ `+CHE_OAUTH2_GITHUB_CLIENTSECRET__FILEPATH+`,"`+NULL+`","Location of the file with GitHub client secret." 
  `+CHE_OAUTH_GITHUB_AUTHURI+`,"`+https://github.com/login/oauth/authorize+`","GitHub OAuth authorization URI." 
  `+CHE_OAUTH_GITHUB_TOKENURI+`,"`+https://github.com/login/oauth/access_token+`","GitHub OAuth token URI." 
  `+CHE_OAUTH_GITHUB_REDIRECTURIS+`,"`+http://localhost:${CHE_PORT}/api/oauth/callback+`","GitHub OAuth redirect URIs. Separate multiple values with comma, for example: URI,URI,URI" 
@@ -111,6 +111,7 @@ pass:[<!-- vale off -->]
  `+CHE_INFRA_KUBERNETES_NAMESPACE_ANNOTATIONS+`,"`+che.eclipse.org/username=<username>+`","List of annotations to find {orch-namespace} prepared for {prod-short} users workspaces. Only {orch-namespace} matching the `che.infra.kubernetes.namespace.labels` will be matched against these annotations. {orch-namespace} that matches both `che.infra.kubernetes.namespace.labels` and `che.infra.kubernetes.namespace.annotations` will be preferentially used for User's workspaces. It's possible to use `<username>` placeholder to specify the {orch-namespace} to concrete user. They are used to:  - find prepared {orch-namespace} for users in combination with `che.infra.kubernetes.namespace.labels`.  - actively annotate {orch-namespace} with any workspace." 
  `+CHE_INFRA_KUBERNETES_SERVICE__ACCOUNT__NAME+`,"`+NULL+`","Defines Kubernetes Service Account name which should be specified to be bound to all workspaces Pods. the {prod-short} Operator that Kubernetes Infrastructure will not create the service account and it should exist. OpenShift infrastructure will check if project is predefined(if `che.infra.openshift.project` is not empty):  - if it is predefined then service account must exist there  - if it is 'NULL' or empty string then infrastructure will create new OpenShift project per workspace    and prepare workspace service account with needed roles there" 
  `+CHE_INFRA_KUBERNETES_WORKSPACE__SA__CLUSTER__ROLES+`,"`+NULL+`","Specifies optional, additional cluster roles to use with the workspace service account. the {prod-short} Operator that the cluster role names must already exist, and the {prod-short} service account needs to be able to create a Role Binding to associate these cluster roles with the workspace service account. The names are comma separated. This property deprecates `che.infra.kubernetes.cluster_role_name`." 
+ `+CHE_INFRA_KUBERNETES_USER__CLUSTER__ROLES+`,"`+NULL+`","Cluster roles to assign to user in his namespace" 
  `+CHE_INFRA_KUBERNETES_WORKSPACE__START__TIMEOUT__MIN+`,"`+8+`","Defines wait time that limits the Kubernetes workspace start time." 
  `+CHE_INFRA_KUBERNETES_INGRESS__START__TIMEOUT__MIN+`,"`+5+`","Defines the timeout in minutes that limits the period for which Kubernetes Ingress become ready" 
  `+CHE_INFRA_KUBERNETES_WORKSPACE__UNRECOVERABLE__EVENTS+`,"`+FailedMount,FailedScheduling,MountVolume.SetUpfailed,Failed to pull image,FailedCreate,ReplicaSetCreateError+`","If during workspace startup an unrecoverable event defined in the property occurs, stop the workspace immediately rather than waiting until timeout. the {prod-short} Operator that this SHOULD NOT include a mere 'Failed' reason, because that might catch events that are not unrecoverable. A failed container startup is handled explicitly by {prod-short} server." 
@@ -144,7 +145,6 @@ pass:[<!-- vale off -->]
  `+CHE_INFRA_KUBERNETES_TRUSTED__CA_DEST__CONFIGMAP+`,"`+ca-certs+`","Name of the ConfigMap in a workspace namespace with additional CA TLS certificates. Holds the copy of `che.infra.kubernetes.trusted_ca.src_configmap` but in a workspace namespace. Content of this ConfigMap is mounted into all workspace containers including plugin brokers. Do not change the ConfigMap name unless it conflicts with the already existing ConfigMap. the {prod-short} Operator that the resulting ConfigMap name can be adjusted eventually to make it unique in {orch-namespace}. The original name would be stored in `che.original_name` label." 
  `+CHE_INFRA_KUBERNETES_TRUSTED__CA_MOUNT__PATH+`,"`+/public-certs+`","Configures path on workspace containers where the CA bundle should be mounted. Content of ConfigMap specified by `che.infra.kubernetes.trusted_ca.dest_configmap` is mounted." 
  `+CHE_INFRA_KUBERNETES_TRUSTED__CA_DEST__CONFIGMAP__LABELS+`,"","Comma separated list of labels to add to the CA certificates ConfigMap in user workspace. See the `che.infra.kubernetes.trusted_ca.dest_configmap` property." 
- `+CHE_INFRA_KUBERNETES_ENABLE__UNSUPPORTED__K8S+`,"`+false+`","Enables the `/unsupported/{orch-name}` endpoint to resolve calls on Kubernetes infrastructure. Provides direct access to the underlying infrastructure REST API. This results in huge privilege escalation. It impacts only Kubernetes infrastructure. Therefore it implies no security risk on OpenShift with OAuth. Do not enable this, unless you understand the risks." 
 ,=== 
 
 [id="openshift-infra-parameters"]
@@ -231,10 +231,10 @@ pass:[<!-- vale off -->]
 ,=== 
  Environment Variable Name,Default value, Description 
  
- `+CHE_FACTORY_DEFAULT__EDITOR+`,"`+eclipse/che-theia/latest+`","Editor that will be used for factories that are created from a remote Git repository which does not contain any {prod-short}-specific workspace descriptor." 
+ `+CHE_FACTORY_DEFAULT__EDITOR+`,"`+eclipse/che-theia/next+`","Editor that will be used for factories that are created from a remote Git repository which does not contain any {prod-short}-specific workspace descriptor." 
  `+CHE_FACTORY_SCM__FILE__FETCHER__LIMIT__BYTES+`,"`+102400+`","File size limit for the URL fetcher which fetch files from the SCM repository." 
  `+CHE_FACTORY_DEVFILE2__FILES__RESOLUTION__LIST+`,"`+.che/che-editor.yaml,.che/che-theia-plugins.yaml,.vscode/extensions.json+`","Additional files which may be present in repository to complement devfile v2, and should be referenced as links to SCM resolver service in factory to retrieve them." 
- `+CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR+`,"`+eclipse/che-theia/latest+`","Default Editor that should be provisioned into Devfile if there is no specified Editor Format is `editorPublisher/editorName/editorVersion` value. `NULL` or absence of value means that default editor should not be provisioned." 
+ `+CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR+`,"`+eclipse/che-theia/next+`","Default Editor that should be provisioned into Devfile if there is no specified Editor Format is `editorPublisher/editorName/editorVersion` value. `NULL` or absence of value means that default editor should not be provisioned." 
  `+CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR_PLUGINS+`,"`+NULL+`","Default Plug-ins which should be provisioned for Default Editor. All the plugins from this list that are not explicitly mentioned in the user-defined devfile will be provisioned but only when the default editor is used or if the user-defined editor is the same as the default one (even if in different version). Format is comma-separated `pluginPublisher/pluginName/pluginVersion` values, and URLs. For example: `eclipse/che-theia-exec-plugin/0.0.1,eclipse/che-theia-terminal-plugin/0.0.1,https://cdn.pluginregistry.com/vi-mode/meta.yaml` If the plugin is a URL, the plugin's `meta.yaml` is retrieved from that URL." 
  `+CHE_WORKSPACE_PROVISION_SECRET_LABELS+`,"`+app.kubernetes.io/part-of=che.eclipse.org,app.kubernetes.io/component=workspace-secret+`","Defines comma-separated list of labels for selecting secrets from a user namespace, which will be mount into workspace containers as a files or environment variables. Only secrets that match ALL given labels will be selected." 
  `+CHE_WORKSPACE_DEVFILE_ASYNC_STORAGE_PLUGIN+`,"`+eclipse/che-async-pv-plugin/latest+`","Plugin is added in case asynchronous storage feature will be enabled in workspace configuration and supported by environment" 
@@ -305,6 +305,20 @@ pass:[<!-- vale off -->]
  `+CHE_INFRA_OPENSHIFT_OAUTH__IDENTITY__PROVIDER+`,"`+NULL+`","Alias of the OpenShift identity provider registered in Keycloak, that should be used to create workspace OpenShift resources in OpenShift namespaces owned by the current {prod-short} user. Should be set to NULL if `che.infra.openshift.project` is set to a non-empty value. See: link:https://www.keycloak.org/docs/latest/server_admin/#openshift-4[OpenShift identity provider]" 
 ,=== 
 
+[id="oidc-configuration"]
+= OIDC configuration
+
+.OIDC configuration 
+,=== 
+ Environment Variable Name,Default value, Description 
+ 
+ `+CHE_OIDC_AUTH__SERVER__URL+`,"`+http://${CHE_HOST}:5050/auth+`","Url to OIDC identity provider server Can be set to NULL only if `che.oidc.oidcProvider` is used" 
+ `+CHE_OIDC_AUTH__INTERNAL__SERVER__URL+`,"`+NULL+`","Internal network service Url to OIDC identity provider server" 
+ `+CHE_OIDC_ALLOWED__CLOCK__SKEW__SEC+`,"`+3+`","The number of seconds to tolerate for clock skew when verifying `exp` or `nbf` claims." 
+ `+CHE_OIDC_USERNAME__CLAIM+`,"`+NULL+`","Username claim to be used as user display name when parsing JWT token if not defined the fallback value is 'preferred_username' in Keycloak installations and `name` in Dex installations." 
+ `+CHE_OIDC_OIDC__PROVIDER+`,"`+NULL+`","Base URL of an alternate OIDC provider that provides a discovery endpoint as detailed in the following specification link:https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig[Obtaining OpenID Provider Configuration Information] Deprecated, use `che.oidc.auth_server_url` and `che.oidc.auth_internal_server_url` instead." 
+,=== 
+
 [id="keycloak-configuration"]
 = Keycloak configuration
 
@@ -312,18 +326,13 @@ pass:[<!-- vale off -->]
 ,=== 
  Environment Variable Name,Default value, Description 
  
- `+CHE_KEYCLOAK_AUTH__SERVER__URL+`,"`+http://${CHE_HOST}:5050/auth+`","Url to keycloak identity provider server Can be set to NULL only if `che.keycloak.oidcProvider` is used" 
- `+CHE_KEYCLOAK_AUTH__INTERNAL__SERVER__URL+`,"`+NULL+`","Internal network service Url to keycloak identity provider server" 
  `+CHE_KEYCLOAK_REALM+`,"`+che+`","Keycloak realm is used to authenticate users Can be set to NULL only if `che.keycloak.oidcProvider` is used" 
  `+CHE_KEYCLOAK_CLIENT__ID+`,"`+che-public+`","Keycloak client identifier in `che.keycloak.realm` to authenticate users in the dashboard, the IDE, and the CLI." 
  `+CHE_KEYCLOAK_OSO_ENDPOINT+`,"`+NULL+`","URL to access OSO OAuth tokens" 
  `+CHE_KEYCLOAK_GITHUB_ENDPOINT+`,"`+NULL+`","URL to access Github OAuth tokens" 
- `+CHE_KEYCLOAK_ALLOWED__CLOCK__SKEW__SEC+`,"`+3+`","The number of seconds to tolerate for clock skew when verifying `exp` or `nbf` claims." 
  `+CHE_KEYCLOAK_USE__NONCE+`,"`+true+`","Use the OIDC optional `nonce` feature to increase security." 
  `+CHE_KEYCLOAK_JS__ADAPTER__URL+`,"`+NULL+`","URL to the Keycloak Javascript adapter to use. if set to NULL, then the default used value is `$++{che.keycloak.auth_server_url}++/js/keycloak.js`, or `<che-server>/api/keycloak/OIDCKeycloak.js` if an alternate `oidc_provider` is used" 
- `+CHE_KEYCLOAK_OIDC__PROVIDER+`,"`+NULL+`","Base URL of an alternate OIDC provider that provides a discovery endpoint as detailed in the following specification link:https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig[Obtaining OpenID Provider Configuration Information]" 
  `+CHE_KEYCLOAK_USE__FIXED__REDIRECT__URLS+`,"`+false+`","Set to true when using an alternate OIDC provider that only supports fixed redirect Urls This property is ignored when `che.keycloak.oidc_provider` is NULL" 
- `+CHE_KEYCLOAK_USERNAME__CLAIM+`,"`+NULL+`","Username claim to be used as user display name when parsing JWT token if not defined the fallback value is 'preferred_username'" 
  `+CHE_OAUTH_SERVICE__MODE+`,"`+delegated+`","Configuration of OAuth Authentication Service that can be used in 'embedded' or 'delegated' mode. If set to 'embedded', then the service work as a wrapper to {prod-short}'s OAuthAuthenticator ( as in Single User mode). If set to 'delegated', then the service will use Keycloak IdentityProvider mechanism. Runtime Exception `wii` be thrown, in case if this property is not set properly." 
  `+CHE_KEYCLOAK_CASCADE__USER__REMOVAL__ENABLED+`,"`+false+`","Configuration for enabling removing user from Keycloak server on removing user from {prod-short} database. By default it's disabled. Can be enabled in some special cases when deleting a user in {prod-short} database should execute removing related-user from Keycloak. For correct work need to set administrator username $++{che.keycloak.admin_username}++ and password $++{che.keycloak.admin_password}++." 
  `+CHE_KEYCLOAK_ADMIN__USERNAME+`,"`+NULL+`","Keycloak administrator username. Will be used for deleting user from Keycloak on removing user from {prod-short} database. Make sense only in case $++{che.keycloak.cascade_user_removal_enabled}++ set to 'true'" 

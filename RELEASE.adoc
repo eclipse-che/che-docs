@@ -5,7 +5,7 @@
 
 == Release workflow automation
 
-The xref:.github/workflows/release.yml[`release.yml`] workflow implements and performs release procedures for the Eclipse Che Documentation.
+The xref:.github/workflows/release.yml[`release.yml`] workflow implements and performs release procedures for the Eclipse Che Documentation, using the xref:make-release.sh[`make-release.sh`] script.
 
 The publication is decoupled. See link:https://github.com/eclipse/che-docs/tree/publication-builder[Publishing Eclipse Che documentation].
 
@@ -13,173 +13,56 @@ The publication is decoupled. See link:https://github.com/eclipse/che-docs/tree/
 == Releasing a major or minor version
 
 
+.Prerequisites
+
+* Define the Eclipse Che version to release: `__<major>__.__<minor>__.0`.
+
 .Procedure
 
-. Define the stable `__<major>__.__<minor>__` Eclipse Che version to release.
-
-. Define the next `__<major-next>__.__<minor-next>__` Eclipse Che version to release.
-
-. Create the `__<major>__.__<minor>__.x` branch from the `_<reference>_` branch.
-+
-.Defining the `_<reference>_` branch
-|===
-| `_<reference>_` branch | Eclipse Che version
-| `master` | < 7.42
-| `main` | >= 7.42
-|===
+. Create the `__<major>__.__<minor>__.x` branch from the `main` branch.
 
 . Edit the `antora.yml` file in the `__<major>__.__<minor>__.x` branch to define:
 +
-`version`:: Antora module version, defining the publication URL.
-+
-.Defining the `version` value for the `antora.yml` file in the `__<major>__.__<minor>__.x` branch
-|===
-| `version` value | Eclipse Che version
-| `che-7` | < 7.42
-| `stable` | >= 7.42
-|===
-`display_version`:: Antora module version display in Antora UI: stable Eclipse Che `_<major>_._<minor>_._<patch>_` version.
-`asciidoc.attributes.prod-prev-ver`:: Previous Eclipse Che `_<major>_._<minor>_` version
-`asciidoc.attributes.prod-ver`:: Stable Eclipse Che `_<major>_._<minor>_` version
-`asciidoc.attributes.prod-ver-patch`:: Stable Eclipse Che `_<major>_._<minor>_.0` version
-+
-.`antora.yml` excerpt for the Eclipse Che 7.41.0 release
-====
 [source,yaml,subs="+attributes,+quotes"]
 ----
-# [...]
-version: che-7
-display_version: "7.41.0"
-# [...]
+prerelease: false
+version: "_<major>_._<minor>_.x"
+display_version: "_<major>_._<minor>_.x"
 asciidoc:
   attributes:
-   # [...]
-    prod-prev-ver: "7.40"
-    # [...]
-    prod-ver-patch: "7.41.0"
-    prod-ver: "7.41"
-# [...]
+    prod-ver-patch: "_<major>_._<minor>_.0"
+    prod-ver: "_<major>_._<minor>_"
+    prod-ver-major: "_<major>_"
 ----
-====
-+
-.`antora.yml` excerpt for the Eclipse Che 7.42.0 release
-====
-[source,yaml,subs="+attributes,+quotes"]
-----
-# [...]
-version: stable
-display_version: "7.42.0"
-# [...]
-asciidoc:
-  attributes:
-   # [...]
-    prod-prev-ver: "7.41"
-    # [...]
-    prod-ver-patch: "7.42.0"
-    prod-ver: "7.42"
-# [...]
-----
-====
 
-. Replace the stable branch version (`"__<major>__.__<minor>__.x"`) in the link:https://github.com/eclipse/che-docs/blob/publication-builder/publication-builder-antora-playbook.yml[`publication-builder-antora-playbook.yml` file in the `publication-builder` branch]. Keep the other branches (`main`, `master`, `che-7`, `che-7-redirections`). See: link:https://github.com/eclipse/che-docs/tree/publication-builder#changing-the-versions-to-publish[Changing the versions to publish]
-+
-[source,yaml,subs="+attributes,+quotes"]
-----
-# [...]
-content:
-  sources:
-    - url: https://github.com/eclipse/che-docs
-      branches:
-        - "main"
-        - "__<major>__.__<minor>__.x"
-# [...]
-----
-+
-.link:https://github.com/eclipse/che-docs/blob/publication-builder/publication-builder-antora-playbook.yml[`publication-builder-antora-playbook.yml` file in the `publication-builder` branch] excerpt for the Eclipse Che `7.41.0` release
-====
-[source,yaml,subs="+attributes,+quotes"]
-----
-# [...]
-content:
-  sources:
-    - url: https://github.com/eclipse/che-docs
-      branches:
-        - "main"
-        - "7.41.x"
-# [...]
-----
-====
 
-. Edit `antora.yml` in the `main` branch, to set Eclipse Che version to the next version. Keep Antora module `version` and `display_version` values to `next`.
-+
-[source,yaml,subs="+attributes,+quotes"]
-----
-# [...]
-version: next
-display_version: next
-# [...]
-asciidoc:
-  attributes:
-   # [...]
-    prod-prev-ver: "__<major>__.__<minor>__"
-    # [...]
-    prod-ver-patch: "__<major-next>__.__<minor-next>__.0"
-    prod-ver: "__<major-next>__.__<minor-next>__"
-# [...]
-----
-+
-`asciidoc.attributes.prod-prev-ver`:: Stable Eclipse Che `_<major>_._<minor>_` version
-+
-`asciidoc.attributes.prod-ver`:: Next Eclipse Che `_<major-next>_._<minor-next>_` version
-+
-`asciidoc.attributes.prod-ver-patch`:: Next Eclipse Che `_<major-next>_._<minor-next>_.0` version
-+
-.`antora.yml` excerpt in the  `main` branch for the Eclipse Che `7.42.0` release
-====
-[source,yaml,subs="+attributes,+quotes"]
-----
-# [...]
-version: next
-display_version: next
-# [...]
-asciidoc:
-  attributes:
-   # [...]
-    prod-prev-ver: "7.42"
-    # [...]
-    prod-ver-patch: "7.43.0"
-    prod-ver: "7.43"
-# [...]
-----
-====
+// . Replace the stable branch version (`"__<major>__.__<minor>__.x"`) in the link:https://github.com/eclipse/che-docs/blob/publication-builder/publication-builder-antora-playbook.yml[`publication-builder-antora-playbook.yml` file in the `publication-builder` branch]. Keep the other branches (`main`, `master`, `che-7`, `che-7-redirections`). See: link:https://github.com/eclipse/che-docs/tree/publication-builder#changing-the-versions-to-publish[Changing the versions to publish]
+// +
+// [source,yaml,subs="+attributes,+quotes"]
+// ----
+// # [...]
+// content:
+//   sources:
+//     - url: https://github.com/eclipse/che-docs
+//       branches:
+//         - "main"
+//         - "__<major>__.__<minor>__.x"
+// # [...]
+// ----
 
 == Releasing a patch version
 
-.Procedure
+.Prerequisites
 
-. Define the stable `__<major>__.__<minor>__.__<patch>__` Eclipse Che version to release.
+* Define the stable `__<major>__.__<minor>__.__<patch>__` Eclipse Che version to release.
+
+.Procedure
 
 . Define `asciidoc.attributes.prod-ver-patch` in the `antora.yml` file in the `__<major>__.__<minor>__.x` branch:
 +
 [source,yaml,subs="+attributes,+quotes"]
 ----
-# [...]
 asciidoc:
   attributes:
-    # [...]
     prod-ver-patch: "__<major>__.__<minor>__.__<patch>__"
-# [...]
 ----
-+
-.`antora.yml` excerpt for the Eclipse Che `7.41.1` release
-====
-[source,yaml,subs="+attributes,+quotes"]
-----
-# [...]
-asciidoc:
-  attributes:
-    # [...]
-    prod-ver-patch: "7.41.1"
-# [...]
-----
-====
