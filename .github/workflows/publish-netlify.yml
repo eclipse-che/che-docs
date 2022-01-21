@@ -31,31 +31,18 @@ jobs:
           name: doc-content
           path: content
 
-      - name: Download pull-request-number artifact
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          workflow: ${{ github.event.workflow_run.workflow_id }}
-          name: pull-request-number
-
-      - name: Set PR_NUMBER variable
+      - name: Set PR_NUMBER and PR_SHA variables in GITHUB_ENV
         run: |
-          pr_number=$(cat "PR_NUMBER")
+          pr_number=$(cat "content/PR_NUMBER")
           if ! [[ "$pr_number" =~ ^[0-9]+$ ]]; then
             echo "pr number invalid"
             exit 1
           fi
           echo "PR_NUMBER=$pr_number" >> $GITHUB_ENV
-
-      - name: Download pull-request-sha artifact
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          workflow: ${{ github.event.workflow_run.workflow_id }}
-          name: pull-request-sha
-
-      - name: Set PR_SHA variable
-        run: |
-          pr_sha=$(cat "PR_SHA")
+          rm content/PR_NUMBER
+          pr_sha=$(cat "content/PR_SHA")
           echo "PR_SHA=$pr_sha" >> $GITHUB_ENV
+          rm content/PR_SHA
 
       - name: Publish doc-content using netlify
         uses: netlify/actions/cli@master
