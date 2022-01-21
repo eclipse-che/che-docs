@@ -1,0 +1,110 @@
+[id="adding-a-new-workspace-without-git_{context}"]
+= Adding a new workspace
+
+////
+THIS CREATES AND STARTS THE NEW WORKSPACE
+LATER NEED TO DESCRIBE HOW TO:
+  REOPEN AFTER (ACCIDENTALLY) CLOSING THE BROWSER TAB/WINDOW
+  STOP
+  RESTART/REOPEN?
+  MODIFY? (DEVFILE?)
+  DELETE/REMOVE
+NB: other terms used in the equivalent procs in the old docs: execute a (new) workspace, run a (new) workspace.
+////
+////it is not clear yet or under which conditions: if entering the same url again later opens or restarts the same workspace
+
+//WHAT ABOUT GIT SERVERS AND LOCAL GITLAB?
+
+[id="creating-a-workspace-from-the-default-branch-of-a-git-repository_{context}"]
+= Creating a workspace from the default branch of a Git repository
+
+As a user, you can create a workspace containing a clone of a Git repository by entering a custom URL in the address bar of your browser.
+
+MERGE:
+* The `devfile.yaml` or `.devfile.yaml` file is located in the root folder of a Git repository, on a specific branch of the user's choice that is accessible over HTTPS. See xref:authoring-devfiles-version-2.adoc[] for detailed information about creating and using devfiles.
++
+* The Git repository __<GIT_REPOSITORY_URL>__ is available over HTTPS and contains a `devfile.yaml` or `.devfile.yaml` in the root folder. See xref:authoring-devfiles-version-2.adoc[].
+
+MERGE:
+This section describes how to start a {prod-short} workspace using a factory URL. The factory URL is a link pointing {prod-short} to a Git source repository containing a devfile. 
++
+A {prod-short} workspace can be created by pointing to a devfile that is stored in a Git source repository on a feature branch of the user’s choice. The {prod-short} instance then uses the discovered devfile to build a workspace.
+
+.Prerequisites
+
+* Your administrator maintains the `devfile.yaml` or `.devfile.yaml` file in the root directory of the Git repository.
+//HERE LINK TO THE RELEVANT PROCEDURE IN THE ADMIN GUIDE
+
+.Procedure
+
+//i'm adding a separate concept module about logging in to {prod-short}
+
+To start a workspace with a clone of a GitHub, GitLab, or Bitbucket repository, go to your browser's address bar and enter your team's or organization's {prod-short} URL, prepended with a `#` character and appended with the repository link. Using the example of Eclipse Che hosted by Red Hat: link:https://workspaces.openshift.com#https://github.com/eclipse-che/che-server[].
+
+//this sentence looks like it belongs in the intro par. consider moving it there and provide a more verification-focused procedure step:
+Then {prod-short} starts a workspace and clones the repository `https://github.com/eclipse-che/che-server`.
+
+MERGE:
+=========================================================================
+// the unstated first and second steps appear to be one and the same
+//vague sentence:
+* Create the workspace by opening(wrong) the factory(dropped)  URL:
++
+`pass:c,a,q[{prod-url}/#__<GIT_REPOSITORY_URL>__]`
++
+.Create a workspace on Eclipse Che hosted by Red Hat from the default branch of the `https://github.com/eclipse-che/che-server` repository using the short factory URL format.
+[subs="+quotes"]
+====
+link:https://workspaces.openshift.com/#https://github.com/eclipse-che/che-server[]
+====
+pass:[<!-- vale CheDocs.TechnicalTerms = YES -->]
+=========================================================================
+.Procedure
+Create the workspace by opening(wrong) the following(wrong:syntax) URL: `pass:c,a,q[{prod-url}/#__<GitHubBranch>__]`
+
+.Example
+Use following URL format to open an experimental link:https://github.com/quarkusio/quarkus-quickstarts[quarkus-quickstarts] branch hosted on link:https://workspaces.openshift.com[workspaces.openshift.com].
+
+[subs="+quotes"]
+----
+https://workspaces.openshift.com/f?url=https://github.com/maxandersen/quarkus-quickstarts/tree/che
+----
+=========================================================================
+
+================================================================================
+.Example
+
+== URL syntax by Git provider
+
+SHORTEN IN SENTENCE LENGTH AND IN THE NUMBER OF SENTENCES USED:
+
+URL syntax for cloning GitHub-hosted repositories to the starting workspace:
+
+* To clone the default branch on GitHub to the starting workspace:
++
+`#https://github.com/_<user_or_org>_/_<repository>_`
++
+Example: `#https://github.com/eclipse-che/che-plugin-registry`
+
+* To clone a specified branch on GitHub to the starting workspace:
++
+`#https://github.com/_<user_or_org>_/_<repository>_/tree/_<branch-name>_`
++
+Example: `#https://github.com/eclipse-che/che-plugin-registry/tree/7.39.x`
+
+* To clone the branch of a pull request on GitHub to the starting workspace:
++
+`#https://github.com/_<user_or_org>_/_<repository>_/pull/_<pull-request-id>_`
++
+Example: `#https://github.com/eclipse-che/che-plugin-registry/pull/1097`
+
+URL syntax for cloning GitLab-hosted repositories:
+
+* To clone the default branch on GitLab to the starting workspace:
++
+`#https://gitlab.com/_<user_or_org>_/_<repository>_`
+
+* To clone a specified branch on GitLab to the starting workspace:
++
+`#https://gitlab.com/_<user_or_org>_/_<repository>_/-/tree/_<branch>_`
+

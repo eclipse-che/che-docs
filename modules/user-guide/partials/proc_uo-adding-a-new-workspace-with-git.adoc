@@ -1,0 +1,118 @@
+////it is not clear yet or under which conditions: if entering the same url again later opens or restarts the same workspace
+
+//WHAT ABOUT GIT SERVERS AND LOCAL GITLAB? DOUBLE-CHECK THE CONCEPT SOURCES, ASK SME, AND TEST TO VERIFY
+
+[id="adding-a-new-workspace-with-git_{context}"]
+= Adding a new workspace
+
+//does this mean that this procedure is inapplicable to Git servers and GitLab servers?
+//To add a new workspace that contains a clone of a GitHub, GitLab, or Bitbucket repository:
+//To add [ADD TO WHAT WHERE?] a new workspace
+
+To add a new workspace that contains a clone of a Git repository, enter a custom URL in the address bar of your internet browser as follows:
+
+.Procedure
+
+//SOMEWHERE IN THIS MODULE MENTION IN SPECIFIC TERMS:
+//1. THE USER CAN CLONE THE PROJECT'S REPOSITORY OR THE USER'S FORK OF IT
+//2. THE USER CAN CLONE THE REPOSITORY FROM THE DEFAULT BRANCH OR FROM A FEATURE BRANCH
+//NB: DOUBLE-CHECK (ASK AND TEST) THAT THE WHOLE REPOSITORY, NOT JUST ONE BRANCH, GETS CLONED
+. In the address bar of your internet browser, enter a custom URL with the following syntax:
++
+[subs="+quotes,+attributes"]
+----
+https://__<your_team's_{prod-short}_URL>__#__<Git_repository_URL>__
+----
+//consider replacing it with the variable {prod-url}, BUT UPDATE THE VALUE FOR THIS VAR BEFOREHAND (TO 'your_team's_{prod-short}_URL')
+//need to mention that the {prod-short} URL is FQDM?
+//`pass:c,a,q[{prod-url}/#__<GIT_REPOSITORY_URL>__]`
+//pass:[<!-- vale CheDocs.TechnicalTerms = YES -->]
++
+.Example
+Eclipse Che hosted by Red Hat: link:https://workspaces.openshift.com#https://github.com/eclipse-che/che-server[].
+
+. In the login page, authenticate yourself as a {prod-short} user with your username and password, according to the information provided by your {prod-short} administrator.
+//here must not say "{prod-short} username and password" or "{prod-short} credentials
+//although i'm adding a separate concept module about logging in to {prod-short}, this procedure may require it as a step, in which case i should just xref to the separate module about logging in (for more info); in any case, the logging in happens after the step of entering the URL in the browser's address bar, and then probably before seeing the progress UI; however, THIS MUST BE TESTED WITH THE USER ALREADY LOGGED IN AND HAVING A DASHBOARD OPEN, BUT CHECK IF AUTHENTICATION IS REPOSITORY-SPECIFIC.
++
+{prod-short} opens the dashboard and displays the progress of starting the new workspace. {prod-short} clones the Git repository in the background.
+//Test and describe what the user is seeing here, enough vague, without unnecessary details which may change later (WORKSPACE STARTING PROGRESS UI >  OPENED WORKSPACE?)
+
+MERGE:
+=========================================================================
+// the unstated first and second steps appear to be one and the same
+//vague sentence:
+* Create the workspace by opening(wrong) the factory(dropped)  URL:
++
+`pass:c,a,q[{prod-url}/#__<GIT_REPOSITORY_URL>__]`
++
+.Create a workspace on Eclipse Che hosted by Red Hat from the default branch of the `https://github.com/eclipse-che/che-server` repository using the short factory URL format.
+[subs="+quotes"]
+====
+link:https://workspaces.openshift.com/#https://github.com/eclipse-che/che-server[]
+====
+pass:[<!-- vale CheDocs.TechnicalTerms = YES -->]
+=========================================================================
+.Procedure
+Create the workspace by opening(wrong) the following(wrong:syntax) URL: `pass:c,a,q[{prod-url}/#__<GitHubBranch>__]`
+
+.Example
+Use following URL format to open an experimental link:https://github.com/quarkusio/quarkus-quickstarts[quarkus-quickstarts] branch hosted on link:https://workspaces.openshift.com[workspaces.openshift.com].
+
+[subs="+quotes"]
+----
+https://workspaces.openshift.com/f?url=https://github.com/maxandersen/quarkus-quickstarts/tree/che
+----
+
+================================================================================
+.Example
+
+== URL syntax by Git provider
+
+SHORTEN IN SENTENCE LENGTH AND IN THE NUMBER OF SENTENCES USED:
+
+URL syntax for cloning GitHub-hosted repositories to the starting workspace:
+
+* To clone the default branch on GitHub to the starting workspace:
++
+`#https://github.com/_<user_or_org>_/_<repository>_`
++
+Example: `#https://github.com/eclipse-che/che-plugin-registry`
+
+* To clone a specified branch on GitHub to the starting workspace:
++
+`#https://github.com/_<user_or_org>_/_<repository>_/tree/_<branch-name>_`
++
+Example: `#https://github.com/eclipse-che/che-plugin-registry/tree/7.39.x`
+
+* To clone the branch of a pull request on GitHub to the starting workspace:
++
+`#https://github.com/_<user_or_org>_/_<repository>_/pull/_<pull-request-id>_`
++
+Example: `#https://github.com/eclipse-che/che-plugin-registry/pull/1097`
+
+URL syntax for cloning GitLab-hosted repositories:
+
+* To clone the default branch on GitLab to the starting workspace:
++
+`#https://gitlab.com/_<user_or_org>_/_<repository>_`
+
+* To clone a specified branch on GitLab to the starting workspace:
++
+`#https://gitlab.com/_<user_or_org>_/_<repository>_/-/tree/_<branch>_`
+
+.Additional resources
+
+* LINK TO ADVANCED USE FOR FEATURE BRANCHES THAT THE USER CAN HAVE A CUSTOM DEVFILE FOR
+* LINK TO ADVANCED USE FOR LONG-URL SYNTAX AND THE FEATURES IT ENABLES
+
+=================================================================================
+//QUESTIONS TO ASK:
+1. what happens when i fork a GH/GL repo that contains a devfile and when i use that devfile to create a new workspace for my fork of that repository (assuming this applies both to the default branch like master or main and any feature branch that I have created in my fork
+2. in theory, this should also apply to non-authorized users of other {prod-short} clusters cloning the same repo and using the embedded devfile to start their own workspaces, correct?
+//the sentence about the devfile doesn't need to be in the prerequisites (it's something that should be set up, so the user shouldn't worry about it), preferably move it elsewhere in the module:
+//the heading is currently branch-specific: this needs to change
+//actually, i can't use 'create' because the user is not creating anything, {prod-short} creates the workspace for the user, so the gerund procedure cannot have its heading start with 'Creating ...'
+//the second reason why i can't use 'create' in the heading (and prob in the module text as well) is that a new workspace is both 'created' and 'started'
+//'add a workspace` is another alternative to 'create a workspace': source: https://people.gnome.org/~bmsmith/build/overview-workspaces.html
+//NONE.Prerequisites

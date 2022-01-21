@@ -1,0 +1,34 @@
+//THERE IS A COPY OF THIS FILE IN THE ADMIN GUIDE FOR ADMINS. THIS ONE NEEDS TO BE REWRITTEN FOR ADVNACED USE (THE IMPORTANT TO ADD).
+//EITHER ADD IT AS A STEP TO ANOTHER DEVFILE PROC FOR THE ADMIN OR IF NOT POSSIBLE THEN MAKE IT A SEPARATE PROC
+//WHAT ABOUT GIT SERVERS AND LOCAL GITLAB?
+
+[id="adding-a-devfile-to-a-git-repository_{context}"]
+= ADDING A DEVFILE TO a Git repository
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+IMPORTANT TO ADD:
+////
+this is in the context of the user procedure:
+To start a workspace with a clone of a GitHub, GitLab, or Bitbucket repository, go to your browser's address bar and enter the {prod-short} URL, prepended with a `#` character and appended with the repository link. Using the example of Eclipse Che hosted by Red Hat: link:https://workspaces.openshift.com#https://github.com/eclipse-che/che-server[].
+Then {prod-short} starts a workspace and clones the repository `https://github.com/eclipse-che/che-server`.
+////
+>>>>
+{prod-short} also searches for a `.devfile.yaml` or `devfile.yaml` file in the given repository. The devfile describes the containers and commands to use for that project. Omitting this file will result in a default container. The default container provides different languages (including Java, Node.js, Python, PHP, Golang, etc) and tools (including `curl`, `jq`, `yq`, etc).
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+MERGE:
+* The `devfile.yaml` or `.devfile.yaml` file is located in the root folder of a Git repository, on a specific branch of the user's choice that is accessible over HTTPS. See xref:authoring-devfiles-version-2.adoc[] for detailed information about creating and using devfiles.
++
+* The Git repository __<GIT_REPOSITORY_URL>__ is available over HTTPS and contains a `devfile.yaml` or `.devfile.yaml` in the root folder. See xref:authoring-devfiles-version-2.adoc[].
+
+MERGE:
+how to start a {prod-short} workspace using a factory URL. The factory URL is a link pointing {prod-short} to a Git source repository containing a devfile. 
++
+A {prod-short} workspace can be created by pointing to a devfile that is stored in a Git source repository on a feature branch of the user’s choice. The {prod-short} instance then uses the discovered devfile to build a workspace.
+
+.Prerequisites
+
+* Your administrator maintains the `devfile.yaml` or `.devfile.yaml` file in the root directory of the Git repository.
+//HERE LINK TO THE RELEVANT PROCEDURE IN THE ADMIN GUIDE
+* The repository is available over HTTPS.
+
