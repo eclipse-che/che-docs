@@ -17,10 +17,6 @@ site:
   start_page: docs:overview:introduction-to-eclipse-che.adoc
   keys:
     google_analytics: "UA-37306001-2"
-  robots: |
-    User-agent: *
-    User-agent: AdsBot-Google
-    Disallow: /docs/next/
 content:
   sources:
     - url: https://github.com/eclipse/che-docs
@@ -44,6 +40,11 @@ content:
           "!7.41.x",
         ]
       edit_url: "{web_url}/edit/{refname}/{path}"
+antora:
+  extensions:
+    - require: "@antora/lunr-extension"
+asciidoc:
+  sourcemap: true
 output:
   destinations:
     - provider: fs
@@ -54,9 +55,16 @@ ui:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
     snapshot: true
   supplemental_files: ./supplemental-ui
+  output_dir: docs/_
 urls:
   html_extension_style: indexify
   redirect_facility: static
+  # latest_prerelease_version_segment: next
+  # latest_version_segment: stable
+  latest_version_segment_strategy: replace
 runtime:
   cache_dir: ./.cache/antora
   fetch: true
+  log:
+    failure_level: warn
+    level: info

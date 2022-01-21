@@ -20,12 +20,10 @@ git clone "ssh://genie.${PROJECT_NAME}@git.eclipse.org:29418/www.eclipse.org/${P
 git checkout master
 ls -ltr
 rm -rf docs/ _/
-cp -Rvf ../che-docs/_ .
 cp -Rvf ../che-docs/docs .
 cp -f ../che-docs/404.html .
-cp -f ../che-docs/favicon.ico .
-cp -f ../che-docs/robots.txt .
 cp -f ../che-docs/sitemap.xml .
+cp -f ../che-docs/search-index.js .
 git add -A
 if ! git diff --cached --exit-code; then
     echo "Changes have been detected, publishing to repo 'www.eclipse.org/${PROJECT_NAME}'"
