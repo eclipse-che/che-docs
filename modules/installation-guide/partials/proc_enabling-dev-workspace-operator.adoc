@@ -1,0 +1,74 @@
+
+[id="enabling-dev-workspace-operator_{context}"]
+= Enabling {devworkspace} operator
+
+This procedure describes how to enable the {devworkspace} operator to support the Devfile v2 file format and mentions how to do so on existing instances or those about to be installed.
+
+.Prerequisites
+
+* The `{orch-cli}` and `{prod-cli}` tools are available.
+
+
+.Procedure
+
+* For a new OperatorHub installation:
++
+. Enter the {prod} Cluster using {ocp} and create CheCluster Custom Resource (CR). See, xref:installing-che-on-openshift-4-using-operatorhub#creating-an-instance-of-the-{prod-id-short}-operator_{context}[Creating an instance of the {prod} Operator]
+
++
+. Set the following values in {prod-checluster} Custom Resource (CR):
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  devWorkspace:
+    enable: true
+----
+
+
+* For a  new `{prod-cli}` installation:
++
+. Configure the the `{prod-cli}` installation using:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:deploy --workspace-engine=dev-workspace ...
+----
+
+ifeval::["{project-context}" == "che"]
+[WARNING]
+====
+{prod-cli} will automatically setup Dex as the OIDC provider on Minikube. For other {kubernetes} clusters setup link:https://kubernetes.io/docs/reference/access-authn-authz/authentication/#configuring-the-api-server[{kubernetes} OIDC] provider following cluster provider documentation and set the following values in {prod-checluster} Custom Resource (CR):
+
+[source,yaml,subs="+quotes"]
+----
+spec:
+  auth:
+    identityProviderURL: '__<oidc_url>__' <1>
+----
+
+<1> URL to the OIDC provider.
+====
+endif::[]
+
+* For already existing {prod-short} installation:
++
+. Update `{prod-checluster}` CR using the `{orch-cli}` tool:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
+'[{"op": "replace", "path": "/spec/devWorkspace/enable", "value": true}]'
+----
+
+ifeval::["{project-context}" == "che"]
+[WARNING]
+====
+* Before enabling {devworkspace} operator on existed Kubernetes-based {prod-short} installation, install cert-manager.
+====
+endif::[]
+
+.Additional resources
+
+For information about installation methods mentioned in this chapter, see xref:installing-che.adoc[].
+

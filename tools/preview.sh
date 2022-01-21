@@ -11,4 +11,6 @@
 # Fail on errors and display commands
 set -ex
 
+./tools/get_vale_styles.sh
+
 LIVERELOAD=true gulp

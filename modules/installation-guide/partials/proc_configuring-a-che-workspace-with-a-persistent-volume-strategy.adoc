@@ -5,7 +5,7 @@
 [id="configuring-a-{prod-id-short}-workspace-with-a-persistent-volume-strategy_{context}"]
 = Configuring a {prod-short} workspace with a persistent volume strategy
 
-A persistent volume (PV) acts as a virtual storage instance that adds a volume to a cluster. 
+A persistent volume (PV) acts as a virtual storage instance that adds a volume to a cluster.
 
 A persistent volume claim (PVC) is a request to provision persistent storage of a specific type and configuration, available in the following {prod-short} storage configuration strategies:
 
@@ -14,74 +14,6 @@ A persistent volume claim (PVC) is a request to provision persistent storage of 
 * Unique
 
 The mounted PVC is displayed as a folder in a container file system.
-
-ifeval::["{project-context}" == "che"]
-
-[id="configuring-a-pvc-strategy-using-the-helm-chart_{context}"]
-== Configuring a PVC strategy using the Helm chart
-
-The following section describes how to configure workspace persistent volume claim (PVC) strategies of a {prod-short} server using the Helm chart.
-
-WARNING: It is not recommended to reconfigure PVC strategies on an existing {prod-short} cluster with existing workspaces. Doing so causes data loss.
-
-.Prerequisites
-
-* The `helm` tool is available. See link:https://helm.sh/[Helm Chart].
-
-.Procedure
-
-When deploying {prod-short} using Helm Chart, configure the workspace PVC strategy by setting values for the `global.cheWorkspacesPVCStrategy` option. 
-
-* For a new installation, use the `helm install` command with the `global.cheWorkspacesPVCStrategy` option:
-+
-[subs="+quotes"]
-----
-$ helm install --set global.cheWorkspacesPVCStrategy=per-workspace
-----
-
-* For an already installed instance, use the `helm upgrade` command with the `global.cheWorkspacesPVCStrategy` option:
-+
-[subs="+quotes"]
-----
-$ helm upgrade --set global.cheWorkspacesPVCStrategy=per-workspace
-----
-
-Depending on the strategy used, replace the `per-workspace` value in the above examples with `unique` or `common`.
-
-[id="configuring-a-pvc-strategy-by-editing-a-configmap_{context}"]
-== Configuring a PVC strategy strategy by editing a configMap
-
-Based on the {prod-short} installation method, configMaps can be used to customize the working environment. A configMap is provided as an editable file that lists options to customize the {prod-short} environment. This method of configuring a persistent volume claim (PVC) strategy for a {prod-short} workspace is available only for the Helm installation.
-
-Changes to a configMap created during Operator installation are not permanent because the Operator overwrites them back to default.
-
-.Prerequisites
-
-* The `helm` tool method was used to deploy {prod-short}.
-* The `{orch-cli}` tool is available.
-
-.Procedure
-
-. Set the configMap variable to reflect the requested PVC strategy:
-+
-[subs="+quotes"]
-----
-CHE_INFRA_KUBERNETES_PVC_STRATEGY=per-workspace
-----
-+
-Depending on the strategy used, replace the `_per-workspace_` option in the above example with `unique` or `common`.
-
-. Restart {prod-short} by scaling the deployment to zero and then back to one again:
-+
-[subs="+quotes"]
-----
-$ oc scale --replicas=0 deployment {prod-deployment}
-$ oc scale --replicas=1 deployment {prod-deployment}
-----
-
-. Restart the workspace for the changes to take effect.
-endif::[]
-
 
 [id="configuring-a-pvc-strategy-using-the-operator_{context}"]
 == Configuring a PVC strategy using the Operator
