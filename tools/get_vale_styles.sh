@@ -15,4 +15,4 @@ set -e
 cd .vale/styles || exit
 rm -rf RedHat CheDocs 
 wget -qO- https://github.com/redhat-documentation/vale-at-red-hat/releases/latest/download/RedHat.zip | unzip -q -
-wget -qO- https://github.com/redhat-documentation/CheDocs/releases/latest/download/CheDocs.zip | unzip -q -
+wget -qO- https://github.com/eclipse-che/che-docs-vale-style/releases/latest/download/CheDocs.zip | unzip -q -
