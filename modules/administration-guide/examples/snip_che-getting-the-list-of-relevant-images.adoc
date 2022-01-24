@@ -1,8 +1,13 @@
+:prod-branch: {prod-ver}.x
+ifeval::[{prod-ver} == main]
+:prod-branch: main
+endif::[]
+
 .Getting the list of all relevant images for {kubernetes}
 ====
-[subs="+attributes,+quotes,+macros"]
+[subs="+attributes,+quotes"]
 ----
-$ curl -sSLo- https://raw.githubusercontent.com/eclipse-che/che-operator/{prod-ver}.x/deploy/olm-catalog/stable/eclipse-che-preview-kubernetes/manifests/che-operator.clusterserviceversion.yaml | \
+$ curl -sSLo- https://raw.githubusercontent.com/eclipse-che/che-operator/{prod-branch}/deploy/olm-catalog/stable/eclipse-che-preview-kubernetes/manifests/che-operator.clusterserviceversion.yaml | \
 yq -r '.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | select(.name | test("RELATED_IMAGE_.*"; "g")) | .value' | \
 sort -u 
 ----
@@ -10,9 +15,9 @@ sort -u
 +
 .Getting the list of all relevant images for OpenShift
 ====
-[subs="+attributes,+quotes,+macros"]
+[subs="+attributes,+quotes"]
 ----
-$ curl -sSLo- https://raw.githubusercontent.com/eclipse-che/che-operator/{prod-ver}.x/deploy/olm-catalog/stable/eclipse-che-preview-openshift/manifests/che-operator.clusterserviceversion.yaml | \
+$ curl -sSLo- https://raw.githubusercontent.com/eclipse-che/che-operator/{prod-branch}/deploy/olm-catalog/stable/eclipse-che-preview-openshift/manifests/che-operator.clusterserviceversion.yaml | \
 yq -r '.spec.install.spec.deployments[].spec.template.spec.containers[].env[] | select(.name | test("RELATED_IMAGE_.*"; "g")) | .value' | \
 sort -u 
 ----
