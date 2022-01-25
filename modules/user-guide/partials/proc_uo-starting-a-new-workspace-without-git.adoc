@@ -1,5 +1,8 @@
-[id="adding-a-new-workspace-without-git_{context}"]
-= Adding a new workspace
+[id="starting-a-new-workspace-without-git_{context}"]
+= Starting a new workspace (without Git)
+
+//[id="creating-a-workspace-from-a-publicly-accessible-standalone-devfile-using-http_{context}"]
+//= Creating a workspace from a publicly accessible standalone devfile using HTTP
 
 ////
 THIS CREATES AND STARTS THE NEW WORKSPACE
@@ -13,27 +16,27 @@ NB: other terms used in the equivalent procs in the old docs: execute a (new) wo
 ////
 ////it is not clear yet or under which conditions: if entering the same url again later opens or restarts the same workspace
 
-//WHAT ABOUT GIT SERVERS AND LOCAL GITLAB?
+////
+Alternative procedure that can be mentioned:
+In the {prod-short} Dashboard:
+.(check the running UI which tab to describe here)
+. Enter the url of the remote publicly accessible standalone devfile in the *URL of devfile* field and click *Load devfile*.
+more info for inspiration: https://www.eclipse.org/che/docs/che-7/end-user-guide/importing-the-source-code-of-a-project-into-a-workspace/#creating-a-custom-workspace-from-the-dashboard_che
+////
 
-[id="creating-a-workspace-from-the-default-branch-of-a-git-repository_{context}"]
-= Creating a workspace from the default branch of a Git repository
-
-As a user, you can create a workspace containing a clone of a Git repository by entering a custom URL in the address bar of your browser.
+Projects that do not use Git use a hosted devfile that is available over HTTPS for configuring new workspaces. As a user, you can start a new workspace by entering a custom URL to the hosted devfile in the address bar of your browser.
 
 MERGE:
-* The `devfile.yaml` or `.devfile.yaml` file is located in the root folder of a Git repository, on a specific branch of the user's choice that is accessible over HTTPS. See xref:authoring-devfiles-version-2.adoc[] for detailed information about creating and using devfiles.
-+
-* The Git repository __<GIT_REPOSITORY_URL>__ is available over HTTPS and contains a `devfile.yaml` or `.devfile.yaml` in the root folder. See xref:authoring-devfiles-version-2.adoc[].
+* The `devfile.yaml` or `.devfile.yaml` file is available over HTTPS. See xref:authoring-devfiles-version-2.adoc[] for detailed information about creating and using devfiles.
 
 MERGE:
 This section describes how to start a {prod-short} workspace using a factory URL. The factory URL is a link pointing {prod-short} to a Git source repository containing a devfile. 
-+
-A {prod-short} workspace can be created by pointing to a devfile that is stored in a Git source repository on a feature branch of the user’s choice. The {prod-short} instance then uses the discovered devfile to build a workspace.
 
 .Prerequisites
 
-* Your administrator maintains the `devfile.yaml` or `.devfile.yaml` file in the root directory of the Git repository.
+* Your administrator maintains a remotely hosted `devfile.yaml` or `.devfile.yaml`.
 //HERE LINK TO THE RELEVANT PROCEDURE IN THE ADMIN GUIDE
+* The devfile is currently available over HTTPS.
 
 .Procedure
 
@@ -70,41 +73,19 @@ Use following URL format to open an experimental link:https://github.com/quarkus
 https://workspaces.openshift.com/f?url=https://github.com/maxandersen/quarkus-quickstarts/tree/che
 ----
 =========================================================================
+.Prerequisites
+* The publicly-accessible standalone `devfile.yaml` file. See xref:authoring-devfiles-version-2.adoc[] for detailed information about creating and using devfiles.
+
+.Procedure
+. Execute the workspace by opening the following URL: `pass:c,a,q[{prod-url}/#https://__<yourhosturl>__/devfile.yaml]`
+
+ifeval::["{project-context}" == "che"]
+.Example
+[subs="+quotes"]
+----
+https://workspaces.openshift.com/f?url=https://github.com/eclipse/che-docs
+----
+endif::[]
 
 ================================================================================
-.Example
-
-== URL syntax by Git provider
-
-SHORTEN IN SENTENCE LENGTH AND IN THE NUMBER OF SENTENCES USED:
-
-URL syntax for cloning GitHub-hosted repositories to the starting workspace:
-
-* To clone the default branch on GitHub to the starting workspace:
-+
-`#https://github.com/_<user_or_org>_/_<repository>_`
-+
-Example: `#https://github.com/eclipse-che/che-plugin-registry`
-
-* To clone a specified branch on GitHub to the starting workspace:
-+
-`#https://github.com/_<user_or_org>_/_<repository>_/tree/_<branch-name>_`
-+
-Example: `#https://github.com/eclipse-che/che-plugin-registry/tree/7.39.x`
-
-* To clone the branch of a pull request on GitHub to the starting workspace:
-+
-`#https://github.com/_<user_or_org>_/_<repository>_/pull/_<pull-request-id>_`
-+
-Example: `#https://github.com/eclipse-che/che-plugin-registry/pull/1097`
-
-URL syntax for cloning GitLab-hosted repositories:
-
-* To clone the default branch on GitLab to the starting workspace:
-+
-`#https://gitlab.com/_<user_or_org>_/_<repository>_`
-
-* To clone a specified branch on GitLab to the starting workspace:
-+
-`#https://gitlab.com/_<user_or_org>_/_<repository>_/-/tree/_<branch>_`
 
