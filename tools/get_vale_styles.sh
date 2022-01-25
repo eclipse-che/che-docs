@@ -8,8 +8,8 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-# Fail on errors and display commands
-set -ex
+# Fail on errors
+set -e
 
 # Get fresh Vale styles
 cd .vale/styles || exit
