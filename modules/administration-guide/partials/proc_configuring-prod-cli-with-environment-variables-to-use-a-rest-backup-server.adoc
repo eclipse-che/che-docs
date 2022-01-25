@@ -1,0 +1,23 @@
+[id="configuring-prod-cli-with-environment-variables-to-use-a-rest-backup-server_{context}"]
+= Configuring {prod-cli} with environment variables to use a REST backup server
+
+As an alternative to using command-line options for `{prod-cli} server:backup`, you can configure {prod-cli} for a REST backup server with environment variables. This enables you to run `{prod-cli} server:backup` without having to enter those options with it.
+
+.Prerequisites
+
+* Installed `{prod-cli}`.
+* Configured REST backup server. See xref:supported-restic-compatible-backup-servers.adoc[].
+
+.Procedure
+
+Which environment variables you need to set depends on your use case:
+
+* If you do not have a `CheBackupServerConfiguration` custom object yet, then you can set the following environment variables:
+** `BACKUP_REPOSITORY_URL` for the backup repository.
+** `BACKUP_REPOSITORY_PASSWORD` for the backup repository password.
+** When authentication to the REST backup server is required:
+*** `REST_SERVER_USERNAME` for the username.
+*** `REST_SERVER_PASSWORD` for the password.
+
+* If you already have a `CheBackupServerConfiguration` custom object, you can set the following environment variable that will point {prod-cli} to that `CheBackupServerConfiguration` custom object:
+** `BACKUP_SERVER_CONFIG_NAME` for the `name` of a `CheBackupServerConfiguration` custom object to point {prod-cli} to. (You can find `name` under `metadata` in the custom object.)
