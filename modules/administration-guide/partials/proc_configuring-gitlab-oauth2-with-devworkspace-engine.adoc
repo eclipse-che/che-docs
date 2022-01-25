@@ -1,0 +1,49 @@
+[id="configuring-gitlab-oauth2_{context}"]
+= Configuring GitLab OAuth2
+
+//[role="_abstract"]
+
+.Prerequisites
+
+* The GitLab server is running and available for {prod-short}.
+
+.Procedure
+
+. Follow GitLab's instructions for link:https://docs.gitlab.com/ee/integration/oauth_provider.html[configuring GitLab as an OAuth 2.0 authentication identity provider] to create an OAuth2 link:https://docs.gitlab.com/ee/integration/oauth_provider.html#authorized-applications[Authorized application] in Gitlab.
+
+. Enter Che as the application `Name`.
+
+. Enter the {prod-short} OAuth callback URL as the `Redirect URI`. The default value is `++https://++{prod-deployment}-{prod-namespace}.__<domain>__/api/oauth/callback`.
+
+. Check the `Confidential` and `Expire access tokens` checkboxes.
+
+. Under *Scopes*, check the `api`, `write_repository`, and `openid` checkboxes.
+
+. Click `Save application` and store the `Application ID` and `Secret` values.
+
+. In the {orch-namespace} where {prod-short} is deployed, create a new secret:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f - <<EOF
+kind: Secret
+apiVersion: v1
+metadata:
+  name: gitlab-oauth-config
+  namespace: __<namespace>__ <1>
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: oauth-scm-configuration
+  annotations:
+    che.eclipse.org/oauth-scm-server: gitlab
+    che.eclipse.org/scm-server-endpoint: __<your_GitLab_service_URL>__
+type: Opaque
+data:
+  id: __<base64_encoded_GitLab_Application_ID>__
+  secret: __<base64_encoded_GitLab_Secret>__
+EOF
+----
+<1> The {prod-short} namespace. The default is {prod-namespace}.
+
+//[role="_additional-resources"]
+//.Additional resources
