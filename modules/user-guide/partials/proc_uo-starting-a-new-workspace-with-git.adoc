@@ -9,29 +9,13 @@
 //To start a new workspace that contains a clone of a GitHub, GitLab, or Bitbucket repository:
 //To start [ADD TO WHAT WHERE?] a new workspace
 
-To start a new workspace that contains a clone of a Git repository, enter a custom URL in the address bar of your internet browser as follows:
+//the following requires import of git config and possibly also git credentials, how?
+//git config in theory can be included in a git repository, however, that would mean importing two git repositories, because the project git repository cannot contain the individual user's git config file and such
+{prod-short} allows you to  start a new workspace that contains a clone of a Git repository. You can have your origin or fork cloned into a new starting workspace. Or you can have a common repository of a project cloned into a new starting workspace. With such Git providers as GitHub and GitLab, you can also specify the branch for the new starting workspace to checkout.
 
 .Procedure
 
 TIP: For git repositories with webpages (like GitHub, GitLab, BitBucket?), entering this URL is simple: Copy the Che/CRW URL, open the git repository page in your internet browser, paste your copied Che/CRW URL in the address bar in front of the URL of the git repository page, and type # in between your Che/CRW and the git repository page. Press Enter.
-
-//SOMEWHERE IN THIS MODULE MENTION IN SPECIFIC TERMS:
-//1. THE USER CAN CLONE THE PROJECT'S REPOSITORY OR THE USER'S FORK OF IT
-//2. THE USER CAN CLONE THE REPOSITORY FROM THE DEFAULT BRANCH OR FROM A FEATURE BRANCH
-//NB: DOUBLE-CHECK (ASK AND TEST) THAT THE WHOLE REPOSITORY, NOT JUST ONE BRANCH, GETS CLONED
-. In the address bar of your internet browser, enter a custom URL with the following syntax:
-+
-[subs="+quotes,+attributes"]
-----
-https://__<your_team's_{prod-short}_URL>__#__<Git_repository_URL>__
-----
-//consider replacing it with the variable {prod-url}, BUT UPDATE THE VALUE FOR THIS VAR BEFOREHAND (TO 'your_team's_{prod-short}_URL')
-//need to mention that the {prod-short} URL is FQDM?
-//`pass:c,a,q[{prod-url}/#__<GIT_REPOSITORY_URL>__]`
-//pass:[<!-- vale CheDocs.TechnicalTerms = YES -->]
-+
-.Example
-Eclipse Che hosted by Red Hat: link:https://workspaces.openshift.com#https://github.com/eclipse-che/che-server[].
 
 . In the login page, authenticate yourself as a {prod-short} user with your username and password, according to the information provided by your {prod-short} administrator.
 //here must not say "{prod-short} username and password" or "{prod-short} credentials
@@ -40,68 +24,15 @@ Eclipse Che hosted by Red Hat: link:https://workspaces.openshift.com#https://git
 {prod-short} opens the dashboard and displays the progress of starting the new workspace. {prod-short} clones the Git repository in the background.
 //Test and describe what the user is seeing here, enough vague, without unnecessary details which may change later (WORKSPACE STARTING PROGRESS UI >  OPENED WORKSPACE?)
 
-MERGE:
-=========================================================================
-// the unstated first and second steps appear to be one and the same
-//vague sentence:
-* Create the workspace by opening(wrong) the factory(dropped)  URL:
-+
-`pass:c,a,q[{prod-url}/#__<GIT_REPOSITORY_URL>__]`
-+
-.Create a workspace on Eclipse Che hosted by Red Hat from the default branch of the `https://github.com/eclipse-che/che-server` repository using the short factory URL format.
-[subs="+quotes"]
-====
-link:https://workspaces.openshift.com/#https://github.com/eclipse-che/che-server[]
-====
-pass:[<!-- vale CheDocs.TechnicalTerms = YES -->]
-=========================================================================
-.Procedure
-Create the workspace by opening(wrong) the following(wrong:syntax) URL: `pass:c,a,q[{prod-url}/#__<GitHubBranch>__]`
+. Enter your username and password in the login page to be redirected to the {prod-short} dashboard. If you are already logged in, the {prod-short} dashboard is loaded without requesting your credentials.
+//the first sentence may be entirely redundant and totally confusing (a user who already has a dashboard open would open one more tab with the dashboard, which doesn't make sense) if the second sentence applies.
+//{prod-url} this is the URL that is also mentioned in the next step for a different purpose, so it'd be useful to introduce it here or overall for this procedure
 
-.Example
-Use following URL format to open an experimental link:https://github.com/quarkusio/quarkus-quickstarts[quarkus-quickstarts] branch hosted on link:https://workspaces.openshift.com[workspaces.openshift.com].
+. Open the URL of your organization's {prod-short} instance. See PREVIOUS MODULE ON ESSENTIAL URLs.
 
-[subs="+quotes"]
-----
-https://workspaces.openshift.com/f?url=https://github.com/maxandersen/quarkus-quickstarts/tree/che
-----
+In this tab, {prod-short} redirects you to a page that displays workspace starting progress.
+When the workspace is ready, it loads in the tab.
 
-================================================================================
-.Example
-
-== URL syntax by Git provider
-
-SHORTEN IN SENTENCE LENGTH AND IN THE NUMBER OF SENTENCES USED:
-
-URL syntax for cloning GitHub-hosted repositories to the starting workspace:
-
-* To clone the default branch on GitHub to the starting workspace:
-+
-`#https://github.com/_<user_or_org>_/_<repository>_`
-+
-Example: `#https://github.com/eclipse-che/che-plugin-registry`
-
-* To clone a specified branch on GitHub to the starting workspace:
-+
-`#https://github.com/_<user_or_org>_/_<repository>_/tree/_<branch-name>_`
-+
-Example: `#https://github.com/eclipse-che/che-plugin-registry/tree/7.39.x`
-
-* To clone the branch of a pull request on GitHub to the starting workspace:
-+
-`#https://github.com/_<user_or_org>_/_<repository>_/pull/_<pull-request-id>_`
-+
-Example: `#https://github.com/eclipse-che/che-plugin-registry/pull/1097`
-
-URL syntax for cloning GitLab-hosted repositories:
-
-* To clone the default branch on GitLab to the starting workspace:
-+
-`#https://gitlab.com/_<user_or_org>_/_<repository>_`
-
-* To clone a specified branch on GitLab to the starting workspace:
-+
-`#https://gitlab.com/_<user_or_org>_/_<repository>_/-/tree/_<branch>_`
 
 .Additional resources
 
@@ -116,5 +47,15 @@ URL syntax for cloning GitLab-hosted repositories:
 //the heading is currently branch-specific: this needs to change
 //actually, i can't use 'create' because the user is not creating anything, {prod-short} creates the workspace for the user, so the gerund procedure cannot have its heading start with 'Creating ...'
 //the second reason why i can't use 'create' in the heading (and prob in the module text as well) is that a new workspace is both 'created' and 'started'
-//'add a workspace` is another alternative to 'create a workspace': source: https://people.gnome.org/~bmsmith/build/overview-workspaces.html
+//'add a workspace` is another alternative to 'create a workspace': source: https://people.gnome.org/~bmsmith/build/overview-workspaces.html. However, i can't use add because all the relevant UI uses 'Start' everywhere.
 //NONE.Prerequisites
+
+//SOMEWHERE IN THIS MODULE MENTION IN SPECIFIC TERMS:
+// ✔ 1. THE USER CAN CLONE THE PROJECT'S REPOSITORY OR THE USER'S FORK OF IT
+//2. THE USER CAN CLONE THE REPOSITORY FROM THE DEFAULT BRANCH OR FROM A FEATURE BRANCH
+//NB: DOUBLE-CHECK (ASK AND TEST) THAT THE WHOLE REPOSITORY, NOT JUST ONE BRANCH, GETS CLONED
+
+// ✔ NO LONGER USING THIS PHRASE DUE TO USE CASE REQUIRING THE USER TO SAVE THE URL SOMEWHERE:in the address bar of your internet browser, enter a custom URL like so:
+
+//. Enter your team's {prod-short} URL in the address bar of your browser.
+//this sentence may be entirely redundant and totally confusing (a user who already has a dashboard open would open one more tab with the dashboard, which doesn't make sense)
