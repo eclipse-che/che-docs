@@ -8,14 +8,14 @@
 #
 
 # Name is reused in `publish-netlify.yml`
-name: "Build and validate PR"
+name: "Build and validate pull request"
 
 on:
   - pull_request
 
 jobs:
   build:
-    name: link checker # This job name is set as mandatory in the GitHub configuration.
+    name: "Build and validate pull request"
     runs-on: ubuntu-20.04
     container: "quay.io/eclipse/che-docs:latest"
     steps:
@@ -36,6 +36,7 @@ jobs:
         run: |
           echo "::set-output name=yearweek::$(/bin/date -u "+%Y%U")"
         shell: bash
+
       - name: Restore cache
         uses: actions/cache@v2
         env:
@@ -46,30 +47,21 @@ jobs:
 
       - name: Build using antora # and fail on warning
         id: antora-build
-        run: CI=true antora generate antora-playbook-for-development.yml --stacktrace 2>&1 | (tee | grep  WARNING && exit 42 || exit 0)
+        run: CI=true antora generate antora-playbook-for-development.yml --stacktrace --log-failure-level=warn
+
+      - name: Store pull request details for publish-netlify
+        run: |
+          echo "${{ github.event.number }}" > PR_NUMBER
+          echo "${{ github.event.pull_request.head.sha }}" > PR_SHA
 
       - name: Upload artifact doc-content
         uses: actions/upload-artifact@v2
         with:
           name: doc-content
-          path: build/site
-
-      - name: Store PR info for publish-netlify
-        run: |
-          echo "${{ github.event.number }}" > PR_NUMBER
-          echo "${{ github.event.pull_request.head.sha }}" > PR_SHA
-
-      - name: Upload artifact pull-request-number for publish-netlify
-        uses: actions/upload-artifact@v2
-        with:
-          name: pull-request-number
-          path: PR_NUMBER
-
-      - name: Upload artifact pull-request-sha for publish-netlify
-        uses: actions/upload-artifact@v2
-        with:
-          name: pull-request-sha
-          path: PR_SHA
+          path: |
+            build/site
+            PR_NUMBER
+            PR_SHA
 
       - name: Validate links using htmltest
         id: validate-links

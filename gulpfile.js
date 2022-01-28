@@ -13,13 +13,13 @@ const connect = require('gulp-connect')
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const fs = require('fs')
-const generator = require('@antora/site-generator-default')
+const generator = require('@antora/site-generator')
 const { reload: livereload } = process.env.LIVERELOAD === 'true' ? require('gulp-connect') : {}
 const { parallel, series, src, watch } = require('gulp')
 const yaml = require('js-yaml')
 
 const playbookFilename = 'antora-playbook-for-development.yml'
-const playbook = yaml.safeLoad(fs.readFileSync(playbookFilename, 'utf8'))
+const playbook = yaml.load(fs.readFileSync(playbookFilename, 'utf8'))
 const outputDir = (playbook.output || {}).dir || './build/site'
 const serverConfig = { name: 'Preview Site', livereload, host: '0.0.0.0', port: 4000, root: outputDir }
 const antoraArgs = ['--playbook', playbookFilename]
