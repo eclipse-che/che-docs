@@ -2,8 +2,8 @@
 
 //WHAT ABOUT GIT SERVERS AND LOCAL GITLAB? DOUBLE-CHECK THE CONCEPT SOURCES, ASK SME, AND TEST TO VERIFY
 
-[id="starting-a-new-workspace-with-git_{context}"]
-= Starting a new workspace
+[id="uo-starting-a-new-workspace-with-a-clone-of-a-git-repository_{context}"]
+= Starting a new workspace with a clone of a Git repository
 
 //does this mean that this procedure is inapplicable to Git servers and GitLab servers?
 //To start a new workspace that contains a clone of a GitHub, GitLab, or Bitbucket repository:
@@ -13,9 +13,19 @@
 //git config in theory can be included in a git repository, however, that would mean importing two git repositories, because the project git repository cannot contain the individual user's git config file and such
 {prod-short} allows you to  start a new workspace that contains a clone of a Git repository. You can have your origin or fork cloned into a new starting workspace. Or you can have a common repository of a project cloned into a new starting workspace. With such Git providers as GitHub and GitLab, you can also specify the branch for the new starting workspace to checkout.
 
+NOTE: Advanced users can compose and use their own devfiles, as well as use a local devfile.
+//provide links on "compose" and "local devfile" to the corresponding sections in Advanced Use (User Guide). Max
+
+.Prerequisites
+
+* Your administrator maintains the  `devfile.yaml` or `.devfile.yaml` file in the root directory of the Git repository.
+* The devfile is currently available over HTTPS.
+
 .Procedure
 
 TIP: For git repositories with webpages (like GitHub, GitLab, BitBucket?), entering this URL is simple: Copy the Che/CRW URL, open the git repository page in your internet browser, paste your copied Che/CRW URL in the address bar in front of the URL of the git repository page, and type # in between your Che/CRW and the git repository page. Press Enter.
+
+//i'm adding a separate concept module about logging in to {prod-short}
 
 . In the login page, authenticate yourself as a {prod-short} user with your username and password, according to the information provided by your {prod-short} administrator.
 //here must not say "{prod-short} username and password" or "{prod-short} credentials
@@ -31,7 +41,7 @@ TIP: For git repositories with webpages (like GitHub, GitLab, BitBucket?), enter
 . Open the URL of your organization's {prod-short} instance. See PREVIOUS MODULE ON ESSENTIAL URLs.
 
 In this tab, {prod-short} redirects you to a page that displays workspace starting progress.
-When the workspace is ready, it loads in the tab.
+When the workspace is ready, it loads in the tab. A clone of the Git repository is present in the filesystem of the workspace.
 
 
 .Additional resources
@@ -59,3 +69,13 @@ When the workspace is ready, it loads in the tab.
 
 //. Enter your team's {prod-short} URL in the address bar of your browser.
 //this sentence may be entirely redundant and totally confusing (a user who already has a dashboard open would open one more tab with the dashboard, which doesn't make sense)
+
+////
+I CAN NO LONGER SAY THIS BECAUSE ENTERING THE LINK IN THE ADDRESS BAR IS NOT THE PREFERRED UX IN THE ACTUAL USE CASE:
+To start a workspace with a clone of a GitHub, GitLab, or Bitbucket repository, go to your browser's address bar and enter your team's or organization's {prod-short} URL, prepended with a `#` character and appended with the repository link. Using the example of Eclipse Che hosted by Red Hat: link:https://workspaces.openshift.com#https://github.com/eclipse-che/che-server[].
+////
+
+////
+//this sentence looks like it belongs in the intro par. consider moving it there and provide a more verification-focused procedure step:
+Then {prod-short} starts a workspace and clones the repository `https://github.com/eclipse-che/che-server`.
+////
