@@ -1,7 +1,11 @@
+:prod-short: Che
+:prod-url: https://__<che_fqdn>__
+
 [id="uo-prod-short-urls_{context}"]
 = {prod-short} URLs
 
 Working with {prod-short} involves regular use of the following URLs:
+
 * URL of your organization's {prod-short} instance
 * URL of your {prod-short} dashboard
 * URLs for starting a new workspace
@@ -9,73 +13,61 @@ Working with {prod-short} involves regular use of the following URLs:
 
 [TIP]
 ====
-Save each URL to your browser bookmarks for your future convenience:
+Save each URL to your browser bookmarks for convenience!
 
-* In Mozilla Firefox, go to *☰* *>* *Bookmarks* *>* *Manager bookmarks Ctrl+Shift+O* *>* *Bookmarks Toolbar* *>* *Organize* *>* *Add bookmark*.
+* In Mozilla Firefox, go to *☰* *>* *Bookmarks* *>* *Manage bookmarks Ctrl+Shift+O* *>* *Bookmarks Toolbar* *>* *Organize* *>* *Add bookmark*.
 
 * In Google Chrome, go to *⋮* *>* *Bookmarks* *>* *Bookmark manager* *>* *Bookmarks bar* *>* *⋮* *>* *Add new bookmark*.
 ====
 
 == URL of your organization's {prod-short} instance
 
-Your {prod-short} administrator must provide you with the URL of your organization's {prod-short} instance that which you need as a user to access the {prod-short} dashboard and start and manage your workspaces. This URL is a fully qualified domain name.
-+
+Your {prod-short} administrator must provide you with the URL of your organization's {prod-short} instance that you need as a user to access your {prod-short} dashboard and start and manage your workspaces. This URL is a fully qualified domain name (FQDN):
+
 [subs="+quotes,+attributes"]
 ----
-https://__<{prod-url}>__
+{prod-url}
 ----
 
 == URL of your {prod-short} dashboard
 
-The *Workspaces* page of your {prod-short} dashboard is where you can manage your user's workspaces and verify their current states. The URL syntax for this page is like so:
-+
+The *Workspaces* page of your {prod-short} dashboard is where you manage your workspaces and verify their current states. The URL syntax for this page is like so:
+
 [subs="+quotes,+attributes"]
 ----
-https://__<{prod-url}>__/dashboard/#/workspaces
+{prod-url}/dashboard/#/workspaces
 ----
 
 == URLs for starting a new workspace
 
-//REWRITE FOR THIS TOPIC IF NECESSARY: As a user, you can create a workspace containing a clone of a Git repository by entering a custom URL in the address bar of your browser.
-
-//BEFORE TELLING READERS ABOUT THE DEVFILE URL, WE NEED MENTION WHAT A DEVFILE IS AND WHAT IT DOES
-
-//MENTION THAT THIS URL USES THE URL OF YOUR ORGANIZATION'S {PROD-SHORT} INSTANCE The URL to your organization's instance of {prod-short} is used as part of the new workspace starting URLs and workspace URLs.
-
-//REWRITE THIS PAR, NEEDS MORE WORK:
-When you have the URL of your organization's {prod-short} instance from your administrator, then for every remote Git repository that you have to work with inside a workspace, you can prepare and save, for example in your browser favorites toolbar or another location which you keep open daily, so that you can simply click on the previously saved link, as opposed to having to put this link together from the "Che host URL" and the repository URL. Keep it somewhere handy.
-+
+For every remote Git repository that you plan to use inside a workspace, you can prepare the following URL:
 [subs="+quotes,+attributes"]
 ----
-https://__<{prod-url}>__#__<Git_repository_URL>__
+{prod-url}#__<Git_repository_URL>__
 ----
 
-.Example
+Visiting this URL in a browser tab starts a new workspace that contains a clone of that repository.
 
-URL syntax for starting a new workspace with a clone of a GitHub-hosted repository
+.URL syntax for starting a new workspace that contains a clone of a GitHub-hosted repository
+====
+* `{prod-url}#https://github.com/__<user_or_org>__/__<repository>__` starts a new workspace with a clone of the default branch.
+* `{prod-url}#https://github.com/__<user_or_org>__/__<repository>__/tree/__<branch_name>__` starts a new workspace with a clone of the specified branch.
+* `{prod-url}#https://github.com/__<user_or_org>__/__<repository>__/pull/__<pull_request_id>__` starts a new workspace with a clone of the branch of the pull request.
+====
 
-* Visiting `https://__<{prod-url}>__#https://github.com/__<user_or_org>__/__<repository>__` starts a new workspace with a clone of the default branch of the repository.
+.URL syntax for starting a new workspace that contains a clone of a GitLab-hosted repository
+====
+* `{prod-url}#https://gitlab.com/__<user_or_org>__/__<repository>__` starts a new workspace with a clone of the default branch.
+* `{prod-url}#https://gitlab.com/__<user_or_org>__/__<repository>__/-/tree/__<branch>__` starts a new workspace with a clone of the specified branch.
+====
 
-* Visiting `https://__<{prod-url}>__#https://github.com/__<user_or_org>__/__<repository>__/tree/__<branch_name>__` starts a new workspace with a clone of the specified branch of the repository.
-
-* Visiting `https://__<{prod-url}>__#https://github.com/__<user_or_org>__/__<repository>__/pull/__<pull_request_id>__` starts a new workspace with a clone of the branch of the pull request.
-
-.Example
-
-URL syntax for starting a new workspace with a clone of a GitLab-hosted repository
-
-* Visiting `https://__<{prod-url}>__#https://gitlab.com/__<user_or_org>__/__<repository>__` starts a new workspace with a clone of the default branch of the repository.
-
-* Visiting `https://__<{prod-url}>__#https://gitlab.com/__<user_or_org>__/__<repository>__/-/tree/__<branch>__` starts a new workspace with a clone of the specified branch of the repository.
-
-//Looks like we need to check with Florent whether the merge request links for GitLab are supported like GH PRs.
+//Looks like we need to check with Florent whether the merge request links for GitLab are supported like GH PRs. Or why don't I test it myself, if I can? Will I be able to?
 
 == URLs of your workspaces
 
-emphasize that 'your workspaces' means 'your user's workspaces'
+When {prod-short} starts a new workspace for you, the workspace has a unique URL that you can visit in a browser tab to open the workspace:
 
-workspace limits https://www.eclipse.org/che/docs/che-7/installation-guide/advanced-configuration-options-for-the-che-server-component/#workspace-limits
-
-//MENTION THAT THIS URL USES THE URL OF YOUR ORGANIZATION'S {PROD-SHORT} INSTANCE The URL to your organization's instance of {prod-short} is used as part of the new workspace starting URLs and workspace URLs.
-
-//https://__<Che_hostname>__.__<Che_domain>__.__<Che_top-level_domain>__
+[subs="+quotes,+attributes"]
+----
+{prod-url}#__<URL_of_your_workspace>__
+----
