@@ -62,6 +62,8 @@ $ kubectl apply -f manifest.yaml -n {prod-namespace}
 
 NOTE: For fast feedback when developing, it is recommended to do development inside a {prod-short} workspace. This way, you can run the application in a cluster and connect to the workspaces front-end telemetry plug-in to send events to your custom back-end.
 
+pass:[<!-- vale RedHat.TermsErrors = NO -->]
+
 . Create a new Maven Quarkus project scaffolding:
 +
 ----
@@ -69,6 +71,8 @@ $ mvn io.quarkus:quarkus-maven-plugin:1.2.1.Final:create \
   -DprojectGroupId=mygroup -DprojectArtifactId=telemetryback-end \
   -DprojectVersion=my-version -DclassName="org.my.group.MyResource"
 ----
+
+pass:[<!-- vale RedHat.TermsErrors = YES -->]
 
 . Add a dependency to `org.eclipse.che.incubator.workspace-telemetry.back-end-base` in your `pom.xml`:
 +
@@ -270,6 +274,6 @@ include::example$telemetry/che_cluster_with_custom_plugin.yaml[]
 
 Wait for the {prod-short} server to restart, and create a new workspace. See a new message stating that the plug-in is being installed into the workspace.
 
-image::telemetry/custom_telemetry_plugin.png[]
+image::telemetry/custom_telemetry_plugin.png[Custom telemetry plug-in]
 
 Perform any operations in the started workspace and observe their events in the example telemetry server logs.
