@@ -7,101 +7,72 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-apiVersion: 1.0.0
+schemaVersion: 2.1.0
 metadata:
-  generateName: che-docs-
+  name: che-docs
 
 components:
-  - alias: che-docs
-    type: dockerimage
-    image: "quay.io/eclipse/che-docs:latest"
-    memoryLimit: 512M
-    mountSources: true
-    command:
-      - tail
-    args:
-      - "-f"
-      - /dev/null
-    endpoints:
-      - name: Open-Livereload
-        port: 35729
-      - name: Open-Preview-server
-        port: 4000
-        attributes:
+  - name: che-docs
+    container:
+      image: "quay.io/eclipse/che-docs:latest"
+      memoryLimit: 512M
+      mountSources: true
+      endpoints:
+        - name: open-livereload
+          targetPort: 35729
+        - name: open-preview-sv
+          targetPort: 4000
           path: /che-7/overview/introduction-to-eclipse-che/
-  - type: chePlugin
-    reference: https://che-plugin-registry-main.surge.sh/v3/plugins/errata-ai/vale-server/latest/meta.yaml
-    alias: vale-vscode
-    preferences:
-      vale.core.useCLI: true
-  - id: ms-vscode/vscode-github-pullrequest/latest
-    type: chePlugin
-  - type: chePlugin
-    reference: https://che-plugin-registry-main.surge.sh/v3/plugins/joaompinto/asciidoctor-vscode/latest/meta.yaml
-    alias: asciidoctor-vscode
-  - type: chePlugin
-    reference: https://che-plugin-registry-main.surge.sh/v3/plugins/timonwong/shellcheck/latest/meta.yaml
-    alias: shellcheck
-  - type: chePlugin
-    id: redhat/vscode-yaml/latest
-  - type: chePlugin
-    id: redhat/vscode-xml/latest
-  - type: chePlugin
-    id: vscode/typescript-language-features/latest
-  - type: chePlugin
-    id: redhat/java/latest
-  - type: chePlugin
-    id: golang/go/latest
 
 commands:
-  - name: Generate reference tables for environment variables
-    actions:
-      - type: exec
-        component: che-docs
-        workdir: /projects/che-docs
-        command: bash tools/environment_docs_gen.sh
-  - name: Generate reference tables for CheCluster
-    actions:
-      - type: exec
-        component: che-docs
-        workdir: /projects/che-docs
-        command: bash tools/checluster_docs_gen.sh
-  - name: Start preview server
-    actions:
-      - type: exec
-        component: che-docs
-        workdir: /projects/che-docs
-        command: sh tools/preview.sh
-  - name: Create a new topic
-    actions:
-      - type: exec
-        component: che-docs
-        workdir: /projects/che-docs
-        command: bash tools/newtopic.sh
-  - name: Validate Modular Doc
-    actions:
-      - type: exec
-        component: che-docs
-        workdir: /projects/che-docs
-        command: >-
-          echo 'Enter path to the file to validate and press Enter:';
-          read file;
-          bash tools/test-adoc.sh $file;
-  - name: Validate links
-    actions:
-      - type: exec
-        component: che-docs
-        workdir: /projects/che-docs
-        command: htmltest
-  - name: Validate language changes
-    actions:
-      - type: exec
-        component: che-docs
-        workdir: /projects/che-docs
-        command: sh tools/validate_language_changes.sh
-  - name: Detect unused images
-    actions:
-      - type: exec
-        component: che-docs
-        workdir: /projects/che-docs
-        command: bash tools/detect-unused-images.sh
+  - id: generate-reference-tables-env
+    exec:
+      component: che-docs
+      workingDir: /projects/che-docs
+      commandLine: bash tools/environment_docs_gen.sh
+      label: Generate reference tables for environment variables
+  - id: generate-reference-tables-checluster
+    exec:
+      component: che-docs
+      workingDir: /projects/che-docs
+      commandLine: bash tools/checluster_docs_gen.sh
+      label: Generate reference tables for CheCluster
+  - id: start-preview-server
+    exec:
+      component: che-docs
+      workingDir: /projects/che-docs
+      commandLine: sh tools/preview.sh
+      label: Start preview server
+  - id: create-topic
+    exec:
+      component: che-docs
+      workingDir: /projects/che-docs
+      commandLine: bash tools/newtopic.sh
+      label: Create a new topic
+  - id: validate-modular-doc
+    exec:
+      component: che-docs
+      workingDir: /projects/che-docs
+      commandLine: >-
+        echo 'Enter path to the file to validate and press Enter:';
+        read file;
+        bash tools/test-adoc.sh $file;
+      label: Validate Modular Doc
+  - id: validate-links
+    exec:
+      component: che-docs
+      workingDir: /projects/che-docs
+      commandLine: htmltest
+      label: Validate links
+  - id: validate-language-changes
+    exec:
+      component: che-docs
+      workingDir: /projects/che-docs
+      commandLine: sh tools/validate_language_changes.sh
+      label: Validate language changes
+  - id: detect-unused-images
+    exec:
+      component: che-docs
+      workingDir: /projects/che-docs
+      commandLine: bash tools/detect-unused-images.sh
+      label: Detect unused images
