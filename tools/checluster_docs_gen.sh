@@ -22,23 +22,23 @@ BUFF=""
 OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/checluster-properties.adoc"
 
 fetch_current_version() {
-  echo "Trying to read current product version from $PARENT_PATH/antora.yml..." >&2
+  # echo "Trying to read current product version from $PARENT_PATH/antora.yml..." >&2
   # remove spaces, single and double quotes from the value of prod-ver, then append x.
   CURRENT_VERSION=$(yq -M '.asciidoc.attributes."prod-ver"' "$PARENT_PATH/antora.yml" | tr -d " '\"" ).x
-  if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
-    CURRENT_VERSION="master"
+  if [[ "$CURRENT_VERSION" == 'main.x' ]]; then
+    CURRENT_VERSION="main"
   fi
   echo "Detected version: $CURRENT_VERSION" >&2
 }
 
 fetch_product_name() {
-  echo "Trying to read product name from $PARENT_PATH/antora.yml..." >&2
+  # echo "Trying to read product name from $PARENT_PATH/antora.yml..." >&2
   PRODUCT=$(yq -rM '.asciidoc.attributes."prod-id-short"' "$PARENT_PATH/antora.yml")
   echo "Detected product: $PRODUCT" >&2
 }
 
 fetch_conf_files_content() {
-  echo "Fetching property files content from GitHub..." >&2
+  # echo "Fetching property files content from GitHub..." >&2
 
   if [[ $PRODUCT == "che" ]]; then
     CHECLUSTER_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse-che/che-operator/$CURRENT_VERSION/config/crd/bases/org_v1_che_crd.yaml"
@@ -75,7 +75,7 @@ parse_section() {
   local id="[id=\"checluster-custom-resource-$sectionName-settings_{context}\"]"
   local caption=$2
   local crdVersion=$(echo "$RAW_CONTENT" | yq -r '.apiVersion')
-  echo "Parsing section: "$sectionName
+  # echo "Parsing section: "$sectionName
 
   if [[ $sectionName == "status" ]]; then
     if [[ $crdVersion == "apiextensions.k8s.io/v1beta1" ]]; then

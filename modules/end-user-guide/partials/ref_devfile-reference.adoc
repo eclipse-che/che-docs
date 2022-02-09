@@ -40,7 +40,7 @@ metadata:
   name: devfile-sample
 ----
 
-. To specify a prefix for automatically generated workspace names, define the `generateName` attribute and don't define the `name` attribute. The workspace name will be in the `<generateName>YYYYY` format, for example, `devfile-sample-2y7kp`, where `Y` is a random `[a-z0-9]` character.
+. To specify a prefix for automatically generated workspace names, define the `generateName` attribute and do not define the `name` attribute. The workspace name will be in the `<generateName>YYYYY` format, for example, `devfile-sample-2y7kp`, where `Y` is a random `[a-z0-9]` character.
 +
 .Adding a generated name to a devfile
 
@@ -77,10 +77,10 @@ Project source consists of two mandatory values: `type` and `location`.
 
 `github`:: Same as `git` but for projects hosted on link:https://github.com/[GitHub] only. Use `git` for projects that do not use GitHub-specific features.
 
-`zip`:: Projects with sources in a `.zip` archive. Location points to a `.zip` file.
+`zip`:: Projects with sources in a `zip` archive. Location points to a `zip` file.
 
 
-=== Project-source type: git
+=== Project-source type: `git`
 
 [source,yaml]
 ----
@@ -112,7 +112,7 @@ The trailing slash indicates that only directories with the given name (includin
 For more information, see link:https://git-scm.com/docs/git-read-tree#_sparse_checkout[Sparse checkout in Git documentation].
 
 
-=== Project-source type: zip
+=== Project-source type: `zip`
 
 [source,yaml]
 ----
@@ -683,7 +683,7 @@ components:
 
 Here, there are two Docker images, each defining a single endpoint. Endpoint is an accessible port that can be made accessible inside the workspace or also publicly (example, from the UI). Each endpoint has a name and port, which is the port on which certain server running inside the container is listening. The following are a few attributes that you can set on the endpoint:
 
-* `discoverable`: If an endpoint is discoverable, it means that it can be accessed using its name as the host name within the workspace containers (in the {platforms-name} terminology, a service is created for it with the provided name).
+* `discoverable`: If an endpoint is discoverable, it means that it can be accessed using its name as the hostname within the workspace containers (in the {platforms-name} terminology, a service is created for it with the provided name).
 55
 * `public`: The endpoint will be accessible outside of the workspace, too (such endpoint can be accessed from the {prod-short} user interface). Such endpoints are publicized always on port `80` or `443` (depending on whether `tls` is enabled in {prod-short}).
 
@@ -913,7 +913,7 @@ The following are two kinds of commands:
 
 * {prod-short} specific commands: You have full control over what component executes the command.
 
-* Editor specific commands: You can use the editor-specific command definitions (example: `tasks.json` and `launch.json` in Che-Theia, which is equivalent to how these files work in VS Code).
+* Editor specific commands: You can use the editor-specific command definitions (example: `tasks.json` and `launch.json` in Che-Theia, which is equivalent to how these files work in Visual Studio Code).
 
 === {prod-short}-specific commands
 
@@ -1101,9 +1101,11 @@ attributes:
 
 === Attribute: mergePlugins
 
-This property can be set to manually control how plugins are included in the workspace. When the property `mergePlugins` is set to `true`, Che will attempt to avoid running multiple instances of the same container by combining plugins. The default value when this property is not included in a devfile is governed by the Che configuration property `che.workspace.plugin_broker.default_merge_plugins`; adding the `mergePlugins: false` attribute to a devfile will disable plugin merging for that workspace.
+This property can be set to manually control how plug-ins are included in the workspace.
+When the property `mergePlugins` is set to `true`, Che will attempt to avoid running multiple instances of the same container by combining plugins. 
+The default value when this property is not included in a devfile is governed by the Che configuration property `che.workspace.plugin_broker.default_merge_plugins`; adding the `mergePlugins: false` attribute to a devfile will disable plug-in merging for that workspace.
 
-.Example of a devfile with plugin merging disabled
+.Example of a devfile with plug-in merging disabled
 [source,yaml]
 ----
 apiVersion: 1.0.0

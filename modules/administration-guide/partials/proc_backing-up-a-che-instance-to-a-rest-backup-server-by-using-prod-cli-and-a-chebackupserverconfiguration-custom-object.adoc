@@ -1,0 +1,34 @@
+[id="backing-up-a-{prod-id-short}-instance-to-a-rest-backup-server-by-using-{prod-cli}-and-a-chebackupserverconfiguration-custom-object_{context}"]
+= Backing up a {prod-short} instance to a REST backup server by using {prod-cli} and a CheBackupServerConfiguration custom object
+
+You can back up a {prod-short} instance by entering the `name` of a `CheBackupServerConfiguration` custom object as an argument with the `{prod-cli} server:backup` command.
+
+.Prerequisites
+
+* Installed `{prod-cli}`.
+* Configured backup server. See xref:supported-restic-compatible-backup-servers.adoc[].
+* Created `CheBackupServerConfiguration` custom object.
+
+.Procedure
+
+. Run the following command on a command line:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:backup \
+--backup-server-config-name=__<name_of_CheBackupServerConfiguration>__ <1>
+----
+<1> This option points {prod-cli} to a `CheBackupServerConfiguration` custom object. You can find the `name` of the `CheBackupServerConfiguration` custom object under `metadata` in the custom object.
++
+TIP: Last used backup server information is stored in a Secret inside the {prod-short} cluster. When consistently using the same backup server, you can enter the `--backup-server-config-name` option with the `{prod-cli} server:backup` command just once and omit this option onward when entering `{prod-cli} server:backup`.
+
+. Verify the output of the entered command. For example:
++
+[subs="+quotes,+attributes"]
+----
+...
+  ✔ Scheduling backup...OK
+  ✔ Waiting until backup process finishes...OK
+Backup snapshot ID: 9f0adce2
+Command server:backup has completed successfully in 00:10.
+----

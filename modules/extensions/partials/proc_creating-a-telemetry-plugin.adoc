@@ -7,7 +7,7 @@ This section shows how to create an `AnalyticsManager` class that extends link:h
 * `destroy()` - cleanup method that is run before shutting down the telemetry back-end. This method sends the `WORKSPACE_STOPPED` event.
 * `onActivity()` - notifies that some activity is still happening for a given user. This is mainly used to send `WORKSPACE_INACTIVE` events.
 * `onEvent()` - submits telemetry events to the telemetry server, such as `WORKSPACE_USED` or `WORKSPACE_STARTED`.
-* `increaseDuration()` - increases the duration of a current event rather than sending multiple events in a small frame of time.
+* `increaseDuration()` - increases the duration of a current event rather than sending many events in a small frame of time.
 
 The following sections cover:
 
@@ -51,7 +51,7 @@ $ docker build -t registry/organization/che-workspace-telemetry-example:latest .
 $ docker push registry/organization/che-workspace-telemetry-example:latest
 ----
 
-In `manifest.yaml`, replace the `image` and `host` fields to match the image you pushed, and the public host name of your {platforms-name} cluster. Then run:
+In `manifest.yaml`, replace the `image` and `host` fields to match the image you pushed, and the public hostname of your {platforms-name} cluster. Then run:
 
 [subs="+quotes"]
 ----
@@ -62,6 +62,8 @@ $ kubectl apply -f manifest.yaml -n {prod-namespace}
 
 NOTE: For fast feedback when developing, it is recommended to do development inside a {prod-short} workspace. This way, you can run the application in a cluster and connect to the workspaces front-end telemetry plug-in to send events to your custom back-end.
 
+pass:[<!-- vale RedHat.TermsErrors = NO -->]
+
 . Create a new Maven Quarkus project scaffolding:
 +
 ----
@@ -69,6 +71,8 @@ $ mvn io.quarkus:quarkus-maven-plugin:1.2.1.Final:create \
   -DprojectGroupId=mygroup -DprojectArtifactId=telemetryback-end \
   -DprojectVersion=my-version -DclassName="org.my.group.MyResource"
 ----
+
+pass:[<!-- vale RedHat.TermsErrors = YES -->]
 
 . Add a dependency to `org.eclipse.che.incubator.workspace-telemetry.back-end-base` in your `pom.xml`:
 +
@@ -217,7 +221,7 @@ See link:https://quarkus.io/guides/building-native-image#using-a-multi-stage-doc
 
 Create a `meta.yaml` definition representing a {prod-short} plug-in that runs your custom back-end in a workspace Pod. For more information about `meta.yaml`, see xref:end-user-guide:what-is-a-che-theia-plug-in.adoc[].
 
-.meta.yaml
+.`meta.yaml`
 ====
 [source,yaml]
 ----
@@ -270,6 +274,6 @@ include::example$telemetry/che_cluster_with_custom_plugin.yaml[]
 
 Wait for the {prod-short} server to restart, and create a new workspace. See a new message stating that the plug-in is being installed into the workspace.
 
-image::telemetry/custom_telemetry_plugin.png[]
+image::telemetry/custom_telemetry_plugin.png[Custom telemetry plug-in]
 
 Perform any operations in the started workspace and observe their events in the example telemetry server logs.

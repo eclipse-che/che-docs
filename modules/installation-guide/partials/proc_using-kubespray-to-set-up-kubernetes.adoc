@@ -82,7 +82,7 @@ sudo apt-get install curl
 
 Get the latest Kubespray source code from its code repository.
 
-WARNING: The latest release when writing this tutorial, v2.12.5, throws error not encountered in the master version.
+WARNING: The latest release when writing this tutorial, v2.12.5, throws error not encountered in the development version.
 
 ----
 mkdir -p ~/projects/ && \
@@ -138,9 +138,9 @@ declare -a IPS=(<node1-ip> <node2-ip> ...)
 CONFIG_FILE=inventory/mycluster/hosts.yaml python contrib/inventory_builder/inventory.py ${IPS[@]}
 ----
 
-. (optional) Rename your nodes or deactivate host name renaming
+. (optional) Rename your nodes or deactivate hostname renaming
 +
-If you skip this step, your cluster host names will be renamed node1, node2, and so on.
+If you skip this step, your cluster hostnames will be renamed node1, node2, and so on.
 +
 You can either edit the file `~/projects/kubespray/inventory/mycluster/hosts.yaml`
 +
@@ -150,15 +150,15 @@ sed -e 's/node1/tower/g' -e 's/node2/laptop/g' ... -i inventory/mycluster/hosts.
 +
 OR
 +
-keep the current host names
+keep the current hostnames
 +
 ----
 echo "override_system_hostname: false" >>  inventory/mycluster/group_vars/all/all.yml
 ----
 
-. Check localhost vs nodes usernames
+. Check localhost compared to nodes usernames
 +
-If your localhost username differ from a node username (the one that owns your SSH public key), you must specify it to Ansible by editing (manually) the hosts.yaml file.
+If your localhost username differ from a node username (the one that owns your SSH public key), you must specify it to Ansible by editing (manually) the `hosts.yaml` file.
 +
 Example:
 +

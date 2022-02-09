@@ -1,0 +1,39 @@
+[id="backing-up-a-{prod-id-short}-instance-to-an-sftp-backup-server-by-using-{prod-cli}-with-command-line-options_{context}"]
+= Backing up a {prod-short} instance to an SFTP backup server by using {prod-cli} with command-line options
+
+To make a backup snapshot of a {prod-short} instance and send the snapshot to a configured SFTP backup server, run {prod-cli} with the command-line options.
+
+include::snip_warning-does-not-back-up-content-of-workspaces.adoc[]
+
+.Prerequisites
+
+* Installed `{prod-cli}`.
+* Configured SFTP backup server. See xref:supported-restic-compatible-backup-servers.adoc[].
+
+.Procedure
+
+. Enter the `{prod-cli} server:backup` command with the following arguments:
++
+[subs="+quotes,+attributes"]
+----
+$ {prod-cli} server:backup \
+--repository-url=_<repository_url>_ \ <1>
+--repository-password=_<repository_password>_ \ <2>
+--ssh-key-file=_<ssh_key_file>_ <3>
+----
+<1> Backup repository URL as an argument using the `--repository-url` or `-r` option. Syntax for the backup repository URL: `sftp:__<user>__@__<host>__:/__<repository_path_on_sftp_server>__`. An example of a repository path on the SFTP server: `/srv/restic-repo`. For more details about repository URL syntax, see link:https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html#sftp[Restic Documentation].
+<2> Backup repository password as an argument using the `--repository-password` or `-p` option.
+<3> Path to a private SSH key file for authenticating on the SFTP server.
++
+include::snip_tip-omitting-prod-cli-options-for-server-backup-and-server-restore-onward-when-using-same-backup-server.adoc[]
+
+. Verify the output of the entered command. For example:
++
+[subs="+quotes,+attributes"]
+----
+...
+  ✔ Scheduling backup...OK
+  ✔ Waiting until backup process finishes...OK
+Backup snapshot ID: 9f0adce2
+Command server:backup has completed successfully in 00:10.
+----
