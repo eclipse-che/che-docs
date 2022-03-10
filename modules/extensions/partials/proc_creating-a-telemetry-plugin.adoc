@@ -1,6 +1,13 @@
 [id="creating-a-telemetry-plugin_{context}"]
 = Creating A Telemetry Plug-in
 
+[WARNING]
+====
+This page explains how to great a back-end telemetry plug-in for {prod-short} workspaces, which will be deprecated in favour of {devworkspace}s.
+
+To create a telemetry back-end plug-in for {devworkspace}s, refer to xref:extensions:creating-a-telemetry-plugin-for-devworkspaces.adoc[]
+====
+
 This section shows how to create an `AnalyticsManager` class that extends link:https://github.com/che-incubator/che-workspace-telemetry-client/blob/master/backend-base/src/main/java/org/eclipse/che/incubator/workspace/telemetry/base/AbstractAnalyticsManager.java[`AbstractAnalyticsManager`] and implements the following methods:
 
 * `isEnabled()` - determines whether the telemetry back-end is functioning correctly. This could mean always returning `true`, or have more complex checks, for example, returning `false` when a connection property is missing.
@@ -42,20 +49,22 @@ include::example$telemetry/main.go[]
 ----
 ====
 
-Create a container image based on this code and expose it as a deployment in OpenShift in the {prod-namespace} {orch-namespace}. The code for the example telemetry server is available at link:https://github.com/che-incubator/che-workspace-telemetry-example[che-workspace-telemetry-example]. To deploy the telemetry server, clone the repository and build the container:
+Create a container image based on this code and expose it as a deployment in OpenShift in the {prod-namespace} {orch-namespace}. The code for the example telemetry server is available at link:https://github.com/che-incubator/telemetry-server-example[telemetry-server-example]. To deploy the telemetry server, clone the repository and build the container:
 
 ----
-$ git clone https://github.com/che-incubator/che-workspace-telemetry-example
-$ cd che-workspace-telemetry-example
-$ docker build -t registry/organization/che-workspace-telemetry-example:latest .
-$ docker push registry/organization/che-workspace-telemetry-example:latest
+$ git clone https://github.com/che-incubator/telemetry-server-example
+$ cd telemetry-server-example
+$ docker build -t registry/organization/telemetry-server-example:latest .
+$ docker push registry/organization/telemetry-server-example:latest
 ----
 
-In `manifest.yaml`, replace the `image` and `host` fields to match the image you pushed, and the public hostname of your {platforms-name} cluster. Then run:
+Both `manifest_with_ingress.yaml` and `manifest_with_route` contain definitions for a Deployment and Service. The former also defines a {kubernetes} Ingress, while the latter defines also an OpenShift Route.
+
+In the manifest file, replace the `image` and `host` fields to match the image you pushed, and the public hostname of your {platforms-name} cluster. Then run:
 
 [subs="+quotes"]
 ----
-$ kubectl apply -f manifest.yaml -n {prod-namespace}
+$ kubectl apply -f manifest_with_[ingress|route].yaml -n {prod-namespace}
 ----
 
 == Creating a new Maven project
