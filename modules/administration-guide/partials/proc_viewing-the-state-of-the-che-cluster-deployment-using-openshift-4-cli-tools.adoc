@@ -23,25 +23,11 @@ This section describes how to view the state of the {prod-short} cluster deploym
 $ oc project _<project_name>_
 ----
 
-. Run the following commands to get the name and status of the Pods running in the selected project:
+. Run the following commands to get the name and status of the Pods running in the selected project, and check that the status of all the Pods is `Running`.
 +
 ----
 $ oc get pods
 ----
-
-. Check that the status of all the Pods is `Running`.
-+
-.Pods with status `Running`
-====
-[subs="+attributes",options="nowrap",role=white-space-pre]
-----
-NAME                            READY     STATUS    RESTARTS   AGE
-{prod-deployment}-8495f4946b-jrzdc            0/1       Running   0          86s
-{prod-operator}-578765d954-99szc   1/1       Running   0          42m
-keycloak-74fbfb9654-g9vp5       1/1       Running   0          4m32s
-postgres-5d579c6847-w6wx5       1/1       Running   0          5m14s
-----
-====
 
 . To see the state of the {prod-short} cluster deployment, run:
 +
@@ -49,8 +35,3 @@ postgres-5d579c6847-w6wx5       1/1       Running   0          5m14s
 ----
 $ oc logs --tail=10 -f `(oc get pods -o name | grep operator)`
 ----
-+
-.Logs of the Operator:
-====
-include::example$snip_{project-context}-cluster-deployment-openshift-logs.adoc[]
-====

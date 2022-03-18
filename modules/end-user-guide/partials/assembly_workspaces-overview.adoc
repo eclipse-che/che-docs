@@ -18,56 +18,6 @@ Pods manage each component of a {prod-short} workspace. Therefore, everything ru
 
 The embedded browser-based IDE is the point of access for everything running in a {prod-short} workspace. This makes a {prod-short} workspace easy to share.
 
-[IMPORTANT]
-====
-By default, it is possible to run only one workspace at a time. To increase the number of concurrent workspaces a user can run, update the CheCluster:
-
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=merge \
--p '{ "spec": { "server": { "customCheProperties": { "CHE_LIMITS_USER_WORKSPACES_RUN_COUNT": "-1" } } } }'
-----
-
-For additional information, see: xref:installation-guide:advanced-configuration-options-for-the-che-server-component.adoc#users-workspace-limits[].
-====
-
-
-.Features and benefits
-[options="header",cols="h,,"]
-|===
-| Features
-| Traditional IDE workspaces
-| {prod} workspaces
-
-| Configuration and installation required
-| Yes.
-| No.
-
-| Embedded tools
-| Partial. IDE plug-ins need configuration. Dependencies need installation and configuration. Example: JDK, Maven, Node.
-| Yes. Plug-ins provide their dependencies.
-
-| Application runtime provided
-| No. Developers have to manage that separately.
-| Yes. Application runtime is replicated in the workspace.
-
-| Shareable
-| No. Or not easily
-| Yes. Developer workspaces are shareable with a URL.
-
-| Capable of being versioned
-| No
-| Yes. Devfiles exist with project source code.
-
-| Accessible from anywhere
-| No. Installation is needed.
-| Yes. Only requires a browser.
-|===
-
-Start a {prod-short} workspace:
-
-* xref:configuring-a-workspace-with-dashboard.adoc[]
-
 Use the Dashboard to discover {prod-short} {prod-ver}:
 
 * xref:creating-a-workspace-from-a-code-sample.adoc[]
