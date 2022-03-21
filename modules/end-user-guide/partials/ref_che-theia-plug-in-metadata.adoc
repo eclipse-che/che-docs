@@ -43,7 +43,7 @@ endif::[]
 |`publisher`| Name of the publisher, must match [-a-z0-9]
 |`repository`| URL for plug-in repository, for example, GitHub
 |`title`|  Plug-in title (long)
-|`type`| `Che Plugin`, `VS Code extension`
+|`type`| `Che Plugin`, `Visual Studio Code extension`
 |`version`| Version information, for example: 7.5.1, [-.a-z0-9]
 |`spec`| Specifications (see below)
 |===
@@ -51,10 +51,10 @@ endif::[]
 .`spec` attributes
 |===
 |`endpoints` | Optional; plug-in endpoint
-|`containers`| Optional; sidecar containers for the plug-in. Che Plug-in and VS Code extension supports only one container
+|`containers`| Optional; sidecar containers for the plug-in. Che Plug-in and Visual Studio Code extension supports only one container
 |`initContainers`| Optional; sidecar init containers for the plug-in
 |`workspaceEnv`| Optional; environment variables for the workspace
-|`extensions`| Optional; Attribute that is required for VS Code and Che-Theia plug-ins in a form list of URLs to plug-in artefacts, such as .vsix or .theia files
+|`extensions`| Optional; Attribute that is required for Visual Studio Code and Che-Theia plug-ins in a form list of URLs to plug-in artefacts, such as .vsix or .theia files
 |===
 
 .`spec.containers`. Notice: `spec.initContainers` has absolutely the same container definition.
@@ -125,12 +125,12 @@ endif::[]
 
 * `exec`: Executes a specific command, resources consumed by the command are counted against the Container 
 
-* `command`: ["/bin/sh", "-c", "/bin/post-start.sh"] 	
+* `command`: `["/bin/sh", "-c", "/bin/post-start.sh"]`
 |`preStop` | The `preStop` event that runs before a Container is terminated. See link:https://kubernetes.io/docs/tasks/configure-pod-container/attach-handler-lifecycle-event/[postStart and preStop handlers]
  
 * `exec`: Executes a specific command, resources consumed by the command are counted against the Container 
 
-* `command`: ["/bin/sh", "-c", "/bin/post-start.sh"] 	
+* `command`: `["/bin/sh", "-c", "/bin/post-start.sh"]`
 |===
 
 .Example `meta.yaml` for a Che-Theia plug-in: the {prod-short} machine-exec Service
@@ -168,7 +168,7 @@ endif::[]
        command: ['/go/bin/che-machine-exec', '--static', '/cloud-shell', '--url', '127.0.0.1:4444']
 ----
 
-.Example `meta.yaml` for a VisualStudio Code extension: the AsciiDoc support extension
+.Example `meta.yaml` for a Visual Studio Code extension: the AsciiDoc support extension
 [source,yaml]
 ----
 apiVersion: v2
@@ -181,7 +181,7 @@ name: vscode-asciidoctor
 publisher: joaompinto
 repository: https://github.com/asciidoctor/asciidoctor-vscode
 title: AsciiDoctor Plug-in
-type: VS Code extension
+type: Visual Studio Code extension
 version: 2.7.7
 spec:
   extensions:
