@@ -1060,45 +1060,6 @@ attributes:
   editorFree: true
 ----
 
-=== Attribute: persistVolumes (ephemeral mode)
-
-By default, volumes and PVCs specified in a devfile are bound to a host folder to persist data even after a container restart. To disable data persistence to make the workspace faster, such as when the volume back end is slow, modify the `persistVolumes` attribute in the devfile. The default value is `true`. Set to `false` to use `emptyDir` for configured volumes and PVC.
-
-.Example of a devfile with ephemeral mode enabled
-[source,yaml]
-----
-apiVersion: 1.0.0
-metadata:
-  name: petclinic-dev-environment
-projects:
-  - name: petclinic
-    source:
-      type: git
-      location: 'https://github.com/che-samples/web-java-spring-petclinic.git'
-attributes:
-  persistVolumes: false
-----
-
-=== Attribute: asyncPersist (asynchronous storage)
-
-When `persistVolumes` is set to `false` (see above), the additional attribute `asyncPersist` can be set to `true` to enable asynchronous storage. See xref:installation-guide:configuring-storage-types.adoc[] for more details.
-
-.Example of a devfile with asynchronous storage enabled
-[source,yaml]
-----
-apiVersion: 1.0.0
-metadata:
-  name: petclinic-dev-environment
-projects:
-  - name: petclinic
-    source:
-      type: git
-      location: 'https://github.com/che-samples/web-java-spring-petclinic.git'
-attributes:
-  persistVolumes: false
-  asyncPersist: true
-----
-
 === Attribute: mergePlugins
 
 This property can be set to manually control how plug-ins are included in the workspace.
