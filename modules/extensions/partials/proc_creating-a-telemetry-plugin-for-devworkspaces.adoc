@@ -21,7 +21,7 @@ The following sections cover:
 This document describes the steps required to extend the {prod-short} telemetry system to communicate with to a custom back-end:
 
 . Creating a server process that receives events
-. Extending {prod-short} libraries to create a back-end that send events to the server
+. Extending {prod-short} libraries to create a back-end that sends events to the server
 . Packaging the telemetry back-end in a container and deploying it to an image registry
 . Adding a plug-in for your back-end and instructing {prod-short} to load the plug-in in your {devworkspace}s
 
@@ -66,8 +66,6 @@ $ kubectl apply -f manifest_with_[ingress|route].yaml -n {prod-namespace}
 
 NOTE: For fast feedback when developing, it is recommended to do development inside a {devworkspace}. This way, you can run the application in a cluster and receive events from the front-end telemetry plug-in.
 
-pass:[<!-- vale RedHat.TermsErrors = NO -->]
-
 . Maven Quarkus project scaffolding:
 +
 ----
@@ -75,8 +73,6 @@ $ mvn io.quarkus:quarkus-maven-plugin:2.7.1.Final:create \
   -DprojectGroupId=mygroup -DprojectArtifactId=devworkspace-telemetry-example-plugin \
   -DprojectVersion=1.0.0-SNAPSHOT
 ----
-
-pass:[<!-- vale RedHat.TermsErrors = YES -->]
 
 . Remove the files under `src/main/java/mygroup` and `src/test/java/mygroup`.
 
@@ -161,7 +157,7 @@ spec:
 
 . Restart the {devworkspace} from the {prod} dashboard.
 
-. From a terminal window, run the application by running the following command within a {devworkspace}. Use the `--settings` flag to specify path to the location of the `settings.xml` file that contains the GitHub access token.
+. Run the following command within a {devworkspace}'s terminal window to start the application. Use the `--settings` flag to specify path to the location of the `settings.xml` file that contains the GitHub access token.
 +
 ----
 $ mvn --settings=settings.xml quarkus:dev -Dquarkus.http.port=${DEVWORKSPACE_TELEMETRY_BACKEND_PORT}
@@ -284,7 +280,7 @@ include::example$creating-a-telemetry-plug-in-for-devworkspaces/destroy.java[]
 ----
 ====
 
-Running `mvn quarkus:dev` as described in xref:running-the-application_{context}[] and terminating the application with kbd:[Ctrl+C] sends `WORKSPACE_STOPPED` event sent to the server.
+Running `mvn quarkus:dev` as described in xref:running-the-application_{context}[] and terminating the application with kbd:[Ctrl+C] sends a `WORKSPACE_STOPPED` event to the server.
 
 [id="packaging-the-quarkus-application"]
 == Packaging the Quarkus application
@@ -334,7 +330,7 @@ include::example$creating-a-telemetry-plug-in-for-devworkspaces/plugin.yaml[]
 ====
 
 <1> Specify the container image built from xref:packaging-the-quarkus-application[]
-<2> Setting the value for the `welcome.message` optional configuration property from Example 4.
+<2> Set the value for the `welcome.message` optional configuration property from Example 4.
 
 Typically, the user deploys this file to a corporate web server. This guide demonstrates how to create an Apache web server on OpenShift and host the plug-in there.
 
@@ -361,7 +357,7 @@ $ oc apply -f manifest.yaml
 
 .Verification steps
 
-After the deployment has started to start, confirm that `plugin.yaml` is available in the web server:
+After the deployment has started, confirm that `plugin.yaml` is available in the web server:
 
 ----
 $ curl apache-che.apps-crc.testing/plugin.yaml
@@ -369,7 +365,7 @@ $ curl apache-che.apps-crc.testing/plugin.yaml
 
 [id="specifying-the-telemetry-plug-in-in-a-{devworkspace}"]
 == Specifying the telemetry plug-in in a {devworkspace}
-. Add the following to the `components` field to an existing {devworkspace}:
+. Add the following to the `components` field of an existing {devworkspace}:
 
 +
 ----
