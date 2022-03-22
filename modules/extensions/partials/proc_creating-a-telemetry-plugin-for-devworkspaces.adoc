@@ -53,7 +53,7 @@ $ docker build -t registry/organization/telemetry-server-example:latest .
 $ docker push registry/organization/telemetry-server-example:latest
 ----
 
-Both `manifest_with_ingress.yaml` and `manifest_with_route` contain definitions for a Deployment and Service. The former also defines a {kubernetes} Ingress, while the latter defines also an OpenShift Route.
+Both `manifest_with_ingress.yaml` and `manifest_with_route` contain definitions for a Deployment and Service. The former also defines a {kubernetes} Ingress, while the latter defines an OpenShift Route.
 
 In the manifest file, replace the `image` and `host` fields to match the image you pushed, and the public hostname of your {platforms-name} cluster. Then run:
 
@@ -102,7 +102,7 @@ include::example$creating-a-telemetry-plug-in-for-devworkspaces/settings.xml[]
 
 == Creating a concrete implementation of AnalyticsManager and adding specialized logic
 
-Create two new files in your project under `src/main/java/mygroup`:
+Create two files in your project under `src/main/java/mygroup`:
 
 * `MainConfiguration.java` - contains configuration provided to `AnalyticsManager`.
 * `AnalyticsManager.java` - contains logic specific to the telemetry system.
@@ -125,8 +125,8 @@ For more details on how to set configuration properties specific to your back-en
 include::example$creating-a-telemetry-plug-in-for-devworkspaces/AnalyticsManagerSkeleton.java[]
 ----
 ====
-<1> Log the welcome message if it was provided
-<2> Log the event received from the front-end plug-in
+<1> Log the welcome message if it was provided.
+<2> Log the event received from the front-end plug-in.
 
 Since `org.my.group.AnalyticsManager` and `org.my.group.MainConfiguration` are alternative beans, specify them using the `quarkus.arc.selected-alternatives` property in `src/main/resources/application.properties`.
 
@@ -165,7 +165,7 @@ $ mvn --settings=settings.xml quarkus:dev -Dquarkus.http.port=${DEVWORKSPACE_TEL
 The application now receives telemetry events through port `4167` from the front-end plug-in.
 
 .Verification steps
-. Verify that the following output is be logged:
+. Verify that the following output is logged:
 
 +
 ----
@@ -185,7 +185,7 @@ INFO  [org.ecl.che.inc.AnalyticsManager] (executor-thread-2) The received event 
 
 == Implementing `isEnabled()`
 
-For the purposes of the example, this method just returns `true` whenever it is called. Whenever the server is running, it is enabled and operational.
+For the purposes of the example, this method always returns `true` whenever it is called.
 
 .`AnalyticsManager.java`
 ====
@@ -268,7 +268,7 @@ include::example$creating-a-telemetry-plug-in-for-devworkspaces/onActivity.java[
 
 == Implementing `destroy()`
 
-When `destroy()` is called, send a `WORKSPACE_STOPPED` event and shutdown any resources, such as connection pools.
+When `destroy()` is called, send a `WORKSPACE_STOPPED` event and shutdown any resources such as connection pools.
 
 .`AnalyticsManager.java`
 ====
@@ -317,7 +317,7 @@ docker build -f src/main/docker/Dockerfile.native -t image:tag .
 
 == Creating a `plugin.yaml` for your plug-in
 
-Create a `plugin.yaml` devfile v2 file representing a {devworkspace} plug-in that runs your custom back-end in a workspace Pod. For more information about devfile v2, see link:https://devfile.io/docs/[Devfile v2 documentation]
+Create a `plugin.yaml` devfile v2 file representing a {devworkspace} plug-in that runs your custom back-end in a {devworkspace} Pod. For more information about devfile v2, see link:https://devfile.io/docs/[Devfile v2 documentation]
 
 .`plugin.yaml`
 ====
@@ -327,7 +327,7 @@ include::example$creating-a-telemetry-plug-in-for-devworkspaces/plugin.yaml[]
 ----
 ====
 
-<1> Specify the container image built from xref:packaging-the-quarkus-application[]
+<1> Specify the container image built from xref:packaging-the-quarkus-application[].
 <2> Set the value for the `welcome.message` optional configuration property from Example 4.
 
 Typically, the user deploys this file to a corporate web server. This guide demonstrates how to create an Apache web server on OpenShift and host the plug-in there.
@@ -387,7 +387,7 @@ components:
 +
 image::creating-a-telemetry-plug-in-for-devworkspaces/devworkspace_telemetry_plugin.png[]
 
-. Edit files within the editor and observe their events in the example telemetry server logs.
+. Edit files within the editor and observe their events in the example telemetry server's logs.
 
 
 == Applying the telemetry plug-in for all {devworkspace}s
@@ -404,8 +404,8 @@ spec:
       - 'http://apache-che.apps-crc.testing/plugin.yaml'
 ----
 
-<1> The editorId to set default plug-ins for
-<2> List of URLs to devfile v2 plug-ins
+<1> The editorId to set default plug-ins for.
+<2> List of URLs to devfile v2 plug-ins.
 
 This can be accomplished by running `oc edit checluster -n {prod-namespace}` and typing in the change at the terminal, or by editing the CR in the OpenShift console (*Installed Operators -> {prod} -> {prod} Cluster -> {prod-checluster} -> YAML*).
 
