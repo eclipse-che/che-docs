@@ -55,5 +55,5 @@ if [[ "$unused_images" ]]; then
     echo -e "${unused_images}"
     exit 1
 else
-    echo "All images have references in their the modules."
+    echo "All images have references in the modules."
 fi
