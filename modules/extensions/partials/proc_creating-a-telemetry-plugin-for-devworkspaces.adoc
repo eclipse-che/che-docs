@@ -3,8 +3,8 @@
 
 This section shows how to create an `AnalyticsManager` class that extends link:https://github.com/che-incubator/che-workspace-telemetry-client/blob/master/backend-base/src/main/java/org/eclipse/che/incubator/workspace/telemetry/base/AbstractAnalyticsManager.java[`AbstractAnalyticsManager`] and implements the following methods:
 
-* `isEnabled()` - determines whether the telemetry back-end is functioning correctly. This can mean always returning `true`, or have more complex checks, for example, returning `false` when a connection property is missing.
-* `destroy()` - cleanup method that is run before shutting down the telemetry back-end. This method sends the `WORKSPACE_STOPPED` event.
+* `isEnabled()` - determines whether the telemetry backend is functioning correctly. This can mean always returning `true`, or have more complex checks, for example, returning `false` when a connection property is missing.
+* `destroy()` - cleanup method that is run before shutting down the telemetry backend. This method sends the `WORKSPACE_STOPPED` event.
 * `onActivity()` - notifies that some activity is still happening for a given user. This is mainly used to send `WORKSPACE_INACTIVE` events.
 * `onEvent()` - submits telemetry events to the telemetry server, such as `WORKSPACE_USED` or `WORKSPACE_STARTED`.
 * `increaseDuration()` - increases the duration of a current event rather than sending many events in a small frame of time.
@@ -12,27 +12,27 @@ This section shows how to create an `AnalyticsManager` class that extends link:h
 The following sections cover:
 
 * Creating a telemetry server to echo events to standard output.
-* Extending the {prod-short} telemetry client and implementing a user's custom back-end.
-* Creating a `plugin.yaml` file representing a {devworkspace} plug-in for the custom back-end.
+* Extending the {prod-short} telemetry client and implementing a user's custom backend.
+* Creating a `plugin.yaml` file representing a {devworkspace} plug-in for the custom backend.
 * Specifying of a location of a custom plug-in to {prod-short} by setting the `workspacesDefaultPlugins` attribute from the `CheCluster` custom resource.
 
 == Getting started
 
-This document describes the steps required to extend the {prod-short} telemetry system to communicate with to a custom back-end:
+This document describes the steps required to extend the {prod-short} telemetry system to communicate with to a custom backend:
 
 . Creating a server process that receives events
-. Extending {prod-short} libraries to create a back-end that sends events to the server
-. Packaging the telemetry back-end in a container and deploying it to an image registry
-. Adding a plug-in for your back-end and instructing {prod-short} to load the plug-in in your {devworkspace}s
+. Extending {prod-short} libraries to create a backend that sends events to the server
+. Packaging the telemetry backend in a container and deploying it to an image registry
+. Adding a plug-in for your backend and instructing {prod-short} to load the plug-in in your {devworkspace}s
 
-A finished example of the telemetry back-end is available link:https://github.com/che-incubator/devworkspace-telemetry-example-plugin[here].
+A finished example of the telemetry backend is available link:https://github.com/che-incubator/devworkspace-telemetry-example-plugin[here].
 
 [discrete]
 == Creating a server that receives events
 
 For demonstration purposes, this example shows how to create a server that receives events from our telemetry plug-in and writes them to standard output.
 
-For production use cases, consider integrating with a third-party telemetry system (for example, Segment, Woopra) rather than creating your own telemetry server. In this case, use your provider's APIs to send events from your custom back-end to their system.
+For production use cases, consider integrating with a third-party telemetry system (for example, Segment, Woopra) rather than creating your own telemetry server. In this case, use your provider's APIs to send events from your custom backend to their system.
 
 The following Go code starts a server on port `8080` and writes events to standard output:
 
@@ -116,7 +116,7 @@ include::example$creating-a-telemetry-plug-in-for-devworkspaces/MainConfiguratio
 ====
 <1> A MicroProfile configuration annotation is used to inject the `welcome.message` configuration.
 
-For more details on how to set configuration properties specific to your back-end, see the Quarkus link:https://quarkus.io/guides/config-reference[Configuration Reference Guide].
+For more details on how to set configuration properties specific to your backend, see the Quarkus link:https://quarkus.io/guides/config-reference[Configuration Reference Guide].
 
 .`AnalyticsManager.java`
 ====
@@ -195,11 +195,11 @@ include::example$creating-a-telemetry-plug-in-for-devworkspaces/isEnabled.java[]
 ----
 ====
 
-It is possible to put more complex logic in `isEnabled()`. For example, the link:https://github.com/che-incubator/devworkspace-telemetry-woopra-plugin/blob/main/src/main/java/com/redhat/devworkspace/services/telemetry/woopra/AnalyticsManager.java[hosted {prod-short} woopra back-end] checks that a configuration property exists before determining if the back-end is enabled.
+It is possible to put more complex logic in `isEnabled()`. For example, the link:https://github.com/che-incubator/devworkspace-telemetry-woopra-plugin/blob/main/src/main/java/com/redhat/devworkspace/services/telemetry/woopra/AnalyticsManager.java[hosted {prod-short} Woopra backend] checks that a configuration property exists before determining if the backend is enabled.
 
 == Implementing `onEvent()`
 
-`onEvent()` sends the event received by the back-end to the telemetry system. For the example application, it sends an HTTP POST payload to the `/event` endpoint from the telemetry server.
+`onEvent()` sends the event received by the backend to the telemetry system. For the example application, it sends an HTTP POST payload to the `/event` endpoint from the telemetry server.
 
 === Sending a POST request to the example telemetry server
 For the following example, the telemetry server application is deployed to OpenShift at the following URL: `++http://little-telemetry-server-che.apps-crc.testing++`, where `apps-crc.testing` is the ingress domain name of the OpenShift cluster.
@@ -317,7 +317,7 @@ docker build -f src/main/docker/Dockerfile.native -t image:tag .
 
 == Creating a `plugin.yaml` for your plug-in
 
-Create a `plugin.yaml` devfile v2 file representing a {devworkspace} plug-in that runs your custom back-end in a {devworkspace} Pod. For more information about devfile v2, see link:https://devfile.io/docs/[Devfile v2 documentation]
+Create a `plugin.yaml` devfile v2 file representing a {devworkspace} plug-in that runs your custom backend in a {devworkspace} Pod. For more information about devfile v2, see link:https://devfile.io/docs/[Devfile v2 documentation]
 
 .`plugin.yaml`
 ====
