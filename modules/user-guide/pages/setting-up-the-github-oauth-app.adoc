@@ -7,31 +7,44 @@
 [id="setting-up-the-github-oauth-app_{context}"]
 = Setting up the GitHub OAuth App
 
-To access a private Git repository that is hosted on GitHub, set up a GitHub OAuth App as follows:
+To be able to access a private Git repository that is hosted on GitHub, set up a GitHub OAuth App as follows:
 
 .Prerequisites
 
 * You are logged in to GitHub.
+* link:https://www.gnu.org/software/coreutils/base64[`base64`] is installed in the operating system you are using.
 
 .Procedure
 
-* Go to link:https://github.com/settings/applications/new[].
+. Go to link:https://github.com/settings/applications/new[].
 //The long version: Click your GitHub avatar *>* *Settings* *>* *Developer settings* *>* *OAuth Apps* *>* *Register a new application*. max-cx
 
-* Enter *{prod-short}* as the *Application name*.
+. Enter *{prod-short}* as the *Application name*.
 
-* Enter `\{prod-url}/` as the *Homepage URL*.
+. Enter `{prod-url}/` as the *Homepage URL*.
 
-* Enter `\{prod-url}/api/oauth/callback` as the *Authorization callback URL*.
+. Enter `{prod-url}/api/oauth/callback` as the *Authorization callback URL*.
 
-* Click *Register application*.
+. Click *Register application*.
 
-* Click *Generate new client secret*.
+. Click *Generate new client secret*.
 
-* Give the generated values of the *Client ID* and *Client Secret* to the administrator of the {prod-short} instance for your organization. The administrator will need the *Client ID* and *Client Secret* when xref:administration-guide:applying-the-github-oauth-app-secret.adoc[].
+. Save and then encode to Base64 the *GitHub OAuth Client ID* like so:
++
+----
+$ echo -n '__<github_oauth_client_id>__' | base64
+----
+
+. Save and then encode to Base64 the *GitHub OAuth Client Secret* like so:
++
+----
+$ echo -n '__<github_oauth_client_secret>__' | base64
+----
+
+. Give the Base64-encoded values of the *Client ID* and *Client Secret* to the administrator of the {prod-short} instance for your organization. The administrator will need the *Client ID* and *Client Secret* when xref:administration-guide:applying-the-github-oauth-app-secret.adoc[applying the GitHub OAuth App Secret].
 
 .Additional resources
 
-* link:https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app[]
+* link:https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app[GitHub Docs: Creating an OAuth App]
 
 * xref:administration-guide:applying-the-github-oauth-app-secret.adoc[]

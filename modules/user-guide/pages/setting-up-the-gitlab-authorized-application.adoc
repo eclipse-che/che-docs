@@ -7,11 +7,12 @@
 [id="setting-up-the-gitlab-authorized-application_{context}"]
 = Setting up the GitLab-authorized application
 
-To access a private Git repository that is hosted using GitLab, set up a GitLab-authorized application as follows:
+To be able to access a private Git repository that is hosted using GitLab, set up a GitLab-authorized application as follows:
 
 .Prerequisites
 
 * You are logged in to GitLab.
+* link:https://www.gnu.org/software/coreutils/base64[`base64`] is installed in the operating system you are using.
 
 .Procedure
 
@@ -20,7 +21,7 @@ To access a private Git repository that is hosted using GitLab, set up a GitLab-
 
 . Enter *{prod-short}* as the *Name*.
 
-. Enter `\{prod-url}/api/oauth/callback` as the *Redirect URI*.
+. Enter `{prod-url}/api/oauth/callback` as the *Redirect URI*.
 
 . Check the *Confidential* and *Expire access tokens* checkboxes.
 
@@ -28,10 +29,24 @@ To access a private Git repository that is hosted using GitLab, set up a GitLab-
 
 . Click *Save application*.
 
-. Give the generated values of the *Application ID* and *Secret* to the administrator of the {prod-short} instance for your organization. The administrator will need the *Application ID* and *Secret* when xref:administration-guide:applying-the-gitlab-authorized-application-secret.adoc[].
+. Save and then encode to Base64 the *GitLab Application ID* like so:
++
+[source,subs="+quotes,+attributes,+macros"]
+----
+$ echo -n '__<gitlab_application_id>__' | base64
+----
+
+. Save and then encode to Base64 the *GitLab Client Secret* like so:
++
+[source,subs="+quotes,+attributes,+macros"]
+----
+$ echo -n '__<gitlab_client_secret>__' | base64
+----
+
+. Give the Base64-encoded values of the *Application ID* and *Secret* to the administrator of the {prod-short} instance for your organization. The administrator will need the *Application ID* and *Secret* when xref:administration-guide:applying-the-gitlab-authorized-application-secret.adoc[applying the GitLab-authorized application Secret].
 
 .Additional resources
 
-* link:https://docs.gitlab.com/ee/integration/oauth_provider.html#authorized-applications[]
+* link:https://docs.gitlab.com/ee/integration/oauth_provider.html#authorized-applications[GitLab Docs: Authorized applications]
 
 * xref:administration-guide:applying-the-gitlab-authorized-application-secret.adoc[]
