@@ -11,12 +11,9 @@
 # Fail on errors and display commands
 set -ex
 
-PROJECT_NAME="${PROJECT_NAME:-che}"
-PROJECT_BOT_NAME="${PROJECT_BOT_NAME:-CHE Bot}"
-
 GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
 export GIT_SSH_COMMAND
-git clone "ssh://genie.${PROJECT_NAME}@git.eclipse.org:29418/www.eclipse.org/${PROJECT_NAME}.git" .
+git clone --depth=1 "ssh://genie.che@git.eclipse.org:29418/www.eclipse.org/che.git" .
 git checkout master
 ls -ltr
 rm -rf docs/ _/
@@ -26,9 +23,9 @@ cp -f ../che-docs/sitemap.xml .
 cp -f ../che-docs/search-index.js .
 git add -A
 if ! git diff --cached --exit-code; then
-    echo "Changes have been detected, publishing to repo 'www.eclipse.org/${PROJECT_NAME}'"
-    git config --global user.email "${PROJECT_NAME}-bot@eclipse.org"
-    git config --global user.name "${PROJECT_BOT_NAME}"
+    echo "Changes have been detected, publishing to repo 'www.eclipse.org/che'"
+    git config --global user.email "che-bot@eclipse.org"
+    git config --global user.name "Che Bot"
     DOC_COMMIT_MSG=$(git log --oneline --format=%B -n 1 HEAD | tail -1)
     export DOC_COMMIT_MSG
     git commit -s -m "[docs] ${DOC_COMMIT_MSG}"
