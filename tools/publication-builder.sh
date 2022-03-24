@@ -8,9 +8,13 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
+# Create group writeable files
+umask 002
+
 # Fail on errors and display commands
 set -ex
 
+# Build with Antora
 CI=true antora generate publication-builder-antora-playbook.yml --stacktrace
 
 # Remove this file that may break Eclipse Che website `index.php`
