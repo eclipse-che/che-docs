@@ -1,5 +1,5 @@
-[id="creating-a-telemetry-plugin-for-{devworkspace}s"]
-= Creating a telemetry plug-in for {devworkspace}s
+[id="creating-a-telemetry-plugin"]
+= Creating a telemetry plug-in
 
 This section shows how to create an `AnalyticsManager` class that extends link:https://github.com/che-incubator/che-workspace-telemetry-client/blob/master/backend-base/src/main/java/org/eclipse/che/incubator/workspace/telemetry/base/AbstractAnalyticsManager.java[`AbstractAnalyticsManager`] and implements the following methods:
 
@@ -40,7 +40,7 @@ The following Go code starts a server on port `8080` and writes events to standa
 ====
 [source,go]
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/main.go[]
+include::example$creating-a-telemetry-plug-in/main.go[]
 ----
 ====
 
@@ -69,7 +69,7 @@ NOTE: For fast feedback when developing, it is recommended to do development ins
 . Maven Quarkus project scaffolding:
 +
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/project_scaffolding.sh[]
+include::example$creating-a-telemetry-plug-in/project_scaffolding.sh[]
 ----
 
 . Remove the files under `src/main/java/mygroup` and `src/test/java/mygroup`.
@@ -82,7 +82,7 @@ include::example$creating-a-telemetry-plug-in-for-devworkspaces/project_scaffold
 ====
 [source,xml]
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/pom_snippet.xml[]
+include::example$creating-a-telemetry-plug-in/pom_snippet.xml[]
 ----
 ====
 
@@ -94,7 +94,7 @@ include::example$creating-a-telemetry-plug-in-for-devworkspaces/pom_snippet.xml[
 ====
 [source,xml]
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/settings.xml[]
+include::example$creating-a-telemetry-plug-in/settings.xml[]
 ----
 ====
 +
@@ -111,7 +111,7 @@ Create two files in your project under `src/main/java/mygroup`:
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/MainConfiguration.java[]
+include::example$creating-a-telemetry-plug-in/MainConfiguration.java[]
 ----
 ====
 <1> A MicroProfile configuration annotation is used to inject the `welcome.message` configuration.
@@ -122,7 +122,7 @@ For more details on how to set configuration properties specific to your backend
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/AnalyticsManagerSkeleton.java[]
+include::example$creating-a-telemetry-plug-in/AnalyticsManagerSkeleton.java[]
 ----
 ====
 <1> Log the welcome message if it was provided.
@@ -191,7 +191,7 @@ For the purposes of the example, this method always returns `true` whenever it i
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/isEnabled.java[]
+include::example$creating-a-telemetry-plug-in/isEnabled.java[]
 ----
 ====
 
@@ -211,7 +211,7 @@ For the following example, the telemetry server application is deployed to OpenS
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/TelemetryService.java[]
+include::example$creating-a-telemetry-plug-in/TelemetryService.java[]
 ----
 ====
 <1> The endpoint to make the `POST` request to.
@@ -235,7 +235,7 @@ org.my.group.TelemetryService/mp-rest/url=http://little-telemetry-server-che.app
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/onEvent.java[]
+include::example$creating-a-telemetry-plug-in/onEvent.java[]
 ----
 ====
 +
@@ -250,7 +250,7 @@ Many telemetry systems recognize event duration. The `AbstractAnalyticsManager` 
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/increaseDuration.java[]
+include::example$creating-a-telemetry-plug-in/increaseDuration.java[]
 ----
 ====
 
@@ -262,7 +262,7 @@ Set an inactive timeout limit, and use `onActivity()` to send a `WORKSPACE_INACT
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/onActivity.java[]
+include::example$creating-a-telemetry-plug-in/onActivity.java[]
 ----
 ====
 
@@ -274,7 +274,7 @@ When `destroy()` is called, send a `WORKSPACE_STOPPED` event and shutdown any re
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/destroy.java[]
+include::example$creating-a-telemetry-plug-in/destroy.java[]
 ----
 ====
 
@@ -291,7 +291,7 @@ See link:https://quarkus.io/guides/building-native-image#using-a-multi-stage-doc
 ====
 [source,yaml]
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/Dockerfile.jvm[]
+include::example$creating-a-telemetry-plug-in/Dockerfile.jvm[]
 ----
 ====
 To build the image, run:
@@ -306,7 +306,7 @@ docker build -f src/main/docker/Dockerfile.jvm -t image:tag .
 ====
 [source,yaml]
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/Dockerfile.native[]
+include::example$creating-a-telemetry-plug-in/Dockerfile.native[]
 ----
 ====
 To build the image, run:
@@ -323,7 +323,7 @@ Create a `plugin.yaml` devfile v2 file representing a {devworkspace} plug-in tha
 ====
 [source,yaml]
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/plugin.yaml[]
+include::example$creating-a-telemetry-plug-in/plugin.yaml[]
 ----
 ====
 
@@ -345,7 +345,7 @@ Create a deployment, a service, and a route to expose the web server. The deploy
 ====
 [source,yaml,subs="+quotes,+attributes"]
 ----
-include::example$creating-a-telemetry-plug-in-for-devworkspaces/webserver.yaml[]
+include::example$creating-a-telemetry-plug-in/webserver.yaml[]
 ----
 ====
 
@@ -385,7 +385,7 @@ components:
 . Verify that the `telemetry-plug-in` container is running in the {devworkspace} pod. Here, this is verified by checking the Workspace view within the editor.
 
 +
-image::creating-a-telemetry-plug-in-for-devworkspaces/devworkspace_telemetry_plugin.png[]
+image::creating-a-telemetry-plug-in/devworkspace_telemetry_plugin.png[]
 
 . Edit files within the editor and observe their events in the example telemetry server's logs.
 
