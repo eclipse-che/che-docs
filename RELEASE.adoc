@@ -19,15 +19,14 @@ The publication is decoupled. See link:https://github.com/eclipse/che-docs/tree/
 
 .Procedure
 
-. Create the `__<major>__.__<minor>__.x` branch from the `main` branch.
+. Create the `__<major>__.__<minor>__.x` branch from the prerelease branch.
 
 . Edit the `antora.yml` file in the `__<major>__.__<minor>__.x` branch to define:
 +
 [source,yaml,subs="+attributes,+quotes"]
 ----
 prerelease: false
-version: "_<major>_._<minor>_.x"
-display_version: "_<major>_._<minor>_.x"
+version: stable
 asciidoc:
   attributes:
     prod-ver-patch: "_<major>_._<minor>_.0"
@@ -35,20 +34,20 @@ asciidoc:
     prod-ver-major: "_<major>_"
 ----
 
-
-// . Replace the stable branch version (`"__<major>__.__<minor>__.x"`) in the link:https://github.com/eclipse/che-docs/blob/publication-builder/publication-builder-antora-playbook.yml[`publication-builder-antora-playbook.yml` file in the `publication-builder` branch]. Keep the other branches (`main`, `master`, `che-7`, `che-7-redirections`). See: link:https://github.com/eclipse/che-docs/tree/publication-builder#changing-the-versions-to-publish[Changing the versions to publish]
-// +
-// [source,yaml,subs="+attributes,+quotes"]
-// ----
-// # [...]
-// content:
-//   sources:
-//     - url: https://github.com/eclipse/che-docs
-//       branches:
-//         - "main"
-//         - "__<major>__.__<minor>__.x"
-// # [...]
-// ----
+. Edit the link:https://github.com/eclipse/che-docs/blob/publication-builder/publication-builder-antora-playbook.yml[`publication-builder-antora-playbook.yml` file in the `publication-builder` branch]. Change the latest branch to "__<major>__.__<minor>__.x". Keep the other branches (`7.43.x` and `master`).
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+# [...]
+content:
+  sources:
+    - url: https://github.com/eclipse/che-docs
+      branches:
+        - "__<major>__.__<minor>__.x"
+        - "7.43.x"
+        - master
+# [...]
+----
 
 == Releasing a patch version
 
