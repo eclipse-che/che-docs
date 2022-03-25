@@ -8,27 +8,42 @@
 
 :context: upgrading-prod-short-using-the-cli-management-tool-in-restricted-environment
 
-This section describes how to upgrade {prod} using the CLI management tool in restricted environment. The upgrade path supports minor version update, from {prod-short} version {prod-prev-ver} to version {prod-ver}.
+This section describes how to upgrade {prod} using the CLI management tool in restricted environment. The upgrade path supports minor version update, from {prod-short} {prod-prev-ver} to version {prod-ver}.
 
 .Prerequisites
 
 * An administrative account on an instance of {platforms-name}.
 
-* A running instance version {prod-prev-ver} of {prod}, installed using the CLI management tool on the same instance of {platforms-name}, with the {prod-cli} `--installer operator` method, in the `_<{prod-namespace}>_` project. See xref:installing-che-in-a-restricted-environment.adoc[].
+* An instance running {prod-short} {prod-prev-ver}, installed using the CLI management tool on the same instance of {platforms-name}, with the {prod-cli} `--installer operator` method, in the `_<{prod-namespace}>_` project. See xref:installing-che-in-a-restricted-environment.adoc[].
 
 * The `{prod-cli}` {prod-ver} management tool is available. See xref:using-the-chectl-management-tool.adoc[].
 
-include::example$con_{project-context}-understanding-network-connectivity-in-restricted-environments.adoc[leveloffset=+1]
+* Essential container images are available to the {prod-short} server running in the cluster. See xref:preparing-a-restricted-environment.adoc[].
 
+.Procedure
 
-include::partial$assembly_building-offline-registry-images.adoc[leveloffset=+1]
+. In all running workspaces in the {prod-short} {prod-prev-ver} instance, save and push changes back to the Git repositories.
 
+. Stop all workspaces in the {prod-short} {prod-prev-ver} instance.
 
-include::example$proc_{project-context}-preparing-a-private-registry.adoc[leveloffset=+1]
+. Run the following command:
++
+[subs="+attributes,+quotes"]
+----
+$ {prod-cli} server:update --che-operator-image=__<image-registry>__/__<organization>__/{prod-operator-image-name}:{prod-ver} -n {prod-namespace}
+----
++
+* _<image-registry>_: A hostname and a port of the container-image registry accessible in the restricted environment.
+* _<organization>_: An organization of the container-image registry. See: See xref:preparing-a-restricted-environment.adoc[].
 
+.Verification steps
 
-include::partial$proc_upgrading-che-using-the-cli-management-tool-in-restricted-environment.adoc[leveloffset=+1]
+. Navigate to the {prod-short} instance.
 
+. The {prod-ver} version number is visible at the bottom of the page.
 
-:context: {parent-context-of-upgrading-prod-short-using-the-cli-management-tool-in-restricted-environment}
+[NOTE]
+====
+For slow systems or internet connections, add the `--k8spodwaittimeout=1800000` flag option to the `{prod-cli} server:update` command to extend the Pod timeout period to 1800000 ms or longer. 
+====
 
