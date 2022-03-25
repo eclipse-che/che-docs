@@ -17,7 +17,7 @@ NEWLINEx2="$NEWLINE$NEWLINE"
 # TABLE_FOOTER=",=== $NEWLINEx2"
 PARENT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")/.." ; pwd -P )
 BUFF=""
-OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/system-variables.adoc"
+OUTPUT_PATH="$PARENT_PATH/modules/administration-guide/examples/system-variables.adoc"
 
 fetch_current_version() {
   # echo "Trying to read current product version from $PARENT_PATH/antora.yml..." >&2

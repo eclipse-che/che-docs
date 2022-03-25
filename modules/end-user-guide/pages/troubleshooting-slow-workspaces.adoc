@@ -1,7 +1,121 @@
-[id="troubleshooting-slow-workspaces"]
-// = Troubleshooting slow workspaces
 :navtitle: Troubleshooting slow workspaces
-:keywords: end-user-guide, troubleshooting-slow-workspaces
+:keywords: user-guide, troubleshooting-slow-workspaces
 :page-aliases: .:troubleshooting-slow-workspaces
 
-include::partial$proc_troubleshooting-slow-workspaces.adoc[]
+[id="troubleshooting-slow-workspaces_{context}"]
+= Troubleshooting slow workspaces
+
+Sometimes, workspaces can take a long time to start. Tuning can reduce this start time. Depending on the options, administrators or users can do the tuning.
+
+This section includes several tuning options for starting workspaces faster or improving workspace runtime performance.
+
+[id="improving-workspace-start-time_{context}"]
+== Improving workspace start time
+
+Caching images with {image-puller-name-short}::
++
+_Role: Administrator_
++
+When starting a workspace, {orch-name} pulls the images from the registry. A workspace can include many containers meaning that {orch-name} pulls Pod's images (one per container). Depending on the size of the image and the bandwidth, it can take a long time.
++
+{image-puller-name-short} is a tool that can cache images on each of {orch-name} nodes. As such, pre-pulling images can improve start times. See xref:administration-guide:caching-images-for-faster-workspace-start.adoc[].
+
+Choosing better storage type::
++
+_Role: Administrator and user_
++
+Every workspace has a shared volume attached. This volume stores the project files, so that when restarting a workspace, changes are still available. Depending on the storage, attach time can take up to a few minutes, and I/O can be slow.
+
+Installing offline::
++
+_Role: Administrator_
++
+Components of {prod-short} are OCI images. Set up {prod} in offline mode (air-gap scenario) to reduce any extra download at runtime because everything needs to be available from the beginning. See xref:administration-guide:installing-che-in-a-restricted-environment.adoc[].
+
+Optimizing workspace plug-ins::
++
+_Role: User_
++
+When selecting various plug-ins, each plug-in can bring its own sidecar container, which is an OCI image. {orch-name} pulls the images of these sidecar containers.
++
+Reduce the number of plug-ins, or disable them to see if start time is faster. See also xref:administration-guide:caching-images-for-faster-workspace-start.adoc[].
+
+Reducing the number of public endpoints::
++
+_Role: Administrator_
++
+For each endpoint, {orch-name} is creating {platforms-ingress} objects. Depending on the underlying configuration, this creation can be slow.
++
+To avoid this problem, reduce the exposure. For example, to automatically detect a new port listening inside containers and redirect traffic for the processes using a local IP address (`127.0.0.1`), the Che-Theia IDE plug-in has three optional routes.
++
+By reducing the number of endpoints and checking endpoints of all plug-ins, workspace start can be faster.
+
+CDN configuration::
++
+The IDE editor uses a CDN (Content Delivery Network) to serve content. Check that the content uses a CDN to the client (or a local route for offline setup).
++
+To check that, open Developer Tools in the browser and check for `vendors` in the *Network* tab. `vendors.<random-id>.js` or `editor.main.*` should come from CDN URLs.
+
+
+[id="improving-workspace-runtime-performance_{context}"]
+== Improving workspace runtime performance
+
+Providing enough CPU resources::
++
+Plug-ins consume CPU resources. For example, when a plug-in provides IntelliSense features, adding more CPU resources may lead to better performance.
++
+Ensure the CPU settings in the devfile definition, `devfile.yaml`, are correct:
++
+[source,yaml]
+----
+apiVersion: 1.0.0
+
+components:
+  -
+    type: chePlugin
+    id: id/of/plug-in
+    cpuLimit: 1360Mi <1>
+    cpuRequest: 100m <2>
+----
+<1> Specifies the CPU limit for the plug-in.
+<2> Specifies the CPU request for the plug-in.
+
+Providing enough memory::
++
+Plug-ins consume CPU and memory resources. For example, when a plug-in provides IntelliSense features, collecting data can consume all the memory allocated to the container.
++
+Providing more memory to the plug-in can increase performance. Ensure about the correctness of memory settings:
++
+* in the plug-in definition - `meta.yaml` file
+* in the devfile definition - `devfile.yaml` file
++
+[source,yaml]
+----
+apiVersion: v2
+
+spec:
+  containers:
+    - image: "quay.io/my-image"
+      name: "vscode-plugin"
+      memoryLimit: "512Mi" <1>
+  extensions:
+    - https://link.to/vsix
+----
+<1> Specifies the memory limit for the plug-in.
++
+In the devfile definition (`devfile.yaml`):
++
+[source,yaml]
+----
+apiVersion: 1.0.0
+
+components:
+  -
+    type: chePlugin
+    id: id/of/plug-in
+    memoryLimit: 1048M  <1>
+    memoryRequest: 256M
+----
+<1> Specifies the memory limit for this plug-in.
+
+

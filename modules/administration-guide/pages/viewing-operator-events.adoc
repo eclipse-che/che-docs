@@ -1,7 +1,36 @@
-[id="viewing-operator-events"]
-// = Viewing the Operator events on OpenShift
 :navtitle: Viewing the Operator events on OpenShift
 :keywords: administration-guide, viewing-operator-events
 :page-aliases: .:viewing-operator-events
 
-include::partial$proc_viewing-the-state-of-the-che-cluster-deployment-using-openshift-4-cli-tools.adoc[]
+[id="viewing-the-state-of-the-{prod-id-short}-cluster-deployment-using-openshift-4-cli-tools_{context}"]
+= Viewing the state of the {prod-short} cluster deployment using OpenShift 4 CLI tools
+
+This section describes how to view the state of the {prod-short} cluster deployment using OpenShift 4 CLI tools.
+
+.Prerequisites
+
+* An instance of {prod} running on OpenShift.
+* An installation of the OpenShift command-line tool, `oc`.
+
+
+.Procedure
+
+. Run the following commands to select the `{project-context}` project:
++
+[subs="+quotes"]
+----
+$ oc project _<project_name>_
+----
+
+. Run the following commands to get the name and status of the Pods running in the selected project, and check that the status of all the Pods is `Running`.
++
+----
+$ oc get pods
+----
+
+. To see the state of the {prod-short} cluster deployment, run:
++
+[subs="+attributes",options="nowrap",role=white-space-pre]
+----
+$ oc logs --tail=10 -f `(oc get pods -o name | grep operator)`
+----

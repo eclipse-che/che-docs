@@ -19,7 +19,7 @@ TABLE_HEADER="$NEWLINE[cols=\"2,5\", options=\"header\"]$NEWLINE:=== $NEWLINE Pr
 TABLE_FOOTER=":=== $NEWLINEx2"
 PARENT_PATH=$(cd "$(dirname "${BASH_SOURCE[0]}")/.."; pwd -P)
 BUFF=""
-OUTPUT_PATH="$PARENT_PATH/modules/installation-guide/examples/checluster-properties.adoc"
+OUTPUT_PATH="$PARENT_PATH/modules/administration-guide/examples/checluster-properties.adoc"
 
 fetch_current_version() {
   # echo "Trying to read current product version from $PARENT_PATH/antora.yml..." >&2
