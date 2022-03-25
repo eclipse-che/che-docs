@@ -1,5 +1,38 @@
-:navtitle: Architecture overview
-:keywords: administration-guide, architecture-overview
-:page-aliases: .:che-architecture-overview, .:high-level-che-architecture, overview:high-level-che-architecture, administration-guide:high-level-che-architecture, che-architecture-overview, .:che-architecture-overview-with-che-server, .:high-level-che-architecture-with-che-server, overview:high-level-che-architecture-with-che-server, administration-guide:high-level-che-architecture-with-che-server, .:che-architecture-overview-with-devworkspace, .:high-level-che-architecture-with-devworkspace, overview:high-level-che-architecture-with-devworkspace, administration-guide:high-level-che-architecture-with-devworkspace, architecture-overview-with-devworkspace, architecture-overview-with-che-server, server-components-with-che-server, che-workspaces-architecture-with-che-server, backup-and-recovery, supported-restic-compatible-backup-servers, backing-up-of-che-instances-to-an-sftp-backup-server, backing-up-of-che-instances-to-amazon-s3, backing-up-of-che-instances-to-a-rest-backup-server, backing-up-of-che-instances-to-the-internal-backup-server, restoring-a-che-instance-from-a-backup, backups-of-persistent-volumes, backups-of-postgresql, migration-from-postgresql-9-to-postgresql-13, readiness-init-containers, enabling-and-disabling-readiness-init-containers-for-the-operator-installer, enabling-readiness-init-containers-for-the-operator-installer, disabling-readiness-init-containers-for-the-operator-installer, enabling-and-disabling-readiness-init-containers-for-the-olm-installer, enabling-readiness-init-containers-for-the-olm-installer, disabling-readiness-init-containers-for-the-olm-installer
+:navtitle: Architecture
+:keywords: administration-guide, architecture
+:page-aliases: .:che-architecture-overview, .:high-level-che-architecture, overview:high-level-che-architecture, administration-guide:high-level-che-architecture, che-architecture-overview, .:che-architecture-overview-with-che-server, .:high-level-che-architecture-with-che-server, overview:high-level-che-architecture-with-che-server, administration-guide:high-level-che-architecture-with-che-server, .:che-architecture-overview-with-devworkspace, .:high-level-che-architecture-with-devworkspace, overview:high-level-che-architecture-with-devworkspace, administration-guide:high-level-che-architecture-with-devworkspace, architecture-overview-with-devworkspace, architecture-overview-with-che-server, server-components-with-che-server, che-workspaces-architecture-with-che-server, backup-and-recovery, supported-restic-compatible-backup-servers, backing-up-of-che-instances-to-an-sftp-backup-server, backing-up-of-che-instances-to-amazon-s3, backing-up-of-che-instances-to-a-rest-backup-server, backing-up-of-che-instances-to-the-internal-backup-server, restoring-a-che-instance-from-a-backup, backups-of-persistent-volumes, backups-of-postgresql, migration-from-postgresql-9-to-postgresql-13, readiness-init-containers, enabling-and-disabling-readiness-init-containers-for-the-operator-installer, enabling-readiness-init-containers-for-the-operator-installer, disabling-readiness-init-containers-for-the-operator-installer, enabling-and-disabling-readiness-init-containers-for-the-olm-installer, enabling-readiness-init-containers-for-the-olm-installer, disabling-readiness-init-containers-for-the-olm-installer, overview:architecture-overview, overview:che-architecture
 
-include::partial$con_architecture-overview.adoc[]
+[id="architecture_{context}"]
+= {prod-short} architecture
+
+.High-level {prod-short} architecture with the {devworkspace} operator
+image::architecture/che-interacting-with-devworkspace.png[]
+
+{prod-short} runs on three groups of components:
+
+{prod-short} server components::
+Manage User {orch-namespace} and workspaces. The main component is the User dashboard, from which users control their workspaces.
+
+{devworkspace} operator::
+Creates and controls the necessary {orch-name} objects to run User workspaces. Including `Pods`, `Services`, and `PeristentVolumes`.
+
+User workspaces:: 
+Container-based development environments, the IDE included.
+
+The role of these {orch-name} features is central:
+
+{devworkspace} Custom Resources::
+Valid {orch-name} objects representing the User workspaces and manipulated by {prod-short}. It is the communication channel for the three groups of components.
+
+{orch-name} role-based access control (RBAC):: 
+Controls access to all resources.
+
+.Additional resources
+
+* xref:server-components.adoc[]
+* xref:devworkspace-operator.adoc[]
+* xref:user-workspaces.adoc[]
+* link:https://github.com/devfile/devworkspace-operator[{devworkspace} Operator repository]
+
+include::example$snip_che-architecture-overview-with-devworkspace-additional-resources.adoc[]
+
