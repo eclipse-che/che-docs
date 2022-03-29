@@ -1,0 +1,48 @@
+This section describes how to configure {prod-short} and related containers to use images in a restricted environment rather than the default images in an online registry.
+
+.Prerequisites
+
+* All required images available in an image registry that is accessible from the cluster where {prod-short} is to be deployed.
+
+.Procedure
+
+This procedure uses the following placeholders:
+
+.Placeholders used in examples
+[cols="1,2"]
+|===
+| `<my-internal-registry>`
+| a hostname of the container-image registry, accessible in the restricted environment, see xref:preparing-a-restricted-environment.adoc[]
+
+| `<my-organization>`
+| organization of the container-image registry
+
+| `<my-offline-plug-in-registry>`
+| offline plug-in registry, see xref:preparing-a-restricted-environment.adoc[]
+
+| `<my-offline-devfile-registry>`
+| offline devfile registry, see xref:preparing-a-restricted-environment.adoc[]
+
+| `<ver>`
+| release of {prod-short} that is being deployed
+|===
+
+The `CheCluster` Custom Resource, which is managed by the {prod-short} Operator, includes fields to facilitate deploying an instance of {prod-short} in a restricted environment:
+
+[source,yaml,subs="+quotes"]
+----
+# ...
+spec:
+  server:
+    airGapContainerRegistryHostname: '__<my-internal-registry>__'
+    airGapContainerRegistryOrganization: '__<my-organization>__'
+# ...
+----
+
+Setting these values uses `<my-internal-registry>` and `<my-organization>` for all images. This means that the Operator expects the offline plug-in and devfile registries to be available at:
+
+[subs="+quotes"]
+----
+__<my-internal-registry>__/__<my-organization>__/__<my-offline-plug-in-registry>__:__<ver>__
+__<my-internal-registry>__/__<my-organization>__/__<my-offline-devfile-registry>__:__<ver>__
+----

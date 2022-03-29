@@ -32,7 +32,7 @@ function generate(done) {
 async function serve(done) {
   connect.server(serverConfig, function () {
     this.server.on('close', done)
-    watch(watchPatterns, series(generate, testlang, testhtml))
+    watch(watchPatterns, series(generate, testlang, testhtml, detect_unused_content))
     if (livereload) watch(this.root).on('change', (filepath) => src(filepath, { read: false }).pipe(livereload()))
   })
 }
@@ -55,12 +55,10 @@ async function environment_docs_gen() {
   // Report script errors but don't make gulp fail.
   try {
     const { stdout, stderr } = await exec('tools/environment_docs_gen.sh')
-    console.log(stdout);
-    console.error(stderr);
+    console.log(stdout, stderr);
   }
   catch (error) {
-    console.log(error.stdout);
-    console.log(error.stderr);
+    console.log(error.stdout, error.stderr);
     return;
   }
 }
@@ -69,12 +67,10 @@ async function testhtml() {
   // Report links errors but don't make gulp fail.
   try {
     const { stdout, stderr } = await exec('htmltest')
-    console.log(stdout);
-    console.error(stderr);
+    console.log(stdout, stderr);
   }
   catch (error) {
-    console.log(error.stdout);
-    console.log(error.stderr);
+    console.log(error.stdout, error.stderr);
     return;
   }
 }
@@ -83,12 +79,22 @@ async function testlang() {
   // Report language errors but don't make gulp fail.
   try {
     const { stdout, stderr } = await exec('./tools/validate_language_changes.sh')
-    console.log(stdout);
-    console.error(stderr);
+    console.log(stdout, stderr);
   }
   catch (error) {
-    console.log(error.stdout);
-    console.log(error.stderr);
+    console.log(error.stdout, error.stderr);
+    return;
+  }
+}
+
+async function detect_unused_content() {
+  // Report unused images but don't make gulp fail.
+  try {
+    const { stdout, stderr } = await exec('./tools/detect-unused-content.sh')
+    console.log(stdout, stderr);
+  }
+  catch (error) {
+    console.log(error.stdout, error.stderr);
     return;
   }
 }
@@ -97,5 +103,5 @@ exports.default = series(
   parallel(checluster_docs_gen, environment_docs_gen),
   generate,
   serve,
-  parallel(testlang, testhtml)
+  parallel(testlang, testhtml, detect_unused_content)
 );

@@ -1,0 +1,69 @@
+:navtitle: Using the OpenShift web console to configure the `CheCluster` Custom Resource during installation
+:keywords: administration guide
+:page-aliases: installation-guide:using-the-openshift-web-console-to-configure-the-checluster-custom-resource-during-installation
+
+
+
+[id="using-the-openshift-web-console-to-configure-the-checluster-custom-resource-during-installation_{context}"]
+= Using the OpenShift web console to configure the `CheCluster` Custom Resource during installation
+
+To deploy {prod-short} with a suitable configuration, edit the `CheCluster` Custom Resource YAML file during the installation of {prod-short}. Otherwise, the {prod-short} deployment uses the default configuration parameterized by the Operator.
+
+The `CheCluster` Custom Resource YAML file contains sections to configure each component: `auth`, `database`, `server`, `storage`.
+
+.Prerequisites
+* Access to an administrator account on an instance of OpenShift.
+
+.Procedure
+
+// This procedure contains steps from proc_creating-an-instance-of-the-che-operator.adoc[]. 
+
+. In the left panel, click *Operators*, then click *Installed Operators*.
+
+. On the *Installed Operators* page, click the *{prod}* name.
+
+. On the *Operator details* page, in the *Details* tab, click the *Create instance* link in the *Provided APIs* section.
++
+This navigates you to the *Create CheCluster* page, which contains the configuration needed to create a {prod-short} instance, stored in the `CheCluster` Custom Resource.
+
+. On the *Create CheCluster* page, click *YAML view*.
+
+. In the YAML file, find or add the property to configure. Set the property to a suitable value:
++
+====
+[source,yaml,subs="+quotes"]
+----
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+# ...
+spec:
+  __<component>__:
+    # ...
+      __<property-to-configure>__: __<value>__
+----
+====
+
+. Create the *{prod-checluster}* cluster by using the btn:[Create] button at the end of the page.
+
+. On the *Operator details* page, in the *{prod} Cluster* tab, click the *{prod-checluster}* link.
+
+. Navigate to the *{prod-checluster}* instance using the link displayed under the *{prod} URL* output. 
++
+[NOTE]
+====
+The installation might take more than 5 minutes. The URL appears when the {prod} installation finishes. 
+====
+
+.Verification
+
+. In the left panel, click *Workloads*, then click *ConfigMaps*.
+. On the *ConfigMaps* page, click *{prod-deployment}*.
+. Navigate to the *YAML* tab.
+. Verify that the YAML file contains the configured property and value.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:understanding-the-checluster-custom-resource.adoc[].
+
+* xref:advanced-configuration-options-for-the-che-server-component.adoc[].
