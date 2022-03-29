@@ -9,10 +9,21 @@
 #
 
 # Detect available runner
-. tools/runner.sh
+if command -v podman > /dev/null
+  then RUNNER=podman
+elif command -v docker > /dev/null
+  then RUNNER=docker
+else echo "No installation of podman or docker found in the PATH" ; exit 1
+fi
 
-# Fail on errors and display commands
-set -ex
+# Fail on errors
+set -e
+
+# Pull the image unless using a container defined in environment variable
+[ -z ${CHE_DOCS_IMAGE} ] && ${RUNNER} pull quay.io/eclipse/che-docs
+
+# Display commands
+set -x
 
 ${RUNNER} run --rm -ti \
   --name che-docs \
