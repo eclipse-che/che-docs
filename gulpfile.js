@@ -32,7 +32,7 @@ function generate(done) {
 async function serve(done) {
   connect.server(serverConfig, function () {
     this.server.on('close', done)
-    watch(watchPatterns, series(generate, testlang, testhtml, testimages, testpartials))
+    watch(watchPatterns, series(generate, testlang, testhtml, detect_unused_content))
     if (livereload) watch(this.root).on('change', (filepath) => src(filepath, { read: false }).pipe(livereload()))
   })
 }
@@ -87,10 +87,10 @@ async function testlang() {
   }
 }
 
-async function testimages() {
+async function detect_unused_content() {
   // Report unused images but don't make gulp fail.
   try {
-    const { stdout, stderr } = await exec('./tools/detect-unused-images.sh')
+    const { stdout, stderr } = await exec('./tools/detect-unused-content.sh')
     console.log(stdout, stderr);
   }
   catch (error) {
@@ -98,23 +98,10 @@ async function testimages() {
     return;
   }
 }
-
-async function testpartials() {
-  // Report unused partials but don't make gulp fail.
-  try {
-    const { stdout, stderr } = await exec('./tools/detect-unused-partials.sh')
-    console.log(stdout, stderr);
-  }
-  catch (error) {
-    console.log(error.stdout, error.stderr);
-    return;
-  }
-}
-
 
 exports.default = series(
   parallel(checluster_docs_gen, environment_docs_gen),
   generate,
   serve,
-  parallel(testlang, testhtml, testimages, testpartials)
+  parallel(testlang, testhtml, detect_unused_content)
 );
