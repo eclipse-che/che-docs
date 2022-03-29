@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+#
+# Copyright (c) 2022 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
 
 # Exit on any error
 set -e
@@ -50,16 +58,23 @@ do
 done
 
 # Prepare convert xref to file name into xref to id
-FILE_TO_ID=$(grep -ire '\[id="' "${DESTINATION_ROOT_DIR}"/*/topics/ |  sed -E 's@.?*/(.?*adoc).?*"(.?*)"\]@s#xref:\1#xref:\2#g;@')
+FILE_TO_ID_MAP=$(grep -ire '\[id="' "${DESTINATION_ROOT_DIR}"/*/topics/)
+FILE_TO_ID=$(echo "$FILE_TO_ID_MAP" | sed -E 's@.?*/(.?*adoc).?*"(.?*)"\]@s#xref:\1#xref:\2#g;@')
+FILE_TO_ID_CROSS=$(echo "$FILE_TO_ID_MAP" | sed -E 's@.?*/(.?*adoc).?*"(.?*)"\]@s#xref:(.?*):\1#link:{\\1-url}\2#g;@')
+
+# Convert partial$ and example$ statements
+SUBSTITUTIONS="s@partial\\\$@@g;
+s@example\\\$@examples/@g;
+${FILE_TO_ID}
+${FILE_TO_ID_CROSS}
+"
 
 # Convert include statements using `partial$` and `example$`` in plain AsciiDoc include statements
 shopt -s globstar nullglob
 for file in "${DESTINATION_ROOT_DIR}"/**/*.adoc
 do
-  # Convert partial$ and example$ statements
-  sed -E --in-place 's@partial\$@@g;s@example\$@examples/@g' "$file"
-  # Convert xref:file_name.adoc[] into xref:id[]
-  sed -E -i "${FILE_TO_ID}" "$file"
+  # Substitutions
+  sed -E -i "${SUBSTITUTIONS}" "$file"
 done
 
 # Validate asciidoctor build
