@@ -10,7 +10,7 @@
 
 echo 'Choose the target guide:'
 PS3='Please select the target guide: '
-options=("administration-guide" "contributor-guide" "end-user-guide" "extensions" "installation-guide" "overview")
+options=("administration-guide" "contributor-guide" "end-user-guide" "extensions" "overview")
 select guide in "${options[@]}"
 do
     case $guide in
@@ -27,10 +27,6 @@ do
             break
             ;;
         "extensions")
-            echo "you chose choice $REPLY which is $guide"
-            break
-            ;;
-        "installation-guide")
             echo "you chose choice $REPLY which is $guide"
             break
             ;;
