@@ -1,0 +1,86 @@
+:_content-type: PROCEDURE
+:description: Starting a new workspace with a clone of a Git repository
+:keywords: start-new-workspace, start-a-new-workspace, how-to-start-new-workspace, how-to-start-a-new-workspace, starting-a-new-workspace, clone-git-repository, clone-a-git-repository, how-to-start-workspace, how-to-start-a-workspace
+:navtitle: Starting a new workspace with a clone of a Git repository
+// :page-aliases:
+
+[id="starting-a-new-workspace-with-a-clone-of-a-git-repository_{context}"]
+= Starting a new workspace with a clone of a Git repository
+
+Working with {prod-short} in your browser involves multiple URLs:
+
+* URL of your organization's {prod-short} instance (as part of all the following URLs)
+* URL of the *Workspaces* page of your {prod-short} dashboard (workspace control panel)
+* [.underline]#URLs for starting a new workspace#
+* URLs of your workspaces in use
+
+With {prod-short}, you can visit a URL in your browser to start a new workspace that contains a clone of a Git repository. So you can have your remote origin or fork cloned into a new starting workspace. Or you can have a common repository of a project cloned into a new starting workspace. With such Git providers as GitHub and GitLab, you can also specify the branch for the new starting workspace to checkout.
+
+NOTE: The *Create Workspace* page of your {prod-short} dashboard has the *Git Repo URL ** field as the limited-functionality GUI alternative for entering the URL of a Git repository to start a new workspace.
+
+.Prerequisites
+
+* Your organization has a running instance of {prod-short}.
+* The administrator of your organization's {prod-short} instance or the repository maintainer or the README author has provided you with the URL of your organization's {prod-short} instance that you need as a user to access your {prod-short} dashboard pages and start and manage your workspaces. This URL is a fully qualified domain name (FQDN): `{prod-url}`.
+* Your Git repository maintainer keeps the `devfile.yaml` or `.devfile.yaml` file in the root directory of the Git repository. (For alternative file names and file paths, see xref:optional-parameters-for-the-urls-for-starting-a-new-workspace.adoc[].)
++
+IMPORTANT: Although the devfile enables full functionality of a workspace, you can also start a new workspace by supplying the URL of a Git repository without a devfile. This results in a new workspace with a clone of the Git repository and with the defaults such as the Che-Theia IDE and the Universal Developer Image.
+//provide xrefs to a concept module about the Universal Developer Image and, if applicable, devfile-less defaults for new workspaces. max-cx
++
+TIP: Advanced users can compose and use their own devfiles.
+//add links on "compose" or "devfiles" to relevant sections when those are drafted. max-cx
+* Optional: Private repositories that are hosted on GitHub, GitLab, or Bitbucket require
+.. an authorized application link to be created on the repository-hosting website and
+.. a Kubernetes secret to be applied by the administrator of your organization's {prod-short} instance.
+//two inline links to be added into this par in the next, separate PR. max-cx
+//* "Kubernetes" rather than {platforms-name} requested by Mario. max-cx
+
+.Procedure
+
+. Optional: visit your {prod-short} dashboard page to authenticate as a {prod-short} user to your organization's instance of {prod-short}.
+
+. Visit the URL to start a new workspace using the basic syntax:
+[source,subs="+quotes,+attributes"]
++
+----
+{prod-url}#__<git_repository_url>__
+----
++
+[TIP]
+====
+You can extend this URL with optional parameters:
+[source,subs="+quotes,+attributes"]
+----
+{prod-url}#__<git_repository_url>__?__<optional_parameters>__ <1>
+----
+<1> See xref:optional-parameters-for-the-urls-for-starting-a-new-workspace.adoc[].
+====
++
+.URL syntax for starting a new workspace that contains a clone of a GitHub-hosted repository
+====
+* `pass:c,a,q[{prod-url}#https://github.com/__<user_or_org>__/__<repository>__]` starts a new workspace with a clone of the default branch.
+* `pass:c,a,q[{prod-url}#https://github.com/__<user_or_org>__/__<repository>__/tree/__<branch_name>__]` starts a new workspace with a clone of the specified branch.
+* `pass:c,a,q[{prod-url}#https://github.com/__<user_or_org>__/__<repository>__/pull/__<pull_request_id>__]` starts a new workspace with a clone of the branch of the pull request.
+====
++
+After you enter the URL to start a new workspace in a browser tab, it renders the workspace-starting page in *Progress*.
++
+When the new workspace is ready, the workspace GUI loads in the browser tab.
++
+A clone of the Git repository is present in the filesystem of the new workspace.
++
+NOTE: Each workspace has a unique URL: `{prod-url}#workspace__<unique_url>__`.
+
+[TIP]
+====
+To add a URL as a bookmark in a browser:
+
+* In Mozilla Firefox, go to *☰* *>* *Bookmarks* *>* *Manage bookmarks Ctrl+Shift+O* *>* *Bookmarks Toolbar* *>* *Organize* *>* *Add bookmark*.
+
+* In Google Chrome, go to *⋮* *>* *Bookmarks* *>* *Bookmark manager* *>* *Bookmarks bar* *>* *⋮* *>* *Add new bookmark*.
+====
+
+.Additional resources
+
+* xref:optional-parameters-for-the-urls-for-starting-a-new-workspace.adoc[]
+* xref:basic-actions-you-can-perform-on-a-workspace.adoc[]
