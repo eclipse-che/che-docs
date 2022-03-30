@@ -21,25 +21,14 @@ This documentation includes a guide describing how to make your own telemetry cl
 
 * Duration of a workspace utilization
 * User-driven actions such as file editing, committing, and pushing to remote repositories.
-* The list of plug-ins enabled in a workspace
 * Programming languages and devfiles used in workspaces.
 
 == How it works
 [id="how-it-works_{context}"]
 
-When a {prod-short} workspace starts, the `che-theia` container starts the telemetry plug-in, which is responsible for sending telemetry events to a backend. If the `$CHE_WORKSPACE_TELEMETRY_BACKEND_PORT` environment variable was set in the workspace Pod, the telemetry plug-in will send events to a backend listening at that port.
-
-If the {prod-short} workspace has a telemetry back-end container running, and it is listening on `$CHE_WORKSPACE_TELEMETRY_BACKEND_PORT`, it takes the events sent from the telemetry plug-in, turns them into the backend-specific representation of events, and sends them to the configured analytics backend (for example, Segment or Woopra).
+When a {devworkspace} starts, the `che-theia` container starts the telemetry plug-in which is responsible for sending telemetry events to a backend. If the `$DEVWORKSPACE_TELEMETRY_BACKEND_PORT` environment variable is set in the {devworkspace} Pod, the telemetry plug-in will send events to a backend listening at that port. The backend turns received events into a backend-specific representation of the events, and sends them to the configured analytics backend (for example, Segment or Woopra).
 
 image::telemetry/telemetry_diagram.png[]
-
-=== {devworkspace} telemetry
-
-Telemetry for {devworkspace}s works similarly to telemetry for {prod-short} workspaces, with the main differences being:
-
-. A {devworkspace} telemetry plug-in listens for events on `$DEVWORKSPACE_TELEMETRY_BACKEND_PORT` instead of `$CHE_WORKSPACE_TELEMETRY_BACKEND_PORT`.
-
-. The {devworkspace} telemetry plug-in requires version 0.0.34 or later of the link:https://github.com/che-incubator/che-workspace-telemetry-client/tree/master/backend-base[telemetry plug-in dependency].
 
 == Events sent to the backend by the Che-Theia telemetry plug-in
 
