@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
 
-K8S_CLI=${K8S_CLI:-kubectl}                                                      # {orch-cli}
+K8S_CLI=${K8S_CLI:-oc}                                                           # {orch-cli}
 PRODUCT_DEPLOYMENT_NAME=${PRODUCT_DEPLOYMENT_NAME:-che}                          # {prod-deployment}
 PRODUCT_ID=${PRODUCT_ID:-eclipse-che}                                            # {prod-id}
 INSTALLATION_NAMESPACE=${INSTALLATION_NAMESPACE:-eclipse-che}                    # {prod-namespace}
 CHE_CLUSTER_CR_NAME=${CHE_CLUSTER_CR_NAME:-eclipse-che}                          # {prod-checluster}
-IDENTITY_PROVIDER_DEPLOYMENT_NAME=${IDENTITY_PROVIDER_DEPLOYMENT_NAME:-keycloak} # {?}
+IDENTITY_PROVIDER_DEPLOYMENT_NAME=${IDENTITY_PROVIDER_DEPLOYMENT_NAME:-keycloak} # {identity-provider-id}
 
 ALL_USERS_DUMP="${PRODUCT_ID}"-users.txt
 DB_DUMP="${PRODUCT_ID}"-db.sql

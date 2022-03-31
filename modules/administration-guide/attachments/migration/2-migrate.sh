@@ -3,7 +3,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-K8S_CLI=${K8S_CLI:-kubectl}                                                      # {orch-cli}
+K8S_CLI=${K8S_CLI:-oc}                                                           # {orch-cli}
 PRODUCT_ID=${PRODUCT_ID:-eclipse-che}                                            # {prod-id}
 INSTALLATION_NAMESPACE=${INSTALLATION_NAMESPACE:-eclipse-che}                    # {prod-namespace}
 
