@@ -7,7 +7,7 @@
 [id="setting-up-the-bitbucket-application-link_{context}"]
 = Setting up the Bitbucket application link
 
-To be able to access a private Git repository that is hosted using Bitbucket, set up a Bitbucket application link as follows:
+Set up a Bitbucket application link as follows:
 
 .Prerequisites
 
@@ -17,7 +17,7 @@ To be able to access a private Git repository that is hosted using Bitbucket, se
 
 .Procedure
 
-. On a command line, generate the `privatepkcs8-stripped.pem` key in the required format:
+. On a command line, generate the `privatepkcs8-stripped.pem` key in the required format and with Base64 encoding:
 +
 [source,subs="+quotes,+attributes,+macros"]
 ----
@@ -25,8 +25,10 @@ $ openssl genrsa -out private.pem 2048
 
 $ openssl pkcs8 -topk8 -inform pem -outform pem -nocrypt -in private.pem -out privatepkcs8.pem
 
-$ cat privatepkcs8.pem | sed 's/-----BEGIN PRIVATE KEY-----//g' |  sed 's/-----END PRIVATE KEY-----//g' | tr -d '\n' > privatepkcs8-stripped.pem
+$ cat privatepkcs8.pem | sed 's/-----BEGIN PRIVATE KEY-----//g' |  sed 's/-----END PRIVATE KEY-----//g' | tr -d '\n' | base64 > privatepkcs8-stripped.pem
 ----
+
+. Save the Base64-encoded `privatepkcs8-stripped.pem` file for the next procedure (Applying the Bitbucket application link Secret).
 
 . On a command line, generate the `public-stripped.pub` key in the required format:
 +
@@ -38,19 +40,23 @@ $ cat public.pub | sed 's/-----BEGIN PUBLIC KEY-----//g' | sed 's/-----END PUBLI
 
 ----
 
-. On a command line, generate a consumer key:
+. On a command line, generate a Base64-encoded consumer key:
 +
 [source,subs="+quotes,+attributes,+macros"]
 ----
 $ openssl rand -base64 24 > bitbucket-consumer-key
 ----
 
-. On a command line, generate a shared secret:
+. Save the Base64-encoded `bitbucket_consumer_key` file for the next procedure (Applying the Bitbucket application link Secret).
+
+. On a command line, generate a Base64-encoded shared secret:
 +
 [source,subs="+quotes,+attributes,+macros"]
 ----
 $ openssl rand -base64 24 > bitbucket-shared-secret
 ----
+
+. Save the Base64-encoded `bitbucket-shared-secret` file for the next procedure (Applying the Bitbucket application link Secret).
 
 . Go to *Administration* *>* *Application Links*
 //I can't find *Administration* when I am logged in to Bitbucket. max-cx
@@ -89,9 +95,6 @@ $ openssl rand -base64 24 > bitbucket-shared-secret
 
 . Click *Continue*.
 
-. Give the generated `privatepkcs8-stripped.pem`, `bitbucket_consumer_key`, and `bitbucket-shared-secret` files to the administrator of the {prod-short} instance for your organization. The administrator will need these files when xref:administration-guide:applying-the-bitbucket-application-link-secret.adoc[applying the Bitbucket application link Secret].
-
 .Additional resources
 
-* link:https://confluence.atlassian.com/bitbucketserver/link-to-other-applications-1018764620.html[[Atlassian Documentation: Link to other applications]
-* xref:administration-guide:applying-the-bitbucket-application-link-secret.adoc[]
+* link:https://confluence.atlassian.com/bitbucketserver/link-to-other-applications-1018764620.html[Atlassian Documentation: Link to other applications]
