@@ -12,16 +12,24 @@ OLM_STABLE_CHANNEL=${OLM_STABLE_CHANNEL:-stable}                                
 OLM_CATALOG_SOURCE=${OLM_CATALOG_SOURCE:-community-operators}                    # {prod-stable-channel-catalog-source}
 OLM_PACKAGE=${OLM_PACKAGE:-eclipse-che}                                          # {prod-stable-channel-package}
 
-IDENTITY_PROVIDER_DEPLOYMENT_NAME=${IDENTITY_PROVIDER_DEPLOYMENT_NAME:-keycloak} # {?}
+IDENTITY_PROVIDER_DEPLOYMENT_NAME=${IDENTITY_PROVIDER_DEPLOYMENT_NAME:-keycloak} # {identity-provider-id}
 
 deleteOperatorCSV() {
-    echo "[INFO] Deleting operator cluster service version."
-    "${K8S_CLI}" delete csv "$("${K8S_CLI}" get subscription "${PRODUCT_ID}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.status.currentCSV}")" -n "${INSTALLATION_NAMESPACE}"
+    if "${K8S_CLI}" get subscription "${PRODUCT_ID}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 ; then
+        echo "[INFO] Deleting operator cluster service version."
+        "${K8S_CLI}" delete csv "$("${K8S_CLI}" get subscription "${PRODUCT_ID}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.status.currentCSV}")" -n "${INSTALLATION_NAMESPACE}"
+    else
+        echo "[INFO] Skipping CSV deletion. No ${PRODUCT_ID} operator subscription found."
+    fi
 }
 
 deleteOperatorSubscription() {
-    echo "[INFO] Deleting ${PRODUCT_ID} operator subscription."
-    "${K8S_CLI}" delete subscription "${PRODUCT_ID}" -n "${INSTALLATION_NAMESPACE}"
+    if "${K8S_CLI}" get subscription "${PRODUCT_ID}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 ; then
+        echo "[INFO] Deleting ${PRODUCT_ID} operator subscription."
+        "${K8S_CLI}" delete subscription "${PRODUCT_ID}" -n "${INSTALLATION_NAMESPACE}"
+    else
+        echo "[INFO] Skipping subscription deletion. No ${PRODUCT_ID} operator subscription found."
+    fi
 }
 
 patchCheCluster() {
@@ -34,9 +42,9 @@ patchCheCluster() {
 
 cleanupIdentityProviderObjects() {
     echo "[INFO] Deleting ${IDENTITY_PROVIDER_DEPLOYMENT_NAME} resources."
-    "${K8S_CLI}" delete route "${IDENTITY_PROVIDER_DEPLOYMENT_NAME}" -n "${INSTALLATION_NAMESPACE}"
-    "${K8S_CLI}" delete service "${IDENTITY_PROVIDER_DEPLOYMENT_NAME}" -n "${INSTALLATION_NAMESPACE}"
-    "${K8S_CLI}" delete deployment "${IDENTITY_PROVIDER_DEPLOYMENT_NAME}" -n "${INSTALLATION_NAMESPACE}"
+    "${K8S_CLI}" delete route "${IDENTITY_PROVIDER_DEPLOYMENT_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Route ${IDENTITY_PROVIDER_DEPLOYMENT_NAME} not found."
+    "${K8S_CLI}" delete service "${IDENTITY_PROVIDER_DEPLOYMENT_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Service ${IDENTITY_PROVIDER_DEPLOYMENT_NAME} not found."
+    "${K8S_CLI}" delete deployment "${IDENTITY_PROVIDER_DEPLOYMENT_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Deployment ${IDENTITY_PROVIDER_DEPLOYMENT_NAME} not found."
 }
 
 createOperatorSubscription() {
@@ -49,14 +57,14 @@ createOperatorSubscription() {
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-name: "${PRODUCT_ID}"
-namespace: openshift-operators
+    name: "${PRODUCT_ID}"
+    namespace: openshift-operators
 spec:
-channel: "${OLM_STABLE_CHANNEL}"
-installPlanApproval: Automatic
-name: "${OLM_PACKAGE}"
-source: "${OLM_CATALOG_SOURCE}"
-sourceNamespace: openshift-marketplace
+    channel: "${OLM_STABLE_CHANNEL}"
+    installPlanApproval: Automatic
+    name: "${OLM_PACKAGE}"
+    source: "${OLM_CATALOG_SOURCE}"
+    sourceNamespace: openshift-marketplace
 EOF
 
 }

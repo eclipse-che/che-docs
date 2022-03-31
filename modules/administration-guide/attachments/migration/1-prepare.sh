@@ -1,5 +1,7 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
 
 K8S_CLI=${K8S_CLI:-oc}                                                           # {orch-cli}
 PRODUCT_DEPLOYMENT_NAME=${PRODUCT_DEPLOYMENT_NAME:-che}                          # {prod-deployment}
@@ -49,7 +51,7 @@ getUsers() {
   refreshToken
   echo "[INFO] Dumping users list in file ${ALL_USERS_DUMP}"
   ALL_USERS=$(curl -ks  -H "Authorization: bearer ${IDENTITY_PROVIDER_TOKEN}" "${IDENTITY_PROVIDER_URL}/${IDENTITY_PROVIDER_USERNAME}/realms/${IDENTITY_PROVIDER_REALM}/users")
-  ALL_USERS_IDS=($(echo "${ALL_USERS}" | jq ".[] | .id" | tr "\r\n" " "))
+  IFS=" " read -r -a ALL_USERS_IDS <<< "$(echo "${ALL_USERS}" | jq ".[] | .id" | tr "\r\n" " ")"
 
   for USER_ID in "${ALL_USERS_IDS[@]}"; do
       refreshToken

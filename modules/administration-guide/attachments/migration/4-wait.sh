@@ -4,21 +4,26 @@ set -o nounset
 set -o pipefail
 
 K8S_CLI=${K8S_CLI:-oc}                                                           # {orch-cli}
-PRODUCT_ID=${PRODUCT_ID:-eclipse-che}                                            # {prod-id}
+PRODUCT_DEPLOYMENT_NAME=${PRODUCT_DEPLOYMENT_NAME:-che}                          # {prod-deployment}
 INSTALLATION_NAMESPACE=${INSTALLATION_NAMESPACE:-eclipse-che}                    # {prod-namespace}
-CHE_CLUSTER_CR_NAME=${CHE_CLUSTER_CR_NAME:-eclipse-che}                          # {prod-checluster}
 
-OLM_STABLE_CHANNEL=${OLM_STABLE_CHANNEL:-stable}                                 # {prod-stable-channel}
-OLM_CATALOG_SOURCE=${OLM_CATALOG_SOURCE:-community-operators}                    # {prod-stable-channel-catalog-source}
-OLM_PACKAGE=${OLM_PACKAGE:-eclipse-che}                                          # {prod-stable-channel-package}
+PRODUCT_OPERATOR_NAME=${PRODUCT_OPERATOR_NAME:-che-operator}                     # {prod-operator}
+OPERATOR_NAMESPACE=${OPERATOR_NAMESPACE:-openshift-operators}                    # {?}
 
-IDENTITY_PROVIDER_DEPLOYMENT_NAME=${IDENTITY_PROVIDER_DEPLOYMENT_NAME:-keycloak} # {?}
+waitForComponent() {
+  component=$1
+  namespace=$2
+  echo "[INFO] Waiting for ${component} Pod to be created"
+  while [[ $("${K8S_CLI}" get pod -l app.kubernetes.io/component="${component}" -n "${namespace}" -o go-template='{{len .items}}') == 0 ]]
+  do
+    echo "[INFO] Waiting..."
+    sleep 10
+  done
+  echo "[INFO] Waiting for ${component} Pod to be ready"
+  "${K8S_CLI}" wait --for=condition=ready pod -l app.kubernetes.io/component="${component}" -n "${namespace}" --timeout=120s
+}
 
-while [[ $({orch-cli} get pod -l app.kubernetes.io/component={k8s-component} -n {k8s-namespace} -o go-template='{{len .items}}') == 0 ]]
-do
-  echo "Waiting..."
-  sleep 10s
-done
-{orch-cli} wait --for=condition=ready pod -l app.kubernetes.io/component={k8s-component} -n {k8s-namespace} --timeout=120s
+waitForComponent "${PRODUCT_DEPLOYMENT_NAME}" "${INSTALLATION_NAMESPACE}"
+waitForComponent "${PRODUCT_OPERATOR_NAME}" "${OPERATOR_NAMESPACE}"
 
 echo "[INFO] Done."
