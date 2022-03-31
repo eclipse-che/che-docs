@@ -1,24 +1,23 @@
 [source,yaml]
 ----
-apiVersion: 1.0.0
+schemaVersion: 2.1.0
 metadata:
-  generateName: nodejs-web-app-
-projects:
-  -
-    name: react-web-app
-    source:
-      type: git
-      location: "https://github.com/che-samples/react-web-app"
+  name: bash
 components:
-  -
-    type: chePlugin
-    id: vscode/typescript-language-features/latest
-  -
-    type: dockerimage
-    alias: nodejs
-    image: quay.io/eclipse/che-nodejs12-community:ce0526f
-    endpoints:
-      - name: 'nodejs'
-        port: 3000
-    mountSources: true
+  - name: tools
+    container:
+      image: quay.io/devfile/universal-developer-image:ubi8-0e189d9
+      memoryLimit: 4Gi
+
+commands:
+  - id: run-main-script
+    exec:
+      label: "Run main.sh script"
+      component: tools
+      workingDir: '${PROJECT_SOURCE}'
+      commandLine: |
+        ./main.sh
+      group:
+        kind: run
+        isDefault: true
 ----
