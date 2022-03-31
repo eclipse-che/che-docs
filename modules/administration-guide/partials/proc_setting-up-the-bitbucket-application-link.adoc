@@ -17,8 +17,9 @@ To be able to access a private Git repository that is hosted using Bitbucket, se
 
 .Procedure
 
-. On a command line, generate the *privatepkcs8-stripped.pem* key in the required format:
+. On a command line, generate the `privatepkcs8-stripped.pem` key in the required format:
 +
+[source,subs="+quotes,+attributes,+macros"]
 ----
 $ openssl genrsa -out private.pem 2048
 
@@ -27,8 +28,9 @@ $ openssl pkcs8 -topk8 -inform pem -outform pem -nocrypt -in private.pem -out pr
 $ cat privatepkcs8.pem | sed 's/-----BEGIN PRIVATE KEY-----//g' |  sed 's/-----END PRIVATE KEY-----//g' | tr -d '\n' > privatepkcs8-stripped.pem
 ----
 
-. On a command line, generate the *public-stripped.pub* key in the required format:
+. On a command line, generate the `public-stripped.pub` key in the required format:
 +
+[source,subs="+quotes,+attributes,+macros"]
 ----
 $ openssl rsa -in private.pem -pubout > public.pub
 
@@ -38,12 +40,14 @@ $ cat public.pub | sed 's/-----BEGIN PUBLIC KEY-----//g' | sed 's/-----END PUBLI
 
 . On a command line, generate a consumer key:
 +
+[source,subs="+quotes,+attributes,+macros"]
 ----
 $ openssl rand -base64 24 > bitbucket-consumer-key
 ----
 
 . On a command line, generate a shared secret:
 +
+[source,subs="+quotes,+attributes,+macros"]
 ----
 $ openssl rand -base64 24 > bitbucket-shared-secret
 ----
@@ -63,32 +67,31 @@ $ openssl rand -base64 24 > bitbucket-shared-secret
 
 . Enter *{prod-short}* as the *Service Provider Name*.
 
-. Paste the content of the *bitbucket-consumer-key* file as the *Consumer key*.
+. Paste the content of the `bitbucket-consumer-key` file as the *Consumer key*.
 
-. Paste the content of the *bitbucket-shared-secret* file as the *Shared secret*.
+. Paste the content of the `bitbucket-shared-secret` file as the *Shared secret*.
 
 . Enter `__<bitbucket_server_url>__/plugins/servlet/oauth/request-token` as the *Request Token URL*.
 
 . Enter `__<bitbucket_server_url>__/plugins/servlet/oauth/access-token` as the *Access token URL*.
 
-. Enter `__<bitbucket_server_url>__/plugins/servlet/oauth/access-token` as the *Authorize URL*.
+. Enter `__<bitbucket_server_url>__/plugins/servlet/oauth/authorize` as the *Authorize URL*.
 
 . Check the *Create incoming link* checkbox.
 
 . Click *Continue*.
 
-. Paste the content of the *bitbucket_consumer_key* file as the *Consumer Key*.
+. Paste the content of the `bitbucket_consumer_key` file as the *Consumer Key*.
 
 . Enter *{prod-short}* as the *Consumer name*.
 
-. Paste the content of the *public-stripped.pub* file as the *Public Key*.
+. Paste the content of the `public-stripped.pub` file as the *Public Key*.
 
 . Click *Continue*.
 
-. Give the generated *privatepkcs8-stripped.pem* and *bitbucket_consumer_key* files to the administrator of the {prod-short} instance for your organization. The administrator will need these files when xref:administration-guide:applying-the-bitbucket-application-link-secret.adoc[applying the Bitbucket application link Secret].
+. Give the generated `privatepkcs8-stripped.pem`, `bitbucket_consumer_key`, and `bitbucket-shared-secret` files to the administrator of the {prod-short} instance for your organization. The administrator will need these files when xref:administration-guide:applying-the-bitbucket-application-link-secret.adoc[applying the Bitbucket application link Secret].
 
 .Additional resources
 
-* link:https://confluence.atlassian.com/adminjiraserver/using-applinks-to-link-to-other-applications-938846918.html[Atlassian Documentation: Link to other applications]
-
+* link:https://confluence.atlassian.com/bitbucketserver/link-to-other-applications-1018764620.html[[Atlassian Documentation: Link to other applications]
 * xref:administration-guide:applying-the-bitbucket-application-link-secret.adoc[]
