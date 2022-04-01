@@ -32,7 +32,7 @@ function generate(done) {
 async function serve(done) {
   connect.server(serverConfig, function () {
     this.server.on('close', done)
-    watch(watchPatterns, series(generate, testlang, testhtml, detect_unused_content))
+    watch(watchPatterns, series(generate, testlang, testhtml, detect_unused_content, antora_to_plain_asciidoc))
     if (livereload) watch(this.root).on('change', (filepath) => src(filepath, { read: false }).pipe(livereload()))
   })
 }
@@ -99,9 +99,21 @@ async function detect_unused_content() {
   }
 }
 
+async function antora_to_plain_asciidoc() {
+  // Report unused images but don't make gulp fail.
+  try {
+    const { stdout, stderr } = await exec('./tools/antora-to-plain-asciidoc.sh')
+    console.log(stdout, stderr);
+  }
+  catch (error) {
+    console.log(error.stdout, error.stderr);
+    return;
+  }
+}
+
 exports.default = series(
   parallel(checluster_docs_gen, environment_docs_gen),
   generate,
   serve,
-  parallel(testlang, testhtml, detect_unused_content)
+  parallel(testlang, testhtml, detect_unused_content, antora_to_plain_asciidoc)
 );
