@@ -6,9 +6,7 @@ This section describes how to use the Prometheus to collect, store, and query me
 
 .Prerequisites
 
-* The link:https://github.com/devfile/devworkspace-operator/blob/v0.10.0/deploy/deployment/kubernetes/objects/devworkspace-controller-metrics.Service.yaml[`devworkspace-controller-metrics` service] is exposing metrics on port `8443`.
-
-* The `devworkspace-webhookserver` service is exposing metrics on port `9443`. By default, the service exposes metrics on port `9443`.
+* The `devworkspace-controller-metrics` service and `devworkspace-webhookserver` service is exposing metrics on port `8443` and `9443` respecitvely. This is the default configuration.
 
 * Prometheus 2.26.0 or later is running. The Prometheus console is running on port `9090` with a corresponding *service* and *route*. See link:https://prometheus.io/docs/introduction/first_steps/[First steps with Prometheus].
 
@@ -37,7 +35,7 @@ rules:
 +
 .ClusterRoleBinding example
 ====
-[source,yaml,subs="+attributes"]
+[source,yaml,subs="+quotes,+attributes,+macros"]
 ----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -45,20 +43,24 @@ metadata:
   name: devworkspace-controller-metrics-binding
 subjects:
   - kind: ServiceAccount
-    name: <ServiceAccount name associated with the Prometheus Pod>
-    namespace: <Prometheus namespace>
+    name: __<ServiceAccount name>__           <1>
+    namespace: __<Prometheus {orch-namespace}>__     <2>
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: devworkspace-controller-metrics-reader
 ----
+
+<1> Name of the ServiceAccount associated with the Prometheus Pod.
+<2> The {orch-namespace} in which Prometheus is running in.
+
 ====
 
 . Configure Prometheus to scrape metrics from the `8443` port exposed by the `devworkspace-controller-metrics` service, and `9443` port exposed by the `devworkspace-webhookserver` service.
 +
 .Prometheus configuration example
 ====
-[source,yaml,subs="+attributes"]
+[source,yaml,subs="+quotes,+attributes,+macros"]
 ----
 apiVersion: v1
 kind: ConfigMap
@@ -71,29 +73,32 @@ data:
         evaluation_interval: 5s             <2>
       scrape_configs:                       <3>
         - job_name: 'DevWorkspace'
+          scheme: https
           authorization:
             type: Bearer
             credentials_file: '/var/run/secrets/kubernetes.io/serviceaccount/token'
           tls_config:
             insecure_skip_verify: true
           static_configs:
-            - targets: ['devworkspace-controller-metrics:8443']  <4>
+            - targets: ['__<devworkspace-controller-metrics service host>__:8443']  <4>
         - job_name: 'DevWorkspace webhooks'
+          scheme: https
           authorization:
             type: Bearer
             credentials_file: '/var/run/secrets/kubernetes.io/serviceaccount/token'
           tls_config:
             insecure_skip_verify: true
           static_configs:
-            - targets: ['devworkspace-webhookserver:9443']  <5>
+            - targets: ['__<devworkspace-webhookserver service host>__:9443']  <5>
 ----
-====
 
 <1> Rate at which a target is scraped.
 <2> Rate at which recording and alerting rules are re-checked.
 <3> Resources that Prometheus monitors. In the default configuration, two jobs (`DevWorkspace` and `DevWorkspace webhooks`), scrape the time series data exposed by the `devworkspace-controller-metrics` and `devworkspace-webhookserver` services.
 <4> Scrape metrics from the `8443` port.
 <5> Scrape metrics from the `9443` port.
+
+====
 
 .Verification steps
 
