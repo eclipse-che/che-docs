@@ -10,12 +10,14 @@
 For the URLs for starting a new workspace, the following optional parameters provide an extra layer of basic workspace configuration in addition to the devfile.
 //here link to a section about the devfile. max-cx
 
+When you start a workspace, {prod-short} configures the workspace according to the instructions in the devfile. When you use a URL to start a new workspace, you can append optional parameters to the URL that further configure the workspace. You can use these parameters to specify a workspace IDE, start duplicate workspaces, and specify a devfile file name or path.
+
 == URL parameter concatenation
 
 The URL for starting a new workspace supports concatenation of multiple URL parameters by using `&` with the following URL syntax:
-[source,subs="+quotes,+attributes"]
+[source,subs="+quotes,+attributes,+macros"]
 ----
-{prod-url}#__<git_repository_url>__?__<url_parameter_1>__&__<url_parameter_2>__&__<url_parameter_3>__
+pass:c,a,q[{prod-url}]#__<git_repository_url>__?__<url_parameter_1>__&__<url_parameter_2>__&__<url_parameter_3>__
 ----
 
 == URL parameter for the workspace IDE
@@ -26,29 +28,29 @@ The URL parameter for specifying another supported IDE is `che-editor=__<editor_
 
 The URL for starting a new workspace has the following syntax with the `che-editor=__<editor_key>__` parameter:
 
-[source,subs="+quotes,+attributes"]
+[source,subs="+quotes,+attributes,+macros"]
 ----
-{prod-url}#__<git_repository_url>__?che-editor=__<editor_key>__
+pass:c,a,q[{prod-url}]#__<git_repository_url>__?che-editor=__<editor_key>__
 ----
 
-.`__<editor_key>__` values for supported IDEs
+.The `__<editor_key>__` values for the supported IDEs
 |===
 | IDE | `__<editor_key>__` value | Note
 
 ifeval::["{project-context}" == "che"]
 | link:https://github.com/eclipse-che/che-theia[Che-Theia]
 | `eclipse/che-theia/latest`
-| This is the default IDE with link:https://github.com/che-incubator/chectl/[chectl stable]. This IDE loads in a new workspace without entering this URL parameter.
+| When using the `stable` link:https://github.com/che-incubator/chectl/[chectl] channel, this IDE loads as a default in a new workspace, without having to enter this URL parameter.
 
 | link:https://github.com/eclipse-che/che-theia[Che-Theia]
 | `eclipse/che-theia/next`
-| This is the default IDE with link:https://github.com/che-incubator/chectl/[chectl next]. This IDE loads in a new workspace without entering this URL parameter.
+| When using the `next` link:https://github.com/che-incubator/chectl/[chectl] channel, this IDE loads as a default in a new workspace, without having to enter this URL parameter.
 endif::[]
 
 ifeval::["{project-context}" == "crw"]
 | link:https://github.com/eclipse-che/che-theia[Che-Theia]
 |`eclipse/che-theia/latest`
-| This is the default IDE: it loads in a new workspace without this URL parameter.
+| This is the default IDE that loads in a new workspace without this URL parameter.
 endif::[]
 
 | link:https://github.com/che-incubator/che-code[Che-Code]
@@ -69,28 +71,28 @@ endif::[]
 
 Visiting a URL for starting a new workspace results in a workspace that is based on a combination of a devfile and a linked Git repository.
 
-In some situations, you may need to start one or more workspaces from the same URL for starting a new workspace, resulting in workspaces that are duplicates in terms of the same devfile and the same linked Git repository. The URL parameter for starting a duplicate workspace is `new`.
+In some situations, you may need to have multiple workspaces that are duplicates in terms of the devfile and the linked Git repository. You can do this by visiting the same URL for starting a new workspace with a URL parameter. The URL parameter for starting a duplicate workspace is `new`.
 
 The URL for starting a new workspace has the following syntax with the `new` parameter:
 
-[source,subs="+quotes,+attributes"]
+[source,subs="+quotes,+attributes,+macros"]
 ----
-{prod-url}#__<git_repository_url>__?new
+pass:c,a,q[{prod-url}]#__<git_repository_url>__?new
 ----
 
-NOTE: Attempting to reuse the devfile and linked Git repository without the `new` URL parameter to start a new workspace in addition to a workspace that already exists results in an error message.
+NOTE: If you currently have a workspace that you started using a URL, then visiting the URL again without the `new` URL parameter results in an error message.
 
 == URL parameter for the devfile file name
 
-When you visit a URL for starting a new workspace, {prod-short} searches the linked Git repository for a devfile with the file name `.devfile.yaml` or `devfile.yaml`. So the devfile in the linked Git repository must follow this convention.
+When you visit a URL for starting a new workspace, {prod-short} searches the linked Git repository for a devfile with the file name `.devfile.yaml` or `devfile.yaml`. The devfile in the linked Git repository must follow this file-naming convention.
 
 In some situations, you may need to specify a different, unconventional file name for the devfile. The URL parameter for specifying an unconventional file name of the devfile is `df=__<filename>__.yaml`.
 
 The URL for starting a new workspace has the following syntax with the `df=__<filename>__.yaml` parameter:
 
-[source,subs="+quotes,+attributes"]
+[source,subs="+quotes,+attributes,+macros"]
 ----
-{prod-url}#__<git_repository_url>__?df=__<filename>__.yaml <1>
+pass:c,a,q[{prod-url}]#__<git_repository_url>__?df=__<filename>__.yaml <1>
 ----
 <1> `__<filename>__.yaml` is an unconventional file name of the devfile in the linked Git repository.
 
@@ -98,14 +100,14 @@ TIP: The `df=__<filename>__.yaml` parameter also has a long version: `devfilePat
 
 == URL parameter for the devfile file path
 
-When you visit a URL for starting a new workspace, {prod-short} searches the root directory of the linked Git repository for a devfile (with the file name `.devfile.yaml` or `devfile.yaml`). So the file path of the devfile in the linked Git repository must follow this convention.
+When you visit a URL for starting a new workspace, {prod-short} searches the root directory of the linked Git repository for a devfile (with the file name `.devfile.yaml` or `devfile.yaml`). The file path of the devfile in the linked Git repository must follow this path convention.
 
 In some situations, you may need to specify a different, unconventional file path for the devfile in the linked Git repository. The URL parameter for specifying an unconventional file path of the devfile is `devfilePath=__<relative_file_path>__`.
 
 The URL for starting a new workspace has the following syntax with the `devfilePath=__<relative_file_path>__` parameter:
 
-[source,subs="+quotes,+attributes"]
+[source,subs="+quotes,+attributes,+macros"]
 ----
-{prod-url}#__<git_repository_url>__?devfilePath=__<relative_file_path>__ <1>
+pass:c,a,q[{prod-url}]#__<git_repository_url>__?devfilePath=__<relative_file_path>__ <1>
 ----
 <1> `__<relative_file_path>__` is an unconventional file path of the devfile in the linked Git repository.
