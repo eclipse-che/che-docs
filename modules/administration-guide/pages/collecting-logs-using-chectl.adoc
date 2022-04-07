@@ -5,11 +5,38 @@
 [id="collecting-logs-using-{prod-cli}_{context}"]
 = Collecting logs using {prod-cli}
 
+An installation of {prod} consists of several containers running in the {orch-name} cluster. While it is possible to manually collect logs from each running container, `{prod-cli}` provides commands which automate the process.
+
 Following commands are available to collect {prod} logs from the {orch-name} cluster using the `{prod-cli}` tool:
 
-`{prod-cli} server:deploy`:: 
-Automatically starts collecting logs during {prod-short} installation.
-
 `{prod-cli} server:logs`:: 
-Collects existing {prod} server logs.
+Collects existing {prod} server logs and stores them in a directory on the local machine. By default, logs are downloaded to a temporary directory on the machine. However, this can be overwritten by specifying the `-d` parameter. For example, to download Che logs to the `/home/user/che-logs/` directory, use the command
++
+[source,shell,subs="+attributes"]
+----
+{prod-cli} server:logs -d /home/user/che-logs/
+----
++
+When run, `{prod-cli} server:logs` prints a message in the console specifying the directory that will store the log files:
++
+[subs="+attributes"]
+----
+{prod} logs will be available in '/tmp/chectl-logs/1648575098344'
+----
++
+If {prod} is installed in a non-default {orch-namespace}, `{prod-cli} server:logs` requires the `-n <NAMESPACE>` paremeter, where `<NAMESPACE>` is the {platforms-namespace} in which {prod} was installed. For example, to get logs from {prod-short} in the `my-namespace` {orch-namespace}, use the command
++
+[source,shell,subs="+attributes"]
+----
+{prod-cli} server:logs -n my-namespace
+----
 
+`{prod-cli} server:deploy`:: 
+Logs are automatically collected during the {prod-short} installation when installed using `{prod-cli}`. As with `{prod-cli} server:logs`, the directory logs are stored in can be specified using the `-d` parameter.
+
+
+ifeval::["{project-context}" == "che"]
+.Additional resources
+
+* See: link:https://github.com/che-incubator/{prod-cli}/#chectl-serverlogs[`{prod-cli}` reference documentation].
+endif::[]
