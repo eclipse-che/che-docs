@@ -9,27 +9,16 @@ This section describes how to view {prod-short} metrics on Grafana dashboards.
 
 * Prometheus is collecting metrics on the {prod-short} cluster. See xref:collecting-che-metrics-with-prometheus_{context}[].
 
-* Grafana 6.0 or above is running on port `3000` with a corresponding *service* and *route*. See link:https://grafana.com/docs/installation/[Installing Grafana].
+* Grafana 6.0 or above is running on port `3000` with a corresponding *service* and *route*. See link:https://grafana.com/docs/grafana/latest/installation/kubernetes/[Installing Grafana].
 
 
 .Procedure
 
-. Deploy {prod-short}-specific dashboards on Grafana using the `che-monitoring.yaml` configuration file.
-+
-Three ConfigMaps are used to configure Grafana:
-+
-* `grafana-datasources` -- configuration for Grafana data source, a Prometheus endpoint
-* `grafana-dashboards` -- configuration of Grafana dashboards and panels
-* `grafana-dashboard-provider`  -- configuration of the Grafana dashboard provider API object, which tells Grafana where to look in the file system for pre-provisioned dashboards
+. Add the data source for the Prometheus instance.
+See link:https://prometheus.io/docs/visualization/grafana/#creating-a-prometheus-data-source[Creating a Prometheus data source].
 
-
-
-
+. Import the example link:https://github.com/eclipse-che/che-server/blob/7.44.x/docs/grafana/dashboard.json[dashboard]. See link:https://grafana.com/docs/grafana/latest/dashboards/export-import/#import-dashboard[Import dashboard].
 
 .Verification steps
 
-* Use the Grafana console to view {prod-short} metrics.
-
-.Additional resources
-
-* link:https://grafana.com/docs/installation/[Installing Grafana].
+* Use the Grafana console to view {prod-short} JVM metrics.

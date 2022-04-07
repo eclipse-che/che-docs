@@ -1,0 +1,126 @@
+:navtitle: Monitoring with Prometheus and Grafana
+:keywords: administration-guide, monitoring-with-prometheus-and-grafana
+:page-aliases: .:monitoring-with-prometheus-and-grafana
+
+:parent-context-of-monitoring-the-dev-workspace-operator: {context}
+
+[id="monitoring-with-prometheus-and-grafana"]
+= Monitoring with Prometheus and Grafana
+
+This section describes how to collect and present metrics with a running instance of Prometheus and Grafana on the cluster.
+
+== Example Prometheus and Grafana template
+To follow the steps in this section, Prometheus and Grafana can be installed on {platforms-name} by applying `template.yaml`. The template consists of a Deployment and Service for both Prometheus and Grafana.
+
+[NOTE]
+====
+Alternatively, the link:https://github.com/prometheus-operator/prometheus-operator[Prometheus Operator] and link:https://github.com/grafana-operator/grafana-operator[Grafana Operator] can be used to collect and display metrics.
+====
+
+Apply `template.yaml` to the cluster by running `{orch-cli} apply -f template.yaml`.
+
+.`template.yaml`
+====
+[source,yaml,subs="+attributes"]
+----
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  ports:
+  - name: 3000-tcp
+    port: 3000
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: grafana
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+spec:
+  ports:
+  - name: 9090-tcp
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  selector:
+    app: prometheus
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grafana
+  name: grafana
+spec:
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - image: grafana/grafana:8.4.5
+        name: grafana
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: prometheus
+  name: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+      - image: prom/prometheus:v2.34.0
+        name: prometheus
+        ports:
+        - containerPort: 9090
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /prometheus
+          name: volume-data
+        - mountPath: /etc/prometheus/prometheus.yml
+          name: volume-config
+          subPath: prometheus.yml
+      volumes:
+      - emptyDir: {}
+        name: volume-data
+      - configMap:
+          defaultMode: 420
+          name: prometheus-config
+        name: volume-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+data:
+  prometheus.yml: |
+---
+----
+====
+
+.Additional resources
+* link:https://prometheus.io/docs/introduction/first_steps/[First steps with Prometheus].
+* link:https://grafana.com/docs/grafana/latest/installation/kubernetes/[Installing Grafana].
