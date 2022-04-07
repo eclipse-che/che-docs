@@ -14,7 +14,7 @@ Working with {prod-short} in your browser involves multiple URLs:
 * [.underline]#The URLs for starting a new workspace#
 * The URLs of your workspaces in use
 
-With {prod-short}, you can visit a URL in your browser to start a new workspace that contains a clone of a Git repository. Thus you can clone a Git repository that is hosted on GitHub or using a GitLab instance or on a Bitbucket server. So you can have your remote origin or fork cloned into a new starting workspace. Or you can have a common repository of a project cloned into a new starting workspace. With such Git providers as GitHub and GitLab, you can also specify the branch for the new starting workspace to checkout.
+With {prod-short}, you can visit a URL in your browser to start a new workspace that contains a clone of a Git repository. This way, you can clone a Git repository that is hosted on GitHub, a GitLab instance, or a Bitbucket server.
 
 NOTE: The *Create Workspace* page of your {prod-short} dashboard has the *Git Repo URL ** field as the limited-functionality GUI alternative for entering the URL of a Git repository to start a new workspace.
 
@@ -31,7 +31,7 @@ IMPORTANT: You can also start a new workspace by supplying the URL of a Git repo
 
 To start a new workspace with a clone of a Git repository:
 
-. Optional: Visit your {prod-short} dashboard page to authenticate as a {prod-short} user to your organization's instance of {prod-short}.
+. Optional: Visit your {prod-short} dashboard pages to authenticate to your organization's instance of {prod-short}.
 
 . Visit the URL to start a new workspace using the basic syntax:
 [source,subs="+quotes,+attributes,+macros"]
@@ -50,8 +50,24 @@ pass:c,a,q[{prod-url}]#__<git_repository_url>__?__<optional_parameters>__ <1>
 <1> See xref:optional-parameters-for-the-urls-for-starting-a-new-workspace.adoc[].
 ====
 +
-.URL syntax for starting a new workspace that contains a clone of a GitHub-hosted repository
+.A URL for starting a new workspace
 ====
+[source,subs="+quotes,+attributes,+macros"]
+----
+ifeval::["{project-context}" == "che"]
+\https://che-openshift-operators.apps.ci-ln-yp1cppt-72292.origin-ci-int-gce.dev.rhcloud.com#https://github.com/che-samples/cpp-hello-world
+endif::[]
+ifeval::["{project-context}" == "crw"]
+\https://codeready-codeready-workspaces-operator.apps.sandbox-m2.ll9k.p1.openshiftapps.com#https://github.com/che-samples/cpp-hello-world
+endif::[]
+----
+====
++
+.The URL syntax for starting a new workspace with a clone of a GitHub-hosted repository
+====
+
+With GitHub and GitLab, you can even use the URL of a specific branch of the repository to be cloned:
+
 * `pass:c,a,q[{prod-url}#https://github.com/__<user_or_org>__/__<repository>__]` starts a new workspace with a clone of the default branch.
 * `pass:c,a,q[{prod-url}#https://github.com/__<user_or_org>__/__<repository>__/tree/__<branch_name>__]` starts a new workspace with a clone of the specified branch.
 * `pass:c,a,q[{prod-url}#https://github.com/__<user_or_org>__/__<repository>__/pull/__<pull_request_id>__]` starts a new workspace with a clone of the branch of the pull request.

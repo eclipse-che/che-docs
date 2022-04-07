@@ -7,32 +7,45 @@
 [id="parameters-for-the-urls-for-starting-a-new-workspace_{context}"]
 = Optional parameters for the URLs for starting a new workspace
 
-When you start a workspace, {prod-short} configures the workspace according to the instructions in the devfile. When you use a URL to start a new workspace, you can append optional parameters to the URL that further configure the workspace. You can use these parameters to specify a workspace IDE, start duplicate workspaces, and specify a devfile file name or path.
+When you start a new workspace, {prod-short} configures the workspace according to the instructions in the devfile. When you use a URL to start a new workspace, you can append optional parameters to the URL that further configure the workspace. You can use these parameters to specify a workspace IDE, start duplicate workspaces, and specify a devfile file name or path.
 
 == URL parameter concatenation
 
-The URL for starting a new workspace supports concatenation of multiple URL parameters by using `&` with the following URL syntax:
+The URL for starting a new workspace supports concatenation of multiple optional URL parameters by using `&` with the following URL syntax:
+
 [source,subs="+quotes,+attributes,+macros"]
 ----
 pass:c,a,q[{prod-url}]#__<git_repository_url>__?__<url_parameter_1>__&__<url_parameter_2>__&__<url_parameter_3>__
 ----
-.URL for starting a new workspace with the URL of a Git repository and optional URL parameters
+
+.A URL for starting a new workspace with the URL of a Git repository and optional URL parameters
 ====
 The complete URL for the browser:
 
+ifeval::["{project-context}" == "crw"]
 \https://codeready-codeready-workspaces-operator.apps.sandbox-m2.ll9k.p1.openshiftapps.com#https://github.com/che-samples/cpp-hello-world?new&che-editor=che-incubator/intellij-community/latest&devfilePath=tests/testdevfile.yaml
+endif::[]
+
+ifeval::["{project-context}" == "che"]
+\https://che-openshift-operators.apps.ci-ln-yp1cppt-72292.origin-ci-int-gce.dev.rhcloud.com#https://github.com/che-samples/cpp-hello-world?new&che-editor=che-incubator/intellij-community/latest&devfilePath=tests/testdevfile.yaml
+endif::[]
 
 Explanation of the parts of the URL:
 
 [source,subs="+quotes,+attributes,+macros"]
 ----
+ifeval::["{project-context}" == "che"]
+\https://che-openshift-operators.apps.ci-ln-yp1cppt-72292.origin-ci-int-gce.dev.rhcloud.com/ <1>
+endif::[]
+ifeval::["{project-context}" == "crw"]
 \https://codeready-codeready-workspaces-operator.apps.sandbox-m2.ll9k.p1.openshiftapps.com <1>
+endif::[]
 #https://github.com/che-samples/cpp-hello-world <2>
 ?new&che-editor=che-incubator/intellij-community/latest&devfilePath=tests/testdevfile.yaml <3>
 ----
 <1> The pass:c,a,q[{prod-url}] part of the URL.
 <2> The URL of the Git repository to be cloned into the new workspace.
-<3> Concatenated optional URL parameters.
+<3> The concatenated optional URL parameters.
 ====
 
 == URL parameter for the workspace IDE
@@ -55,11 +68,11 @@ pass:c,a,q[{prod-url}]#__<git_repository_url>__?che-editor=__<editor_key>__
 ifeval::["{project-context}" == "che"]
 | link:https://github.com/eclipse-che/che-theia[Che-Theia]
 | `eclipse/che-theia/latest`
-| When using the `stable` link:https://github.com/che-incubator/chectl/[chectl] channel, this IDE loads as a default in a new workspace without this URL parameter.
+| When using the `stable` link:https://github.com/che-incubator/chectl/[chectl] channel, this IDE loads as a default without this URL parameter.
 
 | link:https://github.com/eclipse-che/che-theia[Che-Theia]
 | `eclipse/che-theia/next`
-| When using the `next` link:https://github.com/che-incubator/chectl/[chectl] channel, this IDE loads as a default in a new workspace without this URL parameter.
+| When using the `next` link:https://github.com/che-incubator/chectl/[chectl] channel, this IDE loads as a default without this URL parameter.
 endif::[]
 
 ifeval::["{project-context}" == "crw"]
@@ -84,7 +97,7 @@ endif::[]
 
 == URL parameter for starting duplicate workspaces
 
-Visiting a URL for starting a new workspace results in a workspace that is based on a combination of a devfile and a linked Git repository.
+Visiting a URL for starting a new workspace results in a new workspace according to the devfile and with a clone of the linked Git repository.
 
 In some situations, you may need to have multiple workspaces that are duplicates in terms of the devfile and the linked Git repository. You can do this by visiting the same URL for starting a new workspace with a URL parameter.
 
