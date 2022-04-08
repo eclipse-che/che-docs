@@ -18,26 +18,15 @@ Set up a Bitbucket application link using OAuth 1.0.
 .Procedure
 
 . On a command line, generate the `privatepkcs8-stripped.pem` key in the required format and with Base64 encoding:
-+
-[subs="+quotes,+attributes,+macros"]
-----
-$ openssl genrsa -out private.pem 2048
-
-$ openssl pkcs8 -topk8 -inform pem -outform pem -nocrypt -in private.pem -out privatepkcs8.pem
-
-$ cat privatepkcs8.pem | sed 's/-----BEGIN PRIVATE KEY-----//g' | sed 's/-----END PRIVATE KEY-----//g' | tr -d '\n' | base64 | tr -d '\n' > privatepkcs8-stripped.pem
-----
+.. `$ openssl genrsa -out private.pem 2048`
+.. `$ openssl pkcs8 -topk8 -inform pem -outform pem -nocrypt -in private.pem -out privatepkcs8.pem`
+.. `$ cat privatepkcs8.pem | sed 's/-----BEGIN PRIVATE KEY-----//g' | sed 's/-----END PRIVATE KEY-----//g' | tr -d '\n' | base64 | tr -d '\n' > privatepkcs8-stripped.pem`
 
 . Save the Base64-encoded `privatepkcs8-stripped.pem` file for use when applying the Bitbucket application link Secret.
 
 . On a command line, generate the `public-stripped.pub` key in the required format:
-+
-[subs="+quotes,+attributes,+macros"]
-----
-$ openssl rsa -in private.pem -pubout > public.pub
-
-$ cat public.pub | sed 's/-----BEGIN PUBLIC KEY-----//g' | sed 's/-----END PUBLIC KEY-----//g' | tr -d '\n' > public-stripped.pub
-----
+.. `$ openssl rsa -in private.pem -pubout > public.pub`
+.. `$ cat public.pub | sed 's/-----BEGIN PUBLIC KEY-----//g' | sed 's/-----END PUBLIC KEY-----//g' | tr -d '\n' > public-stripped.pub`
 
 . On a command line, generate a Base64-encoded consumer key:
 +
