@@ -11,6 +11,7 @@ CHE_CLUSTER_CR_NAME=${CHE_CLUSTER_CR_NAME:-eclipse-che}                         
 OLM_STABLE_CHANNEL=${OLM_STABLE_CHANNEL:-stable}                                 # {prod-stable-channel}
 OLM_CATALOG_SOURCE=${OLM_CATALOG_SOURCE:-community-operators}                    # {prod-stable-channel-catalog-source}
 OLM_PACKAGE=${OLM_PACKAGE:-eclipse-che}                                          # {prod-stable-channel-package}
+PRODUCT_OPERATOR_NAME=${PRODUCT_OPERATOR_NAME:-che-operator}                     # {prod-operator}
 
 IDENTITY_PROVIDER_DEPLOYMENT_NAME=${IDENTITY_PROVIDER_DEPLOYMENT_NAME:-keycloak} # {identity-provider-id}
 
@@ -28,8 +29,12 @@ deleteOperatorSubscription() {
         echo "[INFO] Deleting ${PRODUCT_ID} operator subscription."
         "${K8S_CLI}" delete subscription "${PRODUCT_ID}" -n "${INSTALLATION_NAMESPACE}"
     else
-        echo "[INFO] Skipping subscription deletion. No ${PRODUCT_ID} operator subscription found."
+        echo "[INFO] Skipping subscription deletion as no ${PRODUCT_ID} operator subscription was found."
+        echo "[INFO] Deleting the ${PRODUCT_ID} operator deployment instead."
+        "${K8S_CLI}" delete deployment "${PRODUCT_OPERATOR_NAME}" -n "${INSTALLATION_NAMESPACE}"
     fi
+    echo "[INFO] Waiting 30s for the old ${PRODUCT_ID} operator deletion."
+    sleep 30
 }
 
 patchCheCluster() {

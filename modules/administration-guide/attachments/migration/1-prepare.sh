@@ -11,7 +11,8 @@ CHE_CLUSTER_CR_NAME=${CHE_CLUSTER_CR_NAME:-eclipse-che}                         
 IDENTITY_PROVIDER_DEPLOYMENT_NAME=${IDENTITY_PROVIDER_DEPLOYMENT_NAME:-keycloak} # {identity-provider-id}
 
 ALL_USERS_DUMP="${PRODUCT_ID}"-users.txt
-DB_DUMP="${PRODUCT_ID}"-db.sql
+DB_DUMP="${PRODUCT_ID}"-original-db.sql
+MIGRATED_DB_DUMP="${PRODUCT_ID}"-migrated-db.sql
 
 echo "[INFO] Getting identity provider information"
 
@@ -25,6 +26,15 @@ echo "[INFO] IDENTITY_PROVIDER_URL: ${IDENTITY_PROVIDER_URL}"
 echo "[INFO] IDENTITY_PROVIDER_SECRET: ${IDENTITY_PROVIDER_SECRET}"
 echo "[INFO] IDENTITY_PROVIDER_USERNAME: ${IDENTITY_PROVIDER_USERNAME}"
 echo "[INFO] IDENTITY_PROVIDER_REALM: ${IDENTITY_PROVIDER_REALM}"
+
+sed_in_place() {
+    SHORT_UNAME=$(uname -s)
+  if [ "$(uname)" == "Darwin" ]; then
+    sed -i '' "$@"
+  elif [ "${SHORT_UNAME:0:5}" == "Linux" ]; then
+    sed -i "$@"
+  fi
+}
 
 refreshToken() {
   echo "[INFO] Refreshing identity provier token"
@@ -92,9 +102,26 @@ dumpDB() {
   echo "[INFO] Database dump completed"
 }
 
+replaceUserIDsInDBDump() {
+  echo "[INFO] Replacing USER_IDs in ${DB_DUMP} and saving it in ${MIGRATED_DB_DUMP}."
+  cp "${DB_DUMP}" "${MIGRATED_DB_DUMP}"
+  while IFS= read -r line
+  do
+    IFS=" " read -r -a IDS <<< "${line}"
+    USER_ID=${IDS[0]}
+    OPENSHIFT_USER_ID=${IDS[1]}
+
+    sed_in_place -e "s|${USER_ID}|${OPENSHIFT_USER_ID}|g" "${MIGRATED_DB_DUMP}"
+
+    echo "[INFO] Replaced User ID \"${USER_ID}\" with \"${OPENSHIFT_USER_ID}\"."
+  done < "${ALL_USERS_DUMP}"
+  echo "[INFO] USER_IDs replaced."
+}
+
 scaleDownCheServer
 getUsers
 scaleDownKeycloak
 dumpDB
+replaceUserIDsInDBDump
 
 echo "[INFO] Done."

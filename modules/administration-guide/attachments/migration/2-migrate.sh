@@ -8,7 +8,7 @@ PRODUCT_ID=${PRODUCT_ID:-eclipse-che}                                           
 INSTALLATION_NAMESPACE=${INSTALLATION_NAMESPACE:-eclipse-che}                    # {prod-namespace}
 
 ALL_USERS_DUMP="${PRODUCT_ID}"-users.txt
-DB_DUMP="${PRODUCT_ID}"-db.sql
+MIGRATED_DB_DUMP="${PRODUCT_ID}"-migrated-db.sql
 
 echo "[INFO] Retriving ${PRODUCT_ID} database name."
 CHE_POSTGRES_DB=$("${K8S_CLI}" get cm/che -n "${INSTALLATION_NAMESPACE}" -o jsonpath='{.data.CHE_JDBC_URL}' | awk -F '/' '{print $NF}')
@@ -28,24 +28,9 @@ createDatabase() {
   "${K8S_CLI}" exec deploy/postgres -n "${INSTALLATION_NAMESPACE}"  -- bash  -c "psql postgres -tAc \"CREATE DATABASE ${CHE_POSTGRES_DB}\""
 }
 
-replaceUserIDsInDBDump() {
-  echo "[INFO] Replacing USER_IDs in ${DB_DUMP}."
-  while IFS= read -r line
-  do
-    IFS=" " read -r -a IDS <<< "${line}"
-    USER_ID=${IDS[0]}
-    OPENSHIFT_USER_ID=${IDS[1]}
-
-    sed -i -e "s|${USER_ID}|${OPENSHIFT_USER_ID}|g" "${DB_DUMP}"
-
-    echo "[INFO] Replaced User ID \"${USER_ID}\" with \"${OPENSHIFT_USER_ID}\"."
-  done < "${ALL_USERS_DUMP}"
-  echo "[INFO] USER_IDs replaced."
-}
-
 restoreDatabase() {
-  echo "[INFO] Uploading ${DB_DUMP} to the postgreSQL pod."
-  "${K8S_CLI}" cp "${DB_DUMP}" "${INSTALLATION_NAMESPACE}"/"$("${K8S_CLI}" get pods -l app.kubernetes.io/component=postgres -n "${INSTALLATION_NAMESPACE}" --no-headers=true  -o custom-columns=":metadata.name")":/tmp/che.sql
+  echo "[INFO] Uploading ${MIGRATED_DB_DUMP} to the postgreSQL pod."
+  "${K8S_CLI}" cp "${MIGRATED_DB_DUMP}" "${INSTALLATION_NAMESPACE}"/"$("${K8S_CLI}" get pods -l app.kubernetes.io/component=postgres -n "${INSTALLATION_NAMESPACE}" --no-headers=true  -o custom-columns=":metadata.name")":/tmp/che.sql
 
   echo "[INFO] Populating ${CHE_POSTGRES_DB} database with the new content."
   "${K8S_CLI}" exec deploy/postgres -n "${INSTALLATION_NAMESPACE}"  -- bash  -c "psql ${CHE_POSTGRES_DB} < /tmp/che.sql"
@@ -75,7 +60,6 @@ migrateUserProfiles() {
 terminatePostgresConnections
 dropExistingDatabase
 createDatabase
-replaceUserIDsInDBDump
 restoreDatabase
 migrateUserProfiles
 
