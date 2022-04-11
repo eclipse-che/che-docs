@@ -84,4 +84,4 @@ do
 done
 
 # Validate xref and links
-vale --no-exit --config="${SCRIPT_DIR%tools*}.vale/styles/PlainAsciiDoc/.vale.ini" "${DESTINATION_ROOT_DIR}/"
+vale --config="${SCRIPT_DIR%tools*}.vale/styles/PlainAsciiDoc/.vale.ini" "${DESTINATION_ROOT_DIR}/"

@@ -1,0 +1,160 @@
+:navtitle: Adding a Visual Studio Code extension to a workspace
+:keywords: Visual Studio Code extension, user-guide
+
+[id="adding-visual-studio-code-extension_{context}"]
+= Adding a Visual Studio Code extension to a workspace
+
+Previously, with the devfiles v1 format, you used the devfile to specify IDE-specific plug-ins and Visual Studio Code extensions. Now, with devfiles v2, you use a specific meta-folder rather than the devfile to specify the plug-ins and extensions.
+
+[id="plug-in-registries"]
+== {prod-short} plug-in registries overview
+
+Every {prod-short} instance has a registry of default plug-ins and extensions. The Che-Theia IDE gets information about these plug-ins and extensions from the registry and installs them.
+
+Check this {prod-short} link:https://github.com/eclipse-che/che-plugin-registry[registry project] for an overview of the default plug-ins, extensions, and source code. An online instance that refreshes after every commit to the main branch, is located link:https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/[here]. You can use a different plug-in or extension registry for Che-Theia if you don't work in air-gapped environment: only the default registry is available there.
+
+The plug-in and extension overview for Che-Code Visual Studio Code editor is located in the link:https://www.open-vsx.org/[OpenVSX instance]. Air gap is not yet supported for this editor.
+
+[id="visual-studio-code-extensions-json"]
+== Adding an extension to `.vscode/extensions.json`
+
+The easiest way to add a Visual Studio Code extension to a workspace is to add it to the `.vscode/extensions.json` file. The main advantage of this method is that it works with all supported {prod-short} IDEs.
+
+If you use the Che-Theia IDE, the extension is installed and configured automatically. If you use a different supported IDE with the Che-Code Visual Studio Code fork, the IDE displays a pop-up with a recommendation to install the extension. 
+
+.Prerequisites
+. You have the `.vscode/extensions.json` file in the root of the GitHub repository.
+
+.Procedure
+. Add the extension ID to the `.vscode/extensions.json` file. Use a `.` sign to separate the publisher and extension. The following example uses the IDs of Red Hat Visual Studio Code Java extension:
++
+[source,json,subs="+quotes"]
+----
+  {
+    "recommendations": [
+      "redhat.java"
+    ]
+  }
+----
+
+NOTE: If the specified set of extension IDs isn't available in the {prod-short} registry, the workspace starts without the extension.
+
+
+[id="che-theia-plug-ins-YAML"]
+== Adding plug-in parameters to `.che/che-theia-plugins.yaml`
+You can add extra parameters to a plug-in by modifying the `.che/che-theia-plugins.yaml` file. These modifications include:
+
+* Defining the plug-ins for workspace installation.
+* Changing the default memory limit.
+* Overriding default preferences.
+
+
+=== Defining the plug-ins for workspace installation
+Define the plug-ins to be installed in the workspace.
+
+.Prerequisites
+. You have the `.che/che-theia-plugins.yaml` file in the root of the GitHub repository.
+
+.Procedure
+. Add the ID of the plug-in to the  `.che/che-theia-plugins.yaml` file. Use the `/` sign to separate the publisher and plug-in name. The following example uses the IDs of Red Hat Visual Studio Code Java extension:
++
+[source,yaml,subs="+quotes"]
+----
+- id: redhat/java  
+----
+
+=== Changing the default memory limit
+
+Override container settings such as the memory limit.
+
+.Prerequisites
+. You have the `.che/che-theia-plugins.yaml` file in the root of the GitHub repository.
+
+.Procedure
+. Add an `override` section to the `.che/che-theia-plugins.yaml` file under the `id` of the plug-in.
+. Specify the memory limit for the extension. In the following example, {prod-short} automatically installs the Red Hat Visual Studio Code Java extension in the {prod-short} workspace and increases the memory of the workspace by two gigabytes:
++
+[source,yaml,subs="+quotes"]
+----
+
+  - id: redhat/java  
+    override:  
+      sidecar:  
+        memoryLimit: 2Gi
+----
+
+=== Overriding default preferences
+
+Override the default preferences of the Visual Studio Code extension for the workspace.
+
+.Prerequisites
+. You have the `.che/che-theia-plugins.yaml` file in the root of the GitHub repository.
+
+.Procedure
+. Add an `override` section to the `.che/che-theia-plugins.yaml` file under the `id` of the extension. 
+. Specify the preferences in the `Preferences` section. In the following example, {prod-short} automatically installs Red Hat Visual Studio Code Java extension in the {prod-short} workspace and sets the `java.server.launchMode` preference to `LightWeight`:
++
+[source,yaml,subs="+quotes"]
+----
+  - id: redhat/java  
+    override:  
+      preferences:
+        java.server.launchMode: LightWeight
+----
+
+[NOTE] 
+====
+You can also define the preferences in the `.vscode/settings.json` file, either by changing the preferences in the UI of your IDE or by adding them to the `.vscode/settings.json` file:
+[source,json,subs="+quotes"]
+----
+{
+"my.preferences": "my-value"
+}
+----
+====
+
+[id="visual-studio-code-extensions-in-devfile"]
+== Defining Visual Studio Code extension attributes in the devfile
+
+If it's not possible to add extra files in the GitHub repository, you can define some of the plug-in or extension attributes by inlining them in the devfile. You can use this procedure with both `.vscode/extensions.json` and `.che/che-theia-plugins.yaml` file contents.
+
+=== Inlining `.vscode/extensions.json` file
+Use `.vscode/extensions.json` file contents to inline the extension attributes in the devfile.
+
+.Procedure
+. Add an `attributes` section to your `devfile.yaml` file.
+. Add `.vscode/extensions.json` to the `atributes` section. Add a `|` sign after the colon separator.
+. Paste the contents of the `.vscode/extensions.json` file after the `|` sign. The following example uses Red Hat Visual Studio Code Java extension attributes:
++
+[source,yaml,subs="+quotes"]
+----
+schemaVersion: 2.2.0  
+metadata:  
+  name: my-example  
+attributes:  
+  .vscode/extensions.json: |  
+    {  
+      "recommendations": [  
+        "redhat.java"  
+      ]  
+    }
+----
+
+=== Inlining `.che/che-theia-plugins.yaml` file
+Use `.che/che-theia-plugins.yaml` file contents to inline the plug-in attributes in the devfile.
+
+.Procedure
+. Add an `attributes` section to your `devfile.yaml` file.
+. Add `.vscode/extensions.json` to the `atributes` section. Add a `|` sign after the colon separator.
+. Paste the content of the `.che/che-theia-plugins.yaml` file after the `|` sign. The following example uses Red Hat Visual Studio Code Java extension attributes:
++
+[source,yaml,subs="+quotes"]
+----
+schemaVersion: 2.2.0  
+metadata:  
+  name: my-example  
+attributes:  
+  .che/che-theia-plugins.yaml: |  
+    - id: redhat/java
+----
+
