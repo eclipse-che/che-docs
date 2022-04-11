@@ -1,0 +1,51 @@
+// {prod-id-short}-compute-resources-requirements
+
+[id="operator-requirements_{context}"]
+= {prod-short} Operator requirements
+
+The {prod-short} Operator manages six operands running in six distinct pods. The following table presents the default resource requirements of each of these operands.
+
+[cols="2,2,1,1", options="header"]
+.{prod-short} operator operands
+|===
+|Pod
+|Container names
+|Default memory limit
+|Default memory request
+
+|{prod-short} Server
+|{prod-short}
+|1 Gi
+|512 MiB
+
+|{prod-short} Gateway
+|`gateway`, `configbump`, `oauth-proxy`, `kube-rbac-proxy`
+| 4 Gi, 256Mi, 512Mi, 512Mi
+| 128 Mi, 64Mi, 64Mi, 64Mi
+
+|{prod-short} Dashboard
+|`{prod-short}-dashboard`
+|256 Mi
+|32 Mi
+
+|PostgreSQL
+|`postgres`
+|1 Gi
+|512 Mi
+
+|Devfile registry
+|`che-devfile-registry`
+|256 Mi
+|32 Mi
+
+|Plug-in registry
+|`che-plugin-registry`
+|256 Mi
+|32 Mi
+|===
+
+The {prod-short} Operator, which powers all the operands, consists of a single container with the `64Mi` memory request and `256Mi` limit. These default values are sufficient when the {prod-short} Operator manages a relatively big amount of {prod-short} workspaces. For even larger deployments, consider increasing the defaults.
+
+.Additional resources
+
+* xref:architecture-overview.adoc[].

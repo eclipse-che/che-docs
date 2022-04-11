@@ -9,7 +9,7 @@
 
 The General Data Protection Regulation (link:https://en.wikipedia.org/wiki/General_Data_Protection_Regulation[GDPR]) law enforces the right for individuals to have personal data erased.
 
-The following procedure describes how to remove a user’s data from a cluster and the {identity-provider} database.
+The following procedure describes how to remove the {prod-short} user’s data.
 
 [NOTE]
 ====
@@ -18,7 +18,7 @@ The following commands use the default {platforms-namespace}, `{prod-namespace}`
 
 .Prerequisites
 
-* A user or an administrator authorization token. To delete any other data except the data bound to a user account, `admin` privileges are required. The `admin` is a special {prod-short} administrator account pre-created and enabled using the `pass:[CHE_SYSTEM_ADMIN__NAME]` and `pass:[CHE_SYSTEM_SUPER__PRIVILEGED__MODE = true]` Custom Resource definitions.
+* A user or an administrator authorization token. To delete the {prod-short} data bound to a user account, `admin` privileges are required. The `admin` is a special {prod-short} administrator account that should be pre-created and enabled using the `pass:[CHE_SYSTEM_ADMIN__NAME]` and `pass:[CHE_SYSTEM_SUPER__PRIVILEGED__MODE = true]` properties of the {prod-short} Custom Resource.
 +
 [subs="+quotes,macros"]
 ----
@@ -29,7 +29,7 @@ spec:
      pass:[CHE_SYSTEM_ADMIN__NAME]: '__<admin-name>__'
 ----
 +
-If needed, use commands below for creating the `admin` user:
+If needed, use {orch-cli} commands below for patching the {prod-short} Custom Resource:
 +
 [subs="+quotes,macros,attributes"]
 ----
@@ -49,7 +49,7 @@ $ {orch-cli} patch checluster/{prod-checluster} \
 +
 [NOTE]
 ====
-All system permissions are granted to the administrative user. To configure the administrative user, use the `CHE_SYSTEM_ADMIN__NAME` property. The default value is `admin`. The system permissions are granted when the {prod-short} server starts. If the user record is not in the {prod-short} user database, the permissions are granted after the first login of the user.
+All {prod-short} system permissions are granted to the administrative user. To configure the administrative user, use the `CHE_SYSTEM_ADMIN__NAME` property. The default value is `admin`. The system permissions are granted when the {prod-short} server starts. If the user record is not in the {prod-short} user database, the permissions are granted after the first login of the user.
 
 .Authorization token privileges:
 
@@ -78,20 +78,11 @@ $ curl -X GET \
   --header 'Authorization: Bearer __<user-token>__' \
   'pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/find?name=__<username>__'
 ----
- 
-** To find a user by email: 
-+
-[subs="+quotes,macros,attributes"]
-----
-$ curl -X GET \
-  --header 'Authorization: Bearer __<user-token>__' \
-  'pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/find?email=__<email>__'
-----
-+
+
 .Example of obtaining a user ID
-+
+
 This example uses `vparfono` as a local user name.
-+
+
 ====
 [subs="+quotes,macros,attributes"]
 ----
@@ -121,16 +112,7 @@ The user ID is at the bottom of the curl command output.
 
 .Procedure
 
-. Update the `{prod-checluster}` `CheCluster Custom` Resource (CR) definition to permit the removal of a user’s data from the {identity-provider} database:
-+
-[subs="+quotes,macros,attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} \
-  --patch "{\"spec\":{\"server\":{\"customCheProperties\": {\"pass:[CHE_KEYCLOAK_CASCADE__USER__REMOVAL__ENABLED]\": \"true\"}}}}" \
-  --type=merge -n _{prod-namespace}_
-----
-
-. Remove the data using the API:
+* Remove the data using the API:
 +
 [subs="+quotes,macros,attributes"]
 ----
@@ -139,6 +121,10 @@ $ curl -i -X DELETE \
   pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/__<user-id>__
 ----
 
+[NOTE]
+====
+The procedure can be also executed using the Swagger UI available on pass:c,m,a,q[+https:+//__<{prod-host}>__]/swagger
+====
 
 .Verification
 
@@ -151,6 +137,10 @@ $ curl -i -X DELETE \
   pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/__<user-id>__
 ----
 
+[WARNING]
+====
+The following procedure only removes the user on the {prod-short} level. For removing all {orch-name} user data including namespaces from the cluster, the {orch-name} cluster-admin needs to explicitly remove the {orch-name} resources bound to the user.
+====
 
 .Additional resources
 

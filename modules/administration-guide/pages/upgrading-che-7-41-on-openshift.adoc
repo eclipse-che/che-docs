@@ -1,0 +1,54 @@
+:navtitle: Upgrading {prod-short} {prod-last-version-pre-dwo} on OpenShift
+:keywords: administration-guide, migration, devworkspace
+:page-aliases: 
+
+[id="upgrading-{prod-id-short}-{prod-last-version-pre-dwo}-on-openshift_{context}"]
+= Upgrading {prod-short} {prod-last-version-pre-dwo} on OpenShift
+
+The workspace engine and authentication system used until version {prod-last-version-pre-dwo} are deprecated. Upgrading from version {prod-last-version-pre-dwo} requires manual steps.
+
+.Prerequisites
+
+* An instance of {prod-short} deployed on xref:supported-platforms.adoc[], using the default internal PostgreSQL database, and with OpenShift OAuth enabled. See {prod-docs-url-enable-oauth}.
+* Command line tools `oc`, `curl`, and `jq` are available.
+* The host running the upgrade commands is running on Linux.
+
+.Procedure
+
+. Optionally push back changes to Git repositories in all workspaces, stop all workspaces to avoid user experience degradation, and backup {prod-short} data. See {prod-docs-url-backup-recovery}.
+
+. Set the environment variables to use in the migration scripts:
++
+[source,bash,subs="+attributes"]
+----
+INSTALLATION_NAMESPACE={prod-namespace} #<1>
+PRODUCT_DEPLOYMENT_NAME={prod-deployment}
+PRODUCT_OPERATOR_NAME={prod-operator}
+PRODUCT_ID={prod-id}
+CHE_CLUSTER_CR_NAME={prod-checluster}
+IDENTITY_PROVIDER_DEPLOYMENT_NAME={identity-provider-id}
+OLM_STABLE_CHANNEL={prod-stable-channel}
+OLM_CATALOG_SOURCE={prod-stable-channel-catalog-source}
+OLM_PACKAGE={prod-stable-channel-package}
+----
+<1> Adapt to the {orch-namespace} where {prod-short} is installed.
+
+. Download and execute the migration scripts: xref:attachment$migration/1-prepare.sh[1-prepare.sh], xref:attachment$migration/2-migrate.sh[2-migrate.sh], xref:attachment$migration/3-subscribe.sh[3-subscribe.sh], and xref:attachment$migration/4-wait.sh[4-wait.sh].
++
+[source,bash,subs="+attributes"]
+----
+chmod +x ./1-prepare.sh ./2-migrate.sh ./3-subscribe.sh ./4-wait.sh
+./1-prepare.sh <1>
+./2-migrate.sh <2>
+./3-subscribe.sh <3>
+./4-wait.sh <4>
+----
+<1> Shuts down {prod-short} and {identity-provider}, fetch users data and dumps {prod-short} database.
+<2> Fetches {prod-short} {identity-provider} and database data, and repopulates the database with updated data.
+<3> Deletes {prod-short} Operator and {identity-provider} resources, updates CheCluster CR and creates a new Operator subscription.
+<4> Waits until {prod-short} is ready (it can take more than 5 minutes).
+
+.Verification
+
+* Open {prod-short} dashboard and log in.
+
