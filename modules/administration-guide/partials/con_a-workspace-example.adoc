@@ -9,7 +9,6 @@ The following devfile defines the {prod-short} workspace:
 
 include::example$snip_a-{project-context}-workspace-example.adoc[]
 
-
 This table provides the memory requirements for each workspace component:
 
 [cols="1,3,1,1", options="header"]
@@ -21,41 +20,26 @@ This table provides the memory requirements for each workspace component:
 |Default memory request
 
 |Workspace
-|`theia-ide` (default `cheEditor`)
-|512 MiB
-|512 MiB
+|`theia-ide`
+|512 Mi
+|64 Mi
 
 |Workspace
-|`machine-exec` (default `chePlugin`)
-|128 MiB
-|32 MiB
+|`machine-exec`
+|128 Mi
+|32 Mi
 
 |Workspace
-|`vscode-typescript` (`chePlugin`)
-|512 MiB
-|512 MiB
+|`tools`
+|4 Gi
+|64 Mi
 
 |Workspace
-|`nodejs` (`dockerimage`)
-|1 GiB
-|512 MiB
-
-|JWT Proxy
-|verifier
-|128 MiB
-|128 MiB
+|`che-gateway`
+|256 Mi
+|64 Mi
 
 2+>s|Total
->s|2.25 GiB
->s|1.38 GiB
+>s|4.9 Gi
+>s|224 Mi
 |===
-
-
-* The `theia-ide` and `machine-exec` components are implicitly added to the workspace, even when not included in the devfile.
-* The resources required by `machine-exec` are the default for `chePlugin`.
-* The resources for `theia-ide` are specifically set in the `cheEditor` `meta.yaml` to *512 MiB* as `memoryLimit`.
-* The Typescript Visual Studio Code extension has also overridden the default memory limits. In its `meta.yaml` file, the limits are explicitly specified to *512 MiB*.
-* {prod-short} is applying the defaults for the `dockerimage` component type: a memory limit of *1 GiB* and a memory request of *512 MiB*.
-* The JWT container requires *128 MiB* of memory.
-
-Adding all together results in *1.38 GiB* of memory requests with a *2.25 GiB* limit.
