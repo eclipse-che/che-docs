@@ -17,18 +17,34 @@ Set up a Bitbucket application link using OAuth 1.0.
 
 .Procedure
 
-. On a command line, run the commands to create the necessary files:
+. On a command line, generate the `privatepkcs8-stripped.pem` key in the required format and with Base64 encoding:
+.. `$ openssl genrsa -out private.pem 2048`
+.. `$ openssl pkcs8 -topk8 -inform pem -outform pem -nocrypt -in private.pem -out privatepkcs8.pem`
+.. `$ cat privatepkcs8.pem | sed 's/-----BEGIN PRIVATE KEY-----//g' | sed 's/-----END PRIVATE KEY-----//g' | tr -d '\n' | base64 | tr -d '\n' > privatepkcs8-stripped.pem`
+
+. Save the Base64-encoded `privatepkcs8-stripped.pem` file for use when applying the Bitbucket application link Secret.
+
+. On a command line, generate the `public-stripped.pub` key in the required format:
+.. `$ openssl rsa -in private.pem -pubout > public.pub`
+.. `$ cat public.pub | sed 's/-----BEGIN PUBLIC KEY-----//g' | sed 's/-----END PUBLIC KEY-----//g' | tr -d '\n' > public-stripped.pub`
+
+. On a command line, generate a Base64-encoded consumer key:
 +
 [subs="+quotes,+attributes,+macros"]
 ----
-$ openssl genrsa -out private.pem 2048 && \
-openssl pkcs8 -topk8 -inform pem -outform pem -nocrypt -in private.pem -out privatepkcs8.pem && \
-cat privatepkcs8.pem | sed 's/-----BEGIN PRIVATE KEY-----//g' | sed 's/-----END PRIVATE KEY-----//g' | tr -d '\n' | base64 | tr -d '\n' > privatepkcs8-stripped.pem && \
-openssl rsa -in private.pem -pubout > public.pub && \
-cat public.pub | sed 's/-----BEGIN PUBLIC KEY-----//g' | sed 's/-----END PUBLIC KEY-----//g' | tr -d '\n' > public-stripped.pub && \
-openssl rand -base64 24 > bitbucket-consumer-key && \
-openssl rand -base64 24 > bitbucket-shared-secret
+$ openssl rand -base64 24 > bitbucket-consumer-key
 ----
+
+. Save the Base64-encoded `bitbucket_consumer_key` file for use when applying the Bitbucket application link Secret.
+
+. On a command line, generate a Base64-encoded shared secret:
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ openssl rand -base64 24 > bitbucket-shared-secret
+----
+
+. Save the Base64-encoded `bitbucket-shared-secret` file for use when applying the Bitbucket application link Secret.
 
 . Go to menu:Administration[Application Links].
 
@@ -52,13 +68,17 @@ openssl rand -base64 24 > bitbucket-shared-secret
 
 . Enter `__<bitbucket_server_url>__/plugins/servlet/oauth/authorize` as the *Authorize URL*.
 
-. Check the *Create incoming link* checkbox and click *Continue*.
+. Check the *Create incoming link* checkbox.
+
+. Click *Continue*.
 
 . Paste the content of the `bitbucket_consumer_key` file as the *Consumer Key*.
 
 . Enter *{prod-short}* as the *Consumer name*.
 
-. Paste the content of the `public-stripped.pub` file as the *Public Key* and click *Continue*.
+. Paste the content of the `public-stripped.pub` file as the *Public Key*.
+
+. Click *Continue*.
 
 .Additional resources
 
