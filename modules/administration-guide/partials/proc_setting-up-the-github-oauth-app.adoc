@@ -1,0 +1,48 @@
+:_content-type: PROCEDURE
+:description: Setting up the GitHub OAuth App
+:keywords: github, github-oauth-app
+:navtitle: Setting up the GitHub OAuth App
+// :page-aliases:
+
+[id="setting-up-the-github-oauth-app_{context}"]
+= Setting up the GitHub OAuth App
+
+Set up a GitHub OAuth App using OAuth 2.0.
+
+.Prerequisites
+
+* You are logged in to GitHub.
+* link:https://www.gnu.org/software/coreutils/base64[`base64`] is installed in the operating system you are using.
+
+.Procedure
+
+. Go to link:https://github.com/settings/applications/new[].
+//Long version: Click your GitHub avatar menu:Settings[Developer settings > OAuth Apps > Register a new application]. max-cx
+
+. Enter the following values:
+
+.. *Application name*: `{prod-short}`.
+.. *Homepage URL*: `pass:c,a,q[{prod-url}]/`
+.. *Authorization callback URL*: `pass:c,a,q[{prod-url}]/api/oauth/callback`
+
+. Click *Register application*.
+
+. Click *Generate new client secret*.
+
+. Copy the *GitHub OAuth Client ID* and encode it to Base64 for use when applying the GitHub OAuth App Secret:
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ echo -n '__<github_oauth_client_id>__' | base64
+----
+
+. Copy the *GitHub OAuth Client Secret* and encode it to Base64 for use when applying the GitHub OAuth App Secret:
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ echo -n '__<github_oauth_client_secret>__' | base64
+----
+
+.Additional resources
+
+* link:https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app[GitHub Docs: Creating an OAuth App]
