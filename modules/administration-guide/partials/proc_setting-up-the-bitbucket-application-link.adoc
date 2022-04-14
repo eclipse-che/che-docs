@@ -1,0 +1,65 @@
+:_content-type: PROCEDURE
+:description: Setting up the Bitbucket application link
+:keywords: bitbucket, bitbucket-application-link, application-link
+:navtitle: Setting up the Bitbucket application link
+// :page-aliases:
+
+[id="setting-up-the-bitbucket-application-link_{context}"]
+= Setting up the Bitbucket application link
+
+Set up a Bitbucket application link using OAuth 1.0.
+
+.Prerequisites
+
+* You are logged in to Bitbucket.
+* link:https://www.openssl.org/[`openssl`] is installed in the operating system you are using.
+* link:https://www.gnu.org/software/coreutils/base64[`base64`] is installed in the operating system you are using.
+
+.Procedure
+
+. On a command line, run the commands to create the necessary files for the next steps and for use when applying the Bitbucket application link Secret:
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ openssl genrsa -out private.pem 2048 && \
+openssl pkcs8 -topk8 -inform pem -outform pem -nocrypt -in private.pem -out privatepkcs8.pem && \
+cat privatepkcs8.pem | sed 's/-----BEGIN PRIVATE KEY-----//g' | sed 's/-----END PRIVATE KEY-----//g' | tr -d '\n' | base64 | tr -d '\n' > privatepkcs8-stripped.pem && \
+openssl rsa -in private.pem -pubout > public.pub && \
+cat public.pub | sed 's/-----BEGIN PUBLIC KEY-----//g' | sed 's/-----END PUBLIC KEY-----//g' | tr -d '\n' > public-stripped.pub && \
+openssl rand -base64 24 > bitbucket-consumer-key && \
+openssl rand -base64 24 > bitbucket-shared-secret
+----
+
+. Go to menu:Administration[Application Links].
+
+. Enter `pass:c,a,q[{prod-url}]/` into the URL field and click *Create new link*.
+
+. Under *The supplied Application URL has redirected once*, check the *Use this URL* checkbox and click *Continue*.
+
+. Enter *{prod-short}* as the *Application Name*.
+
+. Select *Generic Application* as the *Application Type*.
+
+. Enter *{prod-short}* as the *Service Provider Name*.
+
+. Paste the content of the `bitbucket-consumer-key` file as the *Consumer key*.
+
+. Paste the content of the `bitbucket-shared-secret` file as the *Shared secret*.
+
+. Enter `__<bitbucket_server_url>__/plugins/servlet/oauth/request-token` as the *Request Token URL*.
+
+. Enter `__<bitbucket_server_url>__/plugins/servlet/oauth/access-token` as the *Access token URL*.
+
+. Enter `__<bitbucket_server_url>__/plugins/servlet/oauth/authorize` as the *Authorize URL*.
+
+. Check the *Create incoming link* checkbox and click *Continue*.
+
+. Paste the content of the `bitbucket_consumer_key` file as the *Consumer Key*.
+
+. Enter *{prod-short}* as the *Consumer name*.
+
+. Paste the content of the `public-stripped.pub` file as the *Public Key* and click *Continue*.
+
+.Additional resources
+
+* link:https://confluence.atlassian.com/bitbucketserver/link-to-other-applications-1018764620.html[Atlassian Documentation: Link to other applications]
