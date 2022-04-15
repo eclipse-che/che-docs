@@ -19,28 +19,17 @@ The URL for starting a new workspace supports concatenation of multiple optional
 ====
 The complete URL for the browser:
 
-ifeval::["{project-context}" != "che"]
-`\https://codeready-codeready-workspaces-operator.apps.sandbox-m2.ll9k.p1.openshiftapps.com#https://github.com/che-samples/cpp-hello-world?new&che-editor=che-incubator/intellij-community/latest&devfilePath=tests/testdevfile.yaml`
-endif::[]
-
-ifeval::["{project-context}" == "che"]
-`\https://che-openshift-operators.apps.ci-ln-yp1cppt-72292.origin-ci-int-gce.dev.rhcloud.com#https://github.com/che-samples/cpp-hello-world?new&che-editor=che-incubator/intellij-community/latest&devfilePath=tests/testdevfile.yaml`
-endif::[]
+`pass:c,a,q[{prod-url}#https://github.com/che-samples/cpp-hello-world?new&che-editor=che-incubator/intellij-community/latest&devfilePath=tests/testdevfile.yaml]`
 
 Explanation of the parts of the URL:
 
 [source,subs="+quotes,+attributes,+macros"]
 ----
-ifeval::["{project-context}" == "che"]
-\https://che-openshift-operators.apps.ci-ln-yp1cppt-72292.origin-ci-int-gce.dev.rhcloud.com/ <1>
-endif::[]
-ifeval::["{project-context}" != "che"]
-\https://codeready-codeready-workspaces-operator.apps.sandbox-m2.ll9k.p1.openshiftapps.com <1>
-endif::[]
+pass:c,a,q[{prod-url}] <1>
 #https://github.com/che-samples/cpp-hello-world <2>
 ?new&che-editor=che-incubator/intellij-community/latest&devfilePath=tests/testdevfile.yaml <3>
 ----
-<1> The pass:c,a,q[{prod-url}] part of the URL.
+<1> {prod-short} URL.
 <2> The URL of the Git repository to be cloned into the new workspace.
 <3> The concatenated optional URL parameters.
 ====
@@ -56,39 +45,7 @@ The URL parameter for specifying another supported IDE is `che-editor=__<editor_
 pass:c,a,q[{prod-url}]#__<git_repository_url>__?che-editor=__<editor_key>__
 ----
 
-.The `__<editor_key>__` values for the supported IDEs
-|===
-| IDE | `__<editor_key>__` value | Note
-
-ifeval::["{project-context}" == "che"]
-| link:https://github.com/eclipse-che/che-theia[Che-Theia]
-| `eclipse/che-theia/latest`
-| When using the `stable` link:https://github.com/che-incubator/chectl/[chectl] channel, this IDE loads as a default without this URL parameter.
-
-| link:https://github.com/eclipse-che/che-theia[Che-Theia]
-| `eclipse/che-theia/next`
-| When using the `next` link:https://github.com/che-incubator/chectl/[chectl] channel, this IDE loads as a default without this URL parameter.
-endif::[]
-
-ifeval::["{project-context}" != "che"]
-| link:https://github.com/eclipse-che/che-theia[Che-Theia]
-|`eclipse/che-theia/latest`
-| This is the default IDE that loads in a new workspace without this URL parameter.
-endif::[]
-
-| link:https://github.com/che-incubator/che-code[Che-Code]
-| `che-incubator/che-code/insiders`
-|
-
-| link:https://www.jetbrains.com/help/idea/discover-intellij-idea.html[IntelliJ IDEA Community Edition]
-| `che-incubator/intellij-community/latest`
-|
-
-| link:https://www.jetbrains.com/help/pycharm/quick-start-guide.html[PyCharm]
-| `che-incubator/pycharm/latest`
-|
-
-|===
+include::example$snip_{project-context}-supported-ides.adoc[]
 
 == URL parameter for starting duplicate workspaces
 
