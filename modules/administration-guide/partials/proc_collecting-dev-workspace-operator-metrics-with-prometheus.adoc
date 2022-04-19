@@ -1,25 +1,26 @@
 [id="proc_collecting-dev-workspace-operator-metrics-with-prometheus_{context}"]
-= Collecting {devworkspace} operator metrics with Prometheus
+= Collecting {devworkspace} Operator metrics with Prometheus
 
 [role="_abstract"]
-This section describes how to use the Prometheus to collect, store, and query metrics about the {devworkspace} operator.
+To use the Prometheus to collect, store, and query metrics about the {devworkspace} Operator:
 
 .Prerequisites
 
-* The default configuration is set:
-** The `devworkspace-controller-metrics` service is exposing metrics on port `8443`.
-** The `devworkspace-webhookserver` service is exposing metrics on `9443`. 
+* The link:https://github.com/devfile/devworkspace-operator/blob/v0.10.0/deploy/deployment/kubernetes/objects/devworkspace-controller-metrics.Service.yaml[`devworkspace-controller-metrics` Service] is exposing metrics on port `8443`.
 
-* Prometheus 2.26.0 or later is running. The Prometheus console is running on port `9090` with a corresponding *service* and *route*. See link:https://prometheus.io/docs/introduction/first_steps/[First steps with Prometheus].
+* The `devworkspace-webhookserver` Service is exposing metrics on port `9443`. By default, the Service exposes metrics on port `9443`.
+
+* Prometheus 2.26.0 or later is running. The Prometheus console is running on port `9090` with a corresponding `service` and `route`. See link:https://prometheus.io/docs/introduction/first_steps/[First steps with Prometheus].
 
 .Procedure
 
 . Create a `ClusterRoleBinding` to bind the `ServiceAccount` associated with Prometheus to the link:https://github.com/devfile/devworkspace-operator/blob/main/deploy/deployment/kubernetes/objects/devworkspace-controller-metrics-reader.ClusterRole.yaml[devworkspace-controller-metrics-reader] `ClusterRole`.
-Without the `ClusterRoleBinding`, you cannot access {devworkspace} metrics because they are protected with role-based access control (RBAC).
 +
-.ClusterRole example
+NOTE: Without the `ClusterRoleBinding`, you cannot access {devworkspace} metrics because they are protected with role-based access control (RBAC).
++
+.ClusterRole
 ====
-[source,yaml,subs="+attributes"]
+[source,yaml,subs="+quotes,+attributes,+macros"]
 ----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -31,11 +32,9 @@ rules:
   verbs:
   - get
 ----
-
 ====
-
 +
-.ClusterRoleBinding example
+.ClusterRoleBinding
 ====
 [source,yaml,subs="+quotes,+attributes,+macros"]
 ----
@@ -45,22 +44,18 @@ metadata:
   name: devworkspace-controller-metrics-binding
 subjects:
   - kind: ServiceAccount
-    name: __<ServiceAccount_name>__ <1>
-    namespace: __<Prometheus_{orch-namespace}>__ <2>
+    name: __<ServiceAccount_name_associated_with_the_Prometheus_Pod>__
+    namespace: __<Prometheus_namespace>__
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: devworkspace-controller-metrics-reader
 ----
-
-<1> Name of the `ServiceAccount` associated with the Prometheus Pod.
-<2> The {orch-namespace} in which Prometheus is running.
-
 ====
 
-. Configure Prometheus to scrape metrics from the `8443` port exposed by the `devworkspace-controller-metrics` service, and `9443` port exposed by the `devworkspace-webhookserver` service.
+. Configure Prometheus to scrape metrics from the `8443` port exposed by the `devworkspace-controller-metrics` Service and from the `9443` port exposed by the `devworkspace-webhookserver` Service.
 +
-.Prometheus configuration example
+.Prometheus configuration
 ====
 [source,yaml,subs="+quotes,+attributes,+macros"]
 ----
@@ -71,9 +66,9 @@ metadata:
 data:
   prometheus.yml: |-
       global:
-        scrape_interval:     5s             <1>
-        evaluation_interval: 5s             <2>
-      scrape_configs:                       <3>
+        scrape_interval: 5s <1>
+        evaluation_interval: 5s <2>
+      scrape_configs: <3>
         - job_name: 'DevWorkspace'
           scheme: https
           authorization:
@@ -82,7 +77,7 @@ data:
           tls_config:
             insecure_skip_verify: true
           static_configs:
-            - targets: ['__<devworkspace-controller-metrics_service_host>__:8443']  <4>
+            - targets: ['devworkspace-controller-metrics:8443'] <4>
         - job_name: 'DevWorkspace webhooks'
           scheme: https
           authorization:
@@ -91,35 +86,30 @@ data:
           tls_config:
             insecure_skip_verify: true
           static_configs:
-            - targets: ['__<devworkspace-webhookserver_service_host>__:9443']  <5>
+            - targets: ['devworkspace-webhookserver:9443'] <5>
 ----
-
-<1> Rate at which a target is scraped.
-<2> Rate at which recording and alerting rules are re-checked.
-<3> Resources that Prometheus monitors. In the default configuration, two jobs (`DevWorkspace` and `DevWorkspace webhooks`), scrape the time series data exposed by the `devworkspace-controller-metrics` and `devworkspace-webhookserver` services.
-<4> Scrape metrics from the `8443` port.
-<5> Scrape metrics from the `9443` port.
-
+<1> The rate at which a target is scraped.
+<2> The rate at which the recording and alerting rules are re-checked.
+<3> The resources that Prometheus monitors. In the default configuration, two jobs, `DevWorkspace` and `DevWorkspace webhooks`, scrape the time series data exposed by the `devworkspace-controller-metrics` and `devworkspace-webhookserver` Services.
+<4> The scrape metrics from the `8443` port.
+<5> The scrape metrics from the `9443` port.
 ====
 
 .Verification steps
 
-* Use the Prometheus console to query and view metrics.
-
+. Use the Prometheus console to view and query metrics:
+** View the metrics at `http://__<prometheus_url>__/metrics`.
+** Query metrics from `http://__<prometheus_url>__/graph`.
 +
-View the metrics at `http://__<prometheus-url>__/metrics`.
-
-+
-Query metrics from `http://__<prometheus-url>__/graph`. For more information, see link:https://prometheus.io/docs/introduction/first_steps/#using-the-expression-browser[Using the expression browser].
-
-* Verify that all targets are up by viewing the targets endpoint at `http://__<prometheus-url>__/targets`.
+For more information, see link:https://prometheus.io/docs/introduction/first_steps/#using-the-expression-browser[Using the expression browser].
+. Verify that all targets are up by viewing the targets endpoint at `http://__<prometheus-url>__/targets`.
 
 
 [role="_additional-resources"]
 .Additional resources
 
-* link:https://prometheus.io/docs/prometheus/latest/configuration/configuration/[Configuring Prometheus].
+* link:https://prometheus.io/docs/prometheus/latest/configuration/configuration/[Configuring Prometheus]
 
-* link:https://prometheus.io/docs/prometheus/latest/querying/basics/[Querying Prometheus].
+* link:https://prometheus.io/docs/prometheus/latest/querying/basics/[Querying Prometheus]
 
-* link:https://prometheus.io/docs/concepts/metric_types/[Prometheus metric types].
+* link:https://prometheus.io/docs/concepts/metric_types/[Prometheus metric types]

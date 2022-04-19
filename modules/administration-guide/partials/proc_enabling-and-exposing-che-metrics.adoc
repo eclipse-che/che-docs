@@ -3,15 +3,7 @@
 [id="enabling-and-exposing-{prod-id-short}-metrics_{context}"]
 = Enabling and exposing {prod-short} server JVM metrics
 
-This section describes how to enable and expose {prod-short} JVM metrics.
-
-.Procedure
-
-. Set the `CHE_METRICS_ENABLED=true` environment variable, which will expose the `8087` metrics port on the `che-host` service.
-
-When {prod} is installed from the OperatorHub, the environment variable is set automatically if the default `CheCluster` CR is used: 
-
-image::monitoring/monitoring-che-che-cluster-cr.png[link="{imagesdir}/monitoring/monitoring-che-che-cluster-cr.png"]
+When {prod} is installed from the OperatorHub using the default `CheCluster` CR, the `metrics` environment variable is set automatically to `enable: true` in the `CheCluster` CR: 
 
 [source,yaml]
 ----
@@ -19,3 +11,16 @@ spec:
   metrics:
     enable: true
 ----
+
+.The `metrics` environment variable enabled by default in the `CheCluster` CR
+====
+image::monitoring/monitoring-che-che-cluster-cr.png[link="../_images/monitoring/monitoring-che-che-cluster-cr.png"[]
+====
+
+To manually enable and expose the {prod-short} JVM metrics:
+
+.Procedure
+
+* Set the `CHE_METRICS_ENABLED=true` environment variable.
++
+This will expose the `8087` metrics port on the `che-host` service.
