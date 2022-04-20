@@ -1,0 +1,255 @@
+:navtitle: Uninstalling {prod-short} after Operatorhub installation
+:keywords: administration guide, uninstalling-che, uninstalling-che-after-operatorhub-installation
+:page-aliases: installation-guide:uninstalling-che-after-operatorhub-installation
+
+[id="uninstalling-{prod-id-short}-after-operatorhub-installation_{context}"]
+= Uninstalling {prod-short} after OperatorHub installation
+
+This section provides instructions on how to uninstall an {prod} instance installed with OperatorHub.
+
+Uninstalling {prod} is a two-step process:
+
+. Uninstall the {devworkspace} Operator and its related custom resources that were added as a dependency of {prod}.
+
+. Uninstall the {prod} Operator
+
+== Uninstalling the {devworkspace} Operator dependency
+
+.Prerequisites
+
+* You have access to the OpenShift cluster of your organization's {prod-short} instance.
+
+* The OpenShift CLI (`oc`) is installed in the operating system you are using. See link:https://docs.openshift.com/container-platform/4.10/cli_reference/openshift_cli/getting-started-cli.html#installing-openshift-cli[Installing the OpenShift CLI].
+
+.Procedure
+
+https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster/#accessing-for-the-first-time-with-kubectl
+
+. Sign in to the cluster:
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc login -u <username> -p <password> <cluster_URL>
+----
+
+. Remove the {devworkspace} custom resources used by the Operator, along with any related {orch-name} objects, such as deployments.
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ {orch-cli} delete devworkspaces.workspace.devfile.io --all-namespaces --all --wait
+----
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc delete devworkspaceroutings.controller.devfile.io --all-namespaces --all --wait
+----
+
+pass:[<!-- vale RedHat.Spelling = NO -->]
+
++
+[WARNING]
+====
+If this step is not complete, finalizers make it difficult to fully uninstall the Operator easily.
+====
+
+pass:[<!-- vale RedHat.Spelling = YES -->]
+
+. Remove the CRDs used by the Operator:
+
++
+[WARNING]
+====
+The {devworkspace} Operator provides custom resource definitions (CRDs) that use conversion webhooks. Failing to remove these CRDs can cause issues on the cluster.
+====
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc delete customresourcedefinitions.apiextensions.k8s.io devworkspaceroutings.controller.devfile.io
+----
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc delete customresourcedefinitions.apiextensions.k8s.io devworkspaces.workspace.devfile.io
+----
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc delete customresourcedefinitions.apiextensions.k8s.io devworkspacetemplates.workspace.devfile.io
+----
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc delete customresourcedefinitions.apiextensions.k8s.io devworkspaceoperatorconfigs.controller.devfile.io
+----
+
+. Verify that all involved custom resource definitions are removed. The following command should not display any result.
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc get customresourcedefinitions.apiextensions.k8s.io | grep "devfile.io"
+----
+
+. Remove the `devworkspace-webhook-server` deployment, mutating, and validating webhooks:
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc delete deployment/devworkspace-webhook-server -n openshift-operators
+----
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc delete mutatingwebhookconfigurations controller.devfile.io
+----
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc delete validatingwebhookconfigurations controller.devfile.io
+----
+
+. Remove any remaining services, secrets, and config maps. Depending on the installation, some resources included in the following command may not exist on the cluster.
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc delete all --selector app.kubernetes.io/part-of=devworkspace-operator,app.kubernetes.io/name=devworkspace-webhook-server -n openshift-operators
+----
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc delete serviceaccounts devworkspace-webhook-server -n openshift-operators
+----
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc delete configmap devworkspace-controller -n openshift-operators
+----
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc delete clusterrole devworkspace-webhook-server devworkspace-controller-metrics-reader devworkspace-controller-edit-workspaces devworkspace-controller-view-workspaces
+----
+
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc delete clusterrolebinding devworkspace-webhook-server
+----
+
+. Uninstall the {devworkspace} Operator using the OpenShift
+web console
+
+    ** In the Administrator perspective of the web console, navigate to *Operators > Installed Operators*.
+
+    ** Scroll the filter list or type a keyword into the *Filter by name* box to find the {devworkspace} Operator.
+
+    ** Click the *Options* menu kebab for the {devworkspace} Operator, and then select *Uninstall Operator*.
+
+    ** In the *Uninstall Operator* confirmation dialog box, click *Uninstall* to remove the Operator, Operator deployments, and pods from the cluster. The Operator stops running and no longer receives updates.
+
+== Uninstalling {prod-short}
+
+After uninstalling the {devworkspace} Operator, uninstall {prod-short} by using either the OpenShift web console or the OpenShift CLI.
+
+=== Uninstalling {prod-short} using the OpenShift web console
+
+.Prerequisites
+
+* You have access to the OpenShift web console of your organization's {prod-short} instance.
+
+.Procedure
+
+. Navigate to the OpenShift web console and select the Administrator Perspective.
+
+. In the *Home > Projects* section, navigate to the project containing the {prod-short} instance.
++
+[NOTE]
+====
+The default project name is __<{prod-namespace}>__.
+====
+
+. In the *Operators > Installed Operators* section, click *{prod}* in the list of installed operators.
+
+. In the *{prod} Cluster* tab, click the displayed {prod} Cluster, and select the *Delete cluster* option in the *Actions* drop-down menu on the top right.
++
+[NOTE]
+====
+The default {prod} `checluster` Custom Resource name is __<{prod-checluster}>__.
+====
+
+. In the *Operators > Installed Operators* section, click *{prod}* in the list of installed operators and select the *Uninstall Operator* option in the *Actions* drop-down menu on the top right.
+
+. In the *Home > Projects* section, navigate to the project containing the {prod-short} instance, and select the *Delete Project* option in the *Actions* drop-down menu on the top right.
+
+=== Uninstalling {prod-short} using the OpenShift CLI
+
+.Prerequisites
+
+* You have access to the OpenShift web console of your organization's {prod-short} instance.
+
+.Procedure
+
+The following procedure provides command-line outputs as examples. Note that output in the user terminal may differ.
+
+To uninstall a {prod-short} instance from a cluster:
+
+. Sign in to the cluster:
++
+[subs="+quotes"]
+----
+$ oc login -u _<username>_ -p _<password>_ _<cluster_URL>_
+----
+
+. Switch to the project where the {prod-short} instance is deployed:
++
+[subs="+quotes,attributes"]
+----
+$ oc project _<{prod-id-short}_project>_
+----
+
+. Obtain the `checluster` Custom Resource name. The following shows a `checluster` Custom Resource named `{prod-checluster}`:
++
+[subs="+quotes,attributes"]
+----
+$ oc get checluster
+NAME          AGE
+{prod-checluster}   27m
+----
+
+. Delete the {prod-short} cluster:
++
+[subs="+quotes,attributes"]
+----
+$ oc delete checluster {prod-checluster}
+checluster.org.eclipse.che "{prod-checluster}" deleted
+----
+
+. Obtain the name of the {prod-short} cluster service version (CSV) module. The following detects a CSV module named `{prod-deployment}.v{prod-ver}`:
++
+[subs="+quotes,attributes"]
+----
+$ oc get csv
+NAME                 DISPLAY       VERSION   REPLACES             PHASE
+{prod-deployment}.v{prod-ver}   {prod}   {prod-ver}     {prod-deployment}.v{prod-prev-ver}   Succeeded
+----
+
+. Delete the {prod-short} CSV:
++
+[subs="+quotes,attributes"]
+----
+$ oc delete csv {prod-deployment}.v{prod-ver}
+clusterserviceversion.operators.coreos.com "{prod-deployment}.v{prod-ver}" deleted
+----
