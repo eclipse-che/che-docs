@@ -2,7 +2,7 @@
 = Collecting {devworkspace} Operator metrics with Prometheus
 
 [role="_abstract"]
-To use the Prometheus to collect, store, and query metrics about the {devworkspace} Operator:
+To use Prometheus to collect, store, and query metrics about the {devworkspace} Operator:
 
 .Prerequisites
 
@@ -16,7 +16,7 @@ To use the Prometheus to collect, store, and query metrics about the {devworkspa
 
 . Create a `ClusterRoleBinding` to bind the `ServiceAccount` associated with Prometheus to the link:https://github.com/devfile/devworkspace-operator/blob/main/deploy/deployment/kubernetes/objects/devworkspace-controller-metrics-reader.ClusterRole.yaml[devworkspace-controller-metrics-reader] `ClusterRole`.
 +
-NOTE: Without the `ClusterRoleBinding`, you cannot access {devworkspace} metrics because they are protected with role-based access control (RBAC).
+NOTE: Without the `ClusterRoleBinding`, you cannot access {devworkspace} metrics because access is protected with role-based access control (RBAC).
 +
 .ClusterRole
 ====
@@ -53,7 +53,7 @@ roleRef:
 ----
 ====
 
-. Configure Prometheus to scrape metrics from the `8443` port exposed by the `devworkspace-controller-metrics` Service and from the `9443` port exposed by the `devworkspace-webhookserver` Service.
+. Configure Prometheus to scrape metrics from port `8443` exposed by the `devworkspace-controller-metrics` Service and from port `9443` exposed by the `devworkspace-webhookserver` Service.
 +
 .Prometheus configuration
 ====
@@ -91,8 +91,8 @@ data:
 <1> The rate at which a target is scraped.
 <2> The rate at which the recording and alerting rules are re-checked.
 <3> The resources that Prometheus monitors. In the default configuration, two jobs, `DevWorkspace` and `DevWorkspace webhooks`, scrape the time series data exposed by the `devworkspace-controller-metrics` and `devworkspace-webhookserver` Services.
-<4> The scrape metrics from the `8443` port.
-<5> The scrape metrics from the `9443` port.
+<4> The scrape metrics from port `8443`.
+<5> The scrape metrics from port `9443`.
 ====
 
 .Verification steps
