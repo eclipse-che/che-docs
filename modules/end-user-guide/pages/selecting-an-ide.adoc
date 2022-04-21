@@ -11,16 +11,15 @@ You can select your preferred IDE when starting a workspace:
 * JetBrains IDE such as link:https://www.jetbrains.com/help/idea/getting-started.html[IntelliJ IDEA] or link:https://www.jetbrains.com/help/pycharm/quick-start-guide.html[PyCharm]
 * Visual Studio Code - link:https://github.com/Microsoft/vscode/[Open Source ("Code - OSS")]
 
-Currently, Theia is the default editor when none is specified. 
-
-== How to select an IDE
+Currently, the latest stable Theia is the default editor when none is specified. 
 
 There are multiple ways to select an IDE when launching a workspace:
 
-* using the URL parameter `che-editor=...`
-* using the file ./che/che-editor.yaml
+* using the URL parameter `che-editor`
+* using a `.che/che-editor.yaml` file
 
-=== Using URL parameters
+
+== Using URL parameters
 
 When launching a workspace via the factory API, you can pass in additional parameters so the chosen IDE is loaded.
 
@@ -28,11 +27,10 @@ When launching a workspace via the factory API, you can pass in additional param
 https://<che_fqdn>#<git_repository_url>?che-editor=<editor_key>
 ```
 
-// TODO make this a xref 
-See the `<editor_key>`` values for the supported IDEs in Table 1, at https://www.eclipse.org/che/docs/next/end-user-guide/optional-parameters-for-the-urls-for-starting-a-new-workspace/#_url_parameter_for_the_workspace_ide
+See the `<editor_key>` values for the supported IDEs in xref:optional-parameters-for-the-urls-for-starting-a-new-workspace[Table 1. The <editor_key> values for the supported IDEs].
 
 
-=== Using a Che Editor file 
+== Using a Che Editor file 
 
 To define a default editor for your project, different from the default in Che, place a `che-editor.yaml` file in a `.che` folder in the root of your project, and point it at the ID of the editor you wish to use.
 
@@ -42,16 +40,13 @@ id: che-incubator/che-idea/latest
 
 Ref: https://github.com/che-samples/gradle-demo-project/blob/devfilev2/.che/che-editor.yaml
 
-For a list of supported IDs, see:
+For a list of supported IDs, see xref:optional-parameters-for-the-urls-for-starting-a-new-workspace[Optional parameters for the URLs for starting a new workspace].
 
-// TODO make this a xref 
-* https://www.eclipse.org/che/docs/next/end-user-guide/optional-parameters-for-the-urls-for-starting-a-new-workspace/#_url_parameter_for_the_workspace_ide
+Experimental new IDEs can be loaded from the default plugin registry, using the IDs shown in link:https://github.com/eclipse-che/che-plugin-registry/blob/main/che-editors.yaml[che-editors.yaml].
 
-Experimental new IDEs can be loaded from the default plugin registry,  using the IDs shown in this file:
 
-* https://github.com/eclipse-che/che-plugin-registry/blob/main/che-editors.yaml
 
-==== Using a custom plugin registry for your own editors
+=== Using a custom plugin registry for your own editors
 
 If you want to include different editors than the default list in the Che plugin registry, you can do so in your `che-editor.yaml` file by setting an optional `registryUrl` directive.
 
@@ -64,7 +59,8 @@ override:                             # optional
       memoryLimit: 1280Mi
 ```
 
-==== Using a web reference instead of an id
+
+=== Using a web reference instead of an id
 
 Rather than a reference to a plugin in your plugin registry, you can point at a yaml file directly with the `reference` directive.
 
@@ -75,7 +71,9 @@ override:                                              # optional
       - name: theia-ide
         memoryLimit: 1280Mi 
 ```
-==== Using an inlined editor definition
+
+
+=== Using an inlined editor definition
 
 To put your whole editor definition in the `che-editor.yaml`` file, use the `inline` directive.
 
@@ -122,6 +120,7 @@ inline:
         - name: REMOTE_ENDPOINT_VOLUME_NAME
           value: remote-endpoint
 ```
+
 
 .Additional resources
 
