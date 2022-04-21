@@ -5,13 +5,130 @@
 [id="selecting-an-ide_{context}"]
 = Selecting an IDE
 
-You can select your IDE at when starting a workspace: 
+You can select your preferred IDE when starting a workspace: 
 
-* link:https://theia-ide.org/docs/[Eclipse Theia] (default IDE)
-* JetBrains IDE such as IntelliJ or PyCharm
-* Visual Studio Code
+* link:https://theia-ide.org/docs/[Eclipse Theia], the current default editor
+* JetBrains IDE such as link:https://www.jetbrains.com/help/idea/getting-started.html[IntelliJ IDEA] or link:https://www.jetbrains.com/help/pycharm/quick-start-guide.html[PyCharm]
+* Visual Studio Code - link:https://github.com/Microsoft/vscode/[Open Source ("Code - OSS")]
+
+Currently, Theia is the default editor when none is specified. 
+
+== How to select an IDE
+
+There are multiple ways to select an IDE when launching a workspace:
+
+* using the URL parameter `che-editor=...`
+* using the file ./che/che-editor.yaml
+
+=== Using URL parameters
+
+When launching a workspace via the factory API, you can pass in additional parameters so the chosen IDE is loaded.
+
+```
+https://<che_fqdn>#<git_repository_url>?che-editor=<editor_key>
+```
+
+// TODO make this a xref 
+See the `<editor_key>`` values for the supported IDEs in Table 1, at https://www.eclipse.org/che/docs/next/end-user-guide/optional-parameters-for-the-urls-for-starting-a-new-workspace/#_url_parameter_for_the_workspace_ide
+
+
+=== Using a Che Editor file 
+
+To define a default editor for your project, different from the default in Che, place a `che-editor.yaml` file in a `.che` folder in the root of your project, and point it at the ID of the editor you wish to use.
+
+```
+id: che-incubator/che-idea/latest
+```
+
+Ref: https://github.com/che-samples/gradle-demo-project/blob/devfilev2/.che/che-editor.yaml
+
+For a list of supported IDs, see:
+
+// TODO make this a xref 
+* https://www.eclipse.org/che/docs/next/end-user-guide/optional-parameters-for-the-urls-for-starting-a-new-workspace/#_url_parameter_for_the_workspace_ide
+
+Experimental new IDEs can be loaded from the default plugin registry,  using the IDs shown in this file:
+
+* https://github.com/eclipse-che/che-plugin-registry/blob/main/che-editors.yaml
+
+==== Using a custom plugin registry for your own editors
+
+If you want to include different editors than the default list in the Che plugin registry, you can do so in your `che-editor.yaml` file by setting an optional `registryUrl` directive.
+
+```
+id: eclipse/che-theia/next            # mandatory
+registryUrl: https://my-registry.com  # optional
+override:                             # optional
+  containers:
+    - name: theia-ide
+      memoryLimit: 1280Mi
+```
+
+==== Using a web reference instead of an id
+
+Rather than a reference to a plugin in your plugin registry, you can point at a yaml file directly with the `reference` directive.
+
+```
+reference: https://gist.github.com/.../che-editor.yaml # mandatory
+override:                                              # optional
+  containers:
+      - name: theia-ide
+        memoryLimit: 1280Mi 
+```
+==== Using an inlined editor definition
+
+To put your whole editor definition in the `che-editor.yaml`` file, use the `inline` directive.
+
+```
+inline:
+  endpoints:
+    - name: "theia"
+      public: true
+      targetPort: 3100
+      attributes:
+        protocol: http
+        type: ide
+        secure: true
+        cookiesAuthEnabled: true
+        discoverable: false
+    (...)
+  containers:
+    - name: theia-ide
+      image: "quay.io/eclipse/che-theia:next"
+      env:
+        - name: THEIA_PLUGINS
+          value: local-dir:///plugins
+      volumeMounts:
+        - name: plugins
+          path: "/plugins"
+        - name: theia-local
+          path: "/home/theia/.theia"
+      mountSources: true
+      ports:
+        - exposedPort: 3100
+      memoryLimit: "512M"
+      cpuLimit: 1000m
+      cpuRequest: 100m
+  initContainers:
+    - name: remote-runtime-injector
+      image: "quay.io/eclipse/che-theia-endpoint-runtime-binary:next"
+      volumeMounts:
+        - name: remote-endpoint
+          path: "/remote-endpoint"
+          ephemeral: true
+      env:
+        - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
+          value: /remote-endpoint/plugin-remote-endpoint
+        - name: REMOTE_ENDPOINT_VOLUME_NAME
+          value: remote-endpoint
+```
 
 .Additional resources
 
-See: link:https://theia-ide.org/docs/[]
+* link:https://theia-ide.org/docs/[Eclipse Theia Docs]
+* link:https://www.jetbrains.com/help/idea/getting-started.html[JetBrains IntelliJ IDEA]
+* link:https://www.jetbrains.com/help/pycharm/quick-start-guide.html[JetBrains PyCharm]
+* link:https://github.com/Microsoft/vscode/[Visual Studio Code - Open Source ("Code - OSS")]
+
+
 
