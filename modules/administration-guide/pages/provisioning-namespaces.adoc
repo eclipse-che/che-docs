@@ -1,0 +1,112 @@
+:_content-type: CONCEPT
+:navtitle: Provisioning {orch-namespace}s
+:keywords: administration guide, provisioning, {orch-namespace}
+:page-aliases: 
+
+[id="configuring-{orch-namespace}s_{context}"]
+= Provisioning {orch-namespace}s
+
+This procedure describes how to provision workpaces {orch-namespace}s in advance, rather than relying on automatic provisioning. 
+
+.Prerequisites
+
+* The workspace user cannot create namespaces on {orch-name}.
+
+.Procedure
+
+. Create one {orch-namespace} for each user, with following labels and annotations. Do not create multiple namespaces for a single user: it may lead to undefined behavior.
++
+[subs="+quotes,+attributes"]
+----
+metadata:
+  labels: <1>
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-namespace
+  annotations: <2>
+    che.eclipse.org/username: __<username>__ <3>
+----
+<1> `server.customCheProperties.CHE_INFRA_KUBERNETES_NAMESPACE_LABELS` property value
+<2> `server.customCheProperties.CHE_INFRA_KUBERNETES_NAMESPACE_ANNOTATIONS` property value
+<3> Workspace user username on {orch-name}
+
+
+. Ensure the workspace user has `admin` role privileges in the target namespace:
++
+[subs="+quotes,+attributes"]
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: admin
+  namespace: __<namespace>__ <1>
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: __<username>__ <2>
+----
+<1> pre-created namespace
+<2> target user
+
+. On {kubernetes}, ensure the `che` ServiceAccount has a cluster-wide `list` and `get` `namespaces` permissions as well as an `admin` role in target namespace.
+
+. To let {prod-short} update the workspace's {orch-namespace} labels on workspace startup, ensure `che` ServiceAccount has the following cluster-wide permissions to `update` and `get` `namespaces`:
++
+.`CulsterRole`
+[subs="+quotes,+attributes"]
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: __<cluster-role-name>__ <1>
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs:
+      - update
+      - get
+----
+<1> name of the cluster role
++
+.`ClusterRoleBinding`
+[subs="+quotes,+attributes"]
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: __<cluster-role-binding-name>__ <1>
+subjects:
+  - kind: ServiceAccount
+    name: __<service-account-name>__ <2>
+    namespace: __<service-accout-namespace>__ <3>
+roleRef:
+  kind: ClusterRole
+  name: __<cluster-role-name>__ <4>
+  apiGroup: rbac.authorization.k8s.io
+----
+<1> name of the cluster role binding
+<2> name of the `che` ServiceAccount
+<3> {prod-short} installation namespace
+<4> name of the cluster role created in previous step
+
+. Alternatively, configure {prod-short} to not update the labels at workspace startup.
++
+.`CheCluster` custom resource excerpt
+----
+...
+spec:
+  server:
+    server.customCheProperties.CHE_INFRA_KUBERNETES_NAMESPACE_LABEL=false
+...
+----
+
+.Additional resources
+
+* xref:understanding-the-checluster-custom-resource.adoc[]
+* xref:advanced-configuration-options-for-the-che-server-component.adoc[]
+

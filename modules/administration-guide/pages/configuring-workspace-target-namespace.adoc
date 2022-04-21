@@ -1,0 +1,36 @@
+:_content-type: CONCEPT
+:navtitle: Configuring workspace target {orch-namespace}
+:keywords: administration guide, configuring, namespace
+:page-aliases: installation-guide:configuring-namespace-strategies, configuring-namespace-strategies
+
+[id="configuring-workspace-target-namespace_{context}"]
+= Configuring workspace target {orch-namespace}
+
+For each user, {prod-short} isolates the workspaces in a {orch-namespace}.
+You can configure the {orch-namespace} name template.
+
+{prod-short} server checks usernames and IDs for compatibility with {orch-name} objects naming convention before creating a {orch-namespace} from a template:
+
+*  Incompatible usernames or IDs are reduced to the nearest valid name by replacing groups of unsuitable symbols with the `-` symbol. 
+* The addition of a random 6-symbol suffix prevents IDs from collisions. The result is stored in preferences for reuse.
+* {kubernetes} limits the length of a {orch-namespace} name to 63 characters (this includes the evaluated placeholders). Additionally, the names (after placeholder evaluation) must be valid DNS names.
+* OpenShift limits the length further to 49 characters.
+* The `_<userid>_` placeholder is evaluated into a 36 character long UUID string.
+
+.Procedure
+
+* Set the `server.workspaceNamespaceDefault` property in CheCluster Custom Resource:
++
+[subs="+quotes,+attributes"]
+----
+...
+spec:
+  server:
+    workspaceNamespaceDefault: __{prod-workspace}__-__<username>__
+...
+----
+
+.Additional resources
+
+* xref:understanding-the-checluster-custom-resource.adoc[]
+
