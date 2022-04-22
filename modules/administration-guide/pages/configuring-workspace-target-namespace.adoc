@@ -11,7 +11,8 @@ You can configure the {orch-namespace} name template.
 
 {prod-short} server checks usernames and IDs for compatibility with {orch-name} objects naming convention before creating a {orch-namespace} from a template:
 
-*  Incompatible usernames or IDs are reduced to the nearest valid name by replacing groups of unsuitable symbols with the `-` symbol. 
+* The <username> or <userid> placeholder is mandatory.
+* Incompatible usernames or IDs are reduced to the nearest valid name by replacing groups of unsuitable symbols with the `-` symbol. 
 * The addition of a random 6-symbol suffix prevents IDs from collisions. The result is stored in preferences for reuse.
 * {kubernetes} limits the length of a {orch-namespace} name to 63 characters (this includes the evaluated placeholders). Additionally, the names (after placeholder evaluation) must be valid DNS names.
 * OpenShift limits the length further to 49 characters.
@@ -26,9 +27,10 @@ You can configure the {orch-namespace} name template.
 ...
 spec:
   server:
-    workspaceNamespaceDefault: __{prod-workspace}__-__<username>__
+    workspaceNamespaceDefault: __<prefix>__<username>__<suffix>__ <1>
 ...
 ----
+<1> Default: `<username>-che`
 
 .Additional resources
 

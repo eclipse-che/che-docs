@@ -18,83 +18,87 @@ This procedure describes how to provision workpaces {orch-namespace}s in advance
 +
 [subs="+quotes,+attributes"]
 ----
+kind: Namespace
+apiVersion: v1
 metadata:
-  labels: <1>
-    app.kubernetes.io/part-of: che.eclipse.org
-    app.kubernetes.io/component: workspaces-namespace
-  annotations: <2>
+  name: __<{orch-namespace}_name>__ <1>
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org <2>
+    app.kubernetes.io/component: workspaces-namespace <2>
+  annotations:
     che.eclipse.org/username: __<username>__ <3>
 ----
-<1> `server.customCheProperties.CHE_INFRA_KUBERNETES_NAMESPACE_LABELS` property value
-<2> `server.customCheProperties.CHE_INFRA_KUBERNETES_NAMESPACE_ANNOTATIONS` property value
-<3> Workspace user username on {orch-name}
+<1> {orch-namespace} name
+<2> `server.customCheProperties.CHE_INFRA_KUBERNETES_NAMESPACE_LABELS` property value
+<3> `server.customCheProperties.CHE_INFRA_KUBERNETES_NAMESPACE_ANNOTATIONS` property value, replacing __<username>__ with workspace user username on {orch-name}.
 
-
-. Ensure the workspace user has `admin` role privileges in the target namespace:
+. Ensure the __<username>__ workspace user has `admin` role privileges in the __<{orch-namespace}_name>__ {orch-namespace}:
 +
+.`admin` role binding
 [subs="+quotes,+attributes"]
 ----
-apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: admin
-  namespace: __<namespace>__ <1>
+  namespace: __<{orch-namespace}_name>__ <1>
+subjects:
+  - kind: User
+    apiGroup: rbac.authorization.k8s.io
+    name: __<username>__ <2>
+    namespace: __<{orch-namespace}_name>__ <1>
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: admin
-subjects:
-- apiGroup: rbac.authorization.k8s.io
-  kind: User
-  name: __<username>__ <2>
 ----
-<1> pre-created namespace
-<2> target user
+<1> {orch-namespace} name
+<2> workspace user username on {orch-name}
 
-. On {kubernetes}, ensure the `che` ServiceAccount has a cluster-wide `list` and `get` `namespaces` permissions as well as an `admin` role in target namespace.
-
-. To let {prod-short} update the workspace's {orch-namespace} labels on workspace startup, ensure `che` ServiceAccount has the following cluster-wide permissions to `update` and `get` `namespaces`:
+. Create a __<{prod-id-short}-workspaces-namespaces-clusterrole>__ cluster role and cluster role binding to ensure the `che` ServiceAccount has a accurate permissions on the __<{orch-namespace}_name>__ {orch-namespace}. Use a name at your connvenance for __<{prod-id-short}-workspaces-namespaces-clusterrole>__.
 +
-.`CulsterRole`
+.`__<{prod-id-short}-workspaces-namespaces-clusterrole>__` cluster role
 [subs="+quotes,+attributes"]
 ----
-apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: __<cluster-role-name>__ <1>
+  name: __<{prod-id-short}-workspaces-namespaces-clusterrole>__
 rules:
-  - apiGroups:
-      - ""
+  - verbs:
+      - list <1>
+      - get <1>
+      - update <2>
+    apiGroups:
+      - ''
     resources:
       - namespaces
-    verbs:
-      - update
-      - get
 ----
-<1> name of the cluster role
+<1> Necessary permissions to let {prod-short} access the __<{orch-namespace}_name>__ {orch-namespace}.
+<2> Optional permissions to let {prod-short} update the __<{orch-namespace}_name>__ {orch-namespace} labels on workspace startup.
 +
-.`ClusterRoleBinding`
+.`__<{prod-id-short}-workspaces-namespaces-clusterrole>__` cluster role binding
 [subs="+quotes,+attributes"]
 ----
-apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: __<cluster-role-binding-name>__ <1>
+  name: __<{prod-id-short}-workspaces-namespaces-clusterrole>__
 subjects:
   - kind: ServiceAccount
     name: __<service-account-name>__ <2>
-    namespace: __<service-accout-namespace>__ <3>
+    namespace: __<service-account-namespace>__ <3>
 roleRef:
   kind: ClusterRole
-  name: __<cluster-role-name>__ <4>
+  name: __<{prod-id-short}-workspaces-namespaces-clusterrole>__
   apiGroup: rbac.authorization.k8s.io
 ----
 <1> name of the cluster role binding
-<2> name of the `che` ServiceAccount
+<2> name of the {prod-short} ServiceAccount
 <3> {prod-short} installation namespace
-<4> name of the cluster role created in previous step
 
-. Alternatively, configure {prod-short} to not update the labels at workspace startup.
+
+. Optionally, configure {prod-short} to not update the {orch-namespace} labels when starting a workspace.
 +
 .`CheCluster` custom resource excerpt
 ----
