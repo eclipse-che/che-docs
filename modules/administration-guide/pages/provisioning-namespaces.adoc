@@ -32,7 +32,7 @@ metadata:
 <2> `server.customCheProperties.CHE_INFRA_KUBERNETES_NAMESPACE_LABELS` property value
 <3> `server.customCheProperties.CHE_INFRA_KUBERNETES_NAMESPACE_ANNOTATIONS` property value, replacing __<username>__ with workspace user username on {orch-name}.
 
-. Ensure the __<username>__ workspace user has `admin` role privileges in the __<{orch-namespace}_name>__ {orch-namespace}:
+. Ensure the __<username>__ workspace user has `edit` role privileges in the __<{orch-namespace}_name>__ {orch-namespace}:
 +
 .`admin` role binding
 [subs="+quotes,+attributes"]
@@ -40,7 +40,7 @@ metadata:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: admin
+  name: edit
   namespace: __<{orch-namespace}_name>__ <1>
 subjects:
   - kind: User
@@ -50,7 +50,7 @@ subjects:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: admin
+  name: edit
 ----
 <1> {orch-namespace} name
 <2> workspace user username on {orch-name}
