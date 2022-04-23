@@ -1,10 +1,10 @@
 :_content-type: PROCEDURE
-:navtitle: Uninstalling {prod-short} after {prod-cli} installation
+:navtitle: Uninstalling {prod-short} by using {prod-cli}
 :keywords: administration guide, uninstalling-che, uninstalling-che-after-chectl-installation
 :page-aliases: installation-guide:uninstalling-che-after-chectl-installation
 
-[id="uninstalling-{prod-id-short}-after-{prod-cli}-installation_{context}"]
-= Uninstalling {prod-short} after {prod-cli} installation
+[id="uninstalling-{prod-id-short}-by-using-{prod-cli}_{context}"]
+= Uninstalling {prod-short} by using `{prod-cli}`
 
 To uninstall an instance of {prod} that was installed using the `{prod-cli}` tool:
 
@@ -16,27 +16,11 @@ To uninstall an instance of {prod} that was installed using the `{prod-cli}` too
 .Procedure
 
 . Obtain the name of the {prod-short} namespace:
-+
-[subs="+quotes,attributes"]
-----
-$ {orch-cli} get checluster --all-namespaces -o=jsonpath="{.items[*].metadata.namespace}"
-----
 
-. Remove the {prod-short} instance from the {prod-namespace} {orch-namespace}:
 +
-[subs="+quotes,attributes"]
-----
-$ {prod-cli} server:delete -n {prod-namespace}
-----
-+
-[NOTE]
-====
-When the name of the {orch-namespace} containing the {prod-short} instance is `{prod-namespace}`, the `-n` argument is not necessary.
-====
+`$ {orch-cli} get checluster --all-namespaces -o=jsonpath="{.items[*].metadata.namespace}"`
 
-. Remove the {prod-namespace} {orch-namespace}:
+. Remove the {prod-short} instance from the {orch-namespace}:
+
 +
-[subs="+quotes,attributes"]
-----
-$ {orch-cli} delete namespaces {prod-namespace}
-----
+`$ {prod-cli} server:delete -n __<{orch-namespace}>__`
