@@ -1,0 +1,66 @@
+[id="uninstalling-the-devworkspace-operator_{context}"]
+= Uninstalling the {devworkspace} Operator
+
+To uninstall the DevWorkspace Operator and related Custom Resources:
+
+.Prerequisites
+
+* The OperatorHub was used to install the {prod-short} instance on the {ocp} or {osd}.
+
+* You have access to the OpenShift cluster of your organization's {prod-short} instance.
+
+* The OpenShift CLI (`oc`) is installed in the operating system you are using. See link:https://docs.openshift.com/container-platform/4.10/cli_reference/openshift_cli/getting-started-cli.html#installing-openshift-cli[Installing the OpenShift CLI].
+
+.Procedure
+
+. Optional: Sign in to the cluster.
+
++
+`$ oc login -u __<username>__ -p __<password>__ __ <cluster_url>__`
+
+. Remove the {devworkspace} Custom Resources used by the Operator, along with any related {orch-name} objects such as Deployments:
+
++
+`$ {orch-cli} delete devworkspaces.workspace.devfile.io --all-namespaces --all --wait && oc delete devworkspaceroutings.controller.devfile.io --all-namespaces --all --wait`
++
+[WARNING]
+====
+If you do not complete this step, pass:[<!-- vale RedHat.Spelling = NO -->]finalizerspass:[<!-- vale RedHat.Spelling = YES -->] may impede fully uninstalling the Operator.
+====
+
+. Remove the CRDs used by the Operator:
+
++
+`$ oc delete customresourcedefinitions.apiextensions.k8s.io devworkspaceroutings.controller.devfile.io && oc delete customresourcedefinitions.apiextensions.k8s.io devworkspaces.workspace.devfile.io && oc delete customresourcedefinitions.apiextensions.k8s.io devworkspacetemplates.workspace.devfile.io && oc delete customresourcedefinitions.apiextensions.k8s.io devworkspaceoperatorconfigs.controller.devfile.io`
+
++
+[WARNING]
+====
+The {devworkspace} Operator provides Custom Resource Definitions (CRDs) that use conversion webhooks. Failing to remove these CRDs can cause issues in the cluster.
+====
+
+. Verify that all related Custom Resource Definitions are removed:
+
++
+`$ oc get customresourcedefinitions.apiextensions.k8s.io | grep "devfile.io"`
+
++
+This command must display no results.
+
+. Remove the `devworkspace-webhook-server` deployment, mutating, and validating webhooks:
+
++
+`$ oc delete deployment/devworkspace-webhook-server -n openshift-operators && oc delete mutatingwebhookconfigurations controller.devfile.io && oc delete validatingwebhookconfigurations controller.devfile.io`
+
+. Remove any remaining Services, Secrets, and ConfigMaps:
+
++
+`$ oc delete all --selector app.kubernetes.io/part-of=devworkspace-operator,app.kubernetes.io/name=devworkspace-webhook-server -n openshift-operators && oc delete serviceaccounts devworkspace-webhook-server -n openshift-operators && oc delete configmap devworkspace-controller -n openshift-operators && oc delete clusterrole devworkspace-webhook-server devworkspace-controller-metrics-reader devworkspace-controller-edit-workspaces devworkspace-controller-view-workspaces && oc delete clusterrolebinding devworkspace-webhook-server`
+
++
+Depending on the installation, some resources included in the command may not exist in the cluster.
+
+. In the OpenShift web console, go to menu:Administrator[Operators>Installed Operators>{devworkspace} Operator>⋮>Uninstall Operator>Uninstall].
+
++
+This step stops the Operator and removes the Operator, Operator Deployments, and Pods from the cluster.
