@@ -1,0 +1,33 @@
+:_content-type: PROCEDURE
+:navtitle: Provisioning {orch-namespace}s in advance
+:keywords: administration guide, provisioning, {orch-namespace}
+:page-aliases: 
+
+[id="preprovisioning-{orch-namespace}s_{context}"]
+= Provisioning {orch-namespace}s in advance
+
+You can provision workpaces {orch-namespace}s in advance, rather than relying on automatic provisioning. Repeat the procedure for each user.
+
+.Procedure
+
+* Create the __<{orch-namespace}_name>__ {orch-namespace} for __<username>__ user, with following labels and annotations.
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: __<{orch-namespace}_name>__ <1>
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-namespace
+  annotations:
+    che.eclipse.org/username: __<username>__
+----
+<1> Use a {orch-namespace} name at your convenance
+
+.Additional resources
+
+* xref:understanding-the-checluster-custom-resource.adoc[]
+* xref:advanced-configuration-options-for-the-che-server-component.adoc[]
+
