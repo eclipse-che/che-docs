@@ -1,0 +1,69 @@
+:navtitle: Mounting Persistent Volumes
+:keywords: user-guide, configuring, user, volumes, persistent, volume, claim, mounting, mount
+:page-aliases:
+
+[id="mounting-persistent-volumes_{context}"]
+= Mounting Persistent Volumes
+
+You can mount a Persistent Volume Claim (PVC) to your {devworkspace} containers. A PVC is used to request persistent storage resources which are abstracted from the user.
+
+To automatically mount an existing PVC to all {devworkspace} containers:
+
+.Prerequisites
+
+* A running instance of {prod-short}.
+* You have GUI or CLI access to the {orch-name} cluster of your organization's {prod-short} instance.
+* For CLI users: The `{orch-cli}` command-line tool is installed in the operating system you are using.
+
+.Procedure
+
+. Determine an existing PVC in your user {orch-namespace} to mount to all {devworkspace} containers.
+
+. Add label `controller.devfile.io/mount-to-devworkspace: true` to `__<PVC_name>__`.
+
++
+[TIP]
+====
+CLI users can apply the label like so:
+
+`$ {orch-cli} -n __<user_{orch-namespace}>__ label persistentvolumeclaim __<PVC_name>__ controller.devfile.io/mount-to-devworkspace=true`
+====
+
+. Optional: Use the annotations to configure how the PVC is mounted.
++
+.Optional annotations
+|===
+| Annotation |Description
+
+| `controller.devfile.io/mount-path:`
+| The mount path for the PVC. Defaults to `/tmp/__<PVC_name>__`.
+
+| `controller.devfile.io/read-only:`
+| Set to `'true'` or `'false'` to specify whether the PVC is to be mounted as read-only. Defaults to `'false'`, resulting in the PVC mounted as read-write.
+|===
+
+.Mounting a read-only PVC
+====
+[source,yaml,subs="+quotes"]
+----
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-name
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+  annotations:
+    controller.devfile.io/mount-path: /tmp/my-directory
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+  volumeName: pv-name
+  storageClassName: manual
+  volumeMode: Filesystem
+----
+
+When a {devworkspace} starts, the PVC will be mounted at `/tmp/my-directory` in the {devworkspace} containers.
+====
