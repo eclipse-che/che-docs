@@ -7,17 +7,46 @@
 
 You can mount a Persistent Volume Claim (PVC) to your {devworkspace} containers. A PVC is used to request persistent storage resources which are abstracted from the user.
 
-To automatically mount an existing PVC to all {devworkspace} containers:
+{prod-short} provisions containerized development environments (workspaces). Without persistent volumes, every change would be lost when a running workspace is stopped.
+
+To avoid losing changes a user can either:
+
+* Pre-create a PVC with the right labels. This procedure is described in this section.
+* Specify a Persistent Volume (PV) in a Devfile that will be managed by {prod-short}. See link:https://devfile.io/docs/devfile/2.1.0/user-guide/specifying-persistent-storage[Specifiying persistent storage].
+
+Users will want to use Devfile-defined volumes when persisted data is mandatory for development and doesn't need to be shared across multiple workspaces.
+
+Alternatively, users should favor pre-created PVs when:
+
+* not all the developers of a project will need the PV, or
+* the PV lifecycle goes beyond the lifecycle of a single workspace, or
+* the data included in the PV is shared across workspaces.
+
+An example of a Devfile-defined PV is the `/projects/` folder of a workspace, which is by default.
+
+Pre-created PVs are mounted even if the workspace is run in ephemeral mode (the devfile uses the attribute `controller.devfile.io/storage-type: ephemeral`).
+
+[NOTE]
+====
+Persistent Volumes come at a cost. Attaching a persistent volume will make workspace startup slower.
+====
+
+
+[WARNING]
+====
+There is a limitation when trying to run two concurrent workspaces if mounting a PV with the `ReadWriteOnce` access mode. The second workspace may fail to start.
+====
+
+To automatically mount an existing PVC to workspace containers:
 
 .Prerequisites
 
 * A running instance of {prod-short}.
 * You have GUI or CLI access to the {orch-name} cluster of your organization's {prod-short} instance.
+* You have created a new PVC or determined an existing one in your user {orch-namespace} to mount to all workspaces containers.
 * For CLI users: The `{orch-cli}` command-line tool is installed in the operating system you are using.
 
 .Procedure
-
-. Determine an existing PVC in your user {orch-namespace} to mount to all {devworkspace} containers.
 
 . Add label `controller.devfile.io/mount-to-devworkspace: true` to `__<PVC_name>__`.
 
