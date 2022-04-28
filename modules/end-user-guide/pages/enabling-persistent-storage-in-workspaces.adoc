@@ -1,9 +1,13 @@
-:navtitle: Mounting Persistent Volumes
+:navtitle: Enabling persistent storage in workspaces
 :keywords: user-guide, configuring, user, volumes, persistent, volume, claim, mounting, mount
 :page-aliases:
 
-[id="mounting-persistent-volumes_{context}"]
-= Mounting Persistent Volumes
+[id="enabling-persistent-storage-in-workspaces_{context}"]
+= Enabling persistent storage in workspaces
+
+****
+THIS PAGE IS WORK IN PROGRESS. max-cx
+****
 
 You can mount a Persistent Volume Claim (PVC) to your {devworkspace} containers. A PVC is used to request persistent storage resources which are abstracted from the user.
 
@@ -12,7 +16,7 @@ You can mount a Persistent Volume Claim (PVC) to your {devworkspace} containers.
 To avoid losing changes a user can either:
 
 * Pre-create a PVC with the right labels. This procedure is described in this section.
-* Specify a Persistent Volume (PV) in a Devfile that will be managed by {prod-short}. See link:https://devfile.io/docs/devfile/2.1.0/user-guide/specifying-persistent-storage[Specifiying persistent storage].
+* Specify a Persistent Volume (PV) in a Devfile that will be managed by {prod-short}. See link:https://devfile.io/docs/devfile/2.1.0/user-guide/specifying-persistent-storage[Specifying persistent storage].
 
 Users will want to use Devfile-defined volumes when persisted data is mandatory for development and doesn't need to be shared across multiple workspaces.
 
@@ -28,7 +32,7 @@ Pre-created PVs are mounted even if the workspace is run in ephemeral mode (the 
 
 [NOTE]
 ====
-Persistent Volumes come at a cost. Attaching a persistent volume will make workspace startup slower.
+Persistent Volumes come at a cost: attaching a persistent volume slows workspace startup.
 ====
 
 
@@ -41,7 +45,6 @@ To automatically mount an existing PVC to workspace containers:
 
 .Prerequisites
 
-* A running instance of {prod-short}.
 * You have GUI or CLI access to the {orch-name} cluster of your organization's {prod-short} instance.
 * You have created a new PVC or determined an existing one in your user {orch-namespace} to mount to all workspaces containers.
 * For CLI users: The `{orch-cli}` command-line tool is installed in the operating system you are using.
@@ -65,10 +68,14 @@ CLI users can apply the label like so:
 | Annotation |Description
 
 | `controller.devfile.io/mount-path:`
-| The mount path for the PVC. Defaults to `/tmp/__<PVC_name>__`.
+| The mount path for the PVC.
+
+Defaults to `/tmp/__<PVC_name>__`.
 
 | `controller.devfile.io/read-only:`
-| Set to `'true'` or `'false'` to specify whether the PVC is to be mounted as read-only. Defaults to `'false'`, resulting in the PVC mounted as read-write.
+| Set to `'true'` or `'false'` to specify whether the PVC is to be mounted as read-only.
+
+Defaults to `'false'`, resulting in the PVC mounted as read-write.
 |===
 
 .Mounting a read-only PVC
@@ -78,21 +85,27 @@ CLI users can apply the label like so:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-name
+  name: __<pvc_name>__
   labels:
     controller.devfile.io/mount-to-devworkspace: 'true'
   annotations:
-    controller.devfile.io/mount-path: /tmp/my-directory
+    controller.devfile.io/mount-path: __</example/directory>__
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 3Gi
-  volumeName: pv-name
+      storage: 3Gi <1>
+  volumeName: __<pv_name>__
   storageClassName: manual
   volumeMode: Filesystem
 ----
+<1> Example storage request value.
 
-When a {devworkspace} starts, the PVC will be mounted at `/tmp/my-directory` in the {devworkspace} containers.
+When you start a workspace, the PVC is mounted at `/tmp/my-directory` in the `{devworkspace}` containers.
 ====
+
+.Additional resources
+
+* link:https://docs.openshift.com/container-platform/latest/storage/understanding-persistent-storage.html[Red Hat OpenShift Documentation: Understanding persistent storage]
+* link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/[Kubernetes Documentation: Persistent Volumes]

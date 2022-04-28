@@ -5,13 +5,14 @@
 [id="mounting-configmaps_{context}"]
 = Mounting ConfigMaps
 
-You can automatically mount {orch-name} ConfigMaps to all workspace containers, creating permanent mount points for components for configuration files.
+To mount non-confidential configuration data into your workspaces, use {kubernetes} ConfigMaps.
 
-ConfigMaps are {orch-name} objects that store non-confidential data such as configuration values for an application.
+Using {kubernetes} ConfigMaps, you can mount non-sensitive data such as configuration values for an application.
+
+Mount {kubernetes} ConfigMaps to the `{devworkspace}` containers in the {orch-name} cluster of your organization's {prod-short} instance.
 
 .Prerequisites
 
-* A running instance of {prod-short}.
 * You have GUI or CLI access to the {orch-name} cluster of your organization's {prod-short} instance.
 * You have created a new ConfigMap or determined an existing one in your user {orch-namespace} to mount to all workspaces containers.
 * For CLI users: The `{orch-cli}` command line tool is installed in the operating system you are using.
@@ -45,11 +46,11 @@ Defaults to `/etc/config/__<ConfigMap_name>__`.
 
 Defaults to `file`.
 
-If `file`, mounts the keys and values as files within the mount path.
+`mount-as:file` mounts the keys and values as files within the mount path.
 
-If `subpath`, mounts the keys and values within the mount path using subpath volume mounts.
+`mount-as:subpath` mounts the keys and values within the mount path using subpath volume mounts.
 
-If `env`, mounts the keys and values as environment variables in all containers in the {devworkspace}.
+`mount-as:env` mounts the keys and values as environment variables in all `{devworkspace}` containers.
 |===
 
 .Mounting a ConfigMap as environment variables
@@ -70,5 +71,5 @@ data:
   __<env_var_2>__: __<value_2>__
 ----
 
-When a workspace starts, environment variables `__<env_var_1>__` and `__<env_var_2>__` will be available in the workspace containers.
+When you start a workspace, the `__<env_var_1>__` and `__<env_var_2>__` environment variables will be available in the `{devworkspace}` containers.
 ====
