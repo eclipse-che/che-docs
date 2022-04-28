@@ -10,7 +10,7 @@ PRODUCT_OLM_STABLE_CHANNEL=${PRODUCT_OLM_STABLE_CHANNEL:-stable}                
 PRODUCT_OLM_CATALOG_SOURCE=${PRODUCT_OLM_CATALOG_SOURCE:-community-operators}                    # {prod-stable-channel-catalog-source}
 PRODUCT_OLM_PACKAGE=${PRODUCT_OLM_PACKAGE:-eclipse-che}                                          # {prod-stable-channel-package}
 
-MIGRATION_PRODUCT_SHORT_ID=${MIGRATION_PRODUCT_SHORT_ID:-che}                                    # {prod-migration-short-id}
+MIGRATION_PRODUCT_SHORT_ID=${MIGRATION_PRODUCT_SHORT_ID:-che}                                    # {prod-migration-id-short}
 MIGRATION_PRODUCT_SUBSCRIPTION_NAME=${MIGRATION_PRODUCT_SUBSCRIPTION_NAME:-eclipse-che}          # {prod-migration-subscription}
 MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME=${MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME:-eclipse-che}      # {prod-migration-checluster}
 MIGRATION_PRODUCT_OPERATOR_NAME=${MIGRATION_PRODUCT_OPERATOR_NAME:-che-operator}                 # {prod-migration-operator}
