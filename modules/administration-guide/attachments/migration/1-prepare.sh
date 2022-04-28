@@ -7,7 +7,7 @@ K8S_CLI=${K8S_CLI:-oc}                                                          
 PRODUCT_ID=${PRODUCT_ID:-eclipse-che}                                            # {prod-id}
 INSTALLATION_NAMESPACE=${INSTALLATION_NAMESPACE:-eclipse-che}                    # {prod-namespace}
 
-MIGRATION_PRODUCT_DEPLOYMENT_NAME=${MIGRATION_PRODUCT_DEPLOYMENT_NAME:-che}      # {prod-migration-deployment-name}
+MIGRATION_PRODUCT_DEPLOYMENT_NAME=${MIGRATION_PRODUCT_DEPLOYMENT_NAME:-che}      # {prod-migration-deployment}
 MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME=${MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME:-eclipse-che}                          # {prod-migration-checluster}
 MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME=${MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME:-keycloak} # {identity-provider-id}
 
