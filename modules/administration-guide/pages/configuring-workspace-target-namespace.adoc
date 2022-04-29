@@ -1,0 +1,61 @@
+:_content-type: PROCEDURE
+:navtitle: Configuring {orch-namespace} name
+:keywords: administration guide, configuring, namespace
+:page-aliases: 
+
+[id="configuring-a-user-{orch-namespace}-name-for-automatic-provisioning_{context}"]
+= Configuring a user {orch-namespace} name for automatic provisioning
+
+You can configure the {orch-namespace} name template that {prod-short} uses to create the required {orch-namespace} when starting a workspace.
+
+A valid {orch-namespace} name template follows these conventions:
+
+* The `<username>` or `<userid>` placeholder is mandatory.
+
+* Usernames and IDs cannot contain invalid characters. If the formatting of a username or ID is incompatible with the naming conventions for {orch-name} objects, {prod-short} changes the username or ID to a valid name by replacing incompatible characters with the `-` symbol. 
+
+* {prod-short} evaluates the `<userid>` placeholder into a 14 character long string, and adds a random six character long suffix to prevent IDs from colliding. The result is stored in the user preferences for reuse.
+
+* {kubernetes} limits the length of a {orch-namespace} name to 63 characters. 
+
+* OpenShift limits the length further to 49 characters.
+
+
+
+.Procedure
+
+* Set the `server.workspaceNamespaceDefault` property in CheCluster Custom Resource:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+kind: CheCluster
+apiVersion: org.eclipse.che/v1
+# ...
+spec:
+  server:
+    workspaceNamespaceDefault: __<workspace_namespace_template_>__
+# ...
+----
++
+.User workspaces {orch-namespace} name template examples
+====
+[%header,cols="1,1"]  
+|=== 
+|User workspaces {orch-namespace} name template
+|Resulting {orch-namespace} example
+
+|`<username>-{prod-id-short}` (default)
+|user1-{prod-id-short}
+
+|`<userid>-namespace` 
+|`cge1egvsb2nhba-namespace-ul1411` 
+
+|`<userid>-aka-<username>-namespace`
+|`cgezegvsb2nhba-aka-user1-namespace-6m2w2b`
+|=== 
+====
+
+.Additional resources
+
+* xref:understanding-the-checluster-custom-resource.adoc[]
+
