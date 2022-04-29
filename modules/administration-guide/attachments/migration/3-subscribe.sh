@@ -5,59 +5,61 @@ set -o pipefail
 
 K8S_CLI=${K8S_CLI:-oc}                                                           # {orch-cli}
 PRODUCT_ID=${PRODUCT_ID:-eclipse-che}                                            # {prod-id}
-PRODUCT_SUBSCRIPTION_NAME=${PRODUCT_SUBSCRIPTION_NAME:-eclipse-che}              # {prod-subscription}
 INSTALLATION_NAMESPACE=${INSTALLATION_NAMESPACE:-eclipse-che}                    # {prod-namespace}
-CHE_CLUSTER_CR_NAME=${CHE_CLUSTER_CR_NAME:-eclipse-che}                          # {prod-checluster}
+PRODUCT_OLM_STABLE_CHANNEL=${PRODUCT_OLM_STABLE_CHANNEL:-stable}                                 # {prod-stable-channel}
+PRODUCT_OLM_CATALOG_SOURCE=${PRODUCT_OLM_CATALOG_SOURCE:-community-operators}                    # {prod-stable-channel-catalog-source}
+PRODUCT_OLM_PACKAGE=${PRODUCT_OLM_PACKAGE:-eclipse-che}                                          # {prod-stable-channel-package}
 
-OLM_STABLE_CHANNEL=${OLM_STABLE_CHANNEL:-stable}                                 # {prod-stable-channel}
-OLM_CATALOG_SOURCE=${OLM_CATALOG_SOURCE:-community-operators}                    # {prod-stable-channel-catalog-source}
-OLM_PACKAGE=${OLM_PACKAGE:-eclipse-che}                                          # {prod-stable-channel-package}
-PRODUCT_OPERATOR_NAME=${PRODUCT_OPERATOR_NAME:-che-operator}                     # {prod-operator}
-
-IDENTITY_PROVIDER_DEPLOYMENT_NAME=${IDENTITY_PROVIDER_DEPLOYMENT_NAME:-keycloak} # {identity-provider-id}
+PRE_MIGRATION_PRODUCT_SHORT_ID=${PRE_MIGRATION_PRODUCT_SHORT_ID:-che}                                    # {pre-migration-prod-id-short}
+PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME=${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME:-eclipse-che}          # {pre-migration-prod-subscription}
+PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME=${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME:-eclipse-che}      # {pre-migration-prod-checluster}
+PRE_MIGRATION_PRODUCT_OPERATOR_NAME=${PRE_MIGRATION_PRODUCT_OPERATOR_NAME:-che-operator}                 # {pre-migration-prod-operator}
+PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME=${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME:-keycloak} # {identity-provider-id}
 
 deleteOperatorCSV() {
-    if "${K8S_CLI}" get subscription "${PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 ; then
+    if "${K8S_CLI}" get subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 ; then
         echo "[INFO] Deleting operator cluster service version."
-        "${K8S_CLI}" delete csv "$("${K8S_CLI}" get subscription "${PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.status.currentCSV}")" -n "${INSTALLATION_NAMESPACE}"
+        "${K8S_CLI}" delete csv "$("${K8S_CLI}" get subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.status.currentCSV}")" -n "${INSTALLATION_NAMESPACE}"
     else
-        echo "[INFO] Skipping CSV deletion. No ${PRODUCT_SUBSCRIPTION_NAME} operator subscription found."
+        echo "[INFO] Skipping CSV deletion. No ${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME} operator subscription found."
     fi
 }
 
 deleteOperatorSubscription() {
-    if "${K8S_CLI}" get subscription "${PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 ; then
-        echo "[INFO] Deleting ${PRODUCT_SUBSCRIPTION_NAME} operator subscription."
-        "${K8S_CLI}" delete subscription "${PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}"
+    if "${K8S_CLI}" get subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 ; then
+        echo "[INFO] Deleting ${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME} operator subscription."
+        "${K8S_CLI}" delete subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}"
     else
-        echo "[INFO] Skipping subscription deletion as no ${PRODUCT_SUBSCRIPTION_NAME} operator subscription was found."
+        echo "[INFO] Skipping subscription deletion as no ${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME} operator subscription was found."
         echo "[INFO] Deleting the ${PRODUCT_ID} operator deployment instead."
-        "${K8S_CLI}" delete deployment "${PRODUCT_OPERATOR_NAME}" -n "${INSTALLATION_NAMESPACE}"
+        "${K8S_CLI}" delete deployment "${PRE_MIGRATION_PRODUCT_OPERATOR_NAME}" -n "${INSTALLATION_NAMESPACE}"
     fi
     echo "[INFO] Waiting 30s for the old ${PRODUCT_ID} operator deletion."
     sleep 30
 }
 
 patchCheCluster() {
-    echo "[INFO] Updating ${CHE_CLUSTER_CR_NAME} CheCluster CR to switch to DevWorkspace and single-host."
-    "${K8S_CLI}" patch checluster/"${CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
+    echo "[INFO] Updating ${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME} CheCluster CR to switch to DevWorkspace and single-host."
+    "${K8S_CLI}" patch checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
         '[{"op": "replace", "path": "/spec/devWorkspace/enable", "value": true}]'
-    "${K8S_CLI}" patch checluster/"${CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
+    "${K8S_CLI}" patch checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
         '[{"op": "replace", "path": "/spec/server/serverExposureStrategy", "value": "single-host"}]'
 }
 
-cleanupIdentityProviderObjects() {
-    echo "[INFO] Deleting ${IDENTITY_PROVIDER_DEPLOYMENT_NAME} resources."
-    "${K8S_CLI}" delete route "${IDENTITY_PROVIDER_DEPLOYMENT_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Route ${IDENTITY_PROVIDER_DEPLOYMENT_NAME} not found."
-    "${K8S_CLI}" delete service "${IDENTITY_PROVIDER_DEPLOYMENT_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Service ${IDENTITY_PROVIDER_DEPLOYMENT_NAME} not found."
-    "${K8S_CLI}" delete deployment "${IDENTITY_PROVIDER_DEPLOYMENT_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Deployment ${IDENTITY_PROVIDER_DEPLOYMENT_NAME} not found."
+cleanupObsoleteObjects() {
+    echo "[INFO] Deleting obsolete resources."
+    "${K8S_CLI}" delete route "${PRE_MIGRATION_PRODUCT_SHORT_ID}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Route ${PRE_MIGRATION_PRODUCT_SHORT_ID} not found."
+    "${K8S_CLI}" delete route "${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Route ${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard not found."
+    "${K8S_CLI}" delete route "${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Route ${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME} not found."
+    "${K8S_CLI}" delete service "${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Service ${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME} not found."
+    "${K8S_CLI}" delete deployment "${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Deployment ${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME} not found."
 }
 
 createOperatorSubscription() {
     echo "[INFO] Creating new ${PRODUCT_ID} operator subscription." 
-    echo "[INFO] New subscription source: ${OLM_CATALOG_SOURCE}."
-    echo "[INFO] New subscription channel: ${OLM_STABLE_CHANNEL}."
-    echo "[INFO] New subscription name: ${OLM_PACKAGE}."
+    echo "[INFO] New subscription source: ${PRODUCT_OLM_CATALOG_SOURCE}."
+    echo "[INFO] New subscription channel: ${PRODUCT_OLM_STABLE_CHANNEL}."
+    echo "[INFO] New subscription name: ${PRODUCT_OLM_PACKAGE}."
 
     "${K8S_CLI}" apply -f - <<EOF
 apiVersion: operators.coreos.com/v1alpha1
@@ -66,10 +68,10 @@ metadata:
     name: "${PRODUCT_ID}"
     namespace: openshift-operators
 spec:
-    channel: "${OLM_STABLE_CHANNEL}"
+    channel: "${PRODUCT_OLM_STABLE_CHANNEL}"
     installPlanApproval: Automatic
-    name: "${OLM_PACKAGE}"
-    source: "${OLM_CATALOG_SOURCE}"
+    name: "${PRODUCT_OLM_PACKAGE}"
+    source: "${PRODUCT_OLM_CATALOG_SOURCE}"
     sourceNamespace: openshift-marketplace
 EOF
 
@@ -78,7 +80,7 @@ EOF
 deleteOperatorCSV
 deleteOperatorSubscription
 patchCheCluster
-cleanupIdentityProviderObjects
+cleanupObsoleteObjects
 createOperatorSubscription
 
 echo "[INFO] Done."

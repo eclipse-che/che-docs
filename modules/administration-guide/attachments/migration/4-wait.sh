@@ -3,12 +3,11 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-K8S_CLI=${K8S_CLI:-oc}                                                           # {orch-cli}
-PRODUCT_DEPLOYMENT_NAME=${PRODUCT_DEPLOYMENT_NAME:-che}                          # {prod-deployment}
-INSTALLATION_NAMESPACE=${INSTALLATION_NAMESPACE:-eclipse-che}                    # {prod-namespace}
-
-PRODUCT_OPERATOR_NAME=${PRODUCT_OPERATOR_NAME:-che-operator}                     # {prod-operator}
-OPERATOR_NAMESPACE=${OPERATOR_NAMESPACE:-openshift-operators}                    # {?}
+K8S_CLI=${K8S_CLI:-oc}                                                   # {orch-cli}
+PRODUCT_DEPLOYMENT_NAME=${PRODUCT_DEPLOYMENT_NAME:-che}                  # {prod-deployment}
+INSTALLATION_NAMESPACE=${INSTALLATION_NAMESPACE:-eclipse-che}            # {prod-namespace}
+PRODUCT_OPERATOR_NAME=${PRODUCT_OPERATOR_NAME:-che-operator}             # {prod-operator}
+OPERATOR_NAMESPACE=${OPERATOR_NAMESPACE:-openshift-operators}            # {?}
 
 waitForComponent() {
   component=$1
@@ -23,7 +22,7 @@ waitForComponent() {
   "${K8S_CLI}" wait --for=condition=ready pod -l app.kubernetes.io/component="${component}" -n "${namespace}" --timeout=120s
 }
 
-waitForComponent "${PRODUCT_DEPLOYMENT_NAME}" "${INSTALLATION_NAMESPACE}"
 waitForComponent "${PRODUCT_OPERATOR_NAME}" "${OPERATOR_NAMESPACE}"
+waitForComponent "${PRODUCT_DEPLOYMENT_NAME}" "${INSTALLATION_NAMESPACE}"
 
 echo "[INFO] Done."

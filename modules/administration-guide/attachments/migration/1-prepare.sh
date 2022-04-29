@@ -4,11 +4,12 @@ set -o nounset
 set -o pipefail
 
 K8S_CLI=${K8S_CLI:-oc}                                                           # {orch-cli}
-PRODUCT_DEPLOYMENT_NAME=${PRODUCT_DEPLOYMENT_NAME:-che}                          # {prod-deployment}
 PRODUCT_ID=${PRODUCT_ID:-eclipse-che}                                            # {prod-id}
 INSTALLATION_NAMESPACE=${INSTALLATION_NAMESPACE:-eclipse-che}                    # {prod-namespace}
-CHE_CLUSTER_CR_NAME=${CHE_CLUSTER_CR_NAME:-eclipse-che}                          # {prod-checluster}
-IDENTITY_PROVIDER_DEPLOYMENT_NAME=${IDENTITY_PROVIDER_DEPLOYMENT_NAME:-keycloak} # {identity-provider-id}
+
+PRE_MIGRATION_PRODUCT_DEPLOYMENT_NAME=${PRE_MIGRATION_PRODUCT_DEPLOYMENT_NAME:-che}      # {pre-migration-prod-deployment}
+PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME=${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME:-eclipse-che}                          # {pre-migration-prod-checluster}
+PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME=${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME:-keycloak} # {identity-provider-id}
 
 ALL_USERS_DUMP="${PRODUCT_ID}"-users.txt
 DB_DUMP="${PRODUCT_ID}"-original-db.sql
@@ -16,11 +17,11 @@ MIGRATED_DB_DUMP="${PRODUCT_ID}"-migrated-db.sql
 
 echo "[INFO] Getting identity provider information"
 
-IDENTITY_PROVIDER_URL=$("${K8S_CLI}" get checluster "${CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.status.keycloakURL}" )
-IDENTITY_PROVIDER_SECRET=$("${K8S_CLI}" get checluster/"${CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.spec.auth.identityProviderSecret}")
-IDENTITY_PROVIDER_PASSWORD=$(if [ -z "${IDENTITY_PROVIDER_SECRET}" ] || [ "${IDENTITY_PROVIDER_SECRET}" == "null" ]; then "${K8S_CLI}" get checluster/"${CHE_CLUSTER_CR_NAME}"  -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.spec.auth.identityProviderPassword}"; else "${K8S_CLI}" get secret "${IDENTITY_PROVIDER_SECRET}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.data.password}" | base64 -d; fi)
-IDENTITY_PROVIDER_USERNAME=$(if [ -z "${IDENTITY_PROVIDER_SECRET}" ] || [ "${IDENTITY_PROVIDER_SECRET}" == "null" ]; then "${K8S_CLI}" get checluster/"${CHE_CLUSTER_CR_NAME}"  -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.spec.auth.IdentityProviderAdminUserName}"; else "${K8S_CLI}" get secret "${IDENTITY_PROVIDER_SECRET}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.data.user}" | base64 -d; fi)
-IDENTITY_PROVIDER_REALM=$("${K8S_CLI}" get checluster "${CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.spec.auth.identityProviderRealm}")
+IDENTITY_PROVIDER_URL=$("${K8S_CLI}" get checluster "${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.status.keycloakURL}" )
+IDENTITY_PROVIDER_SECRET=$("${K8S_CLI}" get checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.spec.auth.identityProviderSecret}")
+IDENTITY_PROVIDER_PASSWORD=$(if [ -z "${IDENTITY_PROVIDER_SECRET}" ] || [ "${IDENTITY_PROVIDER_SECRET}" == "null" ]; then "${K8S_CLI}" get checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}"  -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.spec.auth.identityProviderPassword}"; else "${K8S_CLI}" get secret "${IDENTITY_PROVIDER_SECRET}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.data.password}" | base64 -d; fi)
+IDENTITY_PROVIDER_USERNAME=$(if [ -z "${IDENTITY_PROVIDER_SECRET}" ] || [ "${IDENTITY_PROVIDER_SECRET}" == "null" ]; then "${K8S_CLI}" get checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}"  -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.spec.auth.IdentityProviderAdminUserName}"; else "${K8S_CLI}" get secret "${IDENTITY_PROVIDER_SECRET}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.data.user}" | base64 -d; fi)
+IDENTITY_PROVIDER_REALM=$("${K8S_CLI}" get checluster "${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.spec.auth.identityProviderRealm}")
 
 echo "[INFO] IDENTITY_PROVIDER_URL: ${IDENTITY_PROVIDER_URL}"
 echo "[INFO] IDENTITY_PROVIDER_SECRET: ${IDENTITY_PROVIDER_SECRET}"
@@ -47,13 +48,13 @@ refreshToken() {
 }
 
 scaleDownCheServer() {
-  echo "[INFO] Scaling down ${PRODUCT_DEPLOYMENT_NAME}"
-  "${K8S_CLI}" scale deployment "${PRODUCT_DEPLOYMENT_NAME}" --replicas=0 -n "${INSTALLATION_NAMESPACE}"
+  echo "[INFO] Scaling down ${PRE_MIGRATION_PRODUCT_DEPLOYMENT_NAME}"
+  "${K8S_CLI}" scale deployment "${PRE_MIGRATION_PRODUCT_DEPLOYMENT_NAME}" --replicas=0 -n "${INSTALLATION_NAMESPACE}"
 }
 
 scaleDownKeycloak() {
-  echo "[INFO] Scaling down ${IDENTITY_PROVIDER_DEPLOYMENT_NAME}"
-  "${K8S_CLI}" scale deployment "${IDENTITY_PROVIDER_DEPLOYMENT_NAME}" --replicas=0 -n "${INSTALLATION_NAMESPACE}"
+  echo "[INFO] Scaling down ${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME}"
+  "${K8S_CLI}" scale deployment "${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME}" --replicas=0 -n "${INSTALLATION_NAMESPACE}"
 }
 
 getUsers() {
