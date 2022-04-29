@@ -7,9 +7,7 @@
 
 {prod-short} workspaces and workspace data are ephemeral and are lost when the workspace stops.
 
-When you need to avoid data loss when the workspace stops, request persistent storage in the {orch-name} cluster of your organization's {prod-short} instance. You do this by claiming a {kubernetes} PersistentVolume (PV) for the `{devworkspace}` containers in the cluster.
-
-You can claim a PV for your workspaces in the devfile or in a {kubernetes} PersistentVolumeClaim (PVC).
+To have persistent storage between workspace restarts, specify a {kubernetes} PersistentVolume (PV) for the `{devworkspace}` containers. You can do this by either defining and mounting a volume from the project devfile or using a {kubernetes} PersistentVolumeClaim (PVC) with the necessary labels.
 
 [NOTE]
 ====
@@ -26,18 +24,23 @@ There is a limitation when trying to run two concurrent workspaces if mounting a
 * link:https://docs.openshift.com/container-platform/latest/storage/understanding-persistent-storage.html[Red Hat OpenShift Documentation: Understanding persistent storage]
 * link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/[Kubernetes Documentation: Persistent Volumes]
 
-== Claiming a PersistentVolume in a devfile
+== Specifying persistant storage in a devfile
 
-When persistent data are mandatory for development and shared across multiple workspaces isn't needed, claim a PersistentVolume (PV) in the devfile and let {prod-short} manage it.
+Persistent storage can be defined in the project's devfile if it is mandatory for development and sharing storage across multiple workspaces isn't needed.
+When persistent storage is defined in the devfile, {prod-short} will manage the necessary PVCs.
 
-I'm not sure where the following line belongs here. max-cx:
-the devfile uses the attribute `controller.devfile.io/storage-type: ephemeral`
+[NOTE]
+====
+An example of a devfile-defined PV is the `/projects/` folder of a workspace, which is mounted by default.
+====
 
 .Procedure
 
-* Is it possible to write a procedure based on link:https://devfile.io/docs/devfile/2.1.0/user-guide/specifying-persistent-storage[]?
+. Create a `volume` component in the project's devfile with a name and the desired volume size.
 
-.Can this example be reworked for our purposes?
+. Create a `volumeMount` in a `container` for mounting. The `volumeMount` is defined with the `name` of the volume from the previous step, and a `path` to where the PV is to be mounted.
+
+.Specifying and mounting the `cache` volume into a container
 ====
 
 [source,yaml,subs="+quotes,+attributes,+macros"]
@@ -46,35 +49,39 @@ schemaVersion: 2.1.0
 metadata:
   name: mydevfile
 components:
-  - name: mydevfile
+  - name: golang
     container:
       image: golang
       memoryLimit: 512Mi
       mountSources: true
       command: ['sleep', 'infinity']
       volumeMounts:
-        - name: cache
-          path: /.cache <1>
-  - name: cache
+        - name: cache <1>
+          path: /.cache
+  - name: cache     <2>
     volume:
       size: 2Gi
 ----
-<1> An example of a devfile-defined PV is the `/projects/` folder of a workspace, which is by default.
+<1> The `volumeMount` definition for mounting the `cache` volume.
+<2> The `volume` component definition for the `cache` volume.
+
+When a workspace is started with a project using this devfile, a persistent volume is mounted to the `golang` container in `./cache` container path.
 ====
 
-== Claiming a PersistentVolume in a PVC
+== Specifying persistant storage with a PVC
 
-You may opt to use a PersistentVolumeClaim (PVC) to claim a PersistentVolume (PV) for your workspaces when you need it:
+You may opt to mount a PersistentVolumeClaim (PVC) to request a PersistentVolume (PV) for your workspaces in the following cases:
 
-* The devfile contains no PV claim.
-* Not all developers on your project need the PV.
+* Not all developers of the project need the PV.
 * The PV lifecycle goes beyond the lifecycle of a single workspace.
 * The data included in the PV are shared across workspaces.
+
+PVCs are mounted to the workspace containers even if the workspace is run in ephemeral mode (in other words, when the devfile has the attribute `controller.devfile.io/storage-type: ephemeral`).
 
 .Prerequisites
 
 * You have GUI or CLI access to the {orch-name} cluster of your organization's {prod-short} instance.
-* You have created a new PVC or determined an existing one in your user {orch-namespace} to mount to all workspaces containers.
+* You have created a new PVC or determined an existing one in your user {orch-namespace} to mount to all workspace containers.
 * For CLI users: The `{orch-cli}` command-line tool is installed in the operating system you are using.
 
 .Procedure
@@ -86,7 +93,11 @@ You may opt to use a PersistentVolumeClaim (PVC) to claim a PersistentVolume (PV
 ====
 CLI users can apply the label like so:
 
-`$ {orch-cli} -n __<user_{orch-namespace}>__ label persistentvolumeclaim __<PVC_name>__ controller.devfile.io/mount-to-devworkspace=true`
+[subs="+quotes,+attributes,+macros"]
+----
+`$ {orch-cli} label persistentvolumeclaim __<PVC_name>__ \
+          controller.devfile.io/mount-to-devworkspace=true`
+----
 ====
 
 . Optional: Use the annotations to configure how the PVC is mounted.
@@ -130,5 +141,5 @@ spec:
 ----
 <1> Example storage request value.
 
-When you start a workspace, the PVC?or?PV is mounted at `/tmp/my-directory` in the `{devworkspace}` containers.
+When you start a workspace, the PV is mounted at `/tmp/my-directory` in the `{devworkspace}` containers.
 ====
