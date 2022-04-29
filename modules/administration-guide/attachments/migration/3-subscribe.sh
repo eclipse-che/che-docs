@@ -5,6 +5,7 @@ set -o pipefail
 
 K8S_CLI=${K8S_CLI:-oc}                                                           # {orch-cli}
 PRODUCT_ID=${PRODUCT_ID:-eclipse-che}                                            # {prod-id}
+PRODUCT_SUBSCRIPTION_NAME=${PRODUCT_SUBSCRIPTION_NAME:-eclipse-che}              # {prod-subscription}
 INSTALLATION_NAMESPACE=${INSTALLATION_NAMESPACE:-eclipse-che}                    # {prod-namespace}
 CHE_CLUSTER_CR_NAME=${CHE_CLUSTER_CR_NAME:-eclipse-che}                          # {prod-checluster}
 
@@ -16,20 +17,20 @@ PRODUCT_OPERATOR_NAME=${PRODUCT_OPERATOR_NAME:-che-operator}                    
 IDENTITY_PROVIDER_DEPLOYMENT_NAME=${IDENTITY_PROVIDER_DEPLOYMENT_NAME:-keycloak} # {identity-provider-id}
 
 deleteOperatorCSV() {
-    if "${K8S_CLI}" get subscription "${PRODUCT_ID}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 ; then
+    if "${K8S_CLI}" get subscription "${PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 ; then
         echo "[INFO] Deleting operator cluster service version."
-        "${K8S_CLI}" delete csv "$("${K8S_CLI}" get subscription "${PRODUCT_ID}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.status.currentCSV}")" -n "${INSTALLATION_NAMESPACE}"
+        "${K8S_CLI}" delete csv "$("${K8S_CLI}" get subscription "${PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.status.currentCSV}")" -n "${INSTALLATION_NAMESPACE}"
     else
-        echo "[INFO] Skipping CSV deletion. No ${PRODUCT_ID} operator subscription found."
+        echo "[INFO] Skipping CSV deletion. No ${PRODUCT_SUBSCRIPTION_NAME} operator subscription found."
     fi
 }
 
 deleteOperatorSubscription() {
-    if "${K8S_CLI}" get subscription "${PRODUCT_ID}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 ; then
-        echo "[INFO] Deleting ${PRODUCT_ID} operator subscription."
-        "${K8S_CLI}" delete subscription "${PRODUCT_ID}" -n "${INSTALLATION_NAMESPACE}"
+    if "${K8S_CLI}" get subscription "${PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 ; then
+        echo "[INFO] Deleting ${PRODUCT_SUBSCRIPTION_NAME} operator subscription."
+        "${K8S_CLI}" delete subscription "${PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}"
     else
-        echo "[INFO] Skipping subscription deletion as no ${PRODUCT_ID} operator subscription was found."
+        echo "[INFO] Skipping subscription deletion as no ${PRODUCT_SUBSCRIPTION_NAME} operator subscription was found."
         echo "[INFO] Deleting the ${PRODUCT_ID} operator deployment instead."
         "${K8S_CLI}" delete deployment "${PRODUCT_OPERATOR_NAME}" -n "${INSTALLATION_NAMESPACE}"
     fi
