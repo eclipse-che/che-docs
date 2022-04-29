@@ -5,43 +5,71 @@
 [id="enabling-persistent-storage-in-workspaces_{context}"]
 = Enabling persistent storage in workspaces
 
-****
-THIS PAGE IS WORK IN PROGRESS. max-cx
-****
+{prod-short} workspaces and workspace data are ephemeral and are lost when the workspace stops.
 
-You can mount a Persistent Volume Claim (PVC) to your {devworkspace} containers. A PVC is used to request persistent storage resources which are abstracted from the user.
+When you need to avoid data loss when the workspace stops, request persistent storage in the {orch-name} cluster of your organization's {prod-short} instance. You do this by claiming a {kubernetes} PersistentVolume (PV) for the `{devworkspace}` containers in the cluster.
 
-{prod-short} provisions containerized development environments (workspaces). Without persistent volumes, every change would be lost when a running workspace is stopped.
-
-To avoid losing changes a user can either:
-
-* Pre-create a PVC with the right labels. This procedure is described in this section.
-* Specify a Persistent Volume (PV) in a Devfile that will be managed by {prod-short}. See link:https://devfile.io/docs/devfile/2.1.0/user-guide/specifying-persistent-storage[Specifying persistent storage].
-
-Users will want to use Devfile-defined volumes when persisted data is mandatory for development and doesn't need to be shared across multiple workspaces.
-
-Alternatively, users should favor pre-created PVs when:
-
-* not all the developers of a project will need the PV, or
-* the PV lifecycle goes beyond the lifecycle of a single workspace, or
-* the data included in the PV is shared across workspaces.
-
-An example of a Devfile-defined PV is the `/projects/` folder of a workspace, which is by default.
-
-Pre-created PVs are mounted even if the workspace is run in ephemeral mode (the devfile uses the attribute `controller.devfile.io/storage-type: ephemeral`).
+You can claim a PV for your workspaces in the devfile or in a {kubernetes} PersistentVolumeClaim (PVC).
 
 [NOTE]
 ====
 Persistent Volumes come at a cost: attaching a persistent volume slows workspace startup.
 ====
 
-
 [WARNING]
 ====
 There is a limitation when trying to run two concurrent workspaces if mounting a PV with the `ReadWriteOnce` access mode. The second workspace may fail to start.
 ====
 
-To automatically mount an existing PVC to workspace containers:
+.Additional resources
+
+* link:https://docs.openshift.com/container-platform/latest/storage/understanding-persistent-storage.html[Red Hat OpenShift Documentation: Understanding persistent storage]
+* link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/[Kubernetes Documentation: Persistent Volumes]
+
+== Claiming a PersistentVolume in a devfile
+
+When persistent data are mandatory for development and shared across multiple workspaces isn't needed, claim a PersistentVolume (PV) in the devfile and let {prod-short} manage it.
+
+I'm not sure where the following line belongs here. max-cx:
+the devfile uses the attribute `controller.devfile.io/storage-type: ephemeral`
+
+.Procedure
+
+* Is it possible to write a procedure based on link:https://devfile.io/docs/devfile/2.1.0/user-guide/specifying-persistent-storage[]?
+
+.Can this example be reworked for our purposes?
+====
+
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+schemaVersion: 2.1.0
+metadata:
+  name: mydevfile
+components:
+  - name: mydevfile
+    container:
+      image: golang
+      memoryLimit: 512Mi
+      mountSources: true
+      command: ['sleep', 'infinity']
+      volumeMounts:
+        - name: cache
+          path: /.cache <1>
+  - name: cache
+    volume:
+      size: 2Gi
+----
+<1> An example of a devfile-defined PV is the `/projects/` folder of a workspace, which is by default.
+====
+
+== Claiming a PersistentVolume in a PVC
+
+You may opt to use a PersistentVolumeClaim (PVC) to claim a PersistentVolume (PV) for your workspaces when you need it:
+
+* The devfile contains no PV claim.
+* Not all developers on your project need the PV.
+* The PV lifecycle goes beyond the lifecycle of a single workspace.
+* The data included in the PV are shared across workspaces.
 
 .Prerequisites
 
@@ -102,10 +130,5 @@ spec:
 ----
 <1> Example storage request value.
 
-When you start a workspace, the PVC is mounted at `/tmp/my-directory` in the `{devworkspace}` containers.
+When you start a workspace, the PVC?or?PV is mounted at `/tmp/my-directory` in the `{devworkspace}` containers.
 ====
-
-.Additional resources
-
-* link:https://docs.openshift.com/container-platform/latest/storage/understanding-persistent-storage.html[Red Hat OpenShift Documentation: Understanding persistent storage]
-* link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/[Kubernetes Documentation: Persistent Volumes]
