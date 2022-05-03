@@ -1,0 +1,76 @@
+[id="requesting-persistent-storage-in-a-pvc_{context}"]
+= Requesting persistent storage in a PVC
+
+You may opt to apply a PersistentVolumeClaim (PVC) to request a PersistentVolume (PV) for your workspaces in the following cases:
+
+* Not all developers of the project need the PV.
+* The PV lifecycle goes beyond the lifecycle of a single workspace.
+* The data included in the PV are shared across workspaces.
+
+TIP: You can apply a PVC to the `{devworkspace}` containers even if the workspace is ephemeral and its devfile contains the `controller.devfile.io/storage-type: ephemeral` attribute.
+
+.Prerequisites
+
+* You have not started the workspace.
+* You have GUI or CLI access to the {orch-name} cluster of your organization's {prod-short} instance.
+* For CLI users: The `{orch-cli}` command-line tool is installed in the operating system you are using.
+* A PVC is created in your user {orch-namespace} to mount to all `{devworkspace}` containers.
+
+.Procedure
+
+. Add the `controller.devfile.io/mount-to-devworkspace: true` label to the PVC.
+
++
+[TIP]
+====
+CLI users can apply the label like so:
+
+[subs="+quotes,+attributes,+macros"]
+----
+`$ {orch-cli} label persistentvolumeclaim __<PVC_name>__ \
+          controller.devfile.io/mount-to-devworkspace=true`
+----
+====
+
+. Optional: Use the annotations to configure how the PVC is mounted:
++
+.Optional annotations
+|===
+| Annotation |Description
+
+| `controller.devfile.io/mount-path:`
+| The mount path for the PVC.
+
+Defaults to `/tmp/__<PVC_name>__`.
+
+| `controller.devfile.io/read-only:`
+| Set to `'true'` or `'false'` to specify whether the PVC is to be mounted as read-only.
+
+Defaults to `'false'`, resulting in the PVC mounted as read-write.
+|===
+
+.Mounting a read-only PVC
+====
+[source,yaml,subs="+quotes"]
+----
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: __<pvc_name>__
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+  annotations:
+    controller.devfile.io/mount-path: __</example/directory>__ <1>
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi <2>
+  volumeName: __<pv_name>__
+  storageClassName: manual
+  volumeMode: Filesystem
+----
+<1> The mounted PV is available at `__</example/directory>__` in the workspace.
+<2> Example size value of the requested storage.
+====
