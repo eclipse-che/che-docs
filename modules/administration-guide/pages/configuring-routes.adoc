@@ -25,24 +25,6 @@ This procedure describes how to configure labels, annotations, and domains for O
 ----
 spec:
   server:
-    devfileRegistryRoute:
-      labels: <labels> <1>
-      domain: <domain> <2>
-      annotations:     <3>
-        key1: value1
-        key2: value2
-    pluginRegistryRoute:
-      labels: <labels> <1>
-      domain: <domain> <2>
-      annotations:     <3>
-        key1: value1
-        key2: value2
-    dashboardRoute:
-      labels: <labels> <1>
-      domain: <domain> <2>
-      annotations:     <3>
-        key1: value1
-        key2: value2
     cheServerRoute:
       labels: <labels> <1>
       domain: <domain> <2>
@@ -52,13 +34,6 @@ spec:
     customCheProperties:
       CHE_INFRA_OPENSHIFT_ROUTE_LABELS: <labels> <1>
       CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX: <domain> <2>
-  auth:
-    identityProviderRoute:
-      labels: <labels> <1>
-      domain: <domain> <2>
-      annotations:     <3>
-        key1: value1
-        key2: value2
 ----
 <1> comma separated list of labels that are used by the target ingress controller to filter the set of Routes to service
 <2> DNS name serviced by the target ingress controller
@@ -79,24 +54,6 @@ The `patch.yaml` file must contain the following:
 ----
 spec:
   server:
-    devfileRegistryRoute:
-      labels: <labels> <1>
-      domain: <domain> <2>
-      annotations:     <3>
-        key1: value1
-        key2: value2
-    pluginRegistryRoute:
-      labels: <labels> <1>
-      domain: <domain> <2>
-      annotations:     <3>
-        key1: value1
-        key2: value2
-    dashboardRoute:
-      labels: <labels> <1>
-      domain: <domain> <2>
-      annotations:     <3>
-        key1: value1
-        key2: value2
     cheServerRoute:
       labels: <labels> <1>
       domain: <domain> <2>
@@ -106,13 +63,6 @@ spec:
     customCheProperties:
       CHE_INFRA_OPENSHIFT_ROUTE_LABELS: <labels> <1>
       CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX: <domain> <2>
-  auth:
-    identityProviderRoute:
-      labels: <labels> <1>
-      domain: <domain> <2>
-      annotations:     <3>
-        key1: value1
-        key2: value2
 ----
 <1> comma separated list of labels that are used by the target ingress controller to filter the set of Routes to service
 <2> DNS name serviced by the target ingress controller
@@ -136,34 +86,6 @@ $ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json 
 [subs="+quotes,+attributes"]
 ----
 $ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/server/pluginRegistryRoute/labels", '\
-'"value": "__<labels for a plug-ins registry route>__"}]'
-----
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/server/devfileRegistryRoute/labels", '\
-'"value": "__<labels for a devfile registry route>__"}]'
-----
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/server/dashboardRoute/labels", '\
-'"value": "__<labels for a dashboard route>__"}]'
-----
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/auth/identityProviderRoute/labels", '\
-'"value": "__<labels for a {identity-provider} route>__"}]'
-----
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
 '[{"op": "replace", "path": "/spec/server/customCheProperties/CHE_INFRA_OPENSHIFT_ROUTE_LABELS", '\
 '"value": "__<labels for a workspace routes>__"}]'
 ----
@@ -174,34 +96,6 @@ $ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json 
 ----
 $ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
 '[{"op": "replace", "path": "/spec/server/cheServerRoute/domain",'\
-'"value": "__<ingress domain>__"}]'
-----
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/server/pluginRegistryRoute/domain", '\
-'"value": "__<ingress domain>__"}]'
-----
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/server/devfileRegistryRoute/domain", '\
-'"value": "__<ingress domain>__"}]'
-----
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/server/dashboardRoute/domain", '\
-'"value": "__<ingress domain>__"}]'
-----
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/auth/identityProviderRoute/domain", '\
 '"value": "__<ingress domain>__"}]'
 ----
 +
@@ -222,32 +116,3 @@ $ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json 
 '[{"op": "replace", "path": "/spec/server/cheServerRoute/annotations",'\
 '"value": __<annotations for a {prod-id-short} ingress>__}]'
 ----
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/server/pluginRegistryRoute/annotations", '\
-'"value": __<annotations for a plug-ins registry ingress>__}]'
-----
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/server/devfileRegistryRoute/annotations", '\
-'"value": __<annotations for a devfile registry ingress>__}]'
-----
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/server/dashboardRoute/annotations", '\
-'"value": __<annotations for a dashboard ingress>__}]'
-----
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/auth/identityProviderRoute/annotations", '\
-'"value": __<annotations for a {identity-provider} ingress>__}]'
-----
-
