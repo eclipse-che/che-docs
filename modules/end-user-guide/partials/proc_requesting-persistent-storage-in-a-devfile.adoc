@@ -1,0 +1,65 @@
+[id="requesting-persistent-storage-in-a-devfile_{context}"]
+= Requesting persistent storage in a devfile
+
+When a workspace requires its own persistent storage, request a PersistentVolume (PV) in the devfile, and {prod-short} will automatically manage the necessary PersistentVolumeClaims.
+
+.Prerequisites
+
+* You have not started the workspace.
+
+.Procedure
+
+. Add a `volume` component in the devfile:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+...
+components:
+  ...
+  - name: __<chosen_volume_name>__
+    volume:
+      size: __<requested_volume_size>__G
+  ...
+----
+
+. Add a `volumeMount` for the relevant `container` in the devfile:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+...
+components:
+  - name: ...
+    container:
+      ...
+      volumeMounts:
+        - name: __<chosen_volume_name_from_previous_step>__
+          path: __<path_where_to_mount_the_PV>__
+      ...
+----
+
+.A devfile that provisions a PV for a workspace to a container
+====
+
+When a workspace is started with the following devfile, the `cache` PV is provisioned to the `golang` container in the `./cache` container path:
+
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+schemaVersion: 2.1.0
+metadata:
+  name: mydevfile
+components:
+  - name: golang
+    container:
+      image: golang
+      memoryLimit: 512Mi
+      mountSources: true
+      command: ['sleep', 'infinity']
+      volumeMounts:
+        - name: cache
+          path: /.cache
+  - name: cache
+    volume:
+      size: 2Gi
+----
+
+====

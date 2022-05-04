@@ -1,0 +1,29 @@
+:navtitle: Requesting persistent storage for workspaces
+:keywords: user-guide, configuring, user, volumes, persistent, volume, claim, mounting, mount
+:page-aliases:
+
+[id="requesting-persistent-storage-for-workspaces_{context}"]
+= Requesting persistent storage for workspaces
+
+{prod-short} workspaces and workspace data are ephemeral and are lost when the workspace stops.
+
+To preserve the workspace state in persistent storage while the workspace is stopped, request a {kubernetes} PersistentVolume (PV) for the `{devworkspace}` containers in the {orch-name} cluster of your organization's {prod-short} instance.
+
+You can request a PV by using the devfile or a {kubernetes} PersistentVolumeClaim (PVC).
+
+An example of a PV is the `/projects/` directory of a workspace, which is mounted by default for non-ephemeral workspaces.
+
+Persistent Volumes come at a cost: attaching a persistent volume slows workspace startup.
+
+[WARNING]
+====
+Starting another, concurrently running workspace with a link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes[`ReadWriteOnce` PV] may fail.
+====
+
+.Additional resources
+
+* link:https://docs.openshift.com/container-platform/latest/storage/understanding-persistent-storage.html[Red Hat OpenShift Documentation: Understanding persistent storage]
+* link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/[Kubernetes Documentation: Persistent Volumes]
+
+include::partial$proc_requesting-persistent-storage-in-a-devfile.adoc[leveloffset=+1]
+include::partial$proc_requesting-persistent-storage-in-a-pvc.adoc[leveloffset=+1]
