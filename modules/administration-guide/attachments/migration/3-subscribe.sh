@@ -44,12 +44,24 @@ patchCheCluster() {
         '[{"op": "replace", "path": "/spec/devWorkspace/enable", "value": true}]'
     "${K8S_CLI}" patch checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
         '[{"op": "replace", "path": "/spec/server/serverExposureStrategy", "value": "single-host"}]'
+
+    echo "[INFO] Updating ${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME} CheCluster CR to clean up default ${PRODUCT_ID} host"
+    CHE_HOST=$("${K8S_CLI}" get checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath='{.spec.server.cheHost}')
+    if [[ "${CHE_HOST}" =~ ${PRE_MIGRATION_PRODUCT_SHORT_ID}-${INSTALLATION_NAMESPACE} ]]; then
+      "${K8S_CLI}" patch checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
+              '[{"op": "replace", "path": "/spec/server/cheHost", "value": ""}]'
+    fi
 }
 
 cleanupObsoleteObjects() {
     echo "[INFO] Deleting obsolete resources."
     "${K8S_CLI}" delete route "${PRE_MIGRATION_PRODUCT_SHORT_ID}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Route ${PRE_MIGRATION_PRODUCT_SHORT_ID} not found."
+    "${K8S_CLI}" delete deployment "${PRE_MIGRATION_PRODUCT_SHORT_ID}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] deployment ${PRE_MIGRATION_PRODUCT_SHORT_ID} not found."
+
+    "${K8S_CLI}" delete service "${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Service ${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard not found."
     "${K8S_CLI}" delete route "${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Route ${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard not found."
+    "${K8S_CLI}" delete deployment "${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Deployment ${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard not found."
+
     "${K8S_CLI}" delete route "${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Route ${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME} not found."
     "${K8S_CLI}" delete service "${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Service ${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME} not found."
     "${K8S_CLI}" delete deployment "${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Deployment ${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME} not found."
