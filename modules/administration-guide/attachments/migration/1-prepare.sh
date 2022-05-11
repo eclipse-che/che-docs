@@ -77,9 +77,15 @@ getUsers() {
         USER_FIRST_NAME=$(echo "${USER_PROFILE}" | jq -r ".firstName")
         USER_LAST_NAME=$(echo "${USER_PROFILE}" | jq -r ".lastName")
 
+        # Don't put null values into profile
+        [[ "${USER_FIRST_NAME}" == "null" ]] && USER_FIRST_NAME=""
+        [[ "${USER_LAST_NAME}" == "null" ]] && USER_LAST_NAME=""
+
         OPENSHIFT_USER_ID=$(echo "${IDENTITY_PROVIDER}" | jq ".userId" | tr -d "\"")
         echo "[INFO] Found ${PRODUCT_ID} user: ${USER_ID} and corresponding OpenShift user: ${OPENSHIFT_USER_ID}"
-        echo "${USER_ID} ${OPENSHIFT_USER_ID} username:$(echo "${USER_NAME}" | base64) email:$(echo "${USER_EMAIL}" | base64) firstName:$(echo "${USER_FIRST_NAME}" | base64) lastName:$(echo "${USER_LAST_NAME}" | base64) " >> "${ALL_USERS_DUMP}"
+
+        # Save profile by encoding data and trimming \r\n
+        echo "${USER_ID} ${OPENSHIFT_USER_ID} username:$(echo "${USER_NAME}" | tr -d "\r\n" | base64) email:$(echo "${USER_EMAIL}" | tr -d "\r\n" | base64) firstName:$(echo "${USER_FIRST_NAME}" | tr -d "\r\n" | base64) lastName:$(echo "${USER_LAST_NAME}" | tr -d "\r\n" | base64) " >> "${ALL_USERS_DUMP}"
       fi
   done
   echo "[INFO] Users list dump completed."
