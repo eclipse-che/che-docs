@@ -1,7 +1,51 @@
 [id="uninstalling-the-che-instance-and-the-che-operator_{context}"]
 = Uninstalling the {prod-short} instance and the {prod} Operator
 
-After uninstalling the {devworkspace} Operator, uninstall the {prod-short} instance and the {prod} Operator by using either the OpenShift web console or the OpenShift CLI.
+After uninstalling the {devworkspace} Operator, uninstall the {prod-short} instance and the {prod} Operator.
 
-include::partial$proc_uninstalling-che-by-using-the-openshift-web-console.adoc[leveloffset=0]
-include::partial$proc_uninstalling-che-by-using-the-openshift-cli.adoc[leveloffset=0]
+.Prerequisites
+
+* OperatorHub was used to install the {prod-short} instance on {ocp} or {osd}.
+
+* An active `oc` session with administrative permissions to the OpenShift cluster hosting the {prod-short} instance to uninstall. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html#installing-openshift-cli[Installing the OpenShift CLI].
+
+.Procedure
+
+
+. Switch to the namespace where the {prod-short} instance is deployed:
++
+[subs="+attributes,+quotes"]
+----
+$ oc project __<{prod-id-short}_namespace>__
+----
+
+. Obtain the `CheCluster` `NAME`:
+
++
+[subs="+attributes,+quotes"]
+----
+$ oc get checluster
+----
+
+. Delete the {prod-short} cluster:
++
+[subs="+attributes,+quotes"]
+----
+$ oc delete checluster __<checluster_name>__
+----
+
+. Obtain the `NAME` of the {prod-short} cluster service version (CSV):
++
+[subs="+attributes,+quotes"]
+----
+$ oc get csv
+----
+
+. Delete the {prod-short} CSV:
++
+[subs="+attributes,+quotes"]
+----
+$ oc delete csv __<csv_name>__
+----
++
+This uninstalls the {prod} Operator.
