@@ -12,25 +12,20 @@ TIP: You can apply a PVC to the `{devworkspace}` containers even if the workspac
 .Prerequisites
 
 * You have not started the workspace.
-* You have GUI or CLI access to the {orch-name} cluster of your organization's {prod-short} instance.
-* For CLI users: The `{orch-cli}` command-line tool is installed in the operating system you are using.
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
 * A PVC is created in your user {orch-namespace} to mount to all `{devworkspace}` containers.
 
 .Procedure
 
 . Add the `controller.devfile.io/mount-to-devworkspace: true` label to the PVC.
-
 +
-[TIP]
-====
-CLI users can apply the label like so:
-
 [subs="+quotes,+attributes,+macros"]
 ----
 `$ {orch-cli} label persistentvolumeclaim __<PVC_name>__ \
           controller.devfile.io/mount-to-devworkspace=true`
 ----
-====
 
 . Optional: Use the annotations to configure how the PVC is mounted:
 +
