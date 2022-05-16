@@ -6,6 +6,7 @@ set -o pipefail
 K8S_CLI=${K8S_CLI:-oc}                                                           # {orch-cli}
 PRODUCT_ID=${PRODUCT_ID:-eclipse-che}                                            # {prod-id}
 INSTALLATION_NAMESPACE=${INSTALLATION_NAMESPACE:-eclipse-che}                    # {prod-namespace}
+OPERATOR_NAMESPACE=${OPERATOR_NAMESPACE:-eclipse-che}                        # {prod-namespace}
 PRODUCT_OLM_STABLE_CHANNEL=${PRODUCT_OLM_STABLE_CHANNEL:-stable}                                 # {prod-stable-channel}
 PRODUCT_OLM_CATALOG_SOURCE=${PRODUCT_OLM_CATALOG_SOURCE:-community-operators}                    # {prod-stable-channel-catalog-source}
 PRODUCT_OLM_PACKAGE=${PRODUCT_OLM_PACKAGE:-eclipse-che}                                          # {prod-stable-channel-package}
@@ -17,22 +18,22 @@ PRE_MIGRATION_PRODUCT_OPERATOR_NAME=${PRE_MIGRATION_PRODUCT_OPERATOR_NAME:-che-o
 PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME=${PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME:-keycloak} # {identity-provider-id}
 
 deleteOperatorCSV() {
-    if "${K8S_CLI}" get subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 ; then
+    if "${K8S_CLI}" get subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${OPERATOR_NAMESPACE}" > /dev/null 2>&1 ; then
         echo "[INFO] Deleting operator cluster service version."
-        "${K8S_CLI}" delete csv "$("${K8S_CLI}" get subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath="{.status.currentCSV}")" -n "${INSTALLATION_NAMESPACE}"
+        "${K8S_CLI}" delete csv "$("${K8S_CLI}" get subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${OPERATOR_NAMESPACE}" -o jsonpath="{.status.currentCSV}")" -n "${OPERATOR_NAMESPACE}"
     else
         echo "[INFO] Skipping CSV deletion. No ${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME} operator subscription found."
     fi
 }
 
 deleteOperatorSubscription() {
-    if "${K8S_CLI}" get subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 ; then
+    if "${K8S_CLI}" get subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${OPERATOR_NAMESPACE}" > /dev/null 2>&1 ; then
         echo "[INFO] Deleting ${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME} operator subscription."
-        "${K8S_CLI}" delete subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${INSTALLATION_NAMESPACE}"
+        "${K8S_CLI}" delete subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${OPERATOR_NAMESPACE}"
     else
         echo "[INFO] Skipping subscription deletion as no ${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME} operator subscription was found."
         echo "[INFO] Deleting the ${PRODUCT_ID} operator deployment instead."
-        "${K8S_CLI}" delete deployment "${PRE_MIGRATION_PRODUCT_OPERATOR_NAME}" -n "${INSTALLATION_NAMESPACE}"
+        "${K8S_CLI}" delete deployment "${PRE_MIGRATION_PRODUCT_OPERATOR_NAME}" -n "${OPERATOR_NAMESPACE}"
     fi
     echo "[INFO] Waiting 30s for the old ${PRODUCT_ID} operator deletion."
     sleep 30
@@ -58,6 +59,7 @@ cleanupObsoleteObjects() {
     "${K8S_CLI}" delete route "${PRE_MIGRATION_PRODUCT_SHORT_ID}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Route ${PRE_MIGRATION_PRODUCT_SHORT_ID} not found."
     "${K8S_CLI}" delete deployment "${PRE_MIGRATION_PRODUCT_SHORT_ID}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] deployment ${PRE_MIGRATION_PRODUCT_SHORT_ID} not found."
 
+    "${K8S_CLI}" delete configmap "che-gateway-route-${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] ConfigMap che-gateway-route-${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard not found."
     "${K8S_CLI}" delete service "${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Service ${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard not found."
     "${K8S_CLI}" delete route "${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Route ${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard not found."
     "${K8S_CLI}" delete deployment "${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Deployment ${PRE_MIGRATION_PRODUCT_SHORT_ID}-dashboard not found."
