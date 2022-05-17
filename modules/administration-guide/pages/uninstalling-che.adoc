@@ -1,21 +1,38 @@
 :_content-type: PROCEDURE
 :navtitle: Uninstalling Che
 :keywords: administration guide, uninstalling-che
-:page-aliases: installation-guide:uninstalling-che
+:page-aliases: installation-guide:uninstalling-che, installation-guide:uninstalling-che-after-operatorhub-installation, uninstalling-che-on-openshift, installation-guide:uninstalling-che-after-chectl-installation, uninstalling-che-by-using-chectl
 
 :parent-context-of-uninstalling-che: {context}
 
 [id="uninstalling-{prod-id-short}_{context}"]
 = Uninstalling {prod-short}
 
-:context: uninstalling-{prod-id-short}
-
 WARNING: Uninstalling {prod-short} removes all {prod-short}-related user data!
 
-How the {prod-short} instance was installed determines the uninstallation procedure:
+To uninstall an instance of {prod} {prod-ver}:
 
-* If the {prod-short} instance was installed using OperatorHub, then see xref:uninstalling-che-on-openshift.adoc[].
+.Prerequisites
 
-* If the {prod-short} instance was installed using `{prod-cli}`, then see xref:uninstalling-che-by-using-chectl.adoc[].
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
 
-:context: {parent-context-of-uninstalling-che}
+* `{prod-cli}`. See: xref:installing-the-chectl-management-tool.adoc[].
+
+.Procedure
+
+. Obtain the name of the {prod-short} {orch-namespace} (default: `{prod-namespace}`):
++
+[subs="+attributes,quotes"]
+----
+$ {orch-cli} get checluster --all-namespaces \
+  -o=jsonpath="{.items[*].metadata.namespace}"
+----
+
+. Remove the {prod-short} instance from the __<{prod-namespace}>__  {orch-namespace}:
++
+[subs="+attributes,quotes"]
+----
+$ {prod-cli} server:delete -n __<{prod-namespace}>__
+----
+
+include::example$snip_{project-context}-note-uninstalling-in-minikube-cluster.adoc[]

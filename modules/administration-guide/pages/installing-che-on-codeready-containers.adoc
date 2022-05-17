@@ -1,4 +1,4 @@
-:_content-type: ASSEMBLY
+:_content-type: PROCEDURE
 :navtitle: Installing {prod-short} on CodeReady Containers
 :keywords: overview, installing-che-on-codeready-containers
 :page-aliases: installation-guide:installing-che-on-codeready-containers, overview:installing-che-on-codeready-containers
@@ -10,10 +10,73 @@
 
 :context: installing-{prod-id-short}-on-codeready-containers
 
-This chapter describes the creation of a single-node OpenShift cluster for deploying a {prod-short} instance using CodeReady Containers. To install {prod-short}, use the`{prod-cli}` command-line tool or the OpenShift web console GUI.
+You can create a single-node OpenShift cluster for deploying a {prod-short} instance using CodeReady Containers.
 
-include::partial$proc_using-chectl-to-install-che-on-codeready-containers.adoc[leveloffset=+1]
+.Prerequisites
 
-include::partial$proc_using-openshift-web-console-to-install-che-on-codeready-containers.adoc[leveloffset=+1]
+* `{prod-cli}`. See: xref:installing-the-chectl-management-tool.adoc[].
 
-:context: {parent-context-of-installing-che-on-codeready-containers}
+* A running instance of CodeReady Containers. See link:https://console.redhat.com/openshift/create/local[Installing CodeReady Containers].```
+
+* The file path of the user's CodeReady Containers pull secret.
+
+* Available memory is 12 GB or more.
+
+* Available disk size is 64 GB or more.
+
+.Procedure
+
+. Remove the previous cluster:
++
+[source,terminal] 
+----
+$ crc delete
+----
+
+. Configure your host machine for CodeReady Containers:
++
+----
+$ crc setup
+----
+
+. Start the CodeReady Containers virtual machine with at least 12 GB of memory and 64 GB of disk space. Also, specify the path to your pull secret and take note of the password for the `kubeadmin` user displayed at the end of the CodeReady Containers initiation:
++
+[subs="+quotes"]
+----
+$ crc start --memory 12288 --disk-size=64 --pull-secret-file __<pull-secret-file>__
+----
+
+. Enable access to the `oc` command line interface embedded in CodeReady Containers:
++
+----
+$ eval $(crc oc-env)
+----
+
+. Install the {prod-short} instance using {prod-cli}:
++
+[subs="+attributes"]
+----
+$ {prod-cli} server:deploy --platform crc
+----
+
+.Verification steps
+
+. Verify the {prod-short} instance status:
++
+[subs="+attributes,+quotes"]
+----
+$ {prod-cli} server:status
+----
+
+. Navigate to the {prod-short} cluster instance:
++
+[subs="+attributes,+quotes"]
+----
+$ {prod-cli} dashboard:open
+----
+
+
+
+.Additional resources
+
+* link:https://access.redhat.com/documentation/en-us/red_hat_codeready_containers/[Product documentation for Red Hat CodeReady Containers].
