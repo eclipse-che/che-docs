@@ -53,11 +53,12 @@ include::example$creating-a-telemetry-plug-in/main.go[]
 
 Create a container image based on this code and expose it as a deployment in OpenShift in the {prod-namespace} {orch-namespace}. The code for the example telemetry server is available at link:https://github.com/che-incubator/telemetry-server-example[telemetry-server-example]. To deploy the telemetry server, clone the repository and build the container:
 
+[subs="+attributes,+quotes"]
 ----
 $ git clone https://github.com/che-incubator/telemetry-server-example
 $ cd telemetry-server-example
-$ docker build -t registry/organization/telemetry-server-example:latest .
-$ docker push registry/organization/telemetry-server-example:latest
+$ {docker-cli} build -t registry/organization/telemetry-server-example:latest .
+$ {docker-cli} push registry/organization/telemetry-server-example:latest
 ----
 
 Both `manifest_with_ingress.yaml` and `manifest_with_route` contain definitions for a Deployment and Service. The former also defines a {kubernetes} Ingress, while the latter defines an OpenShift Route.
@@ -302,9 +303,11 @@ include::example$creating-a-telemetry-plug-in/Dockerfile.jvm[]
 ----
 ====
 To build the image, run:
+
+[subs="+attributes,+quotes"]
 ----
 mvn package && \
-docker build -f src/main/docker/Dockerfile.jvm -t image:tag .
+{docker-cli} build -f src/main/docker/Dockerfile.jvm -t image:tag .
 ----
 
 === Sample Dockerfile for building a Quarkus native image
@@ -317,9 +320,11 @@ include::example$creating-a-telemetry-plug-in/Dockerfile.native[]
 ----
 ====
 To build the image, run:
+
+[subs="+attributes,+quotes"]
 ----
 mvn package -Pnative -Dquarkus.native.container-build=true && \
-docker build -f src/main/docker/Dockerfile.native -t image:tag .
+{docker-cli} build -f src/main/docker/Dockerfile.native -t image:tag .
 ----
 
 == Creating a `plugin.yaml` for your plug-in
