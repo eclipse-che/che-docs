@@ -70,7 +70,7 @@ opm alpha generate dockerfile "./${my_catalog}"
 # Build the catalog image locally
 podman build -t "${my_operator_index}" -f "./${my_catalog}.Dockerfile" --no-cache .
 
-# Disable default OperatorHub catalog
+# Disable default Red Hat Ecosystem Catalog
 oc patch OperatorHub cluster --type json \
     --patch '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": true}]'
 
