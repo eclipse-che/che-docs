@@ -1,20 +1,82 @@
-:_content-type: ASSEMBLY
+:_content-type: PROCEDURE
 :navtitle: Installing {prod-short} on {rh-os-local}
 :keywords: overview, installing, installation, local
-:page-aliases: installation-guide:installing-che-on-codeready-containers, overview:installing-che-on-codeready-containers, installing-che-on-codeready-containers
+:page-aliases: installation-guide:installing-che-on-codeready-containers, overview:installing-che-on-codeready-containers
 
-:parent-context-of-installing-che-on-red-hat-open-shift-local: {context}
+:parent-context-of-installing-che-on-red-hat-openshift-local: {context}
 
-[id="installing-{prod-id-short}-on-red-hat-open-shift-local_{context}"]
+[id="installing-{prod-id-short}-on-red-hat-openshift-local_{context}"]
 = Installing {prod-short} on {rh-os-local}
 
+:context: installing-{prod-id-short}-on-red-hat-openshift-local
 
-:context: installing-{prod-id-short}-on-red-hat-open-shift-local
+You can create a single-node OpenShift cluster for deploying a {prod-short} instance using {rh-os-local}.
 
-This chapter describes the creation of a single-node OpenShift cluster for deploying a {prod-short} instance using {rh-os-local}. To install {prod-short}, use the`{prod-cli}` command-line tool or the OpenShift web console GUI.
+.Prerequisites
 
-include::partial$proc_using-chectl-to-install-che-on-red-hat-openshift-local.adoc[leveloffset=+1]
+* `{prod-cli}`. See: xref:installing-the-chectl-management-tool.adoc[].
 
-include::partial$proc_using-openshift-web-console-to-install-che-on-red-hat-openshift-local.adoc[leveloffset=+1]
+* A running instance of {rh-os-local}. See link:https://console.redhat.com/openshift/create/local[Installing {rh-os-local}].```
 
-:context: {parent-context-of-installing-che-on-red-hat-open-shift-local}
+* The file path of the user's {rh-os-local} pull secret.
+
+* Available memory is 12 GB or more.
+
+* Available disk size is 64 GB or more.
+
+.Procedure
+
+. Remove the previous cluster:
++
+[source,terminal] 
+----
+$ crc delete
+----
+
+. Configure your host machine for {rh-os-local}:
++
+----
+$ crc setup
+----
+
+. Start the {rh-os-local} virtual machine with at least 12 GB of memory and 64 GB of disk space. Also, specify the path to your pull secret and take note of the password for the `kubeadmin` user displayed at the end of the {rh-os-local} initiation:
++
+[subs="+quotes"]
+----
+$ crc start --memory 12288 --disk-size=64 --pull-secret-file __<pull-secret-file>__
+----
+
+. Enable access to the `oc` command line interface embedded in {rh-os-local}:
++
+----
+$ eval $(crc oc-env)
+----
+
+. Install the {prod-short} instance using {prod-cli}:
++
+[subs="+attributes"]
+----
+$ {prod-cli} server:deploy --platform crc
+----
+
+.Verification steps
+
+. Verify the {prod-short} instance status:
++
+[subs="+attributes,+quotes"]
+----
+$ {prod-cli} server:status
+----
+
+. Navigate to the {prod-short} cluster instance:
++
+[subs="+attributes,+quotes"]
+----
+$ {prod-cli} dashboard:open
+----
+
+
+
+.Additional resources
+
+* link:https://access.redhat.com/documentation/en-us/red_hat_openshift_local/[Product documentation for {rh-os-local}].
