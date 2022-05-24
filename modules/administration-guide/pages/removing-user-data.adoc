@@ -10,110 +10,38 @@
 
 The General Data Protection Regulation (link:https://en.wikipedia.org/wiki/General_Data_Protection_Regulation[GDPR]) law enforces the right for individuals to have personal data erased.
 
-The following procedure describes how to remove the {prod-short} user’s data.
-
-[NOTE]
-====
-The following commands use the default {platforms-namespace}, `{prod-namespace}`, as a user's example for the `-n` option.
-====
+You can remove the {prod-short} user’s data using the {prod-short} API.
 
 .Prerequisites
 
-* A user or an administrator authorization token. To delete the {prod-short} data bound to a user account, `admin` privileges are required. The `admin` is a special {prod-short} administrator account that should be pre-created and enabled using the `pass:[CHE_SYSTEM_ADMIN__NAME]` and `pass:[CHE_SYSTEM_SUPER__PRIVILEGED__MODE = true]` properties of the {prod-short} Custom Resource.
-+
-[subs="+quotes,macros"]
-----
-spec:
- server:
-   customCheProperties:
-     pass:[CHE_SYSTEM_SUPER__PRIVILEGED__MODE]: 'true'
-     pass:[CHE_SYSTEM_ADMIN__NAME]: '__<admin-name>__'
-----
-+
-If needed, use {orch-cli} commands below for patching the {prod-short} Custom Resource:
-+
-[subs="+quotes,macros,attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} \
-  --type merge \
-  -p '{ "spec": { "server": {"customCheProperties": {"pass:[CHE_SYSTEM_SUPER__PRIVILEGED__MODE]": "true"} } }}' \
-  -n __{prod-namespace}__
-----
-+
-[subs="+quotes,macros,attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} \
-  --type merge \
-  -p '{ "spec": { "server": {"customCheProperties": {"pass:[CHE_SYSTEM_ADMIN__NAME]": "__<admin-name>__"} } }}' \
-  -n __{prod-namespace}__
-----
-+
-[NOTE]
-====
-All {prod-short} system permissions are granted to the administrative user. To configure the administrative user, use the `CHE_SYSTEM_ADMIN__NAME` property. The default value is `admin`. The system permissions are granted when the {prod-short} server starts. If the user record is not in the {prod-short} user database, the permissions are granted after the first login of the user.
-
-.Authorization token privileges:
-
-* `admin` - Can delete all personal data of all users
-* `user` - Can delete only the data related to the user
-====
-
-* A user or an administrator is logged in the OpenShift cluster with deployed {prod-short}.
-
-* A user ID is obtained. Get the user ID using the commands below:
-
-** For the current user:
-+
-[subs="+quotes,macros,attributes"]
-----
-$ curl -X GET \
-  --header 'Authorization: Bearer __<user-token>__' \
-  'pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user'
-----
- 
-** To find a user by name: 
-+
-[subs="+quotes,macros,attributes"]
-----
-$ curl -X GET \
-  --header 'Authorization: Bearer __<user-token>__' \
-  'pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/find?name=__<username>__'
-----
-
-.Example of obtaining a user ID
-
-This example uses `vparfono` as a local user name.
-
-====
-[subs="+quotes,macros,attributes"]
-----
-$ curl -X GET \
-  --header 'Authorization: Bearer __<user-token>__' \
-  'https://che-vp-che.apps.che-dev.x6e0.p1.openshiftapps.com/api/user/find?name=vparfono'
-----
-
-The user ID is at the bottom of the curl command output.
-
-[source,json]
-----
-{
- "name": "vparfono",
- "links": [
-   {
-.
-.
-.
-   }
- ],
- "email": "vparfono@redhat.com",
- "id": "921b6f33-2657-407e-93a6-fb14cf2329ce"
-}
-----
-====
+* A __<token>__ authorization token for a user with `admin` privileges. See xref:configuring-the-administrative-user.adoc[].
 
 .Procedure
 
-* Remove the data using the API:
+. Get the __<username>__ user __<id>__:
++
+[subs="+quotes,macros,attributes"]
+----
+$ curl -X GET \
+  --header 'Authorization: Bearer __<token>__' \
+  'pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/find?name=__<username>__'
+----
+
+. Remove the user __<id>__ data:
++
+[subs="+quotes,macros,attributes"]
+----
+$ curl -i -X DELETE \
+  --header 'Authorization: Bearer __<token>__' \
+  pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/__<id>__
+----
+
+. Optionally, remove the {orch-name} resources bound to the user.
+
+
+.Verification
+
+* Running the following command returns code `204` as the API response:
 +
 [subs="+quotes,macros,attributes"]
 ----
@@ -122,27 +50,6 @@ $ curl -i -X DELETE \
   pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/__<user-id>__
 ----
 
-[NOTE]
-====
-The procedure can be also executed using the Swagger UI available on pass:c,m,a,q[+https:+//__<{prod-host}>__]/swagger
-====
-
-.Verification
-
-Running the following command returns code `204` as the API response:
-
-[subs="+quotes,macros,attributes"]
-----
-$ curl -i -X DELETE \
-  --header 'Authorization: Bearer __<user-token>__' \
-  pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/__<user-id>__
-----
-
-[WARNING]
-====
-The following procedure only removes the user on the {prod-short} level. For removing all {orch-name} user data including namespaces from the cluster, the {orch-name} cluster-admin needs to explicitly remove the {orch-name} resources bound to the user.
-====
-
 .Additional resources
 
-To remove the data of all users, follow the instructions for xref:uninstalling-che.adoc[].
+* To remove the data of all users, see xref:uninstalling-che.adoc[].
