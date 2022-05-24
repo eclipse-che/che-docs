@@ -7,7 +7,7 @@
 [id="adding-labels-and-annotations-to-ingresses_{context}"]
 = Adding labels and annotations to {orch-ingress}
 
-Some organizations require labels and annotations on each{orch-ingress}. This procedure describes how to configure labels and annotations.
+You can configure {orch-ingress} labels and annotations, if your organization requires them.
 
 .Prerequisites
 
@@ -17,34 +17,21 @@ Some organizations require labels and annotations on each{orch-ingress}. This pr
 
 .Procedure
 
-. To configure labels for {orch-ingress}, update the Custom Resource:
+* Configure the `CheCluster` Custom Resource:
 +
-IMPORTANT: Use commas to separate labels: `key1=value1,key2=value2`.
-+
-[subs="+quotes,+attributes"]
+[source,yaml,subs="+quotes,+attributes"]
 ----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/server/cheServerIngress/labels", '\
-'"value": "__<labels for a {prod-id-short} server ingress>__"}]'
-
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/server/customCheProperties/CHE_INFRA_KUBERNETES_INGRESS_LABELS", '\
-'"value": "__<labels for a workspace ingress>__"}]'
+spec:
+  server:
+    cheServerIngress:
+      labels: __<labels>__ <1>
+      annotations: __<annotations>__ <2>
+    customCheProperties:
+      CHE_INFRA_KUBERNETES_INGRESS_LABELS: __<labels>__ <1>
+      CHE_INFRA_KUBERNETES_INGRESS_ANNOTATIONS______JSON: "__<annotations>__" <2>
 ----
-. To configure annotations for {orch-ingress}, update the Custom Resource with the following commands:
-+
-IMPORTANT: Use objects to specify annotations: `{"key1": "value1", "key2" : "value2"}`.
-+
-[subs="+quotes,+attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/server/cheServerIngress/annotations", '\
-'"value": __<annotations for a {prod-id-short} server ingress>__}]'
-
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json -p \
-'[{"op": "replace", "path": "/spec/server/customCheProperties/CHE_INFRA_KUBERNETES_INGRESS_ANNOTATIONS______JSON", '\
-'"value": "__<annotations for a workspace ingress in json format>__"}]'
-----
+<1> A comma-separated list of labels for {orch-ingress}: `key1=value1,key2=value2`.
+<2> Annotations for {orch-ingress} in JSON format: `{"key1": "value1", "key2" : "value2"}`.
 
 .Additional resources
 
