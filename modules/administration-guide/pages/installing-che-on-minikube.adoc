@@ -1,21 +1,52 @@
-:_content-type: ASSEMBLY
+:_content-type: PROCEDURE
 :navtitle: Installing {prod-short} on Minikube
 :keywords: overview, installing-che-on-minikube
 :page-aliases: installation-guide:installing-che-on-minikube, overview:installing-che-on-minikube
 
-:parent-context-of-installing-che-on-minikube: {context}
 
 [id="installing-{prod-id-short}-on-minikube_{context}"]
 = Installing {prod-short} on Minikube
-
-:context: installing-{prod-id-short}-on-minikube
 
 This article explains how to create a single-node {kubernetes} cluster with Minikube to deploy {prod-short}.
 
 WARNING: Remember that single-node {kubernetes} clusters are suited only for testing or development. Do *NOT* use such clusters to run {prod-short} for organizations or developer teams.
 
-include::partial$proc_using-minikube-to-set-up-kubernetes.adoc[leveloffset=+1]
+.Prerequisites
 
-include::partial$proc_installing-che-on-minikube-using-chectl.adoc[leveloffset=+1]
+* Minikube with {kubernetes} version `{kube-ver-min}` or higher. See link:https://kubernetes.io/docs/tasks/tools/install-minikube/[Installing Minikube].
 
-:context: {parent-context-of-installing-che-on-minikube}
+* `{orch-cli}`. See {orch-cli-link}.
+
+* `{prod-cli}`. See xref:installing-the-chectl-management-tool.adoc[].
+
+.Procedure
+
+. Start Minikube. Allocate at least 8GB of RAM and 4 CPU cores:
++
+----
+$ minikube start --addons=ingress --vm=true --memory=8192 --cpus=4
+----
+
+. Create the {prod-short} instance:
++
+[subs="+attributes"]
+----
+$ {prod-cli} server:deploy --platform minikube
+----
+
+.Verification steps
+
+. Verify the {prod-short} instance status:
++
+[subs="+attributes,+quotes"]
+----
+$ {prod-cli} server:status
+----
+
+. Navigate to the {prod-short} cluster instance:
++
+[subs="+attributes,+quotes"]
+----
+$ {prod-cli} dashboard:open
+----
+

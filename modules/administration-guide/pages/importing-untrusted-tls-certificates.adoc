@@ -6,7 +6,7 @@
 [id="importing-untrusted-tls-certificates_{context}"]
 = Importing untrusted TLS certificates to {prod-short}
 
-External communications between {prod-short} components are, by default, encrypted with TLS. Communications of {prod-short} components with external services such as proxies, source code repositories, and {platforms-identity-provider} may require using TLS. Those communications require the use of TLS certificates signed by trusted Certificate Authorities.
+External communications between {prod-short} components are, by default, encrypted with TLS. Communications of {prod-short} components with external services such as proxies, source code repositories, and identity provider may require using TLS. Those communications require the use of TLS certificates signed by trusted Certificate Authorities.
 
 NOTE: When the certificates used by {prod-short} components or by an external service are signed by an untrusted CA, it can be necessary to import the CA certificate in the {prod-short} installation so that every {prod-short} component will consider them as signed by a trusted CA.
 
@@ -37,7 +37,7 @@ The following procedure is applicable for already installed and running instance
 
 .Prerequisites
 
-* The `{orch-cli}` tool is available.
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
 * Namespace for {prod-short} exists.
 
 .Procedure
@@ -74,6 +74,7 @@ $ {orch-cli} get cm --selector=app.kubernetes.io/component=ca-bundle,app.kuberne
 ----
 +
 Check the content of ConfigMap by running:
++
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get cm __<name>__ -n {prod-namespace} -o yaml

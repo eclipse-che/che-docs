@@ -10,14 +10,16 @@ To deploy {prod-short} with a suitable configuration, edit the `CheCluster` Cust
 
 
 .Prerequisites
-* Access to an administrator account on an instance of {platforms-name}.
-* The {prod-cli} tool is available. See xref:using-the-chectl-management-tool.adoc[]. 
+
+* An active `oc` session with administrative permissions to the OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the OpenShift CLI].
+
+* `{prod-cli}`. See: xref:installing-the-chectl-management-tool.adoc[].
 
 .Procedure
 * Create a `che-operator-cr-patch.yaml` YAML file that contains the subset of the `CheCluster` Custom Resource to configure:
 +
 ====
-[source,yaml,subs="+quotes"]
+[source,yaml,subs="+attributes,+quotes"]
 ----
 spec:
   __<component>__:
@@ -26,7 +28,7 @@ spec:
 ====
 * Deploy {prod-short} and apply the changes described in `che-operator-cr-patch.yaml` file:
 +
-[subs="+quotes"]
+[subs="+attributes,+quotes"]
 ----
 $ {prod-cli} server:deploy \
 --che-operator-cr-patch-yaml=che-operator-cr-patch.yaml \
@@ -46,6 +48,6 @@ $ oc get configmap che -o jsonpath='{.data._<configured-property>_}' \
 [role="_additional-resources"]
 .Additional resources
 
-* xref:understanding-the-checluster-custom-resource.adoc[].
+* xref:checluster-custom-resource-fields-reference.adoc[].
 
 * xref:advanced-configuration-options-for-the-che-server-component.adoc[].

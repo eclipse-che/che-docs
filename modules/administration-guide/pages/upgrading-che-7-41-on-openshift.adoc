@@ -4,13 +4,13 @@
 :page-aliases: 
 
 [id="upgrading-{prod-id-short}-{prod-last-version-pre-dwo}-on-openshift_{context}"]
-= Upgrading {prod-short} {prod-last-version-pre-dwo} on OpenShift
+= Upgrading {prod-prev-short} {prod-last-version-pre-dwo} on OpenShift
 
-The workspace engine and authentication system used until version {prod-last-version-pre-dwo} are deprecated. Upgrading from version {prod-last-version-pre-dwo} requires manual steps.
+The workspace engine and authentication system used up to and including {prod-prev-short} version {prod-last-version-pre-dwo} are deprecated. Upgrading from version {prod-last-version-pre-dwo} requires manual steps.
 
 .Prerequisites
 
-* An instance of {prod-short} deployed on xref:supported-platforms.adoc[], using the default internal PostgreSQL database, and with OpenShift OAuth enabled. See {prod-docs-url-enable-oauth}.
+* An instance of {prod-prev-short} deployed on xref:supported-platforms.adoc[], using the default internal PostgreSQL database, and with OpenShift OAuth enabled. See {prod-docs-url-enable-oauth}.
 * Command line tools `oc`, `curl`, and `jq` are available.
 * The host running the upgrade commands is running on Linux.
 
@@ -29,6 +29,7 @@ export PRODUCT_OPERATOR_NAME={prod-operator}
 export PRODUCT_OLM_STABLE_CHANNEL={prod-stable-channel}
 export PRODUCT_OLM_CATALOG_SOURCE={prod-stable-channel-catalog-source}
 export PRODUCT_OLM_PACKAGE={prod-stable-channel-package}
+export PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE={prod-namespace}  #<1>
 export PRE_MIGRATION_PRODUCT_SHORT_ID={pre-migration-prod-id-short}
 export PRE_MIGRATION_PRODUCT_DEPLOYMENT_NAME={pre-migration-prod-deployment}
 export PRE_MIGRATION_PRODUCT_OPERATOR_NAME={pre-migration-prod-operator}
@@ -48,9 +49,9 @@ chmod +x ./1-prepare.sh ./2-migrate.sh ./3-subscribe.sh ./4-wait.sh
 ./3-subscribe.sh <3>
 ./4-wait.sh <4>
 ----
-<1> Shuts down {prod-short} and {identity-provider}, fetch users data and dumps {prod-short} database.
-<2> Fetches {prod-short} {identity-provider} and database data, and repopulates the database with updated data.
-<3> Deletes {prod-short} Operator and {identity-provider} resources, updates CheCluster CR and creates a new Operator subscription.
+<1> Shuts down {prod-prev-short} and {identity-provider}, fetch users data and dumps {prod-short} database.
+<2> Fetches {prod-prev-short} {identity-provider} and database data, and repopulates the database with updated data.
+<3> Deletes {prod-prev-short} Operator and {identity-provider} resources, updates CheCluster CR and creates a new {prod-short} Operator subscription.
 <4> Waits until {prod-short} is ready (it can take more than 5 minutes).
 
 .Verification

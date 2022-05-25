@@ -13,25 +13,20 @@ Mount {kubernetes} ConfigMaps to the `{devworkspace}` containers in the {orch-na
 
 .Prerequisites
 
-* You have GUI or CLI access to the {orch-name} cluster of your organization's {prod-short} instance.
-* For CLI users: The `{orch-cli}` command line tool is installed in the operating system you are using.
-* A ConfigMap is created in your user {orch-namespace} to mount to all `{devworkspace}` containers.
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+* You have created a new ConfigMap or determined an existing one in your user {orch-namespace} to mount to all `{devworkspace}` containers.
 
 .Procedure
 
 . Add the required labels to the ConfigMap.
 +
-[TIP]
-====
-CLI users can run `{orch-cli}`:
-
 [subs="+quotes,+attributes,+macros"]
 ----
 $ {orch-cli} label configmap __<ConfigMap_name>__ \
         controller.devfile.io/mount-to-devworkspace=true \
         controller.devfile.io/watch-configmap=true
 ----
-====
 
 . Optional: Use the annotations to configure how the ConfigMap is mounted.
 +

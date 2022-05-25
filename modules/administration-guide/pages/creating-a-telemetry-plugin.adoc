@@ -53,11 +53,12 @@ include::example$creating-a-telemetry-plug-in/main.go[]
 
 Create a container image based on this code and expose it as a deployment in OpenShift in the {prod-namespace} {orch-namespace}. The code for the example telemetry server is available at link:https://github.com/che-incubator/telemetry-server-example[telemetry-server-example]. To deploy the telemetry server, clone the repository and build the container:
 
+[subs="+attributes,+quotes"]
 ----
 $ git clone https://github.com/che-incubator/telemetry-server-example
 $ cd telemetry-server-example
-$ docker build -t registry/organization/telemetry-server-example:latest .
-$ docker push registry/organization/telemetry-server-example:latest
+$ {docker-cli} build -t registry/organization/telemetry-server-example:latest .
+$ {docker-cli} push registry/organization/telemetry-server-example:latest
 ----
 
 Both `manifest_with_ingress.yaml` and `manifest_with_route` contain definitions for a Deployment and Service. The former also defines a {kubernetes} Ingress, while the latter defines an OpenShift Route.
@@ -148,7 +149,6 @@ quarkus.arc.selected-alternatives=MainConfiguration,AnalyticsManager
 == Running the application within a {devworkspace}
 
 . Set the `DEVWORKSPACE_TELEMETRY_BACKEND_PORT` environment variable in the {devworkspace}. Here, the value is set to `4167`.
-
 +
 ----
 spec:
@@ -158,7 +158,6 @@ spec:
         - name: DEVWORKSPACE_TELEMETRY_BACKEND_PORT
           value: '4167'
 ----
-+
 
 . Restart the {devworkspace} from the {prod} dashboard.
 
@@ -167,13 +166,12 @@ spec:
 ----
 $ mvn --settings=settings.xml quarkus:dev -Dquarkus.http.port=${DEVWORKSPACE_TELEMETRY_BACKEND_PORT}
 ----
-
 +
 The application now receives telemetry events through port `4167` from the front-end plug-in.
 
 .Verification steps
-. Verify that the following output is logged:
 
+. Verify that the following output is logged:
 +
 ----
 INFO  [org.ecl.che.inc.AnalyticsManager] (Quarkus Main Thread) No welcome message provided
@@ -183,7 +181,6 @@ INFO  [io.quarkus] (Quarkus Main Thread) Installed features: [cdi, kubernetes-cl
 ----
 
 . To verify that the `onEvent()` method of `AnalyticsManager` receives events from the front-end plug-in, press the kbd:[l] key to disable Quarkus live coding and edit any file within the IDE. The following output should be logged:
-
 +
 ----
 INFO  [io.qua.dep.dev.RuntimeUpdatesProcessor] (Aesh InputStream Reader) Live reload disabled
@@ -212,7 +209,6 @@ It is possible to put more complex logic in `isEnabled()`. For example, the link
 For the following example, the telemetry server application is deployed to OpenShift at the following URL: `++http://little-telemetry-server-che.apps-crc.testing++`, where `apps-crc.testing` is the ingress domain name of the OpenShift cluster.
 
 . Set up the RESTEasy REST Client by creating `TelemetryService.java`
-
 +
 .`TelemetryService.java`
 ====
@@ -222,10 +218,8 @@ include::example$creating-a-telemetry-plug-in/TelemetryService.java[]
 ----
 ====
 <1> The endpoint to make the `POST` request to.
-+
 
 . Specify the base URL for `TelemetryService` in the `src/main/resources/application.properties` file:
-
 +
 .`application.properties`
 ====
@@ -233,10 +227,8 @@ include::example$creating-a-telemetry-plug-in/TelemetryService.java[]
 org.my.group.TelemetryService/mp-rest/url=http://little-telemetry-server-che.apps-crc.testing
 ----
 ====
-+
 
 . Inject `TelemetryService` into `AnalyticsManager` and send a `POST` request in `onEvent()`
-
 +
 .`AnalyticsManager.java`
 ====
@@ -246,7 +238,6 @@ include::example$creating-a-telemetry-plug-in/onEvent.java[]
 ----
 ====
 +
-
 This sends an HTTP request to the telemetry server and automatically delays identical events for a small period of time. The default duration is 1500 milliseconds.
 
 == Implementing `increaseDuration()`
@@ -302,9 +293,11 @@ include::example$creating-a-telemetry-plug-in/Dockerfile.jvm[]
 ----
 ====
 To build the image, run:
+
+[subs="+attributes,+quotes"]
 ----
 mvn package && \
-docker build -f src/main/docker/Dockerfile.jvm -t image:tag .
+{docker-cli} build -f src/main/docker/Dockerfile.jvm -t image:tag .
 ----
 
 === Sample Dockerfile for building a Quarkus native image
@@ -317,9 +310,11 @@ include::example$creating-a-telemetry-plug-in/Dockerfile.native[]
 ----
 ====
 To build the image, run:
+
+[subs="+attributes,+quotes"]
 ----
 mvn package -Pnative -Dquarkus.native.container-build=true && \
-docker build -f src/main/docker/Dockerfile.native -t image:tag .
+{docker-cli} build -f src/main/docker/Dockerfile.native -t image:tag .
 ----
 
 == Creating a `plugin.yaml` for your plug-in
@@ -399,25 +394,25 @@ image::creating-a-telemetry-plug-in/devworkspace_telemetry_plugin.png[]
 
 == Applying the telemetry plug-in for all {devworkspace}s
 
-Set the telemetry plug-in as a default plug-in in the `spec.server.workspaceDefaultPlugins` field for the `CheCluster` custom resource. Default plug-ins are applied on {devworkspace} startup for new and existing {devworkspace}s.
+Set the telemetry plug-in as a default plug-in. Default plug-ins are applied on {devworkspace} startup for new and existing {devworkspace}s.
+
+* Configure the `CheCluster` Custom Resource. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
++
 ----
 spec:
-  ...
   server:
-    ...
     workspacesDefaultPlugins:
     - editor: eclipse/che-theia/next     <1>
       plugins:                           <2>
       - 'http://apache-che.apps-crc.testing/plugin.yaml'
 ----
-
 <1> The editorId to set default plug-ins for.
 <2> List of URLs to devfile v2 plug-ins.
 
-This can be accomplished by running `oc edit checluster -n {prod-namespace}` and typing in the change at the terminal, or by editing the CR in the OpenShift console (*Installed Operators -> {prod} -> {prod} Cluster -> {prod-checluster} -> YAML*).
 
-For more information about the Che Cluster custom resource, see
-xref:understanding-the-checluster-custom-resource.adoc[].
+.Additional resources
+
+* xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
 
 .Verification steps
 
