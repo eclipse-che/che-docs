@@ -1,0 +1,52 @@
+[id="using-an-embedded-editor-ddefinition-for-your-ide_{context}"]
+=== Using an embedded editor definition for your IDE
+
+Fully customize the project IDE by using the `inline` directive to put a complete IDE definition in the `che-editor.yaml`` file 
+
+.Procedure
+
+* Set an `inline` directive in your `che-editor.yaml` file:
++
+```
+inline:
+  endpoints:
+    - name: "theia"
+      public: true
+      targetPort: 3100
+      attributes:
+        protocol: http
+        type: ide
+        secure: true
+        cookiesAuthEnabled: true
+        discoverable: false
+    (...)
+  containers:
+    - name: theia-ide
+      image: "quay.io/eclipse/che-theia:next"
+      env:
+        - name: THEIA_PLUGINS
+          value: local-dir:///plugins
+      volumeMounts:
+        - name: plugins
+          path: "/plugins"
+        - name: theia-local
+          path: "/home/theia/.theia"
+      mountSources: true
+      ports:
+        - exposedPort: 3100
+      memoryLimit: "512M"
+      cpuLimit: 1000m
+      cpuRequest: 100m
+  initContainers:
+    - name: remote-runtime-injector
+      image: "quay.io/eclipse/che-theia-endpoint-runtime-binary:next"
+      volumeMounts:
+        - name: remote-endpoint
+          path: "/remote-endpoint"
+          ephemeral: true
+      env:
+        - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
+          value: /remote-endpoint/plugin-remote-endpoint
+        - name: REMOTE_ENDPOINT_VOLUME_NAME
+          value: remote-endpoint
+```
