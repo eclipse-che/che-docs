@@ -60,9 +60,9 @@ patchCheCluster() {
       if [[ ${CHE_LIMITS_USER_WORKSPACES_RUN_COUNT} == -1 ]]; then
         "${K8S_CLI}" patch checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
                 '[{"op": "replace", "path": "/spec/devWorkspace/runningLimit", "value": "99999"}]'
-      else
+      elif [[ ! -z ${CHE_LIMITS_USER_WORKSPACES_RUN_COUNT} ]]; then
         "${K8S_CLI}" patch checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
-                        '[{"op": "replace", "path": "/spec/devWorkspace/runningLimit", "value": "'${CHE_LIMITS_USER_WORKSPACES_RUN_COUNT}'"}]'
+                  '[{"op": "replace", "path": "/spec/devWorkspace/runningLimit", "value": "'${CHE_LIMITS_USER_WORKSPACES_RUN_COUNT}'"}]'
       fi
     fi
 }
