@@ -39,7 +39,7 @@ deleteOperatorSubscription() {
     sleep 30
 }
 
-patchCheCluster() {
+patchPreMigrationCheCluster() {
     echo "[INFO] Updating ${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME} CheCluster CR to switch to DevWorkspace and single-host."
     "${K8S_CLI}" patch checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
         '[{"op": "replace", "path": "/spec/devWorkspace/enable", "value": true}]'
@@ -65,6 +65,21 @@ patchCheCluster() {
                   '[{"op": "replace", "path": "/spec/devWorkspace/runningLimit", "value": "'${CHE_LIMITS_USER_WORKSPACES_RUN_COUNT}'"}]'
       fi
     fi
+}
+
+patchCheCluster() {
+      echo "[INFO] Updating ${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME} CheCluster CR to set 'spec.devWorkspace.runningLimit' field"
+      RUNNING_LIMIT=$("${K8S_CLI}" get checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath='{.spec.devWorkspace.runningLimit}' | tr -d "\r\n")
+      if [[ -z ${RUNNING_LIMIT} ]]; then
+        CHE_LIMITS_USER_WORKSPACES_RUN_COUNT=$("${K8S_CLI}" get checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" -o jsonpath='{.spec.server.customCheProperties.CHE_LIMITS_USER_WORKSPACES_RUN_COUNT}' | tr -d "\r\n")
+        if [[ ${CHE_LIMITS_USER_WORKSPACES_RUN_COUNT} == -1 ]]; then
+          "${K8S_CLI}" patch checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
+                  '[{"op": "replace", "path": "/spec/devWorkspace/runningLimit", "value": "99999"}]'
+        elif [[ ! -z ${CHE_LIMITS_USER_WORKSPACES_RUN_COUNT} ]]; then
+          "${K8S_CLI}" patch checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
+                    '[{"op": "replace", "path": "/spec/devWorkspace/runningLimit", "value": "'${CHE_LIMITS_USER_WORKSPACES_RUN_COUNT}'"}]'
+        fi
+      fi
 }
 
 cleanupObsoleteObjects() {
@@ -102,12 +117,15 @@ spec:
     sourceNamespace: openshift-marketplace
 EOF
 
+    echo "[INFO] Waiting 30s for the new ${PRODUCT_ID} operator creation."
+    sleep 30
 }
 
 deleteOperatorCSV
 deleteOperatorSubscription
-patchCheCluster
+patchPreMigrationCheCluster
 cleanupObsoleteObjects
 createOperatorSubscription
+patchCheCluster
 
 echo "[INFO] Done."
