@@ -19,7 +19,7 @@ waitForComponent() {
     sleep 10
   done
   echo "[INFO] Waiting for ${component} Pod to be ready"
-  "${K8S_CLI}" wait --for=condition=ready pod -l app.kubernetes.io/component="${component}" -n "${namespace}" --timeout=120s
+  "${K8S_CLI}" wait --for=condition=ready pod -l app.kubernetes.io/component="${component}" -n "${namespace}" --timeout=240s
 }
 
 waitForComponent "${PRODUCT_OPERATOR_NAME}" "${OPERATOR_NAMESPACE}"
