@@ -8,7 +8,7 @@ PRODUCT_ID=${PRODUCT_ID:-eclipse-che}                                           
 PRODUCT_SHORT_ID=${PRODUCT_SHORT_ID:-che}                                        # {prod-id-short}
 INSTALLATION_NAMESPACE=${INSTALLATION_NAMESPACE:-eclipse-che}                    # {prod-namespace}
 PRODUCT_DEPLOYMENT_NAME=${PRODUCT_DEPLOYMENT_NAME:-che}                          # {prod-deployment}
-OPERATOR_NAMESPACE=${OPERATOR_NAMESPACE:-openshift-opпerators}                    # {?}
+OPERATOR_NAMESPACE=${OPERATOR_NAMESPACE:-openshift-operators}                    # {?}
 
 PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE=${PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE:-eclipse-che}         # {prod-namespace}
 PRE_MIGRATION_PRODUCT_DEPLOYMENT_NAME=${PRE_MIGRATION_PRODUCT_DEPLOYMENT_NAME:-che}                       # {pre-migration-prod-deployment}
@@ -114,13 +114,13 @@ EOF
 waitForComponent() {
   component=$1
   namespace=$2
-  echo "[INFO] Waiting for ${component} Pod to be created"
+  echo "[INFO] Waiting for ${component} Pod to be created."
   while [[ $("${K8S_CLI}" get pod -l app.kubernetes.io/component="${component}" -n "${namespace}" -o go-template='{{len .items}}') == 0 ]]
   do
     echo "[INFO] Waiting..."
     sleep 10
   done
-  echo "[INFO] Waiting for ${component} Pod to be ready"
+  echo "[INFO] Waiting for ${component} Pod to be ready."
   "${K8S_CLI}" wait --for=condition=ready pod -l app.kubernetes.io/component="${component}" -n "${namespace}" --timeout=120s
 }
 
