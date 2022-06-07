@@ -20,8 +20,9 @@ PRE_MIGRATION_PRODUCT_OLM_CHANNEL=${PRE_MIGRATION_PRODUCT_OLM_CHANNEL:-stable}  
 PRE_MIGRATION_PRODUCT_OLM_CATALOG_SOURCE=${PRE_MIGRATION_PRODUCT_OLM_CATALOG_SOURCE:-community-operators} # {pre-migration-prod-catalog-source}
 
 DB_DUMP="${PRODUCT_ID}"-original-db.sql
+CHE_CLUSTER="${PRODUCT_ID}"-original-checluster.json
 
-echo "[INFO] Retriving ${PRODUCT_ID} database name."
+echo "[INFO] Retrieving ${PRODUCT_ID} database name."
 CHE_POSTGRES_DB=$("${K8S_CLI}" get cm/che -n "${INSTALLATION_NAMESPACE}" -o jsonpath='{.data.CHE_JDBC_URL}' | awk -F '/' '{print $NF}')
 
 deleteOperatorCSV() {
@@ -46,9 +47,17 @@ deleteOperatorSubscription() {
 }
 
 patchCheCluster() {
-    echo "[INFO] Updating ${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME} CheCluster CR to switch to turn off DevWorkspace engine."
-    "${K8S_CLI}" patch checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
-        '[{"op": "replace", "path": "/spec/devWorkspace/enable", "value": false}]'
+    if [[ -f "${CHE_CLUSTER}" ]]; then
+      echo "[INFO] Updating ${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME} CheCluster CR to set DevWorkspace engine mode."
+      DEV_WORKSPACE_ENABLE=$(cat "${CHE_CLUSTER}" | jq -r '.spec.devWorkspace.enable')
+      "${K8S_CLI}" patch checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
+          '[{"op": "replace", "path": "/spec/devWorkspace/enable", "value": '${DEV_WORKSPACE_ENABLE}'}]'
+
+      echo "[INFO] Updating ${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME} CheCluster CR to set server exposure strategy."
+      SEVER_EXPOSURE_STRATEGY=$(cat "${CHE_CLUSTER}" | jq -r '.spec.server.serverExposureStrategy')
+      "${K8S_CLI}" patch checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
+        '[{"op": "replace", "path": "/spec/server/serverExposureStrategy", "value": "'${SEVER_EXPOSURE_STRATEGY}'"}]'
+    fi
 }
 
 terminatePostgresConnections() {
@@ -67,7 +76,7 @@ createDatabase() {
 }
 
 restoreDatabase() {
-  echo "[INFO] Uploading ${DB_DUMP} to the postgreSQL pod."
+  echo "[INFO] Uploading ${DB_DUMP} to the PostgreSQL pod."
   "${K8S_CLI}" cp "${DB_DUMP}" "${INSTALLATION_NAMESPACE}"/"$("${K8S_CLI}" get pods -l app.kubernetes.io/component=postgres -n "${INSTALLATION_NAMESPACE}" --no-headers=true  -o custom-columns=":metadata.name")":/tmp/che.sql
 
   echo "[INFO] Populating ${DB_DUMP} database with the new content."
@@ -75,7 +84,7 @@ restoreDatabase() {
 }
 
 deleteObjects() {
-    echo "[INFO] Deleting obsolete resources."
+    echo "[INFO] Deleting resources."
     echo "[INFO] Deleting deployments."
     for DEPLOYMENT in "${PRODUCT_DEPLOYMENT_NAME}" "${PRODUCT_SHORT_ID}-dashboard" "plugin-registry" "devfile-registry" "che-gateway" "postgres"; do
         "${K8S_CLI}" delete deployment "${DEPLOYMENT}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] deployment ${DEPLOYMENT} not found."
@@ -101,7 +110,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
     name: "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}"
-    namespace: "${INSTALLATION_NAMESPACE}"
+    namespace: "${OPERATOR_NAMESPACE}"
 spec:
     channel: "${PRE_MIGRATION_PRODUCT_OLM_CHANNEL}"
     installPlanApproval: Automatic
@@ -124,15 +133,16 @@ waitForComponent() {
   "${K8S_CLI}" wait --for=condition=ready pod -l app.kubernetes.io/component="${component}" -n "${namespace}" --timeout=120s
 }
 
-
 deleteOperatorCSV
 deleteOperatorSubscription
 patchCheCluster
 
-terminatePostgresConnections
-dropExistingDatabase
-createDatabase
-restoreDatabase
+if [[ -f "${DB_DUMP}" ]]; then
+  terminatePostgresConnections
+  dropExistingDatabase
+  createDatabase
+  restoreDatabase
+fi
 
 deleteObjects
 createOperatorSubscription
