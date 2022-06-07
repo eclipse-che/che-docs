@@ -15,27 +15,27 @@ Following this procedure makes the service compliant to EU General Data Protecti
 
 .Prerequisites
 
-* A __<token>__ authorization token for a user with `admin` privileges. See xref:configuring-the-administrative-user.adoc[].
+* Log in to {prod-short} with a user with `admin` privileges. See xref:configuring-the-administrative-user.adoc[].
 
 .Procedure
 
-. Get the __<username>__ user __<id>__ `id`:
-+
-[subs="+quotes,macros,attributes"]
-----
-$ curl -X GET \
-  --cookie '_oauth_proxy=__<token>__' \
-  'pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/find?name=__<username>__'
-----
+. Get the __<username>__ user __<id>__ `id`: navigate to pass:c,m,a,q[+https:+//__<{prod-host}>__]/swagger/#/user/find_1, click btn:[Try it out], set *name*: __<username>__, and click btn:[Execute]. Scroll down the *Response body* to find the `id` value.
+// +
+// [subs="+quotes,macros,attributes"]
+// ----
+// $ curl -X GET \
+//   --cookie '_oauth_proxy=__<token>__' \
+//   'pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/find?name=__<username>__'
+// ----
 
-. Remove the __<id>__ user data that {prod-short} server manages. Expect a `204` response code:
-+
-[subs="+quotes,macros,attributes"]
-----
-$ curl -i -X DELETE \
-  --cookie '_oauth_proxy=__<token>__' \
-  'pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/__<id>__'
-----
+. Remove the __<id>__ user data that {prod-short} server manages: navigate to pass:c,m,a,q[+https:+//__<{prod-host}>__]/swagger/#/user/remove, click btn:[Try it out], set *id*: __<id>__, and click btn:[Execute]. Expect a `204` response code:
+// +
+// [subs="+quotes,macros,attributes"]
+// ----
+// $ curl -i -X DELETE \
+//   --cookie '_oauth_proxy=__<token>__' \
+//   'pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/__<id>__'
+// ----
 
 . Optionally, remove the {orch-name} resources bound to the user.
 
