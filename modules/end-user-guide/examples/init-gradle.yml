@@ -1,0 +1,24 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: init-gradle
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /home/user/.gradle
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  init.gradle: |
+    allprojects {
+      repositories {
+        mavenLocal ()
+        maven {
+          url "https://<nexus_route>/repository/maven-public/"
+          credentials {
+            username "admin"
+            password "passwd"
+          }
+        }
+      }
+    }
