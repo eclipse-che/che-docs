@@ -1,47 +1,26 @@
-:navtitle: Using Maven artifact repositories
+:navtitle: Maven
 :keywords: maven, artifact-repository, artifact-repositories
 :page-aliases: .:using-maven-artifact-repositories
 
-[id="using-maven-artifact-repositories"]
-= Using Maven artifact repositories
+[id="enabling-maven-artifact-repositories"]
+= Enabling Maven artifact repositories
 
-.Preparation
-. Apply nexus.cer.yaml Secret
-. Apply settings.xml.yaml ConfigMap
-. Apply init-truststore.yaml ConfigMap
+You can enable a Maven artifact repository in Maven workspaces that run in a restricted environment.
 
-.Workspace init
-. Start a maven based workspace
-. Open a new terminal in the `tools` container
-. source ~/init-truststore.sh
+.Prerequisites
 
-//maven/init-truststore.yaml
-[source,yaml,subs="+quotes,+attributes,+macros"]
-----
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: init-truststore
-  annotations:
-    controller.devfile.io/mount-as: subpath
-    controller.devfile.io/mount-path: /home/user/
-  labels:
-    controller.devfile.io/mount-to-devworkspace: 'true'
-    controller.devfile.io/watch-configmap: 'true'
-data:
-  init-truststore.sh: |
-    #!/usr/bin/env bash
+* You are not running any Maven workspace.
 
-    keytool -importcert -noprompt -file /home/user/certs/nexus.cer -cacerts -storepass changeit
-----
+.Procedure
 
-//maven/nexus.cer.yaml
+. Apply the Secret for the TLS certificate:
++
 [source,yaml,subs="+quotes,+attributes,+macros"]
 ----
 kind: Secret
 apiVersion: v1
 metadata:
-  name: nexus-cer
+  name: tls-cer
   annotations:
     controller.devfile.io/mount-path: /home/user/certs
     controller.devfile.io/mount-as: file
@@ -49,11 +28,13 @@ metadata:
     controller.devfile.io/mount-to-devworkspace: 'true'
     controller.devfile.io/watch-secret: 'true'
 data:
-  nexus.cer: >-
-    <base64_encoded_public_cert(base64 -w0 nexus.cer)>
+  tls.cer: >-
+    __<Base64_encoded_content_of_public_cert>__ <1>
 ----
+<1> Base64 encoding with disabled line wrapping.
 
-//maven/settings.xml.yaml
+. Apply the ConfigMap to create the `settings.xml` file:
++
 [source,xml,subs="+quotes,+attributes,+macros"]
 ----
 kind: ConfigMap
@@ -79,19 +60,19 @@ data:
         <mirror>
           <id>redhat-ga-mirror</id>
           <name>Red Hat GA</name>
-          <url>https://<nexus_route>/repository/redhat-ga/</url>
+          <url>https://__<maven_artifact_repository_route>__/repository/redhat-ga/</url>
           <mirrorOf>redhat-ga</mirrorOf>
         </mirror>
         <mirror>
           <id>maven-central-mirror</id>
           <name>Maven Central</name>
-          <url>https://<nexus_route>/repository/maven-central/</url>
+          <url>https://__<maven_artifact_repository_route>__/repository/maven-central/</url>
           <mirrorOf>maven-central</mirrorOf>
         </mirror>
         <mirror>
           <id>jboss-public-repository-mirror</id>
           <name>JBoss Public Maven Repository</name>
-          <url>https://<nexus_route>/repository/jboss-public/</url>
+          <url>https://__<maven_artifact_repository_route>__/repository/jboss-public/</url>
           <mirrorOf>jboss-public-repository</mirrorOf>
         </mirror>
       </mirrors>
@@ -101,3 +82,29 @@ data:
     </settings>
 ----
 
+. Apply the ConfigMap for the TrustStore initialization script:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: init-truststore
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /home/user/
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  init-truststore.sh: |
+    #!/usr/bin/env bash
+
+    keytool -importcert -noprompt -file /home/user/certs/tls.cer -cacerts -storepass changeit
+----
+
+. Start a Maven workspace.
+
+. Open a new terminal in the `tools` container.
+
+. Run `~/init-truststore.sh`.
