@@ -5,3 +5,74 @@
 [id="using-nuget-artifact-repositories"]
 = Using NuGet artifact repositories
 
+# Preparation
+* Apply nexus.cer.yaml Secret
+* Apply disconnected-env.yaml
+* Apply init-nuget.yaml ConfigMap
+
+!! WARNING !!
+In DS 3.0.0 applying a ConfigMap that sets environment variables may cause infinite workspace bootlooping
+If you observe this behavior, remove the ConfigMap and edit the devfile directly
+
+Set the appropriate environment variable in the `tools` container
+
+//nuget/disconnected-env.yaml
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: disconnected-env
+  annotations:
+    controller.devfile.io/mount-as: env
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  SSL_CERT_FILE: /home/user/certs/nexus.cer
+----
+
+//nuget/init-nuget.yml
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: init-nuget
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /projects
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  nuget.config: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <configuration>
+      <packageSources>
+        <add key="nexus2" value="https://<nexus_route>/repository/nuget-group/"/>
+      </packageSources>
+      <packageSourceCredentials>
+        <nexus2>
+            <add key="Username" value="admin" />
+            <add key="Password" value="passwd" />
+        </nexus2>
+      </packageSourceCredentials>
+    </configuration>
+----
+
+//nuget/nexus.cer.yaml
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: nexus-cer
+  annotations:
+    controller.devfile.io/mount-path: /home/user/certs
+    controller.devfile.io/mount-as: file
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-secret: 'true'
+data:
+  nexus.cer: >-
+    <base64_encoded_public_cert(base64 -w0 nexus.cer)>
+----
+

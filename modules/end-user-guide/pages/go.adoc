@@ -5,3 +5,37 @@
 [id="using-go-artifact-repositories"]
 = Using Go artifact repositories
 
+//go/disconnected-env.yaml
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: disconnected-env
+  annotations:
+    controller.devfile.io/mount-as: env
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  GOPROXY: >-
+    http://<athens_proxy_route>
+  SSL_CERT_FILE: /home/user/certs/nexus.cer
+----
+
+//go/nexus.cer.yaml
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: nexus-cer
+  annotations:
+    controller.devfile.io/mount-path: /home/user/certs
+    controller.devfile.io/mount-as: file
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-secret: 'true'
+data:
+  nexus.cer: >-
+    <base64_encoded_public_cert(base64 -w0 nexus.cer)>
+----
+

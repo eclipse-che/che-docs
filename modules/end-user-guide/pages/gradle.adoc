@@ -5,3 +5,76 @@
 [id="using-gradle-artifact-repositories"]
 = Using Gradle artifact repositories
 
+# Preparation
+* Apply nexus.cer.yaml Secret
+* Apply init-truststore.yaml ConfigMap
+* Apply init-gradle.yaml ConfigMap
+
+# Workspace init
+* Start a gradle based workspace
+* Open a new terminal in the `tools` container
+* source ~/init-truststore.sh
+
+//gradle/init-gradle.yml
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: init-gradle
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /home/user/.gradle
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  init.gradle: |
+    allprojects {
+      repositories {
+        mavenLocal ()
+        maven {
+          url "https://<nexus_route>/repository/maven-public/"
+          credentials {
+            username "admin"
+            password "passwd"
+          }
+        }
+      }
+    }
+----
+
+//gradle/init-truststore.yaml
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: init-truststore
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /home/user/
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  init-truststore.sh: |
+    #!/usr/bin/env bash
+
+    keytool -importcert -noprompt -file /home/user/certs/nexus.cer -cacerts -storepass changeit
+----
+
+//gradle/nexus.cer.yaml
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: nexus-cer
+  annotations:
+    controller.devfile.io/mount-path: /home/user/certs
+    controller.devfile.io/mount-as: file
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-secret: 'true'
+data:
+  nexus.cer: >-
+    <base64_encoded_public_cert(base64 -w0 nexus.cer)>
+----
