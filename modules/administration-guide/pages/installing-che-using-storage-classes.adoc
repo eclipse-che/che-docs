@@ -1,5 +1,6 @@
 :_content-type: CONCEPT
 :navtitle: Installing {prod-short} using storage classes
+:description: Installing {prod-short} using storage classes
 :keywords: administration guide, installing-che-using-storage-classes
 :page-aliases: installation-guide:installing-che-using-storage-classes
 
@@ -39,114 +40,23 @@ A user defines a storage class name in the {prod-short} configuration to use the
 
 Use CheCluster Custom Resource definition to define storage classes:
 
-. Define storage class names
-+
-To do so, use one of the following methods:
-
-** *Use arguments for the `server:deploy` command*
-
-... Provide the storage class name for the PostgreSQL PVC
-+
-Use the `{prod-cli}` `server:deploy` command with the `--postgres-pvc-storage-class-name` flag:
-+
-[subs="+quotes,+attributes"]
-----
-$ {prod-cli} server:deploy -p minikube -a operator --postgres-pvc-storage-class-name=postgress-storage
-----
-
-... Provide the storage class name for the {prod-short} workspaces
-+
-Use the `server:deploy` command with the `--workspace-pvc-storage-class-name` flag:
-+
-[subs="+quotes,+attributes"]
-----
-$ {prod-cli} server:deploy -p minikube -a operator --workspace-pvc-storage-class-name=workspace-storage
-----
-+
-For  {prod-short} workspaces, the storage class name has different behavior depending on the workspace PVC strategy.
-+
-
-** *Define storage class names using a Custom Resources YAML file:*
-
-...  Create a YAML file with Custom Resources defined for the {prod-short} installation.
-
-...  Define fields: `spec#storage#postgresPVCStorageClassName` and `spec#storage#workspacePVCStorageClassName`.
+. Define storage class names: configure the `CheCluster` Custom Resource, and install {prod-short}. See xref:using-chectl-to-configure-the-checluster-custom-resource-during-installation.adoc[].
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
-apiVersion: org.eclipse.che/v1
-kind: CheCluster
-metadata:
-  name: {prod-checluster}
 spec:
-  # ...
   storage:
-    # ...
     # keep blank unless you need to use a non default storage class for PostgreSQL PVC
     postgresPVCStorageClassName: 'postgres-storage'
-    # ...
     # keep blank unless you need to use a non default storage class for workspace PVC(s)
     workspacePVCStorageClassName: 'workspace-storage'
-    # ...
 ----
 
-... Start the {prod-id-short} server with your Custom Resources:
+. Define the persistent volume for a PostgreSQL database in a `che-postgres-pv.yaml` file:
 +
-[subs="+quotes,+attributes"]
-----
-$ {prod-cli} server:deploy -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
-----
-
-. Configure {prod-short} to store workspaces in one persistent volume and a PostreSQL database in the second one:
-
-.. Modify your Custom Resources YAML file:
-
-* Set `pvcStrategy` as `common`.
-
-* Configure {prod-short} to start workspaces in a single {orch-namespace}.
-
-* Define storage class names for `postgresPVCStorageClassName` and `workspacePVCStorageClassName`.
-
-* Example of the YAML file:
-+
-[source,yaml,subs="+quotes,+attributes"]
-----
-apiVersion: org.eclipse.che/v1
-kind: CheCluster
-metadata:
-  name: {prod-checluster}
-spec:
-  server:
-    # ...
-    workspaceNamespaceDefault: __{prod-workspace}__-__<username>__
-    # ...
-  storage:
-    # ...
-    # Defaults to common
-    pvcStrategy: 'common'
-    # ...
-    # keep blank unless you need to use a non default storage class for PostgreSQL PVC
-    postgresPVCStorageClassName: 'postgres-storage'
-    # ...
-    # keep blank unless you need to use a non default storage class for workspace PVC(s)
-    workspacePVCStorageClassName: 'workspace-storage'
-    # ...
-----
-
-.. Start the {prod-id-short} server with your Custom Resources:
-+
-[subs="+quotes,+attributes"]
-----
-$ {prod-cli} server:deploy -p minikube -a operator --che-operator-cr-yaml=/path/to/custom/che/resource/org_v1_che_cr.yaml
-----
-
-. Bind static provisioned volumes using class names:
-
-.. Define the persistent volume for a PostgreSQL database:
-+
+.`che-postgres-pv.yaml` file
 [source,yaml]
 ----
-# che-postgres-pv.yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -163,11 +73,11 @@ spec:
     path: "/data/che/postgres"
 ----
 
-.. Define the persistent volume for a {prod-short} workspace:
+. Define the persistent volume for a {prod-short} workspace in a `che-postgres-pv.yaml` file:
 +
+.`che-workspace-pv.yaml` file
 [source,yaml]
 ----
-# che-workspace-pv.yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -184,7 +94,8 @@ spec:
     path: "/data/che/workspace"
 ----
 
-.. Bind the two persistent volumes:
+. Bind the two persistent volumes:
++
 [subs="+quotes,+attributes"]
 ----
 $ kubectl apply -f che-workspace-pv.yaml -f che-postgres-pv.yaml

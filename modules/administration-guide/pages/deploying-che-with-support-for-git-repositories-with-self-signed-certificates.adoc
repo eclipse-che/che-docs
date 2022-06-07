@@ -1,20 +1,21 @@
 :_content-type: PROCEDURE
-:navtitle: Deploying {prod-short} with support for Git repositories with self-signed certificates
+:navtitle: Git with self-signed certificates
+:description: Deploying {prod-short} with support for Git repositories with self-signed certificates
 :keywords: administration guide, deploying-che-with-support-for-git-repositories-with-self-signed-certificates
 :page-aliases: installation-guide:deploying-che-with-support-for-git-repositories-with-self-signed-certificates
 
 [id="deploying-{prod-id-short}-with-support-for-git-repositories-with-self-signed-certificates_{context}"]
 = Deploying {prod-short} with support for Git repositories with self-signed certificates
 
-This procedure describes how to configure {prod-short} for deployment with support for Git operations on repositories that use self-signed certificates.
+You can configure {prod-short} to support operations on Git providers that use self-signed certificates.
 
 .Prerequisites
+
+* An active `oc` session with administrative permissions to the OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the OpenShift CLI].
 
 * Git version 2 or later
 
 .Procedure
-
-Configuring support for self-signed Git repositories.
 
 . Create a new *ConfigMap* with details about the Git server:
 +
@@ -38,29 +39,29 @@ $ {orch-cli} create configmap che-git-self-signed-cert \
 [subs="+quotes,attributes"]
 ----
 $ {orch-cli} label configmap che-git-self-signed-cert \
-app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
+  app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
 ----
 
-. Configure {prod-short} to use self-signed certificates for Git repositories:
+. Configure {prod-short} operand to use self-signed certificates for Git repositories. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
 +
-Update the `gitSelfSignedCert` property. To do that, execute:
+[source,yaml,subs="+attributes"]
+----
+spec:
+  server:
+    gitSelfSignedCert: true
+----
+
+.Verification steps
+
+* Create and start a new workspace. Every container used by the workspace mounts a special volume that contains a file with the self-signed certificate. The repository's `.git/config` file contains information about the Git server host (its URL) and the path to the certificate in the `http` section (see Git documentation about link:https://git-scm.com/docs/git-config#Documentation/git-config.txt-httpsslCAInfo[git-config]).
 +
-[subs="+attributes"]
-----
-$ {orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} --type=json \
-  -p '[{"op": "replace", "path": "/spec/server/gitSelfSignedCert", \
-  "value": true}]'
-----
-// TODO
-// [discrete]
-// == Configuring support for self-signed Git repositories on OpenShift
-
-. Create and start a new workspace. Every container used by the workspace mounts a special volume that contains a file with the self-signed certificate. The repository's `.git/config` file contains information about the Git server host (its URL) and the path to the certificate in the `http` section (see Git documentation about link:https://git-scm.com/docs/git-config#Documentation/git-config.txt-httpsslCAInfo[git-config]). For example:
-
+.A `.git/config` file example
+====
 ----
 [http "https://10.33.177.118:3000"]
 sslCAInfo = /etc/che/git/cert/ca.crt
 ----
+====
 
 .Additional resources
 
