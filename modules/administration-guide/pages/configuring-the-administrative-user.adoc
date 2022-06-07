@@ -6,26 +6,18 @@
 [id="configuring-the-administrative-user_{context}"]
 = Configuring the administrative user
 
-The user with administrative privileges has all {prod-short} system permissions.
-The default administrative user is `admin`.
-You can configure the user name receiving administrative privileges.
-
-.Prerequisites
-
-* An active `oc` session with administrative permissions to the OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the OpenShift CLI].
-
-* `{prod-cli}`. See: xref:installing-the-chectl-management-tool.adoc[].
+To execute actions that require administrative privileges on {prod-short} server, such as deleting user data, activate a user with administrative privileges.
+The default installation enables the administrative privileges for the `admin` user, regardless of its existence on {orch-name}.
 
 .Procedure
 
-* Set the __<admin>__ user with administrative privileges:
+* Configure the `CheCluster` Custom Resource to set the __<admin>__ user with administrative privileges. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
 +
 [source,yaml,subs="+attributes,+quotes,macros"]
 ----
 spec:
  server:
    customCheProperties:
-     pass:[CHE_SYSTEM_SUPER__PRIVILEGED__MODE]: 'true'
      pass:[CHE_SYSTEM_ADMIN__NAME]: '__<admin>__'
 ----
 

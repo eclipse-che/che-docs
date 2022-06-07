@@ -11,7 +11,7 @@
 
 
 You can remove the {prod-short} user’s data using the {prod-short} API.
-Following this procedure makes the service compliant to EU General Data Protection Regulation (link:https://en.wikipedia.org/wiki/General_Data_Protection_Regulation[GDPR]) that enforces the right for individuals to have personal data erased. 
+Following this procedure makes the service compliant to EU General Data Protection Regulation (link:https://en.wikipedia.org/wiki/General_Data_Protection_Regulation[GDPR]) that enforces the right for individuals to have personal data erased.
 
 .Prerequisites
 
@@ -28,13 +28,13 @@ $ curl -X GET \
   'pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/find?name=__<username>__'
 ----
 
-. Remove the user __<id>__ data:
+. Remove the __<id>__ user data that {prod-short} server manages. Expect a `204` response code:
 +
 [subs="+quotes,macros,attributes"]
 ----
 $ curl -i -X DELETE \
   --cookie '_oauth_proxy=__<token>__' \
-  pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/__<id>__
+  'pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/__<id>__'
 ----
 
 . Optionally, remove the {orch-name} resources bound to the user.
@@ -42,15 +42,16 @@ $ curl -i -X DELETE \
 
 .Verification
 
-* Running the following command returns code `204` as the API response:
+* {prod-short} server API reports that the user doesn't exist. Expect a `404` response code:
 +
 [subs="+quotes,macros,attributes"]
 ----
 $ curl -i -X DELETE \
   --cookie '_oauth_proxy=__<token>__' \
-  pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/__<id>__
+  'pass:c,m,a,q[+https:+//__<{prod-host}>__]/api/user/find?name=__<username>__'
 ----
 
 .Additional resources
 
+* xref:managing-workloads-using-the-che-server-api.adoc[].
 * To remove the data of all users, see xref:uninstalling-che.adoc[].
