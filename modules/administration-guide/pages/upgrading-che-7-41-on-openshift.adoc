@@ -59,3 +59,39 @@ chmod +x ./1-prepare.sh ./2-migrate.sh ./3-subscribe.sh ./4-wait.sh
 
 * Open {prod-short} dashboard and log in.
 
+[IMPORTANT]
+====
+If migration fails, use the following steps to roll back to the previous {prod-prev-short} installation.
+
+. Set the environment variables to use in the migration scripts:
++
+[source,bash,subs="+attributes"]
+----
+export INSTALLATION_NAMESPACE={prod-namespace} #<1>
+export PRODUCT_ID={prod-id}
+export PRODUCT_SHORT_ID={prod-id-short}
+export PRODUCT_DEPLOYMENT_NAME={prod-deployment}
+export PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE={prod-namespace}  #<1>
+export PRE_MIGRATION_PRODUCT_DEPLOYMENT_NAME={pre-migration-prod-deployment}
+export PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME={pre-migration-prod-subscription}
+export PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME={pre-migration-prod-checluster}
+export PRE_MIGRATION_PRODUCT_OPERATOR_NAME={pre-migration-prod-operator}
+export PRE_MIGRATION_PRODUCT_OLM_PACKAGE={pre-migration-prod-package}
+export PRE_MIGRATION_PRODUCT_OLM_CHANNEL={pre-migration-prod-channel}
+export PRE_MIGRATION_PRODUCT_OLM_CATALOG_SOURCE={pre-migration-prod-catalog-source}
+----
+<1> Adapt to the {orch-namespace} where {prod-short} is installed.
+
+. Download and execute the rollback script: xref:attachment$migration/rollback.sh[rollback.sh].
++
+[source,bash,subs="+attributes"]
+----
+chmod +x ./rollback.sh
+./rollback.sh
+----
+
+.Verification
+
+* Open {prod-prev-short} dashboard and log in.
+
+====
