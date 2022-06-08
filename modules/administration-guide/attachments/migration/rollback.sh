@@ -110,7 +110,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
     name: "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}"
-    namespace: "${OPERATOR_NAMESPACE}"
+    namespace: "${PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE}"
 spec:
     channel: "${PRE_MIGRATION_PRODUCT_OLM_CHANNEL}"
     installPlanApproval: Automatic
