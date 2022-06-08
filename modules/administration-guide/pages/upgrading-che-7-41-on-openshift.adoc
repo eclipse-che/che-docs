@@ -23,7 +23,7 @@ The workspace engine and authentication system used up to and including {prod-pr
 +
 [source,bash,subs="+attributes"]
 ----
-export INSTALLATION_NAMESPACE={prod-namespace} #<1>
+export INSTALLATION_NAMESPACE={prod-namespace}  #<1>
 export PRODUCT_ID={prod-id}
 export PRODUCT_DEPLOYMENT_NAME={prod-deployment}
 export PRODUCT_OPERATOR_NAME={prod-operator}
@@ -38,17 +38,17 @@ export PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME={pre-migration-prod-checluster}
 export PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME={identity-provider-id}
 export PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME={pre-migration-prod-subscription}
 ----
-<1> Adapt to the {orch-namespace} where {prod-short} is installed.
+<1> Set this environment variable to the {orch-namespace} where {prod-prev-short} was previously installed.
 
 . Download and execute the migration scripts: xref:attachment$migration/1-prepare.sh[1-prepare.sh], xref:attachment$migration/2-migrate.sh[2-migrate.sh], xref:attachment$migration/3-subscribe.sh[3-subscribe.sh], and xref:attachment$migration/4-wait.sh[4-wait.sh].
 +
 [source,bash,subs="+attributes"]
 ----
 chmod +x ./1-prepare.sh ./2-migrate.sh ./3-subscribe.sh ./4-wait.sh
-./1-prepare.sh <1>
-./2-migrate.sh <2>
-./3-subscribe.sh <3>
-./4-wait.sh <4>
+./1-prepare.sh    #<1>
+./2-migrate.sh    #<2>
+./3-subscribe.sh  #<3>
+./4-wait.sh       #<4>
 ----
 <1> Shuts down {prod-prev-short} and {identity-provider}, fetch users data and dumps {prod-short} database.
 <2> Fetches {prod-prev-short} {identity-provider} and database data, and repopulates the database with updated data.
@@ -80,7 +80,7 @@ export PRE_MIGRATION_PRODUCT_OLM_PACKAGE={pre-migration-prod-package}
 export PRE_MIGRATION_PRODUCT_OLM_CHANNEL={pre-migration-prod-channel}
 export PRE_MIGRATION_PRODUCT_OLM_CATALOG_SOURCE={pre-migration-prod-catalog-source}
 ----
-<1> Adapt to the {orch-namespace} where {prod-short} is installed.
+<1> Set this environment variable to the {orch-namespace} where {prod-prev-short} was previously installed.
 
 . Download and execute the rollback script: xref:attachment$migration/rollback.sh[rollback.sh].
 +
