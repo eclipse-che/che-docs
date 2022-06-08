@@ -1,0 +1,83 @@
+:navtitle: NuGet
+:keywords: nuget, artifact-repository, artifact-repositories
+:page-aliases: .:using-nuget-artifact-repositories
+
+[id="enabling-nuget-artifact-repositories"]
+= Enabling NuGet artifact repositories
+
+You can enable a NuGet artifact repository in NuGet workspaces that run in a restricted environment.
+
+.Prerequisites
+
+* You are not running any NuGet workspace.
+
+include::partial$snip_warning-about-applying-a-configmap-that-sets-environment-variables.adoc[]
+
+.Procedure
+
+. Apply the Secret for the TLS certificate:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: tls-cer
+  annotations:
+    controller.devfile.io/mount-path: /home/user/certs
+    controller.devfile.io/mount-as: file
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-secret: 'true'
+data:
+  tls.cer: >-
+    __<Base64_encoded_content_of_public_cert>__ <1>
+----
+<1> Base64 encoding with disabled line wrapping.
+
+. Apply the ConfigMap to set the environment variable for the path of the TLS certificate file in the `tools` container:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: disconnected-env
+  annotations:
+    controller.devfile.io/mount-as: env
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  SSL_CERT_FILE: /home/user/certs/tls.cer
+----
+
+. Apply the ConfigMap to create the `nuget.config` file:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: init-nuget
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /projects
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  nuget.config: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <configuration>
+      <packageSources>
+        <add key="nexus2" value="https://__<nuget_artifact_repository_route>__/repository/nuget-group/"/>
+      </packageSources>
+      <packageSourceCredentials>
+        <nexus2>
+            <add key="Username" value="admin" />
+            <add key="Password" value="passwd" />
+        </nexus2>
+      </packageSourceCredentials>
+    </configuration>
+----

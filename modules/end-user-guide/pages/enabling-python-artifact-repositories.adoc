@@ -1,0 +1,55 @@
+:navtitle: Python
+:keywords: python, artifact-repository, artifact-repositories
+:page-aliases: .:using-python-artifact-repositories
+
+[id="enabling-python-artifact-repositories"]
+= Enabling Python artifact repositories
+
+You can enable a Python artifact repository in Python workspaces that run in a restricted environment.
+
+.Prerequisites
+
+* You are not running any Python workspace.
+
+include::partial$snip_warning-about-applying-a-configmap-that-sets-environment-variables.adoc[]
+
+.Procedure
+
+. Apply the Secret for the TLS certificate:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: tls-cer
+  annotations:
+    controller.devfile.io/mount-path: /home/user/certs
+    controller.devfile.io/mount-as: file
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-secret: 'true'
+data:
+  tls.cer: >-
+    __<Base64_encoded_content_of_public_cert>__ <1>
+----
+<1> Base64 encoding with disabled line wrapping.
+
+. Apply the ConfigMap to set the following environment variables in the `tools` container:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: disconnected-env
+  annotations:
+    controller.devfile.io/mount-as: env
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  PIP_INDEX_URL: >-
+    https://__<python_artifact_repository_route>__/repository/pypi-all/
+  PIP_CERT: /home/user/certs/tls.cer
+----
