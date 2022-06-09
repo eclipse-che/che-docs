@@ -78,7 +78,7 @@ echo "Disabling the default Red Hat Ecosystem Catalog."
 oc patch OperatorHub cluster --type json \
     --patch '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": true}]'
 
-echo "Deploying our catalog image to the $my_operator_index registry."
+echo "Deploying your catalog image to the $my_operator_index registry."
 # See: https://docs.openshift.com/container-platform/latest/installing/disconnected_install/installing-mirroring-installation-images.html#olm-mirroring-catalog_installing-mirroring-installation-images
 oc delete project "$my_catalog" --grace-period=1 --ignore-not-found=true
 oc wait --for=delete "project/$my_catalog"
@@ -86,7 +86,7 @@ sleep 5
 oc new-project "$my_catalog"
 skopeo copy --dest-tls-verify=false --all "containers-storage:$my_operator_index" "docker://$my_operator_index"
 
-echo "Deploying our catalog source to the OpenShift cluster."
+echo "Deploying your catalog source to the OpenShift cluster."
 # See: https://docs.openshift.com/container-platform/latest/operators/admin/olm-restricted-networks.html#olm-creating-catalog-from-index_olm-restricted-networks
 oc apply -f - << EOF
 apiVersion: operators.coreos.com/v1alpha1
