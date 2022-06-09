@@ -43,7 +43,7 @@ declare my_operator_index="$my_registry/$my_catalog/my-operator-index:v${ocp_ver
 # Create local directories
 mkdir -p "${my_catalog}/${devworkspace_operator_package_name}" "${my_catalog}/${prod_operator_package_name}"
 
-echo "Fetching metadata for the ${devworkspace_operator_package_name} operator catalog channel, packages, and bundles ."
+echo "Fetching metadata for the ${devworkspace_operator_package_name} operator catalog channel, packages, and bundles."
 opm render "${devworkspace_operator_index}" \
   | jq "select(\
     .name == \"${devworkspace_operator_package_name}\" \
