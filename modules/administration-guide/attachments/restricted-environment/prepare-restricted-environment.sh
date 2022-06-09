@@ -99,7 +99,7 @@ spec:
   image: $my_operator_index
 EOF
 
-echo "Creating the 'che-operator-cr-patch.yaml' CheCluster custom resource configuration file locally."
+echo "Creating the 'che-operator-cr-patch.yaml' file locally."
 cat > che-operator-cr-patch.yaml << EOF
 kind: CheCluster
 apiVersion: org.eclipse.che/v1
