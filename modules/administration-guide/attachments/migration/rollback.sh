@@ -85,6 +85,7 @@ restoreDatabase() {
 
 deleteObjects() {
     echo "[INFO] Deleting resources."
+
     echo "[INFO] Deleting deployments."
     for DEPLOYMENT in "${PRODUCT_DEPLOYMENT_NAME}" "${PRODUCT_SHORT_ID}-dashboard" "plugin-registry" "devfile-registry" "che-gateway" "postgres"; do
         "${K8S_CLI}" delete deployment "${DEPLOYMENT}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] deployment ${DEPLOYMENT} not found."
@@ -97,6 +98,9 @@ deleteObjects() {
     for SERVICE in "che-host" "${PRODUCT_SHORT_ID}-dashboard" "plugin-registry" "devfile-registry" "che-gateway" "postgres"; do
         "${K8S_CLI}" delete service "${SERVICE}" -n "${INSTALLATION_NAMESPACE}" > /dev/null 2>&1 || echo "[INFO] Service ${SERVICE} not found."
     done
+
+    echo "[INFO] Deleting console link."
+    "${K8S_CLI}" delete consolelink che > /dev/null 2>&1 || echo "[INFO] ConsoleLink che not found."
 }
 
 createOperatorSubscription() {
