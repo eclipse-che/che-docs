@@ -11,8 +11,8 @@ The workspace engine and authentication system used up to and including {prod-pr
 
 .Prerequisites
 
-* An instance of {prod-prev-short} deployed on one of the xref:supported-platforms.adoc[], using the default internal PostgreSQL database, and with OpenShift OAuth enabled. See {prod-docs-url-enable-oauth}.
-* The following CLI tools are available:
+* An instance of {prod-prev-short} deployed on one of the xref:supported-platforms.adoc[]. The instance uses the default internal PostgreSQL database and has OpenShift OAuth enabled. See {prod-docs-url-enable-oauth}.
+* The following command line tools are available:
 ** `oc`
 ** `curl`
 ** `jq`
@@ -62,15 +62,18 @@ export PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME={pre-migration-prod-subscription}
 <1> `{prod-namespace}` or another {orch-namespace} where {prod-prev-short} was previously installed.
 <2> `{prod-namespace}` or another {orch-namespace} where {prod-prev-short} was previously installed.
 
+. Run `chmod` on the downloaded scripts:
++
+[source,terminal]
+----
+$ chmod +x ./1-prepare.sh ./2-migrate.sh ./3-subscribe.sh ./4-wait.sh
+----
+
 . Run the migration scripts:
 +
 [source,terminal]
 ----
-$ chmod +x ./1-prepare.sh ./2-migrate.sh ./3-subscribe.sh ./4-wait.sh /
-./1-prepare.sh /
-./2-migrate.sh /
-./3-subscribe.sh /
-./4-wait.sh
+$ ./1-prepare.sh && ./2-migrate.sh && ./3-subscribe.sh && ./4-wait.sh
 ----
 
 .Verification
@@ -101,13 +104,22 @@ export PRE_MIGRATION_PRODUCT_OLM_CATALOG_SOURCE={pre-migration-prod-catalog-sour
 <1> `{prod-namespace}` or another {orch-namespace} where {prod-prev-short} was previously installed.
 <2> `{prod-namespace}` or another {orch-namespace} where {prod-prev-short} was previously installed.
 
-. Download and run the xref:attachment$migration/rollback.sh[rollback.sh] script.
+. Download the xref:attachment$migration/rollback.sh[rollback.sh] script.
+
+. Run `chmod` on the `rollback.sh` script:
 +
 [source,terminal]
 ----
-$ chmod +x ./rollback.sh /
-./rollback.sh
+$ chmod +x ./rollback.sh
 ----
+
+. Run the `rollback.sh` script.
++
+[source,terminal]
+----
+$ ./rollback.sh
+----
+
 
 .Verification
 
