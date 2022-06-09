@@ -1,0 +1,59 @@
+#
+# Copyright (c) 2022 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+schemaVersion: 2.1.0
+metadata:
+  generateName: che-docs-
+components:
+  - attributes:
+      app.kubernetes.io/name: tools
+      che-theia.eclipse.org/vscode-extensions:
+        - "https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v069c634/vscode-xml-0.17.0.vsix"
+        - "https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/vf707df2/shellcheck-v0.13.2.vsix"
+        - "https://open-vsx.org/api/redhat/vscode-yaml/0.14.0/file/redhat.vscode-yaml-0.14.0.vsix"
+      che-theia.eclipse.org/vscode-preferences:
+        shellcheck.executablePath: /bin/shellcheck
+    container:
+      args:
+        - "-f"
+        - "/dev/null"
+      command:
+        - tail
+      endpoints:
+        - exposure: public
+          name: livereload
+          protocol: http
+          targetPort: 35729
+        - attributes:
+            path: /
+          exposure: public
+          name: preview-server
+          protocol: http
+          targetPort: 4000
+      image: "quay.io/eclipse/che-docs:latest"
+      memoryLimit: 2Gi
+      memoryRequest: 256Mi
+      mountSources: true
+      sourceMapping: /projects
+    name: tools
+commands:
+  - exec:
+      commandLine: sh tools/preview.sh
+      component: tools
+      group:
+        kind: build
+      label: Start preview server
+      workingDir: "${PROJECT_SOURCE}"
+    id: start-preview-server
+  - exec:
+      commandLine: bash tools/newtopic.sh
+      component: tools
+      label: Create a new topic
+      workingDir: "${PROJECT_SOURCE}"
+    id: create-a-new-topic
