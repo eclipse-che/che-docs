@@ -23,22 +23,21 @@ This section describes all fields available to customize the `CheCluster` Custom
 ====
 [source,yaml,subs="+quotes,+attributes"]
 ----
-apiVersion: org.eclipse.che/v1
+apiVersion: org.eclipse.che/v2
 kind: CheCluster
 metadata:
   name: {prod-checluster}
 spec:
-  auth:
-    externalIdentityProvider: false
-  database:
-    externalDb: false
-  server:
-    selfSignedCert: false
-    gitSelfSignedCert: false
-    tlsSupport: true
-  storage:
-    pvcStrategy: 'common'
-    pvcClaimSize: '1Gi'
+  devEnvironments:
+    defaultNamespace:
+      template: '<username>-che'
+    storage:
+      pvcStrategy: 'common'
+  components:
+    database:
+      externalDb: false
+    metrics:
+      enable: true
 ----
 ====
 
