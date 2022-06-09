@@ -11,26 +11,47 @@ The workspace engine and authentication system used up to and including {prod-pr
 
 .Prerequisites
 
-* An instance of {prod-prev-short} deployed on xref:supported-platforms.adoc[], using the default internal PostgreSQL database, and with OpenShift OAuth enabled. See {prod-docs-url-enable-oauth}.
-* Command line tools `oc`, `curl`, and `jq` are available.
+* An instance of {prod-prev-short} deployed on one of the xref:supported-platforms.adoc[], using the default internal PostgreSQL database, and with OpenShift OAuth enabled. See {prod-docs-url-enable-oauth}.
+* The following CLI tools are available:
+** `oc`
+** `curl`
+** `jq`
 * The host running the upgrade commands is running on Linux.
+* Optional:
+.. All changes from all workspaces have been commited and pushed to their Git remotes.
+.. All workspaces have been stopped to avoid UX degradation.
+.. The {prod-prev-short} data have been backed up. See {prod-docs-url-backup-recovery}.
 
 .Procedure
 
-. Optionally push back changes to Git repositories in all workspaces, stop all workspaces to avoid user experience degradation, and backup {prod-short} data. See {prod-docs-url-backup-recovery}.
+. Download xref:attachment$migration/1-prepare.sh[1-prepare.sh].
++
+`1-prepare.sh` is a migration script that shuts down {prod-prev-short} and {identity-provider}, fetches users data, and dumps the {prod-short} database.
+
+. Download xref:attachment$migration/2-migrate.sh[2-migrate.sh].
++
+`2-migrate.sh` is a migration script that fetches {prod-prev-short} {identity-provider} and database data, and repopulates the database with updated data.
+
+. Download xref:attachment$migration/3-subscribe.sh[3-subscribe.sh].
++
+`3-subscribe.sh` is a migration script that deletes {prod-prev-short} Operator and {identity-provider} resources, updates the CheCluster CR, and creates a new {prod-short} Operator subscription.
+
+. Download xref:attachment$migration/4-wait.sh[4-wait.sh].
++
+`4-wait.sh` is a migration script that waits until {prod-short} is ready, which can take more than 5 minutes.
 
 . Set the environment variables to use in the migration scripts:
 +
 [source,bash,subs="+attributes"]
 ----
-export INSTALLATION_NAMESPACE={prod-namespace} #<1>
+export INSTALLATION_NAMESPACE={prod-namespace} # <1>
 export PRODUCT_ID={prod-id}
 export PRODUCT_DEPLOYMENT_NAME={prod-deployment}
 export PRODUCT_OPERATOR_NAME={prod-operator}
 export PRODUCT_OLM_STABLE_CHANNEL={prod-stable-channel}
 export PRODUCT_OLM_CATALOG_SOURCE={prod-stable-channel-catalog-source}
 export PRODUCT_OLM_PACKAGE={prod-stable-channel-package}
-export PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE={prod-namespace}  #<1>
+export PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE={prod-namespace} # <2>
 export PRE_MIGRATION_PRODUCT_SHORT_ID={pre-migration-prod-id-short}
 export PRE_MIGRATION_PRODUCT_DEPLOYMENT_NAME={pre-migration-prod-deployment}
 export PRE_MIGRATION_PRODUCT_OPERATOR_NAME={pre-migration-prod-operator}
@@ -38,22 +59,19 @@ export PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME={pre-migration-prod-checluster}
 export PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME={identity-provider-id}
 export PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME={pre-migration-prod-subscription}
 ----
-<1> Adapt to the {orch-namespace} where {prod-short} is installed.
+<1> `{prod-namespace}` or another {orch-namespace} where {prod-prev-short} was previously installed.
+<2> `{prod-namespace}` or another {orch-namespace} where {prod-prev-short} was previously installed.
 
-. Download and execute the migration scripts: xref:attachment$migration/1-prepare.sh[1-prepare.sh], xref:attachment$migration/2-migrate.sh[2-migrate.sh], xref:attachment$migration/3-subscribe.sh[3-subscribe.sh], and xref:attachment$migration/4-wait.sh[4-wait.sh].
+. Run the migration scripts:
 +
-[source,bash,subs="+attributes"]
+[source,terminal]
 ----
-chmod +x ./1-prepare.sh ./2-migrate.sh ./3-subscribe.sh ./4-wait.sh
-./1-prepare.sh <1>
-./2-migrate.sh <2>
-./3-subscribe.sh <3>
-./4-wait.sh <4>
+$ chmod +x ./1-prepare.sh ./2-migrate.sh ./3-subscribe.sh ./4-wait.sh /
+./1-prepare.sh /
+./2-migrate.sh /
+./3-subscribe.sh /
+./4-wait.sh
 ----
-<1> Shuts down {prod-prev-short} and {identity-provider}, fetch users data and dumps {prod-short} database.
-<2> Fetches {prod-prev-short} {identity-provider} and database data, and repopulates the database with updated data.
-<3> Deletes {prod-prev-short} Operator and {identity-provider} resources, updates CheCluster CR and creates a new {prod-short} Operator subscription.
-<4> Waits until {prod-short} is ready (it can take more than 5 minutes).
 
 .Verification
 
@@ -61,17 +79,17 @@ chmod +x ./1-prepare.sh ./2-migrate.sh ./3-subscribe.sh ./4-wait.sh
 
 [IMPORTANT]
 ====
-If migration fails, use the following steps to roll back to the previous {prod-prev-short} installation.
+If migration fails, use the following steps to roll back to the pre-migration {prod-prev-short} state.
 
 . Set the environment variables to use in the migration scripts:
 +
 [source,bash,subs="+attributes"]
 ----
-export INSTALLATION_NAMESPACE={prod-namespace} #<1>
+export INSTALLATION_NAMESPACE={prod-namespace} # <1>
 export PRODUCT_ID={prod-id}
 export PRODUCT_SHORT_ID={prod-id-short}
 export PRODUCT_DEPLOYMENT_NAME={prod-deployment}
-export PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE={prod-namespace}  #<1>
+export PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE={prod-namespace} # <2>
 export PRE_MIGRATION_PRODUCT_DEPLOYMENT_NAME={pre-migration-prod-deployment}
 export PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME={pre-migration-prod-subscription}
 export PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME={pre-migration-prod-checluster}
@@ -80,13 +98,14 @@ export PRE_MIGRATION_PRODUCT_OLM_PACKAGE={pre-migration-prod-package}
 export PRE_MIGRATION_PRODUCT_OLM_CHANNEL={pre-migration-prod-channel}
 export PRE_MIGRATION_PRODUCT_OLM_CATALOG_SOURCE={pre-migration-prod-catalog-source}
 ----
-<1> Adapt to the {orch-namespace} where {prod-short} is installed.
+<1> `{prod-namespace}` or another {orch-namespace} where {prod-prev-short} was previously installed.
+<2> `{prod-namespace}` or another {orch-namespace} where {prod-prev-short} was previously installed.
 
-. Download and execute the rollback script: xref:attachment$migration/rollback.sh[rollback.sh].
+. Download and run the xref:attachment$migration/rollback.sh[rollback.sh] script.
 +
-[source,bash,subs="+attributes"]
+[source,terminal]
 ----
-chmod +x ./rollback.sh
+$ chmod +x ./rollback.sh /
 ./rollback.sh
 ----
 
