@@ -18,7 +18,7 @@ PRE_MIGRATION_PRODUCT_OPERATOR_NAME=${PRE_MIGRATION_PRODUCT_OPERATOR_NAME:-che-o
 PRE_MIGRATION_PRODUCT_OLM_PACKAGE=${PRE_MIGRATION_PRODUCT_OLM_PACKAGE:-eclipse-che}                       # {pre-migration-prod-package}
 PRE_MIGRATION_PRODUCT_OLM_CHANNEL=${PRE_MIGRATION_PRODUCT_OLM_CHANNEL:-stable}                            # {pre-migration-prod-channel}
 PRE_MIGRATION_PRODUCT_OLM_CATALOG_SOURCE=${PRE_MIGRATION_PRODUCT_OLM_CATALOG_SOURCE:-community-operators} # {pre-migration-prod-catalog-source}
-PRE_MIGRATION_PRODUCT_OLM_STARTING_CSV=${PRE_MIGRATION_PRODUCT_OLM_STARTING_CSV:-eclipse-che.v7.49.0}     # {pre-migration-prod-starting-csv}
+PRE_MIGRATION_PRODUCT_OLM_STARTING_CSV=${PRE_MIGRATION_PRODUCT_OLM_STARTING_CSV:-eclipse-che.v7.41.2}     # {pre-migration-prod-starting-csv}
 
 DB_DUMP="${PRODUCT_ID}"-original-db.sql
 CHE_CLUSTER="${PRODUCT_ID}"-original-checluster.json
