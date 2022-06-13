@@ -9,6 +9,7 @@ INSTALLATION_NAMESPACE=${INSTALLATION_NAMESPACE:-eclipse-che}                   
 PRODUCT_OLM_STABLE_CHANNEL=${PRODUCT_OLM_STABLE_CHANNEL:-stable}                                 # {prod-stable-channel}
 PRODUCT_OLM_CATALOG_SOURCE=${PRODUCT_OLM_CATALOG_SOURCE:-community-operators}                    # {prod-stable-channel-catalog-source}
 PRODUCT_OLM_PACKAGE=${PRODUCT_OLM_PACKAGE:-eclipse-che}                                          # {prod-stable-channel-package}
+PRODUCT_OLM_STARTING_CSV=${PRODUCT_OLM_STARTING_CSV:-eclipse-che.v7.49.0}                        # {prod-stable-channel-starting-csv}
 
 PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE=${PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE:-eclipse-che}        # {prod-namespace}
 PRE_MIGRATION_PRODUCT_SHORT_ID=${PRE_MIGRATION_PRODUCT_SHORT_ID:-che}                                    # {pre-migration-prod-id-short}
@@ -22,7 +23,7 @@ CHE_CLUSTER="${PRODUCT_ID}"-original-checluster.json
 deleteOperatorCSV() {
     if "${K8S_CLI}" get subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE}" > /dev/null 2>&1 ; then
         echo "[INFO] Deleting operator cluster service version."
-        "${K8S_CLI}" delete csv "$("${K8S_CLI}" get subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE}" -o jsonpath="{.status.currentCSV}")" -n "${PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE}"
+        "${K8S_CLI}" delete csv "$("${K8S_CLI}" get subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE}" -o jsonpath="{.status.installedCSV}")" -n "${PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE}"
     else
         echo "[INFO] Skipping CSV deletion. No ${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME} operator subscription found."
     fi
@@ -93,9 +94,10 @@ cleanupObsoleteObjects() {
 
 createOperatorSubscription() {
     echo "[INFO] Creating new ${PRODUCT_ID} operator subscription." 
-    echo "[INFO] New subscription source: ${PRODUCT_OLM_CATALOG_SOURCE}."
-    echo "[INFO] New subscription channel: ${PRODUCT_OLM_STABLE_CHANNEL}."
     echo "[INFO] New subscription name: ${PRODUCT_OLM_PACKAGE}."
+    echo "[INFO] New subscription channel: ${PRODUCT_OLM_STABLE_CHANNEL}."
+    echo "[INFO] New subscription source: ${PRODUCT_OLM_CATALOG_SOURCE}."
+    echo "[INFO] New subscription starting CSV: ${PRODUCT_OLM_STARTING_CSV}."
 
     "${K8S_CLI}" apply -f - <<EOF
 apiVersion: operators.coreos.com/v1alpha1
@@ -105,14 +107,21 @@ metadata:
     namespace: openshift-operators
 spec:
     channel: "${PRODUCT_OLM_STABLE_CHANNEL}"
-    installPlanApproval: Automatic
+    installPlanApproval: Manual
     name: "${PRODUCT_OLM_PACKAGE}"
     source: "${PRODUCT_OLM_CATALOG_SOURCE}"
     sourceNamespace: openshift-marketplace
+    startingCSV: ${PRODUCT_OLM_STARTING_CSV}
 EOF
 
     echo "[INFO] Waiting 30s for the new ${PRODUCT_ID} operator creation."
     sleep 30
+
+    "${K8S_CLI}" wait subscription "${PRODUCT_ID}" -n openshift-operators --for=condition=InstallPlanPending --timeout=120s
+
+    echo "[INFO] Approve install plan."
+    INSTALL_PLAN=$("${K8S_CLI}" get subscription "${PRODUCT_ID}" -n openshift-operators -o jsonpath='{.status.installplan.name}')
+    "${K8S_CLI}" patch installplan ${INSTALL_PLAN} -n openshift-operators --type=merge -p '{"spec": {"approved": true}}'
 }
 
 deleteOperatorCSV

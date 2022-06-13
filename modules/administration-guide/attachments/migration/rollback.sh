@@ -18,6 +18,7 @@ PRE_MIGRATION_PRODUCT_OPERATOR_NAME=${PRE_MIGRATION_PRODUCT_OPERATOR_NAME:-che-o
 PRE_MIGRATION_PRODUCT_OLM_PACKAGE=${PRE_MIGRATION_PRODUCT_OLM_PACKAGE:-eclipse-che}                       # {pre-migration-prod-package}
 PRE_MIGRATION_PRODUCT_OLM_CHANNEL=${PRE_MIGRATION_PRODUCT_OLM_CHANNEL:-stable}                            # {pre-migration-prod-channel}
 PRE_MIGRATION_PRODUCT_OLM_CATALOG_SOURCE=${PRE_MIGRATION_PRODUCT_OLM_CATALOG_SOURCE:-community-operators} # {pre-migration-prod-catalog-source}
+PRE_MIGRATION_PRODUCT_OLM_STARTING_CSV=${PRE_MIGRATION_PRODUCT_OLM_STARTING_CSV:-eclipse-che.v7.41.2}     # {pre-migration-prod-starting-csv}
 
 DB_DUMP="${PRODUCT_ID}"-original-db.sql
 CHE_CLUSTER="${PRODUCT_ID}"-original-checluster.json
@@ -28,7 +29,7 @@ CHE_POSTGRES_DB=$("${K8S_CLI}" get cm/che -n "${INSTALLATION_NAMESPACE}" -o json
 deleteOperatorCSV() {
     if "${K8S_CLI}" get subscription "${PRODUCT_ID}" -n "${OPERATOR_NAMESPACE}" > /dev/null 2>&1 ; then
         echo "[INFO] Deleting operator cluster service version."
-        "${K8S_CLI}" delete csv "$("${K8S_CLI}" get subscription "${PRODUCT_ID}" -n "${OPERATOR_NAMESPACE}" -o jsonpath="{.status.currentCSV}")" -n "${OPERATOR_NAMESPACE}"
+        "${K8S_CLI}" delete csv "$("${K8S_CLI}" get subscription "${PRODUCT_ID}" -n "${OPERATOR_NAMESPACE}" -o jsonpath="{.status.installedCSV}")" -n "${OPERATOR_NAMESPACE}"
     else
         echo "[INFO] Skipping CSV deletion. No ${PRODUCT_ID} operator subscription found."
     fi
@@ -105,9 +106,10 @@ deleteObjects() {
 
 createOperatorSubscription() {
     echo "[INFO] Creating new ${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME} operator subscription." 
-    echo "[INFO] New subscription source: ${PRE_MIGRATION_PRODUCT_OLM_CATALOG_SOURCE}."
-    echo "[INFO] New subscription channel: ${PRE_MIGRATION_PRODUCT_OLM_CHANNEL}."
     echo "[INFO] New subscription name: ${PRE_MIGRATION_PRODUCT_OLM_PACKAGE}."
+    echo "[INFO] New subscription channel: ${PRE_MIGRATION_PRODUCT_OLM_CHANNEL}."
+    echo "[INFO] New subscription source: ${PRE_MIGRATION_PRODUCT_OLM_CATALOG_SOURCE}."
+    echo "[INFO] New subscription starting CSV: ${PRE_MIGRATION_PRODUCT_OLM_STARTING_CSV}."
 
     "${K8S_CLI}" apply -f - <<EOF
 apiVersion: operators.coreos.com/v1alpha1
@@ -117,11 +119,20 @@ metadata:
     namespace: "${PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE}"
 spec:
     channel: "${PRE_MIGRATION_PRODUCT_OLM_CHANNEL}"
-    installPlanApproval: Automatic
+    installPlanApproval: Manual
     name: "${PRE_MIGRATION_PRODUCT_OLM_PACKAGE}"
     source: "${PRE_MIGRATION_PRODUCT_OLM_CATALOG_SOURCE}"
     sourceNamespace: openshift-marketplace
+    startingCSV: ${PRE_MIGRATION_PRODUCT_OLM_STARTING_CSV}
 EOF
+
+  echo "[INFO] Waiting 30s for the new ${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME} operator creation."
+  sleep 30
+  "${K8S_CLI}" wait subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE}" --for=condition=InstallPlanPending --timeout=120s
+
+  echo "[INFO] Approve install plan."
+  INSTALL_PLAN=$("${K8S_CLI}" get subscription "${PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME}" -n "${PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE}" -o jsonpath='{.status.installplan.name}')
+  "${K8S_CLI}" patch installplan ${INSTALL_PLAN} -n "${PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE}" --type=merge -p '{"spec": {"approved": true}}'
 }
 
 waitForComponent() {
