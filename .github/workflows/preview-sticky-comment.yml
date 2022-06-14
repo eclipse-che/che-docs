@@ -1,0 +1,27 @@
+---
+#
+# Copyright (c) 2020 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+# NOTE: Because this worklow is using secrets, it cannot run directly on a pull-request workflow, which is running in the context of the forked repository.
+
+name: Preview sticky comment
+on: pull_request_target
+jobs:
+  preview:
+    name: Preview sticky comment
+    runs-on: ubuntu-latest
+    steps:
+      - name: create
+        uses: actions-cool/maintain-one-comment@v1.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            ⚡️ Deploying pull request preview...
+            <!-- Sticky Pull Request Comment -->
+          body-include: "<!-- Sticky Pull Request Comment -->"
