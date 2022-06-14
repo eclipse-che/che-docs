@@ -11,7 +11,7 @@ set -e
 
 vale -v 
 
-BRANCH=origin/${GITHUB_BASE_REF:-master}
+BRANCH=origin/${GITHUB_BASE_REF:-main}
 
 FILES=$(git diff --name-only --diff-filter=AM "$BRANCH")
 
