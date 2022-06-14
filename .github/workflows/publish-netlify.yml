@@ -10,7 +10,7 @@
 
 # NOTE: Because this worklow is using secrets, it cannot run directly on a pull-request workflow, which is running in the context of the forked repository.
 
-name: Publish doc-content using netlify
+name: Publish preview on netlify
 
 on:
   workflow_run:
@@ -21,7 +21,7 @@ on:
 
 jobs:
   publish:
-    name: Publish doc-content using netlify
+    name: Publish preview on netlify
     runs-on: ubuntu-20.04
     steps:
       - name: Download doc-content artifact
@@ -42,7 +42,7 @@ jobs:
           pr_sha=$(cat "content/PR_SHA")
           echo "PR_SHA=$pr_sha" >> $GITHUB_ENV
 
-      - name: Publish doc-content using netlify
+      - name: Publish preview netlify
         uses: netlify/actions/cli@master
         id: netlify-publish
         with:
