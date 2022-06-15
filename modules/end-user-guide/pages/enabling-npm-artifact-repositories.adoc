@@ -1,0 +1,55 @@
+:navtitle: npm
+:keywords: npm, artifact-repository, artifact-repositories
+:page-aliases: .:using-npm-artifact-repositories
+
+[id="enabling-npm-artifact-repositories"]
+= Enabling npm artifact repositories
+
+You can enable an npm artifact repository in npm workspaces that run in a restricted environment.
+
+.Prerequisites
+
+* You are not running any npm workspace.
+
+include::partial$snip_warning-about-applying-a-configmap-that-sets-environment-variables.adoc[]
+
+.Procedure
+
+. Apply the Secret for the TLS certificate:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: tls-cer
+  annotations:
+    controller.devfile.io/mount-path: /home/user/certs
+    controller.devfile.io/mount-as: file
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-secret: 'true'
+data:
+  tls.cer: >-
+    __<Base64_encoded_content_of_public_cert>__ <1>
+----
+<1> Base64 encoding with disabled line wrapping.
+
+. Apply the ConfigMap to set the following environment variables in the `tools` container:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: disconnected-env
+  annotations:
+    controller.devfile.io/mount-as: env
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  NODE_EXTRA_CA_CERTS: /home/user/certs/tls.cer
+  NPM_CONFIG_REGISTRY: >-
+    https://__<npm_artifact_repository_route>__/repository/npm-all/
+----

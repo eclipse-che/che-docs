@@ -23,7 +23,22 @@ This section describes all fields available to customize the `CheCluster` Custom
 ====
 [source,yaml,subs="+quotes,+attributes"]
 ----
-include::example$checluster-custom-resource.yaml[]
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  name: {prod-checluster}
+spec:
+  auth:
+    externalIdentityProvider: false
+  database:
+    externalDb: false
+  server:
+    selfSignedCert: false
+    gitSelfSignedCert: false
+    tlsSupport: true
+  storage:
+    pvcStrategy: 'common'
+    pvcClaimSize: '1Gi'
 ----
 ====
 

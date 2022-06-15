@@ -10,7 +10,7 @@ INSTALLATION_NAMESPACE=${INSTALLATION_NAMESPACE:-eclipse-che}                   
 ALL_USERS_DUMP="${PRODUCT_ID}"-users.txt
 MIGRATED_DB_DUMP="${PRODUCT_ID}"-migrated-db.sql
 
-echo "[INFO] Retriving ${PRODUCT_ID} database name."
+echo "[INFO] Retrieving ${PRODUCT_ID} database name."
 CHE_POSTGRES_DB=$("${K8S_CLI}" get cm/che -n "${INSTALLATION_NAMESPACE}" -o jsonpath='{.data.CHE_JDBC_URL}' | awk -F '/' '{print $NF}')
 
 terminatePostgresConnections() {

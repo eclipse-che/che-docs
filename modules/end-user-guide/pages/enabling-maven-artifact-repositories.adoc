@@ -1,0 +1,110 @@
+:navtitle: Maven
+:keywords: maven, artifact-repository, artifact-repositories
+:page-aliases: .:using-maven-artifact-repositories
+
+[id="enabling-maven-artifact-repositories"]
+= Enabling Maven artifact repositories
+
+You can enable a Maven artifact repository in Maven workspaces that run in a restricted environment.
+
+.Prerequisites
+
+* You are not running any Maven workspace.
+
+.Procedure
+
+. Apply the Secret for the TLS certificate:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: tls-cer
+  annotations:
+    controller.devfile.io/mount-path: /home/user/certs
+    controller.devfile.io/mount-as: file
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-secret: 'true'
+data:
+  tls.cer: >-
+    __<Base64_encoded_content_of_public_cert>__ <1>
+----
+<1> Base64 encoding with disabled line wrapping.
+
+. Apply the ConfigMap to create the `settings.xml` file:
++
+[source,yaml,subs="+quotes"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: settings-xml
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /home/user/.m2
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  settings.xml: |
+    <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+      <localRepository/>
+      <interactiveMode/>
+      <offline/>
+      <pluginGroups/>
+      <servers/>
+      <mirrors>
+        <mirror>
+          <id>redhat-ga-mirror</id>
+          <name>Red Hat GA</name>
+          <url>https://__<maven_artifact_repository_route>__/repository/redhat-ga/</url>
+          <mirrorOf>redhat-ga</mirrorOf>
+        </mirror>
+        <mirror>
+          <id>maven-central-mirror</id>
+          <name>Maven Central</name>
+          <url>https://__<maven_artifact_repository_route>__/repository/maven-central/</url>
+          <mirrorOf>maven-central</mirrorOf>
+        </mirror>
+        <mirror>
+          <id>jboss-public-repository-mirror</id>
+          <name>JBoss Public Maven Repository</name>
+          <url>https://__<maven_artifact_repository_route>__/repository/jboss-public/</url>
+          <mirrorOf>jboss-public-repository</mirrorOf>
+        </mirror>
+      </mirrors>
+      <proxies/>
+      <profiles/>
+      <activeProfiles/>
+    </settings>
+----
+
+. Apply the ConfigMap for the TrustStore initialization script:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: init-truststore
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /home/user/
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  init-truststore.sh: |
+    #!/usr/bin/env bash
+
+    keytool -importcert -noprompt -file /home/user/certs/tls.cer -cacerts -storepass changeit
+----
+
+. Start a Maven workspace.
+
+. Open a new terminal in the `tools` container.
+
+. Run `~/init-truststore.sh`.
