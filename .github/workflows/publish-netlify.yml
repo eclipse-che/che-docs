@@ -10,7 +10,7 @@
 
 # NOTE: Because this worklow is using secrets, it cannot run directly on a pull-request workflow, which is running in the context of the forked repository.
 
-name: Publish doc-content using netlify
+name: Publish preview on netlify
 
 on:
   workflow_run:
@@ -21,7 +21,7 @@ on:
 
 jobs:
   publish:
-    name: Publish doc-content using netlify
+    name: Publish preview on netlify
     runs-on: ubuntu-20.04
     steps:
       - name: Download doc-content artifact
@@ -31,45 +31,27 @@ jobs:
           name: doc-content
           path: content
 
-      - name: Download pull-request-number artifact
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          workflow: ${{ github.event.workflow_run.workflow_id }}
-          name: pull-request-number
-
-      - name: Set PR_NUMBER variable
+      - name: Set PR_NUMBER and PR_SHA variables
+        id: vars
         run: |
-          pr_number=$(cat "PR_NUMBER")
-          if ! [[ "$pr_number" =~ ^[0-9]+$ ]]; then
-            echo "pr number invalid"
-            exit 1
-          fi
-          echo "PR_NUMBER=$pr_number" >> $GITHUB_ENV
+          echo "::set-output name=pr_number::$(<content/PR_NUMBER)"
+          echo "::set-output name=pr_sha::$(<content/PR_SHA)"
 
-      - name: Download pull-request-sha artifact
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          workflow: ${{ github.event.workflow_run.workflow_id }}
-          name: pull-request-sha
-
-      - name: Set PR_SHA variable
-        run: |
-          pr_sha=$(cat "PR_SHA")
-          echo "PR_SHA=$pr_sha" >> $GITHUB_ENV
-
-      - name: Publish doc-content using netlify
+      - name: Publish preview netlify
         uses: netlify/actions/cli@master
         id: netlify-publish
         with:
-          args: deploy --dir=content --functions=functions
+          args: deploy --dir=content/build/site --functions=functions
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
 
-      - name: Comment the pull-request
-        uses: actions/github-script@v3.0.0
+      - name: Update status comment
+        uses: actions-cool/maintain-one-comment@v1.1.0
         with:
-          script: |
-            const { repo: { owner, repo } } = context;
-            const netlifyUrl = '${{ steps.netlify-publish.outputs.NETLIFY_URL }}';
-            await github.repos.createCommitStatus({ owner, repo, sha: process.env.PR_SHA, state: "success", target_url: netlifyUrl, description: "Browse PR documentation online", context: "browse built doc"})
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            🎊 Navigate the preview: ${{ steps.netlify-publish.outputs.NETLIFY_URL }} 🎊
+            <!-- Sticky Pull Request Comment -->
+          body-include: "<!-- Sticky Pull Request Comment -->"
+          number: ${{ steps.vars.outputs.pr_number }}
