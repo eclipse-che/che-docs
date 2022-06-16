@@ -9,7 +9,7 @@
 [id="installing-prometheus-and-grafana"]
 = Installing Prometheus and Grafana
 
-You can install Prometheus and Grafana by applying `template.yaml` that consists of a Deployment and Service for both Prometheus and Grafana.
+You can install Prometheus and Grafana by applying `template.yaml` which provides an example monitoring stack consisting of basic configuration, Deployments and Services to get started with Prometheus and Grafana.
 
 Alternatively, you can use the link:https://github.com/prometheus-operator/prometheus-operator[Prometheus Operator] and link:https://github.com/grafana-operator/grafana-operator[Grafana Operator].
 
@@ -19,9 +19,18 @@ Alternatively, you can use the link:https://github.com/prometheus-operator/prome
 
 .Procedure
 
-To install Prometheus and Grafana by using `template.yaml`:
+For this example monitoring stack, Prometheus and Grafana will be installed in a new {orch-namespace} called `monitoring`. To install Prometheus and Grafana by using `template.yaml`:
 
-* Apply `template.yaml` to the cluster by running `{orch-cli} apply -f template.yaml`.
+. Create a new {orch-namespace} called `monitoring`:
++
+include::example$snip_{project-context}-create-monitoring-namespace.adoc[]
+
+. Apply `template.yaml` in the `monitoring` {orch-namespace}:
++
+[subs="+attributes,quotes"]
+----
+$ {orch-cli} apply -f template.yaml -n monitoring
+----
 
 .`template.yaml`
 ====
@@ -95,6 +104,7 @@ spec:
       labels:
         app: prometheus
     spec:
+      serviceAccountName: prometheus
       containers:
       - image: quay.io/prometheus/prometheus:v2.36.0
         name: prometheus
@@ -120,7 +130,12 @@ kind: ConfigMap
 metadata:
   name: prometheus-config
 data:
-  prometheus.yml: |
+  prometheus.yml: ""
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
 ---
 ----
 ====

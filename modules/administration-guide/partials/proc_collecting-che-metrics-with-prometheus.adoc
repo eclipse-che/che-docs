@@ -9,15 +9,17 @@ To use Prometheus to collect, store, and query JVM metrics for {prod-short} Serv
 
 * {prod-short} is exposing metrics on port `8087`. See xref:enabling-and-exposing-{prod-id-short}-metrics_{context}[Enabling and exposing {prod-short} server JVM metrics].
 
-* Prometheus  2.26.0 or later is running. The Prometheus console is running on port `9090` with a corresponding `service` and `route`. See link:https://prometheus.io/docs/introduction/first_steps/[First steps with Prometheus].
+* Prometheus 2.26.0 or later is running. The Prometheus console is running on port `9090` with a corresponding Service. See link:https://prometheus.io/docs/introduction/first_steps/[First steps with Prometheus].
 
 .Procedure
 
-* Configure Prometheus to scrape metrics from port `8087`.
+. Configure Prometheus to scrape metrics from port `8087`.
++
+NOTE: The xref:installing-prometheus-and-grafana.adoc[example monitoring stack] already creates the `prometheus-config` ConfigMap with an empty configuration. Edit the `data` field of the ConfigMap to provide the Prometheus configuration details.
 +
 .Prometheus configuration
 ====
-[source,yaml,subs="+attributes"]
+[source,yaml,subs="+quotes,+attributes,+macros"]
 ----
 apiVersion: v1
 kind: ConfigMap
@@ -28,24 +30,38 @@ data:
       global:
         scrape_interval:     5s             <1>
         evaluation_interval: 5s             <2>
-      scrape_configs:                       <3>  
-        - job_name: 'che'
+      scrape_configs:                       <3>
+        - job_name: 'Che Server'
           static_configs:
-            - targets: ['[che-host]:8087']  <4>          
+            - targets: ['che-host.__<{prod-short}_namespace>__:8087']  <4>
 ----
 <1> The rate at which a target is scraped.
 <2> The rate at which the recording and alerting rules are re-checked.
-<3> The Resources that Prometheus monitors. In the default configuration, a single job, `che`, scrapes the time series data exposed by {prod-short} Server.
-<4> The scrape metrics from port `8087`.
+<3> The Resources that Prometheus monitors. In the default configuration, a single job, `Che Server`, scrapes the time series data exposed by {prod-short} Server.
+<4> Scrape metrics from port `8087`. Replace `__<{prod-short}_namespace>__` with the {prod-short} namespace. The default {prod-short} namespace is `{prod-namespace}`.
 ====
+
+. Scale down and scale up the `Prometheus` Deployment to read the updated ConfigMap from the previous step.
++
+[subs="+attributes,quotes"]
+----
+$ {orch-cli} scale --replicas=0 deployment/prometheus -n monitoring && {orch-cli} scale --replicas=1 deployment/prometheus -n monitoring
+----
 
 .Verification steps
 
-. View the metrics in the Prometheus console at `http://__<prometheus-url>__/metrics`.
-
-. Query the metrics in the Prometheus console from `http://__<prometheus-url>__/graph`. For more information, see link:https://prometheus.io/docs/introduction/first_steps/#using-the-expression-browser[Using the expression browser].
-
-. Verify that all targets are up by viewing the targets endpoint at `http://__<prometheus-url>__/targets`.
+. Use port forwarding to access the `Prometheus` Service locally:
++
+[subs="+attributes,quotes"]
+----
+$ {orch-cli} port-forward svc/prometheus 9090:9090 -n monitoring
+----
+. Verify that all targets are up by viewing the targets endpoint at `localhost:9090/targets`.
+. Use the Prometheus console to view and query metrics:
+** View the metrics at `localhost:9090/metrics`.
+** Query metrics from `localhost:9090/graph`.
++
+For more information, see link:https://prometheus.io/docs/introduction/first_steps/#using-the-expression-browser[Using the expression browser].
 
 .Additional resources
 
