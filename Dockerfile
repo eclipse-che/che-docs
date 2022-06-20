@@ -71,6 +71,7 @@ LABEL \
 
 ARG ANTORA_VERSION=3.0.1
 RUN set -x \
+    && dnf upgrade --assumeyes --quiet \
     && dnf install --assumeyes --quiet \
     bash \
     curl \
