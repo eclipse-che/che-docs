@@ -22,7 +22,7 @@ fi
 set -e
 
 # Pull the image unless using a container defined in environment variable
-[ -z "${CHE_DOCS_IMAGE}" ] && ${RUNNER} pull quay.io/eclipse/che-docs
+[ -z "${CHE_DOCS_IMAGE}" ] && ${RUNNER} pull quay.io/eclipse/che-docs:next
 
 # Display commands
 set -x
@@ -32,4 +32,4 @@ ${RUNNER} run --rm -ti \
   -v "$PWD:/projects:z" -w /projects \
   --entrypoint="./tools/preview.sh" \
   -p 4000:4000 -p 35729:35729 \
-  "${CHE_DOCS_IMAGE:-quay.io/eclipse/che-docs}"
+  "${CHE_DOCS_IMAGE:-quay.io/eclipse/che-docs:next}"
