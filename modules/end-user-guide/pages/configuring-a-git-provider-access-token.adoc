@@ -1,0 +1,66 @@
+:navtitle: Configuring a Git provider access token
+:description: Configuring a Git provider access token
+:keywords: user-guide, configuring, user, secrets, token
+:page-aliases: 
+
+[id="configuring-a-git-provider-access-token_{context}"]
+= Configuring a Git provider access token
+
+If xref:administration-guide:oauth-for-github-gitlab-or-bitbucket.adoc[OAuth for GitHub, GitLab, or Bitbucket] is not configured by the administrator of your organization's {prod-short} instance, you can apply your personal access token as a {kubernetes} Secret.
+
+Apply the {kubernetes} Secret in your user {orch-namespace} of the {orch-name} cluster of your organization's {prod-short} instance.
+
+When you apply the Secret, you can create a factory from private GitHub, GitLab or Bitbucket-server repository.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+* link:https://www.gnu.org/software/coreutils/base64[`base64`] command line tools are installed in the operating system you are using.
+
+.Procedure
+. Prepare a new {orch-name} Secret in your user {orch-namespace}.
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: personal-access-token-<git provider name, e.g. github>
+  labels:
+    app.kubernetes.io/component: scm-personal-access-token
+    app.kubernetes.io/part-of: che.eclipse.org
+  annotations:
+    che.eclipse.org/che-userid: <che user id> <1>
+    che.eclipse.org/scm-personal-access-token-name: <git provider name, e.g. github>
+    che.eclipse.org/scm-url: <git provider endpoint> <2>
+    che.eclipse.org/scm-userid: <git provider user id> <3>
+    che.eclipse.org/scm-username: <git provider username>
+data:
+  token: __<Base64 encoded token>__
+type: Opaque
+----
++
+<1> Che user id. Retrieve `<che-endpoint>/api/user` to get the che user data.
+<2> Git provider URL.
+<3> Git provider User id. See the specific Git provider API docs, to get the user id.
++
+[TIP]
+====
+You can create and apply multiple token Secrets in your user {orch-namespace} for each Git provider.
+====
++
+[TIP]
+====
+To encode token to base64 execute:
+
+`$ echo -n '__<token to encode>__' | base64`
+====
+. Apply the Secret:
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ {orch-cli} apply -f - <<EOF
+__<Secret_prepared_in_the_previous_step>__
+EOF
+----
