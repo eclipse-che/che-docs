@@ -71,7 +71,8 @@ LABEL \
 
 ARG ANTORA_VERSION=3.0.1
 RUN set -x \
-    && dnf install -y \
+    && dnf upgrade --assumeyes --quiet \
+    && dnf install --assumeyes --quiet \
     bash \
     curl \
     file \
@@ -85,13 +86,13 @@ RUN set -x \
     tar \
     unzip \
     wget \
-    && dnf clean all \
-    && pip3 install --no-cache-dir --no-input \
+    && dnf clean all --quiet \
+    && pip3 install --no-cache-dir --no-input --quiet \
     diagrams \
     jinja2-cli \
     yq \
     && corepack enable \
-    && yarnpkg global add --ignore-optional --non-interactive \
+    && yarnpkg global add --non-interactive \
     @antora/cli@${ANTORA_VERSION} \
     @antora/lunr-extension \
     @antora/site-generator@${ANTORA_VERSION} \
@@ -102,12 +103,14 @@ RUN set -x \
     js-yaml \
     && rm /tmp/* -rfv
 
-ENV NODE_PATH="/opt/app-root/src/.npm-global/lib/node_modules/"
+# Avoid error: Local gulp not found in /projects
+ENV NODE_PATH="/usr/local/share/.config/yarn/global/node_modules"
 VOLUME /projects
 WORKDIR /projects
 USER 1001
 
 RUN set -x \
+    && env \
     && antora --version \
     && asciidoctor --version \
     && bash --version \
@@ -117,6 +120,7 @@ RUN set -x \
     && htmltest --version \
     && jinja2 --version \
     && jq --version \
+    && pip3 freeze \
     && vale -v \
-    && yarn --version \
+    && yarnpkg global list \
     && yq --version
