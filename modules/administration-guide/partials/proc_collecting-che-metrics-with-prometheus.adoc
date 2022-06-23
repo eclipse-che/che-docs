@@ -33,17 +33,17 @@ data:
       scrape_configs:                       <3>
         - job_name: 'Che Server'
           static_configs:
-            - targets: ['che-host.__<{prod-short}_namespace>__:8087']  <4>
+            - targets: ['che-host.__<{prod-short}_{orch-namespace}>__:8087']  <4>
 ----
 <1> The rate at which a target is scraped.
 <2> The rate at which the recording and alerting rules are re-checked.
-<3> The Resources that Prometheus monitors. In the default configuration, a single job, `Che Server`, scrapes the time series data exposed by {prod-short} Server.
-<4> Scrape metrics from port `8087`. Replace `__<{prod-short}_{orch-namespace}>__` with the {prod-short} {orch-namespace}. The default {prod-short} {orch-namespace} is `{prod-namespace}`.
+<3> The resources that Prometheus monitors. In the default configuration, a single job, `Che Server`, scrapes the time series data exposed by {prod-short} Server.
+<4> The scrape target for the metrics from port `8087`. Replace `__<{prod-short}_{orch-namespace}>__` with the {prod-short} {orch-namespace}. The default {prod-short} {orch-namespace} is `{prod-namespace}`.
 ====
 
 . Scale the `Prometheus` Deployment down and up to read the updated ConfigMap from the previous step.
 +
-[subs="+attributes,quotes"]
+[source,terminal,subs="+attributes,quotes"]
 ----
 $ {orch-cli} scale --replicas=0 deployment/prometheus -n monitoring && {orch-cli} scale --replicas=1 deployment/prometheus -n monitoring
 ----
@@ -52,14 +52,14 @@ $ {orch-cli} scale --replicas=0 deployment/prometheus -n monitoring && {orch-cli
 
 . Use port forwarding to access the `Prometheus` Service locally:
 +
-[subs="+attributes,quotes"]
+[source,terminal,subs="+attributes,quotes"]
 ----
 $ {orch-cli} port-forward svc/prometheus 9090:9090 -n monitoring
 ----
 . Verify that all targets are up by viewing the `targets` endpoint at `localhost:9090/targets`.
 . Use the Prometheus console to view and query metrics:
-** View the metrics at `localhost:9090/metrics`.
-** Query metrics from `localhost:9090/graph`.
+** The metrics are available at `localhost:9090/metrics`.
+** The metrics can be queried from `localhost:9090/graph`.
 +
 For more information, see link:https://prometheus.io/docs/introduction/first_steps/#using-the-expression-browser[Using the expression browser].
 
