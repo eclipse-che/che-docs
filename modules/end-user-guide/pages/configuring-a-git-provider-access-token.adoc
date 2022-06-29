@@ -26,15 +26,15 @@ When you apply the Secret, you can create a factory from private GitHub, GitLab,
 kind: Secret
 apiVersion: v1
 metadata:
-  name: personal-access-token-<git provider name, e.g. github>
+  name: personal-access-token-__<Token name, for example, github>__
   labels:
     app.kubernetes.io/component: scm-personal-access-token
     app.kubernetes.io/part-of: che.eclipse.org
   annotations:
     che.eclipse.org/che-userid: _<Che user ID>_ <1>
-    che.eclipse.org/scm-personal-access-token-name: <git provider name, e.g. github>
-    che.eclipse.org/scm-url: _<Git provider endpoint>_ <2>
-    che.eclipse.org/scm-userid: _<Git provider user ID>_ <3>
+    che.eclipse.org/scm-personal-access-token-name: _<Git provider name>_ <2>
+    che.eclipse.org/scm-url: _<Git provider endpoint>_ <3>
+    che.eclipse.org/scm-userid: _<Git provider user ID>_ <4>
     che.eclipse.org/scm-username: _<Git provider username>_
 data:
   token: __<Base64 encoded token>__
@@ -42,8 +42,9 @@ type: Opaque
 ----
 +
 <1> Che user ID. Retrieve `__<che-endpoint>__/api/user` to get the Che user data.
-<2> Git provider URL.
-<3> Git provider user ID. See the specific Git provider API docs to get the user ID.
+<2> Git provider name: `github` or `gitlab` or `bitbucket-server`.
+<3> Git provider URL.
+<4> Git provider user ID. See the specific Git provider API docs to get the user ID.
 +
 [TIP]
 ====
