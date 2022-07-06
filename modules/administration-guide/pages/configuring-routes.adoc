@@ -22,16 +22,15 @@ You can configure labels, annotations, and domains for OpenShift Route to work w
 [source,yaml,subs="+quotes"]
 ----
 spec:
-  server:
-    cheServerRoute:
-      labels: <labels> <1>
-      domain: <domain> <2>
-      annotations:     <3>
-        key1: value1
-        key2: value2
-    customCheProperties:
-      CHE_INFRA_OPENSHIFT_ROUTE_LABELS: <labels> <1>
-      CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX: <domain> <2>
+  components:
+    cheServer:
+      extraProperties:
+        CHE_INFRA_OPENSHIFT_ROUTE_LABELS: <labels> <1>
+        CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX: <domain> <2>
+    networking:
+      labels: __<labels>__ <1>
+      domain: __<domain>__ <2>
+      annotations: __<annotations>__ <3>
 ----
 <1> A comma-separated list of labels that the target ingress controller uses to filter the set of Routes to service.
 <2> The DNS name serviced by the target ingress controller.
