@@ -48,7 +48,7 @@ The following procedure is applicable for already installed and running instance
 [CAUTION]
 ====
 * Certificate files are typically stored as Base64 ASCII files, such as `.pem`, `.crt`, `.ca-bundle`. But they can also be binary-encoded, for example, as `.cer` files. All Secrets that hold certificate files should use the Base64 ASCII certificate rather than the binary-encoded certificate.
-* A certificate with the introductory phrase `BEGIN TRUSTED CERTIFICATE` is likely in the PEM `TRUSTED CERTIFICATE` format, which is not not supported by Java. Convert it to the supported `CERTIFICATE` format with the following command:
+* A certificate with the `BEGIN TRUSTED CERTIFICATE` introductory phrase is likely in the PEM `TRUSTED CERTIFICATE` format, which is not supported by Java. Convert it to the supported `CERTIFICATE` format with the following command:
 ** `openssl x509 -in cert.pem -out cert.cer`
 * {prod-short} already uses some reserved file names to automatically inject certificates into the ConfigMap, so you should avoid using the following reserved file names to save your certificates:
   ** `ca-bundle.crt`
