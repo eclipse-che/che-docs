@@ -1,0 +1,46 @@
+:_content-type: PROCEDURE
+
+:parent-context-of-rolling-the-upgrade-back-to-{prod-prev-id-short}-{prod-last-version-pre-dwo}-on-openshift: {context}
+
+[id="rolling-the-upgrade-back-to-{prod-prev-id-short}-{prod-last-version-pre-dwo}-on-openshift_{context}"]
+= Rolling the upgrade back to {prod-prev-short} {prod-last-version-pre-dwo} on Red Hat OpenShift
+
+If upgrading {prod-short} 7.41 to 7.49 on Red Hat OpenShift fails, you can run a rollback script to restore {prod-short} 7.41.
+
+.Procedure
+
+. Download the xref:attachment$migration/rollback.sh[rollback.sh] script.
+
+. Set the environment variables to use in the `rollback.sh` script:
++
+[source,bash,subs="+attributes"]
+----
+export INSTALLATION_NAMESPACE={prod-namespace} # <1>
+export PRODUCT_ID={prod-id}
+export PRODUCT_SHORT_ID={prod-id-short}
+export PRODUCT_DEPLOYMENT_NAME={prod-deployment}
+export PRE_MIGRATION_PRODUCT_OPERATOR_NAMESPACE={prod-namespace} # <2>
+export PRE_MIGRATION_PRODUCT_DEPLOYMENT_NAME={pre-migration-prod-deployment}
+export PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME={pre-migration-prod-subscription}
+export PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME={pre-migration-prod-checluster}
+export PRE_MIGRATION_PRODUCT_OPERATOR_NAME={pre-migration-prod-operator}
+export PRE_MIGRATION_PRODUCT_OLM_PACKAGE={pre-migration-prod-package}
+export PRE_MIGRATION_PRODUCT_OLM_CHANNEL={pre-migration-prod-channel}
+export PRE_MIGRATION_PRODUCT_OLM_CATALOG_SOURCE={pre-migration-prod-catalog-source}
+export PRE_MIGRATION_PRODUCT_OLM_STARTING_CSV={pre-migration-prod-starting-csv}
+----
+<1> `{prod-namespace}` or another {orch-namespace} where {prod-prev-short} was previously installed.
+<2> `{prod-namespace}` or another {orch-namespace} where {prod-prev-short} was previously installed.
+
+. Run the `rollback.sh` script.
++
+[source,terminal]
+----
+$ chmod +x ./rollback.sh; ./rollback.sh
+----
+
+.Verification
+
+* In the {prod-prev-short} dashboard, go to menu:About[Server Version] to verify that it is *7.41*.
+
+:context: {parent-context-of-rolling-the-upgrade-back-to-{prod-prev-id-short}-{prod-last-version-pre-dwo}-on-openshift}
