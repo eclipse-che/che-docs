@@ -22,7 +22,7 @@ fi
 set -e
 
 # Pull the image unless using a container defined in environment variable
-[ -z "${CHE_DOCS_IMAGE}" ] && ${RUNNER} pull quay.io/eclipse/che-docs:next
+[ -z "${CHE_DOCS_IMAGE}" ] && ${RUNNER} pull --quiet quay.io/eclipse/che-docs:next
 
 # Display commands
 set -x

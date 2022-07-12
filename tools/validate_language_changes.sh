@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Copyright (c) 2021 Red Hat, Inc.
 # This program and the accompanying materials are made
@@ -9,14 +9,9 @@
 #
 set -e
 
-vale -v 
-
 BRANCH=origin/${GITHUB_BASE_REF:-main}
 
 FILES=$(git diff --name-only --diff-filter=AM "$BRANCH")
-
-echo "Files added or modified, in comparison to branch $BRANCH:
-$FILES"
 
 # shellcheck disable=SC2086 (We want to split on spaces)
 vale ${FILES}

@@ -13,16 +13,22 @@ content:
       edit_url: "https://github.com/eclipse-che/che-docs/edit/main/{path}"
 antora:
   extensions:
-    - require: "@antora/lunr-extension"
+    - id: search
+      require: "@antora/lunr-extension"
       index_latest_only: true
+      languages: [en]
       snippet_length: 142
+    - id: single-sourcing
+      require: ./extensions/single-sourcing.js
+    - id: unlisted-pages
+      require: ./extensions/unlisted-pages.js
+    - id: validators
+      require: ./extensions/validators.js
 asciidoc:
   sourcemap: true
 output:
-  destinations:
-    - provider: fs
-      clean: true
-      path: build/site
+  clean: true
+  dir: build/site
 ui:
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
@@ -39,4 +45,5 @@ runtime:
   cache_dir: ./.cache/antora
   log:
     failure_level: warn
+    format: pretty
     level: info

@@ -120,32 +120,24 @@ if [[ "$unused_images" ]]; then
     echo "ERROR: The following images are not used in their modules. Remove the files or reference them in the content."
     echo -e "${unused_images}"
     exit_status=1
-else
-    echo "INFO: All images have reference in the modules."
 fi
 
 if [[ "$unused_pages" ]]; then
     echo "ERROR: The following pages are not used in the navigation. Remove the files or reference them in the nav.adoc file."
     echo -e "${unused_pages}"
     exit_status=1
-else
-    echo "INFO: All pages have reference in the navigation."
 fi
 
 if [[ "$unused_partials" ]]; then
     echo "ERROR: The following partials are not used in their module. Remove the files or include them in a page."
     echo -e "${unused_partials}"
     exit_status=1
-else
-    echo "INFO: All partials have reference in the modules."
 fi
 
 if [[ "$missing_anchors" ]]; then
     echo "ERROR: The following anchors required for the application dashboard are missing:"
     echo -e "${missing_anchors}"
     exit_status=1
-else
-    echo "INFO: All dashboard anchors are present."
 fi
 
 

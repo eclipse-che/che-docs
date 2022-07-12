@@ -30,7 +30,7 @@ RUN wget -qO- https://github.com/wjdp/htmltest/archive/refs/tags/v${HTMLTEST_VER
 
 # Build vale
 WORKDIR /vale
-ARG VALE_VERSION=2.18.0
+ARG VALE_VERSION=2.20.0
 RUN wget -qO- https://github.com/errata-ai/vale/archive/v${VALE_VERSION}.tar.gz | tar --strip-components=1 -zxvf - \
     &&  export ARCH="$(uname -m)" \
     &&  if [[ ${ARCH} == "x86_64" ]]; \
@@ -67,9 +67,9 @@ LABEL \
     summary="Tools to build Eclipse Che documentation" \
     URL="quay.io/eclipse/che-docs" \
     vendor="Eclipse Che documentation team" \
-    version="2022.06"
+    version="2022.07"
 
-ARG ANTORA_VERSION=3.0.1
+# Install system packages
 RUN set -x \
     && dnf upgrade --assumeyes --quiet \
     && dnf install --assumeyes --quiet \
@@ -86,17 +86,30 @@ RUN set -x \
     tar \
     unzip \
     wget \
-    && dnf clean all --quiet \
+    && dnf clean all --quiet
+
+# Install Python pip packages
+RUN set -x \
     && pip3 install --no-cache-dir --no-input --quiet \
     diagrams \
     jinja2-cli \
     yq \
+    && rm /tmp/* -rfv
+
+# Node.js: using `yarn` rather than `npm` to avoid error:
+#   ERR! code ERR_SOCKET_TIMEOUT
+
+# Install Antora and extensions
+ARG ANTORA_VERSION=3.0.2
+RUN set -x \
     && corepack enable \
     && yarnpkg global add --non-interactive \
     @antora/cli@${ANTORA_VERSION} \
     @antora/lunr-extension \
     @antora/site-generator@${ANTORA_VERSION} \
     asciidoctor \
+    asciidoctor-emoji \
+    asciidoctor-kroki \
     gulp \
     gulp-cli \
     gulp-connect \

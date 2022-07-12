@@ -29,13 +29,13 @@ fetch_current_version() {
     CURRENT_VERSION="main"
   fi
 
-  echo "Detected version: $CURRENT_VERSION" >&2
+  # echo "Detected version: $CURRENT_VERSION" >&2
 }
 
 fetch_product_name() {
   # echo "Trying to read product name from $PARENT_PATH/antora.yml..." >&2
   PRODUCT=$(yq -rM '.asciidoc.attributes."prod-id-short"' "$PARENT_PATH/antora.yml")
-  echo "Detected product: $PRODUCT" >&2
+  # echo "Detected product: $PRODUCT" >&2
 }
 
 fetch_conf_files_content() {
@@ -48,7 +48,7 @@ fetch_conf_files_content() {
   fi
 
   RAW_CONTENT=$(curl -sf "$CHECLUSTER_PROPERTIES_URL")
-  echo "Fetching content done. Trying to parse it." >&2
+  # echo "Fetching content done. Trying to parse it." >&2
 }
 
 parse_content() {
@@ -67,9 +67,9 @@ parse_content() {
   parse_section "status" "\`CheCluster\` Custom Resource \`status\` defines the observed state of {prod-short} installation"
   BUFF="pass:[<!-- vale off -->]
 
-$BUFF" 
+$BUFF"
   echo "$BUFF" > "$OUTPUT_PATH"
-  echo "Processing done. Output file is $OUTPUT_PATH" >&2
+  echo "product: $PRODUCT, version: $CURRENT_VERSION used to generate file $OUTPUT_PATH" >&2
 }
 
 

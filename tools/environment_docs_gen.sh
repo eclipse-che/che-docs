@@ -28,9 +28,9 @@ fetch_current_version() {
     exit 1
   fi
   if [[ "$CURRENT_VERSION" == 'main.x' ]]; then
-     CURRENT_VERSION="main"
+    CURRENT_VERSION="main"
   fi
-  echo "Detected version: $CURRENT_VERSION" >&2
+  # echo "Detected version: $CURRENT_VERSION" >&2
 }
 
 
@@ -64,7 +64,7 @@ parse_content() {
       TOPICID="$(sed 's|-\{2,\}|-|g; s|[\"\/=,.<>?!;:()*]||g; s|\(.*\)|[id="\1"]|;s|prod-short|prod-id-short|' <<< $TOPICID)"
                                                         # replace spaces with dashes, create topic ID, convert to lowercase chars
                                                         # remove non alpha-num, wrap in AsciiDoc ID markup
-      TOPICID=${TOPICID,,}                                                     
+      TOPICID=${TOPICID,,}
       # echo "   Found begin of topic: $TOPIC" >&2
       BUFF="${BUFF}${NEWLINE}${TOPICID}${NEWLINE}= ${TOPIC}${NEWLINEx2}"      # new topic and table header
     elif [[ $LINE == '#'* ]] && [[ -n $TOPIC ]]; then   # line starting with single # means property description (can be multiline)
@@ -82,7 +82,7 @@ parse_content() {
       VALUE="${VALUE/ }"                                # trim first space
       VALUE="\`+${VALUE}+\`"                            # make sure asciidoc doesn't mix it up with attributes
       VALUE="${VALUE/\`++\`/empty}"                           # remove empty value `++`
-      
+
       DESCR_BUFF="$(sed 's|\${\([^}]*\)}|$++{\1}++|g' <<< $DESCR_BUFF)"   # make sure asciidoc doesn't mix it up with attributes
       DESCR_BUFF="$(sed 's|\(Eclipse \)\?\bChe\b|{prod-short}|g' <<< $DESCR_BUFF)"   # (Eclipse) Che -> {prod-short}
       DESCR_BUFF="$(sed -E 's| http:| \\http:|g' <<< $DESCR_BUFF)"   # Deactivate http links
@@ -104,9 +104,9 @@ parse_content() {
   # BUFF="$BUFF$TABLE_FOOTER"                             # close last table
   BUFF="pass:[<!-- vale off -->]
 
-$BUFF" 
+$BUFF"
   echo "$BUFF" > "$OUTPUT_PATH"                         # flush buffer into file
-  echo "Processing done. Output file is $OUTPUT_PATH" >&2
+  echo "Version: $CURRENT_VERSION used to generate file $OUTPUT_PATH" >&2
 }
 
 fetch_current_version

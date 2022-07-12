@@ -11,6 +11,8 @@
 # Fail on errors and display commands
 set -ex
 
+# Get Vale styles
 ./tools/get_vale_styles.sh
 
+# Build docs continuously and serve the result
 LIVERELOAD=true gulp
