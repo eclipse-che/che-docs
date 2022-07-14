@@ -30,7 +30,7 @@ RUN wget -qO- https://github.com/wjdp/htmltest/archive/refs/tags/v${HTMLTEST_VER
 
 # Build vale
 WORKDIR /vale
-ARG VALE_VERSION=2.18.0
+ARG VALE_VERSION=2.20.0
 RUN wget -qO- https://github.com/errata-ai/vale/archive/v${VALE_VERSION}.tar.gz | tar --strip-components=1 -zxvf - \
     &&  export ARCH="$(uname -m)" \
     &&  if [[ ${ARCH} == "x86_64" ]]; \
@@ -69,7 +69,7 @@ LABEL \
     vendor="Eclipse Che documentation team" \
     version="2022.06"
 
-ARG ANTORA_VERSION=3.0.1
+ARG ANTORA_VERSION=3.0.2
 RUN set -x \
     && dnf upgrade --assumeyes --quiet \
     && dnf install --assumeyes --quiet \
@@ -97,6 +97,8 @@ RUN set -x \
     @antora/lunr-extension \
     @antora/site-generator@${ANTORA_VERSION} \
     asciidoctor \
+    asciidoctor-emoji \
+    asciidoctor-kroki \
     gulp \
     gulp-cli \
     gulp-connect \
