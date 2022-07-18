@@ -1,10 +1,7 @@
-:navtitle: Git provider access token
-:description: Git provider access token
-:keywords: access-token
-:page-aliases: 
+:parent-context-of-using-a-git-provider-access-token: {context}
 
-[id="configuring-a-git-provider-access-token_{context}"]
-= Configuring a Git provider access token
+[id="using-a-git-provider-access-token_{context}"]
+= Using a Git provider access token
 
 If the administrator of your organization's {prod-short} instance has not configured xref:administration-guide:oauth-for-github-gitlab-or-bitbucket.adoc[OAuth for GitHub, GitLab, or Bitbucket], you can apply your personal access token as a {kubernetes} Secret.
 
@@ -26,7 +23,7 @@ TIP: In your user {orch-namespace}, you can create and apply multiple access-tok
 
 . Copy your access token and encode it to Base64.
 +
-[source,terminal,subs="+quotes,+attributes,+macros"]
+[source,terminal,subs="+quotes,+attributes"]
 ----
 $ echo -n '__<your_access_token>__' | base64
 ----
@@ -60,9 +57,11 @@ type: Opaque
 
 . Apply the Secret.
 +
-[source,terminal,subs="+quotes,+attributes,+macros"]
+[source,terminal,subs="+quotes,+attributes"]
 ----
 $ {orch-cli} apply -f - <<EOF
 __<Secret_prepared_in_the_previous_step>__
 EOF
 ----
+
+:context: {parent-context-of-configuring-a-git-provider-access-token}
