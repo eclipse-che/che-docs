@@ -9,7 +9,10 @@
 #
 set -e
 
-vale -v 
+vale --version
+
+# Get fresh vale styles
+vale sync
 
 echo "= Breakdown of vale infringements per module"
 for module in modules/*

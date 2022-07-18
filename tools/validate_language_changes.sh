@@ -9,7 +9,10 @@
 #
 set -e
 
-vale -v 
+vale --version
+
+# Get fresh vale styles
+vale sync
 
 BRANCH=origin/${GITHUB_BASE_REF:-main}
 
