@@ -1,6 +1,6 @@
 :_content-type: CONCEPT
 :description: Optional parameters for the URLs for starting a new workspace
-:keywords: url, urls, parameter, parameters, starting, start, workspace, workspaces, url-parameter, url-parameters, multiple-url-parameters, combine-url-parameters, several-url-parameters, add-url-parameters, concatenate, concatenate-multiple-URL-parameters, concatenate-URL-parameters, concatenating, concatenating-multiple-URL-parameters, concatenating-URL-parameters, concatenation, start-duplicate-workspaces, start-duplicated-workspaces, duplicate-workspace, duplicate-workspaces, duplicated-workspace, duplicated-workspaces, how-to-start-a-duplicate, how-to-start-duplicate, devfile, override-devfile-file-name, override-file-name, file-name, devfile-name, different-devfile-name, file-path, devfile-path, devfile-file-path, devfile-path-parameter, devfile-file-path-parameterdevfile, file-path, devfile-path, devfile-file-path, devfile-path-parameter, devfile-file-path-parameter
+:keywords: url, urls, parameter, parameters, starting, start, workspace, workspaces, url-parameter, url-parameters
 :navtitle: Optional parameters for the URLs for starting a new workspace
 // :page-aliases:
 
@@ -9,85 +9,8 @@
 
 When you start a new workspace, {prod-short} configures the workspace according to the instructions in the devfile. When you use a URL to start a new workspace, you can append optional parameters to the URL that further configure the workspace. You can use these parameters to specify a workspace IDE, start duplicate workspaces, and specify a devfile file name or path.
 
-== URL parameter concatenation
-
-The URL for starting a new workspace supports concatenation of multiple optional URL parameters by using `&` with the following URL syntax:
-
-`pass:c,a,q[{prod-url}]#__<git_repository_url>__?__<url_parameter_1>__&__<url_parameter_2>__&__<url_parameter_3>__`
-
-.A URL for starting a new workspace with the URL of a Git repository and optional URL parameters
-====
-The complete URL for the browser:
-
-`pass:c,a,q[{prod-url}#https://github.com/che-samples/cpp-hello-world?new&che-editor=che-incubator/intellij-community/latest&devfilePath=tests/testdevfile.yaml]`
-
-Explanation of the parts of the URL:
-
-[source,subs="+quotes,+attributes,+macros"]
-----
-pass:c,a,q[{prod-url}] <1>
-#https://github.com/che-samples/cpp-hello-world <2>
-?new&che-editor=che-incubator/intellij-community/latest&devfilePath=tests/testdevfile.yaml <3>
-----
-<1> {prod-short} URL.
-<2> The URL of the Git repository to be cloned into the new workspace.
-<3> The concatenated optional URL parameters.
-====
-
-== URL parameter for the workspace IDE
-
-Che-Theia is the default integrated development environment (IDE) that a workspace loads with if no IDE is specified as a URL parameter as part of the URL for starting a new workspace.
-
-The URL parameter for specifying another supported IDE is `che-editor=__<editor_key>__`:
-
-[source,subs="+quotes,+attributes,+macros"]
-----
-pass:c,a,q[{prod-url}]#__<git_repository_url>__?che-editor=__<editor_key>__
-----
-
-include::example$snip_{project-context}-editor-key-values.adoc[]
-
-== URL parameter for starting duplicate workspaces
-
-Visiting a URL for starting a new workspace results in a new workspace according to the devfile and with a clone of the linked Git repository.
-
-In some situations, you may need to have multiple workspaces that are duplicates in terms of the devfile and the linked Git repository. You can do this by visiting the same URL for starting a new workspace with a URL parameter.
-
-The URL parameter for starting a duplicate workspace is `new`:
-
-[source,subs="+quotes,+attributes,+macros"]
-----
-pass:c,a,q[{prod-url}]#__<git_repository_url>__?new
-----
-
-NOTE: If you currently have a workspace that you started using a URL, then visiting the URL again without the `new` URL parameter results in an error message.
-
-== URL parameter for the devfile file name
-
-When you visit a URL for starting a new workspace, {prod-short} searches the linked Git repository for a devfile with the file name `.devfile.yaml` or `devfile.yaml`. The devfile in the linked Git repository must follow this file-naming convention.
-
-In some situations, you may need to specify a different, unconventional file name for the devfile.
-
-The URL parameter for specifying an unconventional file name of the devfile is `df=__<filename>__.yaml`:
-
-[source,subs="+quotes,+attributes,+macros"]
-----
-pass:c,a,q[{prod-url}]#__<git_repository_url>__?df=__<filename>__.yaml <1>
-----
-<1> `__<filename>__.yaml` is an unconventional file name of the devfile in the linked Git repository.
-
-TIP: The `df=__<filename>__.yaml` parameter also has a long version: `devfilePath=__<filename>__.yaml`.
-
-== URL parameter for the devfile file path
-
-When you visit a URL for starting a new workspace, {prod-short} searches the root directory of the linked Git repository for a devfile (with the file name `.devfile.yaml` or `devfile.yaml`). The file path of the devfile in the linked Git repository must follow this path convention.
-
-In some situations, you may need to specify a different, unconventional file path for the devfile in the linked Git repository.
-
-The URL parameter for specifying an unconventional file path of the devfile is `devfilePath=__<relative_file_path>__`:
-
-[source,subs="+quotes,+attributes,+macros"]
-----
-pass:c,a,q[{prod-url}]#__<git_repository_url>__?devfilePath=__<relative_file_path>__ <1>
-----
-<1> `__<relative_file_path>__` is an unconventional file path of the devfile in the linked Git repository.
+* xref:url-parameter-concatenation.adoc[]
+* xref:url-parameter-for-the-workspace-ide.adoc[]
+* xref:url-parameter-for-starting-duplicate-workspaces.adoc[]
+* xref:url-parameter-for-the-devfile-file-name.adoc[]
+* xref:url-parameter-for-the-devfile-file-path.adoc[]
