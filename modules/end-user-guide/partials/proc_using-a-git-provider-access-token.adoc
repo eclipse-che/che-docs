@@ -1,0 +1,67 @@
+:parent-context-of-using-a-git-provider-access-token: {context}
+
+[id="using-a-git-provider-access-token_{context}"]
+= Using a Git provider access token
+
+If the administrator of your organization's {prod-short} instance has not configured xref:administration-guide:oauth-for-github-gitlab-or-bitbucket.adoc[OAuth for GitHub, GitLab, or Bitbucket], you can apply your personal access token as a {kubernetes} Secret.
+
+Mounting your access token as a Secret enables the {prod-short} Server to access the remote repository that is cloned during workspace creation, including access to the repository's `/.che` and `/.vscode` folders.
+
+Apply the {kubernetes} Secret in your user {orch-namespace} of the {orch-name} cluster of your organization's {prod-short} instance.
+
+After you have applied the Secret, you can create new workspaces from a private GitHub, GitLab, or Bitbucket-server repository.
+
+TIP: In your user {orch-namespace}, you can create and apply multiple access-token Secrets per a Git provider.
+
+.Prerequisites
+
+* An active `{orch-cli}` session, with administrative permissions, to the {orch-name} cluster. See {orch-cli-link}.
+
+* The link:https://www.gnu.org/software/coreutils/base64[`base64`] command line tools are installed in the operating system you are using.
+
+.Procedure
+
+. Copy your access token and encode it to Base64.
++
+[source,terminal,subs="+quotes,+attributes"]
+----
+$ echo -n '__<your_access_token>__' | base64
+----
+
+. Prepare a new {orch-name} Secret in your user {orch-namespace}.
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: personal-access-token-__<your_chosen_name_for_this_token>__
+  labels:
+    app.kubernetes.io/component: scm-personal-access-token
+    app.kubernetes.io/part-of: che.eclipse.org
+  annotations:
+    che.eclipse.org/che-userid: _<{prod-id-short}_user_ID>_ <1>
+    che.eclipse.org/scm-personal-access-token-name: _<git_provider_name>_ <2>
+    che.eclipse.org/scm-url: _<Git_provider_endpoint>_ <3>
+    che.eclipse.org/scm-userid: _<Git_provider_user_ID>_ <4>
+    che.eclipse.org/scm-username: _<Git_provider_username>_
+data:
+  token: __<Base64_encoded_access_token>__
+type: Opaque
+----
++
+<1> Your Che user ID. You can retrieve `__<che-endpoint>__/api/user` to get the Che user data.
+<2> The Git provider name: `github` or `gitlab` or `bitbucket-server`.
+<3> The Git provider URL.
+<4> Your Git provider user ID.
+
+. Apply the Secret.
++
+[source,terminal,subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f - <<EOF
+__<Secret_prepared_in_the_previous_step>__
+EOF
+----
+
+:context: {parent-context-of-configuring-a-git-provider-access-token}
