@@ -21,8 +21,6 @@ WARNING: Remember that single-node {kubernetes} clusters are suited only for tes
 
 * `{prod-cli}`. See xref:installing-the-chectl-management-tool.adoc[].
 
-* `cert-manager` installed. See link:https://cert-manager.io/docs/installation[Installing cert-manager].
-
 .Procedure
 
 . Start Minikube. Allocate at least 8GB of RAM and 4 CPU cores:
@@ -30,6 +28,8 @@ WARNING: Remember that single-node {kubernetes} clusters are suited only for tes
 ----
 $ minikube start --addons=ingress --vm=true --memory=8192 --cpus=4
 ----
+
+. Deploy `cert-manager`. See link:https://cert-manager.io/docs/installation[Installing cert-manager].
 
 . Deploy {identity-provider}:
 +
@@ -201,11 +201,16 @@ EOF
 $ {orch-cli} get secret ca.crt -o "jsonpath={.data['ca\.crt']}" -n keycloak | base64 -d > keycloak-ca.crt
 ----
 
+. Copy {identity-provider} CA certificate into `minikube`:
++
+----
+$ minikube ssh sudo "mkdir -p /etc/ca-certificates" && \
+  minikube cp keycloak-ca.crt /etc/ca-certificates/keycloak-ca.crt
+----
+
 . Configure `minikube` to use {identity-provider} as OIDC identity provider:
 +
 ----
-$ minikube ssh sudo "mkdir -p /etc/ca-certificates"
-$ minikube cp keycloak-ca.crt /etc/ca-certificates/keycloak-ca.crt
 $ minikube start \
     --extra-config=apiserver.oidc-issuer-url=https://keycloak.$(minikube ip).nip.io/realms/che \
     --extra-config=apiserver.oidc-username-claim=email \
@@ -248,13 +253,24 @@ $ {orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
         --new-password test"
 ----
 
-. Create the {prod-short} instance:
+. Copy {identity-provider} CA certificate into {prod-namespace}:
 +
 [subs="+attributes"]
 ----
-$ {orch-cli} create namespace {prod-namespace}
-$ {orch-cli} create configmap keycloak-certs --from-file=keycloak-ca.crt=keycloak-ca.crt -n {prod-namespace}
-$ {orch-cli} label configmap keycloak-certs app.kubernetes.io/part-of=che.eclipse.org app.kubernetes.io/component=ca-bundle -n {prod-namespace}
+$ {orch-cli} create namespace {prod-namespace} &&  \
+{orch-cli} create configmap keycloak-certs \
+    --from-file=keycloak-ca.crt=keycloak-ca.crt \
+    -n {prod-namespace} && \
+{orch-cli} label configmap keycloak-certs \
+    app.kubernetes.io/part-of=che.eclipse.org \
+    app.kubernetes.io/component=ca-bundle \
+    -n {prod-namespace}
+----
+
+. Prepare `CheCluster` patch:
++
+[subs="+attributes"]
+----
 $ cat > che-patch.yaml << EOF
 kind: CheCluster
 apiVersion: org.eclipse.che/v2
@@ -269,6 +285,12 @@ spec:
       extraProperties:
         CHE_OIDC_USERNAME__CLAIM: email
 EOF
+----
+
+. Create the {prod-short} instance:
++
+[subs="+attributes"]
+----
 $ {prod-cli} server:deploy --platform k8s --domain $(minikube ip).nip.io --che-operator-cr-patch-yaml che-patch.yaml
 ----
 
@@ -288,3 +310,4 @@ $ {prod-cli} server:status
 $ {prod-cli} dashboard:open
 ----
 
+. Login to {prod-short} instance with Username: `test` and Password: `test`
