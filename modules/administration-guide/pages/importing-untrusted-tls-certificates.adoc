@@ -9,8 +9,8 @@
 
 By default, external communications between {prod-short} components are encrypted with TLS. Communications of {prod-short} components with external services such as proxies, source code repositories, and identity provider might also require TLS. All communications encrypted with TLS require the use of TLS certificates signed by trusted Certificate Authorities (CA).
 
-When the certificates used by {prod-short} components or by an external service are signed by an untrusted CA, it's necessary to import the CA certificate in the {prod-short} installation so that every {prod-short} component considers them as signed by a trusted CA. Following cases typically require this addition:
-* The underlying {orch-name} cluster uses TLS certificates signed by a CA that isn't trusted.
+When the certificates used by {prod-short} components or by an external service are signed by an untrusted CA, you must import the CA certificate in the {prod-short} installation so that every {prod-short} component considers the certificates as signed by a trusted CA. Following cases typically require this addition:
+* The underlying {orch-name} cluster uses TLS certificates signed by an untrusted CA.
 * {prod-short} server or workspace components connect to external services such as {identity-provider} or a Git server that use TLS certificates signed by an untrusted CA.
 
 {prod-short} uses labeled ConfigMaps in {orch-namespace} as sources for TLS certificates. The ConfigMaps can have an arbitrary number of keys with a random number of certificates each.
@@ -23,7 +23,7 @@ When an OpenShift cluster contains cluster-wide trusted CA certificates added th
 [IMPORTANT]
 ====
 Some {prod-short} components require a full certificate chain to trust the endpoint.
-If the cluster is configured with an intermediate certificate, add the whole chain (including self-signed root) to {prod-short}.
+If the cluster is configured with an intermediate certificate, add the whole chain, including self-signed root, to {prod-short}.
 ====
 
 == Adding new CA certificates into {prod-short}
@@ -44,7 +44,7 @@ Certificate files are typically stored as Base64 files, with extensions such as 
 +
 [CAUTION]
 ====
-* A certificate with the introductory phrase `BEGIN TRUSTED CERTIFICATE` is likely in the PEM `TRUSTED CERTIFICATE` format, which is not not supported by Java. Convert it to the supported `CERTIFICATE` format with the following command:
+* A certificate with the introductory phrase `BEGIN TRUSTED CERTIFICATE` is likely in the PEM `TRUSTED CERTIFICATE` format, which is not supported by Java. Convert it to the supported `CERTIFICATE` format with the following command:
 ** `openssl x509 -in cert.pem -out cert.cer`
 ====
 
@@ -55,8 +55,7 @@ Certificate files are typically stored as Base64 files, with extensions such as 
 $ {orch-cli} create configmap custom-certs --from-file=__<bundle-file-path>__ -n={prod-namespace}
 ----
 +
-To apply more than one bundle, add another `-from-file=_<bundle-file-path>_`. Otherwise, create another ConfigMap. 
-// Wouldn't "alternatively" make more sense than "otherwise"? 
+To apply more than one bundle, add another `-from-file=_<bundle-file-path>_`. Alternatively, create another ConfigMap.
 
 . Label created ConfigMaps with the `app.kubernetes.io/part-of=che.eclipse.org` and `app.kubernetes.io/component=ca-bundle` labels:
 +
@@ -65,24 +64,24 @@ To apply more than one bundle, add another `-from-file=_<bundle-file-path>_`. Ot
 $ {orch-cli} label configmap custom-certs app.kubernetes.io/part-of=che.eclipse.org app.kubernetes.io/component=ca-bundle -n <{project-context}-namespace-name>
 ----
 
-. Deploy {prod-short} if it hasn't been deployed before. Otherwise wait until the rollout of {prod-short} components finishes. Restart running workspaces for the changes to take effect.
+. Deploy {prod-short} if it hasn't been deployed before. Otherwise wait until the rollout of {prod-short} components finishes. 
+. Restart running workspaces for the changes to take effect.
 
 == Troubleshooting imported certificate issues
 
-If issues occur after adding the certificates, verify the below specified values at a {prod-short} installation and workspace level.
+If issues occur after adding the certificates, verify the specified values at a {prod-short} installation and workspace level.
 
 
 .Verifying imported certificates at the {prod-short} installation level
 
-* In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/understanding/olm-what-operators-are.html[Operator] deployment, the namespace where the `CheCluster` is located contains labeled ConfigMaps with the right content:
-// Correct content? Relevant content?
+* In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/understanding/olm-what-operators-are.html[Operator] deployment, the namespace where the `CheCluster` is located contains labeled ConfigMaps with the correct content:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get cm --selector=app.kubernetes.io/component=ca-bundle,app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
 ----
 +
-Check the content of ConfigMap by entering this command:
+Check the content of ConfigMap by entering:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -97,21 +96,21 @@ To get the list of Volumes of the {prod-short} Pod, run:
 $ {orch-cli} get pod -o json __<{prod-id-short}-pod-name>__ -n {prod-namespace} | jq .spec.volumes
 ----
 +
-* {prod-short} mounts certificates in the `/public-certs/` folder of the {prod-short} server container. Enter the following command to view the list of files in this folder:
+* {prod-short} mounts certificates in the `/public-certs/` folder of the {prod-short} server container. To view the list of files in this folder, enter:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} exec -t __<{prod-id-short}-pod-name>__ -n {prod-namespace} -- ls /public-certs/
 ----
 +
-* In the {prod-short} server logs, there is a line for every certificate added to the Java truststore, including configured {prod-short} certificates. View them with following command:
+* In the {prod-short} server logs, there is a line for every certificate added to the Java truststore, including configured {prod-short} certificates. View them:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} logs __<{prod-id-short}-pod-name>__ -n {prod-namespace}
 ----
 +
-* {prod-short} server Java truststore contains the certificates. The certificates SHA1 fingerprints are among the list of the SHA1 of the certificates included in the truststore. View the list with the following command:
+* {prod-short} server Java truststore contains the certificates. The certificates SHA1 fingerprints are among the list of the SHA1 of the certificates included in the truststore. View the list:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -131,17 +130,16 @@ SHA1 Fingerprint=3F:DA:BF:E7:A7:A7:90:62:CA:CF:C7:55:0E:1D:7D:05:16:7D:45:60
 
 .Verifying imported certificates at the workspace level
 
-* Start a workspace, obtain the {orch-namespace} name in which it has been created, and wait for the workspace to be started.
-// What do I need the name for?
+* Start a workspace, obtain the {orch-namespace} name in which it has been created and wait for the workspace to be started.
 
-* Get the name of the workspace Pod with the following command:
+* Get the name of the workspace Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get pods -o=jsonpath='{.items[0].metadata.name}' -n __<workspace namespace>__ | grep '^workspace.*'
 ----
 
-* Get the name of the Che-Theia IDE container in the workspace Pod with the following command:
+* Get the name of the Che-Theia IDE container in the workspace Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -156,7 +154,7 @@ $ {orch-cli} get -o json pod __<workspace pod name>__  -n __<workspace namespace
 $ {orch-cli} get cm ca-certs __<workspace namespace>__
 ----
 
-* Check that the entries in the `ca-certs` ConfigMap contain all the additional entries you added before. In addition, it can contain `ca-bundle.crt` reserved entry. View the entries with the following command:
+* Check that the entries in the `ca-certs` ConfigMap contain all the additional entries you added before. In addition, it can contain `ca-bundle.crt` reserved entry. View the entries:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
