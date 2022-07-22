@@ -31,7 +31,6 @@ declare devworkspace_operator_index="${devworkspace_operator_index:?Define the v
 declare devworkspace_operator_package_name="devworkspace-operator"
 declare devworkspace_operator_version="${devworkspace_operator_version:?Define the variable}"
 declare prod_operator_index="${prod_operator_index:?Define the variable}"
-declare prod_operator_bundle_name="${prod_operator_bundle_name:?Define the variable}"
 declare prod_operator_package_name="${prod_operator_package_name:?Define the variable}"
 declare prod_operator_version="${prod_operator_version:?Define the variable}"
 
@@ -46,24 +45,18 @@ mkdir -p "${my_catalog}/${devworkspace_operator_package_name}" "${my_catalog}/${
 echo "Fetching metadata for the ${devworkspace_operator_package_name} operator catalog channel, packages, and bundles."
 opm render "${devworkspace_operator_index}" \
   | jq "select(\
-    .name == \"${devworkspace_operator_package_name}\" \
-    or .package == \"${devworkspace_operator_package_name}\" \
+    .name == \"${devworkspace_operator_package_name}.${devworkspace_operator_version}\" \
+    and .schema == \"olm.bundle\" \
     )" \
   > "${my_catalog}/${devworkspace_operator_package_name}/render.json"
-# FIXME: filter only the required version to limit the number of related images to mirror.
-    # or (.package == \"${devworkspace_operator_package_name}\" and .schema == \"olm.channel\" ) \
-    # or .name == \"${devworkspace_operator_package_name}.${devworkspace_operator_version}\" \
 
 echo "Fetching metadata for the ${prod_operator_package_name} operator catalog channel, packages, and bundles."
 opm render "${prod_operator_index}" \
   | jq "select(\
-    .name == \"${prod_operator_package_name}\" \
-    or .package == \"${prod_operator_package_name}\" \
+    .name == \"${prod_operator_package_name}.${prod_operator_version}\" \
+    and .schema == \"olm.bundle\" \
     )" \
   > "${my_catalog}/${prod_operator_package_name}/render.json"
-# FIXME: filter only the required version to limit the number of related images to mirror.
-    # or (.package == \"${prod_operator_package_name}\" and .schema == \"olm.channel\" ) \
-    # or .name == \"${prod_operator_bundle_name}.${prod_operator_version}\" \
 
 echo "Creating the catalog dockerfile."
 if [ -f "${my_catalog}.Dockerfile" ]; then
@@ -106,7 +99,7 @@ apiVersion: org.eclipse.che/v2
 spec:
   containerRegistry:
     hostname: "$my_registry"
-    organization: "${my_catalog}"
+    organization: "$my_catalog"
 EOF
 
 echo "Removing index image from mappings.txt to prepare mirroring."
