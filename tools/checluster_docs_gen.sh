@@ -28,6 +28,7 @@ fetch_current_version() {
   if [[ "$CURRENT_VERSION" == 'main.x' ]]; then
     CURRENT_VERSION="main"
   fi
+
   echo "Detected version: $CURRENT_VERSION" >&2
 }
 
@@ -41,25 +42,28 @@ fetch_conf_files_content() {
   # echo "Fetching property files content from GitHub..." >&2
 
   if [[ $PRODUCT == "che" ]]; then
-    CHECLUSTER_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse-che/che-operator/$CURRENT_VERSION/config/crd/bases/org_v1_che_crd.yaml"
+    CHECLUSTER_PROPERTIES_URL="https://raw.githubusercontent.com/eclipse-che/che-operator/$CURRENT_VERSION/config/crd/bases/org.eclipse.che_checlusters.yaml"
   else
-    CHECLUSTER_PROPERTIES_URL="https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/$CURRENT_VERSION/config/crd/bases/org_v1_che_crd.yaml"
+    CHECLUSTER_PROPERTIES_URL="https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/$CURRENT_VERSION/config/crd/bases/org.eclipse.che_checlusters.yaml"
   fi
 
   RAW_CONTENT=$(curl -sf "$CHECLUSTER_PROPERTIES_URL")
-  local crdVersion=$(echo "$RAW_CONTENT" | yq -r '.apiVersion')
-  echo "Fetching content done. CRD version: $crdVersion. Trying to parse it." >&2
+  echo "Fetching content done. Trying to parse it." >&2
 }
 
 parse_content() {
-  parse_section "server" "\`CheCluster\` Custom Resource \`server\` settings, related to the {prod-short} server component."
-  parse_section "database" "\`CheCluster\` Custom Resource \`database\` configuration settings related to the database used by {prod-short}."
-  parse_section "auth" "Custom Resource \`auth\` configuration settings related to authentication used by {prod-short}."
-  parse_section "storage" "\`CheCluster\` Custom Resource \`storage\` configuration settings related to persistent storage used by {prod-short}."
-  if [[ $PRODUCT == "che" ]]; then
-    parse_section "k8s" "\`CheCluster\` Custom Resource \`k8s\` configuration settings specific to {prod-short} installations on {platforms-name}."
-  fi
-  parse_section "metrics" "\`CheCluster\` Custom Resource \`metrics\` settings, related to the {prod-short} metrics collection used by {prod-short}."
+  parse_section "devEnvironments" "Development environment configuration options."
+  parse_section "components" "{prod-short} components configuration."
+  parse_section "components.properties.devWorkspace" "DevWorkspace operator component configuration."
+  parse_section "components.properties.cheServer" "General configuration settings related to the {prod-short} server component."
+  parse_section "components.properties.pluginRegistry" "Configuration settings related to the Plug-in registry component used by the {prod-short} installation."
+  parse_section "components.properties.devfileRegistry" "Configuration settings related to the Devfile registry component used by the {prod-short} installation."
+  parse_section "components.properties.database" "Configuration settings related to the Database component used by the {prod-short} installation."
+  parse_section "components.properties.dashboard" "Configuration settings related to the Dashboard component used by the {prod-short} installation."
+  parse_section "components.properties.imagePuller" "Kubernetes Image Puller component configuration."
+  parse_section "components.properties.metrics" "{prod-short} server metrics component configuration."
+  parse_section "networking" "Networking, {prod-short} authentication and TLS configuration."
+  parse_section "containerRegistry" "Configuration of an alternative registry that stores {prod-short} images."
   parse_section "status" "\`CheCluster\` Custom Resource \`status\` defines the observed state of {prod-short} installation"
   BUFF="pass:[<!-- vale off -->]
 
@@ -72,23 +76,15 @@ $BUFF"
 parse_section() {
   local section
   local sectionName=$1
-  local id="[id=\"checluster-custom-resource-$sectionName-settings_{context}\"]"
+  local sectionName2Id=$(echo $sectionName | tr '.' '-' )
+  local id="[id=\"checluster-custom-resource-$sectionName2Id-settings_{context}\"]"
   local caption=$2
-  local crdVersion=$(echo "$RAW_CONTENT" | yq -r '.apiVersion')
-  # echo "Parsing section: "$sectionName
 
+  # echo "Parsing section: "$sectionName
   if [[ $sectionName == "status" ]]; then
-    if [[ $crdVersion == "apiextensions.k8s.io/v1beta1" ]]; then
-      section=$(echo "$RAW_CONTENT" | yq -M '.spec.validation.openAPIV3Schema.properties.status')
-    else
-      section=$(echo "$RAW_CONTENT" | yq -M '.spec.versions[] | select(.name == "v1") | .schema.openAPIV3Schema.properties.status')
-    fi
+    section=$(echo "$RAW_CONTENT" | yq -M '.spec.versions[] | select(.name == "v2") | .schema.openAPIV3Schema.properties.status')
   else
-    if [[ $crdVersion == "apiextensions.k8s.io/v1beta1" ]]; then
-      section=$(echo "$RAW_CONTENT" | yq -M '.spec.validation.openAPIV3Schema.properties.spec.properties.'"$sectionName")
-    else
-      section=$(echo "$RAW_CONTENT" | yq -M '.spec.versions[] | select(.name == "v1") | .schema.openAPIV3Schema.properties.spec.properties.'"$sectionName")
-    fi
+    section=$(echo "$RAW_CONTENT" | yq -M '.spec.versions[] | select(.name == "v2") | .schema.openAPIV3Schema.properties.spec.properties.'"$sectionName")
   fi
 
   local properties=(
