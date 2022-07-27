@@ -288,11 +288,25 @@ spec:
 EOF
 ----
 
-. Create the {prod-short} instance:
+. Create the {prod-short} instance with {prod-cli}:
 +
 [subs="+attributes"]
 ----
 $ {prod-cli} server:deploy --platform k8s --domain $(minikube ip).nip.io --che-operator-cr-patch-yaml che-patch.yaml --skip-cert-manager
+----
++
+or using HelmCharts:
++
+[subs="+attributes"]
+----
+$ helm install che \
+    --namespace eclipse-che \
+    --set networking.domain=$(minikube ip).nip.io \
+    --set networking.auth.oAuthSecret=eclipse-che \
+    --set networking.auth.oAuthClientName=k8s-client \
+    --set networking.auth.identityProviderURL=https://keycloak.$(minikube ip).nip.io/realms/che . && \
+  sleep 5s && \
+  {orch-cli} patch checluster/eclipse-che --patch '{"spec": {"components": {"cheServer": {"extraProperties": {"CHE_OIDC_USERNAME__CLAIM": "email"}}}}}' --type=merge -n eclipse-che
 ----
 
 .Verification steps
