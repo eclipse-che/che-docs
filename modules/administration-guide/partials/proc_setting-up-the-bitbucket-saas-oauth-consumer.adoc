@@ -1,0 +1,49 @@
+:_content-type: PROCEDURE
+:description: Setting up the Bitbucket OAuth consumer
+:keywords: bitbucket, bitbucket-application, bitbucket-oauth-consumer, oauth-application
+:navtitle: Setting up the Bitbucket OAuth consumer
+// :page-aliases:
+
+[id="setting-up-the-bitbucket-saas-oauth-consumer_{context}"]
+= Setting up the Bitbucket OAuth consumer
+
+Set up a Bitbucket OAuth consumer using OAuth 2.0.
+
+.Prerequisites
+
+* You are logged in to Bitbucket.
+* link:https://www.gnu.org/software/coreutils/base64[`base64`] is installed in the operating system you are using.
+
+.Procedure
+
+. Click your avatar and go to *All workspaces* page.
+
+. Select a workspace and click it.
+
+. Go to menu:Settings[OAuth consumers] and click *Add consumer*.
+
+. Enter *{prod-short}* as the *Name*.
+
+. Enter `pass:c,a,q[{prod-url}]/api/oauth/callback` as the *Callback URL*.
+
+. Under *Permissions*, check all of the `Account` and `Repositories` checkboxes.
+
+. Click *Save*.
+
+. Expand the added consumer, copy the *Key* value and encode it to Base64 for use when applying the Bitbucket OAuth consumer Secret:
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ echo -n '__<bitbucket_oauth_consumer_key>__' | base64
+----
+
+. Copy the *Secret* value and encode it to Base64 for use when applying the Bitbucket OAuth consumer Secret:
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ echo -n '__<bitbucket_oauth_consumer_secret>__' | base64
+----
+
+.Additional resources
+
+* link:https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud[Bitbucket Docs: Use OAuth on Bitbucket Cloud]
