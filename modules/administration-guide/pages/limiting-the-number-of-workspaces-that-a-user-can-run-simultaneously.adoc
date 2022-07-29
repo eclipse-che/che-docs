@@ -1,0 +1,41 @@
+:_content-type: PROCEDURE
+:navtitle: Limiting the number of workspaces that a user can run simultaneously
+:description: Limiting the number of workspaces that a user can run simultaneously
+:keywords: administration guide, number, workspaces
+//:page-aliases:
+
+[id="limiting-the-number-of-workspaces-that-a-user-can-run-simultaneously_{context}"]
+= Limiting the number of workspaces that a user can run simultaneously
+
+{prod-short} enables users to run multiple workspaces with different configurations simultaneously.
+
+You can limit the number of workspaces that a user can run simultaneously.
+
+.Procedure
+
+. Obtain the name of the {prod-short} namespace. The default is `{prod-namespace}`.
++
+[source,terminal,subs="+quotes"]
+----
+$ oc get checluster --all-namespaces \
+  -o=jsonpath="{.items[*].metadata.namespace}"
+----
+
+. Configure the `CheCluster` Custom Resource. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  components:
+    devWorkspace:
+      runningLimit: "__<number_of_concurrent_workspaces_per_user>__"
+----
+
+. To apply the above change so that users can have up to 30 open workspaces running concurrently, run the following command for the namespace from the first step:
++
+[source,terminal,subs="+quotes"]
+----
+$ oc patch checluster/devspaces -n  _<openshift-devspaces>_ \ <1>
+--type='merge' -p '{"spec":{"components":{"devWorkspace":{"runningLimit":"30"}}}}'
+----
+<1> The {prod-short} namespace from the first step.

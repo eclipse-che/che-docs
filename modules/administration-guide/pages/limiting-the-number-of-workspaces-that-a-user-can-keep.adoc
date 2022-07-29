@@ -1,0 +1,48 @@
+:_content-type: PROCEDURE
+:navtitle: Limiting the number of workspaces that a user can keep
+:description: Limiting the number of workspaces that a user can keep
+:keywords: administration guide, number, workspaces
+:page-aliases:
+//configuring-the-number-of-workspaces-that-a-user-can-create.adoc
+
+[id="limiting-the-number-of-workspaces-that-a-user-can-keep_{context}"]
+= Limiting the number of workspaces that a user can keep 
+
+{prod-short} enables users to keep several workspaces in their dashboards.
+
+You can limit the number of workspaces that a user can keep in the dashboard.
+
+.Procedure
+
+. Obtain the name of the {prod-short} namespace. The default is `{prod-namespace}`.
++
+[source,terminal,subs="+quotes"]
+----
+$ oc get checluster --all-namespaces \
+  -o=jsonpath="{.items[*].metadata.namespace}"
+----
+
+. Configure the `CheCluster` Custom Resource. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  components:
+    cheServer:
+      extraProperties:
+        CHE_LIMITS_USER_WORKSPACES_COUNT: "<number_of_kept_workspaces_per_user>"
+----
+
+. To apply the configuration from the previous step so that users can keep only up to 5 workspaces, run the following command for the namespace from the first step:
++
+[source,terminal,subs="+quotes"]
+----
+oc patch checluster/devspaces -n  _<openshift-devspaces>_ \ <1>
+--type='merge' -p '{"spec":{"components":{"cheServer":{"extraProperties":{"CHE_LIMITS_USER_WORKSPACES_COUNT":"5"}}}}}'
+----
+<1> The {prod-short} namespace from the first step.
++
+[NOTE]
+====
+If the value is `-1`, users can create an unlimited number of workspaces. If the value is a positive integer, users can create as many workspaces as the value of the integer. The default value is `-1`.
+====
