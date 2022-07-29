@@ -9,7 +9,9 @@
 
 {prod-short} enables users to keep several workspaces in their dashboards.
 
-You can limit the number of workspaces that a user can keep in the dashboard.
+By default, users can keep an unlimited number of workspaces.
+
+You can set a limit on the number of workspaces that a user can keep in the dashboard.
 
 .Procedure
 
@@ -29,19 +31,20 @@ spec:
   components:
     cheServer:
       extraProperties:
-        CHE_LIMITS_USER_WORKSPACES_COUNT: "__<number_of_kept_workspaces_per_user>__"
+        CHE_LIMITS_USER_WORKSPACES_COUNT: "__<max_number_of_kept_workspaces_per_user>__"
 ----
-
-. To apply the configuration from the previous step so that users can keep only up to 5 workspaces, run the following command for the namespace from the first step:
-+
-[source,terminal,subs="+quotes"]
-----
-oc patch checluster/devspaces -n  _<openshift-devspaces>_ \ <1>
---type='merge' -p '{"spec":{"components":{"cheServer":{"extraProperties":{"CHE_LIMITS_USER_WORKSPACES_COUNT":"5"}}}}}'
-----
-<1> The {prod-short} namespace from the first step.
 +
 [NOTE]
 ====
-If the value is `-1`, users can create an unlimited number of workspaces. If the value is a positive integer, users can create as many workspaces as the value of the integer. The default value is `-1`.
+The default value of __<max_number_of_kept_workspaces_per_user>__ is `-1`, which means that users can keep an unlimited number of workspaces. If you set the value to a positive integer, users will be able to keep as many workspaces as the integer value.
 ====
+
+. To apply the configuration from step 2, run the following command for the namespace that you obtained in step 1:
++
+[source,terminal,subs="+quotes,attributes"]
+----
+$ oc patch checluster/devspaces -n  _<{prod-namespace}>_ \ <1>
+--type='merge' -p '{"spec":{"components":{"cheServer":{"extraProperties":{"CHE_LIMITS_USER_WORKSPACES_COUNT":"__<max_number_of_kept_workspaces_per_user>__"}}}}}' <2>
+----
+<1> The {prod-short} namespace that you obtained in step 1.
+<2> The `__<max_number_of_kept_workspaces_per_user>__` that you set for `CHE_LIMITS_USER_WORKSPACES_COUNT` in step 2.

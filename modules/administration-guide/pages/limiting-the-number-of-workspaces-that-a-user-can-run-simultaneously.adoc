@@ -27,14 +27,15 @@ $ oc get checluster --all-namespaces \
 spec:
   components:
     devWorkspace:
-      runningLimit: "__<number_of_concurrent_workspaces_per_user>__"
+      runningLimit: "__<max_number_of_running_workspaces_per_user>__"
 ----
 
-. To apply the above change so that users can have up to 30 open workspaces running concurrently, run the following command for the namespace from the first step:
+. To apply the configuration from step 2, run the following command for the namespace that you obtained in step 1:
 +
-[source,terminal,subs="+quotes"]
+[source,terminal,subs="+quotes,attributes"]
 ----
-$ oc patch checluster/devspaces -n  _<openshift-devspaces>_ \ <1>
---type='merge' -p '{"spec":{"components":{"devWorkspace":{"runningLimit":"30"}}}}'
+$ oc patch checluster/devspaces -n  _<{prod-namespace}>_ \ <1>
+--type='merge' -p '{"spec":{"components":{"devWorkspace":{"runningLimit":"__<max_number_of_running_workspaces_per_user>__"}}}}' <2>
 ----
-<1> The {prod-short} namespace from the first step.
+<1> The {prod-short} namespace that you obtained in step 1.
+<2> The `__<max_number_of_running_workspaces_per_user>__` that you set for `runningLimit` in step 2.
