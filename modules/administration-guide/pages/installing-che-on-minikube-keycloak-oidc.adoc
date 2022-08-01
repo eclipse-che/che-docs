@@ -31,6 +31,15 @@ $ minikube start --addons=ingress --vm=true --memory=8192 --cpus=4
 
 . Deploy `cert-manager`. See link:https://cert-manager.io/docs/installation[Installing cert-manager].
 
+. Wait until all `cert-manager` pods are ready:
++
+[subs="+attributes"]
+----
+$ {orch-cli} wait --for=condition=ready pod -l app.kubernetes.io/component=controller -n cert-manager --timeout=60s && \
+{orch-cli} wait --for=condition=ready pod -l app.kubernetes.io/component=cainjector -n cert-manager --timeout=60s && \
+{orch-cli} wait --for=condition=ready pod -l app.kubernetes.io/component=webhook -n cert-manager --timeout=60s
+----
+
 . Deploy {identity-provider}:
 +
 [subs="+attributes"]
@@ -218,9 +227,17 @@ $ minikube start \
     --extra-config=apiserver.oidc-ca-file=/etc/ca-certificates/keycloak-ca.crt
 ----
 
+. Wait until {identity-provider} pod is ready:
++
+[subs="+attributes"]
+----
+$ {orch-cli} wait --for=condition=ready pod -l app=keycloak -n keycloak --timeout=120s
+----
+
 . Configure {identity-provider} to create realm, client and user:
 +
 IMPORTANT: This step has to be performed every time the minikube cluster is started.
++
 [subs="+attributes"]
 ----
 $ {orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
