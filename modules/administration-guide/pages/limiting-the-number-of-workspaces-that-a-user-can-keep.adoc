@@ -7,11 +7,7 @@
 [id="limiting-the-number-of-workspaces-that-a-user-can-keep_{context}"]
 = Limiting the number of workspaces that a user can keep 
 
-{prod-short} enables users to keep several workspaces in their dashboards.
-
-By default, users can keep an unlimited number of workspaces.
-
-You can set a limit on the number of workspaces that a user can keep in the dashboard.
+By default, users can keep an unlimited number of workspaces in the dashboard, but you can limit this number to reduce demand on the cluster.
 
 .Procedure
 
@@ -31,13 +27,9 @@ spec:
   components:
     cheServer:
       extraProperties:
-        CHE_LIMITS_USER_WORKSPACES_COUNT: "__<max_number_of_kept_workspaces_per_user>__"
+        CHE_LIMITS_USER_WORKSPACES_COUNT: "__<max_number_of_kept_workspaces_per_user>__" <1>
 ----
-+
-[NOTE]
-====
 <1> Sets the maximum number of workspaces per user. The default value, `-1`, allows users to keep an unlimited number of workspaces. Use a positive integer to set the maximum number of workspaces per user.
-====
 
 . Apply the configuration:
 +
