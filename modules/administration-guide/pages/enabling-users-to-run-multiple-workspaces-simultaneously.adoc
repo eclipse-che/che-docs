@@ -25,15 +25,18 @@ $ oc get checluster --all-namespaces \
 spec:
   components:
     devWorkspace:
-      runningLimit: "__<max_count_of_running_workspaces_per_user>__"
+      runningLimit: "__<running_workspaces_limit>__" <1>
 ----
+<1> Sets the maximum number of simultaneously running workspaces per user. The default value is `1`.
 
 . Apply the configuration:
 +
 [source,terminal,subs="+quotes,attributes"]
 ----
-$ oc patch checluster/devspaces -n  _<{prod-namespace}>_ \ <1>
---type='merge' -p '{"spec":{"components":{"devWorkspace":{"runningLimit":"__<max_count_of_running_workspaces_per_user>__"}}}}' <2>
+$ oc patch checluster/devspaces -n _<{prod-namespace}>_ \ <1>
+--type='merge' -p '{"spec":{"components": \
+{"devWorkspace":{"runningLimit": \
+"__<running_workspaces_limit>__"}}}}' <2>
 ----
 <1> The {prod-short} namespace that you got in step 1.
-<2> The `__<max_count_of_running_workspaces_per_user>__` you set in step 2.
+<2> The `__<running_workspaces_limit>__` that you set in step 2.

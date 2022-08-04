@@ -27,7 +27,7 @@ spec:
   components:
     cheServer:
       extraProperties:
-        CHE_LIMITS_USER_WORKSPACES_COUNT: "__<max_count_of_kept_workspaces_per_user>__" <1>
+        CHE_LIMITS_USER_WORKSPACES_COUNT: "__<kept_workspaces_limit>__" <1>
 ----
 <1> Sets the maximum number of workspaces per user. The default value, `-1`, allows users to keep an unlimited number of workspaces. Use a positive integer to set the maximum number of workspaces per user.
 
@@ -35,8 +35,10 @@ spec:
 +
 [source,terminal,subs="+quotes,attributes"]
 ----
-$ oc patch checluster/devspaces -n  _<{prod-namespace}>_ \ <1>
---type='merge' -p '{"spec":{"components":{"cheServer":{"extraProperties":{"CHE_LIMITS_USER_WORKSPACES_COUNT":"__<max_count_of_kept_workspaces_per_user>__"}}}}}' <2>
+$ oc patch checluster/devspaces -n _<{prod-namespace}>_ \ <1>
+--type='merge' -p '{"spec":{"components": \
+{"cheServer":{"extraProperties":{"CHE_LIMITS_USER_WORKSPACES_COUNT": \
+"__<kept_workspaces_limit>__"}}}}}' <2>
 ----
-<1> The namespace you got in step 1.
-<2> The `__<max_count_of_workspaces_per_user>__` value you set in step 2.
+<1> The {prod-short} namespace that you got in step 1.
+<2> The `__<kept_workspaces_limit>__` value that you set in step 2.
