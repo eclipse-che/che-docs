@@ -8,6 +8,17 @@
 
 By default, a user can run only one workspace at a time. You can enable users to run multiple workspaces simultaneously.
 
+This configuration is part of the `CheCluster` Custom Resource:
+
+[source,yaml,subs="+quotes"]
+----
+spec:
+  components:
+    devWorkspace:
+      runningLimit: "__<running_workspaces_limit>__" <1>
+----
+<1> Sets the maximum number of simultaneously running workspaces per user. The default value is `1`.
+
 .Procedure
 
 . Get the name of the {prod-short} namespace. The default is `{prod-namespace}`:
@@ -18,18 +29,7 @@ $ {orch-cli} get checluster --all-namespaces \
   -o=jsonpath="{.items[*].metadata.namespace}"
 ----
 
-. Configure the `CheCluster` Custom Resource. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
-+
-[source,yaml,subs="+quotes"]
-----
-spec:
-  components:
-    devWorkspace:
-      runningLimit: "__<running_workspaces_limit>__" <1>
-----
-<1> Sets the maximum number of simultaneously running workspaces per user. The default value is `1`.
-
-. Apply the configuration:
+. Configure the `runningLimit`:
 +
 [source,terminal,subs="+quotes,attributes"]
 ----
@@ -39,4 +39,8 @@ $ {orch-cli} patch checluster/devspaces -n _<{prod-namespace}>_ \ <1>
 "__<running_workspaces_limit>__"}}}}' <2>
 ----
 <1> The {prod-short} namespace that you got in step 1.
-<2> The `__<running_workspaces_limit>__` that you set in step 2.
+<2> Your choice of the `__<running_workspaces_limit>__` value.
+
+.Addtional resources
+
+* xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]
