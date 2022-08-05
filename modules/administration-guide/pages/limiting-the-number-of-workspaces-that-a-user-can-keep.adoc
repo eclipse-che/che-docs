@@ -13,9 +13,9 @@ By default, users can keep an unlimited number of workspaces in the dashboard, b
 
 . Get the name of the {prod-short} namespace. The default is `{prod-namespace}`.
 +
-[source,terminal,subs="+quotes"]
+[source,terminal,subs="+quotes,attributes"]
 ----
-$ oc get checluster --all-namespaces \
+$ {orch-cli} get checluster --all-namespaces \
   -o=jsonpath="{.items[*].metadata.namespace}"
 ----
 
@@ -35,7 +35,7 @@ spec:
 +
 [source,terminal,subs="+quotes,attributes"]
 ----
-$ oc patch checluster/devspaces -n _<{prod-namespace}>_ \ <1>
+$ {orch-cli} patch checluster/devspaces -n _<{prod-namespace}>_ \ <1>
 --type='merge' -p '{"spec":{"components": \
 {"cheServer":{"extraProperties":{"CHE_LIMITS_USER_WORKSPACES_COUNT": \
 "__<kept_workspaces_limit>__"}}}}}' <2>
