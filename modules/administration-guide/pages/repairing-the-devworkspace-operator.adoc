@@ -1,0 +1,90 @@
+//:_content-type: PROCEDURE
+pass:[<!-- vale RedHat.Spelling = NO -->]
+:navtitle: Repairing the {devworkspace} Operator
+:description: Repairing the {devworkspace} Operator
+:keywords: devworkspace, operator, repair
+pass:[<!-- vale RedHat.Spelling = YES -->]
+:page-aliases: 
+
+[id="repairing-the-devworkspace-operator_{context}"]
+= Repairing the {devworkspace} Operator
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Delete the `devworkspace-controller` namespace that contains the failing pod.
+
+. Update `DevWorkspace` and `DevWorkspaceTemplate` CRDs by setting the conversion strategy to `None`:
++
+image::repairing-dwo/looking-up-custom-resource-definitions.png[]
++
+[source,yaml]
+----
+spec:
+  conversion:
+    strategy: None # note .spec.conversion.webhook is removed here
+----
++
+image::repairing-dwo/setting-the-conversion-strategy-to-none.png[]
++
+NOTE: The `DevWorkspaceOperatorConfig` and `DevWorkspaceRouting` CRDs  have the conversion strategy set to `None` by default.
+
+. Remove the {devworkspace} Operator subscription:
++
+[source,terminal]
+----
+$ oc delete sub devworkspace-operator
+----
+
+. Get the {devworkspace} Operator CSVs:
++
+[source,terminal]
+----
+$ oc get csv | grep devworkspace
+----
++
+pass:[<!-- vale CheDocs.Attributes = NO -->]
+.Output displayed in the __<devworkspace-operator.vX.Y.Z>__ format
+====
+devworkspace-operator.v0.15.1                    DevWorkspace Operator   0.15.1            devworkspace-operator.v0.15.0                    Replacing
+devworkspace-operator.v0.15.2                    DevWorkspace Operator   0.15.2            devworkspace-operator.v0.15.1                    Pending
+====
+pass:[<!-- vale CheDocs.Attributes = YES -->]
+
+. Remove each {devworkspace} Operator CSV:
++
+[source,terminal,subs="+quotes"]
+----
+$ oc delete csv __<devworkspace-operator.vX.Y.Z>__ <1>
+----
+<1> For example, `devworkspace-operator.v0.15.1` or `devworkspace-operator.v0.15.2`.
+
+. Re-create the {devworkspace} Operator subscription:
++
+[source,terminal,subs="+attributes"]
+----
+$ cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: devworkspace-operator
+  namespace: openshift-operators
+spec:
+  channel: fast
+  name: devworkspace-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Manual
+  startingCSV: devworkspace-operator.v{devworkspace-operator-version-patch}
+EOF
+----
+
+. Approve manual installation.
+
+. Verify that manual installation has succeeded:
++
+image::repairing-dwo/verifying-success.png[]
+
