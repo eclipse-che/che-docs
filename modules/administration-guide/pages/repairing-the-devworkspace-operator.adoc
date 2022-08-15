@@ -15,9 +15,7 @@
 
 . Delete the `devworkspace-controller` namespace that contains the failing pod.
 
-. Update `DevWorkspace` and `DevWorkspaceTemplate` Custom Resource Definitions (CRD) by setting the conversion strategy to `None`:
-+
-image::repairing-dwo/looking-up-custom-resource-definitions.png[]
+. Update `DevWorkspace` and `DevWorkspaceTemplate` Custom Resource Definitions (CRD) by setting the conversion strategy to `None` and removing the next several lines of the removed strategy:
 +
 [source,yaml]
 ----
@@ -26,7 +24,7 @@ spec:
     strategy: None # note .spec.conversion.webhook is removed here
 ----
 +
-image::repairing-dwo/setting-the-conversion-strategy-to-none.png[]
+TIP: You can find and edit the `DevWorkspace` and `DevWorkspaceTemplate` CRDs in the *Administrator* perspective of the OpenShift web console by searching for `DevWorkspace` in menu:Administration[CustomResourceDefinitions].
 +
 NOTE: The `DevWorkspaceOperatorConfig` and `DevWorkspaceRouting` CRDs  have the conversion strategy set to `None` by default.
 
@@ -43,11 +41,16 @@ $ oc get csv | grep devworkspace
 ----
 +
 pass:[<!-- vale CheDocs.Attributes = NO -->]
+
 .Output displayed in the __<devworkspace-operator.vX.Y.Z>__ format
 ====
-devworkspace-operator.v0.15.1    DevWorkspace Operator   0.15.1    devworkspace-operator.v0.15.0    Replacing
-devworkspace-operator.v0.15.2     DevWorkspace Operator   0.15.2    devworkspace-operator.v0.15.1    Pending
+----
+devworkspace-operator.v0.15.1    DevWorkspace Operator 0.15.1    devworkspace-operator.v0.15.0    Replacing
+
+devworkspace-operator.v0.15.2    DevWorkspace Operator 0.15.2    devworkspace-operator.v0.15.1    Pending
+----
 ====
+
 pass:[<!-- vale CheDocs.Attributes = YES -->]
 
 . Remove each {devworkspace} Operator CSV:
