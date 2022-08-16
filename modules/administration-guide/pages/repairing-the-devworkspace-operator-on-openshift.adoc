@@ -1,15 +1,19 @@
 :_content-type: PROCEDURE
-:navtitle: Repairing the {devworkspace} Operator
-:description: Repairing the {devworkspace} Operator
+:navtitle: Repairing the {devworkspace} Operator on OpenShift
+:description: Repairing the {devworkspace} Operator on OpenShift
 :keywords: devworkspace, operator, repair
 :page-aliases:
 
-[id="repairing-the-devworkspace-operator_{context}"]
-= Repairing the {devworkspace} Operator
+[id="repairing-the-devworkspace-operator-on-openshift_{context}"]
+= Repairing the {devworkspace} Operator on OpenShift
+
+Under certain conditions, such as https://docs.openshift.com/container-platform/4.10/operators/understanding/olm/olm-understanding-olm.html[OLM] restart or cluster upgrade, the {prod2} Operator for {prod-short} might automatically install the {devworkspace} Operator even when it is already present on the cluster. In that case, you can repair the {devworkspace} Operator on OpenShift as follows:
 
 .Prerequisites
 
-* An active `{orch-cli}` session as a cluster administrator to the destination {orch-name} cluster. See {orch-cli-link}.
+* An active `{orch-cli}` session as a cluster administrator to the destination OpenShift cluster. See {orch-cli-link}.
+
+* On the *Installed Operators* page of the {platforms-name} web console, you see multiple entries for the {devworkspace} Operator or one entry that is stuck in a loop of *Installing* and *InstallSucceeded*.
 
 .Procedure
 
@@ -22,7 +26,7 @@
 spec:
   ...
   conversion:
-    strategy: None # note .spec.conversion.webhook is removed here
+    strategy: None
 status:
 ...
 ----
@@ -37,24 +41,11 @@ NOTE: The `DevWorkspaceOperatorConfig` and `DevWorkspaceRouting` CRDs  have the 
 $ oc delete sub devworkspace-operator
 ----
 
-. Get the {devworkspace} Operator CSVs:
+. Get the {devworkspace} Operator CSVs in the __<devworkspace-operator.vX.Y.Z>__ format:
 +
 ----
 $ oc get csv | grep devworkspace
 ----
-+
-pass:[<!-- vale CheDocs.Attributes = NO -->]
-
-.Output displayed in the __<devworkspace-operator.vX.Y.Z>__ format
-====
-----
-devworkspace-operator.v0.15.1    DevWorkspace Operator 0.15.1    devworkspace-operator.v0.15.0    Replacing
-
-devworkspace-operator.v0.15.2    DevWorkspace Operator 0.15.2    devworkspace-operator.v0.15.1    Pending
-----
-====
-
-pass:[<!-- vale CheDocs.Attributes = YES -->]
 
 . Remove each {devworkspace} Operator CSV:
 +
