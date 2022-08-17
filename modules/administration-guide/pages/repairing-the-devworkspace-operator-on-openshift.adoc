@@ -51,9 +51,11 @@ $ oc get csv | grep devworkspace
 +
 [subs="+quotes"]
 ----
-$ oc delete csv __<devworkspace-operator.vX.Y.Z>__ <1>
+$ oc delete csv __<devworkspace-operator.vX.Y.Z>__ \ <1>
+-n openshift-operators <2>
 ----
 <1> For example, `devworkspace-operator.v0.15.1` or `devworkspace-operator.v0.15.2`.
+<2> `openshift-operators` or an OpenShift {orch-namespace} where the {devworkspace} Operator is installed.
 
 . Re-create the {devworkspace} Operator subscription:
 +
@@ -70,10 +72,12 @@ spec:
   name: devworkspace-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  installPlanApproval: Manual
+  installPlanApproval: Automatic <1>
   startingCSV: devworkspace-operator.v{devworkspace-operator-version-patch}
 EOF
 ----
++
+<1> `Automatic` or `Manual`.
 
 . In the *Administrator* perspective of the OpenShift web console, go to menu:Operators[Installed Operators] and select the following for the *{devworkspace} Operator*: menu:Upgrade available[Preview InstallPlan > Approve].
 
