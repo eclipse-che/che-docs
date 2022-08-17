@@ -1,0 +1,85 @@
+:_content-type: PROCEDURE
+:navtitle: Repairing the {devworkspace} Operator on OpenShift
+:description: Repairing the {devworkspace} Operator on OpenShift
+:keywords: devworkspace, operator, repair
+:page-aliases:
+
+[id="repairing-the-devworkspace-operator-on-openshift_{context}"]
+= Repairing the {devworkspace} Operator on OpenShift
+
+Under certain conditions, such as https://docs.openshift.com/container-platform/4.10/operators/understanding/olm/olm-understanding-olm.html[OLM] restart or cluster upgrade, the {prod2} Operator for {prod-short} might automatically install the {devworkspace} Operator even when it is already present on the cluster. In that case, you can repair the {devworkspace} Operator on OpenShift as follows:
+
+.Prerequisites
+
+* An active `{orch-cli}` session as a cluster administrator to the destination OpenShift cluster. See {orch-cli-link}.
+
+* On the *Installed Operators* page of the {platforms-name} web console, you see multiple entries for the {devworkspace} Operator or one entry that is stuck in a loop of *Replacing* and *Pending*.
+
+.Procedure
+
+. Delete the `devworkspace-controller` namespace that contains the failing pod.
+
+. Update `DevWorkspace` and `DevWorkspaceTemplate` Custom Resource Definitions (CRD) by setting the conversion strategy to `None` and removing the entire `webhook` section:
++
+[source,yaml]
+----
+spec:
+  ...
+  conversion:
+    strategy: None
+status:
+...
+----
++
+TIP: You can find and edit the `DevWorkspace` and `DevWorkspaceTemplate` CRDs in the *Administrator* perspective of the OpenShift web console by searching for `DevWorkspace` in menu:Administration[CustomResourceDefinitions].
++
+NOTE: The `DevWorkspaceOperatorConfig` and `DevWorkspaceRouting` CRDs  have the conversion strategy set to `None` by default.
+
+. Remove the {devworkspace} Operator subscription:
++
+----
+$ oc delete sub devworkspace-operator \
+-n openshift-operators <1>
+----
+<1> `openshift-operators` or an OpenShift {orch-namespace} where the {devworkspace} Operator is installed.
+
+. Get the {devworkspace} Operator CSVs in the __<devworkspace-operator.vX.Y.Z>__ format:
++
+----
+$ oc get csv | grep devworkspace
+----
+
+. Remove each {devworkspace} Operator CSV:
++
+[subs="+quotes"]
+----
+$ oc delete csv __<devworkspace-operator.vX.Y.Z>__ \
+-n openshift-operators <1>
+----
+<1> `openshift-operators` or an OpenShift {orch-namespace} where the {devworkspace} Operator is installed.
+
+. Re-create the {devworkspace} Operator subscription:
++
+[subs="+attributes"]
+----
+$ cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: devworkspace-operator
+  namespace: openshift-operators
+spec:
+  channel: fast
+  name: devworkspace-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic <1>
+  startingCSV: devworkspace-operator.v{devworkspace-operator-version-patch}
+EOF
+----
++
+<1> `Automatic` or `Manual`.
++
+IMPORTANT: For `installPlanApproval: Manual`, in the *Administrator* perspective of the OpenShift web console, go to menu:Operators[Installed Operators] and select the following for the *{devworkspace} Operator*: menu:Upgrade available[Preview InstallPlan > Approve].
+
+. In the *Administrator* perspective of the OpenShift web console, go to menu:Operators[Installed Operators] and verify the *Succeeded* status of the *{devworkspace} Operator*.
