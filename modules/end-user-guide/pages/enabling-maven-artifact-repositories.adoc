@@ -85,6 +85,9 @@ data:
 . Optional: When using EAP-based devfiles, apply a second `settings-xml` ConfigMap with the same content, a different name, and the `/home/jboss/.m2` mount path.
 
 . Apply the ConfigMap for the TrustStore initialization script:
+
++
+Java 8
 +
 [source,yaml,subs="+quotes,+attributes,+macros"]
 ----
@@ -99,12 +102,33 @@ metadata:
     controller.devfile.io/mount-to-devworkspace: 'true'
     controller.devfile.io/watch-configmap: 'true'
 data:
-  init-truststore.sh: |
+  init-java8-truststore.sh: |
+    #!/usr/bin/env bash
+
+    keytool -importcert -noprompt -file /home/user/certs/tls.cer -trustcacerts -keystore ~/.java/current/jre/lib/security/cacerts -storepass changeit
+----
+
++
+Java 11
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: init-truststore
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /home/user/
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  init-java11-truststore.sh: |
     #!/usr/bin/env bash
 
     keytool -importcert -noprompt -file /home/user/certs/tls.cer -cacerts -storepass changeit
 ----
-
 . Start a Maven workspace.
 
 . Open a new terminal in the `tools` container.
