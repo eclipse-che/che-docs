@@ -23,25 +23,20 @@ spec:
 
 .Procedure
 
-. Get the name of the {prod-short} namespace. The default is `{prod-namespace}`:
+. Get the name of the {prod-short} namespace:
 +
 [source,terminal,subs="+quotes,attributes"]
 ----
 $ {orch-cli} get checluster --all-namespaces \
   -o=jsonpath="{.items[*].metadata.namespace}"
 ----
++
+include::example$snip_{project-context}-default-namespace.adoc[]
 
 . Configure the `runningLimit`:
 +
-[source,terminal,subs="+quotes,attributes"]
-----
-$ {orch-cli} patch checluster/{context} -n _<{prod-namespace}>_ \ <1>
---type='merge' -p \
-'{"spec":{"components":{"devWorkspace":{"runningLimit": "__<running_workspaces_limit>__"}}}}' <2>
-----
-<1> The {prod-short} namespace that you got in step 1.
-<2> Your choice of the `__<running_workspaces_limit>__` value.
+include::example$snip_{project-context}-enabling-users-to-run-multiple-workspaces-simultaneously.adoc[]
 
-.Addtional resources
+.Additional resources
 
 * xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]
