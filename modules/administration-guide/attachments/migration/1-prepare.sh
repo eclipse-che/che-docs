@@ -38,7 +38,7 @@ sed_in_place() {
 }
 
 refreshToken() {
-  echo "[INFO] Refreshing identity provier token"
+  echo "[INFO] Refreshing identity provider token"
   IDENTITY_PROVIDER_TOKEN=$(curl -ks \
     -d "client_id=admin-cli" \
     -d "username=${IDENTITY_PROVIDER_USERNAME}" \
@@ -61,41 +61,57 @@ getUsers() {
   rm -f "${ALL_USERS_DUMP}"
   refreshToken
   echo "[INFO] Dumping users list in file ${ALL_USERS_DUMP}"
-  ALL_USERS=$(curl -ks  -H "Authorization: bearer ${IDENTITY_PROVIDER_TOKEN}" "${IDENTITY_PROVIDER_URL}/${IDENTITY_PROVIDER_USERNAME}/realms/${IDENTITY_PROVIDER_REALM}/users")
-  IFS=" " read -r -a ALL_USERS_IDS <<< "$(echo "${ALL_USERS}" | jq ".[] | .id" | tr "\r\n" " ")"
 
-  for USER_ID in "${ALL_USERS_IDS[@]}"; do
-      refreshToken
+  TOTAL=0
+  FIRST=0
+  MAX=100
 
-      USER_ID=$(echo "${USER_ID}" | tr -d "\"")
-      FEDERATED_IDENTITY=$(curl -ks -H "Authorization: bearer ${IDENTITY_PROVIDER_TOKEN}" "${IDENTITY_PROVIDER_URL}/${IDENTITY_PROVIDER_USERNAME}/realms/${IDENTITY_PROVIDER_REALM}/users/${USER_ID}/federated-identity")
-      IDENTITY_PROVIDER=$(echo "${FEDERATED_IDENTITY}" | jq -r ".[] | select(.identityProvider == \"openshift-v4\")")
-      if [ -n "${IDENTITY_PROVIDER}" ]; then
-        USER_PROFILE=$(echo "${ALL_USERS}" | jq -r ".[] | select(.id == \"${USER_ID}\")")
-        USER_EMAIL=$(echo "${USER_PROFILE}" | jq -r ".email")
-        USER_NAME=$(echo "${USER_PROFILE}" | jq -r ".username")
-        USER_FIRST_NAME=$(echo "${USER_PROFILE}" | jq -r ".firstName")
-        USER_LAST_NAME=$(echo "${USER_PROFILE}" | jq -r ".lastName")
+  while :
+  do
+    ALL_USERS=$(curl -ks  -H "Authorization: bearer ${IDENTITY_PROVIDER_TOKEN}" "${IDENTITY_PROVIDER_URL}/${IDENTITY_PROVIDER_USERNAME}/realms/${IDENTITY_PROVIDER_REALM}/users?first=${FIRST}&max=${MAX}")
+    IFS=" " read -r -a ALL_USERS_IDS <<< "$(echo "${ALL_USERS}" | jq ".[] | .id" | tr "\r\n" " ")"
 
-        # Don't put null values into profile
-        [[ "${USER_FIRST_NAME}" == "null" ]] && USER_FIRST_NAME=""
-        [[ "${USER_LAST_NAME}" == "null" ]] && USER_LAST_NAME=""
+    # break the cycle if page is empty
+    [[ ${#ALL_USERS_IDS[@]} == 0 ]] && break
 
-        OPENSHIFT_USER_ID=$(echo "${IDENTITY_PROVIDER}" | jq ".userId" | tr -d "\"")
-        echo "[INFO] Found ${PRODUCT_ID} user: ${USER_ID} and corresponding OpenShift user: ${OPENSHIFT_USER_ID}"
+    for USER_ID in "${ALL_USERS_IDS[@]}"; do
+        refreshToken
 
-        # Save profile by encoding data and trimming \r\n
-        echo "${USER_ID} ${OPENSHIFT_USER_ID} username:$(echo "${USER_NAME}" | tr -d "\r\n" | base64) email:$(echo "${USER_EMAIL}" | tr -d "\r\n" | base64) firstName:$(echo "${USER_FIRST_NAME}" | tr -d "\r\n" | base64) lastName:$(echo "${USER_LAST_NAME}" | tr -d "\r\n" | base64) " >> "${ALL_USERS_DUMP}"
-      fi
+        USER_ID=$(echo "${USER_ID}" | tr -d "\"")
+        FEDERATED_IDENTITY=$(curl -ks -H "Authorization: bearer ${IDENTITY_PROVIDER_TOKEN}" "${IDENTITY_PROVIDER_URL}/${IDENTITY_PROVIDER_USERNAME}/realms/${IDENTITY_PROVIDER_REALM}/users/${USER_ID}/federated-identity")
+        IDENTITY_PROVIDER=$(echo "${FEDERATED_IDENTITY}" | jq -r ".[] | select(.identityProvider == \"openshift-v4\")")
+        if [ -n "${IDENTITY_PROVIDER}" ]; then
+          USER_PROFILE=$(echo "${ALL_USERS}" | jq -r ".[] | select(.id == \"${USER_ID}\")")
+          USER_EMAIL=$(echo "${USER_PROFILE}" | jq -r ".email")
+          USER_NAME=$(echo "${USER_PROFILE}" | jq -r ".username")
+          USER_FIRST_NAME=$(echo "${USER_PROFILE}" | jq -r ".firstName")
+          USER_LAST_NAME=$(echo "${USER_PROFILE}" | jq -r ".lastName")
+
+          # Don't put null values into profile
+          [[ "${USER_FIRST_NAME}" == "null" ]] && USER_FIRST_NAME=""
+          [[ "${USER_LAST_NAME}" == "null" ]] && USER_LAST_NAME=""
+
+          OPENSHIFT_USER_ID=$(echo "${IDENTITY_PROVIDER}" | jq ".userId" | tr -d "\"")
+          echo "[INFO] Found ${PRODUCT_ID} user: ${USER_ID} and corresponding OpenShift user: ${OPENSHIFT_USER_ID}"
+
+          # Save profile by encoding data and trimming \r\n
+          echo "${USER_ID} ${OPENSHIFT_USER_ID} username:$(echo "${USER_NAME}" | tr -d "\r\n" | base64) email:$(echo "${USER_EMAIL}" | tr -d "\r\n" | base64) firstName:$(echo "${USER_FIRST_NAME}" | tr -d "\r\n" | base64) lastName:$(echo "${USER_LAST_NAME}" | tr -d "\r\n" | base64) " >> "${ALL_USERS_DUMP}"
+          TOTAL=$((TOTAL+1))
+        else
+          echo "[WARN] Ignored ${PRODUCT_ID} user: ${USER_ID}. Corresponding OpenShift user not found."
+        fi
+    done
+
+    FIRST=$((FIRST + MAX))
   done
-  echo "[INFO] Users list dump completed."
 
+  echo "[INFO] Users list dump completed. Found ${TOTAL} users."
 }
 
 dumpDB() {
   echo "[INFO] Dumping database in file ${DB_DUMP}"
 
-  echo "[INFO] Retriving database name"
+  echo "[INFO] Retrieving database name"
   CHE_POSTGRES_DB=$("${K8S_CLI}" get cm/che -n "${INSTALLATION_NAMESPACE}" -o jsonpath='{.data.CHE_JDBC_URL}' | awk -F '/' '{print $NF}')
   if [ -z "${CHE_POSTGRES_DB}" ] || [ "${CHE_POSTGRES_DB}" = "null" ]; then CHE_POSTGRES_DB="dbche"; fi
   echo "[INFO] Database name is ${CHE_POSTGRES_DB}"
