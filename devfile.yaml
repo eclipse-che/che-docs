@@ -1,62 +1,49 @@
-# chectl devfile:generate --name=che-docs --git-repo=https://github.com/eclipse/che-docs --dockerimage=docker.io/antora/antora --command=./run_antora.sh
-apiVersion: 1.0.0
+#
+# Copyright (c) 2022 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+schemaVersion: 2.1.0
 metadata:
-  generateName: che-docs-
-
+  name: che-docs
+attributes:
+  controller.devfile.io/storage-type: ephemeral
 components:
-  - alias: che-docs
-    type: dockerimage
-    image: "quay.io/eclipse/che-docs:next"
-    memoryLimit: 512M
-    mountSources: true
-    command:
-      - tail
-    args:
-      - "-f"
-      - /dev/null
-    endpoints:
-      - name: open-livereload
-        port: 35729
-      - name: open-preview-server
-        port: 4000
-        attributes:
-          path: /
-  - type: chePlugin
-    reference: https://che-plugin-registry-main.surge.sh/v3/plugins/errata-ai/vale-server/latest/meta.yaml
-    alias: vale-vscode
-    preferences:
-      vale.core.useCLI: true
-  - type: chePlugin
-    reference: https://che-plugin-registry-main.surge.sh/v3/plugins/joaompinto/asciidoctor-vscode/latest/meta.yaml
-    alias: asciidoctor-vscode
-  - type: chePlugin
-    reference: https://che-plugin-registry-main.surge.sh/v3/plugins/timonwong/shellcheck/latest/meta.yaml
-    alias: shellcheck
-  - type: chePlugin
-    id: golang/go/latest
-  - type: chePlugin
-    id: ms-python/python/latest
-  - type: chePlugin
-    id: ms-vscode/vscode-github-pullrequest/latest
-  - type: chePlugin
-    id: redhat/java/latest
-  - type: chePlugin
-    id: redhat/vscode-xml/latest
-  - type: chePlugin
-    id: redhat/vscode-yaml/latest
-  - type: chePlugin
-    id: vscode/typescript-language-features/latest
-
+  - name: tools
+    container:
+      args:
+        - tail
+        - "-f"
+        - "/dev/null"
+      endpoints:
+        - exposure: public
+          name: livereload
+          protocol: http
+          targetPort: 35729
+        - attributes:
+            path: /
+          exposure: public
+          name: preview-server
+          protocol: http
+          targetPort: 4000
+      image: "quay.io/eclipse/che-docs:next"
+      memoryLimit: 2Gi
+      memoryRequest: 256Mi
 commands:
-  - name: Start preview server
-    actions:
-      - type: exec
-        component: che-docs
-        workdir: /projects/che-docs
-        command: sh tools/preview.sh
-  - name: Create a new topic
-    actions:
-      - type: exec
-        component: che-docs
-        workdir: /projects/che-docs
-        command: bash tools/newtopic.sh
+  - exec:
+      commandLine: sh tools/preview.sh
+      component: tools
+      group:
+        kind: build
+      label: Start preview server
+      workingDir: "${PROJECT_SOURCE}"
+    id: start-preview-server
+  - exec:
+      commandLine: bash tools/newtopic.sh
+      component: tools
+      label: Create a new topic
+      workingDir: "${PROJECT_SOURCE}"
+    id: create-a-new-topic
