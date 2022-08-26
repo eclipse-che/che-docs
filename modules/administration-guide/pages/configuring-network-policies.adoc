@@ -1,0 +1,48 @@
+:_content-type: CONCEPT
+:description: Configuring network policies
+:keywords: administration guide, configuring, namespace, network policy, network policies, multitenant isolation
+:navtitle: Configuring network policies
+:page-aliases: installation-guide:configuring-network-policies.adoc
+
+[id="configuring-networking-policies_{context}"]
+= Configuring network policies
+
+By default all Pods in a {orch-name} cluster can communicate with each other even if they are in different namespaces.
+In the context of {prod-short}, this makes it possible for a workspace Pod from one user {orch-namespace} to send traffic to another workspace Pod from a different user {orch-namespace}.
+
+For security, multitenant isolation can be configured by using NetworkPolicy objects to restrict all incoming communication to Pods in a user {orch-namespace}.
+However for {prod-short}, it is necessary for Pods in the {prod-short} {orch-namespace} to be able to communicate with Pods in {orch-namespace}s. 
+
+For a {prod-short} installation with network restrictions such as multitenant isolation configured, the `allow-from-eclipse-che.yaml` NetworkPolicy must be applied to each user {orch-namespace}.
+
+The `allow-from-eclipse-che` NetworkPolicy allows incoming traffic from the {prod-short} namespace to all Pods in the user {orch-namespace}.
+
+.`allow-from-eclipse-che.yaml`
+====
+[source,yaml,subs="+quotes,attributes"]
+----
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+    name: allow-from-eclipse-che
+spec:
+    ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+                kubernetes.io/metadata.name: {prod-namespace}   <1>
+    podSelector: {}   <2>
+    policyTypes:
+    - Ingress
+----
+====
+<1> The {prod-short} namespace. The default is `{prod-namespace}`.
+<2> The empty podSelector selects all Pods in the {orch-namespace}.
+
+.Additional resources
+
+* xref:configuring-namespace-provisioning.adoc[]
+
+* link:https://kubernetes.io/docs/concepts/security/multi-tenancy/#network-isolation[Network isolation]
+
+include::partial$snip_configuring-network-policies.adoc[]
