@@ -13,17 +13,17 @@ In the context of {prod-short}, this makes it possible for a workspace Pod in on
 For security, multitenant isolation could be configured by using NetworkPolicy objects to restrict all incoming communication to Pods in a user {orch-namespace}.
 However, Pods in the {prod-short} {orch-namespace} must be able to communicate with Pods in user {orch-namespace}s.
 
-For a cluster with network restrictions such as multitenant isolation already configured, you must apply the `allow-from-eclipse-che` NetworkPolicy to each user {orch-namespace}. The `allow-from-eclipse-che` NetworkPolicy allows incoming traffic from the {prod-short} namespace to all Pods in the user {orch-namespace}.
+For a cluster with network restrictions such as multitenant isolation already configured, you must apply the `allow-from-{prod-namespace}` NetworkPolicy to each user {orch-namespace}. The `allow-from-{prod-namespace}` NetworkPolicy allows incoming traffic from the {prod-short} namespace to all Pods in the user {orch-namespace}.
 
 
-.`allow-from-eclipse-che.yaml`
+.`allow-from-{prod-namespace}.yaml`
 ====
 [source,yaml,subs="+quotes,attributes"]
 ----
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-    name: allow-from-eclipse-che
+    name: allow-from-{prod-namespace}
 spec:
     ingress:
     - from:
