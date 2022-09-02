@@ -44,14 +44,20 @@ migrateUserProfiles() {
     OPENSHIFT_USER_ID=${IDS[1]}
     USER_NAME=$(echo "${IDS[2]}" | cut -d ":" -f 2- | base64 -d)
     USER_EMAIL=$(echo "${IDS[3]}" | cut -d ":" -f 2- | base64 -d)
-    USER_FIRST_NAME=$(echo "${IDS[4]}" | cut -d ":" -f 2- | base64 -d)
-    USER_LAST_NAME=$(echo "${IDS[5]}" | cut -d ":" -f 2- | base64 -d)
+    USER_FIRST_NAME=$(echo "${IDS[4]}" | cut -d ":" -f 2- | base64 -d | sed "s|'|''|g")
+    USER_LAST_NAME=$(echo "${IDS[5]}" | cut -d ":" -f 2- | base64 -d | sed "s|'|''|g")
+
+    OPENSHIFT_USER_ID_EXISTS_IN_DB_CHE=$("${K8S_CLI}" exec deploy/postgres -n "${INSTALLATION_NAMESPACE}"  -- bash  -c "psql ${CHE_POSTGRES_DB} -tAc \"SELECT COUNT(*) from usr WHERE id='${OPENSHIFT_USER_ID}';\"")
+    if [[ ${OPENSHIFT_USER_ID_EXISTS_IN_DB_CHE} == 0 ]]; then
+        echo "[WARN] OpenShift user ${OPENSHIFT_USER_ID} does not exist in ${CHE_POSTGRES_DB} database."
+        continue
+    fi
 
     "${K8S_CLI}" exec deploy/postgres -n "${INSTALLATION_NAMESPACE}"  -- bash  -c "psql ${CHE_POSTGRES_DB} -tAc \"INSERT INTO profile(userid) VALUES ('${OPENSHIFT_USER_ID}');\""
-    "${K8S_CLI}" exec deploy/postgres -n "${INSTALLATION_NAMESPACE}"  -- bash  -c "psql ${CHE_POSTGRES_DB} -tAc \"INSERT INTO profile_attributes(user_id,name, value) VALUES ('${OPENSHIFT_USER_ID}', 'preferred_username', '${USER_NAME}');\""
-    "${K8S_CLI}" exec deploy/postgres -n "${INSTALLATION_NAMESPACE}"  -- bash  -c "psql ${CHE_POSTGRES_DB} -tAc \"INSERT INTO profile_attributes(user_id,name, value) VALUES ('${OPENSHIFT_USER_ID}', 'email', '${USER_EMAIL}');\""
-    "${K8S_CLI}" exec deploy/postgres -n "${INSTALLATION_NAMESPACE}"  -- bash  -c "psql ${CHE_POSTGRES_DB} -tAc \"INSERT INTO profile_attributes(user_id,name, value) VALUES ('${OPENSHIFT_USER_ID}', 'firstName', '${USER_FIRST_NAME}');\""
-    "${K8S_CLI}" exec deploy/postgres -n "${INSTALLATION_NAMESPACE}"  -- bash  -c "psql ${CHE_POSTGRES_DB} -tAc \"INSERT INTO profile_attributes(user_id,name, value) VALUES ('${OPENSHIFT_USER_ID}', 'lastName', '${USER_LAST_NAME}');\""
+    "${K8S_CLI}" exec deploy/postgres -n "${INSTALLATION_NAMESPACE}"  -- bash  -c "psql ${CHE_POSTGRES_DB} -tAc \"INSERT INTO profile_attributes(user_id, name, value) VALUES ('${OPENSHIFT_USER_ID}', 'preferred_username', '${USER_NAME}');\""
+    "${K8S_CLI}" exec deploy/postgres -n "${INSTALLATION_NAMESPACE}"  -- bash  -c "psql ${CHE_POSTGRES_DB} -tAc \"INSERT INTO profile_attributes(user_id, name, value) VALUES ('${OPENSHIFT_USER_ID}', 'email', '${USER_EMAIL}');\""
+    "${K8S_CLI}" exec deploy/postgres -n "${INSTALLATION_NAMESPACE}"  -- bash  -c "psql ${CHE_POSTGRES_DB} -tAc \"INSERT INTO profile_attributes(user_id, name, value) VALUES ('${OPENSHIFT_USER_ID}', 'firstName', '${USER_FIRST_NAME}');\""
+    "${K8S_CLI}" exec deploy/postgres -n "${INSTALLATION_NAMESPACE}"  -- bash  -c "psql ${CHE_POSTGRES_DB} -tAc \"INSERT INTO profile_attributes(user_id, name, value) VALUES ('${OPENSHIFT_USER_ID}', 'lastName', '${USER_LAST_NAME}');\""
 
     echo "[INFO] Added profile for \"${OPENSHIFT_USER_ID}\"."
   done < "${ALL_USERS_DUMP}"

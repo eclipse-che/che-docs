@@ -1,0 +1,344 @@
+:_content-type: PROCEDURE
+:navtitle: Installing {prod-short} on Minikube with {identity-provider} as the OIDC provider
+:description: Installing {prod-short} on Minikube with {identity-provider} as the OIDC provider
+:keywords: overview, installing-che-on-minikube-keycloak-oidc
+:page-aliases: installation-guide:installing-che-on-minikube-keycloak-oidc, overview:installing-che-on-minikube-keycloak-oidc
+
+
+[id="installing-{prod-id-short}-on-minikube-keycloak-oidc_{context}"]
+= Installing {prod-short} on Minikube with {identity-provider} as the OIDC provider
+
+You can create a single-node {kubernetes} cluster with Minikube to deploy {prod-short} and configure it to use {identity-provider} as the OpenID Connect (OIDC) provider.
+
+WARNING: Single-node {kubernetes} clusters are suited only for testing or development. Do *NOT* use such clusters to run {prod-short} for organizations or developer teams!
+
+.Prerequisites
+
+* Minikube with {kubernetes} `{kube-ver-min}` or later. See link:https://kubernetes.io/docs/tasks/tools/install-minikube/[Installing Minikube].
+
+* `{orch-cli}`. See {orch-cli-link}.
+
+* `{prod-cli}`. See xref:installing-the-chectl-management-tool.adoc[].
+
+.Procedure
+
+. Start Minikube. Allocate at least 8GB of RAM and 4 CPU cores:
++
+----
+$ minikube start --addons=ingress --vm=true --memory=8192 --cpus=4
+----
+
+. Deploy `cert-manager`. See link:https://cert-manager.io/docs/installation[Installing cert-manager].
+
+. Wait until all `cert-manager` pods are ready:
++
+[subs="+attributes"]
+----
+$ {orch-cli} wait --for=condition=ready pod -l app.kubernetes.io/component=controller -n cert-manager --timeout=60s && \
+{orch-cli} wait --for=condition=ready pod -l app.kubernetes.io/component=cainjector -n cert-manager --timeout=60s && \
+{orch-cli} wait --for=condition=ready pod -l app.kubernetes.io/component=webhook -n cert-manager --timeout=60s
+----
+
+. Deploy {identity-provider}:
++
+[subs="+attributes"]
+----
+$ {orch-cli} apply -f - <<EOF
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: keycloak
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: keycloak-selfsigned
+  namespace: keycloak
+  labels:
+    app: keycloak
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: keycloak-selfsigned
+  namespace: keycloak
+  labels:
+    app: keycloak
+spec:
+  isCA: true
+  commonName: keycloak-selfsigned-ca
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: keycloak-selfsigned
+    kind: Issuer
+    group: cert-manager.io
+  secretName: ca.crt
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: keycloak
+  namespace: keycloak
+  labels:
+    app: keycloak
+spec:
+  ca:
+    secretName: ca.crt
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: keycloak
+  namespace: keycloak
+  labels:
+    app: keycloak
+spec:
+  isCA: false
+  commonName: keycloak
+  dnsNames:
+    - keycloak.$(minikube ip).nip.io
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 4096
+  issuerRef:
+    kind: Issuer
+    name: keycloak
+    group: cert-manager.io
+  secretName: keycloak.tls
+  subject:
+    organizations:
+      - Local Eclipse Che
+  usages:
+    - server auth
+    - digital signature
+    - key encipherment
+    - key agreement
+    - data encipherment
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  namespace: keycloak
+  labels:
+    app: keycloak
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: keycloak
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: keycloak
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - name: keycloak
+        image: quay.io/keycloak/keycloak:18.0.2
+        args: ["start-dev"]
+        env:
+        - name: KEYCLOAK_ADMIN
+          value: "admin"
+        - name: KEYCLOAK_ADMIN_PASSWORD
+          value: "admin"
+        - name: KC_PROXY
+          value: "edge"
+        ports:
+        - name: http
+          containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /realms/master
+            port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keycloak
+  namespace: keycloak
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: '3600'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '3600'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+spec:
+  tls:
+    - hosts:
+        - keycloak.$(minikube ip).nip.io
+      secretName: keycloak.tls
+  rules:
+  - host: keycloak.$(minikube ip).nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: keycloak
+            port:
+              number: 8080
+EOF
+----
+
+. Save the {identity-provider} CA certificate:
++
+[subs="+attributes"]
+----
+$ {orch-cli} get secret ca.crt -o "jsonpath={.data['ca\.crt']}" -n keycloak | base64 -d > keycloak-ca.crt
+----
+
+. Copy the {identity-provider} CA certificate into Minikube:
++
+----
+$ minikube ssh sudo "mkdir -p /etc/ca-certificates" && \
+  minikube cp keycloak-ca.crt /etc/ca-certificates/keycloak-ca.crt
+----
+
+. Configure Minikube to use {identity-provider} as the OIDC provider:
++
+----
+$ minikube start \
+    --extra-config=apiserver.oidc-issuer-url=https://keycloak.$(minikube ip).nip.io/realms/che \
+    --extra-config=apiserver.oidc-username-claim=email \
+    --extra-config=apiserver.oidc-client-id=k8s-client \
+    --extra-config=apiserver.oidc-ca-file=/etc/ca-certificates/keycloak-ca.crt
+----
+
+. Wait until the {identity-provider} pod is ready:
++
+[subs="+attributes"]
+----
+$ {orch-cli} wait --for=condition=ready pod -l app=keycloak -n keycloak --timeout=120s
+----
+
+. Configure the {identity-provider} to create the realm, client, and user:
++
+IMPORTANT: You must do this each time you start the Minikube cluster.
++
+[subs="+attributes"]
+----
+$ {orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
+    "/opt/keycloak/bin/kcadm.sh config credentials \
+        --server http://localhost:8080 \
+        --realm master \
+        --user admin  \
+        --password admin && \
+    /opt/keycloak/bin/kcadm.sh create realms \
+        -s realm='che' \
+        -s displayName='che' \
+        -s enabled=true \
+        -s registrationAllowed=false \
+        -s resetPasswordAllowed=true && \
+    /opt/keycloak/bin/kcadm.sh create clients \
+        -r 'che' \
+        -s clientId=k8s-client \
+        -s id=k8s-client \
+        -s redirectUris='[\"*\"]' \
+        -s directAccessGrantsEnabled=true \
+        -s secret=eclipse-che && \
+    /opt/keycloak/bin/kcadm.sh create users \
+        -r 'che' \
+        -s username=test \
+        -s email=\"test@test.com\" \
+        -s enabled=true \
+        -s emailVerified=true &&  \
+    /opt/keycloak/bin/kcadm.sh set-password \
+        -r 'che' \
+        --username test \
+        --new-password test"
+----
+
+. Copy the {identity-provider} CA certificate into the `{prod-namespace}` namespace:
++
+[subs="+attributes"]
+----
+$ {orch-cli} create namespace {prod-namespace} &&  \
+{orch-cli} create configmap keycloak-certs \
+    --from-file=keycloak-ca.crt=keycloak-ca.crt \
+    -n {prod-namespace} && \
+{orch-cli} label configmap keycloak-certs \
+    app.kubernetes.io/part-of=che.eclipse.org \
+    app.kubernetes.io/component=ca-bundle \
+    -n {prod-namespace}
+----
+
+. Prepare the `CheCluster` patch:
++
+[subs="+attributes"]
+----
+$ cat > che-patch.yaml << EOF
+kind: CheCluster
+apiVersion: org.eclipse.che/v2
+spec:
+  networking:
+    auth:
+      oAuthClientName: k8s-client
+      oAuthSecret: eclipse-che
+      identityProviderURL: "https://keycloak.$(minikube ip).nip.io/realms/che"
+  components:
+    cheServer:
+      extraProperties:
+        CHE_OIDC_USERNAME__CLAIM: email
+EOF
+----
+
+. Create the {prod-short} instance with `{prod-cli}`:
++
+[subs="+attributes"]
+----
+$ {prod-cli} server:deploy --platform k8s --domain $(minikube ip).nip.io --che-operator-cr-patch-yaml che-patch.yaml --skip-cert-manager
+----
++
+Alternatively, use the link:https://artifacthub.io/packages/helm/eclipse-che/eclipse-che[{prod}] Helm Charts:
++
+[subs="+attributes"]
+----
+$ helm install che \
+    --namespace eclipse-che \
+    --set networking.domain=$(minikube ip).nip.io \
+    --set networking.auth.oAuthSecret=eclipse-che \
+    --set networking.auth.oAuthClientName=k8s-client \
+    --set networking.auth.identityProviderURL=https://keycloak.$(minikube ip).nip.io/realms/che . && \
+  sleep 5s && \
+  {orch-cli} patch checluster/eclipse-che --patch '{"spec": {"components": {"cheServer": {"extraProperties": {"CHE_OIDC_USERNAME__CLAIM": "email"}}}}}' --type=merge -n eclipse-che
+----
+
+.Verification steps
+
+. Verify the {prod-short} instance status:
++
+[subs="+attributes,+quotes"]
+----
+$ {prod-cli} server:status
+----
+
+. Navigate to the {prod-short} cluster instance:
++
+[subs="+attributes,+quotes"]
+----
+$ {prod-cli} dashboard:open
+----
+
+. Log in to the {prod-short} instance with *Username:* `test` and *Password:* `test`.
