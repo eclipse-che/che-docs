@@ -19,14 +19,14 @@ You can configure labels, annotations, and domains for OpenShift Route to work w
 
 * Configure the `CheCluster` Custom Resource. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
 +
-[source,yaml,subs="+quotes"]
+[source,yaml,subs="+quotes,+macros"]
 ----
 spec:
   components:
     cheServer:
       extraProperties:
-        CHE_INFRA_OPENSHIFT_ROUTE_LABELS: <labels> <1>
-        CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX: <domain> <2>
+        CHE_INFRA_OPENSHIFT_ROUTE_LABELS: __<labels>__ <1>
+        pass:a,c,m[CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX]: __<domain>__ <2>
     networking:
       labels: __<labels>__ <1>
       domain: __<domain>__ <2>
@@ -34,7 +34,7 @@ spec:
 ----
 <1> A comma-separated list of labels that the target ingress controller uses to filter the set of Routes to service.
 <2> The DNS name serviced by the target ingress controller.
-<3> An unstructured key value map stored with a resource.```
+<3> An unstructured key value map stored with a resource.
 
 
 .Additional resources
