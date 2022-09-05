@@ -45,11 +45,16 @@ Use CheCluster Custom Resource definition to define storage classes:
 [source,yaml,subs="+quotes,+attributes"]
 ----
 spec:
-  storage:
-    # keep blank unless you need to use a non default storage class for PostgreSQL PVC
-    postgresPVCStorageClassName: 'postgres-storage'
-    # keep blank unless you need to use a non default storage class for workspace PVC(s)
-    workspacePVCStorageClassName: 'workspace-storage'
+  components:
+    database:
+      pvc:
+        # keep blank unless you need to use a non default storage class for PostgreSQL PVC
+        storageClass: 'postgres-storage'
+  devEnvironments:
+    storage:
+      pvc:
+        # keep blank unless you need to use a non default storage class for workspace PVC(s)
+        storageClass: 'workspace-storage'
 ----
 
 . Define the persistent volume for a PostgreSQL database in a `che-postgres-pv.yaml` file:

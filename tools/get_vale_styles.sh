@@ -12,11 +12,4 @@
 set -e
 
 # Get fresh Vale styles
-mkdir --parents .vale/styles
-cd .vale/styles || exit
-rm -rf RedHat CheDocs
-wget --quiet --timestamping https://github.com/redhat-documentation/vale-at-red-hat/releases/latest/download/RedHat.zip
-unzip -q RedHat.zip
-wget --quiet --timestamping https://github.com/eclipse-che/che-docs-vale-style/releases/latest/download/CheDocs.zip
-unzip -q CheDocs.zip
-echo "Downloaded fresh 'CheDocs' and 'RedHat' Vale styles"
+vale sync

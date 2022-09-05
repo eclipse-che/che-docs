@@ -102,11 +102,11 @@ EOF
 echo "Creating the 'che-operator-cr-patch.yaml' file locally."
 cat > che-operator-cr-patch.yaml << EOF
 kind: CheCluster
-apiVersion: org.eclipse.che/v1
+apiVersion: org.eclipse.che/v2
 spec:
-  server:
-    airGapContainerRegistryHostname: "$my_registry"
-    airGapContainerRegistryOrganization: "${my_catalog}"
+  containerRegistry:
+    hostname: "$my_registry"
+    organization: "${my_catalog}"
 EOF
 
 echo "Removing index image from mappings.txt to prepare mirroring."

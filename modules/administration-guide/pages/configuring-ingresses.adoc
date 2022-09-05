@@ -22,13 +22,14 @@ You can configure {orch-ingress} labels and annotations, if your organization re
 [source,yaml,subs="+quotes,+attributes"]
 ----
 spec:
-  server:
-    cheServerIngress:
+  components:
+    cheServer:
+      extraProperties:
+        CHE_INFRA_KUBERNETES_INGRESS_LABELS: __<labels>__ <1>
+        CHE_INFRA_KUBERNETES_INGRESS_ANNOTATIONS______JSON: "__<annotations>__" <2>
+    networking:
       labels: __<labels>__ <1>
       annotations: __<annotations>__ <2>
-    customCheProperties:
-      CHE_INFRA_KUBERNETES_INGRESS_LABELS: __<labels>__ <1>
-      CHE_INFRA_KUBERNETES_INGRESS_ANNOTATIONS______JSON: "__<annotations>__" <2>
 ----
 <1> A comma-separated list of labels for {orch-ingress}: `key1=value1,key2=value2`.
 <2> Annotations for {orch-ingress} in JSON format: `{"key1": "value1", "key2" : "value2"}`.
