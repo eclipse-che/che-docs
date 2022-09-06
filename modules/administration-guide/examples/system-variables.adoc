@@ -50,15 +50,6 @@ Default::: `+/projects+`
 '''
 
 
-== `+CHE_WORKSPACE_PROJECTS_STORAGE_DEFAULT_SIZE+`
-
-Used when {orch-name}-type components in a devfile request project PVC creation (Applied in case of `unique` and `per workspace` PVC strategy. In case of the `common` PVC strategy, it is rewritten with the value of the `che.infra.kubernetes.pvc.quantity` property.)
-
-Default::: `+1Gi+`
-
-'''
-
-
 == `+CHE_WORKSPACE_LOGS_ROOT__DIR+`
 
 Defines the directory inside the machine where all the workspace logs are placed. Provide this value into the machine, for example, as an environment variable. This is to ensure that agent developers can use this directory to back up agent logs.
@@ -495,6 +486,51 @@ Default::: `+NULL+`
 '''
 
 
+== `+CHE_OAUTH2_BITBUCKET_CLIENTID__FILEPATH+`
+
+Configuration of Bitbucket OAuth2 client. Used to obtain Personal access tokens. Location of the file with Bitbucket client id.
+
+Default::: `+NULL+`
+
+'''
+
+
+== `+CHE_OAUTH2_BITBUCKET_CLIENTSECRET__FILEPATH+`
+
+Location of the file with Bitbucket client secret.
+
+Default::: `+NULL+`
+
+'''
+
+
+== `+CHE_OAUTH_BITBUCKET_AUTHURI+`
+
+Bitbucket OAuth authorization URI.
+
+Default::: `+https://bitbucket.org/site/oauth2/authorize+`
+
+'''
+
+
+== `+CHE_OAUTH_BITBUCKET_TOKENURI+`
+
+Bitbucket OAuth token URI.
+
+Default::: `+https://bitbucket.org/site/oauth2/access_token+`
+
+'''
+
+
+== `+CHE_OAUTH_BITBUCKET_REDIRECTURIS+`
+
+Bitbucket OAuth redirect URIs. Separate multiple values with comma, for example: URI,URI,URI
+
+Default::: `+http://localhost:${CHE_PORT}/api/oauth/callback+`
+
+'''
+
+
 [id="internal"]
 = Internal
 
@@ -742,105 +778,6 @@ Default::: `+5+`
 If during workspace startup an unrecoverable event defined in the property occurs, stop the workspace immediately rather than waiting until timeout. the {prod-short} Operator that this SHOULD NOT include a mere "Failed" reason, because that might catch events that are not unrecoverable. A failed container startup is handled explicitly by {prod-short} server.
 
 Default::: `+FailedMount,FailedScheduling,MountVolume.SetUpfailed,Failed to pull image,FailedCreate,ReplicaSetCreateError+`
-
-'''
-
-
-== `+CHE_INFRA_KUBERNETES_PVC_ENABLED+`
-
-Defines whether use the Persistent Volume Claim for {prod-short} workspace needs, for example: backup projects, logs, or disable it.
-
-Default::: `+true+`
-
-'''
-
-
-== `+CHE_INFRA_KUBERNETES_PVC_STRATEGY+`
-
-Defined which strategy will be used while choosing PVC for workspaces. Supported strategies: `common`:        All workspaces in the same {orch-namespace} will reuse the same PVC.        Name of PVC may be configured with `che.infra.kubernetes.pvc.name`.        Existing PVC will be used or a new one will be created if it does not exist. `unique`:        Separate PVC for each workspace's volume will be used.        Name of PVC is evaluated as `'{che.infra.kubernetes.pvc.name} + '-' + \{generated_8_chars}'`.        Existing PVC will be used or a new one will be created if it does not exist. `per-workspace`:        Separate PVC for each workspace will be used.        Name of PVC is evaluated as `'{che.infra.kubernetes.pvc.name} + '-' + \{WORKSPACE_ID}'`.        Existing PVC will be used or a new one will be created if it doesn't exist.
-
-Default::: `+common+`
-
-'''
-
-
-== `+CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS+`
-
-Defines whether to run a job that creates workspace's subpath directories in persistent volume for the `common` strategy before launching a workspace. Necessary in some versions of {orch-name} as workspace subpath volume mounts are created with root permissions, and therefore cannot be modified by workspaces running as a user (presents an error importing projects into a workspace in {prod-short}). The default is `true`, but should be set to `false` if the version of {orch-name} creates subdirectories with user permissions. See: link:https://github.com/kubernetes/kubernetes/issues/41638[subPath in volumeMount is not writable for non-root users #41638] the {prod-short} Operator that this property has effect only if the `common` PVC strategy used.
-
-Default::: `+true+`
-
-'''
-
-
-== `+CHE_INFRA_KUBERNETES_PVC_NAME+`
-
-Defines the settings of PVC name for {prod-short} workspaces. Each PVC strategy supplies this value differently. See documentation for `che.infra.kubernetes.pvc.strategy` property
-
-Default::: `+claim-che-workspace+`
-
-'''
-
-
-== `+CHE_INFRA_KUBERNETES_PVC_STORAGE__CLASS__NAME+`
-
-Defines the storage class of Persistent Volume Claim for the workspaces. Empty strings means "use default".
-
-Default::: empty
-
-'''
-
-
-== `+CHE_INFRA_KUBERNETES_PVC_QUANTITY+`
-
-Defines the size of Persistent Volume Claim of {prod-short} workspace. See: link:https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html[Understanding persistent storage]
-
-Default::: `+10Gi+`
-
-'''
-
-
-== `+CHE_INFRA_KUBERNETES_PVC_JOBS_IMAGE+`
-
-Pod that is launched when performing persistent volume claim maintenance jobs on OpenShift
-
-Default::: `+registry.access.redhat.com/ubi8-minimal:8.3-230+`
-
-'''
-
-
-== `+CHE_INFRA_KUBERNETES_PVC_JOBS_IMAGE_PULL__POLICY+`
-
-Image pull policy of container that used for the maintenance jobs on {orch-name} cluster
-
-Default::: `+IfNotPresent+`
-
-'''
-
-
-== `+CHE_INFRA_KUBERNETES_PVC_JOBS_MEMORYLIMIT+`
-
-Defines Pod memory limit for persistent volume claim maintenance jobs
-
-Default::: `+250Mi+`
-
-'''
-
-
-== `+CHE_INFRA_KUBERNETES_PVC_ACCESS__MODE+`
-
-Defines Persistent Volume Claim access mode. the {prod-short} Operator that for common PVC strategy changing of access mode affects the number of simultaneously running workspaces. If the OpenShift instance running {prod-short} is using Persistent Volumes with RWX access mode, then a limit of running workspaces at the same time is bounded only by {prod-short} limits configuration: RAM, CPU, and so on. See: link:https://docs.openshift.com/container-platform/4.4/storage/understanding-persistent-storage.html[Understanding persistent storage]
-
-Default::: `+ReadWriteOnce+`
-
-'''
-
-
-== `+CHE_INFRA_KUBERNETES_PVC_WAIT__BOUND+`
-
-Defines if {prod-short} Server should wait workspaces Persistent Volume Claims to become bound after creating. Default value is `true`. The parameter is used by all Persistent Volume Claim strategies. It should be set to `false` when `volumeBindingMode` is configured to `WaitForFirstConsumer` otherwise workspace starts will hangs up on phase of waiting PVCs.
-
-Default::: `+true+`
 
 '''
 
@@ -1355,15 +1292,6 @@ Default::: `+eclipse/che-async-pv-plugin/latest+`
 '''
 
 
-== `+CHE_INFRA_KUBERNETES_ASYNC_STORAGE_IMAGE+`
-
-Docker image for the {prod-short} asynchronous storage
-
-Default::: `+quay.io/eclipse/che-workspace-data-sync-storage:0.0.1+`
-
-'''
-
-
 == `+CHE_WORKSPACE_POD_NODE__SELECTOR+`
 
 Optionally configures node selector for workspace Pod. Format is comma-separated key=value pairs, for example: `disktype=ssd,cpu=xlarge,foo=bar`
@@ -1378,24 +1306,6 @@ Default::: `+NULL+`
 Optionally configures tolerations for workspace Pod. Format is a string representing a JSON Array of taint tolerations, or `NULL` to disable it. The objects contained in the array have to follow the link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#toleration-v1-core[toleration v1 core specifications]. Example: `[{"effect":"NoExecute","key":"aNodeTaint","operator":"Equal","value":"aValue"}]`
 
 Default::: `+NULL+`
-
-'''
-
-
-== `+CHE_INFRA_KUBERNETES_ASYNC_STORAGE_SHUTDOWN__TIMEOUT__MIN+`
-
-The timeout for the Asynchronous Storage Pod shutdown after stopping the last used workspace. Value less or equal to 0 interpreted as disabling shutdown ability.
-
-Default::: `+120+`
-
-'''
-
-
-== `+CHE_INFRA_KUBERNETES_ASYNC_STORAGE_SHUTDOWN__CHECK__PERIOD__MIN+`
-
-Defines the period with which the Asynchronous Storage Pod stopping ability will be performed (once in 30 minutes by default)
-
-Default::: `+30+`
 
 '''
 
@@ -1607,6 +1517,15 @@ Default::: `+3+`
 == `+CHE_OIDC_USERNAME__CLAIM+`
 
 Username claim to be used as user display name when parsing JWT token if not defined the fallback value is 'preferred_username' in Keycloak installations and `name` in Dex installations.
+
+Default::: `+NULL+`
+
+'''
+
+
+== `+CHE_OIDC_EMAIL__CLAIM+`
+
+Email claim to be used when parsing JWT token. If not defined, the fallback value is 'email'.
 
 Default::: `+NULL+`
 
