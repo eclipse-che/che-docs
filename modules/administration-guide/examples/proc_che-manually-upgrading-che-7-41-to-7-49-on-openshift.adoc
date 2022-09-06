@@ -24,15 +24,15 @@ You can manually upgrade Che 7.41 to 7.49 on Red Hat OpenShift.
 
 . Download xref:attachment$migration/1-prepare.sh[1-prepare.sh].
 +
-`1-prepare.sh` shuts down {prod-prev-short} and {identity-provider}, fetches the existing users' data, and dumps the {prod-short} database.
+`1-prepare.sh` shuts down {prod-prev-short} and {identity-provider-legacy}, fetches the existing users' data, and dumps the {prod-short} database.
 
 . Download xref:attachment$migration/2-migrate.sh[2-migrate.sh].
 +
-`2-migrate.sh` fetches {prod-prev-short} {identity-provider} and database data, and repopulates the database with updated data.
+`2-migrate.sh` fetches {prod-prev-short} {identity-provider-legacy} and database data, and repopulates the database with updated data.
 
 . Download xref:attachment$migration/3-subscribe.sh[3-subscribe.sh].
 +
-`3-subscribe.sh` deletes {prod-prev-short} Operator and {identity-provider} resources, updates the CheCluster CR, and creates a new {prod-short} Operator subscription.
+`3-subscribe.sh` deletes {prod-prev-short} Operator and {identity-provider-legacy} resources, updates the CheCluster CR, and creates a new {prod-short} Operator subscription.
 
 . Download xref:attachment$migration/4-wait.sh[4-wait.sh].
 +
@@ -55,7 +55,7 @@ export PRE_MIGRATION_PRODUCT_SHORT_ID={pre-migration-prod-id-short}
 export PRE_MIGRATION_PRODUCT_DEPLOYMENT_NAME={pre-migration-prod-deployment}
 export PRE_MIGRATION_PRODUCT_OPERATOR_NAME={pre-migration-prod-operator}
 export PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME={pre-migration-prod-checluster}
-export PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME={identity-provider-id}
+export PRE_MIGRATION_PRODUCT_IDENTITY_PROVIDER_DEPLOYMENT_NAME={identity-provider-legacy-id}
 export PRE_MIGRATION_PRODUCT_SUBSCRIPTION_NAME={pre-migration-prod-subscription}
 ----
 <1> `{prod-namespace}` or another {orch-namespace} where {prod-prev-short} was previously installed.
