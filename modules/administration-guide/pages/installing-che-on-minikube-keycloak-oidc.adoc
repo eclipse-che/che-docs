@@ -1,14 +1,14 @@
 :_content-type: PROCEDURE
-:navtitle: Installing {prod-short} on Minikube with {identity-provider} as the OIDC provider
-:description: Installing {prod-short} on Minikube with {identity-provider} as the OIDC provider
+:navtitle: Installing {prod-short} on Minikube with Keyclaok as the OIDC provider
+:description: Installing {prod-short} on Minikube with Keycloak as the OIDC provider
 :keywords: overview, installing-che-on-minikube-keycloak-oidc
 :page-aliases: installation-guide:installing-che-on-minikube-keycloak-oidc, overview:installing-che-on-minikube-keycloak-oidc
 
 
 [id="installing-{prod-id-short}-on-minikube-keycloak-oidc_{context}"]
-= Installing {prod-short} on Minikube with {identity-provider} as the OIDC provider
+= Installing {prod-short} on Minikube with Keycloak as the OIDC provider
 
-You can create a single-node {kubernetes} cluster with Minikube to deploy {prod-short} and configure it to use {identity-provider} as the OpenID Connect (OIDC) provider.
+You can create a single-node {kubernetes} cluster with Minikube to deploy {prod-short} and configure it to use Keycloak as the OpenID Connect (OIDC) provider.
 
 WARNING: Single-node {kubernetes} clusters are suited only for testing or development. Do *NOT* use such clusters to run {prod-short} for organizations or developer teams!
 
@@ -39,7 +39,7 @@ $ {orch-cli} wait --for=condition=ready pod -l app.kubernetes.io/component=contr
 {orch-cli} wait --for=condition=ready pod -l app.kubernetes.io/component=webhook -n cert-manager --timeout=60s
 ----
 
-. Deploy {identity-provider}:
+. Deploy https://www.keycloak.org/[Keycloak]:
 +
 [subs="+attributes"]
 ----
@@ -202,21 +202,21 @@ spec:
 EOF
 ----
 
-. Save the {identity-provider} CA certificate:
+. Save Keycloak CA certificate:
 +
 [subs="+attributes"]
 ----
 $ {orch-cli} get secret ca.crt -o "jsonpath={.data['ca\.crt']}" -n keycloak | base64 -d > keycloak-ca.crt
 ----
 
-. Copy the {identity-provider} CA certificate into Minikube:
+. Copy Keycloak CA certificate into Minikube:
 +
 ----
 $ minikube ssh sudo "mkdir -p /etc/ca-certificates" && \
   minikube cp keycloak-ca.crt /etc/ca-certificates/keycloak-ca.crt
 ----
 
-. Configure Minikube to use {identity-provider} as the OIDC provider:
+. Configure Minikube to use Keycloak as the OIDC provider:
 +
 ----
 $ minikube start \
@@ -226,14 +226,14 @@ $ minikube start \
     --extra-config=apiserver.oidc-ca-file=/etc/ca-certificates/keycloak-ca.crt
 ----
 
-. Wait until the {identity-provider} pod is ready:
+. Wait until the Keycloak pod is ready:
 +
 [subs="+attributes"]
 ----
 $ {orch-cli} wait --for=condition=ready pod -l app=keycloak -n keycloak --timeout=120s
 ----
 
-. Configure the {identity-provider} to create the realm, client, and user:
+. Configure Keycloak to create the realm, client, and user:
 +
 IMPORTANT: You must do this each time you start the Minikube cluster.
 +
@@ -270,7 +270,7 @@ $ {orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
         --new-password test"
 ----
 
-. Copy the {identity-provider} CA certificate into the `{prod-namespace}` namespace:
+. Copy Keycloak CA certificate into the `{prod-namespace}` namespace:
 +
 [subs="+attributes"]
 ----
