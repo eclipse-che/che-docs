@@ -48,7 +48,7 @@ runningLimit: The maximum number of running workspaces per user.
 [cols="2,5", options="header"]
 :=== 
  Property: Description 
-clusterRoles: ClusterRoles assigned to Che ServiceAccount. The defaults roles are\: - `<che-namespace>-cheworkspaces-namespaces-clusterrole` - `<che-namespace>-cheworkspaces-clusterrole` - `<che-namespace>-cheworkspaces-devworkspace-clusterrole` where the <che-namespace> is the namespace where the CheCluster CRD is created. Each role must have a `app.kubernetes.io/part-of=che.eclipse.org` label. The Che Operator must already have all permissions in these ClusterRoles to grant them.
+clusterRoles: ClusterRoles assigned to Che ServiceAccount. The defaults roles are\: - `<che_namespace>-cheworkspaces-namespaces-clusterrole` - `<che_namespace>-cheworkspaces-clusterrole` - `<che_namespace>-cheworkspaces-devworkspace-clusterrole` where the <che_namespace> is the namespace where the CheCluster CRD is created. Each role must have a `app.kubernetes.io/part-of=che.eclipse.org` label. The Che Operator must already have all permissions in these ClusterRoles to grant them.
 debug: Enables the debug mode for Che server.
 deployment: Deployment override options.
 extraProperties: A map of additional environment variables applied in the generated `che` ConfigMap to be used by the Che server in addition to the values already generated from other fields of the `CheCluster` custom resource (CR). If the `extraProperties` field contains a property normally generated in `che` ConfigMap from other CR fields, the value defined in the `extraProperties` is used instead.
@@ -130,7 +130,7 @@ enable: Enables `metrics` for the Che server endpoint.
  Property: Description 
 annotations: Defines annotations which will be set for an Ingress (a route for OpenShift platform). The defaults for kubernetes platforms are\:     kubernetes.io/ingress.class\:                       \nginx\     nginx.ingress.kubernetes.io/proxy-read-timeout\:    \3600\,     nginx.ingress.kubernetes.io/proxy-connect-timeout\: \3600\,     nginx.ingress.kubernetes.io/ssl-redirect\:          \true\
 auth: Authentication settings.
-domain: For an OpenShift cluster, the Operator uses the domain to generate a hostname for the route. The generated hostname follows this pattern\: che-<che-namespace>.<domain>. The <che-namespace> is the namespace where the CheCluster CRD is created. In conjunction with labels, it creates a route served by a non-default Ingress controller. For a Kubernetes cluster, it contains a global ingress domain. There are no default values\: you must specify them.
+domain: For an OpenShift cluster, the Operator uses the domain to generate a hostname for the route. The generated hostname follows this pattern\: che-<che_namespace>.<domain>. The <che_namespace> is the namespace where the CheCluster CRD is created. In conjunction with labels, it creates a route served by a non-default Ingress controller. For a Kubernetes cluster, it contains a global ingress domain. There are no default values\: you must specify them.
 hostname: The public hostname of the installed Che server.
 labels: Defines labels which will be set for an Ingress (a route for OpenShift platform).
 tlsSecretName: The name of the secret used to set up Ingress TLS termination. If the field is an empty string, the default cluster certificate is used. The secret must have a `app.kubernetes.io/part-of=che.eclipse.org` label.
@@ -163,5 +163,3 @@ postgresVersion: The PostgreSQL version of the image in use.
 reason: A brief CamelCase message indicating details about why the Che deployment is in the current phase.
 workspaceBaseDomain: The resolved workspace base domain. This is either the copy of the explicitly defined property of the same name in the spec or, if it is undefined in the spec and we're running on OpenShift, the automatically resolved basedomain for routes.
 :=== 
-
-
