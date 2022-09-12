@@ -47,6 +47,23 @@ refreshToken() {
     "${IDENTITY_PROVIDER_URL}/realms/master/protocol/openid-connect/token" | jq -r ".access_token")
 }
 
+checkPrerequisites() {
+  CHE_CLUSTERS=$(${K8S_CLI} get checluster --all-namespaces -o go-template='{{len .items}}')
+  case ${CHE_CLUSTERS} in
+    "0")
+      echo "[ERROR] CheCluster Custom Resource not found"
+      exit 1
+      ;;
+    "1")
+      ;;
+    *)
+      echo "[ERROR] More than one CheCluster Custom Resource found"
+      ${K8S_CLI} get checluster --all-namespaces
+      exit 1
+      ;;
+  esac
+}
+
 scaleDownCheServer() {
   echo "[INFO] Scaling down ${PRE_MIGRATION_PRODUCT_DEPLOYMENT_NAME}"
   "${K8S_CLI}" scale deployment "${PRE_MIGRATION_PRODUCT_DEPLOYMENT_NAME}" --replicas=0 -n "${INSTALLATION_NAMESPACE}"
@@ -141,6 +158,7 @@ replaceUserIDsInDBDump() {
   echo "[INFO] USER_IDs replaced."
 }
 
+checkPrerequisites
 scaleDownCheServer
 getUsers
 scaleDownKeycloak
