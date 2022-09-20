@@ -58,6 +58,39 @@ patchPreMigrationCheCluster() {
       "${K8S_CLI}" patch checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
               '[{"op": "replace", "path": "/spec/server/cheHost", "value": ""}]'
     fi
+
+    # https://issues.redhat.com/browse/CRW-3315
+    # Clean up resources fields.
+    echo "[INFO] Updating ${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME} CheCluster CR to clean up containers resources"
+    FIELDS_2_CLEAN_UP=(
+            .spec.server.dashboardMemoryLimit
+            .spec.server.dashboardMemoryRequest
+            .spec.server.dashboardCpuLimit
+            .spec.server.dashboardCpuRequest
+            .spec.server.pluginRegistryMemoryLimit
+            .spec.server.pluginRegistryMemoryRequest
+            .spec.server.pluginRegistryCpuLimit
+            .spec.server.pluginRegistryCpuRequest
+            .spec.server.devfileRegistryMemoryLimit
+            .spec.server.devfileRegistryMemoryRequest
+            .spec.server.devfileRegistryCpuLimit
+            .spec.server.devfileRegistryCpuRequest
+            .spec.server.serverMemoryLimit
+            .spec.server.serverMemoryRequest
+            .spec.server.serverCpuLimit
+            .spec.server.serverCpuRequest
+            .spec.database.chePostgresContainerResources.request.memory
+            .spec.database.chePostgresContainerResources.request.cpu
+            .spec.database.chePostgresContainerResources.limits.cpu
+            .spec.database.chePostgresContainerResources.limits.memory
+    )
+    for FIELD in "${FIELDS_2_CLEAN_UP[@]}"; do
+      VALUE=$("${K8S_CLI}" get checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" -o "jsonpath={${FIELD}}")
+      if [[ ${VALUE} == "null" ]] || [[ -z ${VALUE} ]]; then
+        "${K8S_CLI}" patch checluster/"${PRE_MIGRATION_PRODUCT_CHE_CLUSTER_CR_NAME}" -n "${INSTALLATION_NAMESPACE}" --type=json -p \
+                '[{"op": "replace", "path": "'$(echo "${FIELD}" | tr '.' '/')'", "value": "0"}]'
+      fi
+    done
 }
 
 patchCheCluster() {
