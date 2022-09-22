@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/bin/env python3
 #
 # Copyright (c) 2021 Red Hat, Inc.
 # This program and the accompanying materials are made
@@ -24,7 +24,7 @@ import os
 def ArchitectureDiagrams(prod_short, project_context, orch_name):
     script_path = os.path.dirname(os.path.realpath(__file__))
     file_path = script_path + \
-        '/../modules/administration-guide/images/architecture/' + project_context + '-'
+                '/../modules/administration-guide/images/architecture/' + project_context + '-'
     prod_icon = script_path + '/' + project_context + '-icon.png'
     graph_attr = {
         "bgcolor": "white",
@@ -32,20 +32,6 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
         "overlap": "false",
         # "splines": "curved"
     }
-
-    filename = file_path + 'architecture-with-che-server-engine'
-    with Diagram(filename=filename,
-                 show=False,
-                 direction="TB",
-                 outformat="png",
-                 edge_attr={"constraint": "false"},
-                 graph_attr=graph_attr):
-        devfile = Git('Devfile v1')
-        dashboard = Custom('User dashboard', prod_icon)
-        che_host = Custom(prod_short + ' server', prod_icon)
-        with Cluster(orch_name + ' API'):
-            workspace = Compute('User workspace')
-        devfile >> dashboard >> che_host >> workspace
 
     filename = file_path + 'interacting-with-devworkspace'
     with Diagram(filename=filename,
@@ -179,7 +165,7 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
 ArchitectureDiagrams(project_context='che',
                      prod_short='Che',
                      orch_name='Kubernetes')
-
-ArchitectureDiagrams(project_context='crw',
-                     prod_short='CodeReady Workspaces',
-                     orch_name='OpenShift')
+#
+# ArchitectureDiagrams(project_context='devspaces',
+#                      prod_short='Dev Spaces',
+#                      orch_name='OpenShift')
