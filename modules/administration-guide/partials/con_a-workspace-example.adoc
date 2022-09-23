@@ -7,7 +7,30 @@ This section describes a {prod-short} workspace example.
 
 The following devfile defines the {prod-short} workspace:
 
-include::example$snip_{project-context}-a-workspace-example.adoc[]
+[source,yaml]
+----
+schemaVersion: 2.1.0
+metadata:
+  name: bash
+components:
+  - name: tools
+    container:
+      image: quay.io/devfile/universal-developer-image:ubi8-latest
+      memoryLimit: 4Gi
+
+commands:
+  - id: run-main-script
+    exec:
+      label: "Run main.sh script"
+      component: tools
+      workingDir: '${PROJECT_SOURCE}'
+      commandLine: |
+        ./main.sh
+      group:
+        kind: run
+        isDefault: true
+----
+
 
 This table provides the memory requirements for each workspace component:
 

@@ -13,21 +13,31 @@ This section describes how to install {prod-short} using the OpenShift web conso
 
 * An OpenShift web console session by a cluster administrator. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/web_console/web-console.html[Accessing the web console].
 
-[IMPORTANT]
-====
-Ensure that there are no `CheCluster` API by running the following command:
-[source,subs="+quotes,attributes"]
-----
-$ {orch-cli} get crd checlusters.org.eclipse.che
-Error from server (NotFound): customresourcedefinitions.apiextensions.k8s.io "checlusters.org.eclipse.che" not found
-----
-====
+.Procedure
 
 .Procedure
 
+. Ensure that there is no previous {prod-short} instance, if you already used the OpenShift cluster to deploy {prod-short}:
++
+[subs="+attributes,+quotes"]
+----
+$ {prod-cli} server:delete
+----
+
 . Install the {prod} Operator. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/operators/admin/olm-adding-operators-to-cluster.html#olm-installing-from-operatorhub-using-web-console_olm-adding-operators-to-a-cluster[Installing from OperatorHub using the web console].
 
-. Create a {prod-short} instance from the {prod} Operator. See https://docs.openshift.com/container-platform/4.10/operators/user/olm-creating-apps-from-installed-operators.html[Creating applications from installed Operators].
+. Create the `{prod-namespace}` project in OpenShift as follows:
++
+[subs="+attributes"]
+----
+oc create namespace {prod-namespace}
+----
+
+. In the *Administrator* view of the OpenShift web console, go to menu:Operators[Installed Operators > {prod} instance Specification > Create CheCluster > YAML view].
+
+. In the *YAML view*, replace `namespace: openshift-operators` with `namespace: {prod-namespace}`.
+
+. Select *Create*. See https://docs.openshift.com/container-platform/4.10/operators/user/olm-creating-apps-from-installed-operators.html[Creating applications from installed Operators].
 
 .Verification
 
