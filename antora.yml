@@ -95,11 +95,11 @@ asciidoc:
     prod-stable-channel-package: eclipse-che
     prod-stable-channel: stable
     prod-stable-channel-starting-csv: eclipse-che.v7.49.0
-    prod-upstream: Eclipse&#160Che
+    prod-upstream: Eclipse&#160;Che
     prod-url: "https://__&lt;che_fqdn&gt;__"
     prod-ver-major: "7"
-    prod-ver-patch: "7.50.0"
-    prod-ver: "7.50"
+    prod-ver-patch: "7.53.0"
+    prod-ver: "7.53"
     prod-workspace: che-ws
     prod: Eclipse&#160;Che
     prod2: Eclipse&#160;Che
@@ -108,3 +108,27 @@ asciidoc:
     rh-os-devspaces: Red Hat OpenShift Dev Spaces
     rh-os-local: Red Hat OpenShift Local
     theia-endpoint-image: eclipse/che-theia-endpoint-runtime:next
+ext:
+  collector:
+  - run:
+      command: ./tools/detect-unused-content.sh
+  - run:
+      command: ./tools/validate_language_changes.sh
+  - run:
+      command: ./tools/checluster_docs_gen.sh
+    scan:
+      base: modules/administration-guide/examples/checluster-properties
+      dir: build/collector/checluster-properties
+      files: checluster-properties.adoc
+  - run:
+      command: ./tools/environment_docs_gen.sh
+    scan:
+      base: modules/administration-guide/examples/che-server-properties
+      dir: build/collector/che-server-properties
+      files: system-variables.adoc
+  - run:
+      command: ./tools/create_architecture_diagrams.py
+    scan:
+      base: modules/administration-guide/images/architecture/
+      dir: build/collector/architecture-diagrams
+      files: '*.png'

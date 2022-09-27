@@ -10,6 +10,7 @@
 
 # Exit on any error
 set -e
+umask 002
 
 function usage {
     echo "Usage: /${BASH_SOURCE[0]} [-h]

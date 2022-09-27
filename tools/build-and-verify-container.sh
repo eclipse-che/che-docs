@@ -10,6 +10,7 @@
 
 # Fail on errors
 set -e
+umask 002
 
 CHE_DOCS_IMAGE=che-docs-devel
 export CHE_DOCS_IMAGE

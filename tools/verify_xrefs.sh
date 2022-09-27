@@ -8,23 +8,27 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-echo "Verifying xrefs."
+umask 002
+info() {
+  echo -e "\e[32mINFO $0"
+}
+info "Verifying xrefs."
 for MODULES_DIR in $@
 do
 
-echo "* Checking remains of {site-baseurl}:"
+info "* Checking remains of {site-baseurl}:"
 grep -Ernie '{site-baseurl}' "${MODULES_DIR}" | cat -n
 
-echo "* Checking xref with anchor without a {context}:"
+info "* Checking xref with anchor without a {context}:"
 grep -Ernie 'xref:.?*#' "${MODULES_DIR}" | grep -Ev '{context}' | cat -n
 
-echo "* Checking xref with anchor without a file name:"
+info "* Checking xref with anchor without a file name:"
 grep -Ernie 'xref:.?*#' "${MODULES_DIR}" | grep -v 'adoc' | cat -n
 
-echo "* Checking xref with {context} without a #:"
+info "* Checking xref with {context} without a #:"
 grep -Ernie 'xref:.?*{context}' "${MODULES_DIR}" | grep -v '#' | cat -n
 
-echo "* Checking xref without file name:"
+info "* Checking xref without file name:"
 grep -Ernie 'xref:' "${MODULES_DIR}" | grep -v 'adoc.*adoc' | cat -n
 
 done

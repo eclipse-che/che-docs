@@ -8,18 +8,19 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 set -e
+umask 002
+info() {
+  echo -e "\e[32mINFO $1"
+}
 
-vale --version
-
-# Get fresh vale styles
-vale sync
+# Get fresh vale styles if required
+test -d .vale/styles/RedHat/ || vale sync
 
 BRANCH=origin/${GITHUB_BASE_REF:-main}
 
 FILES=$(git diff --name-only --diff-filter=AM "$BRANCH")
 
-echo "Files added or modified, in comparison to branch $BRANCH:
-$FILES"
+info "Validating files changed in comparison to branch $BRANCH:"
 
 # shellcheck disable=SC2086 (We want to split on spaces)
 vale ${FILES}

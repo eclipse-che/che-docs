@@ -10,9 +10,19 @@
 
 # Exit on any error
 set -e
+umask 002
+
+info() {
+  echo -e "\e[32mINFO $1"
+}
+error() {
+  echo -e "\e[31mERROR $1"
+}
+
+info "Converting to plain AsciiDoc"
 
 # Variables for the project
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
 # Variables for SOURCE
 SOURCE_SRC="${SCRIPT_DIR%tools*}modules"
@@ -24,8 +34,7 @@ DESTINATION_TEMPLATES_DIR="${DESTINATION_ROOT_DIR}/templates"
 
 mkdir -p "$DESTINATION_TEMPLATES_DIR"
 
-for GUIDE in ${SOURCE_GUIDES}
-do
+for GUIDE in ${SOURCE_GUIDES}; do
   # Generate title, copy topics, examples and images.
   SOURCE_GUIDE="${SOURCE_SRC}/${GUIDE}"
   DESTINATION_DIR="${DESTINATION_ROOT_DIR}/${GUIDE}"
@@ -44,13 +53,13 @@ do
     s@\*\*\* (.*)\]@\1leveloffset=+3]@;
     s@\*\* (.*)\]@\1leveloffset=+2]@;
     s@\* (.*)\]@\1leveloffset=+1]@;
-    " "${SOURCE_GUIDE}/nav.adoc" > "${DESTINATION_TITLE}"
+    " "${SOURCE_GUIDE}/nav.adoc" >"${DESTINATION_TITLE}"
 
   # Copy topics, examples, and images
   # Remove old topics, but keep examples and images as they may mix content
-  find "${DESTINATION_TOPICS_DIR}"  -maxdepth 1 -name '*.adoc' -exec rm {} +
+  find "${DESTINATION_TOPICS_DIR}" -maxdepth 1 -name '*.adoc' -exec rm {} +
   # shellcheck disable=SC2086
-  cp ${VERBOSE} -t "${DESTINATION_TOPICS_DIR}"  "${SOURCE_GUIDE}/pages/"* "${SOURCE_GUIDE}/partials/"*
+  cp ${VERBOSE} -t "${DESTINATION_TOPICS_DIR}" "${SOURCE_GUIDE}/pages/"* "${SOURCE_GUIDE}/partials/"*
   # shellcheck disable=SC2086
   cp ${VERBOSE} -f -r -t "${DESTINATION_EXAMPLES_DIR}" "${SOURCE_GUIDE}/examples/"*
   # shellcheck disable=SC2086
@@ -71,15 +80,13 @@ ${FILE_TO_ID_CROSS}
 
 # Convert include statements using `partial$` and `example$`` in plain AsciiDoc include statements
 shopt -s globstar nullglob
-for file in "${DESTINATION_ROOT_DIR}"/**/*.adoc
-do
+for file in "${DESTINATION_ROOT_DIR}"/**/*.adoc; do
   # Substitutions
   sed -E -i "${SUBSTITUTIONS}" "$file"
 done
 
 # Validate asciidoctor build
-for GUIDE in ${SOURCE_GUIDES}
-do
+for GUIDE in ${SOURCE_GUIDES}; do
   asciidoctor -a project-context=che -a context=che "${DESTINATION_ROOT_DIR}/${GUIDE}/index.adoc"
 done
 
