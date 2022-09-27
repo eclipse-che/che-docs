@@ -8,13 +8,20 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
+umask 002
+info() {
+  echo -e "\e[32mINFO $1"
+}
+error() {
+  echo -e "\e[31mERROR $1"
+}
 # Detect available runner
 if [ -z ${RUNNER+x} ]; then 
   if command -v podman > /dev/null 
     then RUNNER=podman
   elif command -v docker > /dev/null
     then RUNNER=docker
-  else echo "No installation of podman or docker found in the PATH" ; exit 1
+  else error "No installation of podman or docker found in the PATH" ; exit 1
   fi
 fi
 
@@ -22,7 +29,7 @@ fi
 set -e
 
 # Pull the image unless using a container defined in environment variable
-[ -z "${CHE_DOCS_IMAGE}" ] && ${RUNNER} pull quay.io/eclipse/che-docs:next
+[ -z "${CHE_DOCS_IMAGE}" ] && ${RUNNER} pull --quiet quay.io/eclipse/che-docs:next
 
 # Display commands
 set -x

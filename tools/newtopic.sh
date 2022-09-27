@@ -8,6 +8,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
+umask 002
 echo 'Choose the target guide:'
 PS3='Please select the target guide: '
 options=("administration-guide" "contributor-guide" "end-user-guide" "extensions" "overview")
