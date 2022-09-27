@@ -26,4 +26,4 @@ ${RUNNER} run --rm -ti --memory 512m \
   -v "$PWD:/projects:z" -w /projects \
   --entrypoint="./tools/publication-builder.sh" \
   -p 4000:4000 -p 35729:35729 \
-  "${CHE_DOCS_IMAGE:-quay.io/eclipse/che-docs}"
+  "${CHE_DOCS_IMAGE:-quay.io/eclipse/che-docs:next}"
