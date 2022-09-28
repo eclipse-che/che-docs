@@ -13,9 +13,16 @@ content:
       edit_url: "https://github.com/eclipse-che/che-docs/edit/main/{path}"
 antora:
   extensions:
-    - require: "@antora/lunr-extension"
+    - id: search
+      require: '@antora/lunr-extension'
       index_latest_only: true
       snippet_length: 142
+    - id: collector
+      require: '@antora/collector-extension'
+    - id: htmltest
+      require: ./extensions/htmltest.js
+    - id: antora-to-plain-asciidoc
+      require: ./extensions/antora-to-plain-asciidoc.js
 asciidoc:
   sourcemap: true
 output:
@@ -32,8 +39,7 @@ ui:
 urls:
   html_extension_style: indexify
   redirect_facility: static
-  # latest_prerelease_version_segment: next
-  # latest_version_segment: stable
+  latest_prerelease_version_segment: next
   latest_version_segment_strategy: replace
 runtime:
   cache_dir: ./.cache/antora

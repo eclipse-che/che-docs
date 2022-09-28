@@ -7,6 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 
+umask 002
 PROJECT=$1
 WORKDIR="$(pwd)"
 

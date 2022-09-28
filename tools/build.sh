@@ -10,14 +10,6 @@
 
 # Fail on errors
 set -ex
-id
-ls -ltr
 umask 002
-./tools/checluster_docs_gen.sh
-./tools/environment_docs_gen.sh
-./tools/create_architecture_diagrams.py
 CI=true antora generate antora-playbook-for-development.yml --stacktrace --log-failure-level=warn
 htmltest
-./tools/detect-unused-content.sh
-./tools/validate_language_changes.sh
-./tools/antora-to-plain-asciidoc.sh

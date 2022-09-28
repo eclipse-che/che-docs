@@ -8,6 +8,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 set -e
+umask 002
 
 vale --version
 
