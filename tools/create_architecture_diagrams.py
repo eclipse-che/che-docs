@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/bin/env python3
 #
 # Copyright (c) 2021 Red Hat, Inc.
 # This program and the accompanying materials are made
@@ -7,9 +7,11 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
+"""
+Generate architecture diagrams
+"""
 
 from diagrams import *
-import diagrams
 from diagrams.custom import Custom
 from diagrams.k8s.controlplane import APIServer
 from diagrams.k8s.rbac import User
@@ -18,13 +20,17 @@ from diagrams.onprem.network import Traefik
 from diagrams.onprem.vcs import Git
 from diagrams.outscale.compute import Compute
 from diagrams.outscale.storage import SimpleStorageService
-import os
 
 
-def ArchitectureDiagrams(prod_short, project_context, orch_name):
+def architecture_diagrams(prod_short, project_context, orchestrator_name):
+    """
+
+    :param prod_short: Short product name
+    :param project_context: project-context AsciiDoc attribute value
+    :param orchestrator_name: Orchestrator name
+    """
     script_path = os.path.dirname(os.path.realpath(__file__))
-    file_path = script_path + \
-        '/../modules/administration-guide/images/architecture/' + project_context + '-'
+    file_path = script_path + '/../build/collector/architecture-diagrams/' + project_context + '-'
     prod_icon = script_path + '/' + project_context + '-icon.png'
     graph_attr = {
         "bgcolor": "white",
@@ -33,29 +39,13 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
         # "splines": "curved"
     }
 
-    filename = file_path + 'architecture-with-che-server-engine'
-    with Diagram(filename=filename,
-                 show=False,
-                 direction="TB",
-                 outformat="png",
-                 edge_attr={"constraint": "false"},
-                 graph_attr=graph_attr):
-        devfile = Git('Devfile v1')
-        dashboard = Custom('User dashboard', prod_icon)
-        che_host = Custom(prod_short + ' server', prod_icon)
-        with Cluster(orch_name + ' API'):
-            workspace = Compute('User workspace')
-        devfile >> dashboard >> che_host >> workspace
-
     filename = file_path + 'interacting-with-devworkspace'
     with Diagram(filename=filename,
                  show=False,
-                 direction="LR",
-                 outformat="png",
                  graph_attr=graph_attr):
         devfile = Git('Devfile v2')
         dashboard = Custom('User dashboard', prod_icon)
-        with Cluster(orch_name + ' API'):
+        with Cluster(orchestrator_name + ' API'):
             devworkspace_operator = Compute('DevWorkspace')
             workspace = Compute('User workspace')
         devfile >> dashboard >> devworkspace_operator >> workspace
@@ -64,7 +54,6 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
     with Diagram(filename=filename,
                  show=False,
                  direction="TB",
-                 outformat="png",
                  graph_attr=graph_attr
                  ):
         che_dashboard = Custom('User dashboard', icon_path=prod_icon)
@@ -74,7 +63,7 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
         git = Git('Git provider')
         postgres = PostgreSQL('PostgreSQL')
         plugin_registry = SimpleStorageService('Plug-in registry')
-        kubernetes_api = APIServer(orch_name + ' API')
+        kubernetes_api = APIServer(orchestrator_name + ' API')
         user = User('User browser')
         user >> che_gateway
         che_gateway >> [che_dashboard, devfile_registries, che_host,
@@ -85,7 +74,6 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
     with Diagram(filename=filename,
                  show=False,
                  direction="TB",
-                 outformat="png",
                  graph_attr=graph_attr):
         user = User('User')
         che_gateway = Traefik('Gateway')
@@ -101,13 +89,12 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
     with Diagram(filename=filename,
                  show=False,
                  direction="TB",
-                 outformat="png",
                  graph_attr=graph_attr):
         che_dashboard = Custom('User dashboard', icon_path=prod_icon)
         devfile_registry = SimpleStorageService('Devfile registries')
         che_host = Custom(prod_short + ' server', icon_path=prod_icon)
         plugin_registry = SimpleStorageService('Plug-in registry')
-        crd_workspace = APIServer(orch_name + ' API')
+        crd_workspace = APIServer(orchestrator_name + ' API')
         che_dashboard >> che_host,
         che_dashboard >> [
             devfile_registry, plugin_registry]
@@ -117,7 +104,6 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
     with Diagram(filename=filename,
                  show=False,
                  direction="TB",
-                 outformat="png",
                  graph_attr=graph_attr):
         che_host = Custom(prod_short + ' server', icon_path=prod_icon)
         postgres = PostgreSQL('PostgreSQL')
@@ -133,7 +119,6 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
     with Diagram(filename=filename,
                  show=False,
                  direction="TB",
-                 outformat="png",
                  graph_attr=graph_attr):
         che_host = Custom(prod_short + ' server', icon_path=prod_icon)
         postgres = PostgreSQL('PostgreSQL')
@@ -143,7 +128,6 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
     with Diagram(filename=filename,
                  show=False,
                  direction="TB",
-                 outformat="png",
                  graph_attr=graph_attr):
         che_dashboard = Custom('User dashboard', icon_path=prod_icon)
         devfile_registry = SimpleStorageService('Devfile registries')
@@ -153,7 +137,6 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
     with Diagram(filename=filename,
                  show=False,
                  direction="TB",
-                 outformat="png",
                  graph_attr=graph_attr):
         che_dashboard = Custom('User dashboard', icon_path=prod_icon)
         plugin_registry = SimpleStorageService('Plug-in registry')
@@ -163,7 +146,6 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
     with Diagram(filename=filename,
                  show=False,
                  direction="TB",
-                 outformat="png",
                  graph_attr=graph_attr):
         che_gateway = Traefik('Gateway')
         git = Git('Git provider')
@@ -176,10 +158,10 @@ def ArchitectureDiagrams(prod_short, project_context, orch_name):
         user_workspace >> [git, container_registries, artifact_management]
 
 
-ArchitectureDiagrams(project_context='che',
-                     prod_short='Che',
-                     orch_name='Kubernetes')
+architecture_diagrams(project_context='che',
+                      prod_short='Che',
+                      orchestrator_name='Kubernetes')
 
-ArchitectureDiagrams(project_context='crw',
-                     prod_short='CodeReady Workspaces',
-                     orch_name='OpenShift')
+architecture_diagrams(project_context='devspaces',
+                      prod_short='Dev Spaces',
+                      orchestrator_name='OpenShift')
