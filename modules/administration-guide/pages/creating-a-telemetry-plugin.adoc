@@ -333,14 +333,14 @@ include::example$creating-a-telemetry-plug-in/plugin.yaml[]
 
 Typically, the user deploys this file to a corporate web server. This guide demonstrates how to create an Apache web server on OpenShift and host the plug-in there.
 
-Create a ConfigMap referencing the new `plugin.yaml` file.
+Create a `ConfigMap` object that references the new `plugin.yaml` file.
 
 [subs="+attributes"]
 ----
 $ oc create configmap --from-file=plugin.yaml -n {prod-namespace} telemetry-plugin-yaml
 ----
 
-Create a deployment, a service, and a route to expose the web server. The deployment references this ConfigMap and places it in the `/var/www/html` directory.
+Create a deployment, a service, and a route to expose the web server. The deployment references this `ConfigMap` object and places it in the `/var/www/html` directory.
 
 .`manifest.yaml`
 ====

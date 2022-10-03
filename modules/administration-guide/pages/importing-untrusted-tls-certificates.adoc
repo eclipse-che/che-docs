@@ -14,11 +14,11 @@ When the certificates used by {prod-short} components or by an external service 
 * The underlying {orch-name} cluster uses TLS certificates signed by an untrusted CA.
 {prod-short} server or workspace components connect to external OIDC providers or a Git server that use TLS certificates signed by an untrusted CA.
 
-{prod-short} uses labeled ConfigMaps in {orch-namespace} as sources for TLS certificates. The ConfigMaps can have an arbitrary number of keys with a random number of certificates each.
+{prod-short} uses labeled `ConfigMap` objects in {orch-namespace} as sources for TLS certificates. The `ConfigMap` objects can have an arbitrary number of keys with a random number of certificates each.
 
 [NOTE]
 ====
-When an OpenShift cluster contains cluster-wide trusted CA certificates added through the link:https://docs.openshift.com/container-platform/4.10/networking/configuring-a-custom-pki.html#nw-proxy-configure-object_configuring-a-custom-pki[cluster-wide-proxy configuration], {prod-short} Operator detects them and automatically injects them into a ConfigMap. {prod-short} automatically labels the ConfigMap with the `config.openshift.io/inject-trusted-cabundle="true"` label. Based on this annotation, OpenShift automatically injects the cluster-wide trusted CA certificates inside the `ca-bundle.crt` key of ConfigMap.
+When an OpenShift cluster contains cluster-wide trusted CA certificates added through the link:https://docs.openshift.com/container-platform/4.10/networking/configuring-a-custom-pki.html#nw-proxy-configure-object_configuring-a-custom-pki[cluster-wide-proxy configuration], {prod-short} Operator detects them and automatically injects them into a `ConfigMap` object. {prod-short} automatically labels the `ConfigMap` object with the `config.openshift.io/inject-trusted-cabundle="true"` label. Based on this annotation, OpenShift automatically injects the cluster-wide trusted CA certificates inside the `ca-bundle.crt` key of the `ConfigMap` object.
 ====
 
 [IMPORTANT]
@@ -35,7 +35,7 @@ Certificate files are typically stored as Base64 files, with extensions such as 
 
 * An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
 * Namespace for {prod-short} exists.
-* {prod-short} already uses some reserved file names to automatically inject certificates into the ConfigMap, so avoid using the following reserved file names to save your certificates:
+* {prod-short} already uses some reserved file names to automatically inject certificates into the `ConfigMap` object. Avoid using the following reserved file names to save your certificates:
   ** `ca-bundle.crt`
   ** `ca.crt`
 
@@ -49,16 +49,16 @@ Certificate files are typically stored as Base64 files, with extensions such as 
 ** `openssl x509 -in cert.pem -out cert.cer`
 ====
 
-. Create a new ConfigMap with the required TLS certificates:
+. Create a new `ConfigMap` object with the required TLS certificates:
 +
 [subs="+attributes,+quotes"]
 ----
 $ {orch-cli} create configmap custom-certs --from-file=__<bundle_file_path>__ -n={prod-namespace}
 ----
 +
-To apply more than one bundle, add another `-from-file=_<bundle_file_path>_`. Alternatively, create another ConfigMap.
+To apply more than one bundle, add another `-from-file=_<bundle_file_path>_`. Alternatively, create another `ConfigMap` object.
 
-. Label created ConfigMaps with the `app.kubernetes.io/part-of=che.eclipse.org` and `app.kubernetes.io/component=ca-bundle` labels:
+. Label the created `ConfigMap` objects with the `app.kubernetes.io/part-of=che.eclipse.org` and `app.kubernetes.io/component=ca-bundle` labels:
 +
 [subs="+attributes,+quotes"]
 ----
@@ -75,21 +75,21 @@ If issues occur after adding the certificates, verify the specified values at th
 
 .Verifying imported certificates at the {prod-short} instance level
 
-* In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/understanding/olm-what-operators-are.html[Operator] deployment, the namespace where the `CheCluster` is located contains labeled ConfigMaps with the correct content:
+* In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/understanding/olm-what-operators-are.html[Operator] deployment, the namespace where the `CheCluster` is located contains the labeled `ConfigMap` objects with the correct content:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get cm --selector=app.kubernetes.io/component=ca-bundle,app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
 ----
 +
-Check the content of ConfigMap by entering:
+Check the content of the `ConfigMap` object by entering:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get cm __<name>__ -n {prod-namespace} -o yaml
 ----
 
-* {prod-short} Pod Volumes list contains a volume that uses `ca-certs-merged` ConfigMap as data-source.
+* {prod-short} Pod Volumes list contains a volume that uses the `ca-certs-merged` `ConfigMap` object as the `data-source`.
 To get the list of Volumes of the {prod-short} Pod, run:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
@@ -148,14 +148,14 @@ $ {orch-cli} get -o json pod __<workspace pod name>__  -n __<workspace namespace
     jq -r '.spec.containers[] | select(.name | startswith("theia-ide")).name'
 ----
 
-* Look for a `ca-certs` ConfigMap inside the workspace namespace:
+* Look for a `ca-certs` `ConfigMap` object inside the workspace namespace:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get cm ca-certs __<workspace namespace>__
 ----
 
-* Check that the entries in the `ca-certs` ConfigMap contain all the additional entries you added before. In addition, it can contain `ca-bundle.crt` reserved entry. View the entries:
+* Check that the entries in the `ca-certs` `ConfigMap` object contain all the additional entries you added before. In addition, it can contain `ca-bundle.crt` reserved entry. View the entries:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -164,7 +164,7 @@ ca-bundle.crt
 source-config-map-name.data-key.crt
 ----
 
-* Confirm that the `ca-certs` ConfigMap is added as a volume in the workspace Pod:
+* Confirm that the `ca-certs` `ConfigMap` object is added as a volume in the workspace Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -192,7 +192,7 @@ $ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>
 }
 ----
 
-* Inspect the `/public-certs` folder in the Che-Theia IDE container and check if its contents match the list of entries in the `ca-certs` ConfigMap:
+* Inspect the `/public-certs` folder in the Che-Theia IDE container and check if its contents match the list of entries in the `ca-certs` `ConfigMap` object:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
