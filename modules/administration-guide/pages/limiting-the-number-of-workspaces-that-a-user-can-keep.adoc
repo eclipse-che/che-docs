@@ -17,25 +17,30 @@ spec:
   components:
     cheServer:
       extraProperties:
-        CHE_LIMITS_USER_WORKSPACES_COUNT: "__<kept_workspaces_limit>__" <1>
+        CHE_LIMITS_USER_WORKSPACES_COUNT: "__<kept_workspaces_limit>__" # <1>
 ----
 <1> Sets the maximum number of workspaces per user. The default value, `-1`, allows users to keep an unlimited number of workspaces. Use a positive integer to set the maximum number of workspaces per user.
 
 .Procedure
 
-. Get the name of the {prod-short} namespace:
+. Get the name of the {prod-short} namespace. The default is `{prod-namespace}`.
 +
 [source,terminal,subs="+quotes,attributes"]
 ----
 $ {orch-cli} get checluster --all-namespaces \
   -o=jsonpath="{.items[*].metadata.namespace}"
 ----
-+
-include::example$snip_{project-context}-default-namespace.adoc[]
 
 . Configure the `CHE_LIMITS_USER_WORKSPACES_COUNT`:
 +
-include::example$snip_{project-context}-limiting-the-number-of-workspaces-that-a-user-can-keep.adoc[]
+[source,subs="+quotes,attributes"]
+----
+$ {orch-cli} patch checluster/{context} -n {prod-namespace} \# <1>
+--type='merge' -p \
+'{"spec":{"components":{"cheServer":{"extraProperties":{"CHE_LIMITS_USER_WORKSPACES_COUNT": "__<kept_workspaces_limit>__"}}}}}' # <2>
+----
+<1> The {prod-short} namespace that you got in step 1.
+<2> Your choice of the `__<kept_workspaces_limit>__` value.
 
 .Additional resources
 
