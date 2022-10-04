@@ -21,7 +21,7 @@ To uninstall an instance of {prod} {prod-ver}:
 
 .Procedure
 
-. Obtain the name of the {prod-short} {orch-namespace} (default: `{prod-namespace}`):
+. Obtain the name of the {prod-short} {orch-namespace}. The default is `{prod-namespace}`.
 +
 [subs="+attributes,quotes"]
 ----
@@ -29,12 +29,13 @@ $ {orch-cli} get checluster --all-namespaces \
   -o=jsonpath="{.items[*].metadata.namespace}"
 ----
 
-. Remove the {prod-short} instance from the __<{prod-namespace}>__  {orch-namespace}:
+. Remove the {prod-short} instance from the `{prod-namespace}` {orch-namespace}:
 +
 [subs="+attributes,quotes"]
 ----
-$ {prod-cli} server:delete -n __<{prod-namespace}>__
+$ {prod-cli} server:delete -n {prod-namespace} # <1>
 ----
+<1> The {orch-namespace} that you got in step 1.
 
 include::example$snip_{project-context}-note-uninstalling-in-minikube-cluster.adoc[]
 
