@@ -1,12 +1,37 @@
-[id="using-an-embedded-editor-ddefinition-for-your-ide_{context}"]
-= Using an embedded editor definition for your IDE
+[id="options-for-che-editor-yaml_{context}"]
+= Options for che-editor.yaml
 
-If you have specific requirements for your project that aren't addressed by standard IDE behaviour, you can customize the project IDE by using the `inline` directive to put a complete IDE definition in the `che-editor.yaml` file.
+The `che-editor.yaml` file supports optional parameters to suit the needs of more complex projects:
 
-.Procedure
+.`reference` points to a remote `che-editor.yaml` file
+====
+[source,yaml]
+----
+reference: https://gist.github.com/.../che-editor.yaml # required
+override:                                              # optional
+  containers:
+      - name: theia-ide
+        memoryLimit: 1280Mi 
+----
+====
 
-* Set an `inline` directive in your `che-editor.yaml` file. For example:
-+
+.`registryUrl` points to a custom plug-in registry rather than to the default {prod-short} plug-in registry
+====
+[source,yaml]
+----
+id: eclipse/che-theia/next            # required
+registryUrl: https://my-registry.com  # optional
+override:                             # optional
+  containers:
+    - name: theia-ide
+      memoryLimit: 1280Mi
+----
+====
+
+pass:[<!-- vale RedHat.TermsErrors = NO -->]
+
+.`inline` specifies a complete IDE definition when your project requires a customized IDE
+====
 [source,yaml]
 ----
 inline:
@@ -51,3 +76,10 @@ inline:
         - name: REMOTE_ENDPOINT_VOLUME_NAME
           value: remote-endpoint
 ----
+====
+
+pass:[<!-- vale RedHat.TermsErrors = YES -->]
+
+.Additional resources
+
+include::example$snip_{project-context}-link-to-example-che-editor-yaml-file.adoc[]
