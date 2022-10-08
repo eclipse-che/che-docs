@@ -1,0 +1,64 @@
+// Module included in the following assemblies:
+//
+// branding-vs-code
+
+[id="defining-custom-branding-values-for-vs-code_{context}"]
+= Defining custom branding values for Visual Studio Code - Open Source
+
+This section describes how to customize definitions of basic branding elements of Visual Studio Code.
+
+.Procedure
+
+Create a `branding/product.json` file. The values defined in the `branding/product.json` file override the link:https://github.com/che-incubator/che-code/blob/main/code/product.json[default values]. Also the file serves data mapping for provided branding resources.
+Example of the `branding/product.json` file:
+
+[source,json,attrs="nowrap",subs="+attributes"]
+----
+{
+    "nameShort": "VS Code - Open Source", <1>
+    "nameLong": "Red Hat OpenShift Dev Spaces with Microsoft Visual Studio Code - Open Source IDE", <2>
+    "icons": {
+        "favicon": { <3>
+            "universal": "icons/favicon.ico"
+        },
+        "welcome": { <4>
+            "universal": "icons/dev-spaces.svg"
+        },
+        "statusBarItem": { <5>
+            "universal": "icons/dev-spaces.svg"
+        },
+        "letterpress": { <6>
+            "light": "icons/letterpress-light.svg",
+            "dark": "icons/letterpress-light.svg"
+        }
+    },
+    "remoteIndicatorCommands": { <7>
+        "openDocumentationCommand": "Dev Spaces: Open Documentation",
+        "openDashboardCommand": "Dev Spaces: Open Dashboard",
+        "stopWorkspaceCommand": "Dev Spaces: Stop Workspace"
+    },
+    "workbenchConfigFilePath": "workbench-config.json", <8>
+    "codiconCssFilePath": "css/codicon.css" <9>
+}
+
+----
+<1> `nameShort` - the application name.
+<2> `nameLong` - this is used for the **Welcome** page, the **About** dialog, and browser tab title.
+<3> `favicon` - the icon for the browser tab title. It's the same for all themes.
+<4> `welcome` - the icon for the **Get Started** page tab title. It's the same for all themes.
+<5> `statusBarItem` - the icon for the status bar item. It's the same for all themes and must be defined as `codicon` in the `workbench-config.json` file and the `codicon` CSS styles.
+<6> `letterpress` - the icon for the main area when all editors are closed. It's possible to provide different icons for `light` and `dark` themes.
+<7> `remoteIndicatorCommands` - the names of commands provided by the link:https://github.com/che-incubator/che-code/blob/main/code/extensions/che-remote/package.nls.json[Eclipse Che Remote] extension. They are available for running at click on the `Product status bar` item.
+<8> `workbenchConfigFilePath` - the config file path. See an link:https://github.com/che-incubator/che-code/blob/main/code/src/vs/code/browser/workbench/che/workbench-config.json[example of the config file].
+<9> `codiconCssFilePath` - the codicon css file path. Must contain CSS styles for codicons. The content of the file is appended to link:https://github.com/che-incubator/che-code/blob/main/code/src/vs/base/browser/ui/codicons/codicon/codicon.css[the coressponding css file]. See an link:https://github.com/che-incubator/che-code/blob/803b864e8411bd57d617dabddfd8a132fac6c743/code/src/vs/base/browser/ui/codicons/codicon/codicon.css#L29-L33[example of the content].
+
+
+[NOTE]
+====
+All paths in the `__branding/product.json__` file must be relative to the `__branding__` folder. For example, the `__workbenchConfigFilePath__` field might have the `__anyFolder/myConfigFiles/workbench-config.json__` value. This means that the config file can be found by the path: `__branding/anyFolder/myConfigFiles/workbench-config.json__`.
+====
+
+
+////
+.Additional resources
+////
