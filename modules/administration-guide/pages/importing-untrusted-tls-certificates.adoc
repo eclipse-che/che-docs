@@ -94,28 +94,28 @@ To get the list of Volumes of the {prod-short} Pod, run:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get pod -o json __<{prod-id-short}-pod-name>__ -n {prod-namespace} | jq .spec.volumes
+$ {orch-cli} get pod -l app.kubernetes.io/component={prod-id-short} -o "jsonpath={.items[0].spec.volumes}" -n {prod-namespace}
 ----
 +
 * {prod-short} mounts certificates in the `/public-certs/` folder of the {prod-short} server container. To view the list of files in this folder, enter:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} exec -t __<{prod-id-short}-pod-name>__ -n {prod-namespace} -- ls /public-certs/
+$ {orch-cli} exec -t deploy/{prod-id-short} -n {prod-namespace} -- ls /public-certs/
 ----
 +
 * In the {prod-short} server logs, there is a line for every certificate added to the Java truststore, including configured {prod-short} certificates. View them:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} logs __<{prod-id-short}-pod-name>__ -n {prod-namespace}
+$ {orch-cli} logs deploy/{prod-id-short} -n {prod-namespace}
 ----
 +
 * {prod-short} server Java truststore contains the certificates. The certificates SHA1 fingerprints are among the list of the SHA1 of the certificates included in the truststore. View the list:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} exec -t __<{prod-id-short}-pod-name>__ -n {prod-namespace} -- keytool -list -keystore {prod-home}/cacerts
+$ {orch-cli} exec -t deploy/{prod-id-short} -n {prod-namespace} -- keytool -list -keystore {prod-home}/cacerts
 Your keystore contains 141 entries:
 +
 (...)
@@ -148,28 +148,28 @@ $ {orch-cli} get -o json pod __<workspace pod name>__  -n __<workspace namespace
     jq -r '.spec.containers[] | select(.name | startswith("theia-ide")).name'
 ----
 
-* Look for a `ca-certs` `ConfigMap` object inside the workspace namespace:
+* Look for a `che-trusted-ca-certs` `ConfigMap` object inside the workspace namespace:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get cm ca-certs __<workspace namespace>__
+$ {orch-cli} get cm che-trusted-ca-certs -n __<workspace namespace>__
 ----
 
-* Check that the entries in the `ca-certs` `ConfigMap` object contain all the additional entries you added before. In addition, it can contain `ca-bundle.crt` reserved entry. View the entries:
+* Check that the entries in the `che-trusted-ca-certs` `ConfigMap` object contain all the additional entries you added before. In addition, it can contain `ca-bundle.crt` reserved entry. View the entries:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get cm ca-certs -n __<workspace namespace>__ -o json | jq -r '.data | keys[]'
+$ {orch-cli} get cm che-trusted-ca-certs -n __<workspace namespace>__ -o json | jq -r '.data | keys[]'
 ca-bundle.crt
 source-config-map-name.data-key.crt
 ----
 
-* Confirm that the `ca-certs` `ConfigMap` object is added as a volume in the workspace Pod:
+* Confirm that the `che-trusted-ca-certs` `ConfigMap` object is added as a volume in the workspace Pod:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>__ | \
-    jq '.spec.volumes[] | select(.configMap.name == "ca-certs")'
+    jq '.spec.volumes[] | select(.configMap.name == "che-trusted-ca-certs")'
 {
   "configMap": {
     "defaultMode": 420,
@@ -184,15 +184,15 @@ $ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
 $ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>__ | \
-   jq '.spec.containers[] | select(.name == "__<theia ide container name>__").volumeMounts[] | select(.name == "che-self-signed-certs")'
+   jq '.spec.containers[] | select(.name == "__<theia ide container name>__").volumeMounts[] | select(.name == "che-trusted-ca-certs")'
 {
   "mountPath": "/public-certs",
-  "name": "che-self-signed-certs",
+  "name": "che-trusted-ca-certs",
   "readOnly": true
 }
 ----
 
-* Inspect the `/public-certs` folder in the Che-Theia IDE container and check if its contents match the list of entries in the `ca-certs` `ConfigMap` object:
+* Inspect the `/public-certs` folder in the Che-Theia IDE container and check if its contents match the list of entries from the `custom-certs` `ConfigMap` object:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -200,3 +200,7 @@ $ {orch-cli} exec __<workspace pod name>__ -c __<theia ide container name>__ -n 
 ca-bundle.crt
 source-config-map-name.data-key.crt
 ----
+
+.Additional resources
+
+* xref:deploying-che-with-support-for-git-repositories-with-self-signed-certificates.adoc[].
