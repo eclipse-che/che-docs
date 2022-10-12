@@ -1,7 +1,31 @@
 [id="options-for-che-editor-yaml_{context}"]
 = Options for che-editor.yaml
 
-The `che-editor.yaml` file supports optional parameters to suit the needs of more complex projects:
+The `che-editor.yaml` file supports using a `reference` to a remote IDE definition or an `inline` IDE definition as an alternative to the `id` parameter. This is useful when the IDE is not defined in the plugin registry:
+
+.`reference` points to a remote `che-editor.yaml` file
+====
+[source,yaml]
+----
+reference: https://gist.github.com/.../che-editor.yaml # required
+----
+====
+
+.`inline` specifies a complete IDE definition when your project requires a customized IDE
+====
+[source,yaml]
+----
+inline:
+  components:
+  (...)
+  events:
+  (...)
+   commands:
+  (...)
+----
+====
+
+The `che-editor.yaml` file supports optional parameters to suit the needs of more complex scenarios: `regisryUrl` and `override`:
 
 .`reference` points to a remote `che-editor.yaml` file
 ====
