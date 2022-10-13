@@ -1,58 +1,65 @@
 [id="options-for-che-editor-yaml_{context}"]
 = Options for che-editor.yaml
 
-The `che-editor.yaml` file supports using a `reference` to a remote IDE definition or an `inline` IDE definition as an alternative to the `id` parameter. This is useful when the IDE is not defined in the plug-in registry:
+As an alternative to the `id` parameter, the `che-editor.yaml` file supports a `reference` to a remote file or an `inline` definition for an IDE outside of a plug-in registry:
 
 .`reference` points to a remote `che-editor.yaml` file
 ====
-[source,yaml]
+[source,yaml,subs="+quotes"]
 ----
-reference: https://gist.github.com/.../che-editor.yaml
+reference: https://__<hostname_and_path_to_a_remote_file>__/che-editor.yaml
 ----
 ====
 
-.`inline` specifies a complete IDE definition when your project requires a customized IDE
+.`inline` specifies a complete definition for a customized IDE without a plug-in registry
 ====
 [source,yaml]
 ----
 inline:
-  components:
-  (...)
+  schemaVersion: 2.1.0
+  metadata:
+    name: theia-ide
+  commands:
+    ...
   events:
-  (...)
-   commands:
-  (...)
-----
+    ...
+  components:
+    - name: che-machine-exec
+      container:
+        image: 'quay.io/eclipse/che-machine-exec:next'
+        command:
+          ...
+        memoryLimit: 128Mi
+        memoryRequest: 32Mi
+        cpuLimit: 500m
+        cpuRequest: 30m
+      attributes:
+...
 ====
 
-The `che-editor.yaml` file supports optional parameters to suit the needs of more complex scenarios: `regisryUrl` and `override`:
+For more complex scenarios, the `che-editor.yaml` file supports the optional `registryUrl` and `override` parameters:
 
 .`registryUrl` points to a custom plug-in registry rather than to the default {prod-short} plug-in registry
 ====
-[source,yaml]
+[source,yaml,subs="+quotes"]
 ----
-id: eclipse/che-theia/next            # required
-registryUrl: https://my-registry.com  # optional
-override:                             # optional
+id: __<editor_id>__
+registryUrl: __<url_of_custom_plug-in_registry>__
+----
+====
+
+.`override` of the default value of one or more defined properties of the IDE
+====
+[source,yaml,subs="+quotes"]
+----
+... # <1>
+override:
   containers:
     - name: theia-ide
       memoryLimit: 1280Mi
+      cpuLimit: 1510m
+      cpuRequest: 102m
+    ...
 ----
+<1> `id:`, `registryUrl:`, or `reference:`
 ====
-
-Can I remove the `reference` line below? And can this work also with the `registryURL`?
-.`override` does what?
-====
-[source,yaml]
-----
-reference: https://gist.github.com/.../che-editor.yaml # required
-override:                                              # optional
-  containers:
-      - name: theia-ide
-        memoryLimit: 1280Mi 
-----
-====
-
-.Additional resources
-
-include::example$snip_{project-context}-link-to-example-che-editor-yaml-file.adoc[]
