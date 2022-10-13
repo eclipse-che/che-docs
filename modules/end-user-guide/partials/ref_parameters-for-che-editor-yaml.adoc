@@ -1,5 +1,15 @@
-[id="options-for-che-editor-yaml_{context}"]
-= Options for che-editor.yaml
+[id="parameters-for-che-editor-yaml_{context}"]
+= Parameters for che-editor.yaml
+
+The simplest way to select an IDE in the `che-editor.yaml` is to specify the IDE's `id`, which is available in the table of supported in-browser IDEs in xref:selecting-a-workspace-ide.adoc[]:
+
+.`id` selects an IDE from the plug-in registry
+====
+[source,yaml]
+----
+id: che-incubator/che-code/insiders
+----
+====
 
 As an alternative to the `id` parameter, the `che-editor.yaml` file supports a `reference` to a remote file or an `inline` definition for an IDE outside of a plug-in registry:
 
@@ -37,15 +47,16 @@ inline:
 ...
 ====
 
-For more complex scenarios, the `che-editor.yaml` file supports the optional `registryUrl` and `override` parameters:
+For more complex scenarios, the `che-editor.yaml` file supports the `registryUrl` and `override` parameters:
 
 .`registryUrl` points to a custom plug-in registry rather than to the default {prod-short} plug-in registry
 ====
 [source,yaml,subs="+quotes"]
 ----
-id: __<editor_id>__
+id: __<editor_id>__ # <1>
 registryUrl: __<url_of_custom_plug-in_registry>__
 ----
+<1> The `id` of the IDE in the custom plug-in registry.
 ====
 
 .`override` of the default value of one or more defined properties of the IDE
@@ -61,5 +72,5 @@ override:
       cpuRequest: 102m
     ...
 ----
-<1> `id:`, `registryUrl:`, or `reference:`
+<1> `id:`, `registryUrl:`, or `reference:`.
 ====
