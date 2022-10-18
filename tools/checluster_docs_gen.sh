@@ -91,7 +91,7 @@ parse_section() {
   local section
   local sectionName=$1
   local sectionName2Id=$(echo $sectionName | tr '.' '-')
-  local id="[id=\"checluster-custom-resource-$sectionName2Id-settings_{context}\"]"
+  local id="[id=\"checluster-custom-resource-$sectionName2Id-settings\"]"
   local caption=$2
 
   # info "Parsing section: "$sectionName
