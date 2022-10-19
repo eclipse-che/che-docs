@@ -54,13 +54,13 @@ spec:
 
 .Verification steps
 
-* Create and start a new workspace. Every container used by the workspace mounts a special volume that contains a file with the self-signed certificate. The repository's `.git/config` file contains information about the Git server host (its URL) and the path to the certificate in the `http` section (see Git documentation about link:https://git-scm.com/docs/git-config#Documentation/git-config.txt-httpsslCAInfo[git-config]).
+* Create and start a new workspace. Every container used by the workspace mounts a special volume that contains a file with the self-signed certificate. The container's `/etc/gitconfig` file contains information about the Git server host (its URL) and the path to the certificate in the `http` section (see Git documentation about link:https://git-scm.com/docs/git-config#Documentation/git-config.txt-httpsslCAInfo[git-config]).
 +
-.A `.git/config` file example
+.Contents of an `/etc/gitconfig` file
 ====
 ----
 [http "https://10.33.177.118:3000"]
-sslCAInfo = /etc/che/git/cert/ca.crt
+sslCAInfo = /etc/config/che-git-tls-creds/certificate
 ----
 ====
 
@@ -69,3 +69,5 @@ sslCAInfo = /etc/che/git/cert/ca.crt
 * xref:using-chectl-to-configure-the-checluster-custom-resource-during-installation.adoc[]
 
 * xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]
+
+* xref:importing-untrusted-tls-certificates.adoc[].
