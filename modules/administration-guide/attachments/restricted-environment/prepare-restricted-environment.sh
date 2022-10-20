@@ -97,6 +97,9 @@ cat > che-operator-cr-patch.yaml << EOF
 kind: CheCluster
 apiVersion: org.eclipse.che/v2
 spec:
+  components:
+    pluginRegistry:
+      openVSXURL: ''
   containerRegistry:
     hostname: "$my_registry"
     organization: "$my_catalog"
