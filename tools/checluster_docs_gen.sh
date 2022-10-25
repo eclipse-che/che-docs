@@ -66,6 +66,8 @@ fetch_conf_files_content() {
 
 parse_content() {
   parse_section "devEnvironments" "Development environment configuration options."
+  parse_section "devEnvironments.properties.defaultNamespace" "Development environment \`defaultNamespace\` options."
+  parse_section "devEnvironments.properties.storage" "Development environment \`storage\` options."
   parse_section "components" "{prod-short} components configuration."
   parse_section "components.properties.devWorkspace" "DevWorkspace operator component configuration."
   parse_section "components.properties.cheServer" "General configuration settings related to the {prod-short} server component."
@@ -89,7 +91,7 @@ parse_section() {
   local section
   local sectionName=$1
   local sectionName2Id=$(echo $sectionName | tr '.' '-')
-  local id="[id=\"checluster-custom-resource-$sectionName2Id-settings_{context}\"]"
+  local id="[id=\"checluster-custom-resource-$sectionName2Id-settings\"]"
   local caption=$2
 
   # info "Parsing section: "$sectionName

@@ -31,7 +31,7 @@ id_list="$(curl -fsSL https://raw.githubusercontent.com/redhat-developer/devspac
   jq -r '.docs[]' | grep '#' | cut -d'#' -f2)"
 # Checking the anchors
 for id in $id_list; do
-  if grep --quiet --recursive -e "id=\"${id}_" "${SCRIPT_DIR}/../modules/"; then
+  if grep --quiet --recursive -e "id=\"${id}" "${SCRIPT_DIR}/../modules/"; then
     true
   else
     missing_anchors="${missing_anchors}  - ${id}"
