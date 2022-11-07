@@ -34,8 +34,8 @@ jobs:
       - name: Set PR_NUMBER and PR_SHA variables
         id: vars
         run: |
-          echo "::set-output name=pr_number::$(<content/PR_NUMBER)"
-          echo "::set-output name=pr_sha::$(<content/PR_SHA)"
+          echo "pr_number=$(<content/PR_NUMBER)" >> $GITHUB_OUTPUT
+          echo "pr_sha=$(<content/PR_SHA)" >> $GITHUB_OUTPUT
 
       - name: Publish preview netlify
         uses: netlify/actions/cli@master
@@ -47,7 +47,7 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
 
       - name: Update status comment
-        uses: actions-cool/maintain-one-comment@v1.1.0
+        uses: actions-cool/maintain-one-comment@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
