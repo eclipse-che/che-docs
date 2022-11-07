@@ -29,9 +29,8 @@ jobs:
     container: "quay.io/eclipse/che-docs:next"
     steps:
       - name: Checkout publication-builder branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          # fetch-depth: 0
           ref: publication-builder
 
       # Cache for Antora UI and Htmltest.
@@ -43,17 +42,16 @@ jobs:
       # See: http://man7.org/linux/man-pages/man1/date.1.html
       - name: Get Date
         id: get-date
-        run: |
-          echo "::set-output name=yearweek::$(/bin/date -u "+%Y%U")"
-          echo "::set-output name=timestamp::$(/bin/date -Iminutes)"
+        run: echo "YEAR_WEEK=$(/bin/date -u +%Y%U)" >> $GITHUB_OUTPUT
         shell: bash
+
       - name: Restore cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache
         with:
           path: .cache
-          key: ${{ steps.get-date.outputs.yearweek }}
+          key: ${{ steps.get-date.outputs.YEAR_WEEK }}
 
       - name: Build for publication
         id: antora-build
