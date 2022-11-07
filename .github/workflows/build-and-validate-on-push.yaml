@@ -22,7 +22,7 @@ jobs:
     container: "quay.io/eclipse/che-docs:next"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -35,8 +35,7 @@ jobs:
       # See: http://man7.org/linux/man-pages/man1/date.1.html
       - name: Get Date
         id: get-date
-        run: |
-          echo "::set-output name=yearweek::$(/bin/date -u "+%Y%U")"
+        run: echo "YEAR_WEEK=$(/bin/date -u +%Y%U)" >> $GITHUB_OUTPUT
         shell: bash
       - name: Restore cache
         uses: actions/cache@v2
@@ -44,7 +43,7 @@ jobs:
           cache-name: cache
         with:
           path: .cache
-          key: ${{ steps.get-date.outputs.yearweek }}
+          key: ${{ steps.get-date.outputs.YEAR_WEEK }}
 
       - name: Build using antora
         id: antora-build
