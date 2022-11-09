@@ -82,6 +82,8 @@ RUN set -x \
 
 # WORKDIR is a Node.js prerequisite
 WORKDIR /tmp
+# Avoid error: Local gulp not found in /projects
+ENV NODE_PATH="/usr/local/lib/node_modules/"
 # Install Node.js packages, one by one to avoid timeouts
 RUN set -x \
     && npm install --no-save --global @antora/cli \

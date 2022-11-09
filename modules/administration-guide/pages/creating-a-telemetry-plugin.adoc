@@ -355,11 +355,8 @@ $ oc apply -f manifest.yaml
 ----
 
 .Verification steps
-
-pass:[<!-- vale RedHat.TermsErrors = NO -->]
-
-After the deployment has started, confirm that `plugin.yaml` is available in the web server:
-
+* After the deployment has started, confirm that `plugin.yaml` is available in the web server:
++
 ----
 $ curl apache-che.apps-crc.testing/plugin.yaml
 ----
@@ -367,7 +364,6 @@ $ curl apache-che.apps-crc.testing/plugin.yaml
 [id="specifying-the-telemetry-plug-in-in-a-devworkspace"]
 == Specifying the telemetry plug-in in a {devworkspace}
 . Add the following to the `components` field of an existing {devworkspace}:
-
 +
 ----
 components:
@@ -376,20 +372,16 @@ components:
     plugin:
       uri: http://apache-che.apps-crc.testing/plugin.yaml
 ----
-+
 
 . Start the {devworkspace} from the {prod-short} dashboard.
 
 
 .Verification steps
-
 . Verify that the `telemetry-plug-in` container is running in the {devworkspace} pod. Here, this is verified by checking the Workspace view within the editor.
-
 +
-image::creating-a-telemetry-plug-in/devworkspace_telemetry_plugin.png[]
+image::creating-a-telemetry-plug-in/devworkspace_telemetry_plugin.png[{devworkspace} telemetry plug-in]
 
 . Edit files within the editor and observe their events in the example telemetry server's logs.
-
 
 == Applying the telemetry plug-in for all {devworkspace}s
 
@@ -405,7 +397,7 @@ spec:
       plugins:                           <2>
       - 'http://apache-che.apps-crc.testing/plugin.yaml'
 ----
-<1> The editorId to set default plug-ins for.
+<1> The editor identification to set the default plug-ins for.
 <2> List of URLs to devfile v2 plug-ins.
 
 
@@ -418,5 +410,3 @@ spec:
 . Start a new or existing {devworkspace} from the {prod} dashboard.
 
 . Verify that the telemetry plug-in is working by following the verification steps for xref:specifying-the-telemetry-plug-in-in-a-devworkspace[].
-
-pass:[<!-- vale RedHat.TermsErrors = YES -->]
