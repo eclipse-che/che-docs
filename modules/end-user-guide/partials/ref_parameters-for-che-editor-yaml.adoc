@@ -28,23 +28,34 @@ reference: https://__<hostname_and_path_to_a_remote_file>__/che-editor.yaml
 inline:
   schemaVersion: 2.1.0
   metadata:
-    name: theia-ide
-  commands:
-    ...
-  events:
-    ...
+    name: IntelliJ IDEA Community Edition
   components:
-    - name: che-machine-exec
+    - name: intellij
       container:
-        image: 'quay.io/eclipse/che-machine-exec:next'
-        command:
-          ...
-        memoryLimit: 128Mi
+        image: 'quay.io/che-incubator/che-idea@sha256:b02663b2aea521bcbcafdbec7eba27b6d804e3885dc54bb7d5c771ed77d4a97f'
+        volumeMounts:
+          - name: projector-user
+            path: /home/projector-user
+        mountSources: true
+        memoryLimit: 2048M
         memoryRequest: 32Mi
-        cpuLimit: 500m
-        cpuRequest: 30m
-      attributes:
-...
+        cpuLimit: 1500m
+        cpuRequest: 100m
+        endpoints:
+          - name: intellij
+            attributes:
+              type: main
+              cookiesAuthEnabled: true
+              urlRewriteSupported: true
+              discoverable: false
+              path: /?backgroundColor=434343&wss
+            targetPort: 8887
+            exposure: public
+            secure: false
+            protocol: https
+      attributes: {}
+    - name: projector-user
+      volume: {}
 ----
 ====
 
