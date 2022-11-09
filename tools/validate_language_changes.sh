@@ -16,11 +16,19 @@ info() {
 # Get fresh vale styles if required
 test -d .vale/styles/RedHat/ || vale sync
 
+case $CI in
+true)
+  # Avoid error on GitHub: fatal: detected dubious ownership in repository at '/__w/che-docs/che-docs'
+  git config --global --add safe.directory $(pwd)
+  ;;
+esac
+
 BRANCH=origin/${GITHUB_BASE_REF:-main}
 
 FILES=$(git diff --name-only --diff-filter=AM "$BRANCH")
 
 info "Validating files changed in comparison to branch $BRANCH:"
 
+set -x
 # shellcheck disable=SC2086 (We want to split on spaces)
 vale ${FILES}
