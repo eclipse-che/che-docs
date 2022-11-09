@@ -80,9 +80,6 @@ parse_content() {
   parse_section "networking" "Networking, {prod-short} authentication and TLS configuration."
   parse_section "containerRegistry" "Configuration of an alternative registry that stores {prod-short} images."
   parse_section "status" "\`CheCluster\` Custom Resource \`status\` defines the observed state of {prod-short} installation"
-  BUFF="pass:[<!-- vale off -->]
-
-$BUFF"
   echo "$BUFF" >"$OUTPUT_PATH"
   info "Single-sourced $OUTPUT_PATH" >&2
 }

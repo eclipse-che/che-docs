@@ -1,48 +1,52 @@
 ---
 # Use this Antora Playbook for development, to build current state in HEAD.
 site:
-  title: Eclipse Che Documentation
-  # Disabling url on purpose to avoid htmltest crawling the live website.
-  # url: https://www.eclipse.org/che/docs
-  start_page: docs:overview:introduction-to-eclipse-che.adoc
-  robots: allow
+    title: Eclipse Che Documentation
+    # Disabling url on purpose to avoid htmltest crawling the live website.
+    # url: https://www.eclipse.org/che/docs
+    start_page: docs:overview:introduction-to-eclipse-che.adoc
+    robots: allow
+
 content:
-  sources:
-    - url: ./
-      branches: HEAD
-      edit_url: "https://github.com/eclipse-che/che-docs/edit/main/{path}"
+    sources:
+        -   url: ./
+            branches: HEAD
+            edit_url: "https://github.com/eclipse-che/che-docs/edit/main/{path}"
+
 antora:
-  extensions:
-    - id: search
-      require: '@antora/lunr-extension'
-      index_latest_only: true
-      snippet_length: 142
-    - id: collector
-      require: '@antora/collector-extension'
-    - id: htmltest
-      require: ./extensions/htmltest.js
-    - id: antora-to-plain-asciidoc
-      require: ./extensions/antora-to-plain-asciidoc.js
+    extensions:
+        -   require: '@antora/lunr-extension' # Search engine, see https://gitlab.com/antora/antora-lunr-extension/
+            index_latest_only: true
+            snippet_length: 142
+        -   require: '@antora/collector-extension' # Single-source content from engineering repositories, see https://gitlab.com/antora/antora-collector-extension
+        -   require: ./extensions/htmltest.js # Test links in HTML, see https://docs.antora.org/antora/latest/extend/extension-tutorial/
+        -   require: '@antora/pdf-extension' # Generate monolithic AsciiDoc files, see  https://gitlab.com/antora/antora-assembler
+
 asciidoc:
-  sourcemap: true
+    sourcemap: true
+
 output:
-  destinations:
-    - provider: fs
-      clean: true
-      path: build/site
-ui:
-  bundle:
-    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
-    snapshot: true
-  supplemental_files: ./supplemental-ui
-  output_dir: docs/_
+    clean: true
+#    destinations:
+#        -   provider: fs
+#            clean: true
+#            path: build/site
+
+ui: # https://docs.antora.org/antora/latest/playbook/configure-ui/
+    bundle:
+        url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
+        snapshot: true
+    supplemental_files: ./supplemental-ui
+    output_dir: docs/_ #
+
 urls:
-  html_extension_style: indexify
-  redirect_facility: static
-  latest_prerelease_version_segment: next
-  latest_version_segment_strategy: replace
-runtime:
-  cache_dir: ./.cache/antora
-  log:
-    failure_level: warn
-    level: info
+    html_extension_style: indexify # For consistency with pages indexed by search engines, see https://docs.antora.org/antora/latest/playbook/urls-html-extension-style/
+    redirect_facility: static # The least convenient, but only available redirect on our hosting platform, see https://docs.antora.org/antora/latest/playbook/urls-redirect-facility/
+    latest_prerelease_version_segment: next # Override the version in the navigation https://docs.antora.org/antora/latest/playbook/urls-redirect-facility/
+    latest_version_segment_strategy: replace # Consequence of static redirect, see https://docs.antora.org/antora/latest/playbook/urls-redirect-facility/
+
+runtime: # https://docs.antora.org/antora/latest/playbook/configure-runtime/
+    cache_dir: ./.cache/antora # Cache in local directory rather than $HOME
+    log:
+        failure_level: warn # Fail on missing attributes
+        level: info # Be more verbose than default warn level
