@@ -20,26 +20,16 @@ To uninstall an instance of {prod} {prod-ver}:
 
 .Procedure
 
-. Obtain the name of the {prod-short} {orch-namespace}. The default is `{prod-namespace}`.
+* Remove the {prod-short} instance from the `{prod-namespace}` {orch-namespace}:
 +
 [subs="+attributes,quotes"]
 ----
-$ {orch-cli} get checluster --all-namespaces \
-  -o=jsonpath="{.items[*].metadata.namespace}"
+$ {prod-cli} server:delete
 ----
 
-. Remove the {prod-short} instance from the `{prod-namespace}` {orch-namespace}:
-+
-[subs="+attributes,quotes"]
-----
-$ {prod-cli} server:delete -n {prod-namespace} # <1>
-----
-<1> The {orch-namespace} that you got in step 1.
+[TIP]
 
-include::example$snip_{project-context}-note-uninstalling-in-minikube-cluster.adoc[]
-
-[NOTE] 
-====
-If {prod-short} was installed from the OpenShift web console, `{prod-cli}` will not uninstall the {devworkspace} operator.
-To uninstall the {devworkspace} Operator, see link:https://docs.openshift.com/container-platform/{ocp4-ver}/web_console/odc-about-web-terminal.html#deleting-the-devworkspace-operator-dependency[Deleting the {devworkspace} Operator dependency].
-====
+----
+Use the `--delete-namespace` flag to remove the {prod} namespace in addition to the instance.
+Use the `--delete:all` flag to remove the {devworkspace} operator in addition to the {prod} namespace and instance.
+----
