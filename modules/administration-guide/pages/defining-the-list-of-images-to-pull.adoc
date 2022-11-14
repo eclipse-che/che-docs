@@ -7,13 +7,24 @@
 [id="defining-the-list-of-images-to-pull"]
 = Defining the list of images to pull
 
-The {image-puller-name-short} can pre-pull most images, including scratch images such as `che-machine-exec`. However, images that mount volumes in the Dockerfile, such as `traefik`, are not supported for pre-pulling on OpenShift 3.11.
+You can speed up workspace startup by using {image-puller-name-short} to pre-pull workspace-related images such as `che-code`, `che-machine-exec`, and the Universal Developer Image (`udi`) image.
+
+.Prerequisites
+
+* The `podman` CLI tool.
+* The `yq` CLI tool.
 
 .Procedure
 
-. Gather a list of relevant container images to pull by navigating to the `pass:c,a,q[{prod-url}]/plugin-registry/v3/external_images.txt` URL.
+* Get the latest {devworkspace} and {prod-short} operator bundle images, and parse the related images from the `ClusterServiceVersion` YAML file in the `/manifests/` folder into a simple list of container images:
 
-. Determine images from the list for pre-pulling. For faster workspace startup times, consider pulling workspace related images such as `che-theia`, `che-machine-exec`, `che-theia-endpoint-runtime-binary`, and plug-in sidecar images.
+[subs="+attributes"]
+----
+$ cd /tmp && \
+curl -sSLkO https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/product/getRelatedImages.sh && \
+chmod +x getRelatedImages.sh && \
+./getRelatedImages.sh -t {prod-ver-patch} -d {devworkspace-operator-version} --quiet
+----
 
 .Additional resources
 * xref:installing-image-puller-on-openshift-using-the-web-console.adoc[]
