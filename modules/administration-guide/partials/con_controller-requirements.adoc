@@ -5,28 +5,36 @@
 
 The {devworkspace} Operator consists of 3 pods. The following table presents the default resource requirements of each of these pods.
 
-[cols="2,2,1,1", options="header"]
+[cols="1a,1a,1a,1a,1a", options="header"]
 .{devworkspace} Operator Pods
 |===
+|Purpose
 |Pod
-|Container name
+|Container names
 |Default memory limit
 |Default memory request
 
 |{devworkspace} Controller Manager
-|`{devworkspace}-controller`, `kube-rbac-proxy`
-|1 Gi
-|100 Mi 
+|`{devworkspace-id}-controller-manager`
+|* `{devworkspace-id}-controller`
+* `kube-rbac-proxy`
+|* 1 GiB
+* N/A
+|* 100 MiB
+* N/A
 
 |{devworkspace} Operator Catalog
-|`registry-server`
-|N/A
-|50 Mi
+|
+|* `registry-server`
+|* N/A
+|* 50 MiB
 
 |{devworkspace} Webhook Server
-|`webhook-server}`, kube-rbac-proxy
-|300 Mi
-|20 Mi
+| `{devworkspace-id}-webhook-server`
+|* `{devworkspace-id}-controller`
+* `kube-rbac-proxy`
+|* 300 MiB
+|* 20 MiB
 |===
 
 These default values are sufficient when the {devworkspace} Controller manages a relatively big amount of {prod-short} workspaces. For larger deployments, consider increasing the defaults.
