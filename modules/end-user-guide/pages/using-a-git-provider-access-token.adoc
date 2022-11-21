@@ -32,7 +32,7 @@ TIP: In your user {orch-namespace}, you can create and apply multiple access-tok
 $ echo -n '__<your_access_token>__' | base64
 ----
 
-. Visit {prod-url}/api/user in the web browser and copy the `id` value from the response. This is your {prod-short} user ID.
+. Visit pass:a,c,q[{prod-url}]/api/user in the web browser and copy the `id` value from the response. This is your {prod-short} user ID.
 
 . Get your Git provider user ID by following the Git provider's API documentation:
 +
@@ -67,11 +67,37 @@ type: Opaque
 <3> The Git provider URL.
 <4> Your Git provider user ID.
 
+. Verify that you are in your {prod-short} user namespace in the {orch-name} cluster.
++
+[TIP]
+====
+* Visiting pass:a,c,q[{prod-url}]/api/kubernetes/namespace returns your {prod-short} user namespace as `name`.
+
+* The `{orch-cli}` tool can return the namespace you are currently on in the {orch-name} cluster:
++
+[source,subs="+attributes"]
+----
+$ {orch-cli} project
+----
+
+* If needed, switch to your your {prod-short} user namespace:
++
+[source,subs="+quotes,+attributes"]
+----
+$ {orch-cli} project <your_user_namespace>
+----
+====
+
 . Apply the Secret.
 +
-[source,terminal,subs="+quotes,+attributes"]
+[source,subs="+quotes,+attributes"]
 ----
 $ {orch-cli} apply -f - <<EOF
 __<Secret_prepared_in_the_previous_step>__
 EOF
 ----
+
+.Verification
+
+. Start a new workspace by using the URL of a Git repository that is hosted by that Git provider.
+. Push to the Git repository from the workspace.
