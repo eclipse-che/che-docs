@@ -10,36 +10,24 @@
 
 WARNING: Uninstalling {prod-short} removes all {prod-short}-related user data!
 
-To uninstall an instance of {prod} {prod-ver}:
+Use `{orch-cli}` to uninstall the {prod-short} instance.
 
 .Prerequisites
-
-* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
 
 * `{prod-cli}`. See: xref:installing-the-chectl-management-tool.adoc[].
 
 .Procedure
 
-. Obtain the name of the {prod-short} {orch-namespace}. The default is `{prod-namespace}`.
+* Remove the {prod-short} instance:
 +
 [subs="+attributes,quotes"]
 ----
-$ {orch-cli} get checluster --all-namespaces \
-  -o=jsonpath="{.items[*].metadata.namespace}"
+$ {prod-cli} server:delete
 ----
 
-. Remove the {prod-short} instance from the `{prod-namespace}` {orch-namespace}:
-+
-[subs="+attributes,quotes"]
-----
-$ {prod-cli} server:delete -n {prod-namespace} # <1>
-----
-<1> The {orch-namespace} that you got in step 1.
-
-include::example$snip_{project-context}-note-uninstalling-in-minikube-cluster.adoc[]
-
-[NOTE] 
+[TIP]
 ====
-If {prod-short} was installed from the OpenShift web console, `{prod-cli}` will not uninstall the {devworkspace} operator.
-To uninstall the {devworkspace} Operator, see link:https://docs.openshift.com/container-platform/{ocp4-ver}/web_console/odc-about-web-terminal.html#deleting-the-devworkspace-operator-dependency[Deleting the {devworkspace} Operator dependency].
+The `--delete-namespace` option removes the {prod-short} namespace.
+
+The `--delete-all` option removes the {devworkspace} Operator and the related resources.
 ====
