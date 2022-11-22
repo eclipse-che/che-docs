@@ -3,16 +3,49 @@
 [id="importing-extensions-from-the-open-vsx-registry"]
 = Importing extensions from the Open VSX Registry
 
-In the intro:
-
-* Please clarify if this procedure is about adding extensions from https://open-vsx.org/ to Che's embedded Open VSX Registry.
-
-* Please also clarify how the list of extensions that can be added from Che's embedded Open VSX Registry is synchronized with the list of extensions at https://open-vsx.org/.
+This section describes how to add VS Code extensions from link:https://open-vsx.org/[Open VSX Registry] to {prod-short}'s embedded Open VSX Registry.
 
 .Prerequisites
 
-?
+. The extension should be published on link:https://open-vsx.org/[Open VSX Registry]
+. An information about an ID of the extension. The ID contains the extension's pubisher and name (e.g. `redhat.vscode-xml`).
 
 .Procedure
 
-?
+. Modify `openvsx-sync.json` file in the link:https://github.com/redhat-developer/devspaces/blob/devspaces-3-rhel-8/dependencies/che-plugin-registry/openvsx-sync.json[plugin-registry repository] to add an information about the extension:
++
+[source,json]
+----
+    {
+        "id": "extension_id"
+    }
+----
+In this case the latest version of the extension from link:https://open-vsx.org/[Open VSX Registry] will be published. If need to specify the version, use the next structure:
++
+[source,json]
+----
+    {
+        "id": "extension_id",
+        "version": "extension_version"
+    }
+----
+. Build the container image with plugin registry and push the image to a container registry:
++
+[subs="+attributes,+quotes"]
+----
+$ ./build.sh -o username -r quay.io -t next
+$ {docker-cli} push username/che-theia-devspaces:next
+----
+. Customize an instance of `CheCluster` Custom Resource in the cluster to point the image and save the changes:
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  components:
+    pluginRegistry:
+      deployment:
+        containers:
+          - image: quay.io/username/pluginregistry-rhel8:next
+      openVSXURL: '' 
+----
+. Check that `che-plugin-registry` pod restarted and it's running. Restart the workspace and check plugins in the Plugins view.

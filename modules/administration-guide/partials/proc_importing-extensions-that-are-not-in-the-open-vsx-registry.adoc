@@ -3,14 +3,53 @@
 [id="importing-extensions-that-are-not-in-the-open-vsx-registry"]
 = Importing extensions that are not in the Open VSX Registry
 
-In the intro, please clarify if this procedure is about adding extensions to Che's embedded Open VSX Registry.
+This section describes how to add VS Code extensions that are not in the link:https://open-vsx.org/[Open VSX Registry] to {prod-short}'s embedded Open VSX Registry.
 
-Please clarify the use cases for adding extensions that are not in the Open VSX Registry. Is this procedure about adding extensions that are in https://marketplace.visualstudio.com/VSCode? If so, then please clearly state it as the (main?) use case for this procedure.
+It's possible that link:https://open-vsx.org/[Open VSX Registry] doesn't contain an extension that needs to be used in the workspace. If the extension was not yet published on the link:https://open-vsx.org/[Open VSX Registry]. In that case, please reach out to the extension's author and ask them to publish the extension on the Open VSX registry, the link:https://open-vsx.org/[how to Publish an Extension] docs provide instructions or try to import it into the local registry by using the procedure from this page.
 
 .Prerequisites
-
-?
+. The vsix file of the VS Code extension should be deployed somewhere to download it by the direct link.
+. The extenshion's id and version that is going to be added.  
 
 .Procedure
-
-?
+. Modify `openvsx-sync.json` file in the link:https://github.com/redhat-developer/devspaces/blob/devspaces-3-rhel-8/dependencies/che-plugin-registry/openvsx-sync.json[plugin-registry repository] to add an information about the extension:
++
+[source,json]
+----
+    {
+        "id": "extension_id",
+        "download": "url_to_download_vsix_file",
+        "version": "extension_version"
+    }
+----
+for example:
++
+[source,json]
+----
+    {
+        "id": "redhat.vscode-yaml",
+        "version": "1.10.1",
+        "download": "https://github.com/redhat-developer/vscode-yaml/releases/download/1.10.1/yaml-1.10.1-19523.vsix"
+    }
+----
+NOTE: If the extension is available in link:https://marketplace.visualstudio.com/vscode[VS Code Marketplace], the download link could be build like https://extension_publisher.gallery.vsassets.io/_apis/public/gallery/publisher/extension_publisher/extension/extension_name/extension_version/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage. For GoogleCloudTools.cloudcode extension it is https://GoogleCloudTools.gallery.vsassets.io/_apis/public/gallery/publisher/GoogleCloudTools/extension/cloudcode/1.20.3/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage
+. Build the container image with plugin registry and push the image to a container registry:
++
+[subs="+attributes,+quotes"]
+----
+$ ./build.sh -o username -r quay.io -t next
+$ {docker-cli} push username/che-theia-devspaces:next
+----
+. Customize an instance of `CheCluster` Custom Resource in the cluster to point the image and save the changes:
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  components:
+    pluginRegistry:
+      deployment:
+        containers:
+          - image: quay.io/username/pluginregistry-rhel8:next
+      openVSXURL: '' 
+----
+. Check that `che-plugin-registry` pod restarted and it's running. Restart the workspace and check plugins in the Plugins view.

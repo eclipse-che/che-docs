@@ -3,12 +3,27 @@
 [id="removing-extensions-from-the-embedded-open-vsx-registry"]
 = Removing extensions from the embedded Open VSX Registry
 
-Intro.
-
-.Prerequisites
-
-?
+This section describes how to remove VS Code extensions from the embedded Open VSX Registry.
 
 .Procedure
-
-?
+. Modify `openvsx-sync.json` file in the link:https://github.com/redhat-developer/devspaces/blob/devspaces-3-rhel-8/dependencies/che-plugin-registry/openvsx-sync.json[plugin-registry repository] to remove extensions from the list.
+. Build the container image with plugin registry and push the image to a container registry:
++
+[subs="+attributes,+quotes"]
+----
+$ ./build.sh -o username -r quay.io -t next
+$ {docker-cli} push username/che-theia-devspaces:next
+----
+. Customize an instance of `CheCluster` Custom Resource in the cluster to point the image and save the changes:
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  components:
+    pluginRegistry:
+      deployment:
+        containers:
+          - image: quay.io/username/pluginregistry-rhel8:next
+      openVSXURL: '' 
+----
+. Check that `che-plugin-registry` pod restarted and it's running. Restart the workspace and check plugins in the Plugins view.

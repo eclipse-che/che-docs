@@ -7,9 +7,25 @@
 [id="extensions-for-microsoft-visual-studio-code-open-source"]
 = Extensions for Microsoft Visual Studio Code - Open Source
 
-A paragraph or more of conceptual information about the embedded link:https://open-vsx.org/[Open VSX Registry] that Che admins need to understand.
+To manage Visual Studio Code extensions {prod-short} uses link:https://open-vsx.org/[Open VSX Registry], it is an open source VS Code extensions registry.
 
-Explain the process and UX implications for Che end-users.
+Depends on which cluster is used, with a restricted/disconnected network (air gap) or a connected network, the default value of Open VSX registry is different. In a cluster with a restricted network it is a local Open VSX registry instance within the plugin-registry pod, in another case - it is a public link:https://open-vsx.org/[Open VSX Registry].
+
+It is also possible to control what instance of Open VSX should be used in the workspaces. This configuration is part of the `CheCluster` Custom Resource:
+
+[source,yaml,subs="+quotes"]
+----
+spec:
+  components:
+    pluginRegistry:
+      openVSXURL: "__<Open_VSX_registry_URL>__" # <1> 
+----
+
+<1> Sets the URL of Open VSX registry. The default value is `https://open-vsx.org`. In case if the value is empty, {prod-short} will use a local Open VSX registry.
+
+The local/embedded registry is running in the plugin-registry pod and provides a subset of VS Code extensions that are published on link:https://open-vsx.org/[Open VSX Registry].
+
+.Next topics describe how to manage a local Open VSX registry:
 
 include::partial$proc_importing-extensions-from-the-open-vsx-registry.adoc[leveloffset=+1]
 
