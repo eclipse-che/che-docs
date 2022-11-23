@@ -9,7 +9,9 @@
 
 To manage Visual Studio Code extensions {prod-short} uses link:https://open-vsx.org/[Open VSX Registry], it is an open source VS Code extensions registry.
 
-Depends on which cluster is used, with a restricted/disconnected network (air gap) or a connected network, the default value of Open VSX registry is different. In a cluster with a restricted network it is a local Open VSX registry instance within the plugin-registry pod, in another case - it is a public link:https://open-vsx.org/[Open VSX Registry].
+The default Open VSX registry differs depending on how proxies or DNS is configued. 
+
+If open-vsx.org can be resolved, the default will be to the public link:https://open-vsx.org/[Open VSX Registry]; if not, then the default will be a locally cached Open VSX registry instance within the plugin-registry pod to support airgapped, offline, and proxy-restricted deployments. 
 
 It is also possible to control what instance of Open VSX should be used in the workspaces. This configuration is part of the `CheCluster` Custom Resource:
 
