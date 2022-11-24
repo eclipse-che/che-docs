@@ -1,0 +1,231 @@
+:_content-type: PROCEDURE
+:description: Branding Visual Studio Code - Open Source
+:keywords: contributor-guide, branding-visual-studio-code
+:navtitle: Branding Visual Studio Code - Open Source
+:page-aliases: branding.adoc
+
+[id="branding-visual-studio-code_{context}"]
+= Branding Visual Studio Code - Open Source
+
+You can brand some of the UI elements in the Visual Studio Code - Open Source IDE with your corporate or product brand. This means first adding brand-related files to the forked IDE repository, then building a container image of the branded IDE, and finally adding a `che-editor.yaml` file to the project repository.
+
+Here are some examples of the UI elements in Visual Studio Code - Open Source that you can brand:
+
+.Browser tab title and icon
+image::branding/browser-tab.png[link="{imagesdir}/branding/browser-tab.png"]
+
+.The icon for the empty editor area when no editor is open
+image::branding/main-area.png[link="{imagesdir}/branding/main-area.png"]
+
+.The Status Bar commands
+image::branding/product-commands.png[link="{imagesdir}/branding/product-commands.png"]
+
+.The Status Bar icon
+image::branding/status-bar-item.png[link="{imagesdir}/branding/status-bar-item.png"]
+
+.The Get Started page
+image::branding/get-started-page.png[link="{imagesdir}/branding/get-started-page.png"]
+
+.The tab icon for the Get Started page
+image::branding/get-started-tab.png[link="{imagesdir}/branding/get-started-tab.png"]
+
+.The application name in the *About* dialog
+image::branding/about-dialog.png[link="{imagesdir}/branding/about-dialog.png"]
+
+.Prerequisites
+
+* Bash
+* `{docker-cli}`
+
+.Procedure
+
+include::example$snip_{project-context}-link-to-che-code-repository.adoc[]
+
+include::example$snip_{project-context}-step-about-product-json-file.adoc[]
++
+TIP: In the `product.json` file, specify all paths relative the `/branding/` folder.
++
+.`/branding/product.json`
+====
+This example shows all of the properties that you can customize by using this file:
+
+[source,json,attrs="nowrap",subs="+attributes"]
+----
+{
+    "nameShort": "VS Code - Open Source", # <1>
+    "nameLong": "Red Hat OpenShift Dev Spaces with Microsoft Visual Studio Code - Open Source IDE", # <2>
+    "icons": {
+        "favicon": { # <3>
+            "universal": "icons/favicon.ico"
+        },
+        "welcome": { # <4>
+            "universal": "icons/dev-spaces.svg"
+        },
+        "statusBarItem": { # <5>
+            "universal": "icons/dev-spaces.svg"
+        },
+        "letterpress": { # <6>
+            "light": "icons/letterpress-light.svg",
+            "dark": "icons/letterpress-light.svg"
+        }
+    },
+    "remoteIndicatorCommands": { # <7>
+        "openDocumentationCommand": "Dev Spaces: Open Documentation",
+        "openDashboardCommand": "Dev Spaces: Open Dashboard",
+        "stopWorkspaceCommand": "Dev Spaces: Stop Workspace"
+    },
+    "workbenchConfigFilePath": "workbench-config.json", # <8>
+    "codiconCssFilePath": "css/codicon.css" # <9>
+}
+----
+<1> The application name for UI elements.
+<2> This application name is used for the *Welcome* page, **About** dialog, and browser tab title.
+<3> The icon for the browser tab title for all themes.
+<4> The icon for the tab title of the **Get Started** page for all themes.
+<5> The icon for the bottom *Status Bar* for all themes. Define it as `codicon` in the `workbench-config.json` file and the `codicon` CSS styles.
+//The second sentence above is not clear to me.
+<6> The icon for the empty editor area when no editor is open. You can provide different icon files for `light` and `dark` themes.
+<7> The names of commands provided by the link:https://github.com/che-incubator/che-code/blob/main/code/extensions/che-remote/package.nls.json[Eclipse Che Remote] extension. Users can run these commands by clicking the *Status Bar*.
+<8> The relative path to `workbench-config.json`, which is explained in one of the next steps.
+<9> The relative path to `css/codicon.css`, which is explained in one of the next steps.
+====
++
+include::example$snip_{project-context}-admonition-product-json-link.adoc[]
+
+. Add the icon files, which you specified in the `product.json` file in the previous step, to the repository.
+
+include::example$snip_{project-context}-workbench-config-step.adoc[]
+
+include::example$snip_{project-context}-codicon-css-step.adoc[]
+
+. Run the `/branding/branding.sh` script.
++
+[subs="+attributes,+quotes"]
+----
+$ ./branding/branding.sh
+----
+
+. Build the container image from the `/che-code/` directory and push the image to a container registry:
++
+.. {empty}
++
+[subs="+attributes,+quotes"]
+----
+$ {docker-cli} build -f build/dockerfiles/linux-musl.Dockerfile -t linux-musl-amd64 .
+----
++
+.. {empty}
++
+[subs="+attributes,+quotes"]
+----
+$ {docker-cli} build -f build/dockerfiles/linux-libc.Dockerfile -t linux-libc-amd64 .
+----
++
+.. {empty}
++
+[subs="+attributes,+quotes"]
+----
+$ export DOCKER_BUILDKIT=1
+----
++
+.. {empty}
++
+[subs="+attributes,+quotes"]
+----
+$ {docker-cli} build -f build/dockerfiles/assembly.Dockerfile -t vs-code-open-source .
+----
++
+.. {empty}
++
+[subs="+attributes,+quotes"]
+----
+$ {docker-cli} push __<username>__/vs-code-open-source:next
+----
+
+. Create a `/.che/che-editor.yaml` file in the remote repository that you intend to clone into workspaces. This file must specify the container image of your customized Visual Studio Code - Open Source that is to be pulled for new workspaces.
++
+.che-editor.yaml for the branded Visual Studio Code - Open Source
+====
+[source,yaml,attrs="nowrap"]
+----
+inline:
+  schemaVersion: 2.1.0
+  metadata:
+    name: che-code
+  commands:
+    - id: init-container-command
+      apply:
+        component: che-code-injector
+  events:
+    preStart:
+      - init-container-command
+  components:
+    - name: che-code-runtime-description
+      container:
+        image: quay.io/devfile/universal-developer-image:ubi8-latest
+        command:
+          - /checode/entrypoint-volume.sh
+        volumeMounts:
+          - name: checode
+            path: /checode
+        memoryLimit: 2Gi
+        memoryRequest: 256Mi
+        cpuLimit: 500m
+        cpuRequest: 30m
+        endpoints:
+          - name: che-code
+            attributes:
+              type: main
+              cookiesAuthEnabled: true
+              discoverable: false
+              urlRewriteSupported: true
+            targetPort: 3100
+            exposure: public
+            secure: false
+            protocol: https
+          - name: code-redirect-1
+            attributes:
+              discoverable: false
+              urlRewriteSupported: true
+            targetPort: 13131
+            exposure: public
+            protocol: http
+          - name: code-redirect-2
+            attributes:
+              discoverable: false
+              urlRewriteSupported: true
+            targetPort: 13132
+            exposure: public
+            protocol: http
+          - name: code-redirect-3
+            attributes:
+              discoverable: false
+              urlRewriteSupported: true
+            targetPort: 13133
+            exposure: public
+            protocol: http
+      attributes:
+        app.kubernetes.io/component: che-code-runtime
+        app.kubernetes.io/part-of: che-code.eclipse.org
+    - name: checode
+      volume: {}
+    - name: che-code-injector
+      container:
+        image: quay.io/username/vs-code-open-source:next <1>
+        command: ["/entrypoint-init-container.sh"]
+        volumeMounts:
+          - name: checode
+            path: /checode
+        memoryLimit: 128Mi
+        memoryRequest: 32Mi
+        cpuLimit: 500m
+        cpuRequest: 30m
+----
+<1> In this example, `quay.io/username/vs-code-open-source:next` specifies the container image of a branded Visual Studio Code - Open Source that will be pulled at workspace creation.
+====
+
+.Verification
+
+. xref:end-user-guide:starting-a-new-workspace-with-a-clone-of-a-git-repository.adoc[Start a new workspace] with a clone of the project repository that contains the `che-editor.yaml` file.
+
+. Check that the configured UI elements are correctly branded in Visual Studio Code - Open Source in the workspace.
