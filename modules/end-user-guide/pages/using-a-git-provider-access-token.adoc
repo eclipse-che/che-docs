@@ -11,26 +11,39 @@ OAuth for GitHub, GitLab, or Bitbucket needs to be xref:administration-guide:oau
 
 Mounting your access token as a Secret enables the {prod-short} Server to access the remote repository that is cloned during workspace creation, including access to the repository's `/.che` and `/.vscode` folders.
 
-Apply the {kubernetes} Secret in your user {orch-namespace} of the {orch-name} cluster of your organization's {prod-short} instance.
+Apply the Secret in your user {orch-namespace} of the {orch-name} cluster of your organization's {prod-short} instance.
 
 After you have applied the Secret, you can create new workspaces from a private GitHub, GitLab, or Bitbucket-server repository.
 
-TIP: In your user {orch-namespace}, you can create and apply multiple access-token Secrets per a Git provider.
+You can create and apply multiple access-token Secrets per a Git provider. You must apply each of those Secrets in your user {orch-namespace}.
 
 .Prerequisites
 
-* An active `{orch-cli}` session, with administrative permissions, to the {orch-name} cluster. See {orch-cli-link}.
+* You have cluster administrator permissions for the cluster on which your organization's {prod-short} instance is running.
 
-* The link:https://www.gnu.org/software/coreutils/base64[`base64`] command line tools are installed in the operating system you are using.
+* You have logged in to the cluster.
++
+[TIP]
+====
+On OpenShift, you can use the `oc` command-line tool to log in to the cluster:
+
+`$ oc login pass:c,a,q[{prod-url}] --username=__<my_user>__`
+
+====
 
 .Procedure
 
-. Copy your access token and encode it to Base64.
+. Generate your access token on your Git provider's website.
+
+. Encode your access token to Base64.
 +
-[source,terminal,subs="+quotes,+attributes"]
-----
-$ echo -n '__<your_access_token>__' | base64
-----
+[TIP]
+====
+If you have the link:https://www.gnu.org/software/coreutils/base64[base64] command-line tools installed in the operating system, you can use the command line:
+
+`$ echo -n '__<your_access_token_string>__' | base64`
+
+====
 
 . Visit `pass:c,a,q[{prod-url}]/api/user` in the web browser and copy the `id` value from the response. This is your {prod-short} user ID.
 
@@ -52,10 +65,10 @@ metadata:
     app.kubernetes.io/component: scm-personal-access-token
     app.kubernetes.io/part-of: che.eclipse.org
   annotations:
-    che.eclipse.org/che-userid: _<{prod-id-short}_user_ID>_ <1>
-    che.eclipse.org/scm-personal-access-token-name: _<git_provider_name>_ <2>
-    che.eclipse.org/scm-url: _<Git_provider_endpoint>_ <3>
-    che.eclipse.org/scm-userid: _<Git_provider_user_ID>_ <4>
+    che.eclipse.org/che-userid: _<{prod-id-short}_user_ID>_# <1>
+    che.eclipse.org/scm-personal-access-token-name: _<git_provider_name>_# <2>
+    che.eclipse.org/scm-url: _<Git_provider_endpoint># <3>
+    che.eclipse.org/scm-userid: '_<Git_provider_user_ID>_'# <4>
     che.eclipse.org/scm-username: _<Git_provider_username>_
 data:
   token: __<Base64_encoded_access_token>__
@@ -67,37 +80,39 @@ type: Opaque
 <3> The Git provider URL.
 <4> Your Git provider user ID.
 
-. Verify that you are in your {prod-short} user namespace in the {orch-name} cluster.
+. Visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
+
+. Switch to your {prod-short} user namespace in the cluster.
 +
 [TIP]
 ====
-* Visiting `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` returns your {prod-short} user namespace as `name`.
+On OpenShift:
 
-* The `{orch-cli}` tool can return the namespace you are currently on in the {orch-name} cluster:
+* The `oc` command-line tool can return the namespace you are currently on in the cluster, which you can use to check your current namespace:
 +
-[source,subs="+attributes"]
-----
-$ {orch-cli} project
-----
+`$ oc project`
 
-* If needed, switch to your your {prod-short} user namespace:
+* You can switch to your {prod-short} user namespace on a command line if needed:
 +
-[source,subs="+quotes,+attributes"]
-----
-$ {orch-cli} project <your_user_namespace>
-----
+`$ oc project __<your_user_namespace>__`
+
 ====
 
 . Apply the Secret.
 +
+[TIP]
+====
+On OpenShift, you can use the `oc` command-line tool:
 [source,subs="+quotes,+attributes"]
 ----
-$ {orch-cli} apply -f - <<EOF
+$ oc apply -f - <<EOF
 __<Secret_prepared_in_the_previous_step>__
 EOF
 ----
+====
 
 .Verification
 
-. Start a new workspace by using the URL of a Git repository that is hosted by that Git provider.
-. Push to the Git repository from the workspace.
+. Start a new workspace by using the URL of a remote Git repository that is hosted by that Git provider.
+. Make some changes and push to the remote Git repository from the workspace.
+
