@@ -1,19 +1,26 @@
-:_content-type: ASSEMBLY
+:_content-type: REFERENCE
 :description: Viewing {prod-short} workspaces logs
 :keywords: administration-guide, viewing-che-workspaces-logs
 :navtitle: Viewing {prod-short} workspaces logs
 :page-aliases: .:viewing-che-workspaces-logs.adoc, administration-guide:viewing-che-workspaces-logs.adoc
 
-
 [id="viewing-{prod-id-short}-workspaces-logs"]
 = Viewing {prod-short} workspaces logs
 
+You can view {prod-short} logs to better understand and debug background processes should a problem occur.
 
-This section describes how to view {prod-short} workspaces logs.
+An IDE extension misbehaves or needs debugging::
+The logs list the plugins that have been loaded by the editor.
 
-include::partial$assembly_viewing-logs-from-language-servers-and-debug-adapters.adoc[leveloffset=+1]
+The container runs out of memory::
+The logs contain an `OOMKilled` error message.
+Processes running in the container attempted to request more memory than is configured to be available to the container.
 
+A process runs out of memory::
+The logs contain an error message such as `OutOfMemoryException`.
+A process inside the container ran out of memory without the container noticing.
 
-include::partial$assembly_viewing-che-theia-ide-logs.adoc[leveloffset=+1]
-
-
+.Additional resources
+* xref:viewing-workspace-logs-in-cli.adoc[]
+* xref:viewing-workspace-logs-in-the-openshift-console.adoc[]
+* xref:viewing-language-servers-and-debug-adapters-logs-in-visual-studio-code.adoc[]
