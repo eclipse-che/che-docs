@@ -2,4 +2,14 @@
 [id="stopping-workspaces"]
 = Stopping workspaces
 
-Rough technical info to be dumped here by the assigned SME.
+A workspace can be stopped by setting the `Devworkspace` 's `spec.started` field to `false`.
+
+To use the `wait` command to wait for the status change, a minimum version of `1.23` for `kubectl`, or a minimum version of `4.10` for `oc` is required.
+
+After determining the `NAME` and `NAMESPACE` of the workspace to stop, run:
+
+[source,subs="+attributes"]
+----
+$ {orch-cli} patch devworkspace NAME -p '{"spec":{"started":false}}' --type=merge -n NAMESPACE && \
+        {orch-cli} wait --for=jsonpath='{.status.phase}'=Stopped dw/NAME -n NAMESPACE
+----

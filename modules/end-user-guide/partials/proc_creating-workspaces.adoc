@@ -2,4 +2,218 @@
 [id="creating-workspaces"]
 = Creating workspaces
 
-Rough technical info to be dumped here by the assigned SME.
+It is recommended to create workspaces using the {prod-short} Dashboard instead of using {orch-name} APIs to directly create the `DevWorkspace` and `DevWorkspaceTemplate` custom resources.
+
+This is because creating workspaces using the {prod-short} Dashboard helps {prod-short} and its components convert the workspace project's devfile to `DevWorkspace` and `DevWorkspaceTemplate` custom resources on the cluster.
+
+Creating workspaces using the {prod-short} dashboard allows {prod-short} to make the following additions to the newly created `DevWorkspaces`:
+
+* Recognition of configurations in `spec.devEnvironments` specified in the `CheCluster` custom resource including:
+** persistent storage strategy specified with `devEnvironments.storage`
+** default editor specified with `devEnvironments.defaultEditor`
+** default plugins specified with `devEnvironments.defaultPlugins`
+** container build configuration specified with `devEnvironments.containerBuildConfiguration`
+* Recognition of the `DevWorkspaceOperatorConfig` configuration managed by {prod-short}
+
+.Prerequisites
+
+* An active `{orch-cli}` session with permissions to create `DevWorkspace` and `DevWorkspaceTemplate` resources in your {orch-namespace} on the {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Create a `DevWorkspaceTemplate` for the editor. The example below creates a `DevWorkspaceTemplate` named `che-code` for the Che-Code Visual Studio Code editor.
++
+[subs="+quotes,attributes"]
+----
+$ cat <<EOF | {orch-cli} apply -f - -n __<user_namespace>__
+apiVersion: workspace.devfile.io/v1alpha2
+kind: DevWorkspaceTemplate
+metadata:
+  name: che-code
+spec:
+  commands:
+    - apply:
+        component: vscode-injector
+      id: init-container-command
+  components:
+    - container:
+        command:
+          - /entrypoint-init-container.sh
+        cpuLimit: 500m
+        cpuRequest: 30m
+        image: 'quay.io/che-incubator/che-code:insiders'
+        memoryLimit: 128Mi
+        memoryRequest: 32Mi
+        sourceMapping: /projects
+        volumeMounts:
+          - name: checode
+            path: /checode
+      name: vscode-injector
+    - attributes:
+        app.kubernetes.io/component: vscode-runtime
+        app.kubernetes.io/part-of: vscode.eclipse.org
+        controller.devfile.io/container-contribution: true
+      container:
+        cpuRequest: 30m
+        command:
+          - /checode/entrypoint-volume.sh
+        env:
+          - name: CODE_HOST
+            value: 0.0.0.0
+        memoryRequest: 256Mi
+        sourceMapping: /projects
+        cpuLimit: 500m
+        volumeMounts:
+          - name: checode
+            path: /checode
+        memoryLimit: 1024Mi
+        image: 'quay.io/che-incubator/che-code:insiders' # no-op ignored image
+        endpoints:
+          - attributes:
+              cookiesAuthEnabled: true
+              discoverable: false
+              type: main
+              urlRewriteSupported: true
+            exposure: public
+            name: che-code
+            protocol: https
+            secure: false
+            targetPort: 3100
+          - attributes:
+              discoverable: false
+              urlRewriteSupported: true
+            exposure: public
+            name: code-redirect-1
+            protocol: http
+            targetPort: 13131
+          - attributes:
+              discoverable: false
+              urlRewriteSupported: true
+            exposure: public
+            name: code-redirect-2
+            protocol: http
+            targetPort: 13132
+          - attributes:
+              discoverable: false
+              urlRewriteSupported: true
+            exposure: public
+            name: code-redirect-3
+            protocol: http
+            targetPort: 13133
+      name: vscode-runtime-description
+    - name: checode
+      volume:
+        ephemeral: true
+  events:
+    preStart:
+      - init-container-command
+EOF
+----
+. To prepare the `DevWorkspace` custom resource, copy the contents of a project Devfile. The example used for this procedure is the following Devfile:
++
+[subs="+quotes,attributes"]
+----
+schemaVersion: 2.1.0    
+components:
+  - name: tooling-container
+    container:
+      image: quay.io/devfile/universal-developer-image:ubi8-latest
+----
+. Use the devfile to create a `DevWorkspace` definition by adding its contents to the `spec.template` field of the `DevWorkspace`. In the following example, `spec.started` is set to `true`, meaning that the workspace will start automatically when the `DevWorkspace` is applied on the {orch-name} cluster.
++
+[subs="+quotes,attributes"]
+----
+kind: DevWorkspace
+apiVersion: workspace.devfile.io/v1alpha2
+metadata:
+  name: my-devworkspace
+spec:
+  started: true
+  template:
+    components:
+      - name: tooling-container
+        container:
+          image: quay.io/devfile/universal-developer-image:ubi8-latest
+----
+. Add details about the project using the `spec.template.projects` field.
++
+[subs="+quotes,attributes"]
+----
+kind: DevWorkspace
+apiVersion: workspace.devfile.io/v1alpha2
+metadata:
+  name: my-devworkspace
+spec:
+  started: true
+  template:
+    projects:
+      - name: my-project-name
+        git:
+          remotes:
+            origin: __<git_project_URL>__
+    components:
+      - name: tooling-container
+        container:
+          image: quay.io/devfile/universal-developer-image:ubi8-latest
+----
+. Reference the editor using the `DevWorkspaceTemplate` created from step 1 using the `spec.contributions` field.
++
+[subs="+quotes,attributes"]
+----
+kind: DevWorkspace
+apiVersion: workspace.devfile.io/v1alpha2
+metadata:
+  name: my-devworkspace
+spec:
+  started: true
+  contributions:
+    - name: editor
+      kubernetes:
+        name: che-code
+  template:
+    projects:
+      - name: my-project-name
+        git:
+          remotes:
+            origin: __<git_project_URL>__
+    components:
+      - name: tooling-container
+        container:
+          image: quay.io/devfile/universal-developer-image:ubi8-latest
+----
+. Apply the `DevWorkspace` from the previous step onto the {orch-name} cluster.
++
+[subs="+quotes,attributes"]
+----
+$ cat <<EOF | {orch-cli} apply -f - -n __<user_namespace>__
+kind: DevWorkspace
+apiVersion: workspace.devfile.io/v1alpha2
+metadata:
+  name: my-devworkspace
+spec:
+  started: true
+  contributions:
+    - name: editor
+      kubernetes:
+        name: che-code
+  template:
+    projects:
+      - name: my-project-name
+        git:
+          remotes:
+            origin: __<git_project_URL>__
+    components:
+      - name: tooling-container
+        container:
+          image: quay.io/devfile/universal-developer-image:ubi8-latest
+EOF
+----
+. Confirm that the workspace is starting.
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} get devworkspaces __<user_namespace>__
+
+NAMESPACE          NAME                  DEVWORKSPACE ID             PHASE      INFO
+__<user_namespace>__   my-devworkspace       workspacedf64e4a492cd4701   Starting   Waiting for workspace deployment
+----

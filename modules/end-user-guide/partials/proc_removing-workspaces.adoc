@@ -2,4 +2,11 @@
 [id="removing-workspaces"]
 = Removing workspaces
 
-Rough technical info to be dumped here by the assigned SME.
+Removing a workspace only requires deleting the `DevWorkspace` custom resource.
+
+Deleting the `DevWorkspace` custom resource will also delete other workspace resources if they were created by {prod-short} such as the referenced `DevWorkspaceTemplate` and per-workspace `PersistentVolumeClaims`.
+
+[source,subs="+attributes"]
+----
+$ {orch-cli} delete devworkspace NAME -n NAMESPACE
+----

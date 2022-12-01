@@ -2,4 +2,14 @@
 [id="starting-stopped-workspaces"]
 = Starting stopped workspaces
 
-Rough technical info to be dumped here by the assigned SME.
+A stopped workspace can be started by setting the `Devworkspace` 's `spec.started` field to `true`.
+
+To use the `wait` command to wait for the status change, a minimum version of `1.23` for `kubectl`, or a minimum version of `4.10` for `oc` is required.
+
+After determining the `NAME` and `NAMESPACE` of the workspace to start, run:
+
+[source,subs="+attributes"]
+----
+$ {orch-cli} patch devworkspace NAME -p '{"spec":{"started":true}}' --type=merge -n NAMESPACE && \
+        {orch-cli} wait --for=jsonpath='{.status.phase}'=Running dw/NAME -n NAMESPACE
+----
