@@ -7,200 +7,180 @@
 [id="importing-untrusted-tls-certificates"]
 = Importing untrusted TLS certificates to {prod-short}
 
-By default, external communications between {prod-short} components are encrypted with TLS. Communications of {prod-short} components with external services such as proxies, source code repositories, and identity provider might also require TLS. All communications encrypted with TLS require the use of TLS certificates signed by trusted Certificate Authorities (CA).
+{prod-short} components communications with following services are encrypted with TLS.
+They require TLS certificates signed by trusted Certificate Authorities (CA):
 
-When the certificates used by {prod-short} components or by an external service are signed by an untrusted CA, you must import the CA certificate into the {prod-short} instance so that every {prod-short} component treats the certificates as signed by a trusted CA. You have to do this in the following cases:
+* External communications between {prod-short} components
+* Communications of {prod-short} components with external services
 
-* The underlying {orch-name} cluster uses TLS certificates signed by an untrusted CA.
-{prod-short} server or workspace components connect to external OIDC providers or a Git server that use TLS certificates signed by an untrusted CA.
+Therefore, you must import the full Certificate Authorities chain (root CA and intermediate) into the {prod-short} instance when the certificates used by one of such services are signed by an otherwise untrusted CA:
 
-{prod-short} uses labeled `ConfigMap` objects in {orch-namespace} as sources for TLS certificates. The `ConfigMap` objects can have an arbitrary number of keys with a random number of certificates each.
+* The underlying {orch-name} cluster
+* An external proxy
+* An external identity provider (OIDC)
+* An external source code repositories provider (Git)
+
+{prod-short} uses labeled config maps in {prod-short} {orch-namespace} as sources for TLS certificates.
+The config maps can have an arbitrary amount of keys with a random amount of certificates each.
 
 [NOTE]
 ====
-When an OpenShift cluster contains cluster-wide trusted CA certificates added through the link:https://docs.openshift.com/container-platform/4.10/networking/configuring-a-custom-pki.html#nw-proxy-configure-object_configuring-a-custom-pki[cluster-wide-proxy configuration], {prod-short} Operator detects them and automatically injects them into a `ConfigMap` object. {prod-short} automatically labels the `ConfigMap` object with the `config.openshift.io/inject-trusted-cabundle="true"` label. Based on this annotation, OpenShift automatically injects the cluster-wide trusted CA certificates inside the `ca-bundle.crt` key of the `ConfigMap` object.
+When an OpenShift cluster contains cluster-wide trusted CA certificates added through the link:https://docs.openshift.com/container-platform/latest/networking/configuring-a-custom-pki.html#nw-proxy-configure-object_configuring-a-custom-pki[cluster-wide-proxy configuration],
+{prod-short} Operator detects them and automatically injects them into a config map with the `config.openshift.io/inject-trusted-cabundle="true"` label.
+Based on this annotation, OpenShift automatically injects the cluster-wide trusted CA certificates inside the `ca-bundle.crt` key of the config map.
 ====
-
-[IMPORTANT]
-====
-Some {prod-short} components require a full certificate chain to trust the endpoint.
-If the cluster is configured with an intermediate certificate, add the whole chain, including self-signed root, to {prod-short}.
-====
-
-== Adding new CA certificates into {prod-short}
-
-Certificate files are typically stored as Base64 files, with extensions such as `.pem`, `.crt`, `.ca-bundle`, and others. All Secrets that hold certificate files should use the Base64-encoded certificate rather than binary-encoded certificate. The following procedure is applicable for already installed and running instances and for instances that are to be installed.
 
 .Prerequisites
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster.
+See {orch-cli-link}.
 
-* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
-* Namespace for {prod-short} exists.
-* {prod-short} already uses some reserved file names to automatically inject certificates into the `ConfigMap` object. Avoid using the following reserved file names to save your certificates:
-  ** `ca-bundle.crt`
-  ** `ca.crt`
+* The `{prod-namespace}` {orch-namespace} exists.
+
+* The complete Certificate Authorities chains to import (root CA and intermediate) in link:https://wiki.openssl.org/index.php/PEM[PEM] format in `ca-cert-__<count>__.pem` files.
 
 .Procedure
-
-. Save the certificates you need to import to a local file system.
+. Concatenate all CA chains PEM files to import, into the `custom-ca-certificates.pem` file, and remove the return character that is incompatible with the Java trust store.
 +
-[CAUTION]
-====
-* A certificate with the introductory phrase `BEGIN TRUSTED CERTIFICATE` is likely in the PEM `TRUSTED CERTIFICATE` format, which is not supported by Java. Convert it to the supported `CERTIFICATE` format with the following command:
-** `openssl x509 -in cert.pem -out cert.cer`
-====
+----
+$ cat ca-cert*.pem | tr -d '\r' > custom-ca-certificates.pem
+----
 
-. Create a new `ConfigMap` object with the required TLS certificates:
+. Create the `custom-ca-certificates` config map with the required TLS certificates:
 +
 [subs="+attributes,+quotes"]
 ----
-$ {orch-cli} create configmap custom-certs --from-file=__<bundle_file_path>__ -n={prod-namespace}
+$ {orch-cli} create configmap custom-ca-certificates \
+    --from-file=custom-ca-certificates.pem \
+    --namespace={prod-namespace}
 ----
-+
-To apply more than one bundle, add another `-from-file=_<bundle_file_path>_`. Alternatively, create another `ConfigMap` object.
 
-. Label the created `ConfigMap` objects with the `app.kubernetes.io/part-of=che.eclipse.org` and `app.kubernetes.io/component=ca-bundle` labels:
+. Label the `custom-ca-certificates` config map:
 +
 [subs="+attributes,+quotes"]
 ----
-$ {orch-cli} label configmap custom-certs app.kubernetes.io/part-of=che.eclipse.org app.kubernetes.io/component=ca-bundle -n {prod-namespace}
+$ {orch-cli} label configmap custom-ca-certificates \
+    app.kubernetes.io/component=ca-bundle \
+    app.kubernetes.io/part-of=che.eclipse.org \
+    --namespace={prod-namespace}
 ----
 
-. Deploy {prod-short} if it hasn't been deployed before. Otherwise wait until the rollout of {prod-short} components finishes. 
+. Deploy {prod-short} if it hasn't been deployed before.
+Otherwise, wait until the rollout of {prod-short} components finishes.
+
 . Restart running workspaces for the changes to take effect.
 
-== Troubleshooting imported certificate issues
-
-If issues occur after adding the certificates, verify the specified values at the {prod-short} instance level and workspace level.
-
-
-.Verifying imported certificates at the {prod-short} instance level
-
-* In case of a {prod-short} link:https://docs.openshift.com/container-platform/latest/operators/understanding/olm-what-operators-are.html[Operator] deployment, the namespace where the `CheCluster` is located contains the labeled `ConfigMap` objects with the correct content:
+.Verification steps
+. Verify that the config map contains your custom CA certificates.
+The command returns your custom CA certificates in PEM format:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get cm --selector=app.kubernetes.io/component=ca-bundle,app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
-----
-+
-Check the content of the `ConfigMap` object by entering:
-+
-[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
-----
-$ {orch-cli} get cm __<name>__ -n {prod-namespace} -o yaml
+$ {orch-cli} get configmap \
+    --namespace={prod-namespace} \
+    --output='jsonpath={.items[0:].data.custom-ca-certificates\.pem}' \
+    --selector=app.kubernetes.io/component=ca-bundle,app.kubernetes.io/part-of=che.eclipse.org
 ----
 
-* {prod-short} Pod Volumes list contains a volume that uses the `ca-certs-merged` `ConfigMap` object as the data source.
-To get the list of Volumes of the {prod-short} Pod, run:
+. Verify {prod-short} pod contains a volume mounting the `ca-certs-merged` config map:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get pod -l app.kubernetes.io/component={prod-id-short} -o "jsonpath={.items[0].spec.volumes}" -n {prod-namespace}
-----
-+
-* {prod-short} mounts certificates in the `/public-certs/` folder of the {prod-short} server container. To view the list of files in this folder, enter:
-+
-[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
-----
-$ {orch-cli} exec -t deploy/{prod-id-short} -n {prod-namespace} -- ls /public-certs/
-----
-+
-* In the {prod-short} server logs, there is a line for every certificate added to the Java truststore, including configured {prod-short} certificates. View them:
-+
-[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
-----
-$ {orch-cli} logs deploy/{prod-id-short} -n {prod-namespace}
-----
-+
-* {prod-short} server Java truststore contains the certificates. The certificates SHA1 fingerprints are among the list of the SHA1 of the certificates included in the truststore. View the list:
-+
-[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
-----
-$ {orch-cli} exec -t deploy/{prod-id-short} -n {prod-namespace} -- keytool -list -keystore {prod-home}/cacerts
-Your keystore contains 141 entries:
-+
-(...)
-----
-+
-To get the SHA1 hash of a certificate on the local filesystem, run:
-+
-[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
-----
-$ openssl x509 -in __<certificate_file_path>__ -fingerprint -noout
-SHA1 Fingerprint=3F:DA:BF:E7:A7:A7:90:62:CA:CF:C7:55:0E:1D:7D:05:16:7D:45:60
+$ {orch-cli} get pod \
+    --selector=app.kubernetes.io/component={prod-id-short} \
+    --output='jsonpath={.items[0].spec.volumes[0:].configMap.name}' \
+    --namespace={prod-namespace} \
+    | grep ca-certs-merged
 ----
 
-.Verifying imported certificates at the workspace level
-
-* Start a workspace, obtain the {orch-namespace} name in which it has been created and wait for the workspace to be started.
-
-* Get the name of the workspace Pod:
+. Verify the {prod-short} server container has your custom CA certificates.
+The command returns your custom CA certificates in PEM format:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get pods -o=jsonpath='{.items[0].metadata.name}' -n __<workspace namespace>__ | grep '^workspace.*'
+$ {orch-cli} exec -t deploy/{prod-id-short} \
+    --namespace={prod-namespace} \
+    -- cat /public-certs/custom-ca-certificates.pem
 ----
 
-* Get the name of the Che-Theia IDE container in the workspace Pod:
+. Verify in the {prod-short} server logs that the imported certificates count is not null:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get -o json pod __<workspace pod name>__  -n __<workspace namespace>__ | \
-    jq -r '.spec.containers[] | select(.name | startswith("theia-ide")).name'
+$ {orch-cli} logs deploy/{prod-id-short} --namespace={prod-namespace} \
+    | grep custom-ca-certificates.pem
 ----
 
-* Look for a `che-trusted-ca-certs` `ConfigMap` object inside the workspace namespace:
+. List the SHA256 fingerprints of your certificates:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get cm che-trusted-ca-certs -n __<workspace namespace>__
+$ for certificate in ca-cert*.pem ;
+  do openssl x509 -in $certificate -digest -sha256 -fingerprint -noout | cut -d= -f2;
+  done
 ----
 
-* Check that the entries in the `che-trusted-ca-certs` `ConfigMap` object contain all the additional entries you added before. In addition, it can contain `ca-bundle.crt` reserved entry. View the entries:
+. Verify {prod-short} server Java truststore contains certificates with the same fingerprint:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get cm che-trusted-ca-certs -n __<workspace namespace>__ -o json | jq -r '.data | keys[]'
-ca-bundle.crt
-source-config-map-name.data-key.crt
+$ {orch-cli} exec -t deploy/{prod-id-short} --namespace={prod-namespace} -- \
+    keytool -list -keystore {prod-home}/cacerts \
+    | grep --after-context=1 custom-ca-certificates.pem
 ----
 
-* Confirm that the `che-trusted-ca-certs` `ConfigMap` object is added as a volume in the workspace Pod:
+. Start a workspace, get the {orch-namespace} name in which it has been created: __<workspace_namespace>__, and wait for the workspace to be started.
+
+. Verify that the `che-trusted-ca-certs` config map contains your custom CA certificates.
+The command returns your custom CA certificates in PEM format:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>__ | \
-    jq '.spec.volumes[] | select(.configMap.name == "che-trusted-ca-certs")'
-{
-  "configMap": {
-    "defaultMode": 420,
-    "name": "ca-certs"
-  },
-  "name": "che-self-signed-certs"
-}
+$ {orch-cli} get configmap che-trusted-ca-certs \
+    --namespace=__<workspace_namespace>__ \
+    --output='jsonpath={.data.custom-ca-certificates\.custom-ca-certificates\.pem}'
 ----
 
-* Confirm that the volume is mounted into containers, especially in the Che-Theia IDE container:
+. Verify that the workspace pod mounts the `che-trusted-ca-certs` config map:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get -o json pod __<workspace pod name>__ -n __<workspace namespace>__ | \
-   jq '.spec.containers[] | select(.name == "__<theia ide container name>__").volumeMounts[] | select(.name == "che-trusted-ca-certs")'
-{
-  "mountPath": "/public-certs",
-  "name": "che-trusted-ca-certs",
-  "readOnly": true
-}
+$ {orch-cli} get pod \
+    --namespace=__<workspace_namespace>__ \
+    --selector='controller.devfile.io/devworkspace_name=__<workspace_name>__' \
+    --output='jsonpath={.items[0:].spec.volumes[0:].configMap.name}' \
+    | grep che-trusted-ca-certs
 ----
 
-* Inspect the `/public-certs` folder in the Che-Theia IDE container and check if its contents match the list of entries from the `custom-certs` `ConfigMap` object:
+. Verify that the `universal-developer-image` container (or the container defined in the workspace devfile) mounts the `che-trusted-ca-certs` volume:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} exec __<workspace pod name>__ -c __<theia ide container name>__ -n __<workspace namespace>__ -- ls /public-certs
-ca-bundle.crt
-source-config-map-name.data-key.crt
+$ {orch-cli} get pod \
+    --namespace=__<workspace_namespace>__ \
+    --selector='controller.devfile.io/devworkspace_name=__<workspace_name>__' \
+    --output='jsonpath={.items[0:].spec.containers[0:]}' \
+    | jq 'select (.volumeMounts[].name == "che-trusted-ca-certs") | .name'
+----
+
+. Get __<workspace_pod_name>__, the workspace pod name:
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+$ {orch-cli} get pod \
+    --namespace=__<workspace_namespace>__ \
+    --selector='controller.devfile.io/devworkspace_name=__<workspace_name>__' \
+    --output='jsonpath={.items[0:].metadata.name}' \
+----
+
+. Verify the workspace container has your custom CA certificates.
+The command returns your custom CA certificates in PEM format:
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+$ {orch-cli} exec __<workspace_pod_name>__ \
+    --namespace=__<workspace_namespace>__ \
+    -- cat /public-certs/custom-ca-certificates.custom-ca-certificates.pem
 ----
 
 .Additional resources
-
 * xref:deploying-che-with-support-for-git-repositories-with-self-signed-certificates.adoc[].
