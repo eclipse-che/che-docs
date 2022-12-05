@@ -19,16 +19,52 @@ Therefore, everything running in a {prod-short} workspace is running inside cont
 This makes a {prod-short} workspace highly portable.
 
 The embedded browser-based IDE is the point of access for everything running in a {prod-short} workspace.
-This makes a {prod-short} workspace easy to share.
 
-Visual Studio Code is the default browser-based IDE. {prod-short} adds these features:
+== Visual Studio Code
 
-Tasks::
-Commands that are defined in the devfile appear as tasks.
+Visual Studio Code is the default browser-based IDE.
+
+{prod-short} adds these extensions:
+
+Commands::
+Translates Devfile commands to Visual Studio Code tasks.
 +
-To execute such a command, go to menu:Terminal[Run Task].
-+
-Alternatively, kbd:[F1] to open the *Command Palette* and type `Tasks: Run Tasks` to see a drop-down list of available task-related commands.
+.Procedure
+* To see the drop-down list of available tasks, type: kbd:[F1] `Tasks: Run Task` kbd:[Enter] `che`.
 
-Process monitoring::
+Activity tracker::
+Tracks events provided by the Visual Studio Code to determine and stop inactive workspaces.
+This extension does not save, collect, or store data.
+
+API::
+Provides helpers to interact with {devworkspace} and {prod-short}.
+
+GitHub authentication::
+Provides support for authenticating to GitHub.
+It registers the `github` Authentication Provider that can be leveraged by other extensions.
+This also provides the GitHub authentication used by Settings Sync.
+
+Port::
+Detects opening ports and provides redirect URI.
 When a process starts listening to a port, {prod-short} displays an alert with a link to open the resulting resource.
++
+.Procedure
+* To display the endpoint list, type: kbd:[F1] `Explorer: Focus on endpoints View` kbd:[Enter].
+
+Remote::
+Provides commands for the remote authority.
+
+Resource monitor::
+Monitors resources such as CPU and RAM.
+
+Telemetry::
+Detects and sends the following events to a backend telemetry plugin listening on `http://localhost:$\{DEVWORKSPACE_TELEMETRY_BACKEND_PORT}`:
+
+`WORKSPACE_OPENED`:::
+Sent when the telemetry extension activates
+
+`EDITOR_USED`:::
+Sent on the `vscode.workspace.onDidChangeTextDocument` event
+
+Terminal::
+Opens a terminal to a {devworkspace} container.
