@@ -43,79 +43,6 @@ If you use the Che-Theia IDE, the extension is installed and configured automati
 NOTE: If the specified set of extension IDs isn't available in the {prod-short} registry, the workspace starts without the extension.
 
 
-[id="che-theia-plugins-YAML"]
-== Adding plugin parameters to `.che/che-theia-plugins.yaml`
-You can add extra parameters to a plugin by modifying the `.che/che-theia-plugins.yaml` file. These modifications include:
-
-* Defining the plugins for workspace installation.
-* Changing the default memory limit.
-* Overriding default preferences.
-
-
-=== Defining the plugins for workspace installation
-Define the plugins to be installed in the workspace.
-
-.Prerequisites
-. You have the `.che/che-theia-plugins.yaml` file in the root of the GitHub repository.
-
-.Procedure
-. Add the ID of the plugin to the  `.che/che-theia-plugins.yaml` file. Use the `/` sign to separate the publisher and plugin name. The following example uses the IDs of Red Hat Visual Studio Code Java extension:
-+
-[source,yaml,subs="+quotes"]
-----
-- id: redhat/java/latest
-----
-
-=== Changing the default memory limit
-
-Override container settings such as the memory limit.
-
-.Prerequisites
-. You have the `.che/che-theia-plugins.yaml` file in the root of the GitHub repository.
-
-.Procedure
-. Add an `override` section to the `.che/che-theia-plugins.yaml` file under the `id` of the plugin.
-. Specify the memory limit for the extension. In the following example, {prod-short} automatically installs the Red Hat Visual Studio Code Java extension in the {prod-short} workspace and increases the memory of the workspace by two gigabytes:
-+
-[source,yaml,subs="+quotes"]
-----
-
-  - id: redhat/java/latest
-    override:  
-      sidecar:  
-        memoryLimit: 2Gi
-----
-
-=== Overriding default preferences
-
-Override the default preferences of the Visual Studio Code extension for the workspace.
-
-.Prerequisites
-. You have the `.che/che-theia-plugins.yaml` file in the root of the GitHub repository.
-
-.Procedure
-. Add an `override` section to the `.che/che-theia-plugins.yaml` file under the `id` of the extension. 
-. Specify the preferences in the `Preferences` section. In the following example, {prod-short} automatically installs Red Hat Visual Studio Code Java extension in the {prod-short} workspace and sets the `java.server.launchMode` preference to `LightWeight`:
-+
-[source,yaml,subs="+quotes"]
-----
-  - id: redhat/java/latest
-    override:  
-      preferences:
-        java.server.launchMode: LightWeight
-----
-
-[NOTE] 
-====
-You can also define the preferences in the `.vscode/settings.json` file, either by changing the preferences in the UI of your IDE or by adding them to the `.vscode/settings.json` file:
-[source,json,subs="+quotes"]
-----
-{
-"my.preferences": "my-value"
-}
-----
-====
-
 [id="visual-studio-code-extensions-in-devfile"]
 == Defining Visual Studio Code extension attributes in the devfile
 
@@ -141,22 +68,4 @@ attributes:
         "redhat.java"  
       ]  
     }
-----
-
-=== Inlining `.che/che-theia-plugins.yaml` file
-Use `.che/che-theia-plugins.yaml` file contents to inline the plugin attributes in the devfile.
-
-.Procedure
-. Add an `attributes` section to your `devfile.yaml` file.
-. Add `.vscode/extensions.json` to the `atributes` section. Add a `|` sign after the colon separator.
-. Paste the content of the `.che/che-theia-plugins.yaml` file after the `|` sign. The following example uses Red Hat Visual Studio Code Java extension attributes:
-+
-[source,yaml,subs="+quotes"]
-----
-schemaVersion: 2.2.0  
-metadata:  
-  name: my-example  
-attributes:  
-  .che/che-theia-plugins.yaml: |  
-    - id: redhat/java/latest
 ----
