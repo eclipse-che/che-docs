@@ -13,7 +13,7 @@
 # Container to build and test Eclipse Che documentation
 
 # Require podman to run ccutil
-FROM quay.io/podman/stable:v4.2.1
+FROM quay.io/podman/stable:latest
 
 # Require superuser privileges to install packages
 USER root
