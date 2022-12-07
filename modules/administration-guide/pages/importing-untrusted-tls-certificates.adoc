@@ -7,18 +7,13 @@
 [id="importing-untrusted-tls-certificates"]
 = Importing untrusted TLS certificates to {prod-short}
 
-{prod-short} components communications with following services are encrypted with TLS.
-They require TLS certificates signed by trusted Certificate Authorities (CA):
+{prod-short} components communications with external services are encrypted with TLS.
+They require TLS certificates signed by trusted Certificate Authorities (CA).
+Therefore, you must import into {prod-short} all untrusted CA chains in use by an external service such as:
 
-* External communications between {prod-short} components
-* Communications of {prod-short} components with external services
-
-Therefore, you must import the full Certificate Authorities chain (root CA and intermediate) into the {prod-short} instance when the certificates used by one of such services are signed by an otherwise untrusted CA:
-
-* The underlying {orch-name} cluster
-* An external proxy
-* An external identity provider (OIDC)
-* An external source code repositories provider (Git)
+* A proxy
+* An identity provider (OIDC)
+* A source code repositories provider (Git)
 
 {prod-short} uses labeled config maps in {prod-short} {orch-namespace} as sources for TLS certificates.
 The config maps can have an arbitrary amount of keys with a random amount of certificates each.
@@ -36,13 +31,13 @@ See {orch-cli-link}.
 
 * The `{prod-namespace}` {orch-namespace} exists.
 
-* The complete Certificate Authorities chains to import (root CA and intermediate) in link:https://wiki.openssl.org/index.php/PEM[PEM] format in `ca-cert-__<count>__.pem` files.
+* For each CA chain to import, the root CA and intermediate certificates, in link:https://wiki.openssl.org/index.php/PEM[PEM] format, in a `ca-cert-for-{prod-id-short}-__<count>__.pem` file.
 
 .Procedure
 . Concatenate all CA chains PEM files to import, into the `custom-ca-certificates.pem` file, and remove the return character that is incompatible with the Java trust store.
 +
 ----
-$ cat ca-cert*.pem | tr -d '\r' > custom-ca-certificates.pem
+$ cat ca-cert-for-{prod-id-short}-*.pem | tr -d '\r' > custom-ca-certificates.pem
 ----
 
 . Create the `custom-ca-certificates` config map with the required TLS certificates:
