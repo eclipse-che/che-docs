@@ -71,7 +71,7 @@ Otherwise, wait until the rollout of {prod-short} components finishes.
 
 .Verification steps
 . Verify that the config map contains your custom CA certificates.
-The command returns your custom CA certificates in PEM format:
+This command returns your custom CA certificates in PEM format:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -93,7 +93,7 @@ $ {orch-cli} get pod \
 ----
 
 . Verify the {prod-short} server container has your custom CA certificates.
-The command returns your custom CA certificates in PEM format:
+This command returns your custom CA certificates in PEM format:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -119,7 +119,7 @@ $ for certificate in ca-cert*.pem ;
   done
 ----
 
-. Verify {prod-short} server Java truststore contains certificates with the same fingerprint:
+. Verify  that {prod-short} server Java truststore contains certificates with the same fingerprint:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -131,7 +131,7 @@ $ {orch-cli} exec -t deploy/{prod-id-short} --namespace={prod-namespace} -- \
 . Start a workspace, get the {orch-namespace} name in which it has been created: __<workspace_namespace>__, and wait for the workspace to be started.
 
 . Verify that the `che-trusted-ca-certs` config map contains your custom CA certificates.
-The command returns your custom CA certificates in PEM format:
+This command returns your custom CA certificates in PEM format:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -162,7 +162,7 @@ $ {orch-cli} get pod \
     | jq 'select (.volumeMounts[].name == "che-trusted-ca-certs") | .name'
 ----
 
-. Get __<workspace_pod_name>__, the workspace pod name:
+. Get the workspace pod name __<workspace_pod_name>__:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
@@ -172,8 +172,8 @@ $ {orch-cli} get pod \
     --output='jsonpath={.items[0:].metadata.name}' \
 ----
 
-. Verify the workspace container has your custom CA certificates.
-The command returns your custom CA certificates in PEM format:
+. Verify that the workspace container has your custom CA certificates.
+This command returns your custom CA certificates in PEM format:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
