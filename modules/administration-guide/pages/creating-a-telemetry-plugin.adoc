@@ -1,11 +1,11 @@
 :_content-type: REFERENCE
-:description: Creating a telemetry plug-in
+:description: Creating a telemetry plugin
 :keywords: extensions, telemetry
-:navtitle: Creating a telemetry plug-in
+:navtitle: Creating a telemetry plugin
 :page-aliases: extensions:creating-a-telemetry-plug-in.adoc
 
 [id="creating-a-telemetry-plugin"]
-= Creating a telemetry plug-in
+= Creating a telemetry plugin
 
 This section shows how to create an `AnalyticsManager` class that extends link:https://github.com/che-incubator/che-workspace-telemetry-client/blob/master/backend-base/src/main/java/org/eclipse/che/incubator/workspace/telemetry/base/AbstractAnalyticsManager.java[`AbstractAnalyticsManager`] and implements the following methods:
 
@@ -19,8 +19,8 @@ The following sections cover:
 
 * Creating a telemetry server to echo events to standard output.
 * Extending the {prod-short} telemetry client and implementing a user's custom backend.
-* Creating a `plugin.yaml` file representing a {devworkspace} plug-in for the custom backend.
-* Specifying of a location of a custom plug-in to {prod-short} by setting the `workspacesDefaultPlugins` attribute from the `CheCluster` custom resource.
+* Creating a `plugin.yaml` file representing a {devworkspace} plugin for the custom backend.
+* Specifying of a location of a custom plugin to {prod-short} by setting the `workspacesDefaultPlugins` attribute from the `CheCluster` custom resource.
 
 == Getting started
 
@@ -29,14 +29,14 @@ This document describes the steps required to extend the {prod-short} telemetry 
 . Creating a server process that receives events
 . Extending {prod-short} libraries to create a backend that sends events to the server
 . Packaging the telemetry backend in a container and deploying it to an image registry
-. Adding a plug-in for your backend and instructing {prod-short} to load the plug-in in your {devworkspace}s
+. Adding a plugin for your backend and instructing {prod-short} to load the plugin in your {devworkspace}s
 
 A finished example of the telemetry backend is available link:https://github.com/che-incubator/devworkspace-telemetry-example-plugin[here].
 
 [discrete]
 == Creating a server that receives events
 
-For demonstration purposes, this example shows how to create a server that receives events from our telemetry plug-in and writes them to standard output.
+For demonstration purposes, this example shows how to create a server that receives events from our telemetry plugin and writes them to standard output.
 
 For production use cases, consider integrating with a third-party telemetry system (for example, Segment, Woopra) rather than creating your own telemetry server. In this case, use your provider's APIs to send events from your custom backend to their system.
 
@@ -46,7 +46,7 @@ The following Go code starts a server on port `8080` and writes events to standa
 ====
 [source,go]
 ----
-include::example$creating-a-telemetry-plug-in/main.go[]
+include::example$creating-a-telemetry-plugin/main.go[]
 ----
 ====
 
@@ -71,12 +71,12 @@ $ kubectl apply -f manifest_with_[ingress|route].yaml -n {prod-namespace}
 
 == Creating the back-end project
 
-NOTE: For fast feedback when developing, it is recommended to do development inside a {devworkspace}. This way, you can run the application in a cluster and receive events from the front-end telemetry plug-in.
+NOTE: For fast feedback when developing, it is recommended to do development inside a {devworkspace}. This way, you can run the application in a cluster and receive events from the front-end telemetry plugin.
 
 . Maven Quarkus project scaffolding:
 +
 ----
-include::example$creating-a-telemetry-plug-in/project_scaffolding.sh[]
+include::example$creating-a-telemetry-plugin/project_scaffolding.sh[]
 ----
 
 . Remove the files under `src/main/java/mygroup` and `src/test/java/mygroup`.
@@ -89,7 +89,7 @@ include::example$creating-a-telemetry-plug-in/project_scaffolding.sh[]
 ====
 [source,xml]
 ----
-include::example$creating-a-telemetry-plug-in/pom_snippet.xml[]
+include::example$creating-a-telemetry-plugin/pom_snippet.xml[]
 ----
 ====
 
@@ -101,7 +101,7 @@ include::example$creating-a-telemetry-plug-in/pom_snippet.xml[]
 ====
 [source,xml]
 ----
-include::example$creating-a-telemetry-plug-in/settings.xml[]
+include::example$creating-a-telemetry-plugin/settings.xml[]
 ----
 ====
 +
@@ -118,7 +118,7 @@ Create two files in your project under `src/main/java/mygroup`:
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in/MainConfiguration.java[]
+include::example$creating-a-telemetry-plugin/MainConfiguration.java[]
 ----
 ====
 <1> A MicroProfile configuration annotation is used to inject the `welcome.message` configuration.
@@ -129,11 +129,11 @@ For more details on how to set configuration properties specific to your backend
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in/AnalyticsManagerSkeleton.java[]
+include::example$creating-a-telemetry-plugin/AnalyticsManagerSkeleton.java[]
 ----
 ====
 <1> Log the welcome message if it was provided.
-<2> Log the event received from the front-end plug-in.
+<2> Log the event received from the front-end plugin.
 
 Since `org.my.group.AnalyticsManager` and `org.my.group.MainConfiguration` are alternative beans, specify them using the `quarkus.arc.selected-alternatives` property in `src/main/resources/application.properties`.
 
@@ -166,7 +166,7 @@ spec:
 $ mvn --settings=settings.xml quarkus:dev -Dquarkus.http.port=${DEVWORKSPACE_TELEMETRY_BACKEND_PORT}
 ----
 +
-The application now receives telemetry events through port `4167` from the front-end plug-in.
+The application now receives telemetry events through port `4167` from the front-end plugin.
 
 .Verification steps
 
@@ -179,7 +179,7 @@ INFO  [io.quarkus] (Quarkus Main Thread) Profile dev activated. Live Coding acti
 INFO  [io.quarkus] (Quarkus Main Thread) Installed features: [cdi, kubernetes-client, rest-client, rest-client-jackson, resteasy, resteasy-jsonb, smallrye-context-propagation, smallrye-openapi, swagger-ui, vertx]
 ----
 
-. To verify that the `onEvent()` method of `AnalyticsManager` receives events from the front-end plug-in, press the kbd:[l] key to disable Quarkus live coding and edit any file within the IDE. The following output should be logged:
+. To verify that the `onEvent()` method of `AnalyticsManager` receives events from the front-end plugin, press the kbd:[l] key to disable Quarkus live coding and edit any file within the IDE. The following output should be logged:
 +
 ----
 INFO  [io.qua.dep.dev.RuntimeUpdatesProcessor] (Aesh InputStream Reader) Live reload disabled
@@ -194,7 +194,7 @@ For the purposes of the example, this method always returns `true` whenever it i
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in/isEnabled.java[]
+include::example$creating-a-telemetry-plugin/isEnabled.java[]
 ----
 ====
 
@@ -213,7 +213,7 @@ For the following example, the telemetry server application is deployed to OpenS
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in/TelemetryService.java[]
+include::example$creating-a-telemetry-plugin/TelemetryService.java[]
 ----
 ====
 <1> The endpoint to make the `POST` request to.
@@ -233,7 +233,7 @@ org.my.group.TelemetryService/mp-rest/url=http://little-telemetry-server-che.app
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in/onEvent.java[]
+include::example$creating-a-telemetry-plugin/onEvent.java[]
 ----
 ====
 +
@@ -247,7 +247,7 @@ Many telemetry systems recognize event duration. The `AbstractAnalyticsManager` 
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in/increaseDuration.java[]
+include::example$creating-a-telemetry-plugin/increaseDuration.java[]
 ----
 ====
 
@@ -259,7 +259,7 @@ Set an inactive timeout limit, and use `onActivity()` to send a `WORKSPACE_INACT
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in/onActivity.java[]
+include::example$creating-a-telemetry-plugin/onActivity.java[]
 ----
 ====
 
@@ -271,7 +271,7 @@ When `destroy()` is called, send a `WORKSPACE_STOPPED` event and shutdown any re
 ====
 [source,java]
 ----
-include::example$creating-a-telemetry-plug-in/destroy.java[]
+include::example$creating-a-telemetry-plugin/destroy.java[]
 ----
 ====
 
@@ -288,7 +288,7 @@ See link:https://quarkus.io/guides/building-native-image#using-a-multi-stage-doc
 ====
 [source,yaml]
 ----
-include::example$creating-a-telemetry-plug-in/Dockerfile.jvm[]
+include::example$creating-a-telemetry-plugin/Dockerfile.jvm[]
 ----
 ====
 To build the image, run:
@@ -305,7 +305,7 @@ mvn package && \
 ====
 [source,yaml]
 ----
-include::example$creating-a-telemetry-plug-in/Dockerfile.native[]
+include::example$creating-a-telemetry-plugin/Dockerfile.native[]
 ----
 ====
 To build the image, run:
@@ -316,22 +316,22 @@ mvn package -Pnative -Dquarkus.native.container-build=true && \
 {docker-cli} build -f src/main/docker/Dockerfile.native -t image:tag .
 ----
 
-== Creating a `plugin.yaml` for your plug-in
+== Creating a `plugin.yaml` for your plugin
 
-Create a `plugin.yaml` devfile v2 file representing a {devworkspace} plug-in that runs your custom backend in a {devworkspace} Pod. For more information about devfile v2, see link:https://devfile.io/docs/2.1.0/overview[Devfile v2 documentation]
+Create a `plugin.yaml` devfile v2 file representing a {devworkspace} plugin that runs your custom backend in a {devworkspace} Pod. For more information about devfile v2, see link:https://devfile.io/docs/2.1.0/overview[Devfile v2 documentation]
 
 .`plugin.yaml`
 ====
 [source,yaml]
 ----
-include::example$creating-a-telemetry-plug-in/plugin.yaml[]
+include::example$creating-a-telemetry-plugin/plugin.yaml[]
 ----
 ====
 
 <1> Specify the container image built from xref:packaging-the-quarkus-application[].
 <2> Set the value for the `welcome.message` optional configuration property from Example 4.
 
-Typically, the user deploys this file to a corporate web server. This guide demonstrates how to create an Apache web server on OpenShift and host the plug-in there.
+Typically, the user deploys this file to a corporate web server. This guide demonstrates how to create an Apache web server on OpenShift and host the plugin there.
 
 Create a `ConfigMap` object that references the new `plugin.yaml` file.
 
@@ -346,7 +346,7 @@ Create a deployment, a service, and a route to expose the web server. The deploy
 ====
 [source,yaml,subs="+quotes,+attributes"]
 ----
-include::example$creating-a-telemetry-plug-in/webserver.yaml[]
+include::example$creating-a-telemetry-plugin/webserver.yaml[]
 ----
 ====
 
@@ -361,14 +361,14 @@ $ oc apply -f manifest.yaml
 $ curl apache-che.apps-crc.testing/plugin.yaml
 ----
 
-[id="specifying-the-telemetry-plug-in-in-a-devworkspace"]
-== Specifying the telemetry plug-in in a {devworkspace}
+[id="specifying-the-telemetry-plugin-in-a-devworkspace"]
+== Specifying the telemetry plugin in a {devworkspace}
 . Add the following to the `components` field of an existing {devworkspace}:
 +
 ----
 components:
   ...
-  - name: telemetry-plug-in
+  - name: telemetry-plugin
     plugin:
       uri: http://apache-che.apps-crc.testing/plugin.yaml
 ----
@@ -377,15 +377,15 @@ components:
 
 
 .Verification steps
-. Verify that the `telemetry-plug-in` container is running in the {devworkspace} pod. Here, this is verified by checking the Workspace view within the editor.
+. Verify that the telemetry plugin container is running in the {devworkspace} pod. Here, this is verified by checking the Workspace view within the editor.
 +
-image::creating-a-telemetry-plug-in/devworkspace_telemetry_plugin.png[{devworkspace} telemetry plug-in]
+image::creating-a-telemetry-plugin/devworkspace_telemetry_plugin.png[{devworkspace} telemetry plugin]
 
 . Edit files within the editor and observe their events in the example telemetry server's logs.
 
-== Applying the telemetry plug-in for all {devworkspace}s
+== Applying the telemetry plugin for all {devworkspace}s
 
-Set the telemetry plug-in as a default plug-in. Default plug-ins are applied on {devworkspace} startup for new and existing {devworkspace}s.
+Set the telemetry plugin as a default plugin. Default plugins are applied on {devworkspace} startup for new and existing {devworkspace}s.
 
 * Configure the `CheCluster` Custom Resource. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
 +
@@ -397,8 +397,8 @@ spec:
       plugins:                           <2>
       - 'http://apache-che.apps-crc.testing/plugin.yaml'
 ----
-<1> The editor identification to set the default plug-ins for.
-<2> List of URLs to devfile v2 plug-ins.
+<1> The editor identification to set the default plugins for.
+<2> List of URLs to devfile v2 plugins.
 
 
 .Additional resources
@@ -409,4 +409,4 @@ spec:
 
 . Start a new or existing {devworkspace} from the {prod} dashboard.
 
-. Verify that the telemetry plug-in is working by following the verification steps for xref:specifying-the-telemetry-plug-in-in-a-devworkspace[].
+. Verify that the telemetry plugin is working by following the verification steps for xref:specifying-the-telemetry-plugin-in-a-devworkspace[].
