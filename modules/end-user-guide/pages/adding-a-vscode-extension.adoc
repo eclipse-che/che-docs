@@ -1,71 +1,50 @@
 :_content-type: PROCEDURE
-:description: Adding a Visual Studio Code extension to a workspace
+:description: Adding a Microsoft Visual Studio Code extension to a workspace
 :keywords: Visual Studio Code extension, user-guide
 :navtitle: Adding a Visual Studio Code extension to a workspace
 :page-aliases:
 
-[id="adding-visual-studio-code-extension"]
-= Adding a Visual Studio Code extension to a workspace
+[id="adding-microsoft-visual-studio-code-extension"]
+= Adding a Microsoft Visual Studio Code extension list to a workspace
 
-Previously, with the devfiles v1 format, you used the devfile to specify IDE-specific plugins and Visual Studio Code extensions. Now, with devfiles v2, you use a specific meta-folder rather than the devfile to specify the plugins and extensions.
-
-[id="plugin-registries"]
-== {prod-short} plugin registries overview
-
-Every {prod-short} instance has a registry of default plugins and extensions. The Che-Theia IDE gets information about these plugins and extensions from the registry and installs them.
-
-Check this {prod-short} link:https://github.com/eclipse-che/che-plugin-registry[registry project] for an overview of the default plugins, extensions, and source code. An online instance that refreshes after every commit to the main branch, is located link:https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/[here]. You can use a different plugin or extension registry for Che-Theia if you don't work in a restricted environment: only the default registry is available there.
-
-The plugin and extension overview for Che-Code Visual Studio Code editor is located in the link:https://www.open-vsx.org/[OpenVSX instance]. Air gap is not yet supported for this editor.
-
-[id="visual-studio-code-extensions-json"]
-== Adding an extension to `.vscode/extensions.json`
-
-The easiest way to add a Visual Studio Code extension to a workspace is to add it to the `.vscode/extensions.json` file. The main advantage of this method is that it works with all supported {prod-short} IDEs.
-
-If you use the Che-Theia IDE, the extension is installed and configured automatically. If you use a different supported IDE with the Che-Code Visual Studio Code fork, the IDE displays a pop-up with a recommendation to install the extension. 
+{prod-short} can automatically install workspace recommended extensions.
 
 .Prerequisites
-. You have the `.vscode/extensions.json` file in the root of the GitHub repository.
+* {prod-short} has access to the link:https://www.open-vsx.org/[OpenVSX registry].
++
+[TIP]
+====
+To install recomended extensions in a restricted environment, consider these options:
+
+* xref:selecting-a-workspace-ide.adoc[] that accesses an internal plugin registry, such as Che-Theia.
+
+* xref:administration-guide:configuring-the-open-vsx-registry-url.adoc[] to point to your OpenVSX registry.
+
+* link:https://code.visualstudio.com/docs/editor/extension-marketplace#_install-from-a-vsix[Installing extensions from VSX files].
+====
 
 .Procedure
-. Add the extension ID to the `.vscode/extensions.json` file. Use a `.` sign to separate the publisher and extension. The following example uses the IDs of Red Hat Visual Studio Code Java extension:
+. Go to the link:https://www.open-vsx.org/[Open VSX registry], search for extensions, and on each extension description page, collect the extension unique identifier.
++
+[subs="+quotes"]
+====
+* __<publisher_id_1>__.__<extension_id_1>__
+* __<publisher_id_2>__.__<extension_id_2>__
+* ...
+====
+
+. Add the extension unique identifier list to the `.vscode/extensions.json` file in your workspace repository.
 +
 [source,json,subs="+quotes"]
 ----
   {
     "recommendations": [
-      "redhat.java"
+      "__<publisher_id_1>__.__<extension_id_1>__",
+      "__<publisher_id_2>__.__<extension_id_2>__"
     ]
   }
 ----
 
-NOTE: If the specified set of extension IDs isn't available in the {prod-short} registry, the workspace starts without the extension.
-
-
-[id="visual-studio-code-extensions-in-devfile"]
-== Defining Microsoft Visual Studio Code - Open Source extension attributes in the devfile
-
-If it's not possible to add extra files in the GitHub repository, you can define some of the plugin or extension attributes by inlining them in the devfile. You can use this procedure with both `.vscode/extensions.json` and `.che/che-theia-plugins.yaml` file contents.
-
-=== Inlining `.vscode/extensions.json` file
-Use `.vscode/extensions.json` file contents to inline the extension attributes in the devfile.
-
-.Procedure
-. Add an `attributes` section to your `devfile.yaml` file.
-. Add `.vscode/extensions.json` to the `atributes` section. Add a `|` sign after the colon separator.
-. Paste the contents of the `.vscode/extensions.json` file after the `|` sign. The following example uses Red Hat Visual Studio Code Java extension attributes:
-+
-[source,yaml,subs="+quotes"]
-----
-schemaVersion: 2.2.0  
-metadata:  
-  name: my-example  
-attributes:  
-  .vscode/extensions.json: |  
-    {  
-      "recommendations": [  
-        "redhat.java"  
-      ]  
-    }
-----
+.Additional resources
+* link:https://www.open-vsx.org/[Open VSX registry - Extensions for Microsoft Visual Studio Code compatible editors]
+* link:https://code.visualstudio.com/docs/editor/extension-marketplace#_workspace-recommended-extensions[Microsoft Visual Studio Code - Workspace recommended extensions]
