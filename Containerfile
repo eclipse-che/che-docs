@@ -27,7 +27,7 @@ LABEL \
     license="Eclipse Public License - v 2.0" \
     maintainer="Red Hat, Inc." \
     name="eclipse/che-docs" \
-    source="https://github.com/eclipse-chhe/che-docs/blob/main/Dockerfile" \
+    source="https://github.com/eclipse-chhe/che-docs/blob/main/Containerfile" \
     summary="Tools to build Eclipse Che documentation" \
     URL="quay.io/eclipse/che-docs" \
     vendor="Eclipse Che documentation team" \
