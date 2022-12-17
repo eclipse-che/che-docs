@@ -7,32 +7,14 @@
 [id="extensions-for-microsoft-visual-studio-code-open-source"]
 = Extensions for Microsoft Visual Studio Code - Open Source
 
-To manage extensions for link:https://github.com/microsoft/vscode[Microsoft Visual Studio Code - Open Source IDE], {prod-short} uses the link:https://open-vsx.org/[Open VSX Registry]. 
+To manage extensions for link:https://github.com/microsoft/vscode[Microsoft Visual Studio Code - Open Source IDE], {prod-short} uses one of the link:https://open-vsx.org/about[Open VSX] registry instances:
 
-This is an open source extensions registry, restricted in its use like the link:https://marketplace.visualstudio.com/[Visual Studio Code Marketplace] which can only be used with link:https://aka.ms/vsmarketplace-ToU[In-Scope Products and Services from Microsoft].
+* Public link:https://open-vsx.org[open-vsx.org].
+* The embedded, locally cached instance of the Open VSX registry that runs in the `plugin-registry` pod of {prod-short} to support air-gapped, offline, and proxy-restricted environments, containing only a subset of the extensions published on link:https://open-vsx.org[open-vsx.org].
+* Your own custom build of the embedded Open VSX registry for use in workspaces of your organization's {prod-short}.
 
-The default Open VSX registry differs depending on how proxies or DNS are configured. 
+The Open VSX registry instance default differs depending on how proxies or DNS are configued: If {prod-short} resolves `pass:c,a,q[https://open-vsx.org]`, then the default is link:https://open-vsx.org[open-vsx.org]. If not, then the default is the embedded, locally cached Open VSX registry instance within the `plugin-registry` pod of {prod-short}.
 
-If open-vsx.org can be resolved, the default will be to the public link:https://open-vsx.org/[Open VSX Registry]; if not, then the default will be a locally cached Open VSX registry instance within the plugin-registry pod to support air-gapped, offline, and proxy-restricted deployments. 
+include::partial$proc_manually-selecting-an-open-vsx-registry-instance.adoc[leveloffset=+1]
 
-It is also possible to control what instance of Open VSX should be used in the workspaces, should you want to include your own custom build. This configuration is part of the `CheCluster` Custom Resource:
-
-[source,yaml,subs="+quotes"]
-----
-spec:
-  components:
-    pluginRegistry:
-      openVSXURL: "__<Open_VSX_registry_URL>__" # <1> 
-----
-
-<1> Sets the URL of Open VSX registry. The default value is `https://open-vsx.org`. An empty string will cause  {prod-short} to use the local Open VSX registry in the plug-in registry pod.
-
-The local Open VSX registry runs in the plug-in registry pod and provides a subset of the Visual Studio Code extensions published on link:https://open-vsx.org/[Open VSX Registry].
-
-.Below, please find information about managing a local Open VSX registry:
-
-include::partial$proc_importing-extensions-from-the-open-vsx-registry.adoc[leveloffset=+1]
-
-include::partial$proc_importing-extensions-that-are-not-in-the-open-vsx-registry.adoc[leveloffset=+1]
-
-include::partial$proc_removing-extensions-from-the-embedded-open-vsx-registry.adoc[leveloffset=+1]
+include::partial$proc_adding-or-removing-vscode-extensions-in-the-embedded-open-vsx-registry-instance.adoc[leveloffset=+1]
