@@ -31,13 +31,13 @@ data:
         scrape_interval:     5s             <1>
         evaluation_interval: 5s             <2>
       scrape_configs:                       <3>
-        - job_name: 'Che Server'
+        - job_name: '{prod-short} Server'
           static_configs:
             - targets: ['che-host.__<{prod-short}_{orch-namespace}>__:8087']  <4>
 ----
 <1> The rate at which a target is scraped.
 <2> The rate at which the recording and alerting rules are re-checked.
-<3> The resources that Prometheus monitors. In the default configuration, a single job, `Che Server`, scrapes the time series data exposed by {prod-short} Server.
+<3> The resources that Prometheus monitors. In the default configuration, a single job, `{prod-short} Server`, scrapes the time series data exposed by {prod-short} Server.
 <4> The scrape target for the metrics from port `8087`. Replace `__<{prod-short}_{orch-namespace}>__` with the {prod-short} {orch-namespace}. The default {prod-short} {orch-namespace} is `{prod-namespace}`.
 ====
 
