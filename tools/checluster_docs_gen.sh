@@ -111,6 +111,7 @@ parse_section() {
     DESCR_BUFF="${DESCR_BUFF//\"/}"
     DESCR_BUFF="${DESCR_BUFF//:/\\:}"
     DESCR_BUFF="$(sed 's|Eclipse Che|{prod-short}|g' <<<$DESCR_BUFF)"
+    DESCR_BUFF="$(sed 's|Che |{prod-short} |g' <<<$DESCR_BUFF)"
     BUFF="$BUFF${PROP}: ${DESCR_BUFF}$NEWLINE"
   done
   BUFF="$BUFF$TABLE_FOOTER"
