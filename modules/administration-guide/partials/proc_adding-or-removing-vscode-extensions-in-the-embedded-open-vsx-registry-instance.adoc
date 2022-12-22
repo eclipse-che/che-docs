@@ -7,7 +7,7 @@ You can add or remove your choice of pass:[<!-- vale RedHat.Spelling = NO -->] p
 
 This will create a custom build of the Open VSX registry, which can be used in your organization’s workspaces. 
 
-Note that after a subscription update, your CheCluster will revert to default settings and any changes will need to be reapplied. 
+NOTE: A subscription update reverts your `CheCluster` to default settings, and you must reapply your changes to `CheCluster`. 
 
 .Procedure
 
@@ -27,12 +27,14 @@ include::example$snip_{project-context}-steps-to-add-or-remove-extensions-in-ope
 The latest extension version on link:https://open-vsx.org[open-vsx.org] is the default. Alternatively, you can add `"version": "__<extension_version>__"` on a new line to specify a version.
 ====
 
-** If it is an extension from link:https://marketplace.visualstudio.com/VSCode[Visual Studio Marketplace] that is not available on link:https://open-vsx.org[Open VSX] yet, you can ask the extension author to publish it on link:https://open-vsx.org[open-vsx.org] according to the link:https://github.com/eclipse/openvsx/wiki/Publishing-Extensions#how-to-publish-an-extension[instructions] so that you can add it as an extension that is published on link:https://open-vsx.org[open-vsx.org].
+** If the extension is only available from link:https://marketplace.visualstudio.com/VSCode[Microsoft Visual Studio Marketplace], but not link:https://open-vsx.org[Open VSX], you can ask the extension publisher to also publish it on link:https://open-vsx.org[open-vsx.org] according to the link:https://github.com/eclipse/openvsx/wiki/Publishing-Extensions#how-to-publish-an-extension[instructions] and the link:https://github.com/marketplace/actions/publish-vs-code-extension[GitHub action].
 +
 [TIP]
 ====
-If the extension author is not cooperative, you can add the extension directly from the `.vsix` file, as long as the license and terms of use allow it, and the file can be accessed from a https:// URL while building the plugin registry container.
+* If the extension publisher is not available for publishing the extension on link:https://open-vsx.org[open-vsx.org], and if there is no Open VSX equivalent of the extension, consider link:https://github.com/open-vsx/publish-extensions/issues[notifying] the Open VSX team.
 
+* If you have a closed-source extension or an extension developed only for internal use in your company, you can add the extension directly from a `.vsix` file that is accessible from a URL while building the plugin registry container:
++
 [source,json,subs="+quotes"]
 ----
     {
@@ -42,6 +44,8 @@ If the extension author is not cooperative, you can add the extension directly f
     }
 ----
 ====
++
+WARNING: The link:https://aka.ms/vsmarketplace-ToU[Microsoft Visual Studio Marketplace Terms of Use] do not permit downloading extensions from link:https://marketplace.visualstudio.com/VSCode[Microsoft Visual Studio Marketplace] for use in Microsoft Visual Studio Code - Open Source that is loaded in your organization's workspaces.
 
 ** You can remove the extension by deleting its object from the `openvsx-sync.json` file.
 
