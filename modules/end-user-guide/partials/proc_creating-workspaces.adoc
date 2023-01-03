@@ -2,11 +2,13 @@
 [id="creating-workspaces"]
 = Creating workspaces
 
-It is recommended to create workspaces using the {prod-short} Dashboard instead of using {orch-name} APIs to directly create the `DevWorkspace` and `DevWorkspaceTemplate` custom resources.
+Since workspaces on the {orch-name} cluster are represented by custom resources, it is possible to create workspaces with {orch-name} APIs by applying custom resources to the cluster.
+
+It is recommended however, for users to create workspaces using the {prod-short} Dashboard instead of using {orch-name} APIs to manually create `DevWorkspace` and `DevWorkspaceTemplate` custom resources.
 
 This is because creating workspaces using the {prod-short} Dashboard helps {prod-short} and its components convert the workspace project's devfile to `DevWorkspace` and `DevWorkspaceTemplate` custom resources on the cluster.
 
-Creating workspaces using the {prod-short} dashboard allows {prod-short} to make the following additions to the newly created `DevWorkspaces`:
+Creating workspaces using the {prod-short} Dashboard allows {prod-short} to make the following additions to the newly created `DevWorkspaces`:
 
 * Recognition of configurations in `spec.devEnvironments` specified in the `CheCluster` custom resource including:
 ** persistent storage strategy specified with `devEnvironments.storage`
@@ -19,17 +21,19 @@ Creating workspaces using the {prod-short} dashboard allows {prod-short} to make
 
 * An active `{orch-cli}` session with permissions to create `DevWorkspace` and `DevWorkspaceTemplate` resources in your {orch-namespace} on the {orch-name} cluster. See {orch-cli-link}.
 
+NOTE: For admins creating workspaces for users, the `DevWorkspace` and `DevWorkspaceTemplate` custom resources should be created in a user namespace that is provisioned by {prod-short} or provisioned by the admin. See xref:administration-guide:configuring-namespace-provisioning.adoc[].
+
 .Procedure
 
 . Create a `DevWorkspaceTemplate` for the editor. The example below creates a `DevWorkspaceTemplate` named `che-code` for the Che-Code Visual Studio Code editor.
 +
-[subs="+quotes,attributes"]
+[source,yaml,subs="+quotes,+attributes"]
 ----
-$ cat <<EOF | {orch-cli} apply -f - -n __<user_namespace>__
 apiVersion: workspace.devfile.io/v1alpha2
 kind: DevWorkspaceTemplate
 metadata:
-  name: che-code
+  name: che-code <1>
+  namespace: __<user_{orch-namespace}>__ <2>
 spec:
   commands:
     - apply:
@@ -47,7 +51,6 @@ spec:
         sourceMapping: /projects
         volumeMounts:
           - name: checode
-            path: /checode
       name: vscode-injector
     - attributes:
         app.kubernetes.io/component: vscode-runtime
@@ -107,11 +110,12 @@ spec:
   events:
     preStart:
       - init-container-command
-EOF
 ----
+<1> Name of the `DevWorkspaceTemplate`. This name will be used to reference the `DevWorkspaceTemplate` within the `DevWorkspace`.
+<2> Target {orch-namespace} for the new workspace.
 . To prepare the `DevWorkspace` custom resource, copy the contents of a project Devfile. The example used for this procedure is the following Devfile:
 +
-[subs="+quotes,attributes"]
+[source,yaml,subs="+quotes,+attributes"]
 ----
 schemaVersion: 2.1.0    
 components:
@@ -119,101 +123,56 @@ components:
     container:
       image: quay.io/devfile/universal-developer-image:ubi8-latest
 ----
-. Use the devfile to create a `DevWorkspace` definition by adding its contents to the `spec.template` field of the `DevWorkspace`. In the following example, `spec.started` is set to `true`, meaning that the workspace will start automatically when the `DevWorkspace` is applied on the {orch-name} cluster.
 +
-[subs="+quotes,attributes"]
-----
-kind: DevWorkspace
-apiVersion: workspace.devfile.io/v1alpha2
-metadata:
-  name: my-devworkspace
-spec:
-  started: true
-  template:
-    components:
-      - name: tooling-container
-        container:
-          image: quay.io/devfile/universal-developer-image:ubi8-latest
-----
-. Add details about the project using the `spec.template.projects` field.
-+
-[subs="+quotes,attributes"]
-----
-kind: DevWorkspace
-apiVersion: workspace.devfile.io/v1alpha2
-metadata:
-  name: my-devworkspace
-spec:
-  started: true
-  template:
-    projects:
-      - name: my-project-name
-        git:
-          remotes:
-            origin: __<git_project_URL>__
-    components:
-      - name: tooling-container
-        container:
-          image: quay.io/devfile/universal-developer-image:ubi8-latest
-----
-. Reference the editor using the `DevWorkspaceTemplate` created from step 1 using the `spec.contributions` field.
-+
-[subs="+quotes,attributes"]
-----
-kind: DevWorkspace
-apiVersion: workspace.devfile.io/v1alpha2
-metadata:
-  name: my-devworkspace
-spec:
-  started: true
-  contributions:
-    - name: editor
-      kubernetes:
-        name: che-code
-  template:
-    projects:
-      - name: my-project-name
-        git:
-          remotes:
-            origin: __<git_project_URL>__
-    components:
-      - name: tooling-container
-        container:
-          image: quay.io/devfile/universal-developer-image:ubi8-latest
-----
-. Apply the `DevWorkspace` from the previous step onto the {orch-name} cluster.
-+
-[subs="+quotes,attributes"]
-----
-$ cat <<EOF | {orch-cli} apply -f - -n __<user_namespace>__
-kind: DevWorkspace
-apiVersion: workspace.devfile.io/v1alpha2
-metadata:
-  name: my-devworkspace
-spec:
-  started: true
-  contributions:
-    - name: editor
-      kubernetes:
-        name: che-code
-  template:
-    projects:
-      - name: my-project-name
-        git:
-          remotes:
-            origin: __<git_project_URL>__
-    components:
-      - name: tooling-container
-        container:
-          image: quay.io/devfile/universal-developer-image:ubi8-latest
-EOF
-----
-. Confirm that the workspace is starting.
-+
-[subs="+quotes,attributes"]
-----
-$ {orch-cli} get devworkspaces __<user_namespace>__
+For more details about Devfiles, see the link:https://devfile.io/docs/2.1.0/what-is-a-devfile[Devfile v2 documentation].
 
-NAMESPACE          NAME                  DEVWORKSPACE ID             PHASE      INFO
-__<user_namespace>__   my-devworkspace       workspacedf64e4a492cd4701   Starting   Waiting for workspace deployment
+. Use the Devfile to create a `DevWorkspace` definition.
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+kind: DevWorkspace
+apiVersion: workspace.devfile.io/v1alpha2
+metadata:
+  name: my-devworkspace <1>
+  namespace: __<user_{orch-namespace}>__ <2>
+spec:
+  started: true <3>
+  contributions: <4>
+    - name: editor
+      kubernetes:
+        name: che-code <5>
+  template:
+    projects: <6>
+      - name: my-project-name
+        git:
+          remotes:
+            origin: https://github.com/eclipse-che/che-docs
+    components: <7>
+      - name: tooling-container
+        container:
+          image: quay.io/devfile/universal-developer-image:ubi8-latest
+----
+<1> Name of `DevWorkspace` resource. This is will be the name of the new workspace.
+<2> Target {orch-namespace} for the new workspace.
+<3> Determines whether the workspace should be started upon creating the `DevWorkspace` resource.
+<4> Reference to the editor's `DevWorkspaceTemplate`.
+<5> Name of the editor's `DevWorkspaceTemplate` from the previous step.
+<6> Details about the Git project to clone upon workspace startup. The Git project that will be cloned for this example is https://github.com/eclipse-che/che-docs.
+<7> List of components such as workspace containers and volume components.
+. Apply the `DevWorkspace` to the cluster. 
+. Confirm that the workspace is starting by referring to the `PHASE` status of the `DevWorkspace`.
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} get devworkspaces -n __<user_{orch-namespace}>__  --watch
+
+NAMESPACE            NAME                  DEVWORKSPACE ID             PHASE      INFO
+__<user_{orch-namespace}>__   my-devworkspace       workspacedf64e4a492cd4701   Starting   Waiting for workspace deployment
+----
+. Once the workspace starts, the workspace can be opened by accessing the URL provided in the `INFO` section of the output from `{orch-cli} get devworkspaces`, or by accessing the workspace from the {prod-short} Dashboard.
++
+[subs="+quotes,attributes"]
+----
+NAMESPACE            NAME                  DEVWORKSPACE ID             PHASE      INFO
+__<user_{orch-namespace}>__   my-devworkspace       workspacedf64e4a492cd4701   Running    https://url-to-workspace.com
 ----
