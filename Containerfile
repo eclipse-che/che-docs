@@ -43,6 +43,7 @@ RUN set -x \
     curl \
     file \
     findutils \
+    gcc \
     git-core \
     graphviz \
     grep \
