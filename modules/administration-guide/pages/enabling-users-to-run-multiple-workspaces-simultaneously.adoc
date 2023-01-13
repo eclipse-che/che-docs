@@ -16,11 +16,13 @@ This configuration is part of the `CheCluster` Custom Resource:
 [source,yaml,subs="+quotes"]
 ----
 spec:
-  components:
-    devWorkspace:
-      runningLimit: "__<running_workspaces_limit>__" # <1>
+  devEnvironments:
+    maxNumberOfRunningWorkspacesPerUser: __<running_workspaces_limit>__ # <1>
+
 ----
-<1> Sets the maximum number of simultaneously running workspaces per user. The default value is `1`.
+<1> Sets the maximum number of simultaneously running workspaces per user.
+The value, `-1`, allows users to run an unlimited number of workspaces.
+The default value is `1`.
 
 .Procedure
 
@@ -32,13 +34,13 @@ $ {orch-cli} get checluster --all-namespaces \
   -o=jsonpath="{.items[*].metadata.namespace}"
 ----
 
-. Configure the `runningLimit`:
+. Configure the `maxNumberOfRunningWorkspacesPerUser`:
 +
 [source,subs="+quotes,attributes"]
 ----
 $ {orch-cli} patch checluster/{context} -n {prod-namespace} \# <1>
 --type='merge' -p \
-'{"spec":{"components":{"devWorkspace":{"runningLimit": "__<running_workspaces_limit>__"}}}}' # <2>
+'{"spec":{"devEnvironments":{"maxNumberOfRunningWorkspacesPerUser": __<running_workspaces_limit>__}}}' # <2>
 ----
 <1> The {prod-short} namespace that you got in step 1.
 <2> Your choice of the `__<running_workspaces_limit>__` value.
