@@ -1,0 +1,29 @@
+:_content-type: CONCEPT
+
+[id="selecting-an-open-vsx-registry-instance"]
+= Selecting an Open VSX registry instance
+
+The Open VSX registry at `pass:c,a,q[https://open-vsx.org]` is the default if it is resolved from within your cluster. If not, then the embedded Open VSX registry within the {prod-short} `plugin-registry` pod is the default.
+
+If the default Open VSX registry instance is not what you need, you can select another Open VSX registry instance:
+
+.Procedure
+
+* Edit the `openVSXURL` value in the `CheCluster` custom resource:
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  components:
+    pluginRegistry:
+      openVSXURL: "__<url_of_an_open_vsx_registry_instance>__"
+----
++
+[TIP]
+====
+* The default `openVSXURL` value is `pass:c,a,q[https://open-vsx.org]`.
+ 
+* To select the embedded Open VSX registry instance in the `plugin-registry` pod, use `openVSXURL: ''`. See the next section for how to customize the included extensions.
+
+* You can point `openVSXURL` at the URL of a standalone Open VSX registry instance. 
+====

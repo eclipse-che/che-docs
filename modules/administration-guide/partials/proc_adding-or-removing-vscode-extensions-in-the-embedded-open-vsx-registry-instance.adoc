@@ -1,0 +1,87 @@
+:_content-type: PROCEDURE
+
+[id="adding-or-removing-vscode-extensions-in-the-embedded-open-vsx-registry-instance"]
+= Adding or removing pass:[<!-- vale RedHat.Spelling = NO -->] pass:[<!-- vale RedHat.Spelling = NO -->] VS Code pass:[<!-- vale RedHat.Spelling = YES -->] pass:[<!-- vale RedHat.Spelling = YES -->] extensions in the embedded Open VSX registry instance
+
+You can add or remove your choice of pass:[<!-- vale RedHat.Spelling = NO -->] pass:[<!-- vale RedHat.Spelling = NO -->] VS Code pass:[<!-- vale RedHat.Spelling = YES -->] pass:[<!-- vale RedHat.Spelling = YES -->] extensions in the embedded Open VSX registry instance that is deployed by {prod-short} to support air-gapped, offline, and proxy-restricted environments.
+
+This will create a custom build of the Open VSX registry, which can be used in your organization’s workspaces. 
+
+pass:[<!-- vale RedHat.TermsErrors = NO -->]
+
+TIP: To get the latest security fixes after a {prod-short} update, rebuild your container based on the latest tag or SHA.
+
+pass:[<!-- vale RedHat.TermsErrors = YES -->]
+
+.Procedure
+
+include::example$snip_{project-context}-steps-to-add-or-remove-extensions-in-openvsx-sync-json.adoc[]
+
+** If the extension is published on link:https://open-vsx.org[open-vsx.org], you can add its extension `id` in the format __<published_by>__.__<unique_identifier>__. You can find the `id` on the extension's listing page on link:https://open-vsx.org[open-vsx.org].
++
+[source,json,subs="+quotes"]
+----
+    {
+        "id": "__<published_by>__.__<unique_identifier>__"
+    }
+----
++
+[TIP]
+====
+The latest extension version on link:https://open-vsx.org[open-vsx.org] is the default. Alternatively, you can add `"version": "__<extension_version>__"` on a new line to specify a version.
+====
+
+** If the extension is only available from link:https://marketplace.visualstudio.com/VSCode[Microsoft Visual Studio Marketplace], but not link:https://open-vsx.org[Open VSX], you can ask the extension publisher to also publish it on link:https://open-vsx.org[open-vsx.org] according to these link:https://github.com/eclipse/openvsx/wiki/Publishing-Extensions#how-to-publish-an-extension[instructions], potentially using this link:https://github.com/marketplace/actions/publish-vs-code-extension[GitHub action].
++
+[TIP]
+====
+* If the extension publisher is unavailable or unwilling to publish the extension to link:https://open-vsx.org[open-vsx.org], and if there is no Open VSX equivalent of the extension, consider link:https://github.com/open-vsx/publish-extensions/issues[reporting an issue] to the Open VSX team.
+
+* If you have a closed-source extension or an extension developed only for internal use in your company, you can add the extension directly from a `.vsix` file that is accessible from a URL while building the plugin registry container:
++
+[source,json,subs="+quotes"]
+----
+    {
+        "id": "__<published_by>__.__<unique_identifier>__",
+        "download": "__<url_to_download_vsix_file>__",
+        "version": "__<extension_version>__"
+    }
+----
+====
++
+NOTE: Please read the link:https://aka.ms/vsmarketplace-ToU[Terms of Use] for the link:https://marketplace.visualstudio.com/VSCode[Microsoft Visual Studio Marketplace] before using its resources.
+
+** You can remove the extension by deleting it from the `openvsx-sync.json` file.
+
+. Build the plugin registry container image and publish it to a container registry like link:https://quay.io/[quay.io]:
+
+.. {empty}
++
+[subs="+attributes,+quotes"]
+----
+$ ./build.sh -o __<username>__ -r quay.io -t custom
+----
+
+.. {empty}
++
+[subs="+attributes,+quotes"]
+----
+$ {docker-cli} push quay.io/__<username/plugin_registry:custom>__
+----
+
+. Edit the `CheCluster` custom resource in the cluster to point to the image (for example, on link:https://quay.io/[quay.io]) and then save the changes:
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  components:
+    pluginRegistry:
+      deployment:
+        containers:
+          - image: quay.io/__<username/plugin_registry:custom>__
+      openVSXURL: '' 
+----
+
+. Check that the `plugin-registry` pod has restarted and is running.
+
+. Restart the workspace and check the available extensions in the *Extensions* view of the Microsoft Visual Studio Code - Open Source in the workspace.
