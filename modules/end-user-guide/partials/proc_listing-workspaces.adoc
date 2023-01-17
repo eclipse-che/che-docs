@@ -2,28 +2,33 @@
 [id="listing-workspaces"]
 = Listing all workspaces
 
-Run the following command to list all workspaces for all users.
+You can list your workspaces on a command line.
 
+.Procedure
+
+* To list your workspaces, enter the following on a command line:
++
 [source,subs="+attributes"]
 ----
 $ {orch-cli} get devworkspaces
-
+----
++
+.Output
+====
+----
 NAMESPACE   NAME                 DEVWORKSPACE ID             PHASE     INFO
+user1-dev   spring-petclinic     workspace6d99e9ffb9784491   Running   https://url-to-workspace.com
 user1-dev   golang-example       workspacedf64e4a492cd4701   Stopped   Stopped
-user1-dev   php-symfony          workspace5a8f37a0a0d94ea3   Stopped   Stopped
+user1-dev   python-hello-world   workspace69c26884bbc141f2   Failed    Container tooling has state CrashLoopBackOff
 ----
+====
 
-TIP: You can add the `--watch` flag to view updates when the workspace's `PHASE` changes.
+[TIP]
+====
+You can view `PHASE` changes live by adding the `--watch` flag to this command.
+====
 
-Admins can add the `--all-namespaces` flag to list all workspaces from all users.
-
-[source,subs="+attributes"]
-----
-$ {orch-cli} get devworkspaces --all-namespaces
-
-NAMESPACE   NAME                 DEVWORKSPACE ID             PHASE     INFO
-user1-dev   golang-example       workspacedf64e4a492cd4701   Stopped   Stopped
-user1-dev   php-symfony          workspace5a8f37a0a0d94ea3   Stopped   Stopped
-user2-dev   python-hello-world   workspace69c26884bbc141f2   Failed    Container tooling has state CrashLoopBackOff
-user3-dev   spring-petclinic     workspace6d99e9ffb9784491   Running   https://url-to-workspace.com
-----
+[NOTE]
+====
+Users with administrative permissions on the cluster can list all workspaces from all {prod-short} users by including the `--all-namespaces` flag.
+====

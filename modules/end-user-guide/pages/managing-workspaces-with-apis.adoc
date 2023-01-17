@@ -7,14 +7,14 @@
 [id="managing-workspaces-with-apis"]
 = Managing workspaces with {orch-name} APIs
 
-On a {platforms-name} cluster, {prod-short} workspaces are represented as `DevWorkspace` custom resources of the same name.
-As a result, if there is a workspace named `my-workspace` in the {prod-short} dashboard, there is a `DevWorkspace` named `my-workspace` in the user's {orch-namespace} on the {orch-name} cluster.
+On the {platforms-name} cluster, {prod-short} workspaces are represented as `DevWorkspace` custom resources of the same name.
+As a result, if there is a workspace named `my-workspace` in the {prod-short} dashboard, there is a corresponding `DevWorkspace` named `my-workspace` in the user's {orch-namespace} on the cluster.
 
-Since `DevWorkspaces` on the cluster represent {prod-short} workspaces, this allows managing {prod-short} workspaces using {orch-name} APIs with clients such as {orch-cli}.
+Because each `DevWorkspace` custom resource on the cluster represents a {prod-short} workspace, you can manage {prod-short} workspaces by using {orch-name} APIs with clients such as the command-line {orch-cli}.
 
-Each `DevWorkspace` contains details derived from the workspace project's devfile, such as workspace container configurations and devfile commands.
+Each `DevWorkspace` contains details derived from the devfile of the Git repository cloned in the workspace. For example, a devfile might provide devfile commands and workspace container configurations.
 
-Each `DevWorkspace` also references a `DevWorkspaceTemplate` custom resource using the `spec.contributions` field, which contains details about the editor for the workspace.
+Each `DevWorkspace` also references a `DevWorkspaceTemplate` custom resource using the `spec.contributions` field, which contains details about the editor to be loaded in the workspace.
 
 To manage a workspace with {orch-name} APIs, you must determine the workspace `NAME` and the `NAMESPACE` it is located in.
 
