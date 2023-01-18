@@ -1,0 +1,56 @@
+:_content-type: PROCEDURE
+:description: Configuring storage sizes
+:keywords: administration guide, configuring, {prod-id-short}, storage sizes, PVC size, pvc
+:navtitle: Configuring storage sizes
+:page-aliases: installation-guide:configuring-storage-sizes.adoc
+
+[id="configuring-storage-sizes"]
+= Configuring storage sizes
+
+You can configure the persistent volume claim (PVC) size when using the `per-user` or `per-workspace` storage strategies. You must specify the PVC sizes in the `CheCluster` Custom Resource in the format of a link:https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/[{kubernetes} resource quantity]. For more details on the available storage strategies, see xref:configuring-the-storage-strategy.adoc[].
+
+Default persistent volume claim sizes:
+
+* {empty}
++
+[source,yaml]
+----
+per-user: 10Gi
+----
+
+* {empty}
++
+[source,yaml]
+----
+per-workspace: 5Gi
+----
+
+
+.Procedure
+
+. Set the appropriate `claimSize` field for the desired storage strategy in the Che Cluster Custom Resource.
+
+[NOTE]
+====
+
+* You can set this field at installation. See xref:using-chectl-to-configure-the-checluster-custom-resource-during-installation.adoc[].
+
+* You can update this field on the command line. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
+
+====
+
+[source,yaml,subs="+quotes,+attributes"]
+----
+spec:
+  devEnvironments:
+    storage:
+      pvc:
+        pvcStrategy: '__<strategy_name>__'  <1>
+        perUserStrategyPvcConfig: <2>
+          claimSize: __<resource_quantity>__ <3>
+        perWorkspaceStrategyPvcConfig:  <2>
+          claimSize: __<resource_quantity>__ <3>
+----
+<1> Select the storage strategy: `per-user` or `per-workspace` or `ephemeral`. Note: the `ephemeral` storage strategy does not use persistent storage, therefore you cannot configure its storage size or other PVC-related attributes. 
+<2> Specify a claim size on the next line or omit the next line to set the default claim size value. The specified claim size is only used when you select this storage strategy.
+<3> The claim size must be specified as a link:https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/[{kubernetes} resource quantity]. The available quantity units include: `Ei`, `Pi`, `Ti`, `Gi`,  `Mi` and `Ki`.
