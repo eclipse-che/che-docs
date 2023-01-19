@@ -2,15 +2,45 @@
 [id="starting-stopped-workspaces"]
 = Starting stopped workspaces
 
-You can start a stopped workspace by setting the `spec.started` field in the `Devworkspace` to `true`.
+You can start a stopped workspace by setting the `spec.started` field in the `Devworkspace` custom resource to `true`.
+
+.Prerequisites
+
+* An active `{orch-cli}` session on the cluster. See {orch-cli-link}.
+
+* You know the workspace name.
++
+[TIP]
+====
+You can find the relevant workspace name in the output of the following command:
+
+`$ {orch-cli} get devworkspaces`
+====
+
+* You know the relevant {prod-short} user namespace on the cluster.
++
+TIP: You can visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
+
+* You are on the {prod-short} user namespace on the cluster.
++
+[TIP]
+====
+On OpenShift:
+
+* You can use the `oc` command-line tool to check your current namespace:
++
+`$ oc project`
+
+* You can switch to your {prod-short} user namespace on a command line if needed:
++
+`$ oc project __<user_namespace>__`
+====
 
 .Procedure
 
-. Get the `__<workspace_name>__` of the stopped workspace and the `__<user_namespace>__`.
-
-. Run the following command to start the stopped workspace:
+* Run the following command to start the stopped workspace:
 +
-[source,subs="+attributes"]
+[subs="+quotes,attributes"]
 ----
 $ {orch-cli} patch devworkspace __<workspace_name>__ -p '{"spec":{"started":true}}' --type=merge -n __<user_namespace>__ && \
         {orch-cli} wait --for=jsonpath='{.status.phase}'=Running dw/__<workspace_name>__ -n __<user_namespace>__
