@@ -85,57 +85,6 @@ Workspaces are isolated from one another and are responsible for managing the li
 
 Developers using {prod} use their containers directly in their developer workspaces. *{prod-short} workspaces are {platforms-name} Pods, which allow to replicate the application runtimes (and its microservices) used in production* and provide a “developer mode” layer on top of those, adding intelligent code completion and IDE tools.
 
-=== Browser-based IDEs
-
-{prod} provides browser-based IDEs for its workspaces. The default IDE is built on link:https://github.com/theia-ide/theia[Theia], and it has the following capabilities:
-
-* *Monaco-based editor:* A fast and responsive editor, CodeLens
-* **Language Server Protocol:** Language tools
-* *Debug Adapter Protocol:* Debugger tools
-* *Command palette:* Do everything from your keyboard
-* *Task support:* Tasks from Visual Studio Code are extended and support {prod-short} commands
-* *Embedded preview:* Preview your application directly from the IDE, including Markdown preview
-* *Customizable layout:* Adapt the layout using drag-and-drop
-* *And more:* Outline view, search, Git
-
-
-==== Different IDEs for different use cases
-
-
-In {prod}, the IDE is completely decoupled, so that it is possible to plug a different IDE into {prod-short} workspaces:
-
-* It can be based on Eclipse Theia (as it is a framework to build a web IDE), such as Sirius:
-+
-video::B6aCqywKpyY[youtube]
-
-* It can be a completely different solution, such as Jupyter or Eclipse Dirigible:
-+
-video::VooNzKxRFgw[youtube]
-
-For situations where the default IDE does not cover the use cases of the users or to use a dedicated tool rather than an IDE.
-
-
-=== Extensible platform
-
-{prod} is a great platform to build cloud-native tools, and it provides a strong extensibility model with an enjoyable developer experience for contributors.
-
-{prod} is extensible in different ways:
-
-* *Plug-ins* to add capabilities to the IDE. Che-Theia plugins rely on APIs compatible with Visual Studio Code. Plug-ins are isolated and provide their own dependencies packaged in containers.
-* *Stacks* to create pre-configured {prod-short} workspaces with a dedicated set of tools.
-* *Alternative IDEs* to provide specialized tools within {prod}. Build your own, based on Eclipse Theia, or pick existing ones such as Jupyter.
-* *Marketplace (soon)* to easily distribute tools and custom IDEs, which can be tried online, to users and communities.
-
-{prod} uses Che-Theia as its default browser-based IDE. Che-Theia provides a framework to build web IDEs. It is built-in TypeScript and gives contributors a programming model that is flexible, relies on state-of-the-art tools protocols, and makes it faster to build new tools.
-
-In {prod}, the dependencies needed for the tools running in the user's workspace are available when needed. This means that a Che-Theia plugin provides its dependencies, its back-end services (which could be running in a sidecar container connected to the user’s workspace), and the IDE UI extension. {prod-short} packages all these elements together, so that the user does not have to configure different tools together.
-
-==== Visual Studio Code extension compatibility
-
-{prod} rationalizes the effort for a contributor who wants to build a plugin and distribute it to different developer communities and tools. For that purpose, {prod} features a plugin API compatible with extension points from Visual Studio Code. As a result, it is easy to bring an existing plugin from Visual Studio Code into {prod}. The main difference is in the way the plugins are packaged. On {prod}, plugins are delivered with their own dependencies in their own container.
-
-video::HbTKDlOL1eo[youtube]
-
 === Enterprise integration
 
 * An enterprise integration using OpenShift OAuth or Dex.
