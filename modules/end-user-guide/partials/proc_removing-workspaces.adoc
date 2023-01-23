@@ -2,11 +2,49 @@
 [id="removing-workspaces"]
 = Removing workspaces
 
-Removing a workspace only requires deleting the `DevWorkspace` custom resource.
+You can remove a workspace by simply deleting the `DevWorkspace` custom resource.
 
-Deleting the `DevWorkspace` custom resource will also delete other workspace resources if they were created by {prod-short} such as the referenced `DevWorkspaceTemplate` and per-workspace `PersistentVolumeClaims`.
+WARNING: Deleting the `DevWorkspace` custom resource will also delete other workspace resources if they were created by {prod-short}: for example, the referenced `DevWorkspaceTemplate` and per-workspace `PersistentVolumeClaims`.
 
-[source,subs="+attributes"]
+TIP: Remove workspaces by using the {prod-short} dashboard whenever possible.
+
+.Prerequisites
+
+* An active `{orch-cli}` session on the cluster. See {orch-cli-link}.
+
+* You know the workspace name.
++
+[TIP]
+====
+You can find the relevant workspace name in the output of the following command:
+
+`$ {orch-cli} get devworkspaces`
+====
+
+* You know the relevant {prod-short} user namespace on the cluster.
++
+TIP: You can visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
+
+* You are on the {prod-short} user namespace on the cluster.
++
+[TIP]
+====
+On OpenShift:
+
+* You can use the `oc` command-line tool to check your current namespace:
++
+`$ oc project`
+
+* You can switch to your {prod-short} user namespace on a command line if needed:
++
+`$ oc project __<user_namespace>__`
+====
+
+.Procedure
+
+* Run the following command to remove the workspace:
++
+[subs="+quotes,attributes"]
 ----
-$ {orch-cli} delete devworkspace NAME -n NAMESPACE
+$ {orch-cli} delete devworkspace __<workspace_name>__ -n __<user_namespace>__
 ----

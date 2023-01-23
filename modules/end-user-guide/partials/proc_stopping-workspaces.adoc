@@ -2,14 +2,46 @@
 [id="stopping-workspaces"]
 = Stopping workspaces
 
-A workspace can be stopped by setting the `Devworkspace` 's `spec.started` field to `false`.
+You can stop a workspace by setting the `spec.started` field in the `Devworkspace` custom resource to `false`.
 
-To use the `wait` command to wait for the status change, a minimum version of `1.23` for `kubectl`, or a minimum version of `4.10` for `oc` is required.
+.Prerequisites
 
-After determining the `NAME` and `NAMESPACE` of the workspace to stop, run:
+* An active `{orch-cli}` session on the cluster. See {orch-cli-link}.
 
-[source,subs="+attributes"]
+* You know the workspace name.
++
+[TIP]
+====
+You can find the relevant workspace name in the output of the following command:
+
+`$ {orch-cli} get devworkspaces`
+====
+
+* You know the relevant {prod-short} user namespace on the cluster.
++
+TIP: You can visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
+
+* You are on the {prod-short} user namespace on the cluster.
++
+[TIP]
+====
+On OpenShift:
+
+* You can use the `oc` command-line tool to check your current namespace:
++
+`$ oc project`
+
+* You can switch to your {prod-short} user namespace on a command line if needed:
++
+`$ oc project __<user_namespace>__`
+====
+
+.Procedure
+
+* Run the following command to stop that workspace:
++
+[subs="+quotes,attributes"]
 ----
-$ {orch-cli} patch devworkspace NAME -p '{"spec":{"started":false}}' --type=merge -n NAMESPACE && \
-        {orch-cli} wait --for=jsonpath='{.status.phase}'=Stopped dw/NAME -n NAMESPACE
+$ {orch-cli} patch devworkspace __<workspace_name>__ -p '{"spec":{"started":false}}' --type=merge -n __<user_namespace>__ && \
+        {orch-cli} wait --for=jsonpath='{.status.phase}'=Stopped dw/__<workspace_name>__ -n __<user_namespace>__
 ----
