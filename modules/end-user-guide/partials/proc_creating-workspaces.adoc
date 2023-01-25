@@ -184,6 +184,11 @@ spec:
 +
 [TIP]
 ====
+Multiple `DevWorkspace` resources can reference the same `DevWorkspaceTemplate` resource.
+====
++
+[TIP]
+====
 Instead of creating a `DevWorkspaceTemplate` and referencing it in the `spec.contributions` field of the `DevWorkspace`, you can reference the IDE devfile in the `DevWorkspace` using a URL.
 [source,subs="+quotes,+attributes,+macros"]
 ----
@@ -191,6 +196,7 @@ Instead of creating a `DevWorkspaceTemplate` and referencing it in the `spec.con
     - name: ide
       uri: pass:c,a,q[{prod-url}]/plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml
 ----
+Referencing the IDE using the `pass:c,a,q[{prod-url}]/*` URL automatically updates the IDE when {prod} is updated to a newer version.
 ====
 
 . Apply the `DevWorkspace` custom resource to the cluster.
