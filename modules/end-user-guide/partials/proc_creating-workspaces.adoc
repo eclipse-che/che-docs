@@ -36,7 +36,7 @@ NOTE: {prod-short} administrators who intend to create workspaces for other user
 
 .Procedure
 
-. Create a `DevWorkspaceTemplate` custom resource for the selected IDE.
+. Create a `DevWorkspaceTemplate` custom resource for the selected IDE. The `DevWorkspaceTemplate` is based on the IDE's devfile.
 +
 .Creating a `DevWorkspaceTemplate` named `che-code` for the link:https://github.com/microsoft/vscode[Microsoft Visual Studio Code - Open Source] IDE
 ====
@@ -47,7 +47,7 @@ kind: DevWorkspaceTemplate
 metadata:
   name: che-code#<1>
   namespace: user1-dev#<2>
-spec:
+spec:#<3>
   commands:
     - apply:
         component: vscode-injector
@@ -126,6 +126,7 @@ spec:
 ----
 <1> Name of the `DevWorkspaceTemplate` custom resource. This name will be used to reference the `DevWorkspaceTemplate` custom resource within the `DevWorkspace` custom resource.
 <2> User namespace, which is the target {orch-namespace} for the new workspace.
+<3> The `spec` is derived from the `che-code` editor devfile located in `pass:c,a,q[{prod-url}]/plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml`
 ====
 
 . To prepare the `DevWorkspace` custom resource, copy the contents of the target Git repository's devfile.
@@ -183,12 +184,12 @@ spec:
 +
 [TIP]
 ====
-Instead of creating a `DevWorkspaceTemplate` and referencing it in the `spec.contributions` field of the `DevWorkspace`, if the `DevWorkspaceTemplate` is hosted online, you can reference it using a URL.
+Instead of creating a `DevWorkspaceTemplate` and referencing it in the `spec.contributions` field of the `DevWorkspace`, you can reference the IDE devfile in the `DevWorkspace` using a URL.
 [source,subs="+quotes,+attributes,+macros"]
 ----
   contributions:
     - name: ide
-      uri: __<url_to_devworkspace_template>__
+      uri: pass:c,a,q[{prod-url}]/plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml
 ----
 ====
 
