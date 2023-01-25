@@ -1,8 +1,13 @@
+:_content-type: PROCEDURE
+:description: Using a Git-provider access token
+:keywords: Git, credentials, access-token
+:navtitle: Using a Git-provider access token
+:page-aliases: using-a-Git-credentials-store.adoc, using-git-credentials.adoc, 
 
 [id="using-a-git-provider-access-token"]
-= Using a Git provider access token
+= Using a Git-provider access token
 
-If the administrator of your organization's {prod-short} instance has not configured xref:administration-guide:oauth-for-github-gitlab-or-bitbucket.adoc[OAuth for GitHub, GitLab, or Bitbucket], you can apply your personal access token as a {kubernetes} Secret.
+OAuth for GitHub, GitLab, or Bitbucket needs to be xref:administration-guide:oauth-for-github-gitlab-or-bitbucket.adoc[configured by the administrator] of your organization's {prod-short} instance. If the administrator has not configured it for {prod-short} users, alternatively you can apply your personal access token as a {kubernetes} Secret.
 
 Mounting your access token as a Secret enables the {prod-short} Server to access the remote repository that is cloned during workspace creation, including access to the repository's `/.che` and `/.vscode` folders.
 
@@ -27,6 +32,14 @@ TIP: In your user {orch-namespace}, you can create and apply multiple access-tok
 $ echo -n '__<your_access_token>__' | base64
 ----
 
+. Visit {prod-url}/api/user in the web browser and copy the `id` value from the response. This is your {prod-short} user ID.
+
+. Get your Git provider user ID by following the Git provider's API documentation:
++
+* GitHub: link:https://docs.github.com/en/rest/users/users#get-a-user[Get a user]. See the `id` value in the response.
+* GitLab: link:https://docs.gitlab.com/ee/api/users.html#for-normal-users[List users: For normal users], use the `username` filter: `/users?username=:username`. See the `id` value in the response.
+* Bitbucket Server: link:https://developer.atlassian.com/server/bitbucket/rest/v802/api-group-api/#api-api-latest-users-userslug-get[Get users]. See the `id` value in the response.
+
 . Prepare a new {orch-name} Secret in your user {orch-namespace}.
 +
 [source,yaml,subs="+quotes,+attributes,+macros"]
@@ -49,13 +62,10 @@ data:
 type: Opaque
 ----
 +
-<1> Your {prod-short} user ID. You can retrieve `__<che_endpoint>__/api/user` to get the {prod-short} user data.
+<1> Your {prod-short} user ID.
 <2> The Git provider name: `github` or `gitlab` or `bitbucket-server`.
 <3> The Git provider URL.
-<4> Your Git provider user ID, follow the API documentation to retrieve the user object:
-* GitHub: link:https://docs.github.com/en/rest/users/users#get-a-user[Get a user]. See the `id` value in the response.
-* GitLab: link:https://docs.gitlab.com/ee/api/users.html#for-normal-users[List users: For normal users], use the `username` filter: `/users?username=:username`. See the `id` value in the response.
-* Bitbucket Server: link:https://developer.atlassian.com/server/bitbucket/rest/v802/api-group-api/#api-api-latest-users-userslug-get[Get users]. See the `id` value in the response.
+<4> Your Git provider user ID.
 
 . Apply the Secret.
 +
@@ -65,4 +75,3 @@ $ {orch-cli} apply -f - <<EOF
 __<Secret_prepared_in_the_previous_step>__
 EOF
 ----
-
