@@ -14,7 +14,7 @@ Creating new workspaces through the {prod-short} dashboard provides better user 
 * {prod-short} and its components automatically convert the target Git repository's devfile into the `DevWorkspace` and `DevWorkspaceTemplate` custom resources on the cluster.
 * Access to the workspace is secured by default with the `routingClass: che` in the `DevWorkspace` of the workspace.
 * Recognition of the `DevWorkspaceOperatorConfig` configuration is managed by {prod-short}.
-* Recognition of configurations in `spec.devEnvironments`is specified in the `CheCluster` custom resource including:
+* Recognition of configurations in `spec.devEnvironments` specified in the `CheCluster` custom resource including:
 ** Persistent storage strategy is specified with `devEnvironments.storage`
 ** Default IDE is specified with `devEnvironments.defaultEditor`
 ** Default plugins are specified with `devEnvironments.defaultPlugins`
@@ -24,7 +24,7 @@ Creating new workspaces through the {prod-short} dashboard provides better user 
 
 .Prerequisites
 
-* An active `{orch-cli}` session with permissions to create `DevWorkspace` and `DevWorkspaceTemplate` resources in your {orch-namespace} on the cluster. See {orch-cli-link}.
+* An active `{orch-cli}` session with permissions to create `DevWorkspace` resources in your {orch-namespace} on the cluster. See {orch-cli-link}.
 
 * You know the relevant {prod-short} user namespace on the cluster.
 +
@@ -32,102 +32,9 @@ TIP: You can visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your
 
 * You are on the {prod-short} user namespace on the cluster.
 +
-NOTE: {prod-short} administrators who intend to create workspaces for other users must create the `DevWorkspace` and `DevWorkspaceTemplate` custom resources in a user namespace that is provisioned by {prod-short} or by the administrator. See xref:administration-guide:configuring-namespace-provisioning.adoc[].
+NOTE: {prod-short} administrators who intend to create workspaces for other users must create the `DevWorkspace` custom resource in a user namespace that is provisioned by {prod-short} or by the administrator. See xref:administration-guide:configuring-namespace-provisioning.adoc[].
 
 .Procedure
-
-. Create a `DevWorkspaceTemplate` custom resource for the selected IDE. The `DevWorkspaceTemplate` is based on the IDE's devfile.
-+
-.Creating a `DevWorkspaceTemplate` named `che-code` for the link:https://github.com/microsoft/vscode[Microsoft Visual Studio Code - Open Source] IDE
-====
-[source,yaml,subs="+quotes,+attributes"]
-----
-apiVersion: workspace.devfile.io/v1alpha2
-kind: DevWorkspaceTemplate
-metadata:
-  name: che-code#<1>
-  namespace: user1-dev#<2>
-spec:#<3>
-  commands:
-    - apply:
-        component: vscode-injector
-      id: init-container-command
-  components:
-    - container:
-        command:
-          - /entrypoint-init-container.sh
-        cpuLimit: 500m
-        cpuRequest: 30m
-        image: 'quay.io/che-incubator/che-code:insiders'
-        memoryLimit: 128Mi
-        memoryRequest: 32Mi
-        sourceMapping: /projects
-        volumeMounts:
-          - name: checode
-      name: vscode-injector
-    - attributes:
-        app.kubernetes.io/component: vscode-runtime
-        app.kubernetes.io/part-of: vscode.eclipse.org
-        controller.devfile.io/container-contribution: true
-      container:
-        cpuRequest: 30m
-        command:
-          - /checode/entrypoint-volume.sh
-        env:
-          - name: CODE_HOST
-            value: 0.0.0.0
-        memoryRequest: 256Mi
-        sourceMapping: /projects
-        cpuLimit: 500m
-        volumeMounts:
-          - name: checode
-            path: /checode
-        memoryLimit: 1024Mi
-        image: 'quay.io/che-incubator/che-code:insiders'
-        endpoints:
-          - attributes:
-              cookiesAuthEnabled: true
-              discoverable: false
-              type: main
-              urlRewriteSupported: true
-            exposure: public
-            name: che-code
-            protocol: https
-            secure: false
-            targetPort: 3100
-          - attributes:
-              discoverable: false
-              urlRewriteSupported: true
-            exposure: public
-            name: code-redirect-1
-            protocol: http
-            targetPort: 13131
-          - attributes:
-              discoverable: false
-              urlRewriteSupported: true
-            exposure: public
-            name: code-redirect-2
-            protocol: http
-            targetPort: 13132
-          - attributes:
-              discoverable: false
-              urlRewriteSupported: true
-            exposure: public
-            name: code-redirect-3
-            protocol: http
-            targetPort: 13133
-      name: vscode-runtime-description
-    - name: checode
-      volume:
-        ephemeral: true
-  events:
-    preStart:
-      - init-container-command
-----
-<1> Name of the `DevWorkspaceTemplate` custom resource. This name will be used to reference the `DevWorkspaceTemplate` custom resource within the `DevWorkspace` custom resource.
-<2> User namespace, which is the target {orch-namespace} for the new workspace.
-<3> The `spec` is derived from the `che-code` editor devfile located in `pass:c,a,q[{prod-url}]/plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml`
-====
 
 . To prepare the `DevWorkspace` custom resource, copy the contents of the target Git repository's devfile.
 +
@@ -148,7 +55,7 @@ TIP: For more details, see the link:https://devfile.io/docs/2.2.0/what-is-a-devf
 +
 .A `DevWorkspace` custom resource
 ====
-[source,yaml,subs="+quotes,+attributes"]
+[source,yaml,subs="+quotes,+attributes,+macros"]
 ----
 kind: DevWorkspace
 apiVersion: workspace.devfile.io/v1alpha2
@@ -160,15 +67,14 @@ spec:
   started: true#<3>
   contributions:#<4>
     - name: ide
-      kubernetes:
-        name: che-code#<5>
+      uri: pass:c,a,q[{prod-url}]/plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml
   template:
-    projects:#<6>
+    projects:#<5>
       - name: my-project-name
         git:
           remotes:
             origin: https://github.com/eclipse-che/che-docs
-    components:#<7>
+    components:#<6>
       - name: tooling-container
         container:
           image: quay.io/devfile/universal-developer-image:ubi8-latest
@@ -176,27 +82,9 @@ spec:
 <1> Name of the `DevWorkspace` custom resource. This will be the name of the new workspace.
 <2> User namespace, which is the target {orch-namespace} for the new workspace.
 <3> Determines whether the workspace must be started when the `DevWorkspace` custom resource is created.
-<4> Reference to the `DevWorkspaceTemplate` custom resource of the selected IDE.
-<5> Name of the `DevWorkspaceTemplate` custom resource from the previous step.
-<6> Details about the Git repository to clone into the workspace when it starts.
-<7> List of components such as workspace containers and volume components.
-====
-+
-[TIP]
-====
-Multiple `DevWorkspace` resources can reference the same `DevWorkspaceTemplate` resource.
-====
-+
-[TIP]
-====
-Instead of creating a `DevWorkspaceTemplate` and referencing it in the `spec.contributions` field of the `DevWorkspace`, you can reference the IDE devfile in the `DevWorkspace` using a URL.
-[source,subs="+quotes,+attributes,+macros"]
-----
-  contributions:
-    - name: ide
-      uri: pass:c,a,q[{prod-url}]/plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml
-----
-Referencing the IDE using the `pass:c,a,q[{prod-url}]/*` URL automatically updates the IDE when {prod} is updated to a newer version.
+<4> URL reference to the link:https://github.com/microsoft/vscode[Microsoft Visual Studio Code - Open Source] IDE devfile from the plugin registry.
+<5> Details about the Git repository to clone into the workspace when it starts.
+<6> List of components such as workspace containers and volume components.
 ====
 
 . Apply the `DevWorkspace` custom resource to the cluster.
