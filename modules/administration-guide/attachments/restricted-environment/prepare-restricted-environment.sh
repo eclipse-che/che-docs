@@ -44,19 +44,30 @@ mkdir -p "${my_catalog}/${devworkspace_operator_package_name}" "${my_catalog}/${
 
 echo "Fetching metadata for the ${devworkspace_operator_package_name} operator catalog channel, packages, and bundles."
 opm render "${devworkspace_operator_index}" \
-  | jq "select(\
-    .name == \"${devworkspace_operator_package_name}.${devworkspace_operator_version}\" \
-    and .schema == \"olm.bundle\" \
+  | jq "select \
+    (\
+      (.schema == \"olm.bundle\" and .name == \"${devworkspace_operator_package_name}.${devworkspace_operator_version}\") or \
+      (.schema == \"olm.package\" and .name == \"${devworkspace_operator_package_name}\") or \
+      (.schema == \"olm.channel\" and .package == \"${devworkspace_operator_package_name}\") \
     )" \
+  | jq "select \
+     (.schema == \"olm.channel\" and .package == \"${devworkspace_operator_package_name}\").entries \
+      |= [{name: \"${devworkspace_operator_package_name}.${devworkspace_operator_version}\"}]"
   > "${my_catalog}/${devworkspace_operator_package_name}/render.json"
 
 echo "Fetching metadata for the ${prod_operator_package_name} operator catalog channel, packages, and bundles."
 opm render "${prod_operator_index}" \
-  | jq "select(\
-    .name == \"${prod_operator_package_name}.${prod_operator_version}\" \
-    and .schema == \"olm.bundle\" \
+  | jq "select \
+    (\
+      (.schema == \"olm.bundle\" and .name == \"${prod_operator_package_name}.${prod_operator_version}\") or \
+      (.schema == \"olm.package\" and .name == \"${prod_operator_package_name}\") or \
+      (.schema == \"olm.channel\" and .package == \"${prod_operator_package_name}\") \
     )" \
+  | jq "select \
+     (.schema == \"olm.channel\" and .package == \"${prod_operator_package_name}\").entries \
+      |= [{name: \"${prod_operator_package_name}.${prod_operator_version}\"}]"
   > "${my_catalog}/${prod_operator_package_name}/render.json"
+
 
 echo "Creating the catalog dockerfile."
 if [ -f "${my_catalog}.Dockerfile" ]; then
