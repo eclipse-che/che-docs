@@ -52,7 +52,7 @@ opm render "${devworkspace_operator_index}" \
     )" \
   | jq "select \
      (.schema == \"olm.channel\" and .package == \"${devworkspace_operator_package_name}\").entries \
-      |= [{name: \"${devworkspace_operator_package_name}.${devworkspace_operator_version}\"}]"
+      |= [{name: \"${devworkspace_operator_package_name}.${devworkspace_operator_version}\"}]" \
   > "${my_catalog}/${devworkspace_operator_package_name}/render.json"
 
 echo "Fetching metadata for the ${prod_operator_package_name} operator catalog channel, packages, and bundles."
@@ -65,9 +65,8 @@ opm render "${prod_operator_index}" \
     )" \
   | jq "select \
      (.schema == \"olm.channel\" and .package == \"${prod_operator_package_name}\").entries \
-      |= [{name: \"${prod_operator_package_name}.${prod_operator_version}\"}]"
+      |= [{name: \"${prod_operator_package_name}.${prod_operator_version}\"}]" \
   > "${my_catalog}/${prod_operator_package_name}/render.json"
-
 
 echo "Creating the catalog dockerfile."
 if [ -f "${my_catalog}.Dockerfile" ]; then
@@ -84,10 +83,6 @@ oc patch OperatorHub cluster --type json \
 
 echo "Deploying your catalog image to the $my_operator_index registry."
 # See: https://docs.openshift.com/container-platform/latest/installing/disconnected_install/installing-mirroring-installation-images.html#olm-mirroring-catalog_installing-mirroring-installation-images
-oc delete project "$my_catalog" --grace-period=1 --ignore-not-found=true
-oc wait --for=delete "project/$my_catalog"
-sleep 5
-oc new-project "$my_catalog"
 skopeo copy --dest-tls-verify=false --all "containers-storage:$my_operator_index" "docker://$my_operator_index"
 
 echo "Deploying your catalog source to the OpenShift cluster."
