@@ -36,7 +36,7 @@ declare prod_operator_version="${prod_operator_version:?Define the variable}"
 
 # Destination registry
 declare my_registry="${my_registry:?Define the variable}"
-declare my_catalog="${my_catalog:-restricted-environment-install}"
+declare my_catalog=restricted-environment-install
 declare my_operator_index="$my_registry/$my_catalog/my-operator-index:v${ocp_ver}"
 
 # Create local directories
