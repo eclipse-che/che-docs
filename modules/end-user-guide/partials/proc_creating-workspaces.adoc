@@ -2,4 +2,127 @@
 [id="creating-workspaces"]
 = Creating workspaces
 
-Rough technical info to be dumped here by the assigned SME.
+If your use case does not permit use of the {prod-short} dashboard, you can create workspaces with {orch-name} APIs by applying custom resources to the cluster.
+
+[NOTE]
+====
+
+Creating workspaces through the {prod-short} dashboard provides better user experience and configuration benefits compared to using the command line:
+
+* As a user, you are automatically logged in to the cluster.
+* {platforms-name} clients work automatically.
+* {prod-short} and its components automatically convert the target Git repository's devfile into the `DevWorkspace` and `DevWorkspaceTemplate` custom resources on the cluster.
+* Access to the workspace is secured by default with the `routingClass: che` in the `DevWorkspace` of the workspace.
+* Recognition of the `DevWorkspaceOperatorConfig` configuration is managed by {prod-short}.
+* Recognition of configurations in `spec.devEnvironments` specified in the `CheCluster` custom resource including:
+** Persistent storage strategy is specified with `devEnvironments.storage`.
+** Default IDE is specified with `devEnvironments.defaultEditor`.
+** Default plugins are specified with `devEnvironments.defaultPlugins`.
+** Container build configuration is specified with `devEnvironments.containerBuildConfiguration`.
+
+====
+
+.Prerequisites
+
+* An active `{orch-cli}` session with permissions to create `DevWorkspace` resources in your {orch-namespace} on the cluster. See {orch-cli-link}.
+
+* You know the relevant {prod-short} user namespace on the cluster.
++
+TIP: You can visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
+
+* You are in the {prod-short} user namespace on the cluster.
++
+[TIP]
+====
+On OpenShift, you can use the command-line `oc` tool to link:https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/developer-cli-commands.html#oc-project[display your current namespace or switch to a namespace].
+====
++
+NOTE: {prod-short} administrators who intend to create workspaces for other users must create the `DevWorkspace` custom resource in a user namespace that is provisioned by {prod-short} or by the administrator. See xref:administration-guide:configuring-namespace-provisioning.adoc[].
+
+.Procedure
+
+. To prepare the `DevWorkspace` custom resource, copy the contents of the target Git repository's devfile.
++
+.Copied devfile contents with `schemaVersion: 2.2.0`
+====
+[source,yaml,subs="+quotes,+attributes"]
+----
+components:
+  - name: tooling-container
+    container:
+      image: quay.io/devfile/universal-developer-image:ubi8-latest
+----
+====
++
+TIP: For more details, see the link:https://devfile.io/docs/2.2.0/what-is-a-devfile[devfile v2 documentation].
+
+. Create a `DevWorkspace` custom resource, pasting the devfile contents from the previous step under the `spec.template` field.
++
+.A `DevWorkspace` custom resource
+====
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: DevWorkspace
+apiVersion: workspace.devfile.io/v1alpha2
+metadata:
+  name: my-devworkspace#<1>
+  namespace: user1-dev#<2>
+spec:
+  routingClass: che
+  started: true#<3>
+  contributions:#<4>
+    - name: ide
+      uri: pass:c,a,q[{prod-url}]/plugin-registry/v3/plugins/che-incubator/che-code/insiders/devfile.yaml
+  template:
+    projects:#<5>
+      - name: my-project-name
+        git:
+          remotes:
+            origin: https://github.com/eclipse-che/che-docs
+    components:#<6>
+      - name: tooling-container
+        container:
+          image: quay.io/devfile/universal-developer-image:ubi8-latest
+----
+<1> Name of the `DevWorkspace` custom resource. This will be the name of the new workspace.
+<2> User namespace, which is the target {orch-namespace} for the new workspace.
+<3> Determines whether the workspace must be started when the `DevWorkspace` custom resource is created.
+<4> URL reference to the link:https://github.com/microsoft/vscode[Microsoft Visual Studio Code - Open Source] IDE devfile from the plugin registry.
+<5> Details about the Git repository to clone into the workspace when it starts.
+<6> List of components such as workspace containers and volume components.
+====
+
+. Apply the `DevWorkspace` custom resource to the cluster.
+
+.Verification
+. Verify that the workspace is starting by checking the *PHASE* status of the `DevWorkspace`.
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} get devworkspaces -n __<user_{orch-namespace}>__ --watch
+----
++
+.Output
+====
+[subs="+quotes,attributes"]
+----
+NAMESPACE        NAME                  DEVWORKSPACE ID             PHASE      INFO
+user1-dev        my-devworkspace       workspacedf64e4a492cd4701   Starting   Waiting for workspace deployment
+----
+====
+
+. When the workspace has successfully started, its *PHASE* status changes to *Running* in the output of the `{orch-cli} get devworkspaces` command.
++
+.Output
+====
+[subs="+quotes,attributes"]
+----
+NAMESPACE            NAME                  DEVWORKSPACE ID             PHASE      INFO
+user1-dev            my-devworkspace       workspacedf64e4a492cd4701   Running    https://url-to-workspace.com
+----
+====
++
+You can then open the workspace by using one of these options:
++
+** Visit the URL provided in the *INFO* section of the output of the `{orch-cli} get devworkspaces` command.
+** Open the workspace from the {prod-short} dashboard.
