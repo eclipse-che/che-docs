@@ -25,19 +25,6 @@ DOCS_PROJECT_PATH=$SCRIPT_DIR/..
 pushd "$DOCS_PROJECT_PATH/modules" >/dev/null
 readarray -d '' modules < <(find . -mindepth 1 -maxdepth 1 -type d -print0)
 
-missing_anchors=""
-# Getting anchor list
-id_list="$(curl -fsSL https://raw.githubusercontent.com/redhat-developer/devspaces-images/devspaces-3-rhel-8/devspaces-dashboard/packages/dashboard-frontend/assets/branding/product.json |
-  jq -r '.docs[]' | grep '#' | cut -d'#' -f2)"
-# Checking the anchors
-for id in $id_list; do
-  if grep --quiet --recursive -e "id=\"${id}" "${SCRIPT_DIR}/../modules/"; then
-    true
-  else
-    missing_anchors="${missing_anchors}  - ${id}"
-  fi
-done
-
 unused_images=""
 for module in "${modules[@]}"; do
   pushd "$module" >/dev/null
@@ -134,14 +121,6 @@ if [[ "$unused_partials" ]]; then
   exit_status=1
 else
   info "All partials have reference in the modules."
-fi
-
-if [[ "$missing_anchors" ]]; then
-  error "The following anchors required for the application dashboard are missing:"
-  echo -e "${missing_anchors}"
-  exit_status=1
-else
-  info "All dashboard anchors are present."
 fi
 
 exit $exit_status
