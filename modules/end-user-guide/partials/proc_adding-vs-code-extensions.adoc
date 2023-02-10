@@ -1,0 +1,40 @@
+
+[id="adding-vs-code-extensions"]
+= Adding `VS Code` extensions
+
+To enable the loaded Microsoft Visual Studio Code - Open Source in a workspace to automatically install selected extensions, you have to add an `extensions.json` file into the remote Git repository that contains your project source code and that will be cloned into workspaces.
+
+.Prerequisites
+* {prod-short} has access to the link:https://www.open-vsx.org/[OpenVSX registry].
++
+[TIP]
+====
+To install recommended extensions in a restricted environment, consider these options:
+
+* xref:administration-guide:configuring-the-open-vsx-registry-url.adoc[] to point to your OpenVSX registry.
+
+* xref:defining-a-common-ide.adoc[].
+
+* link:https://code.visualstudio.com/docs/editor/extension-marketplace#_install-from-a-vsix[Installing extensions from VSX files].
+====
+
+.Procedure
+
+. Create a `.vscode/extensions.json` file in the remote Git repository.
+
+. Go to the link:https://www.open-vsx.org/[Open VSX registry], and while on the extension page, copy the **Unique_identifier** of each chosen extension and the publisher username from **Published_by** into the `extensions.json` file:
++
+[source,json,subs="+quotes"]
+----
+  {
+    "recommendations": [
+      "__<Published_by_A>__.__<Unique_identifier_1>__",
+      "__<Published_by_B>__.__<Unique_identifier_2>__",
+      "__<Published_by_C>__.__<Unique_identifier_3>__"
+    ]
+  }
+----
+
+.Additional resources
+* link:https://www.open-vsx.org/[Open VSX registry - Extensions for Microsoft Visual Studio Code compatible editors]
+* link:https://code.visualstudio.com/docs/editor/extension-marketplace#_workspace-recommended-extensions[Microsoft Visual Studio Code - Workspace recommended extensions]
