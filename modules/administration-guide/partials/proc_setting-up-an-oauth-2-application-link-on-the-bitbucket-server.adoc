@@ -1,0 +1,41 @@
+:_content-type: PROCEDURE
+:description: Setting up an oauth-2 application link on the Bitbucket Server
+:keywords: bitbucket, bitbucket-server, application-link, oauth2
+:navtitle: Setting up an oauth-2 application link on the Bitbucket Server
+// :page-aliases:
+
+[id="setting-up-an-oauth-2-application-link-on-the-bitbucket-server"]
+= Setting up an oauth-2 application link on the Bitbucket Server
+
+Set up an application link for OAuth 2.0 on the Bitbucket Server.
+
+.Prerequisites
+
+* You are logged in to the Bitbucket Server.
+* link:https://www.gnu.org/software/coreutils/base64[`base64`] is installed in the operating system you are using.
+
+.Procedure
+
+. Go to *Administration > Applications > Application links*.
+. Select *Create link*.
+. Select *External application*, and then choose *Incoming* as the direction.
+. Enter `pass:c,a,q[{prod-url}]/api/oauth/callback` to the *Redirect URL* field.
+. Chose `Admin - Write`  checkbox in the `Application permissions` section.
+. Click the *Save* button.
+. Copy the *Client ID* and encode it to Base64 for use when applying the Bitbucket Server OAuth App Secret:
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ echo -n '__<github_oauth_client_id>__' | base64
+----
+
+. Copy the *Client Secret* and encode it to Base64 for use when applying the Bitbucket Server OAuth App Secret:
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ echo -n '__<github_oauth_client_secret>__' | base64
+----
+
+.Additional resources
+
+* link:https://confluence.atlassian.com/bitbucketserver0720/configure-an-incoming-link-1116282013.html[Atlassian Documentation: Configure an incoming link]
