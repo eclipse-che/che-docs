@@ -9,19 +9,23 @@
 
 If the URL for starting a new workspace doesn't contain a parameter specifying the integrated development environment (IDE), the workspace loads with the default cloud IDE, which is Microsoft Visual Studio Code - Open Source.
 
-The URL parameter for specifying a supported cloud IDE is `che-editor=__<editor_key>__`:
+The URL parameter for specifying a supported cloud IDE is `che-editor=`. You can use it to start a workspace with a clone of the same project repository and your choice of a supported cloud IDE.
 
+TIP: You can use the `che-editor=` parameter when you cannot add or edit a xref:defining-a-common-ide.adoc[`/.che/che-editor.yaml`] file in the source-code Git repository to be cloned for workspaces.
+
+NOTE: If the source-code Git repository to be cloned for workspaces contains a xref:defining-a-common-ide.adoc[`/.che/che-editor.yaml`] file, then the `che-editor=` parameter overrides it.
+
+This parameter accepts two types of values:
+
+* `che-editor=__<editor_key>__`
++
 [source,subs="+quotes,+attributes,+macros"]
 ----
 pass:c,a,q[{prod-url}]#__<git_repository_url>__?che-editor=__<editor_key>__
 ----
++
 
-This URL parameter enables a user to start a workspace with a clone of the same project repository and the personal choice of the cloud IDE.
-
-NOTE: The cloud IDE might be already set for a remote Git repository in the xref:defining-a-common-ide.adoc[`che-editor.yaml` file of the repository].
-
-.The URL parameter `__<editor_key>__` values for supported cloud IDEs 
-
+.The URL parameter `__<editor_key>__` values for supported cloud IDEs
 [cols="1,1a,1a"]
 |===
 | Cloud IDE | `__<editor_key>__` value | Note
@@ -29,3 +33,13 @@ NOTE: The cloud IDE might be already set for a remote Git repository in the xref
 include::example$snip_{project-context}-table-of-supported-editors.adoc[]
 
 |===
+
+* `che-editor=__<url_to_a_file>__`
++
+[source,subs="+quotes,+attributes,+macros"]
+----
+pass:c,a,q[{prod-url}]#__<git_repository_url>__?che-editor=__<url_to_a_file>__# <1>
+----
+<1> You can supply a URL to a xref:defining-a-common-ide.adoc[`che-editor.yaml`]  file or another file with link:https://devfile.io/docs/2.2.0/what-is-a-devfile[devfile content].
++
+TIP: The URL must point to the raw file content.
