@@ -115,15 +115,6 @@ def architecture_diagrams(prod_short, project_context, orchestrator_name):
         che_host >> crd_workspace
         che_host >> postgres
 
-    filename = file_path + 'postgresql-interactions'
-    with Diagram(filename=filename,
-                 show=False,
-                 direction="TB",
-                 graph_attr=graph_attr):
-        che_host = Custom(prod_short + ' server', icon_path=prod_icon)
-        postgres = PostgreSQL('PostgreSQL')
-        che_host >> postgres
-
     filename = file_path + 'devfile-registry-interactions'
     with Diagram(filename=filename,
                  show=False,
