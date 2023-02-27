@@ -13,23 +13,38 @@ The publication is decoupled. See link:https://github.com/eclipse-che/che-docs/t
 
 .Prerequisites
 
-* Define the Eclipse Che version to release: `__<major>__.__<minor>__.0`.
+* The new release is published on https://github.com/eclipse/che/releases and in https://mattermost.eclipse.org/eclipse/channels/eclipse-che-releases.
 
 .Procedure
 
-. Create the `__<major>__.__<minor>__.x` branch from the prerelease branch.
+. From the `main` branch, create a release branch with a branch name in the format `__<major>__.__<minor>__.x`, and then checkout the created release branch.
++
+NOTE: The name of the release branch differs from the number of the release in the trailing `x`.
 
-. Edit the `antora.yml` file in the `__<major>__.__<minor>__.x` branch to define:
+. Update the following product-version-related values in `antora.yml`:
 +
 [source,yaml,subs="+attributes,+quotes"]
 ----
 prerelease: false
-version: __<major>__.__<minor>__.x
+version: __<major>__.__<minor>__.x # name of release branch
 asciidoc:
   attributes:
     prod-ver-patch: "_<major>_._<minor>_.0"
     prod-ver: "_<major>_._<minor>_"
     prod-ver-major: "_<major>_"
+----
+
+. Look up the latest DWO release in https://github.com/devfile/devworkspace-operator/tags, double-check it with the SMEs, and update the DWO version patch value in `antora.yml`:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+asciidoc:
+  attributes:
+    ...
+    # for the project
+    ...
+    devworkspace-operator-version-patch: "x.y.z"
+    ...
 ----
 
 . Commit and push the changes to the release branch.
