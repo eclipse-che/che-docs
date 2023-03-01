@@ -1,0 +1,92 @@
+:_content-type: PROCEDURE
+:description: Starting a new workspace from a devfile URL
+:keywords: start-new-workspace, start-a-new-workspace, how-to-start-new-workspace, how-to-start-a-new-workspace, starting-a-new-workspace, how-to-start-workspace, how-to-start-a-workspace
+:navtitle: Starting a new workspace from a devfile URL
+:page-aliases:
+
+[id="starting-a-new-workspace-from-a-devfile-url"]
+= Starting a new workspace from a devfile URL
+
+Working with {prod-short} in your browser involves multiple URLs:
+
+* The URL of your organization's {prod-short} instance, used as part of all the following URLs
+* The URL of the *devfile*
+* [.underline]#The URLs for starting a new workspace#
+* The URLs of your workspaces in use
+
+With {prod-short}, you can visit a *devfile* URL in your browser to start a new workspace.
+
+TIP: You can also use the *Git Repo URL ** field on the *Create Workspace* page of your {prod-short} dashboard to enter the URL of a *devfile* to start a new workspace.
+
+.Prerequisites
+
+* Your organization has a running instance of {prod-short}.
+* You know the FQDN URL of your organization's {prod-short} instance: `pass:c,a,q[{prod-url}]`.
+
+.Procedure
+
+To start a new workspace from a devfile URL:
+
+. Optional: Visit your {prod-short} dashboard pages to authenticate to your organization's instance of {prod-short}.
+
+. Visit the URL to start a new workspace using the basic syntax:
+[source,subs="+quotes,+attributes,+macros"]
++
+----
+pass:c,a,q[{prod-url}]#__<devfile_url>__
+----
++
+[TIP]
+====
+You can extend this URL with optional parameters:
+[source,subs="+quotes,+attributes,+macros"]
+----
+pass:c,a,q[{prod-url}]#__<devfile_url>__?__<optional_parameters>__ <1>
+----
+<1> See xref:optional-parameters-for-the-urls-for-starting-a-new-workspace.adoc[].
+====
++
+.A URL for starting a new workspace
+====
+
+`pass:c,a,q[{prod-url}#https://raw.githubusercontent.com/che-samples/cpp-hello-world/main/devfile.yaml]`
+
+====
++
+[TIP]
+====
+You can pass Personal Access Token to the URL to have access to private repositories:
+[source,subs="+quotes,+attributes,+macros"]
+----
+pass:c,a,q[{prod-url}]#__https://__<token>__@__<host>__/__<path> <1>
+----
+<1> See xref:using-a-git-provider-access-token.adoc[].
+
+This works for GitHub, GitLab, Bitbucket, Microsoft Azure, and other providers that support Personal Access Token.
+====
++
+After you enter the URL to start a new workspace in a browser tab, it renders the workspace-starting page.
++
+When the new workspace is ready, the workspace IDE loads in the browser tab.
++
+The workspace has a unique URL: `pass:c,a,q[{prod-url}]#workspace__<unique_url>__`.
+
+[TIP]
+====
+Although this is not possible in the address bar, you can add a URL for starting a new workspace as a bookmark by using the browser bookmark manager:
+
+* In Mozilla Firefox, go to *☰* *>* *Bookmarks* *>* *Manage bookmarks Ctrl+Shift+O* *>* *Bookmarks Toolbar* *>* *Organize* *>* *Add bookmark*.
+
+* In Google Chrome, go to *⋮* *>* *Bookmarks* *>* *Bookmark manager* *>* *Bookmarks bar* *>* *⋮* *>* *Add new bookmark*.
+====
+[IMPORTANT]
+====
+The devfile must contain a project info in its content, to initiate a clone of the Git repository in the filesystem of the new workspace.
+
+See https://devfile.io/docs/2.2.0/adding-projects.
+====
+
+.Additional resources
+
+* xref:optional-parameters-for-the-urls-for-starting-a-new-workspace.adoc[]
+* xref:basic-actions-you-can-perform-on-a-workspace.adoc[]
