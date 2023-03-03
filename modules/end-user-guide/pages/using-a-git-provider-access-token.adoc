@@ -51,7 +51,7 @@ If you have the link:https://www.gnu.org/software/coreutils/base64[base64] comma
 +
 * GitHub: link:https://docs.github.com/en/rest/users/users#get-a-user[Get a user]. See the `id` value in the response.
 * GitLab: link:https://docs.gitlab.com/ee/api/users.html#for-normal-users[List users: For normal users], use the `username` filter: `/users?username=:username`. See the `id` value in the response.
-* Bitbucket Server: link:https://developer.atlassian.com/server/bitbucket/rest/v802/api-group-api/#api-api-latest-users-userslug-get[Get users]. See the `id` value in the response.
+* Bitbucket Server: use the `curl` command: `curl -D- -u username:password -X GET -H "Content-Type: application/json" https://{baseurl}/rest/api/latest/users/{userSlug}` and see the `id` value in the response. More information could be found in the link:https://developer.atlassian.com/server/bitbucket/rest/v802/api-group-api/#api-api-latest-users-userslug-get[Get users BitBucket documentation] and the link:https://developer.atlassian.com/server/bitbucket/how-tos/example-basic-authentication/[authentication for BitBucket API].
 
 . Prepare a new {orch-name} Secret.
 +
@@ -78,7 +78,7 @@ type: Opaque
 <1> Your {prod-short} user ID.
 <2> The Git provider name: `github` or `gitlab` or `bitbucket-server`.
 <3> The Git provider URL.
-<4> Your Git provider user ID.
+<4> Your Git provider user ID, the value should be wrapped with ' ' or " ".
 
 . Visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
 
@@ -116,3 +116,6 @@ EOF
 . xref:starting-a-new-workspace-with-a-clone-of-a-git-repository.adoc[Start a new workspace by using the URL of a remote Git repository] that the Git provider hosts.
 . Make some changes and push to the remote Git repository from the workspace.
 
+.Additional resources
+
+* xref:administration-guide:deploying-che-with-support-for-git-repositories-with-self-signed-certificates.adoc[Deploying Che with support for Git repositories with self-signed certificates]
