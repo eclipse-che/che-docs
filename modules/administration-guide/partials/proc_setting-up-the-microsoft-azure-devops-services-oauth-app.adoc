@@ -1,0 +1,51 @@
+:_content-type: PROCEDURE
+:description: Setting up the Microsoft Azure DevOps Services OAuth App
+:keywords: azure, devops, oauth
+:navtitle: Setting up the Microsoft Azure DevOps Services OAuth App
+// :page-aliases:
+
+[id="setting-up-the-microsoft-azure-devops-services-oauth-app"]
+= Setting up the Microsoft Azure DevOps Services OAuth App
+
+Set up a Microsoft Azure DevOps Services OAuth App using OAuth 2.0.
+
+.Prerequisites
+
+* You are logged in to https://azure.microsoft.com/en-us/products/devops/[Microsoft Azure DevOps Services].
+* Third-party applications can access resources in your organization through OAuth. See link:https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/change-application-access-policies?view=azure-devops[Manage security & app access policies].
+* link:https://www.gnu.org/software/coreutils/base64[`base64`] is installed in the operating system you are using.
+
+.Procedure
+
+. Visit link:https://app.vsaex.visualstudio.com/app/register/[].
+
+. Enter the following values:
+
+.. *Company name*: `{prod-short}`
+.. *Application name*: `{prod-short}`
+.. *Application website*: `pass:c,a,q[{prod-url}]/`
+.. *Authorization callback URL*: `pass:c,a,q[{prod-url}]/api/oauth/callback`
+
+. In *Select Authorized scopes*, select *Code (read and write)*.
+
+. Click *Create application*.
+
+. Copy the *App ID* and encode it to Base64 for use when applying the Microsoft Azure DevOps Services OAuth App Secret:
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ echo -n '__<microsoft_azure_devops_services_oauth_app_id>__' | base64
+----
+
+. Click *Show* to display the *Client Secret*.
+
+. Copy the *Client Secret* and encode it to Base64 for use when applying the Microsoft Azure DevOps Services OAuth App Secret:
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ echo -n '__<microsoft_azure_devops_services_oauth_client_secret>__' | base64
+----
+
+.Additional resources
+
+* link:https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/oauth?view=azure-devops[Authorize access to REST APIs with OAuth 2.0]

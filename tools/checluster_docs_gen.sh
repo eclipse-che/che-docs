@@ -73,7 +73,6 @@ parse_content() {
   parse_section "components.properties.cheServer" "General configuration settings related to the {prod-short} server component."
   parse_section "components.properties.pluginRegistry" "Configuration settings related to the Plug-in registry component used by the {prod-short} installation."
   parse_section "components.properties.devfileRegistry" "Configuration settings related to the Devfile registry component used by the {prod-short} installation."
-  parse_section "components.properties.database" "Configuration settings related to the Database component used by the {prod-short} installation."
   parse_section "components.properties.dashboard" "Configuration settings related to the Dashboard component used by the {prod-short} installation."
   parse_section "components.properties.imagePuller" "Kubernetes Image Puller component configuration."
   parse_section "components.properties.metrics" "{prod-short} server metrics component configuration."

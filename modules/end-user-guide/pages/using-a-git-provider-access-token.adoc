@@ -7,15 +7,23 @@
 [id="using-a-git-provider-access-token"]
 = Using a Git-provider access token
 
-OAuth for GitHub, GitLab, or Bitbucket needs to be xref:administration-guide:oauth-for-github-gitlab-or-bitbucket.adoc[configured by the administrator] of your organization's {prod-short} instance. If your administrator could not configure it for {prod-short} users, the workaround is for you to apply your personal access token as a {kubernetes} Secret.
+pass:[<!-- vale RedHat.Spelling = NO -->]
+
+OAuth for GitHub, GitLab, Bitbucket, or Microsoft Azure Repos needs to be xref:administration-guide:configuring-oauth-for-git-providers.adoc[configured by the administrator] of your organization's {prod-short} instance. If your administrator could not configure it for {prod-short} users, the workaround is for you to apply your personal access token as a {kubernetes} Secret.
+
+pass:[<!-- vale RedHat.Spelling = YES -->]
 
 Mounting your access token as a Secret enables the {prod-short} Server to access the remote repository that is cloned during workspace creation, including access to the repository's `/.che` and `/.vscode` folders.
 
 Apply the Secret in your user {orch-namespace} of the {orch-name} cluster of your organization's {prod-short} instance.
 
-After applying the Secret, you can create new workspaces from a private GitHub, GitLab, or Bitbucket-server repository.
+pass:[<!-- vale RedHat.Spelling = NO -->]
 
-You can create and apply multiple access-token Secrets per a Git provider. You must apply each of those Secrets in your user {orch-namespace}.
+After applying the Secret, you can create workspaces with clones of private Git repositories that are hosted on GitHub, GitLab, Bitbucket Server, or Microsoft Azure Repos.
+
+pass:[<!-- vale RedHat.Spelling = YES -->]
+
+You can create and apply multiple access-token Secrets per Git provider. You must apply each of those Secrets in your user {orch-namespace}.
 
 .Prerequisites
 
@@ -70,15 +78,17 @@ metadata:
     che.eclipse.org/scm-url: __<git_provider_endpoint>__# <3>
     che.eclipse.org/scm-userid: '__<git_provider_user_id>__'# <4>
     che.eclipse.org/scm-username: __<git_provider_username>__
+    che.eclipse.org/scm-organization: __<git_provider_organization>__# <5>
 data:
   token: __<Base64_encoded_access_token>__
 type: Opaque
 ----
 +
 <1> Your {prod-short} user ID.
-<2> The Git provider name: `github` or `gitlab` or `bitbucket-server`.
+<2> The Git provider name: `github` or `gitlab` or `bitbucket-server` or `azure-devops`.
 <3> The Git provider URL.
 <4> Your Git provider user ID, the value should be wrapped with ' ' or " ".
+<5> This line is only applicable to `azure-devops`: your Git provider user organization.
 
 . Visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
 
