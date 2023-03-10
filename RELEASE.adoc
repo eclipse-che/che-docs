@@ -17,7 +17,30 @@ The publication is decoupled. See link:https://github.com/eclipse-che/che-docs/t
 
 .Procedure
 
-. From the `main` branch, create a release branch with a branch name in the format `__<major>__.__<minor>__.x`, and then checkout the created release branch.
+. From the `main` branch, open and merge a PR to `main` to update the Che version values in link:https://github.com/eclipse-che/che-docs/blob/main/antora.yml[`antora.yml`]:
++
+TIP: You can proceed to step 2 without waiting for this PR to be merged.
+
+.. Update the `prod-...` version values to the just released Che version:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+    prod-ver-major: "7" # update this only if there is a major version change
+    prod-ver-patch: "7.62.0"
+    prod-ver: "7.62"
+----
+
+.. Add a commit message and PR title like `chore: update product version values in antora.yml to Che 7.62` and explain the changes:
++
+----
+## What does this pull request change?
+Bump up the Che version to the latest release for the main branch.
+
+## Specify the version of the product this pull request applies to
+Merge to `main`
+----
+
+. From the `main` branch, create a release branch with a branch name in the format `__<major>__.__<minor>__.x`.
 +
 NOTE: The name of the release branch differs from the number of the release in the trailing `x`.
 
@@ -34,35 +57,20 @@ asciidoc:
     prod-ver-major: "_<major>_"
 ----
 
-. Look up the latest DWO release in https://github.com/devfile/devworkspace-operator/tags, double-check it with the SMEs, and update the DWO version patch value in `antora.yml`:
+. In the `publication-builder` branch, update the first `branches` value to the latest release branch (from step 2) in link:https://github.com/eclipse-che/che-docs/blob/publication-builder/publication-builder-antora-playbook.yml[`publication-builder-antora-playbook.yml`].
 +
 [source,yaml,subs="+attributes,+quotes"]
 ----
-asciidoc:
-  attributes:
-    ...
-    # for the project
-    ...
-    devworkspace-operator-version-patch: "x.y.z"
-    ...
-----
-
-. Commit and push the changes to the release branch.
-
-. Edit the link:https://github.com/eclipse-che/che-docs/blob/publication-builder/publication-builder-antora-playbook.yml[`publication-builder-antora-playbook.yml` file in the `publication-builder` branch]. Change the latest branch to "__<major>__.__<minor>__.x". Keep the other branches (`7.43.x` and `main`).
-+
-[source,yaml,subs="+attributes,+quotes"]
-----
-# [...]
 content:
   sources:
     - url: https://github.com/eclipse-che/che-docs
       branches:
-        - 7.57.x
+        - 7.62.x
         - che-7-redirections
         - main
-# [...]
 ----
++
+WARNING: Do not remove the other branches like `main`!
 
 == Releasing a patch version
 
@@ -72,7 +80,7 @@ content:
 
 .Procedure
 
-. Define `asciidoc.attributes.prod-ver-patch` in the `antora.yml` file in the `__<major>__.__<minor>__.x` branch:
+. Define `asciidoc.attributes.prod-ver-patch` in `antora.yml` in the `__<major>__.__<minor>__.x` branch:
 +
 [source,yaml,subs="+attributes,+quotes"]
 ----
