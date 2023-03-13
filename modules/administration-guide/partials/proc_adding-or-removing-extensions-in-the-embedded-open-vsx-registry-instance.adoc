@@ -13,31 +13,18 @@ TIP: To get the latest security fixes after a {prod-short} update, rebuild your 
 
 pass:[<!-- vale RedHat.TermsErrors = YES -->]
 
-.Procedure
+.Prerequisites
 
-include::example$snip_{project-context}-steps-to-add-or-remove-extensions-in-openvsx-sync-json.adoc[]
-
-** If the extension is published on link:https://open-vsx.org[open-vsx.org], you can copy and use the publisher and extension names from the extension's listing page:
-+
-[source,json,subs="+quotes"]
-----
-    {
-        "id": "__<publisher>__.__<extension>__"
-    }
-----
+* Chosen extensions are published on link:https://open-vsx.org[open-vsx.org].
 +
 [TIP]
 ====
-The latest extension version on link:https://open-vsx.org[open-vsx.org] is the default. Alternatively, you can add `"version": "__<extension_version>__"` on a new line to specify a version.
-====
 
-** If the extension is only available from link:https://marketplace.visualstudio.com/VSCode[Microsoft Visual Studio Marketplace], but not link:https://open-vsx.org[Open VSX], you can ask the extension publisher to also publish it on link:https://open-vsx.org[open-vsx.org] according to these link:https://github.com/eclipse/openvsx/wiki/Publishing-Extensions#how-to-publish-an-extension[instructions], potentially using this link:https://github.com/marketplace/actions/publish-vs-code-extension[GitHub action].
-+
-[TIP]
-====
-* If the extension publisher is unavailable or unwilling to publish the extension to link:https://open-vsx.org[open-vsx.org], and if there is no Open VSX equivalent of the extension, consider link:https://github.com/open-vsx/publish-extensions/issues[reporting an issue] to the Open VSX team.
+If the extension is only available from link:https://marketplace.visualstudio.com/VSCode[Microsoft Visual Studio Marketplace], but not link:https://open-vsx.org[Open VSX], you can ask the extension publisher to also publish it on link:https://open-vsx.org[open-vsx.org] according to these link:https://github.com/eclipse/openvsx/wiki/Publishing-Extensions#how-to-publish-an-extension[instructions], potentially using this link:https://github.com/marketplace/actions/publish-vs-code-extension[GitHub action].
 
-* If you have a closed-source extension or an extension developed only for internal use in your organization, you can add the extension directly from a `.vsix` file by using a URL accessible to your custom plugin registry container:
+If the extension publisher is unavailable or unwilling to publish the extension to link:https://open-vsx.org[open-vsx.org], and if there is no Open VSX equivalent of the extension, consider link:https://github.com/open-vsx/publish-extensions/issues[reporting an issue] to the Open VSX team.
+
+If you have a closed-source extension or an extension developed only for internal use in your organization, you can add the extension directly from a `.vsix` file by using a URL accessible to your custom plugin registry container:
 +
 [source,json,subs="+quotes"]
 ----
@@ -47,11 +34,38 @@ The latest extension version on link:https://open-vsx.org[open-vsx.org] is the d
         "version": "__<extension_version>__"
     }
 ----
-====
-+
-WARNING: Please read the link:https://aka.ms/vsmarketplace-ToU[Terms of Use] for the link:https://marketplace.visualstudio.com/VSCode[Microsoft Visual Studio Marketplace] before using its resources.
 
-** You can remove the extension by deleting it from the `openvsx-sync.json` file.
+Read the link:https://aka.ms/vsmarketplace-ToU[Terms of Use] for the link:https://marketplace.visualstudio.com/VSCode[Microsoft Visual Studio Marketplace] before using its resources.
+
+====
+
+.Procedure
+
+include::example$snip_{project-context}-steps-to-add-or-remove-extensions-in-openvsx-sync-json.adoc[]
+
+. Get the publisher and extension names of each chosen extension:
+
+.. Find the extension on the link:https://www.open-vsx.org/[Open VSX registry website] and open the extension's listing page.
+
+.. Right-click btn:[DOWNLOAD] and copy its URL. If right-clicking does not allow you to copy the URL, left-click btn:[DOWNLOAD] and right-click any of the version links in the drop-down list and copy its URL.
+
+.. Extract the __<publisher>__ and __<extension>__ names from the copied URL:
++
+[subs="+quotes"]
+----
+https://open-vsx.org/.../file/__<publisher>__.__<extension>__-__<version>__.vsix
+----
+
+. To add extensions, add the publisher and extension names to the `openvsx-sync.json` file. To remove extensions, remove the publisher and extension names from the `openvsx-sync.json` file. Use the following JSON syntax:
++
+[source,json,subs="+quotes"]
+----
+    {
+        "id": "__<publisher>__.__<extension>__"
+    }
+----
++
+TIP: The latest extension version on link:https://open-vsx.org[open-vsx.org] is the default. Alternatively, you can add `"version": "__<extension_version>__"` on a new line to specify a version.
 
 . Build the plugin registry container image and publish it to a container registry like link:https://quay.io/[quay.io]:
 
@@ -81,6 +95,8 @@ spec:
           - image: quay.io/__<username/plugin_registry:custom>__
       openVSXURL: '' 
 ----
+
+.Verification
 
 . Check that the `plugin-registry` pod has restarted and is running.
 
