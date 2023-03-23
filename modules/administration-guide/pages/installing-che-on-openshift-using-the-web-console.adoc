@@ -7,24 +7,23 @@
 [id="installing-{prod-id-short}-on-openshift-using-the-web-console"]
 = Installing {prod-short} on OpenShift using the web console
 
-This section describes how to install {prod-short} using the OpenShift web console. Consider xref:installing-che-on-openshift-using-cli.adoc[] instead.
+If you have trouble xref:installing-che-on-openshift-using-cli.adoc[installing {prod-short} on the command line], you can alternatively install it through the OpenShift web console.
 
 .Prerequisites
 
 * An OpenShift web console session by a cluster administrator. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/web_console/web-console.html[Accessing the web console].
 
-.Procedure
+* An active `oc` session with administrative permissions to the OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the OpenShift CLI].
+
+* For a repeat installation on the same OpenShift cluster: you uninstalled the previous {prod-short} instance according to xref:uninstalling-che.adoc[].
 
 .Procedure
 
-. Optional: If you previously deployed {prod-short} on this OpenShift cluster, ensure that the previous {prod-short} instance is removed:
-+
-[subs="+attributes,+quotes"]
-----
-$ {prod-cli} server:delete
-----
+. In the *Administrator* view of the OpenShift web console, go to *Operators* -> *OperatorHub* and search for *{prod}*.
 
-. Install the {prod} Operator. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/operators/admin/olm-adding-operators-to-cluster.html#olm-installing-from-operatorhub-using-web-console_olm-adding-operators-to-a-cluster[Installing from OperatorHub using the web console].
+. Install the {prod} Operator.
+
+TIP: See link:https://docs.openshift.com/container-platform/{ocp4-ver}/operators/admin/olm-adding-operators-to-cluster.html#olm-installing-from-operatorhub-using-web-console_olm-adding-operators-to-a-cluster[Installing from OperatorHub using the web console].
 
 . Create the `{prod-namespace}` project in OpenShift as follows:
 +
@@ -33,21 +32,20 @@ $ {prod-cli} server:delete
 oc create namespace {prod-namespace}
 ----
 
-. In the *Administrator* view of the OpenShift web console, go to menu:Operators[Installed Operators > {prod} instance Specification > Create CheCluster > YAML view].
+. Go to *Operators* -> *Installed Operators* -> *{prod} instance Specification* -> *Create CheCluster* -> *YAML view*.
 
 . In the *YAML view*, replace `namespace: openshift-operators` with `namespace: {prod-namespace}`.
 
-. Select *Create*. See https://docs.openshift.com/container-platform/4.10/operators/user/olm-creating-apps-from-installed-operators.html[Creating applications from installed Operators].
+. Select *Create*.
++
+TIP: See https://docs.openshift.com/container-platform/4.10/operators/user/olm-creating-apps-from-installed-operators.html[Creating applications from installed Operators].
 
 .Verification
 
-. To verify that the {prod-short} instance has installed correctly, navigate to the *{prod2} Cluster* tab of the *Operator details* page. The *{prod} instance Specification* page displays the list of {prod} instances and their status.
+. In *{prod} instance Specification*, go to *devspaces* to land on the *Details* tab.
 
-. Click *{prod-checluster}* `CheCluster` and navigate to the *Details* tab.
+. Under *Message*, check that there is *None*, which means no errors.
 
-. See the content of the following fields:
-+
-* The *Message* field contains error messages. The expected content is `None`.
-* The *{prod} URL* field contains the URL of the {prod} instance. The URL appears when the deployment finishes successfully.
+. Under *{prod} URL*, wait until the URL of the {prod-short} instance appears, and then open the URL to check the {prod-short} dashboard.
 
-. Navigate to the *Resources* tab. View the list of resources assigned to the {prod-short} deployment and their status.
+. In the *Resources* tab, view the resources for the {prod-short} deployment and their status.
