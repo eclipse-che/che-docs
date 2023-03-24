@@ -13,38 +13,44 @@ The pods contribute to the resource consumption in CPU and memory limits and req
 Learn how to calculate resources, such as memory and CPU, required to run {prod}.
 
 .Procedure
-. Identify the workspace components explicitly specified in the `components` section of your devfile.
-When this section is empty, {prod-short} only loads the implicit components.
+
+. Identify the workspace resource requirements which depend on the devfile that is used for defining the development environment. To illustrate the procedure a specific link:https://github.com/che-incubator/quarkus-api-example/blob/main/devfile.yaml[devfile] will be used for calculating the resource requirements. Identify the workspace components explicitly specified in the `components` section of the devfile.
++
+** The `tools` component of the devfile defines the following requests and limits:
++
+[source,yaml,subs="+attributes,+quotes,macros"]
+----
+    memoryLimit: 6G
+    memoryRequest: 512M
+    cpuRequest: 1000m
+    cpuLimit: 4000m
+----
+
+** The `postgresql` component does not define any requests and limits and therefore falls back on the defaults for the dedicated container:
++
+[source,yaml,subs="+attributes,+quotes,macros"]
+----
+    memoryLimit: 128M
+    memoryRequest: 64M
+    cpuRequest: 10m
+    cpuLimit: 1000m
+----
+
+** During the workspace startup, an internal `che-gateway` container is implicitly provisioned with the following requests and limits:
++
+[source,yaml,subs="+attributes,+quotes,macros"]
+----
+    memoryLimit: 256M
+    memoryRequest: 64M
+    cpuRequest: 50m
+    cpuLimit: 500m
+----
+
+
+. Calculate the total: 
 +
 [cols="1a,1a,1a,1a,1a,1a,1a",options="header"]
-.Devfile specified workspace components memory requirements
-|===
-|Purpose
-|Pod
-|Container name
-|Memory limit
-|Memory request
-|CPU limit
-|CPU request
-
-|Your developer tools
-|`workspace`
-|
-|
-|
-|
-|
-
-3+>s|Total
->s|
->s|
->s|
->s|
-|===
-. Identify the implicit workspace components that {prod-short} loads: developer tools, editor, and {prod-short} gateway.
-+
-[cols="1a,1a,1a,1a,1a,1a,1a",options="header"]
-.Implicit workspace components default requirements
+.Workspace requirements
 |===
 |Purpose
 |Pod
@@ -56,37 +62,36 @@ When this section is empty, {prod-short} only loads the implicit components.
 
 |Developer tools
 |`workspace`
-|`universal-developer-image`
-|1 GiB
-|256 MiB
-|500 m
-|30 m
+|`tools`
+|6 GiB
+|512 MiB
+|4000 m
+|1000 m
 
-|Editor
+|Database
 |`workspace`
-|`che-code`
+|`postgresql`
 |128 MiB
-|32 MiB
-|500 m
-|30 m
+|64 MiB
+|50 m
+|10 m
 
 |{prod-short} gateway
 |`workspace`
 |`che-gateway`
-|256 Mi
-|64 Mi
+|256 MiB
+|64 MiB
 |500 m
 |50 m
 
 3+>s|Total
->s|2.4 GiB
->s|480 MiB
->s|1.5
->s|110 m
+>s|6.4 GiB
+>s|640 MiB
+>s|4550 m
+>s|1060 m
 |===
 
-
-. Sum up the resources required for each workspace, and multiply them by the running workspaces count.
+. Sum up the resources required for each workspace, and multiply them by the expected running workspaces count.
 
 . Sum up the requirements for the {prod-short} Operator, Operands, and {devworkspace} Controller
 +
@@ -119,7 +124,7 @@ When this section is empty, {prod-short} only loads the implicit components.
 
 |{prod-short} Dashboard
 |`{prod-id-short}-dashboard`
-|* `{prod-id-short}-dashboard`
+|`{prod-id-short}-dashboard`
 |256 MiB
 |32 MiB
 |500 m
@@ -206,7 +211,7 @@ When this section is empty, {prod-short} only loads the implicit components.
 |100 m
 
 |{devworkspace} Operator Catalog
-|
+|`{devworkspace-id}-operator-catalog`
 |`registry-server`
 |N/A
 |50 MiB
@@ -236,3 +241,9 @@ When this section is empty, {prod-short} only loads the implicit components.
 >s|1.3
 
 |===
+
+.Additional resources
+
+* link:https://devfile.io/docs/2.2.0/what-is-a-devfile[What is a devfile]
+* link:https://devfile.io/docs/2.2.0/benefits-of-devfile[Benefits of devfile]
+* link:https://devfile.io/docs/2.2.0/overview[Devfile customization overview]
