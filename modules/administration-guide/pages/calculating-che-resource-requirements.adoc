@@ -10,14 +10,21 @@
 
 The {prod-short} Operator, {devworkspace} Controller, and user workspaces consist of a set of pods.
 The pods contribute to the resource consumption in CPU and memory limits and requests.
-Learn how to calculate resources, such as memory and CPU, required to run {prod}.
+
+To learn how to calculate resources, such as memory and CPU, required to run {prod}, you can use the link:https://github.com/che-incubator/quarkus-api-example/blob/main/devfile.yaml[example devfile].
+
+.Prequisites
+
+* You have downloaded the link:https://github.com/che-incubator/quarkus-api-example/blob/main/devfile.yaml[example devfile].
 
 .Procedure
 
-. Identify the workspace resource requirements which depend on the devfile that is used for defining the development environment. To illustrate the procedure a specific link:https://github.com/che-incubator/quarkus-api-example/blob/main/devfile.yaml[devfile] will be used for calculating the resource requirements. Identify the workspace components explicitly specified in the `components` section of the devfile.
+. Identify the workspace resource requirements which depend on the devfile that is used for defining the development environment. This includes identifying the workspace components explicitly specified in the `components` section of the devfile.
 +
-** The `tools` component of the devfile defines the following requests and limits:
-+
+.`tools`
+====
+The `tools` component of the devfile defines the following requests and limits:
+
 [source,yaml,subs="+attributes,+quotes,macros"]
 ----
     memoryLimit: 6G
@@ -25,9 +32,12 @@ Learn how to calculate resources, such as memory and CPU, required to run {prod}
     cpuRequest: 1000m
     cpuLimit: 4000m
 ----
-
-** The `postgresql` component does not define any requests and limits and therefore falls back on the defaults for the dedicated container:
+====
 +
+.`postgresql`
+====
+The `postgresql` component does not define any requests and limits and therefore falls back on the defaults for the dedicated container:
+
 [source,yaml,subs="+attributes,+quotes,macros"]
 ----
     memoryLimit: 128M
@@ -35,9 +45,12 @@ Learn how to calculate resources, such as memory and CPU, required to run {prod}
     cpuRequest: 10m
     cpuLimit: 1000m
 ----
-
-** During the workspace startup, an internal `che-gateway` container is implicitly provisioned with the following requests and limits:
+====
 +
+.`che-gateway`
+====
+During the workspace startup, an internal `che-gateway` container is implicitly provisioned with the following requests and limits:
+
 [source,yaml,subs="+attributes,+quotes,macros"]
 ----
     memoryLimit: 256M
@@ -45,12 +58,13 @@ Learn how to calculate resources, such as memory and CPU, required to run {prod}
     cpuRequest: 50m
     cpuLimit: 500m
 ----
+====
 
-
-. Calculate the total: 
+. Calculate the totals.
 +
-[cols="1a,1a,1a,1a,1a,1a,1a",options="header"]
 .Workspace requirements
+====
+[cols="1a,1a,1a,1a,1a,1a,1a",options="header"]
 |===
 |Purpose
 |Pod
@@ -73,7 +87,7 @@ Learn how to calculate resources, such as memory and CPU, required to run {prod}
 |`postgresql`
 |128 MiB
 |64 MiB
-|50 m
+|1000 m
 |10 m
 
 |{prod-short} gateway
@@ -87,13 +101,14 @@ Learn how to calculate resources, such as memory and CPU, required to run {prod}
 3+>s|Total
 >s|6.4 GiB
 >s|640 MiB
->s|4550 m
+>s|5500 m
 >s|1060 m
 |===
+====
 
 . Sum up the resources required for each workspace, and multiply them by the expected running workspaces count.
 
-. Sum up the requirements for the {prod-short} Operator, Operands, and {devworkspace} Controller
+. Sum up the requirements for the {prod-short} Operator, Operands, and {devworkspace} Controller.
 +
 [cols="1a,1a,1a,1a,1a,1a,1a",options="header"]
 .Default requirements for the {prod-short} Operator, Operands, and {devworkspace} Controller
@@ -119,7 +134,7 @@ Learn how to calculate resources, such as memory and CPU, required to run {prod}
 |`{prod-id-short}-server`
 |1 GiB
 |512 MiB
-|1
+|1000 m
 |100 m
 
 |{prod-short} Dashboard
@@ -135,7 +150,7 @@ Learn how to calculate resources, such as memory and CPU, required to run {prod}
 |`traefik`
 |4 GiB
 |128 MiB
-|1
+|1000 m
 |100 m
 
 |{prod-short} Gateway
@@ -183,7 +198,7 @@ Learn how to calculate resources, such as memory and CPU, required to run {prod}
 |`{devworkspace-id}-controller`
 |1 GiB
 |100 MiB
-|1
+|1000 m
 |250 m
 
 |{devworkspace} Controller Manager
