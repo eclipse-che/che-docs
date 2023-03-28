@@ -11,16 +11,11 @@
 The {prod-short} Operator, {devworkspace} Controller, and user workspaces consist of a set of pods.
 The pods contribute to the resource consumption in CPU and memory limits and requests.
 
-To learn how to calculate resources such as memory and CPU that are required to run {prod}, you can use a provided example devfile.
-
-.Prerequisites
-
-* You have downloaded the link:https://github.com/che-incubator/quarkus-api-example/blob/main/devfile.yaml[example devfile].
-+
-
 .Procedure
 
 . Identify the workspace resource requirements which depend on the devfile that is used for defining the development environment. This includes identifying the workspace components explicitly specified in the `components` section of the devfile.
+
+** To learn how to calculate resources such as memory and CPU that are required to run one workspace, you can examine the linked link:https://github.com/che-incubator/quarkus-api-example/blob/main/devfile.yaml[example devfile] and identify the following components in it:
 +
 .`tools`
 ====
@@ -47,11 +42,9 @@ The `postgresql` component does not define any requests and limits and therefore
     cpuLimit: 1000m
 ----
 ====
-+
-.`che-gateway`
-====
-During the workspace startup, an internal `che-gateway` container is implicitly provisioned with the following requests and limits:
 
+** During the workspace startup, an internal `che-gateway` container is implicitly provisioned with the following requests and limits:
++
 [source,yaml,subs="+attributes,+quotes,macros"]
 ----
     memoryLimit: 256M
@@ -59,9 +52,8 @@ During the workspace startup, an internal `che-gateway` container is implicitly 
     cpuRequest: 50m
     cpuLimit: 500m
 ----
-====
 
-. Calculate the totals.
+. Calculate the sums of the resources required for each workspace.
 +
 .Workspace requirements
 ====
@@ -107,7 +99,7 @@ During the workspace startup, an internal `che-gateway` container is implicitly 
 |===
 ====
 
-. Calculate the sums of the resources required for each workspace, and multiply them by the number of workspaces that you expect all of your users to run simultaneously.
+. Multiply the resources calculated per workspace by the number of workspaces that you expect all of your users to run simultaneously.
 
 . Calculate the sums of the requirements for the {prod-short} Operator, Operands, and {devworkspace} Controller.
 +
