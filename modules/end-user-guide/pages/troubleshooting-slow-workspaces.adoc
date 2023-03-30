@@ -34,14 +34,6 @@ _Role: Administrator_
 +
 Components of {prod-short} are OCI images. Set up {prod} in offline mode to reduce any extra download at runtime because everything needs to be available from the beginning. See xref:administration-guide:installing-che-in-a-restricted-environment.adoc[].
 
-Optimizing workspace plugins::
-+
-_Role: User_
-+
-When selecting various plugins, each plugin can bring its own sidecar container, which is an OCI image. {orch-name} pulls the images of these sidecar containers.
-+
-Reduce the number of plugins, or disable them to see if start time is faster. See also xref:administration-guide:caching-images-for-faster-workspace-start.adoc[].
-
 Reducing the number of public endpoints::
 +
 _Role: Administrator_
@@ -51,13 +43,6 @@ For each endpoint, {orch-name} is creating {platforms-ingress} objects. Dependin
 To avoid this problem, reduce the exposure. For example, to automatically detect a new port listening inside containers and redirect traffic for the processes using a local IP address (`127.0.0.1`), Microsoft Visual Code - Open Source has three optional routes.
 +
 By reducing the number of endpoints and checking endpoints of all plugins, workspace start can be faster.
-
-CDN configuration::
-+
-The IDE editor uses a CDN (Content Delivery Network) to serve content. Check that the content uses a CDN to the client (or a local route for offline setup).
-+
-To check that, open Developer Tools in the browser and check for `vendors` in the *Network* tab. `vendors.<random_id>.js` or `editor.main.*` should come from CDN URLs.
-
 
 [id="improving-workspace-runtime-performance"]
 == Improving workspace runtime performance
@@ -70,52 +55,31 @@ Ensure the CPU settings in the devfile definition, `devfile.yaml`, are correct:
 +
 [source,yaml]
 ----
-apiVersion: 1.0.0
-
 components:
-  -
-    type: chePlugin
-    id: __<plugin_id>__
-    cpuLimit: 1360Mi <1>
-    cpuRequest: 100m <2>
+  - name: tools
+    container:
+      image: quay.io/devfile/universal-developer-image:ubi8-latest
+      cpuLimit: 4000m <1>
+      cpuRequest: 1000m <2>
 ----
-<1> Specifies the CPU limit for the plugin.
-<2> Specifies the CPU request for the plugin.
+<1> Specifies the CPU limit
+<2> Specifies the CPU request
 
 Providing enough memory::
 +
 Plug-ins consume CPU and memory resources. For example, when a plugin provides IntelliSense features, collecting data can consume all the memory allocated to the container.
 +
-Providing more memory to the plugin can increase performance. Ensure about the correctness of memory settings:
+Providing more memory to the container can increase performance. Ensure about the correctness of memory settings in the devfile definition - `devfile.yaml` file
 +
-* in the plugin definition - `meta.yaml` file
-* in the devfile definition - `devfile.yaml` file
-+
+----
 [source,yaml]
 ----
-apiVersion: v2
-
-spec:
-  containers:
-    - image: "quay.io/my-image"
-      name: "vscode-plugin"
-      memoryLimit: "512Mi" <1>
-  extensions:
-    - https://link.to/vsix
-----
-<1> Specifies the memory limit for the plugin.
-+
-In the devfile definition (`devfile.yaml`):
-+
-[source,yaml]
-----
-apiVersion: 1.0.0
-
 components:
-  -
-    type: chePlugin
-    id: __<plugin_id>__
-    memoryLimit: 1048M  <1>
-    memoryRequest: 256M
+  - name: tools
+    container:
+      image: quay.io/devfile/universal-developer-image:ubi8-latest
+      memoryLimit: 6G <1>
+      memoryRequest: 512Mi <2>
 ----
-<1> Specifies the memory limit for this plugin.
+<1> Specifies the memory limit
+<2> Specifies the memory request
