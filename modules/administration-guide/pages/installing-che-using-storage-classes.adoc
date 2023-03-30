@@ -18,10 +18,9 @@ To configure {prod-short} to use a configured infrastructure storage, install {p
 * A storage type
 * And many others
 
-{prod-short} has two components that require persistent volumes to store data:
+{prod-short} has one component that requires persistent volumes to store data:
 
- * A PostgreSQL database.
- * A {prod-short} workspaces. {prod-short} workspaces store source code using volumes, for example `/projects` volume.
+  * A {prod-short} workspace. {prod-short} workspaces store source code using volumes, for example `/projects` volume.
 
 [NOTE]
 ====
@@ -45,11 +44,6 @@ Use CheCluster Custom Resource definition to define storage classes:
 [source,yaml,subs="+quotes,+attributes"]
 ----
 spec:
-  components:
-    database:
-      pvc:
-        # keep blank unless you need to use a non default storage class for PostgreSQL PVC
-        storageClass: 'postgres-storage'
   devEnvironments:
     storage:
       pvc:
@@ -57,28 +51,7 @@ spec:
         storageClass: 'workspace-storage'
 ----
 
-. Define the persistent volume for a PostgreSQL database in a `che-postgres-pv.yaml` file:
-+
-.`che-postgres-pv.yaml` file
-[source,yaml]
-----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: postgres-pv-volume
-  labels:
-    type: local
-spec:
-  storageClassName: postgres-storage
-  capacity:
-    storage: 1Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/data/che/postgres"
-----
-
-. Define the persistent volume for a {prod-short} workspace in a `che-postgres-pv.yaml` file:
+. Define the persistent volume for a {prod-short} workspace in a `che-workspace-pv.yaml` file:
 +
 .`che-workspace-pv.yaml` file
 [source,yaml]
@@ -99,16 +72,16 @@ spec:
     path: "/data/che/workspace"
 ----
 
-. Bind the two persistent volumes:
+. Bind the persistent volume:
 +
 [subs="+quotes,+attributes"]
 ----
-$ kubectl apply -f che-workspace-pv.yaml -f che-postgres-pv.yaml
+$ kubectl apply -f che-workspace-pv.yaml
 ----
 
 [NOTE]
 ====
-You must provide valid file permissions for volumes. You can do it using storage class configuration or manually. To manually define permissions, define `storageClass#mountOptions` `uid` and `gid`. PostgreSQL volume requires `uid=26` and `gid=26`.
+You must provide valid file permissions for volumes. You can do it using storage class configuration or manually. To manually define permissions, define `storageClass#mountOptions` `uid` and `gid`.
 ====
 
 .Additional resources

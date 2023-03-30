@@ -11,16 +11,62 @@ This section describes all fields available to customize the `CheCluster` Custom
 
 * xref:a-minimal-checluster-custom-resource-example[]
 * xref:checluster-custom-resource-devEnvironments-settings[]
+** xref:checluster-custom-resource-devEnvironments-defaultNamespace-settings[]
+** xref:checluster-custom-resource-devEnvironments-defaultPlugins-settings[]
+** xref:checluster-custom-resource-devEnvironments-storage-settings[]
+*** xref:checluster-custom-resource-devEnvironments-storage-perUserStrategyPvcConfig-settings[]
+*** xref:checluster-custom-resource-devEnvironments-storage-perWorkspaceStrategyPvcConfig-settings[]
+** xref:checluster-custom-resource-devEnvironments-trustedCerts-settings[]
+** xref:checluster-custom-resource-devEnvironments-containerBuildConfiguration-settings[]
 * xref:checluster-custom-resource-components-settings[]
-* xref:checluster-custom-resource-components-properties-devWorkspace-settings[]
-* xref:checluster-custom-resource-components-properties-cheServer-settings[]
-* xref:checluster-custom-resource-components-properties-pluginRegistry-settings[]
-* xref:checluster-custom-resource-components-properties-devfileRegistry-settings[]
-* xref:checluster-custom-resource-components-properties-database-settings[]
-* xref:checluster-custom-resource-components-properties-dashboard-settings[]
-* xref:checluster-custom-resource-components-properties-imagePuller-settings[]
-* xref:checluster-custom-resource-components-properties-metrics-settings[]
+** xref:checluster-custom-resource-components-cheServer-settings[]
+*** xref:checluster-custom-resource-components-cheServer-proxy-settings[]
+*** xref:checluster-custom-resource-components-common-deployment-settings[]
+**** xref:checluster-custom-resource-components-common-deployment-securityContext-settings[]
+**** xref:checluster-custom-resource-components-common-deployment-containers-settings[]
+***** xref:checluster-custom-resource-components-common-deployment-containers-resources-settings[]
+****** xref:checluster-custom-resource-components-common-deployment-containers-resources-request-settings[]
+****** xref:checluster-custom-resource-components-common-deployment-containers-resources-limits-settings[]
+** xref:checluster-custom-resource-components-pluginRegistry-settings[]
+*** xref:checluster-custom-resource-components-pluginRegistry-externalPluginRegistries-settings[]
+*** xref:checluster-custom-resource-components-common-deployment-settings[]
+**** xref:checluster-custom-resource-components-common-deployment-securityContext-settings[]
+**** xref:checluster-custom-resource-components-common-deployment-containers-settings[]
+***** xref:checluster-custom-resource-components-common-deployment-containers-resources-settings[]
+****** xref:checluster-custom-resource-components-common-deployment-containers-resources-request-settings[]
+****** xref:checluster-custom-resource-components-common-deployment-containers-resources-limits-settings[]
+** xref:checluster-custom-resource-components-devfileRegistry-settings[]
+*** xref:checluster-custom-resource-components-devfileRegistry-externalDevfileRegistries-settings[]
+*** xref:checluster-custom-resource-components-common-deployment-settings[]
+**** xref:checluster-custom-resource-components-common-deployment-securityContext-settings[]
+**** xref:checluster-custom-resource-components-common-deployment-containers-settings[]
+***** xref:checluster-custom-resource-components-common-deployment-containers-resources-settings[]
+****** xref:checluster-custom-resource-components-common-deployment-containers-resources-request-settings[]
+****** xref:checluster-custom-resource-components-common-deployment-containers-resources-limits-settings[]
+** xref:checluster-custom-resource-components-dashboard-settings[]
+*** xref:checluster-custom-resource-components-dashboard-headerMessage-settings[]
+*** xref:checluster-custom-resource-components-common-deployment-settings[]
+**** xref:checluster-custom-resource-components-common-deployment-securityContext-settings[]
+**** xref:checluster-custom-resource-components-common-deployment-containers-settings[]
+***** xref:checluster-custom-resource-components-common-deployment-containers-resources-settings[]
+****** xref:checluster-custom-resource-components-common-deployment-containers-resources-request-settings[]
+****** xref:checluster-custom-resource-components-common-deployment-containers-resources-limits-settings[]
+** xref:checluster-custom-resource-components-imagePuller-settings[]
+** xref:checluster-custom-resource-components-metrics-settings[]
+* xref:checluster-custom-resource-gitServices-settings[]
+** xref:checluster-custom-resource-gitServices-github-settings[]
+** xref:checluster-custom-resource-gitServices-gitlab-settings[]
+** xref:checluster-custom-resource-gitServices-bitbucket-settings[]
+** xref:checluster-custom-resource-gitServices-azure-settings[]
 * xref:checluster-custom-resource-networking-settings[]
+** xref:checluster-custom-resource-networking-auth-settings[]
+*** xref:checluster-custom-resource-networking-auth-gateway-settings[]
+**** xref:checluster-custom-resource-components-common-deployment-settings[]
+***** xref:checluster-custom-resource-components-common-deployment-securityContext-settings[]
+***** xref:checluster-custom-resource-components-common-deployment-containers-settings[]
+****** xref:checluster-custom-resource-components-common-deployment-containers-resources-settings[]
+******* xref:checluster-custom-resource-components-common-deployment-containers-resources-request-settings[]
+******* xref:checluster-custom-resource-components-common-deployment-containers-resources-limits-settings[]
 * xref:checluster-custom-resource-containerRegistry-settings[]
 * xref:checluster-custom-resource-status-settings[]
 
@@ -33,17 +79,11 @@ apiVersion: org.eclipse.che/v2
 kind: CheCluster
 metadata:
   name: {prod-checluster}
+  namespace: {prod-namespace}
 spec:
-  devEnvironments:
-    defaultNamespace:
-      template: '<username>-che'
-    storage:
-      pvcStrategy: 'common'
-  components:
-    database:
-      externalDb: false
-    metrics:
-      enable: true
+  components: {}
+  devEnvironments: {}
+  networking: {}
 ----
 ====
 

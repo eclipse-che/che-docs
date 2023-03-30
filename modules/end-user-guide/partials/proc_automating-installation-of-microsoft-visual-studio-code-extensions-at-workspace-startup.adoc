@@ -1,0 +1,58 @@
+
+[id="automating-installation-of-microsoft-visual-studio-code-extensions-at-workspace-startup"]
+= Automating installation of Microsoft Visual Studio Code extensions at workspace startup
+
+To have the Microsoft Visual Studio Code - Open Source IDE automatically install chosen extensions, you can add an `extensions.json` file to the remote Git repository that contains your project source code and that will be cloned into workspaces.
+
+.Prerequisites
+* {prod-short} has network access to the link:https://www.open-vsx.org/[OpenVSX registry].
++
+[TIP]
+====
+To install recommended extensions in a restricted environment, consider these options:
+
+* xref:administration-guide:configuring-the-open-vsx-registry-url.adoc[] to point to your OpenVSX registry.
+
+* xref:defining-a-common-ide.adoc[].
+
+* link:https://code.visualstudio.com/docs/editor/extension-marketplace#_install-from-a-vsix[Installing extensions from VSX files].
+====
+
+.Procedure
+
+. Get the publisher and extension names of each chosen extension:
+
+.. Find the extension on the link:https://www.open-vsx.org/[Open VSX registry website] and copy the URL of the extension's listing page.
+
+.. Extract the __<publisher>__ and __<extension>__ names from the copied URL:
++
+[subs="+quotes"]
+----
+https://www.open-vsx.org/extension/__<publisher>__/__<extension>__
+----
+
+. Create a `.vscode/extensions.json` file in the remote Git repository.
+
+. Add the __<publisher>__ and __<extension>__ names to the `extensions.json` file as follows:
++
+[source,json,subs="+quotes"]
+----
+  {
+    "recommendations": [
+      "__<publisher_A>__.__<extension_B>__",
+      "__<publisher_C>__.__<extension_D>__",
+      "__<publisher_E>__.__<extension_F>__"
+    ]
+  }
+----
+
+.Verification
+
+. xref:starting-a-new-workspace-with-a-clone-of-a-git-repository.adoc[Start a new workspace by using the URL of the remote Git repository] that contains the created `extensions.json` file.
+. In the IDE of the workspace, press kbd:[Ctrl+Shift+X] or go to *Extensions* to find each of the extensions listed in the file.
+. The extension has the label *This extension is enabled globally*.
+
+.Additional resources
+* link:https://www.open-vsx.org/[Open VSX registry - Extensions for Microsoft Visual Studio Code compatible editors]
+* link:https://code.visualstudio.com/docs/editor/extension-marketplace#_workspace-recommended-extensions[Microsoft Visual Studio Code - Workspace recommended extensions]
+

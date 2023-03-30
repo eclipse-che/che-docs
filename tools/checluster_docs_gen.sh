@@ -22,7 +22,7 @@ PRODUCT=""
 RAW_CONTENT=""
 NEWLINE=$'\n'
 NEWLINEx2="$NEWLINE$NEWLINE"
-TABLE_HEADER="$NEWLINE[cols=\"2,5\", options=\"header\"]$NEWLINE:=== $NEWLINE Property: Description $NEWLINE"
+TABLE_HEADER="$NEWLINE[cols=\"2,5,3\", options=\"header\"]$NEWLINE:=== $NEWLINE Property: Description: Default $NEWLINE"
 TABLE_FOOTER=":=== $NEWLINEx2"
 PARENT_PATH=$(
   cd "$(dirname "${BASH_SOURCE[0]}")/.."
@@ -66,19 +66,52 @@ fetch_conf_files_content() {
 
 parse_content() {
   parse_section "devEnvironments" "Development environment configuration options."
-  parse_section "devEnvironments.properties.defaultNamespace" "Development environment \`defaultNamespace\` options."
-  parse_section "devEnvironments.properties.storage" "Development environment \`storage\` options."
+  parse_section "devEnvironments.properties.defaultNamespace" "\`defaultNamespace\` options."
+  parse_section "devEnvironments.properties.defaultPlugins" "\`defaultPlugins\` options."
+  parse_section "devEnvironments.properties.storage" "\`storage\` options."
+  parse_section "devEnvironments.properties.storage.properties.perUserStrategyPvcConfig" "\`per-user\` PVC strategy options."
+  parse_section "devEnvironments.properties.storage.properties.perWorkspaceStrategyPvcConfig" "\`per-workspace\` PVC strategy options."
+  parse_section "devEnvironments.properties.trustedCerts" "\`trustedCerts\` options."
+  parse_section "devEnvironments.properties.containerBuildConfiguration" "\`containerBuildConfiguration\` options."
+
   parse_section "components" "{prod-short} components configuration."
-  parse_section "components.properties.devWorkspace" "DevWorkspace operator component configuration."
+
   parse_section "components.properties.cheServer" "General configuration settings related to the {prod-short} server component."
+  parse_section "components.properties.cheServer.properties.proxy" "\`proxy\` options."
+
   parse_section "components.properties.pluginRegistry" "Configuration settings related to the Plug-in registry component used by the {prod-short} installation."
+  parse_section "components.properties.pluginRegistry.properties.externalPluginRegistries" "\`externalPluginRegistries\` options."
+
   parse_section "components.properties.devfileRegistry" "Configuration settings related to the Devfile registry component used by the {prod-short} installation."
-  parse_section "components.properties.database" "Configuration settings related to the Database component used by the {prod-short} installation."
+  parse_section "components.properties.devfileRegistry.properties.externalDevfileRegistries" "\`externalDevfileRegistries\` options."
+
   parse_section "components.properties.dashboard" "Configuration settings related to the Dashboard component used by the {prod-short} installation."
+  parse_section "components.properties.dashboard.properties.headerMessage" "\`headerMessage\` options."
+
   parse_section "components.properties.imagePuller" "Kubernetes Image Puller component configuration."
+
   parse_section "components.properties.metrics" "{prod-short} server metrics component configuration."
+
+  parse_section "gitServices" "Configuration settings that allows users to work with remote Git repositories."
+  parse_section "gitServices.properties.github" "\`github\` options."
+  parse_section "gitServices.properties.gitlab" "\`gitlab\` options."
+  parse_section "gitServices.properties.bitbucket" "\`bitbucket\` options."
+  parse_section "gitServices.properties.azure" "\`azure\` options."
+
   parse_section "networking" "Networking, {prod-short} authentication and TLS configuration."
+  parse_section "networking.properties.auth" "\`auth\` options."
+  parse_section "networking.properties.auth.properties.gateway" "\`gateway\` options."
+
   parse_section "containerRegistry" "Configuration of an alternative registry that stores {prod-short} images."
+
+  # Common components configurations
+  parse_section "components.properties.cheServer.properties.deployment" "\`deployment\` options." "components-common-deployment"
+  parse_section "components.properties.cheServer.properties.deployment.properties.containers" "\`containers\` options." "components-common-deployment-containers"
+  parse_section "components.properties.cheServer.properties.deployment.properties.containers.items.properties.resources" "\`containers\` options." "components-common-deployment-containers-resources"
+  parse_section "components.properties.cheServer.properties.deployment.properties.containers.items.properties.resources.properties.request" "\`request\` options." "components-common-deployment-containers-resources-request"
+  parse_section "components.properties.cheServer.properties.deployment.properties.containers.items.properties.resources.properties.limits" "\`limits\` options." "components-common-deployment-containers-resources-limits"
+  parse_section "components.properties.cheServer.properties.deployment.properties.securityContext" "\`securityContext\` options." "components-common-deployment-securityContext"
+
   parse_section "status" "\`CheCluster\` Custom Resource \`status\` defines the observed state of {prod-short} installation"
   echo "$BUFF" >"$OUTPUT_PATH"
   info "Single-sourced $OUTPUT_PATH" >&2
@@ -87,9 +120,10 @@ parse_content() {
 parse_section() {
   local section
   local sectionName=$1
-  local sectionName2Id=$(echo $sectionName | tr '.' '-')
-  local id="[id=\"checluster-custom-resource-$sectionName2Id-settings\"]"
   local caption=$2
+  local sectionName2Id=$3
+  [[ -z $sectionName2Id ]] && sectionName2Id=$(echo $sectionName | tr '.' '-' | sed 's/properties-//g' | sed 's/items-//g')
+  local id="[id=\"checluster-custom-resource-$sectionName2Id-settings\"]"
 
   # info "Parsing section: "$sectionName
   if [[ $sectionName == "status" ]]; then
@@ -98,21 +132,52 @@ parse_section() {
     section=$(echo "$RAW_CONTENT" | yq -M '.spec.versions[] | select(.name == "v2") | .schema.openAPIV3Schema.properties.spec.properties.'"$sectionName")
   fi
 
-  local properties=(
-    $(echo "$section" | yq -M '.properties | keys[]')
-  )
+  local properties
+  local type=$(echo "$section" | yq -M '.type')
+  if [[ ${type} =~ "array" ]]; then
+
+    properties=(
+      $(echo "$section" | yq -M '.items.properties | keys[]')
+    )
+  else
+    properties=(
+      $(echo "$section" | yq -M '.properties | keys[]')
+    )
+  fi
 
   BUFF="$BUFF$id$NEWLINE"
   BUFF="$BUFF.$caption$NEWLINE"
   BUFF="$BUFF$TABLE_HEADER"
   for PROP in "${properties[@]}"; do
-    PROP="${PROP//\"/}"
-    DESCR_BUFF=$(echo "$section" | yq -M '.properties.'"$PROP"'.description')
-    DESCR_BUFF="${DESCR_BUFF//\"/}"
-    DESCR_BUFF="${DESCR_BUFF//:/\\:}"
+    # Property name
+    PROP="${PROP//\"/}" # Removes quotes "
+
+    # Description
+    if [[ ${type} =~ "array" ]]; then
+      DESCR_BUFF=$(echo "$section" | yq -M '.items.properties.'"$PROP"'.description')
+    else
+      DESCR_BUFF=$(echo "$section" | yq -M '.properties.'"$PROP"'.description')
+    fi
+    DESCR_BUFF="${DESCR_BUFF:1:-1}"       # Removes first and last quotes "
+    DESCR_BUFF="${DESCR_BUFF//\\\"/\"}"   # Removes escaped quotes "
+    DESCR_BUFF="${DESCR_BUFF//:/\\:}"     # Escapes colons
     DESCR_BUFF="$(sed 's|Eclipse Che|{prod-short}|g' <<<$DESCR_BUFF)"
     DESCR_BUFF="$(sed 's|Che |{prod-short} |g' <<<$DESCR_BUFF)"
-    BUFF="$BUFF${PROP}: ${DESCR_BUFF}$NEWLINE"
+
+    # Default value
+    if [[ ${type} =~ "array" ]]; then
+      DEFAULT_BUFF=$(echo "$section" | yq -M '.items.properties.'"$PROP"'.default')
+    else
+      DEFAULT_BUFF=$(echo "$section" | yq -M '.properties.'"$PROP"'.default')
+    fi
+    if [[ $DEFAULT_BUFF == "null" ]]; then
+      DEFAULT_BUFF=""
+    else
+      DEFAULT_BUFF="${DEFAULT_BUFF//:/\\:}"               # Escapes colons
+      DEFAULT_BUFF=$(echo "$DEFAULT_BUFF" | tr -d '\n')   # Removes newlines
+    fi
+
+    BUFF="$BUFF${PROP}: ${DESCR_BUFF}: ${DEFAULT_BUFF}$NEWLINE"
   done
   BUFF="$BUFF$TABLE_FOOTER"
 }
