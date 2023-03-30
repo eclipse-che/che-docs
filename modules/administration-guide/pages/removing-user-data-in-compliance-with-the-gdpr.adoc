@@ -7,34 +7,29 @@
 [id="removing-user-data-in-compliance-with-the-gdpr"]
 = Removing user data in compliance with the GDPR
 
-You can remove a user’s data in compliance with the link:https://gdpr.eu/[General Data Protection Regulation (GDPR)] that enforces the right of individuals to have their personal data erased.
+You can remove a user’s data on {ocp} in compliance with the link:https://gdpr.eu/[General Data Protection Regulation (GDPR)] that enforces the right of individuals to have their personal data erased. The process for other {kubernetes} infrastructures might vary. Follow the user management best practices of the provider you are using for the {prod} installation.
 
 WARNING: Removing user data as follows is irreversible! All removed data is deleted and unrecoverable!
 
 .Prerequisites
 
-* An active session with administrative permissions for {prod-short}. See xref:configuring-the-administrative-user.adoc[].
-
-* An active `oc` session with administrative permissions for the OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the OpenShift CLI].
+* An active `oc` session with administrative permissions for the {ocp} cluster. See link:https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the OpenShift CLI].
 
 .Procedure
 
-. If the {prod-short} instance has been upgraded since a previous release in which user data were stored in a PostgreSQL database, then first use the deprecated endpoints:
-+
-.. Go to `pass:c,m,a,q[{prod-url}]/swagger/#/user/find_1`.
-.. Select *Try it out* -> *name*: __<username>__ -> *Execute* to get the user *id*.
-.. Find the *id* value in the *Response body*.
-+
-If the response is *404*, which means the user is not in the database, skip to step two.
-.. Go to `pass:c,m,a,q[{prod-url}]/swagger/#/user/remove`.
-.. Select *Try it out* -> *id*: __<id>__ -> *Execute* to remove the user's data that is managed by the {prod-short} server. 
-.. Verify that you got a *204* response.
-
-. Delete the user {orch-namespace} to remove all {orch-name} resources bound to the user, such as workspaces, Secrets, and ConfigMaps.
+. List all the users in the OpenShift cluster using the following command:
 +
 [source,shell,subs="+quotes,macros,attributes"]
 ----
-$ {orch-cli} delete namespace __<username>__-{prod-id-short}
+$ oc get users
+----
+. Delete the user entry:
+
+IMPORTANT: If the user has any associated resources (such as projects, roles, or service accounts), you need to delete those first before deleting the user.
+
+[source,shell,subs="+quotes,macros,attributes"]
+----
+$ oc delete user <username>
 ----
 
 .Additional resources
