@@ -25,13 +25,16 @@ $ {orch-cli} create configmap che-git-self-signed-cert \
   --from-file=ca.crt=__<path_to_certificate>__ \  <1>
   --from-literal=githost=__<host:port>__ -n {prod-namespace}  <2>
 ----
-<1> Path to self-signed certificate
-<2> The host and port of the HTTPS connection on the Git server (optional).
+<1> Path to the self-signed certificate.
+<2> Optional parameter to specify the `https://` host and port of the HTTPS connection on the Git server. When omitted, the self-signed certificate is used for all repositories over HTTPS.
 +
 [NOTE]
 ====
-* When `githost` is not specified, the given certificate is used for all HTTPS repositories.
-* Certificate files are typically stored as Base64 ASCII files, such as. `.pem`, `.crt`, `.ca-bundle`. Also, they can be encoded as binary data, for example, `.cer`.  All `Secrets` that hold certificate files should use the Base64 ASCII certificate rather than the binary data certificate.
+
+* Certificate files are typically stored as Base64 ASCII files, such as. `.pem`, `.crt`, `.ca-bundle`. All `ConfigMaps` that hold certificate files should use the Base64 ASCII certificate rather than the binary data certificate.
+
+* A certificate chain of trust is required. If the `ca.crt` is signed by a certificate authority (CA), the CA certificate must be included in the `ca.crt` file.
+
 ====
 
 . Add the required labels to the ConfigMap:
