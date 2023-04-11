@@ -10,14 +10,17 @@
 
 The {prod-short} Operator, {devworkspace} Controller, and user workspaces consist of a set of pods.
 The pods contribute to the resource consumption in CPU and memory limits and requests.
-Learn how to calculate resources, such as memory and CPU, required to run {prod}.
 
 .Procedure
 
-. Identify the workspace resource requirements which depend on the devfile that is used for defining the development environment. To illustrate the procedure a specific link:https://github.com/che-incubator/quarkus-api-example/blob/main/devfile.yaml[devfile] will be used for calculating the resource requirements. Identify the workspace components explicitly specified in the `components` section of the devfile.
+. Identify the workspace resource requirements which depend on the devfile that is used for defining the development environment. This includes identifying the workspace components explicitly specified in the `components` section of the devfile.
+
+** Here is an link:https://github.com/che-incubator/quarkus-api-example/blob/main/devfile.yaml[example devfile] with the following components:
 +
-** The `tools` component of the devfile defines the following requests and limits:
-+
+.`tools`
+====
+The `tools` component of the devfile defines the following requests and limits:
+
 [source,yaml,subs="+attributes,+quotes,macros"]
 ----
     memoryLimit: 6G
@@ -25,9 +28,12 @@ Learn how to calculate resources, such as memory and CPU, required to run {prod}
     cpuRequest: 1000m
     cpuLimit: 4000m
 ----
-
-** The `postgresql` component does not define any requests and limits and therefore falls back on the defaults for the dedicated container:
+====
 +
+.`postgresql`
+====
+The `postgresql` component does not define any requests and limits and therefore falls back on the defaults for the dedicated container:
+
 [source,yaml,subs="+attributes,+quotes,macros"]
 ----
     memoryLimit: 128M
@@ -35,6 +41,7 @@ Learn how to calculate resources, such as memory and CPU, required to run {prod}
     cpuRequest: 10m
     cpuLimit: 1000m
 ----
+====
 
 ** During the workspace startup, an internal `che-gateway` container is implicitly provisioned with the following requests and limits:
 +
@@ -46,11 +53,11 @@ Learn how to calculate resources, such as memory and CPU, required to run {prod}
     cpuLimit: 500m
 ----
 
-
-. Calculate the total: 
+. Calculate the sums of the resources required for each workspace. If you intend to use multiple devfiles, repeat this calculation for every expected devfile.
 +
+.Workspace requirements for the link:https://github.com/che-incubator/quarkus-api-example/blob/main/devfile.yaml[example devfile] in the previous step
+====
 [cols="1a,1a,1a,1a,1a,1a,1a",options="header"]
-.Workspace requirements
 |===
 |Purpose
 |Pod
@@ -90,10 +97,11 @@ Learn how to calculate resources, such as memory and CPU, required to run {prod}
 >s|5500 m
 >s|1060 m
 |===
+====
 
-. Sum up the resources required for each workspace, and multiply them by the expected running workspaces count.
+. Multiply the resources calculated per workspace by the number of workspaces that you expect all of your users to run simultaneously.
 
-. Sum up the requirements for the {prod-short} Operator, Operands, and {devworkspace} Controller
+. Calculate the sums of the requirements for the {prod-short} Operator, Operands, and {devworkspace} Controller.
 +
 [cols="1a,1a,1a,1a,1a,1a,1a",options="header"]
 .Default requirements for the {prod-short} Operator, Operands, and {devworkspace} Controller
