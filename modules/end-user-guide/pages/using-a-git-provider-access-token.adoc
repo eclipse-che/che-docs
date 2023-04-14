@@ -55,12 +55,6 @@ If you have the link:https://www.gnu.org/software/coreutils/base64[base64] comma
 
 . Go to `pass:c,a,q[{prod-url}]/api/user/id` in the web browser to get your {prod-short} user ID.
 
-. Get your Git provider user ID by following the Git provider's API documentation:
-+
-* GitHub: link:https://docs.github.com/en/rest/users/users#get-a-user[Get a user]. See the `id` value in the response.
-* GitLab: link:https://docs.gitlab.com/ee/api/users.html#for-normal-users[List users: For normal users], use the `username` filter: `/users?username=:username`. See the `id` value in the response.
-* Bitbucket Server: Get the `id` by running `curl -D- -u username:password -X GET -H "Content-Type: application/json" https://__<baseurl>__/rest/api/latest/users/__<userSlug>__`. See the Bitbucket API documentation about link:https://developer.atlassian.com/server/bitbucket/rest/v802/api-group-api/#api-api-latest-users-userslug-get[using the user slug] and link:https://developer.atlassian.com/server/bitbucket/how-tos/example-basic-authentication/[authentication].
-
 . Prepare a new {orch-name} Secret.
 +
 [source,yaml,subs="+quotes,+attributes,+macros"]
@@ -76,8 +70,7 @@ metadata:
     che.eclipse.org/che-userid: __<{prod-id-short}_user_id>__# <1>
     che.eclipse.org/scm-personal-access-token-name: _<git_provider_name>_# <2>
     che.eclipse.org/scm-url: __<git_provider_endpoint>__# <3>
-    che.eclipse.org/scm-userid: '__<git_provider_user_id>__'# <4>
-    che.eclipse.org/scm-username: __<git_provider_username>__
+    che.eclipse.org/scm-username: __<git_provider_username>__# <4>
     che.eclipse.org/scm-organization: __<git_provider_organization>__# <5>
 data:
   token: __<Base64_encoded_access_token>__
@@ -87,7 +80,7 @@ type: Opaque
 <1> Your {prod-short} user ID.
 <2> The Git provider name: `github` or `gitlab` or `bitbucket-server` or `azure-devops`.
 <3> The Git provider URL.
-<4> Your Git provider user ID wrapped in `' '` or `" "`.
+<4> The Git provider username, user email in case you are using `azure-devops`.
 <5> This line is only applicable to `azure-devops`: your Git provider user organization.
 
 . Visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
