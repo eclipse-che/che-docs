@@ -1,0 +1,97 @@
+:_content-type: PROCEDURE
+:description: Customizing user roles
+:keywords: administration-guide, user, roles, permissions
+:navtitle: Customizing user roles
+:page-aliases: .:customizing-user-roles.adoc, customizing-user-roles.adoc
+
+[id="customizing-user-roles"]
+= Customizing user roles
+
+You can customize the user roles in {prod-short} by creating new roles.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Define the user roles name:
++
+[source,shell,subs="+quotes,macros,attributes"]
+----
+$ USER_ROLES=__<name>__ <1>
+----
+<1> Unique resource name.
+
+. Find out the namespace where the {prod-short} operator is deployed:
++
+[source,shell,subs="+quotes,macros,attributes"]
+----
+$ OPERATOR_NAMESPACE=$({orch-cli} get pods -l app.kubernetes.io/component={prod-operator} -o jsonpath={".items[0].metadata.namespace"} --all-namespaces)
+----
+
+. Create needed roles:
++
+[source,shell,subs="+quotes,macros,attributes"]
+----
+$ {orch-cli} apply -f - <<EOF
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ${USER_ROLES}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+rules:
+  - verbs:
+      - __<verbs>__ <1>
+    apiGroups:
+      - __<apiGroups>__ <2>
+    resources:
+      - __<resources>__ <3>
+EOF
+----
+<1> Verbs is a list of Verbs that apply to ALL the ResourceKinds and AttributeRestrictions contained in this rule. '*' represents all verbs.
+<2> APIGroups is the name of the APIGroup that contains the resources.
+<3> Resources is a list of resources this rule applies to. '*' represents all resources.
+
+. Delegate the roles to the {prod-short} operator:
++
+[source,shell,subs="+quotes,macros,attributes"]
+----
+$ {orch-cli} apply -f - <<EOF
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ${USER_ROLES}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+subjects:
+  - kind: ServiceAccount
+    name: {prod-operator}
+    namespace: ${OPERATOR_NAMESPACE}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ${USER_ROLES}
+EOF
+
+----
+
+. Configure {prod-short} operator to delegate the roles to the `che` service account:
++
+[source,shell,subs="+quotes,macros,attributes"]
+----
+$ {orch-cli} patch checluster {prod-checluster} \
+  --patch '{"spec": {"components": {"cheServer": {"clusterRoles": ["'${USER_ROLES}'"]}}}}' \
+  --type=merge -n {prod-namespace}
+----
+
+. Configure {prod-deployment} server to delegate the roles to a user:
++
+[source,shell,subs="+quotes,macros,attributes"]
+----
+$ {orch-cli} patch checluster {prod-checluster} \
+  --patch '{"spec": {"components": {"cheServer": {"extraProperties": {"CHE_INFRA_KUBERNETES_USER\__CLUSTER__ROLES": "'${USER_ROLES}'"}}}}}' \
+  --type=merge -n {prod-namespace}
+----
+NOTE: The user has to log in and log out to have the new roles applied.
