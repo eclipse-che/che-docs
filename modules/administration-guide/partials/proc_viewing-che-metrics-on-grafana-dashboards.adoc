@@ -17,11 +17,19 @@ After configuring the in-cluster Prometheus instance to collect {prod-short} Ser
 
 . Create a ConfigMap for the dashboard definition in the `openshift-config-managed` {orch-namespace} and apply the necessary label.
 +
-[source,terminal,subs="+attributes,quotes"]
+.. {empty}
++
+[source,subs="+quotes"]
 ----
 $ oc create configmap grafana-dashboard-devspaces-server \
   --from-literal=devspaces-server-dashboard.json="$(curl https://raw.githubusercontent.com/eclipse-che/che-server/main/docs/grafana/openshift-console-dashboard.json)" \
   -n openshift-config-managed
+----
+
+.. {empty}
++
+[source,subs="+quotes"]
+----
 $ oc label configmap grafana-dashboard-devspaces-server console.openshift.io/dashboard=true -n openshift-config-managed
 ----
 
