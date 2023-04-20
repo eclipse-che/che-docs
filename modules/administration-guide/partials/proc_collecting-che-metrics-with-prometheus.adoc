@@ -109,19 +109,21 @@ For more information, see link:https://prometheus.io/docs/introduction/first_ste
 [TIP]
 ====
 
-If the metrics are not available, view the Prometheus container logs for possible RBAC-related errors.
+To troubleshoot missing metrics, view the Prometheus container logs for possible RBAC-related errors:
 
-Get the Prometheus pod name:
-```
+. Get the name of the Prometheus pod:
++
+[source,yaml,subs="+quotes"]
+----
 $ oc get pods -l app.kubernetes.io/name=prometheus -n openshift-monitoring -o=jsonpath='{.items[*].metadata.name}'
-prometheus-k8s-0
-```
-According to the output above, there is a Prometheus pod named `prometheus-k8s-0`.
+----
 
-To print the last 20 lines of the Prometheus container logs from the `prometheus-k8s-0` pod:
-```
-$ oc logs --tail=20 prometheus-k8s-0 -c prometheus -n openshift-monitoring
-```
+. Print the last 20 lines of the Prometheus container logs from the Prometheus pod from the previous step:
++
+[source,yaml,subs="+quotes"]
+----
+$ oc logs --tail=20 __<prometheus_pod_name>__ -c prometheus -n openshift-monitoring
+----
 
 ====
 
