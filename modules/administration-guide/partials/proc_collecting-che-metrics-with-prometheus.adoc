@@ -3,7 +3,7 @@
 [id="collecting-{prod-id-short}-metrics-with-prometheus"]
 = Collecting {prod-short} Server metrics with Prometheus
 
-To use Prometheus to collect, store, and query JVM metrics for {prod-short} Server:
+To use the in-cluster Prometheus instance to collect, store, and query JVM metrics for {prod-short} Server:
 
 .Prerequisites
 
@@ -15,7 +15,7 @@ To use Prometheus to collect, store, and query JVM metrics for {prod-short} Serv
 
 .Procedure
 
-. Create the ServiceMonitor for detecting the {prod-short} JVM metrics service.
+. Create the ServiceMonitor for detecting the {prod-short} JVM metrics Service.
 +
 .ServiceMonitor
 ====
@@ -91,7 +91,7 @@ roleRef:
 <1> The {prod-short} namespace. The default is `{prod-namespace}`.
 ====
 
-. Allow the in-cluster Prometheus instance to detect the ServiceMonitor in the {prod-short} namespace.
+. Allow the in-cluster Prometheus instance to detect the ServiceMonitor in the {prod-short} namespace. The default {prod-short} namespace is `{prod-namespace}`.
 +
 [source,terminal,subs="+attributes,quotes"]
 ----
@@ -103,8 +103,6 @@ oc label namespace {prod-namespace} openshift.io/cluster-monitoring=true
 . In the *Administrator* view of the OpenShift web console, go to *Observe* -> *Metrics*.
 
 . Run a PromQL query to confirm that the metrics are available. For example, enter `process_uptime_seconds{job="che-host"}` and click *Run queries*.
-+
-For more information, see link:https://prometheus.io/docs/introduction/first_steps/#using-the-expression-browser[Using the expression browser].
 
 [TIP]
 ====
