@@ -63,20 +63,25 @@ For more metrics, see xref:ref_devworkspace-specific-metrics[].
 
 [TIP]
 ====
+
 To troubleshoot missing metrics, view the Prometheus container logs for possible RBAC-related errors:
+
 . Get the name of the Prometheus pod:
 +
 [source,yaml,subs="+quotes"]
 ----
 $ oc get pods -l app.kubernetes.io/name=prometheus -n openshift-monitoring -o=jsonpath='{.items[*].metadata.name}'
 ----
+
 . Print the last 20 lines of the Prometheus container logs from the Prometheus pod from the previous step:
 +
 [source,yaml,subs="+quotes"]
 ----
 $ oc logs --tail=20 __<prometheus_pod_name>__ -c prometheus -n openshift-monitoring
 ----
+
 ====
+
 .Additional resources
 * link:https://prometheus.io/docs/prometheus/latest/querying/basics/[Querying Prometheus]
 * link:https://prometheus.io/docs/concepts/metric_types/[Prometheus metric types]
