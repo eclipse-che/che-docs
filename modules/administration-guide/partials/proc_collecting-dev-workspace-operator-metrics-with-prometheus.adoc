@@ -1,114 +1,88 @@
 [id="proc_collecting-dev-workspace-operator-metrics-with-prometheus"]
-= Collecting {devworkspace} Operator metrics with Prometheus
+= Collecting {devworkspace} Operator metrics
 
 [role="_abstract"]
-To use Prometheus to collect, store, and query metrics about the {devworkspace} Operator:
+To use the in-cluster Prometheus instance to collect, store, and query metrics about the {devworkspace} Operator:
 
 .Prerequisites
 
+* Your organization's instance of {prod-short} is installed and running in Red Hat OpenShift.
+
+* An active `oc` session with administrative permissions to the destination OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the CLI].
+
 * The `devworkspace-controller-metrics` Service is exposing metrics on port `8443`. This is preconfigured by default.
-
-* The `devworkspace-webhookserver` Service is exposing metrics on port `9443`. This is preconfigured by default.
-
-* Prometheus 2.26.0 or later is running. The Prometheus console is running on port `9090` with a corresponding Service. See link:https://prometheus.io/docs/introduction/first_steps/[First steps with Prometheus].
 
 .Procedure
 
-. Create a ClusterRoleBinding to bind the ServiceAccount associated with Prometheus to the link:https://github.com/devfile/devworkspace-operator/blob/main/deploy/deployment/kubernetes/objects/devworkspace-controller-metrics-reader.ClusterRole.yaml[devworkspace-controller-metrics-reader] ClusterRole. For the xref:installing-prometheus-and-grafana.adoc[example monitoring stack], the name of the ServiceAccount to be used is `prometheus`.
+. Create the ServiceMonitor for detecting the Dev Workspace Operator metrics Service
 +
-NOTE: Without the ClusterRoleBinding, you cannot access {devworkspace} metrics because access is protected with role-based access control (RBAC).
-+
-.ClusterRoleBinding
+.ServiceMonitor
 ====
 [source,yaml,subs="+quotes,+attributes,+macros"]
 ----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
 metadata:
-  name: devworkspace-controller-metrics-binding
-subjects:
-  - kind: ServiceAccount
-    name: prometheus
-    namespace: monitoring
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: devworkspace-controller-metrics-reader
+  name: devworkspace-controller
+  namespace: {prod-namespace} <1>
+spec:
+  endpoints:
+    - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      interval: 10s <2>
+      port: metrics
+      scheme: https
+      tlsConfig:
+        insecureSkipVerify: true
+  namespaceSelector:
+    matchNames:
+      - openshift-operators
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: devworkspace-controller
 ----
+<1> The {prod-short} namespace. The default is `{prod-namespace}`.
+<2> The rate at which a target is scraped.
 ====
 
-. Configure Prometheus to scrape metrics from port `8443` exposed by the `devworkspace-controller-metrics` Service and from port `9443` exposed by the `devworkspace-webhookserver` Service.
+. Allow the in-cluster Prometheus instance to detect the ServiceMonitor in the {prod-short} namespace. The default {prod-short} namespace is `{prod-namespace}`.
 +
-NOTE: The xref:installing-prometheus-and-grafana.adoc[example monitoring stack] already creates the `prometheus-config` ConfigMap with an empty configuration. To provide the Prometheus configuration details, edit the `data` field of the ConfigMap.
-+
-.Prometheus configuration
-====
-[source,yaml,subs="+quotes,+attributes,+macros"]
+[source,subs="+attributes"]
 ----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: prometheus-config
-  namespace: monitoring
-data:
-  prometheus.yml: |-
-      global:
-        scrape_interval: 5s <1>
-        evaluation_interval: 5s <2>
-      scrape_configs: <3>
-        - job_name: 'DevWorkspace'
-          scheme: https
-          authorization:
-            type: Bearer
-            credentials_file: '/var/run/secrets/kubernetes.io/serviceaccount/token'
-          tls_config:
-            insecure_skip_verify: true
-          static_configs:
-            - targets: ['devworkspace-controller-metrics.__<DWO_{orch-namespace}>__:8443'] <4>
-        - job_name: 'DevWorkspace webhooks'
-          scheme: https
-          authorization:
-            type: Bearer
-            credentials_file: '/var/run/secrets/kubernetes.io/serviceaccount/token'
-          tls_config:
-            insecure_skip_verify: true
-          static_configs:
-            - targets: ['devworkspace-webhookserver.__<DWO_{orch-namespace}>__:9443'] <5>
-----
-<1> The rate at which a target is scraped.
-<2> The rate at which the recording and alerting rules are re-checked.
-<3> The resources that Prometheus monitors. In the default configuration, two jobs, `DevWorkspace` and `DevWorkspace webhooks`, scrape the time series data exposed by the `devworkspace-controller-metrics` and `devworkspace-webhookserver` Services.
-<4> The scrape target for the metrics from port `8443`. Replace `__<DWO_{orch-namespace}>__` with the {orch-namespace} where the `devworkspace-controller-metrics` `Service` is located.
-<5> The scrape target for the metrics from port `9443`. Replace `__<DWO_{orch-namespace}>__` with the {orch-namespace} where the `devworkspace-webhookserver` `Service` is located.
-====
-
-. Scale the `Prometheus` Deployment down and up to read the updated ConfigMap from the previous step.
-+
-[source,terminal,subs="+attributes,quotes"]
-----
-$ {orch-cli} scale --replicas=0 deployment/prometheus -n monitoring && {orch-cli} scale --replicas=1 deployment/prometheus -n monitoring
+$ oc label namespace {prod-namespace} openshift.io/cluster-monitoring=true
 ----
 
 .Verification
 
-. Use port forwarding to access the `Prometheus` Service locally:
-+
-[source,terminal,subs="+attributes,quotes"]
-----
-$ {orch-cli} port-forward svc/prometheus 9090:9090 -n monitoring
-----
-. Verify that all targets are up by viewing the targets endpoint at `localhost:9090/targets`.
-. Use the Prometheus console to view and query metrics:
-** View metrics at `localhost:9090/metrics`.
-** Query metrics from `localhost:9090/graph`.
-+
-For more information, see link:https://prometheus.io/docs/introduction/first_steps/#using-the-expression-browser[Using the expression browser].
+. For a fresh installation of {prod-short}, generate metrics by creating a {prod-short} workspace from the Dashboard.
 
-[role="_additional-resources"]
+. In the *Administrator* view of the OpenShift web console, go to *Observe* -> *Metrics*.
+
+. Run a PromQL query to confirm that the metrics are available. For example, enter `devworkspace_started_total` and click *Run queries*.
++
+For more metrics, see xref:ref_devworkspace-specific-metrics[].
+
+[TIP]
+====
+
+To troubleshoot missing metrics, view the Prometheus container logs for possible RBAC-related errors:
+
+. Get the name of the Prometheus pod:
++
+[source,yaml,subs="+quotes"]
+----
+$ oc get pods -l app.kubernetes.io/name=prometheus -n openshift-monitoring -o=jsonpath='{.items[*].metadata.name}'
+----
+
+. Print the last 20 lines of the Prometheus container logs from the Prometheus pod from the previous step:
++
+[source,yaml,subs="+quotes"]
+----
+$ oc logs --tail=20 __<prometheus_pod_name>__ -c prometheus -n openshift-monitoring
+----
+
+====
+
 .Additional resources
-
-* link:https://prometheus.io/docs/prometheus/latest/configuration/configuration/[Configuring Prometheus]
-
 * link:https://prometheus.io/docs/prometheus/latest/querying/basics/[Querying Prometheus]
-
 * link:https://prometheus.io/docs/concepts/metric_types/[Prometheus metric types]
+

@@ -1,31 +1,40 @@
 [id="proc_viewing-dev-workspace-operator-metrics-on-grafana-dashboards"]
-= Viewing {devworkspace} Operator metrics on Grafana dashboards
+= Viewing {devworkspace} Operator metrics from an OpenShift web console dashboard
 
-To view the {devworkspace} Operator metrics on Grafana with the example dashboard:
+After configuring the in-cluster Prometheus instance to collect {devworkspace} Operator metrics, you can view the metrics on a custom dashboard in the *Administrator* perspective of the OpenShift web console.
 
 .Prerequisites
 
-* Prometheus is collecting metrics. See xref:proc_collecting-dev-workspace-operator-metrics-with-prometheus[].
+* Your organization's instance of {prod-short} is installed and running in Red Hat OpenShift.
 
-* Grafana version 7.5.3 or later.
+* An active `oc` session with administrative permissions to the destination OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the CLI].
 
-* Grafana is running on port `3000` with a corresponding Service. See link:https://grafana.com/docs/grafana/latest/installation/kubernetes/[Installing Grafana].
-
-
+* The in-cluster Prometheus instance is collecting metrics. See xref:proc_collecting-dev-workspace-operator-metrics-with-prometheus[].
 
 .Procedure
 
-. Add the data source for the Prometheus instance.
-See link:https://prometheus.io/docs/visualization/grafana/#creating-a-prometheus-data-source[Creating a Prometheus data source].
-
-. Import the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/grafana/grafana-dashboard.json[example `grafana-dashboard.json`] dashboard.
-
+* Create a ConfigMap for the dashboard definition in the `openshift-config-managed` {orch-namespace} and apply the necessary label.
+.. {empty}
++
+[source,subs="+quotes"]
+----
+$ oc create configmap grafana-dashboard-dwo \
+  --from-literal=dwo-dashboard.json="$(curl https://raw.githubusercontent.com/devfile/devworkspace-operator/main/docs/grafana/openshift-console-dashboard.json)" \
+  -n openshift-config-managed
+----
++
+include::example$snip_{project-context}-disclaimer-for-configuring-observability.adoc[]
+.. {empty}
++
+[source,subs="+quotes"]
+----
+$ oc label configmap grafana-dashboard-dwo console.openshift.io/dashboard=true -n openshift-config-managed
+----
++
+NOTE: The dashboard definition is based on Grafana 6.x dashboards. Not all Grafana 6.x dashboard features are supported in the OpenShift web console.
 
 .Verification steps
 
-* Use the Grafana console to view the {devworkspace} Operator metrics dashboard. See xref:ref_grafana-dashboards-for-the-dev-workspace-operator[].
+. In the *Administrator* view of the OpenShift web console, go to *Observe* -> *Dashboards*.
 
-.Additional resources
-
-* link:https://grafana.com/docs/grafana/latest/datasources/prometheus/#prometheus-data-source[Prometheus data source]
-* link:https://grafana.com/docs/grafana/latest/dashboards/export-import/#import-dashboard[Import dashboard]
+. Go to *Dashboard* -> *Che Server JVM* and verify that the dashboard panels contain data.

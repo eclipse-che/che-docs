@@ -3,69 +3,131 @@
 [id="collecting-{prod-id-short}-metrics-with-prometheus"]
 = Collecting {prod-short} Server metrics with Prometheus
 
-To use Prometheus to collect, store, and query JVM metrics for {prod-short} Server:
+To use the in-cluster Prometheus instance to collect, store, and query JVM metrics for {prod-short} Server:
 
 .Prerequisites
 
-* {prod-short} is exposing metrics on port `8087`. See xref:enabling-and-exposing-{prod-id-short}-metrics[Enabling and exposing {prod-short} server JVM metrics].
+* Your organization's instance of {prod-short} is installed and running in Red Hat OpenShift.
 
-* Prometheus 2.26.0 or later is running. The Prometheus console is running on port `9090` with a corresponding Service. See link:https://prometheus.io/docs/introduction/first_steps/[First steps with Prometheus].
+* An active `oc` session with administrative permissions to the destination OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the CLI].
+
+* {prod-short} is exposing metrics on port `8087`. See xref:enabling-and-exposing-{prod-id-short}-metrics[Enabling and exposing {prod-short} server JVM metrics].
 
 .Procedure
 
-. Configure Prometheus to scrape metrics from port `8087`.
+. Create the ServiceMonitor for detecting the {prod-short} JVM metrics Service.
 +
-NOTE: The xref:installing-prometheus-and-grafana.adoc[example monitoring stack] already creates the `prometheus-config` ConfigMap with an empty configuration. To provide the Prometheus configuration details, edit the `data` field of the ConfigMap.
-+
-.Prometheus configuration
+.ServiceMonitor
 ====
 [source,yaml,subs="+quotes,+attributes,+macros"]
 ----
-apiVersion: v1
-kind: ConfigMap
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
 metadata:
-  name: prometheus-config
-data:
-  prometheus.yml: |-
-      global:
-        scrape_interval:     5s             <1>
-        evaluation_interval: 5s             <2>
-      scrape_configs:                       <3>
-        - job_name: '{prod-short} Server'
-          static_configs:
-            - targets: ['che-host.__<{prod-short}_{orch-namespace}>__:8087']  <4>
+  name: che-host
+  namespace: {prod-namespace} <1>
+spec:
+  endpoints:
+    - interval: 10s <2>
+      port: metrics
+      scheme: http
+  namespaceSelector:
+    matchNames:
+      - openshift-devspaces
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: devspaces
 ----
-<1> The rate at which a target is scraped.
-<2> The rate at which the recording and alerting rules are re-checked.
-<3> The resources that Prometheus monitors. In the default configuration, a single job, `{prod-short} Server`, scrapes the time series data exposed by {prod-short} Server.
-<4> The scrape target for the metrics from port `8087`. Replace `__<{prod-short}_{orch-namespace}>__` with the {prod-short} {orch-namespace}. The default {prod-short} {orch-namespace} is `{prod-namespace}`.
+<1> The {prod-short} namespace. The default is `{prod-namespace}`.
+<2> The rate at which a target is scraped.
 ====
 
-. Scale the `Prometheus` Deployment down and up to read the updated ConfigMap from the previous step.
+. Create a Role and RoleBinding to allow Prometheus view the metrics.
+
++
+.Role
+====
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: prometheus-k8s
+  namespace: {prod-namespace} <1>
+rules:
+  - verbs:
+      - get
+      - list
+      - watch
+    apiGroups:
+      - ''
+    resources:
+      - services
+      - endpoints
+      - pods
+----
+<1> The {prod-short} namespace. The default is `{prod-namespace}`.
+====
+
++
+.RoleBinding
+====
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: view-openshift-monitoring-prometheus-k8s
+  namespace: {prod-namespace} <1>
+subjects:
+  - kind: ServiceAccount
+    name: prometheus-k8s
+    namespace: openshift-monitoring
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prometheus-k8s
+----
+<1> The {prod-short} namespace. The default is `{prod-namespace}`.
+====
+
+. Allow the in-cluster Prometheus instance to detect the ServiceMonitor in the {prod-short} namespace. The default {prod-short} namespace is `{prod-namespace}`.
 +
 [source,terminal,subs="+attributes,quotes"]
 ----
-$ {orch-cli} scale --replicas=0 deployment/prometheus -n monitoring && {orch-cli} scale --replicas=1 deployment/prometheus -n monitoring
+$ oc label namespace {prod-namespace} openshift.io/cluster-monitoring=true
 ----
 
 .Verification
 
-. Use port forwarding to access the `Prometheus` Service locally:
-+
-[source,terminal,subs="+attributes,quotes"]
-----
-$ {orch-cli} port-forward svc/prometheus 9090:9090 -n monitoring
-----
-. Verify that all targets are up by viewing the `targets` endpoint at `localhost:9090/targets`.
-. Use the Prometheus console to view and query metrics:
-** View metrics at `localhost:9090/metrics`.
-** Query metrics from `localhost:9090/graph`.
-+
-For more information, see link:https://prometheus.io/docs/introduction/first_steps/#using-the-expression-browser[Using the expression browser].
+. In the *Administrator* view of the OpenShift web console, go to *Observe* -> *Metrics*.
 
+. Run a PromQL query to confirm that the metrics are available. For example, enter `process_uptime_seconds{job="che-host"}` and click *Run queries*.
+
+[TIP]
+====
+
+To troubleshoot missing metrics, view the Prometheus container logs for possible RBAC-related errors:
+
+. Get the name of the Prometheus pod:
++
+[source,yaml,subs="+quotes"]
+----
+$ oc get pods -l app.kubernetes.io/name=prometheus -n openshift-monitoring -o=jsonpath='{.items[*].metadata.name}'
+----
+
+. Print the last 20 lines of the Prometheus container logs from the Prometheus pod from the previous step:
++
+[source,yaml,subs="+quotes"]
+----
+$ oc logs --tail=20 __<prometheus_pod_name>__ -c prometheus -n openshift-monitoring
+----
+
+====
+
+[role="_additional-resources"]
 .Additional resources
 
-* link:https://prometheus.io/docs/prometheus/latest/configuration/configuration/[Configuring Prometheus]
 
 * link:https://prometheus.io/docs/prometheus/latest/querying/basics/[Querying Prometheus]
 
