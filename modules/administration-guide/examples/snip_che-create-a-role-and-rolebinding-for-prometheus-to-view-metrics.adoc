@@ -1,0 +1,46 @@
+. Create a Role and RoleBinding to allow Prometheus to view the metrics.
+
++
+.Role
+====
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: prometheus-k8s
+  namespace: openshift-operators
+rules:
+  - verbs:
+      - get
+      - list
+      - watch
+    apiGroups:
+      - ''
+    resources:
+      - services
+      - endpoints
+      - pods
+----
+====
+
++
+.RoleBinding
+====
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: view-che-openshift-monitoring-prometheus-k8s
+  namespace: openshift-operators
+subjects:
+  - kind: ServiceAccount
+    name: prometheus-k8s
+    namespace: openshift-monitoring
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prometheus-k8s
+----
+====
