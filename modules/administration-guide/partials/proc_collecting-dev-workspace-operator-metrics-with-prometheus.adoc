@@ -6,7 +6,7 @@ To use the in-cluster Prometheus instance to collect, store, and query metrics a
 
 .Prerequisites
 
-* Your organization's instance of {prod-short} is installed and running in Red Hat OpenShift.
+* Your organization instance of {prod-short} is installed and running in Red Hat OpenShift.
 
 * An active `oc` session with administrative permissions to the destination OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the CLI].
 
@@ -48,7 +48,7 @@ include::example$snip_{project-context}-create-a-role-and-rolebinding-for-promet
 
 . Allow the in-cluster Prometheus instance to detect the ServiceMonitor in the {prod-short} namespace. The default {prod-short} namespace is `{prod-namespace}`.
 +
-[source,subs="+attributes"]
+[subs="+attributes"]
 ----
 $ oc label namespace {prod-namespace} openshift.io/cluster-monitoring=true
 ----
@@ -70,14 +70,14 @@ To troubleshoot missing metrics, view the Prometheus container logs for possible
 
 . Get the name of the Prometheus pod:
 +
-[source,yaml,subs="+quotes"]
+[subs="+quotes"]
 ----
 $ oc get pods -l app.kubernetes.io/name=prometheus -n openshift-monitoring -o=jsonpath='{.items[*].metadata.name}'
 ----
 
 . Print the last 20 lines of the Prometheus container logs from the Prometheus pod from the previous step:
 +
-[source,yaml,subs="+quotes"]
+[subs="+quotes"]
 ----
 $ oc logs --tail=20 __<prometheus_pod_name>__ -c prometheus -n openshift-monitoring
 ----
@@ -87,4 +87,3 @@ $ oc logs --tail=20 __<prometheus_pod_name>__ -c prometheus -n openshift-monitor
 .Additional resources
 * link:https://prometheus.io/docs/prometheus/latest/querying/basics/[Querying Prometheus]
 * link:https://prometheus.io/docs/concepts/metric_types/[Prometheus metric types]
-

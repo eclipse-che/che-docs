@@ -16,9 +16,8 @@ After configuring the in-cluster Prometheus instance to collect {prod-short} Ser
 .Procedure
 
 * Create a ConfigMap for the dashboard definition in the `openshift-config-managed` {orch-namespace} and apply the necessary label.
-.. {empty}
 +
-[source,subs="+quotes"]
+[subs="+quotes"]
 ----
 $ oc create configmap grafana-dashboard-devspaces-server \
   --from-literal=devspaces-server-dashboard.json="$(curl https://raw.githubusercontent.com/eclipse-che/che-server/main/docs/grafana/openshift-console-dashboard.json)" \
@@ -26,10 +25,8 @@ $ oc create configmap grafana-dashboard-devspaces-server \
 ----
 +
 include::example$snip_{project-context}-disclaimer-for-configuring-observability.adoc[]
-
-.. {empty}
 +
-[source,subs="+quotes"]
+[subs="+quotes"]
 ----
 $ oc label configmap grafana-dashboard-devspaces-server console.openshift.io/dashboard=true -n openshift-config-managed
 ----
