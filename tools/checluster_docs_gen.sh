@@ -68,6 +68,7 @@ parse_content() {
   parse_section "devEnvironments" "Development environment configuration options."
   parse_section "devEnvironments.properties.defaultNamespace" "\`defaultNamespace\` options."
   parse_section "devEnvironments.properties.defaultPlugins" "\`defaultPlugins\` options."
+  parse_section "devEnvironments.properties.gatewayContainer" "\`gatewayContainer\` options."
   parse_section "devEnvironments.properties.storage" "\`storage\` options."
   parse_section "devEnvironments.properties.storage.properties.perUserStrategyPvcConfig" "\`per-user\` PVC strategy options."
   parse_section "devEnvironments.properties.storage.properties.perWorkspaceStrategyPvcConfig" "\`per-workspace\` PVC strategy options."
