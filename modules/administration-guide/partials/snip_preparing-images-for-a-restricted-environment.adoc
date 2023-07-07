@@ -24,22 +24,18 @@
 
 * `podman`. See link:https://podman.io/docs/installation[Podman Installation Instructions].
 
-* An active `skopeo` session with administrative access to the __<my_registry>__ registry. See link:https://github.com/containers/skopeo/blob/main/install.md[Installing Skopeo], link:https://github.com/containers/skopeo#authenticating-to-a-registry[Authenticating to a registry], and link:https://docs.openshift.com/container-platform/{ocp4-ver}/installing/disconnected_install/installing-mirroring-installation-images.html[Mirroring images for a disconnected installation].
+* `skopeo` version 1.6 or higher. See link:https://github.com/containers/skopeo/blob/main/install.md[Installing Skopeo].
 
-* `{prod-cli}` for {prod-short} version {prod-ver}. See xref:installing-the-chectl-management-tool.adoc[].
+* An active `skopeo` session with administrative access to the private docker registry. link:https://github.com/containers/skopeo#authenticating-to-a-registry[Authenticating to a registry], and link:https://docs.openshift.com/container-platform/{ocp4-ver}/installing/disconnected_install/installing-mirroring-installation-images.html[Mirroring images for a disconnected installation].
 
-.Procedure
-
-. Download and execute the mirroring script to install a custom Operator catalog and mirror the related images: xref:attachment$restricted-environment/prepare-restricted-environment.sh[prepare-restricted-environment.sh].
-+
-[subs="+attributes,+quotes"]
 ----
 $ bash prepare-restricted-environment.sh \
-  --devworkspace_operator_index "{devworkspace-operator-index}" \
+  --devworkspace_operator_index {devworkspace-operator-index-disconnected-install}\
   --devworkspace_operator_version "v{devworkspace-operator-version-patch}" \
   --prod_operator_index "{prod-operator-index}" \
   --prod_operator_package_name "{prod-operator-package-name}" \
   --prod_operator_version "v{prod-ver-patch}" \
-  --my_registry "__<my_registry>__"
+  --my_registry "__<my_registry>__" <1>
 ----
+<1> The private docker registry where the images will be mirrored
 

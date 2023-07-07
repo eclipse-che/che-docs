@@ -33,8 +33,10 @@ declare prod_operator_version="${prod_operator_version:?Define the variable}"
 
 # Destination registry
 declare my_registry="${my_registry:?Define the variable}"
-declare my_catalog=restricted-environment-install
-declare my_operator_index="$my_registry/$my_catalog/my-operator-index:latest"
+declare my_catalog=${prod_operator_package_name}-disconnected-install
+declare k8s_resource_name=${my_catalog}
+declare my_operator_index_image_name_and_tag=${prod_operator_package_name}-index:${prod_operator_version}
+declare my_operator_index="${my_registry}/${prod_operator_package_name}/${my_operator_index_image_name_and_tag}"
 
 # Create local directories
 mkdir -p "${my_catalog}/${devworkspace_operator_package_name}" "${my_catalog}/${prod_operator_package_name}"
@@ -95,7 +97,7 @@ EOF
 echo "Removing index image from mappings.txt to prepare mirroring."
 oc adm catalog mirror "$my_operator_index" "$my_registry" --insecure --manifests-only | tee catalog_mirror.log
 MANIFESTS_FOLDER=$(sed -n -e 's/^wrote mirroring manifests to \(.*\)$/\1/p' catalog_mirror.log |xargs) # The xargs here is to trim whitespaces
-sed -i -e "/my-operator-index:latest/d" "${MANIFESTS_FOLDER}/mapping.txt"
+sed -i -e "/${my_operator_index_image_name_and_tag}/d" "${MANIFESTS_FOLDER}/mapping.txt"
 cat "${MANIFESTS_FOLDER}/mapping.txt"
 
 echo "Mirroring related images to the $my_registry registry."
@@ -118,7 +120,7 @@ do
 done < "${MANIFESTS_FOLDER}/mapping.txt"
 
 echo "Creating CatalogSource and ImageContentSourcePolicy"
-cat ${MANIFESTS_FOLDER}/catalogSource.yaml | oc apply -f -
-cat ${MANIFESTS_FOLDER}/imageContentSourcePolicy.yaml | oc apply -f -
+cat ${MANIFESTS_FOLDER}/catalogSource.yaml | sed 's|name: .*|name: '${k8s_resource_name}'|' | oc apply -f -
+cat ${MANIFESTS_FOLDER}/imageContentSourcePolicy.yaml | sed 's|name: .*|name: '${k8s_resource_name}'|' | oc apply -f -
 
 echo "INFO: Catalog $my_operator_index deployed to the $my_registry registry."
