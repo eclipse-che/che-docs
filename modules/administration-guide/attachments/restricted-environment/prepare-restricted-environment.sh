@@ -101,22 +101,12 @@ sed -i -e "/${my_operator_index_image_name_and_tag}/d" "${MANIFESTS_FOLDER}/mapp
 cat "${MANIFESTS_FOLDER}/mapping.txt"
 
 echo "Mirroring related images to the $my_registry registry."
-oc image mirror --insecure=true -f "${MANIFESTS_FOLDER}/mapping.txt"
-
-# Use skopeo for non Red Hat registries to preserve the original digest
+# oc image mirror --insecure=true -f "${MANIFESTS_FOLDER}/mapping.txt"
 while IFS= read -r line
 do
-  images=(
-    $(echo $line | tr "=" "\n")
-  )
-
-  public_image=${images[1]}
-  private_image=${images[2]}
-
-  if [[ ! $public_image =~ ^quay.io ]] && [[ ! $public_image =~ ^registry.redhat.io ]]; then
-    echo "Preserving digest for $public_image"
-    skopeo copy --preserve-digests --all "docker://$public_image" "docker://$private_image"
-  fi
+  public_image=$(echo "${line}" | cut -d '=' -f1)
+  private_image=$(echo "${line}" | cut -d '=' -f2)
+  skopeo copy --preserve-digests --all "docker://$public_image" "docker://$private_image"
 done < "${MANIFESTS_FOLDER}/mapping.txt"
 
 echo "Creating CatalogSource and ImageContentSourcePolicy"
