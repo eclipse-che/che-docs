@@ -33,10 +33,11 @@ declare prod_operator_version="${prod_operator_version:?Define the variable}"
 
 # Destination registry
 declare my_registry="${my_registry:?Define the variable}"
-declare my_catalog=${prod_operator_package_name}-disconnected-install
-declare k8s_resource_name=${my_catalog}
 declare my_operator_index_image_name_and_tag=${prod_operator_package_name}-index:${prod_operator_version}
 declare my_operator_index="${my_registry}/${prod_operator_package_name}/${my_operator_index_image_name_and_tag}"
+
+declare my_catalog=${prod_operator_package_name}-disconnected-install
+declare k8s_resource_name=${my_catalog}
 
 # Create local directories
 mkdir -p "${my_catalog}/${devworkspace_operator_package_name}" "${my_catalog}/${prod_operator_package_name}"
@@ -106,7 +107,8 @@ while IFS= read -r line
 do
   public_image=$(echo "${line}" | cut -d '=' -f1)
   private_image=$(echo "${line}" | cut -d '=' -f2)
-  skopeo copy --preserve-digests --all "docker://$public_image" "docker://$private_image"
+  echo "Mirroring ${public_image}"
+  skopeo copy --dest-tls-verify=false --preserve-digests --all "docker://$public_image" "docker://$private_image"
 done < "${MANIFESTS_FOLDER}/mapping.txt"
 
 echo "Creating CatalogSource and ImageContentSourcePolicy"
