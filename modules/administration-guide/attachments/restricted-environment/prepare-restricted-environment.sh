@@ -29,6 +29,7 @@ declare devworkspace_operator_package_name="devworkspace-operator"
 declare devworkspace_operator_version="${devworkspace_operator_version:?Define the variable}"
 declare prod_operator_index="${prod_operator_index:?Define the variable}"
 declare prod_operator_package_name="${prod_operator_package_name:?Define the variable}"
+declare prod_operator_bundle_name="${prod_operator_bundle_name:?Define the variable}"
 declare prod_operator_version="${prod_operator_version:?Define the variable}"
 
 # Destination registry
@@ -59,13 +60,13 @@ echo "[INFO] Fetching metadata for the ${prod_operator_package_name} operator ca
 opm render "${prod_operator_index}" \
   | jq "select \
     (\
-      (.schema == \"olm.bundle\" and .name == \"${prod_operator_package_name}.${prod_operator_version}\") or \
+      (.schema == \"olm.bundle\" and .name == \"${prod_operator_bundle_name}.${prod_operator_version}\") or \
       (.schema == \"olm.package\" and .name == \"${prod_operator_package_name}\") or \
       (.schema == \"olm.channel\" and .package == \"${prod_operator_package_name}\") \
     )" \
   | jq "select \
      (.schema == \"olm.channel\" and .package == \"${prod_operator_package_name}\").entries \
-      |= [{name: \"${prod_operator_package_name}.${prod_operator_version}\"}]" \
+      |= [{name: \"${prod_operator_bundle_name}.${prod_operator_version}\"}]" \
   > "${my_catalog}/${prod_operator_package_name}/render.json"
 
 echo "[INFO] Creating the catalog dockerfile."
