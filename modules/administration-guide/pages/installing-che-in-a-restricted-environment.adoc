@@ -25,7 +25,12 @@ include::partial$snip_preparing-images-for-a-restricted-environment.adoc[]
 +
 [subs="+attributes,+quotes"]
 ----
-$ {prod-cli} server:deploy --platform=openshift \
+$ {prod-cli} server:deploy \
+  --platform=openshift \
+  --olm-channel stable \
+  --catalog-source-name={prod-operator-package-name}-disconnected-install \
+  --catalog-source-namespace=openshift-marketplace \
+  --skip-devworkspace-operator \
   --che-operator-cr-patch-yaml=che-operator-cr-patch.yaml
 ----
 
