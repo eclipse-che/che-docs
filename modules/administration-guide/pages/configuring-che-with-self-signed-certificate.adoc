@@ -1,13 +1,13 @@
 :_content-type: PROCEDURE
-:description: Deploying {prod-short} with self-signed certificates
+:description: Configuring {prod-short} with self-signed certificates
 :keywords: administration guide, configuring, {prod}, {prod-short}, certificate
-:navtitle: Deploying {prod-short} with self-signed certificates
-:page-aliases: installation-guide:deploying-che-with-self-signed-certificate.adoc
+:navtitle: Configuring {prod-short} with self-signed certificates
+:page-aliases: installation-guide:configuring-che-with-self-signed-certificate.adoc
 
-[id="deploying-{prod-id-short}-with-self-signed-certificate"]
-= Deploying {prod} with self-signed certificate
+[id="configuring-{prod-id-short}-with-self-signed-certificate"]
+= Configuring {prod} with self-signed certificate
 
-This procedure describes how to deploy {prod-short} with custom self-signed certificate.
+This procedure describes how to configure {prod-short} with custom self-signed certificate.
 
 .Prerequisites
 
@@ -50,7 +50,7 @@ $ {orch-cli} label secret che-tls app.kubernetes.io/part-of=che.eclipse.org -n {
 [subs="+quotes,attributes"]
 ----
 $ {orch-cli} create secret generic self-signed-certificate \
---from-file=ca.crt=__<certitifcate_chain_of_trust>__ \ <1>
+--from-file=ca.crt=__<certitifcate_chain_of_trust_file>__ \ <1>
 -n {prod-namespace}
 ----
 <1> A file with certificate chain of trust in PEM format
@@ -62,4 +62,6 @@ $ {orch-cli} create secret generic self-signed-certificate \
 $ {orch-cli} label secret self-signed-certificate app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
 ----
 
-. Deploy {prod} with {prod-cli}.
+.Additional resources
+
+* xref:installing-che.adoc[]
