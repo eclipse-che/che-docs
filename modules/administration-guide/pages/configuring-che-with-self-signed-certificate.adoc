@@ -1,0 +1,66 @@
+:_content-type: PROCEDURE
+:description: Configuring {prod-short} with self-signed certificates
+:keywords: administration guide, configuring, {prod}, {prod-short}, self-signed, certificate
+:navtitle: Configuring {prod-short} with self-signed certificates
+:page-aliases: installation-guide:configuring-che-with-self-signed-certificate.adoc
+
+[id="configuring-{prod-id-short}-with-self-signed-certificate"]
+= Configuring {prod} with self-signed certificate
+
+By default `{prod-cli}` creates a {kubernetes} Job to generate self-signed certificate to deploy {prod-short} with.
+This procedure describes how to configure a custom self-signed certificate on prior of deploying {prod-short}.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+* Generated certificate and private key files.
+
+.Procedure
+
+. Pre-create a {orch-namespace} for {prod-short}:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} create {orch-namespace} {prod-namespace}
+----
+
+. Create a `che-tls` secret:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} create secret tls che-tls \
+--key __<key_file>__ \ <1>
+--cert __<cert_file>__ \ <2>
+-n {prod-namespace}
+----
+<1> A file with the private key in PEM format
+<2> A file with the public key certificates in PEM format
+
+. Add the required labels to the secret:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} label secret che-tls app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
+----
+
+. Create a `self-signed-certificate` secret:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} create secret generic self-signed-certificate \
+--from-file=ca.crt=__<certitifcate_chain_of_trust_file>__ \ <1>
+-n {prod-namespace}
+----
+<1> A file with certificate chain of trust in PEM format
+
+. Add the required labels to the secret:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} label secret self-signed-certificate app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
+----
+
+.Additional resources
+
+* xref:installing-che.adoc[]
