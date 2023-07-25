@@ -73,7 +73,7 @@ echo "[INFO] Creating the catalog dockerfile."
 if [ -f "${my_catalog}.Dockerfile" ]; then
   rm -f "${my_catalog}.Dockerfile"
 fi
-opm alpha generate dockerfile "./${my_catalog}"
+opm generate dockerfile "./${my_catalog}"
 
 echo "[INFO] Building the catalog image locally."
 podman build -t "${my_operator_index}" -f "./${my_catalog}.Dockerfile" --no-cache .
