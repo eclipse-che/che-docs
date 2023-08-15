@@ -26,14 +26,14 @@ apiVersion: v1
 metadata:
   name: tls-cer
   annotations:
-    controller.devfile.io/mount-path: /home/user/certs
+    controller.devfile.io/mount-path: /public-certs/nexus.cer
     controller.devfile.io/mount-as: file
   labels:
     controller.devfile.io/mount-to-devworkspace: 'true'
     controller.devfile.io/watch-secret: 'true'
 data:
   tls.cer: >-
-    __<Base64_encoded_content_of_public_cert>__ <1>
+    <Base64_encoded_content_of_public_cert>
 ----
 <1> Base64 encoding with disabled line wrapping.
 
@@ -51,7 +51,6 @@ metadata:
     controller.devfile.io/mount-to-devworkspace: 'true'
     controller.devfile.io/watch-configmap: 'true'
 data:
-  NODE_EXTRA_CA_CERTS: /home/user/certs/tls.cer
   NPM_CONFIG_REGISTRY: >-
-    https://__<npm_artifact_repository_route>__/repository/npm-all/
+    https://<npm_artifact_repository_route>/repository/npm-all/
 ----
