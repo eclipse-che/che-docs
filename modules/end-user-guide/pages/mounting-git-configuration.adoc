@@ -1,0 +1,54 @@
+:_content-type: PROCEDURE
+:description: Mounting Git configuration
+:keywords: Git, config
+:navtitle: Mounting Git configuration
+:page-aliases:
+
+[id="mounting-git-configuration"]
+= Mounting Git configuration
+
+This procedure describes how to mount a Git config file to a workspace.
+
+.Prerequisites
+
+* You have logged in to the cluster.
+
+.Procedure
+
+. Prepare a new {orch-name} ConfigMap.
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: workspace-userdata-gitconfig-configmap
+  namespace: __<user_namespace>__ <1>
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /etc/
+data:
+  gitconfig: "[user] \n  name = __<git_user_name>__ \n  email = __<git_user_email>__" <2>
+----
++
+<1> A user namespace. Visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
+<2> Your Git user's name and email.
+
+. Apply the ConfigMap.
++
+[source,subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f - <<EOF
+__<ConfigMap_prepared_in_step_1>__
+EOF
+----
+
+.Verification
+
+. xref:starting-a-new-workspace-with-a-clone-of-a-git-repository.adoc[Start a new workspace by using the URL of a remote Git repository] that the Git provider hosts.
+. Once the workspace is started, open a new terminal in the `tools` container and run `git config --get-regexp user.*`. You should observe your Git user's name and email in the output.
+
+
