@@ -7,13 +7,6 @@
 [id="starting-a-new-workspace-from-a-devfile-url"]
 = Starting a new workspace from a devfile URL
 
-[IMPORTANT]
-====
-To initiate a clone of the Git repository in the filesystem of a new workspace, the devfile must contain project info.
-
-See https://devfile.io/docs/2.2.0/adding-projects.
-====
-
 With {prod-short}, you can open a *devfile* URL in your browser to start a new workspace.
 
 pass:[<!-- vale RedHat.Spelling = NO -->]
@@ -21,6 +14,13 @@ pass:[<!-- vale RedHat.Spelling = NO -->]
 TIP: You can use the *Git Repo URL* field on the *Create Workspace* page of your {prod-short} dashboard to enter the URL of a *devfile* to start a new workspace.
 
 pass:[<!-- vale RedHat.Spelling = YES -->]
+
+[IMPORTANT]
+====
+To initiate a clone of the Git repository in the filesystem of a new workspace, the devfile must contain project info.
+
+See https://devfile.io/docs/2.2.0/adding-projects.
+====
 
 .Prerequisites
 
@@ -40,6 +40,23 @@ To start a new workspace from a devfile URL:
 pass:c,a,q[{prod-url}]#__<devfile_url>__
 ----
 +
+You can pass your personal access token to the URL to access a devfile from *private* repositories:
+[source,subs="+quotes,+attributes,+macros"]
++
+----
+pass:c,a,q[{prod-url}]#__https://__<token>__@__<host>__/__<path_to_devfile> <1>
+----
++
+<1> Your personal access token that you generated on the Git provider's website.
++
+This works for GitHub, GitLab, Bitbucket, Microsoft Azure, and other providers that support Personal Access Token.
++
+[IMPORTANT]
+====
+Automated Git credential injection does not work in this case.
+To configure the Git credentials, use the xref:using-a-git-provider-access-token.adoc[configure personal access token] guide.
+====
++
 [TIP]
 ====
 You can extend this URL with optional parameters:
@@ -50,29 +67,18 @@ pass:c,a,q[{prod-url}]#__<devfile_url>__?__<optional_parameters>__ <1>
 <1> See xref:optional-parameters-for-the-urls-for-starting-a-new-workspace.adoc[].
 ====
 +
-.A URL for starting a new workspace
+.A URL for starting a new workspace from a public repository
 ====
 
 `pass:c,a,q[{prod-url}#https://raw.githubusercontent.com/che-samples/cpp-hello-world/main/devfile.yaml]`
 
 ====
 +
-[TIP]
+.A URL for starting a new workspace from a private repository
 ====
-You can pass your personal access token to the URL to access a devfile from *private* repositories:
-[source,subs="+quotes,+attributes,+macros"]
-----
-pass:c,a,q[{prod-url}]#__https://__<token>__@__<host>__/__<path_to_devfile> <1>
-----
-<1> Your personal access token that you generated on the Git provider's website.
 
-This works for GitHub, GitLab, Bitbucket, Microsoft Azure, and other providers that support Personal Access Token.
-====
-+
-[IMPORTANT]
-====
-Automated Git credential injection is not supported.
-To configure the Git credentials, use the xref:using-a-git-provider-access-token.adoc[configure personal access token] guide.
+`pass:c,a,q[{prod-url}#https://__<token>__@raw.githubusercontent.com/che-samples/cpp-hello-world/main/devfile.yaml]`
+
 ====
 +
 .Verification
