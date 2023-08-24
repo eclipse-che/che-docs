@@ -7,24 +7,23 @@
 [id="starting-a-new-workspace-with-a-clone-of-a-git-repository"]
 = Starting a new workspace with a clone of a Git repository
 
-Working with {prod-short} in your browser involves multiple URLs:
+With {prod-short}, you can use a URL in your browser to start
+a new workspace that contains a clone of a Git repository.
+This way, you can clone a Git repository that is hosted on GitHub, GitLab, Bitbucket or Microsoft Azure DevOps server instances.
 
-* The URL of your organization's {prod-short} instance, used as part of all the following URLs
-* The URL of the *Workspaces* page of your {prod-short} dashboard with the workspace control panel
-* [.underline]#The URLs for starting a new workspace#
-* The URLs of your workspaces in use
-
-With {prod-short}, you can use either an HTTPS or SSH URL to start a new workspace with a clone of a Git repository.
+TIP: You can also use the *Git Repository URL* field on the *Create Workspace* page of your {prod-short} dashboard to enter the URL of a Git repository to start a new workspace.
 
 [IMPORTANT]
 ====
-//TODO: point to the dashboard SSH procedure when https://github.com/eclipse/che/issues/22111 is done.
+* Starting a workspace using a URL from a Git service other than GitHub, GiLab, Bitbucket, or Microsoft Azure DevOps will fail.
 * If you use an SSH URL to start a new workspace, you must propagate the SSH key. See link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#configuring-devworkspaces-to-use-ssh-keys-for-git-operations[Configuring DevWorkspaces to use SSH keys for Git operations] for more information.
 * If the SSH URL points to a private repository, you must apply an access token to be able to fetch the `devfile.yaml` content. You can do this either by accepting an SCM authentication page or following a xref:using-a-git-provider-access-token.adoc[Personal Access Token] procedure.
-
 ====
 
-TIP: You can also use the *Git Repo URL ** field on the *Create Workspace* page of your {prod-short} dashboard to enter the URL of a Git repository to start a new workspace.
+[IMPORTANT]
+====
+Configure personal access token to access private repositories. See xref:using-a-git-provider-access-token.adoc[].
+====
 
 .Prerequisites
 
@@ -59,50 +58,68 @@ pass:c,a,q[{prod-url}]#__<git_repository_url>__?__<optional_parameters>__ <1>
 <1> See xref:optional-parameters-for-the-urls-for-starting-a-new-workspace.adoc[].
 ====
 +
-.A URL for starting a new workspace
+[TIP]
 ====
-
-`pass:c,a,q[{prod-url}#https://github.com/che-samples/cpp-hello-world]`
-
+You can use Git+SSH URLs to start a new workspace.
+See link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#configuring-devworkspaces-to-use-ssh-keys-for-git-operations[Configuring DevWorkspaces to use SSH keys for Git operations]
 ====
 +
-.The URL syntax for starting a new workspace with a clone of a GitHub-hosted repository
+.A URL for starting a new workspace
+====
+* `pass:c,a,q[{prod-url}#https://github.com/che-samples/cpp-hello-world]`
+* `pass:c,a,q[{prod-url}#git@github.com:che-samples/cpp-hello-world.git]`
 ====
 
-With GitHub and GitLab, you can even use the URL of a specific branch of the repository to be cloned:
-
-* `pass:c,a,q[{prod-url}#https://github.com/__<user_or_org>__/__<repository>__]` starts a new workspace with a clone of the default branch.
-* `pass:c,a,q[{prod-url}#https://github.com/__<user_or_org>__/__<repository>__/tree/__<branch_name>__]` starts a new workspace with a clone of the specified branch.
-* `pass:c,a,q[{prod-url}#https://github.com/__<user_or_org>__/__<repository>__/pull/__<pull_request_id>__]` starts a new workspace with a clone of the branch of the pull request.
++
+.The URL syntax for starting a new workspace with a clone of a GitHub instance repository
 ====
+
+* `pass:c,a,q[{prod-url}#https://__<github_host>__/__<user_or_org>__/__<repository>__]` starts a new workspace with a clone of the default branch.
+* `pass:c,a,q[{prod-url}#https://__<github_host>__/__<user_or_org>__/__<repository>__/tree/__<branch_name>__]` starts a new workspace with a clone of the specified branch.
+* `pass:c,a,q[{prod-url}#https://__<github_host>__/__<user_or_org>__/__<repository>__/pull/__<pull_request_id>__]` starts a new workspace with a clone of the branch of the pull request.
+* `pass:c,a,q[{prod-url}#git@__<github_host>__:__<user_or_org>__/__<repository>__.git]` starts a new workspace from Git+SSH URL.
+====
+
++
+.The URL syntax for starting a new workspace with a clone of a GitLab instance repository
+====
+
+* `pass:c,a,q[{prod-url}#https://__<gitlab_host>__/__<user_or_org>__/__<repository>__]` starts a new workspace with a clone of the default branch.
+* `pass:c,a,q[{prod-url}#https://__<gitlab_host>__/__<user_or_org>__/__<repository>__/-/tree/__<branch_name>__]` starts a new workspace with a clone of the specified branch.
+* `pass:c,a,q[{prod-url}#git@__<gitlab_host>__:__<user_or_org>__/__<repository>__.git]` starts a new workspace from Git+SSH URL.
+====
+
 +
 .The URL syntax for starting a new workspace with a clone of a BitBucket Server repository
 ====
 
-* `pass:c,a,q[{prod-url}#https://<bb-host>/scm/<project-key>/<repository_name>.git]` starts a new workspace with a clone of the default branch.
-* `pass:c,a,q[{prod-url}#https://<bb-host>/users/<user-slug>/repos/<repo-name>/]` starts a new workspace with a clone of the default branch, if a repository was created under the user profile.
-* `pass:c,a,q[{prod-url}#https://<bb-host>/users/<user-slug>/repos/<repo-name>/browse?at=refs%2Fheads%2F<branch-name>]` starts a new workspace with a clone of the specified branch.
+* `pass:c,a,q[{prod-url}#https://__<bb_host>__/scm/__<project-key>__/__<repository>__.git]` starts a new workspace with a clone of the default branch.
+* `pass:c,a,q[{prod-url}#https://__<bb_host>__/users/__<user_slug>__/repos/__<repository>__/]` starts a new workspace with a clone of the default branch, if a repository was created under the user profile.
+* `pass:c,a,q[{prod-url}#https://__<bb_host>__/users/__<user-slug>__/repos/__<repository>__/browse?at=refs%2Fheads%2F__<branch-name>__]` starts a new workspace with a clone of the specified branch.
+* `pass:c,a,q[{prod-url}#git@__<bb_host>__:__<user_slug>__/__<repository>__.git]` starts a new workspace from Git+SSH URL.
 
 ====
 +
-After you enter the URL to start a new workspace in a browser tab, it renders the workspace-starting page.
+.The URL syntax for starting a new workspace with a clone of a Microsoft Azure DevOps Git repository
+====
+* `pass:c,a,q[{prod-url}#https://__<organization>__@dev.azure.com/__<organization>__/__<project>__/_git/__<repository>__]` starts a new workspace with a clone of the default branch.
+* `pass:c,a,q[{prod-url}#https://__<organization>__@dev.azure.com/__<organization>__/__<project>__/_git/__<repository>__?version=GB__<branch>__]` starts a new workspace with a clone of the specific branch.
+* `pass:c,a,q[{prod-url}#git@ssh.dev.azure.com:v3/__<organization>__/__<project>__/__<repository>__]` starts a new workspace from Git+SSH URL.
+====
+
++
+After you enter the URL to start a new workspace in a browser tab, the workspace starting page appears.
 +
 When the new workspace is ready, the workspace IDE loads in the browser tab.
 +
 A clone of the Git repository is present in the filesystem of the new workspace.
 +
-The workspace has a unique URL: `pass:c,a,q[{prod-url}]#workspace__<unique_url>__`.
-
-[TIP]
-====
-Although this is not possible in the address bar, you can add a URL for starting a new workspace as a bookmark by using the browser bookmark manager:
-
-* In Mozilla Firefox, go to *☰* *>* *Bookmarks* *>* *Manage bookmarks Ctrl+Shift+O* *>* *Bookmarks Toolbar* *>* *Organize* *>* *Add bookmark*.
-
-* In Google Chrome, go to *⋮* *>* *Bookmarks* *>* *Bookmark manager* *>* *Bookmarks bar* *>* *⋮* *>* *Add new bookmark*.
-====
+The workspace has a unique URL: `pass:c,a,q[{prod-url}]/__<user_name>__/__<unique_url>__`.
 
 .Additional resources
 
 * xref:optional-parameters-for-the-urls-for-starting-a-new-workspace.adoc[]
 * xref:basic-actions-you-can-perform-on-a-workspace.adoc[]
+* xref:using-a-git-provider-access-token.adoc[]
+* xref:mounting-git-configuration.adoc[]
+* link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#configuring-devworkspaces-to-use-ssh-keys-for-git-operations[Configuring DevWorkspaces to use SSH keys for Git operations]
