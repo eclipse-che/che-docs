@@ -1,0 +1,59 @@
+:_content-type: PROCEDURE
+:description: Configuring getting started samples
+:keywords: administration guide, configuring, dashboard, samples
+:navtitle: Configuring getting started samples
+:page-aliases: installation-guide:configuring-getting-started-samples.adoc
+
+[id="configuring-getting-started-samples"]
+= Configuring getting started samples
+
+This procedure describes how to configure {prod-short} Dashboard to display custom samples.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Create a JSON file with the samples configuration.
+The file must contain an array of objects, where each object represents a sample.
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+$ cat > my-samples.json <<EOF
+[
+  {
+    "displayName": "__<display_name>__", <1>
+    "description": "__<description>__", <2>
+    "tags": ["Eclipse Che", "Dashboard"], <3>
+    "url": "__<url>__", <4>
+    "icon": {
+      "base64data": "__<base64data>__", <5>
+      "mediatype": "__<mediatype>__" <6>
+    }
+  }
+]
+EOF
+----
+<1> The display name of the sample.
+<2> The description of the sample.
+<3> The JSON array of tags.
+<4> The URL to the repository containing the devfile.
+<5> The base64-encoded data of the icon.
+<6> The media type of the icon. For example, `image/png`.
+
+. Create a ConfigMap with the samples configuration:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+$ {orch-cli} create configmap getting-started-samples --from-file=my-samples.json -n {prod-namespace}
+----
+
+. Add the required labels to the ConfigMap:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+$ {orch-cli} label configmap getting-started-samples app.kubernetes.io/part-of=che.eclipse.org,app.kubernetes.io/component=getting-started-samples -n {prod-namespace}
+----
+
+. Refresh the {prod-short} Dashboard page to see the new samples.
