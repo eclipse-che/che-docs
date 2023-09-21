@@ -1,0 +1,41 @@
+:_content-type: PROCEDURE
+:description: Configuring the storage strategy 
+:keywords: administration guide, configuring, {prod-short}, storage, strategy, per-user, per-workspace, ephemeral
+:navtitle: Configuring the storage strategy
+:page-aliases: installation-guide:configuring-the-storage-strategy.adoc
+
+[id="configuring-the-storage-strategy"]
+= Configuring the storage strategy
+
+{prod-short} can be configured to provide persistent or non-persistent storage to workspaces by selecting a storage strategy. The selected storage strategy will be applied to all newly created workspaces by default. Users can opt for a non-default storage strategy for their workspace in their xref:end-user-guide:requesting-persistent-storage-for-workspaces.adoc[devfile] or through the xref:end-user-guide:url-parameter-for-the-workspace-storage.adoc[URL parameter].
+
+Available storage strategies:
+
+* `per-user`: Use a single PVC for all workspaces created by a user.
+* `per-workspace`: Each workspace is given its own PVC.
+* `ephemeral`: Non-persistent storage; any local changes will be lost when the workspace is stopped.
+
+The default storage strategy used in {prod-short} is `per-user`. 
+
+.Procedure
+
+. Set the `pvcStrategy` field in the Che Cluster Custom Resource to `per-user`, `per-workspace` or `ephemeral`.
+
+[NOTE]
+====
+
+* You can set this field at installation. See xref:using-chectl-to-configure-the-checluster-custom-resource-during-installation.adoc[].
+
+* You can update this field on the command line. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
+
+====
+
+[source,yaml,subs="+quotes,+attributes"]
+----
+spec:
+  devEnvironments:
+    storage:
+      pvc:
+        pvcStrategy: 'per-user' <1>   
+----
+<1> The available storage strategies are `per-user`, `per-workspace` and `ephemeral`.
