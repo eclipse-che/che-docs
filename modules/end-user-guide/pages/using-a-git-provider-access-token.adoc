@@ -63,15 +63,6 @@ If the token is valid and has the necessary permissions, the cloning process sho
 For GitHub Enterprise Cloud, verify that the token is link:https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on[authorized for use within the organization].
 ====
 
-. Encode your access token to Base64.
-+
-[TIP]
-====
-If you have the link:https://www.gnu.org/software/coreutils/base64[base64] command-line tools installed in the operating system, you can use the command line:
-
-`$ echo -n '__<your_access_token_string>__' | base64`
-
-====
 
 . Go to `pass:c,a,q[{prod-url}]/api/user/id` in the web browser to get your {prod-short} user ID.
 
@@ -91,8 +82,8 @@ metadata:
     che.eclipse.org/scm-personal-access-token-name: _<git_provider_name>_# <2>
     che.eclipse.org/scm-url: __<git_provider_endpoint>__# <3>
     che.eclipse.org/scm-organization: __<git_provider_organization>__# <4>
-data:
-  token: __<Base64_encoded_access_token>__
+stringData:
+  token: __<Content_of_access_token>__
 type: Opaque
 ----
 +

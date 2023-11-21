@@ -13,7 +13,6 @@ Set up an application link for OAuth 1.0 on the Bitbucket Server.
 
 * You are logged in to the Bitbucket Server.
 * link:https://www.openssl.org/[`openssl`] is installed in the operating system you are using.
-* link:https://www.gnu.org/software/coreutils/base64[`base64`] is installed in the operating system you are using.
 
 .Procedure
 
@@ -23,7 +22,7 @@ Set up an application link for OAuth 1.0 on the Bitbucket Server.
 ----
 $ openssl genrsa -out private.pem 2048 && \
 openssl pkcs8 -topk8 -inform pem -outform pem -nocrypt -in private.pem -out privatepkcs8.pem && \
-cat privatepkcs8.pem | sed 's/-----BEGIN PRIVATE KEY-----//g' | sed 's/-----END PRIVATE KEY-----//g' | tr -d '\n' | base64 | tr -d '\n' > privatepkcs8-stripped.pem && \
+cat privatepkcs8.pem | sed 's/-----BEGIN PRIVATE KEY-----//g' | sed 's/-----END PRIVATE KEY-----//g' | tr -d '\n' > privatepkcs8-stripped.pem && \
 openssl rsa -in private.pem -pubout > public.pub && \
 cat public.pub | sed 's/-----BEGIN PUBLIC KEY-----//g' | sed 's/-----END PUBLIC KEY-----//g' | tr -d '\n' > public-stripped.pub && \
 openssl rand -base64 24 > bitbucket-consumer-key && \
