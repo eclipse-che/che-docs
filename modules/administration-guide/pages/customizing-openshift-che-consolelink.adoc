@@ -1,0 +1,41 @@
+:_content-type: PROCEDURE
+:description: Customizing OpenShift Eclipse Che ConsoleLink
+:keywords: administration guide, customizing, consolelink
+:navtitle: Customizing OpenShift Eclipse Che ConsoleLink
+:page-aliases: installation-guide:customizing-openshift-che-consolelink.adoc
+
+[id="customizing-openshift-che-consolelink"]
+= Customizing {ocp} {prod} ConsoleLink
+
+This procedure describes how to customize {prod} ConsoleLink.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Create a Secret:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {prod-deployment}-dashboard-customization
+  namespace: {prod-namespace}
+  annotations:
+    che.eclipse.org/mount-as: subpath
+    che.eclipse.org/mount-path: /public/dashboard/assets/branding
+  labels:
+    app.kubernetes.io/component: {prod-deployment}-dashboard-secret
+    app.kubernetes.io/part-of: che.eclipse.org
+data:
+  loader.svg: __<Base64_encoded_content_of_the_image>__ <1>
+type: Opaque
+EOF
+----
+<1> Base64 encoding with disabled line wrapping.
+
+. Wait until the rollout of {prod-deployment}-dashboard finishes.
