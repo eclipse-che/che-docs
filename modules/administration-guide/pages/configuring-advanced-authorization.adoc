@@ -1,0 +1,49 @@
+:_content-type: PROCEDURE
+:description: Configuring advanced authorization
+:keywords: authorization, user, group
+:navtitle: Configuring advanced authorization
+// :page-aliases:
+
+[id="configuring-advanced-authorization"]
+= Configuring advanced authorization
+
+You can determine which users and groups are allowed to access {prod-short}.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Configure the `CheCluster` Custom Resource. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+spec:
+  networking:
+    auth:
+      advancedAuthorization:
+        allowUsers:
+          - __<allow_users>__ <1>
+        allowGroups:
+          - __<allow_groups>__ <2>
+        denyUsers:
+          - __<deny_users>__ <3>
+        denyGroups:
+          - __<deny_groups>__ <4>
+----
+<1> List of users allowed to access {prod}.
+<2> List of groups of users allowed to access {prod} (for {ocp} only).
+<3> List of users denied access to {prod}.
+<4> List of groups of users denied to access {prod} (for {ocp} only).
++
+To allow a user to access {prod-short}, add him to the `allowUsers` list or a group where he is member of to `allowGroups` list.
+To deny a user to access {prod-short}, add him to the `denyUsers` list or a group where he is member of to `denyGroups` list.
+If user is in both `allow` and `deny` lists, then he is denied access to {prod-short}.
++
+If `allowUsers` and `allowGroups` are empty, then all users are allowed to access {prod-short} except ones from `deny` lists.
+if `denyUsers` and `denyGroups` are empty, then only users from `allow` lists are allowed to access {prod-short}.
++
+If `allow` and `deny` lists are empty, then all users are allowed to access {prod-short}.
+
+. Wait for the rollout of the {prod-short} server components to be completed.
