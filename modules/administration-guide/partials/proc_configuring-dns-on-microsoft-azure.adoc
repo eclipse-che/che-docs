@@ -1,0 +1,39 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-on-microsoft-azure
+
+[id="configuring-DNS-on-microsoft-azure"]
+= Configuring DNS on Microsoft Azure
+
+.Procedure
+
+. Define the domain name. You will need to register a domain unless you already have one.
++
+[source,shell]
+----
+export DOMAIN_NAME=azr.my-ide.cloud
+----
+
+. Create a DNS zone:
++
+[source,shell]
+----
+az network dns zone create \
+  --resource-group $ECLIPSE_CHE_RESOURCE_GROUP \
+  --name $DOMAIN_NAME
+----
+
+. Create a DNS record set:
++
+[source,shell,subs="attributes+"]
+----
+az network dns record-set a add-record \
+  --resource-group $ECLIPSE_CHE_RESOURCE_GROUP \
+  --zone-name $DOMAIN_NAME \
+  --record-set-name "*" \
+  --ipv4-address $({orch-cli} get service -n ingress-nginx ingress-nginx-controller -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+----
+
+.Additional resources
+
+* link:https://learn.microsoft.com/en-us/azure/dns/dns-getstarted-cli[Create an Azure DNS zone and record using Azure CLI]

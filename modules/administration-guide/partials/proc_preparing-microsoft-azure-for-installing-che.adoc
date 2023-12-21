@@ -1,0 +1,91 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-on-microsoft-azure
+
+[id="preparing-microsoft-azure-for-installing-che"]
+= Preparing Microsoft Azure for installing {prod-short}
+
+.Procedure
+
+. Log in to Microsoft Azure:
++
+[source,shell]
+----
+az login
+----
+
+. Create a resource group (to list the locations, use the `az account list-locations` command):
++
+[source,shell]
+----
+# Resource group name
+ECLIPSE_CHE_RESOURCE_GROUP=eclipse-che
+
+# Azure region
+AZURE_REGION=centralus
+
+az group create --name $ECLIPSE_CHE_RESOURCE_GROUP --location $AZURE_REGION
+----
+
+. Create a cluster admins group:
++
+[source,shell]
+----
+# Azure Active Directory group name
+AAD_GROUP_NAME=AKSAdmins
+
+az ad group create --display-name $AAD_GROUP_NAME --mail-nickname $AAD_GROUP_NAME
+----
+
+. Add the current user to the cluster admins group:
++
+[source,shell]
+----
+az ad group member add --group $AAD_GROUP_NAME \
+  --member-id $(az ad signed-in-user show --query id --output tsv)
+----
+
+. Create the Microsoft Entra integrated cluster:
++
+[source,shell]
+----
+# Azure Kubernetes Service cluster name
+AKS_CLUSTER_NAME=eclipse-che
+
+az aks create \
+  --resource-group $ECLIPSE_CHE_RESOURCE_GROUP \
+  --name $AKS_CLUSTER_NAME \
+  --enable-aad \
+  --aad-admin-group-object-ids $(az ad group list --query "[?displayName=='$AAD_GROUP_NAME'].id" --output tsv) \
+  --generate-ssh-keys
+----
+
+. Get the user credentials to access your cluster:
++
+[source,shell]
+----
+az aks get-credentials \
+  --resource-group $ECLIPSE_CHE_RESOURCE_GROUP \
+  --name $AKS_CLUSTER_NAME \
+  --admin
+----
+
+. Set `kubelogin` to use the Azure CLI:
++
+[source,shell]
+----
+kubelogin convert-kubeconfig -l azurecli
+----
+
+. View the pods in the cluster :
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} get pods --all-namespaces
+----
++
+All the Pods in the running state are displayed.
+
+.Additional resources
+
+* link:https://learn.microsoft.com/en-us/azure/aks/enable-authentication-microsoft-entra-id[Enable Azure managed identity authentication for Kubernetes clusters with kubelogin]

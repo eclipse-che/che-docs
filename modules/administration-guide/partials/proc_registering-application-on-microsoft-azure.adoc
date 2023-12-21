@@ -1,0 +1,39 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-on-microsoft-azure
+
+[id="registering-the-application-on-microsoft-azure-ad-portal"]
+= Registering a client application in Microsoft Entra ID
+
+.Procedure
+
+. Create the application:
++
+[source,shell,subs="attributes+"]
+----
+# Eclipse Che Application display name
+ECLIPSE_CHE_APPLICATION_DISPLAY_NAME="Eclipse Che"
+
+az ad app create \
+  --display-name $ECLIPSE_CHE_APPLICATION_DISPLAY_NAME \
+  --enable-access-token-issuance \
+  --required-resource-accesses '[{"resourceAccess":[{"id":"34a47c2f-cd0d-47b4-a93c-2c41130c671c","type":"Scope"}],"resourceAppId":"6dae42f8-4368-4678-94ff-3960e28e3630"},{"resourceAccess":[{"id":"e1fe6dd8-ba31-4d61-89e7-88639da4683d","type":"Scope"}],"resourceAppId":"00000003-0000-0000-c000-000000000000"}]' \
+  --optional-claims '{"accessToken":[{"additionalProperties":[],"essential":false,"name":"groups","source":null}]}'  \
+  --sign-in-audience AzureADMyOrg \
+  --web-redirect-uris https://$DOMAIN_NAME/oauth/callback
+----
+
+. Update the application group membership claims:
++
+[source,shell,subs="attributes+"]
+----
+az ad app update \
+  --id $(az ad app list --query "[?displayName=='$ECLIPSE_CHE_APPLICATION_DISPLAY_NAME'].id" --output tsv) \
+  --set groupMembershipClaims=SecurityGroup
+----
+
+.Additional resources
+
+* link:https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app[Register an application with the Microsoft identity platform]
+
+* link:https://learn.microsoft.com/en-us/graph/permissions-reference#userread[Microsoft Graph permissions reference]
