@@ -33,7 +33,10 @@ az network dns record-set a add-record \
   --record-set-name "*" \
   --ipv4-address $({orch-cli} get service -n ingress-nginx ingress-nginx-controller -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
 ----
-
+IMPORTANT: If you use a registrar like GoDaddy, you will need to add
+two DNS records in your registrar of type `A`, names `@` and `*` and point them to the
+IP address of the ingress controller.
++
 .Additional resources
 
 * link:https://learn.microsoft.com/en-us/azure/dns/dns-getstarted-cli[Create an Azure DNS zone and record using Azure CLI]
