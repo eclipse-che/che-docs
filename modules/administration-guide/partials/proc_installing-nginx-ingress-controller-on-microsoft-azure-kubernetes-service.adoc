@@ -1,0 +1,37 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-on-microsoft-azure
+
+[id="installing-nginx-ingress-controller-on-microsoft-azure-kubernetes-service"]
+= Installing NGINX Ingress Controller on Microsoft Azure {kubernetes} Service
+
+Use the following instructions to install the NGINX Ingress Controller on Microsoft Azure {kubernetes} Service.
+
+.Procedure
+
+. Install NGINX Ingress Controller:
++
+[source,shell,subs="attributes+"]
+----
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+
+helm install ingress-nginx ingress-nginx/ingress-nginx \
+  --wait \
+  --create-namespace \
+  --namespace ingress-nginx \
+  --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
+----
+
+. Wait for the external IP. Note that a `<pending>` status for the external IP is shown before the exact external IP address is displayed.
++
+[source,shell,subs="attributes+"]
+----
+{orch-cli} get services ingress-nginx-controller --namespace ingress-nginx
+NAME                                 TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)                      AGE
+ingress-nginx-controller             LoadBalancer   10.0.65.52     XX.XXX.XX.XXX   80:31104/TCP,443:32552/TCP   13m
+----
+
+.Additional resources
+
+* link:https://learn.microsoft.com/en-us/azure/aks/ingress-basic[Create an unmanaged ingress controller]
