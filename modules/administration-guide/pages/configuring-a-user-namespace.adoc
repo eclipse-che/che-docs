@@ -1,0 +1,96 @@
+:_content-type: PROCEDURE
+:description: Configuring a user namespace
+:keywords: administration guide, configuring, user, namespace
+:navtitle: Configuring a user namespace
+:page-aliases:
+
+[id="configuring-a-user-namespace"]
+= Configuring a user namespace
+
+This procedure walks through the process of using the {prod-short}
+to replicate `ConfigMaps`, `Secrets` and `PersistentVolumeClaim` from `{prod-namespace}` namespace to numerous
+user-specific namespaces. The operator automates the synchronization of important configuration
+data such as passwords, ssh-keys, certificates etc to users' namespaces.
+
+If a {kubernetes} resource is changed in an {prod-namespace} namespace,
+the operator will immediately replicate the changes across all users namespaces.
+In reverse, if a {kubernetes} resource is modified in a user namespace,
+the operator will immediately revert the changes.
+
+The special logic is used for 'PersistentVolumeClaim' resources. If a 'PersistentVolumeClaim'
+is updated in {prod-namespace} or user namespaces, it will not be replicated or reverted due
+to its readonly specification. To modify the 'PersistentVolumeClaim' specification, delete it and create a new one
+in {prod-namespace} namespace.
+
+.Procedure
+* Create the `ConfigMap` below to replicate it to every user namespace.
++
+The following labels will be added to a replicated ConfigMap automatically:
+`"controller.devfile.io/watch-configmap":"true"` and `"controller.devfile.io/mount-to-devworkspace":"true"`.
++
+To enhance the configurability, you can customize the `Secret` by adding additional labels and annotations.
+See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
+for other possible setup labels and annotations.
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: user-configmap
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+data:
+...
+----
+
+* Create the `Secret` below to replicate it to every user namespace.
++
+The following labels will be added to a replicated Secret automatically:
+`"controller.devfile.io/watch-secret":"true"` and `"controller.devfile.io/mount-to-devworkspace":"true"`.
++
+To enhance the configurability, you can customize the `Secret` by adding additional labels and annotations.
+See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
+for other possible setup labels and annotations.
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: user-secret
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+stringData:
+...
+----
+
+* Create the `PersistentVolumeClaim` below to replicate it to every user namespace.
++
+To enhance the configurability, you can customize the `PersistentVolumeClaim` by adding additional labels and annotations.
+See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
+for other possible setup labels and annotations.
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: user-pvc
+  namespace: eclipse-che
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+spec:
+...
+----
+
+.Additional resources
+* xref:end-user-guide:mounting-configmaps.adoc[]
+* xref:end-user-guide:mounting-secrets.adoc[]
+* link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
+
