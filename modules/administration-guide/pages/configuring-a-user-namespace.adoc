@@ -9,7 +9,7 @@
 
 This procedure walks you through the process of using {prod-short}
 to replicate `ConfigMaps`, `Secrets` and `PersistentVolumeClaim` from `{prod-namespace}` namespace to numerous
-user-specific namespaces. The operator automates the synchronization of important configuration
+user-specific namespaces. The {prod-short} automates the synchronization of important configuration
 data such as passwords, SSH keys, and certificates to user namespaces.
 
 If you make changes to a {kubernetes} resource in an {prod-namespace} namespace,
@@ -17,20 +17,12 @@ the operator will immediately replicate the changes across all users namespaces.
 In reverse, if a {kubernetes} resource is modified in a user namespace,
 the operator will immediately revert the changes.
 
-Special logic is used for 'PersistentVolumeClaim' resources. If you update 'PersistentVolumeClaim'
-in {prod-namespace} or user namespaces, it will not be replicated or reverted due
-to its read-only specification. To modify the 'PersistentVolumeClaim' specification, delete it and create a new one
-in {prod-namespace} namespace.
-
 .Procedure
+
 . Create the `ConfigMap` below to replicate it to every user namespace.
-+
-The following labels will be added to a replicated ConfigMap automatically:
-`"controller.devfile.io/watch-configmap":"true"` and `"controller.devfile.io/mount-to-devworkspace":"true"`.
-+
-To enhance the configurability, you can customize the `Secret` by adding additional labels and annotations.
+To enhance the configurability, you can customize the `ConfigMap` by adding additional labels and annotations.
 See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
-for other possible setup labels and annotations.
+for other possible labels and annotations.
 +
 [source,yaml,subs="+attributes,+quotes"]
 ----
@@ -43,17 +35,38 @@ metadata:
     app.kubernetes.io/part-of: che.eclipse.org
     app.kubernetes.io/component: workspaces-config
 data:
-...
+  ...
 ----
++
+.Mounting a `settings.xml` file to a user workspace:
+====
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: user-settings-xml
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /home/user/.m2
+data:
+  settings.xml: |
+    <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+      <localRepository>/home/user/.m2/repository</localRepository>
+      <interactiveMode>true</interactiveMode>
+      <offline>false</offline>
+    </settings>
+----
+====
 
 . Create the `Secret` below to replicate it to every user namespace.
-+
-The following labels will be added to a replicated Secret automatically:
-`"controller.devfile.io/watch-secret":"true"` and `"controller.devfile.io/mount-to-devworkspace":"true"`.
-+
 To enhance the configurability, you can customize the `Secret` by adding additional labels and annotations.
 See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
-for other possible setup labels and annotations.
+for other possible labels and annotations.
 +
 [source,yaml,subs="+attributes,+quotes"]
 ----
@@ -65,15 +78,61 @@ metadata:
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
     app.kubernetes.io/component: workspaces-config
-stringData:
-...
+data:
+  ...
 ----
++
+.Mounting certificates to a user workspace:
+====
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: user-certificates
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /etc/pki/ca-trust/source/anchors
+stringData:
+  trusted-certificates.crt: |
+    ...
+----
+NOTE: Run `update-ca-trust` command on workspace startup to import certificates.
+It can be achieved manually or by adding this command to a `postStart` event in a devfile.
+See the link:https://devfile.io/docs/2.2.2/adding-event-bindings#post-start-object[Adding event bindings in a devfile].
+====
++
+.Mounting environment variables to a user workspace:
+====
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: user-env
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+  annotations:
+    controller.devfile.io/mount-as: env
+stringData:
+  ENV_VAR_1: value_1
+  ENV_VAR_2: value_2
+----
+====
 
 . Create the `PersistentVolumeClaim` below to replicate it to every user namespace.
 +
 To enhance the configurability, you can customize the `PersistentVolumeClaim` by adding additional labels and annotations.
 See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
-for other possible setup labels and annotations.
+for other possible labels and annotations.
++
+To modify the 'PersistentVolumeClaim', delete it and create a new one in {prod-namespace} namespace.
 +
 [source,yaml,subs="+attributes,+quotes"]
 ----
@@ -86,11 +145,38 @@ metadata:
     app.kubernetes.io/part-of: che.eclipse.org
     app.kubernetes.io/component: workspaces-config
 spec:
-...
+  ...
 ----
++
+.Mounting a `PersistentVolumeClaim` to a user workspace:
+====
+[source,yaml,subs="+attributes,+quotes"]
+----
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: user-pvc
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+    controller.devfile.io/mount-to-devworkspace: 'true'
+  annotations:
+    controller.devfile.io/mount-path: __</example/directory>__ <1>
+    controller.devfile.io/read-only: 'true'
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  volumeMode: Filesystem
+----
+====
 
 .Additional resources
 * xref:end-user-guide:mounting-configmaps.adoc[]
 * xref:end-user-guide:mounting-secrets.adoc[]
+* xref:end-user-guide:requesting-persistent-storage-for-workspaces.adoc[]
 * link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
 
