@@ -1,0 +1,68 @@
+:_content-type: PROCEDURE
+:description: Configuring a number of replicas
+:keywords: administration-guide, configuring-number-of-replicas
+:navtitle: Configuring a number of replicas {prod-cli}
+:page-aliases:
+
+[id="configuring-number-of-replicas"]
+= Configuring the number of replicas
+
+To configure the number of replicas for {prod-short} operands using {kubernetes} `HorizontalPodAutoscaler`
+(HPA), you can define an `HPA` resource for deployment. The `HPA` dynamically adjusts the number
+of replicas based on specified metrics.
+
+.Procedure
+
+. Create an `HPA` resource for a deployment, specifying the target metrics and desired replica count.
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: scaler
+  namespace: {prod-namespace}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: __<deployment_name>__ <1>
+  ...
+----
+<1> The `__<deployment_name>__` corresponds to the one following deployments:
+* `{prod-deployment}`
+* `che-gateway`
+* `{prod-deployment}-dashboard`
+* `plugin-registry`
+* `devfile-registry`
+
+.Create a `HorizontalPodAutoscaler` for {prod-deployment} deployment:
+====
+[source,yaml,subs="+attributes,+quotes"]
+----
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {prod-deployment}-scaler
+  namespace: {prod-namespace}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {prod-deployment}
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 75
+----
+In this example, the HPA is targeting the Deployment named {prod-deployment}, with a minimum of 2 replicas, a maximum of 5 replicas
+and scaling based on CPU utilization.
+====
+
+.Additional resources
+* link:https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale[Horizontal Pod Autoscaling]
