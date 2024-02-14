@@ -1,0 +1,80 @@
+:_content-type: PROCEDURE
+:description: You can enable fuse-overlayfs storage driver for Podman
+:keywords: overlay, configmap, podman, storage, driver, fuse-overlayfs
+:navtitle: Enabling fuse-overlayfs with a ConfigMap
+:page-aliases:
+
+[id="enabling-fuse-overlay-with-a-configmap"]
+= Enabling fuse-overlayfs with a Configmap
+
+For Podman, the storage driver can be defined in the `~/.config/containers/storage.conf` file. Here are the default contents of the `/home/user/.config/containers/storage.conf` file in the UDI container:
+
+.`storage.conf`
+[source]
+----
+[storage]
+driver = "vfs"
+----
+
+To use fuse-overlayfs, `storage.conf` can be set to the following:
+
+.`storage.conf`
+[source]
+----
+[storage]
+driver = "overlay"
+
+[storage.options.overlay]
+mount_program="/usr/bin/fuse-overlayfs" <1>
+----
+<1> The absolute path to the `fuse-overlayfs` binary. The `/usr/bin/fuse-overlayfs` path is the default for the UDI.
+
+This can be done manually after starting a workspace. If the administrator enabled `persistUserHome` in the `CheCluster` custom resource, the `storage.conf` file changes will persist after a workspace restart if the workspace does not use ephemeral storage. Another option is to build a new image with changes to `storage.conf` and use the new image for workspaces.
+
+Otherwise, it is possible to update the `/home/user/.config/containers/storage.conf` for all workspaces in your {orch-namespace} by creating a ConfigMap that mounts the updated file. See xref:mounting-configmaps.adoc[].
+
+.Prerequisites
+
+* The administrator has enabled access to `/dev/fuse` by following xref:administration-guide:configuring-fuse.adoc[]
+
+* A workspace with the required annotations are set by following xref:accessing-fuse.adoc[]
+
+
+[NOTE]
+====
+Since ConfigMaps mounted by following xref:mounting-configmaps.adoc[] mounts the ConfigMap's data to all workspaces, following this procedure will set the storage driver to fuse-overlayfs for all workspaces. Ensure that your workspaces contain the required annotations to use fuse-overlayfs by following xref:accessing-fuse.adoc[].
+====
+
+.Procedure
+
+. Apply a ConfigMap that mounts a `/home/user/.config/containers/storage.conf` file in your {orch-namespace}.
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: fuse-overlay
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+  annotations:
+    controller.devfile.io/mount-as: file
+    controller.devfile.io/mount-path: /home/user/.config/containers
+data:
+  storage.conf: |
+    [storage]
+    driver = "overlay"
+
+    [storage.options.overlay]
+    mount_program="/usr/bin/fuse-overlayfs"
+----
+
+.Verification steps
+
+. Start the workspace containing the required annotations and verify that the storage driver is `overlay`.
++
+[subs="+attributes,+quotes"]
+----
+$ podman info | grep overlay
+----

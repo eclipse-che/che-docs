@@ -1,0 +1,44 @@
+:_content-type: PROCEDURE
+:description: Accessing /dev/fuse from your workspaces.
+:keywords: user-guide, fuse, overlay, device, /dev/fuse, pod, overrides
+:navtitle: Accessing /dev/fuse
+:page-aliases:
+
+[id="accessing-fuse"]
+= Accessing /dev/fuse from a workspace
+
+Using fuse-overlayfs requires access to `/dev/fuse`. This section describes the steps required for `/dev/fuse` to be accessible to workspace containers.
+
+.Prerequisites
+
+* The administrator has enabled access to `/dev/fuse` by following xref:administration-guide:configuring-fuse.adoc[]
+
+.Procedure
+
+. Determine a workspace to add the required annotations to. The required annotations defined in xref:administration-guide:configuring-fuse.adoc[] are as follows.
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+io.openshift.podman-fuse: ''
+io.kubernetes.cri-o.Devices: /dev/fuse
+----
+
+. Use the `pod-overrides` attribute to add the required annotations to the workspace. The `pod-overrides` attribute allows merging certain fields in the workspace pod's `spec`.
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ {orch-cli} patch devworkspace __<DevWorkspace_name>__ \
+  --patch '{"spec":{"template":{"attributes":{"pod-overrides":{"metadata":{"annotations":{"io.kubernetes.cri-o.Devices":"/dev/fuse","io.openshift.podman-fuse":""}}}}}}}' \
+  --type=merge
+----
+
+.Verification steps
+
+. Start the workspace and verify that `/dev/fuse` is available in the workspace container.
++
+[subs="+attributes,+quotes"]
+----
+$ stat /dev/fuse 
+----
+
+After completing this procedure, follow the steps in xref:enabling-overlay-with-a-configmap.adoc[] to use fuse-overlayfs for Podman.
