@@ -29,7 +29,7 @@ mount_program="/usr/bin/fuse-overlayfs" <1>
 ----
 <1> The absolute path to the `fuse-overlayfs` binary. The `/usr/bin/fuse-overlayfs` path is the default for the UDI.
 
-This can be done manually after starting a workspace. If the administrator enabled `persistUserHome` in the `CheCluster` custom resource, the `storage.conf` file changes will persist after a workspace restart if the workspace does not use ephemeral storage. Another option is to build a new image with changes to `storage.conf` and use the new image for workspaces.
+This can be done manually after starting a workspace. Another option is to build a new image based on the UDI with changes to `storage.conf` and use the new image for workspaces.
 
 Otherwise, it is possible to update the `/home/user/.config/containers/storage.conf` for all workspaces in your {orch-namespace} by creating a ConfigMap that mounts the updated file. See xref:mounting-configmaps.adoc[].
 
@@ -77,4 +77,15 @@ data:
 [subs="+attributes,+quotes"]
 ----
 $ podman info | grep overlay
+----
+
+Example output:
+[subs="+attributes,+quotes"]
+----
+graphDriverName: overlay
+  overlay.mount_program:
+    Executable: /usr/bin/fuse-overlayfs
+    Package: fuse-overlayfs-1.12-1.module+el8.9.0+20326+387084d0.x86_64
+      fuse-overlayfs: version 1.12
+  Backing Filesystem: overlayfs
 ----
