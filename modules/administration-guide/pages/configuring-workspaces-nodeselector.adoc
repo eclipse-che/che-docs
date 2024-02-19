@@ -10,8 +10,10 @@
 This section describes how to configure link:https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/[`nodeSelector`] for Pods of {prod-short} workspaces.
 
 .Procedure
-
+.. Using NodeSelector
++
 {prod-short} uses `CheCluster` Custom Resource to configure `nodeSelector`:
++
 [source,yaml]
 ----
 spec:
@@ -19,8 +21,24 @@ spec:
     nodeSelector:
       key: value
 ----
-This section must contain a set of `key=value` pairs to form the nodeSelector rule.
+This section must contain a set of `key=value` pairs for each link:https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#built-in-node-labels[node label] to form the link:https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector[nodeSelector] rule.
 
+.. Using Taints and Tolerations
++
+This works in the opposite way to `nodeSelector`. Instead of specifying which nodes the Pod will be scheduled on, you specify which nodes the Pod cannot be scheduled on. For more information, see: link:https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration[].
++
+{prod-short} uses `CheCluster` Custom Resource to configure `tolerations`:
++
+[source,yaml]
+----
+spec:
+  devEnvironments:
+    tolerations:
+      - effect: NoSchedule
+        key: key
+        value: value
+        operator: Equal
+----
 
 [IMPORTANT]
 ====
