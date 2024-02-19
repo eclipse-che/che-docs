@@ -11,11 +11,16 @@ This section describes how to configure link:https://kubernetes.io/docs/concepts
 
 .Procedure
 
-{prod-short} uses the `CHE_WORKSPACE_POD_NODE__SELECTOR` environment variable to configure `nodeSelector`. This variable can contain a set of comma-separated `key=value` pairs to form the nodeSelector rule, or `NULL` to disable it.
+{prod-short} uses `CheCluster` Custom Resource to configure `nodeSelector`:
+[source,yaml]
+----
+spec:
+  devEnvironments:
+    nodeSelector:
+      key: value
+----
+This section must contain a set of `key=value` pairs to form the nodeSelector rule.
 
-----
-CHE_WORKSPACE_POD_NODE__SELECTOR=disktype=ssd,cpu=xlarge,[key=value]
-----
 
 [IMPORTANT]
 ====
