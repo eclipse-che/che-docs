@@ -35,12 +35,15 @@ View the link:https://docs.openshift.com/container-platform/{ocp4-ver}/post_inst
 . Set the environment variable based on the type of your OpenShift cluster: a single node cluster, or a multi node cluster with separate control plane and worker nodes.
 +
 * For a single node cluster, set:
++
 [subs="+quotes,+attributes,+macros"]
 ----
 $ NODE_ROLE=master
 ----
++
 * For a multi node cluster, set:
 [subs="+quotes,+attributes,+macros"]
++
 ----
 $ NODE_ROLE=worker
 ----
@@ -51,7 +54,7 @@ $ NODE_ROLE=worker
 ----
 $ VERSION=4.12.0
 ----
-
++
 . Create a `MachineConfig` resource that creates a drop-in CRI-O configuration file named `99-podman-fuse` in the `NODE_ROLE` nodes. This configuration file makes access to the `/dev/fuse` device possible for certain pods.
 +
 [subs="+quotes,+attributes,+macros"]
@@ -92,7 +95,9 @@ EOF
 ----
 $ oc get nodes
 ----
++
 Example output:
++
 [subs="+quotes,+attributes,+macros"]
 ----
 NAME                           STATUS                     ROLES    AGE   VERSION
