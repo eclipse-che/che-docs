@@ -1,0 +1,25 @@
+:_content-type: CONCEPT
+:description: Using the fuse-overlayfs storage driver for Podman and Buildah
+:keywords: fuse, overlay, fuse-overlayfsm, podman, buildah, storage, driver
+:navtitle: Using the fuse-overlayfs storage driver for Podman and Buildah
+:page-aliases:
+
+[id="using-the-fuse-overlay-storage-driver-for-podman-and-buildah"]
+= Using the fuse-overlayfs storage driver for Podman and Buildah
+
+By default, newly created workspaces that do not specify a devfile will use the Universal Developer Image (UDI).
+The UDI contains common development tools and dependencies commonly used by developers.
+
+Podman and Buildah are included in the UDI, allowing developers to build and push container images from their workspace.
+
+By default, Podman and Buildah in the UDI are configured to use the `vfs` storage driver.
+For more efficient image management, use the fuse-overlayfs storage driver which supports copy-on-write in rootless environments.
+
+You must meet the following requirements to fuse-overlayfs in a workspace:
+
+. The administrator has configured `/dev/fuse` access on the cluster by following xref:administration-guide:configuring-fuse.adoc[].
+. The workspace has the necessary annotations for using the `/dev/fuse` device. See xref:accessing-fuse.adoc[].
+. The `storage.conf` file in the workspace container has been configured to use fuse-overlayfs. See xref:enabling-overlay-with-a-configmap.adoc[].
+
+.Additional resources
+* link:https://github.com/devfile/developer-images[Universal Developer Image]
