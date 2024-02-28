@@ -1,0 +1,115 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-on-microsoft-azure
+
+[id="creating-lets-encrypt-certificate-for-{prod-id-short}-on-microsoft-azure"]
+= Creating Let's Encrypt certificate for {prod-id-short} on Microsoft Azure
+
+Follow these instructions to create a Let's Encrypt certificate for {prod-short} on Microsoft Azure.
+
+.Procedure
+
+. Create a service principal:
++
+[source,shell,subs="attributes+"]
+----
+CERT_MANAGER_SERVICE_PRINCIPAL_NAME=cert-manager-eclipse-che
+CERT_MANAGER_SERVICE_PRINCIPAL_APP_ID=$(az ad sp create-for-rbac --name $CERT_MANAGER_SERVICE_PRINCIPAL_NAME --query "appId" --output tsv)
+----
+
+. Give access to the DNS zone:
++
+[source,shell,subs="attributes+"]
+----
+az role assignment create \
+  --assignee $CERT_MANAGER_SERVICE_PRINCIPAL_APP_ID \
+  --scope $(az network dns zone show --name $DOMAIN_NAME --resource-group $ECLIPSE_CHE_RESOURCE_GROUP --query "id" --output tsv) \
+  --role "DNS Zone Contributor"
+----
+
+. Create the {prod-namespace} namespace:
++
+[source,shell,subs="attributes+"]
+----
+{orch-cli} create namespace {prod-namespace}
+----
+
+. Create a Service Account Secret:
++
+[source,shell,subs="attributes+"]
+----
+{orch-cli} create secret generic azuredns-config \
+  --from-literal=clientSecret=$(az ad sp create-for-rbac --name $CERT_MANAGER_SERVICE_PRINCIPAL_NAME --query "password" --output tsv) \
+  --namespace {prod-namespace}
+----
+
+. Create the Issuer and replace `MY_EMAIL_ADDRESS` with a valid address:
++
+[source,shell,subs="+attributes,+quotes"]
+----
+{orch-cli} apply -f - << EOF
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {prod-id-short}-letsencrypt
+  namespace: {prod-namespace}
+spec:
+  acme:
+    solvers:
+    - dns01:
+        azureDNS:
+          clientID: $CERT_MANAGER_SERVICE_PRINCIPAL_APP_ID
+          clientSecretSecretRef:
+            name: azuredns-config
+            key: clientSecret
+          subscriptionID: $(az account show --query "id" --output tsv)
+          tenantID: $(az account show --query "tenantId" --output tsv)
+          resourceGroupName: $ECLIPSE_CHE_RESOURCE_GROUP
+          hostedZoneName: $DOMAIN_NAME
+    email: `__MY_EMAIL_ADDRESS__`
+    privateKeySecretRef:
+      name: letsencrypt
+    server: https://acme-v02.api.letsencrypt.org/directory
+EOF
+----
+
+. Create the Certificate:
++
+[source,shell,subs="+attributes,+quotes"]
+----
+{orch-cli} apply -f - << EOF
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: che-tls
+  namespace: {prod-namespace}
+spec:
+  secretName: che-tls
+  issuerRef:
+    name: {prod-id-short}-letsencrypt
+    kind: Issuer
+  commonName: '$DOMAIN_NAME'
+  dnsNames:
+  - '$DOMAIN_NAME'
+  - '*.$DOMAIN_NAME'
+  usages:
+    - server auth
+    - digital signature
+    - key encipherment
+    - key agreement
+    - data encipherment
+EOF
+----
+[IMPORTANT]
+====
+If you use a registrar such as GoDaddy, you need to duplicate the following DNS records in your registrar:
+
+* type: `TXT`
+* name: `_acme-challenge`.
+====
+
+.Additional resources
+
+* link:https://cert-manager.io/docs/tutorials/getting-started-aks-letsencrypt[Deploy cert-manager on Azure Kubernetes Service (AKS) and use Let's Encrypt to sign a certificate for an HTTPS website]
+
+

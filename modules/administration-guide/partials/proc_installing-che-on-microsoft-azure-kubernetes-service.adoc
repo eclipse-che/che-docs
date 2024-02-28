@@ -1,0 +1,62 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-on-microsoft-azure
+
+[id="installing-che-on-microsoft-azure-kubernetes-service"]
+= Installing {prod-short} on Microsoft Azure {kubernetes} Service
+
+Install {prod-short} on Microsoft Azure {kubernetes} Service.
+
+.Procedure
+
+. Prepare a CheCluster patch YAML file:
++
+[source,shell,subs="attributes+"]
+----
+cat > che-cluster-patch.yaml << EOF
+spec:
+  networking:
+    auth:
+      identityProviderURL: "https://sts.windows.net/$(az account show --query "tenantId" --output tsv)/v2.0/"
+      identityToken: access_token
+      oAuthClientName: $(az ad app list --query "[?displayName=='$ECLIPSE_CHE_APPLICATION_DISPLAY_NAME'].appId" --output tsv)
+      oAuthSecret: $(az ad app credential reset --id $(az ad app list --query "[?displayName=='$ECLIPSE_CHE_APPLICATION_DISPLAY_NAME'].id" --output tsv) --query "password" --output tsv)
+      oAuthScope: openid email profile 6dae42f8-4368-4678-94ff-3960e28e3630/user.read
+      gateway:
+        deployment:
+          containers:
+          - env:
+            - name: OAUTH2_PROXY_INSECURE_OIDC_ALLOW_UNVERIFIED_EMAIL
+              value: "true"
+            name: oauth-proxy
+  components:
+    cheServer:
+      extraProperties:
+        CHE_OIDC_AUTH__SERVER__URL: "https://sts.windows.net/$(az account show --query "tenantId" --output tsv)/v2.0/"
+        CHE_OIDC_EMAIL__CLAIM: unique_name
+EOF
+----
+
+. Deploy {prod-short}:
++
+[source,shell,subs="attributes+"]
+----
+chectl server:deploy \
+       --platform=k8s \
+       --che-operator-cr-patch-yaml=che-cluster-patch.yaml \
+       --skip-oidc-provider-check \
+       --skip-cert-manager \
+       --domain=$DOMAIN_NAME
+----
+
+. Navigate to the {prod-short} cluster instance:
++
+[subs="+attributes,+quotes"]
+----
+$ {prod-cli} dashboard:open
+----
+
+
+.Additional resources
+
+* https://che.eclipseprojects.io/2022/07/25/@karatkep-installing-eclipse-che-on-aks.html[Installing Eclipse Che on the Azure Kubernetes Service (AKS)]

@@ -1,0 +1,28 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-on-microsoft-azure
+
+[id="installing-cert-manager-on-microsoft-azure-kubernetes-service"]
+= Installing cert-manager on Microsoft Azure {kubernetes} Service
+
+Learn how to install cert-manager on Microsoft Azure {kubernetes} Service.
+
+.Procedure
+
+. Install the cert-manager:
++
+[source,shell,subs="attributes+"]
+----
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+
+helm install cert-manager jetstack/cert-manager \
+  --wait \
+  --create-namespace \
+  --namespace cert-manager \
+  --set installCRDs=true
+----
+
+.Additional resources
+
+* link:https://learn.microsoft.com/en-us/azure/aks/ingress-tls[Use TLS with an ingress controller on Azure Kubernetes Service (AKS)]

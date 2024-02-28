@@ -1,0 +1,54 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-on-microsoft-azure
+
+[id="configuring-DNS-on-microsoft-azure"]
+= Configuring DNS on Microsoft Azure
+
+Configure DNS on Microsoft Azure. Before you start, make sure you have a registered domain.
+
+.Prerequisites
+
+* A registered domain.
+
+.Procedure
+
+. Define the domain name.
++
+[source,shell]
+----
+export DOMAIN_NAME=azr.my-ide.cloud
+----
+
+. Create a DNS zone:
++
+[source,shell]
+----
+az network dns zone create \
+  --resource-group $ECLIPSE_CHE_RESOURCE_GROUP \
+  --name $DOMAIN_NAME
+----
+
+. Create a DNS record set:
++
+[source,shell,subs="attributes+"]
+----
+az network dns record-set a add-record \
+  --resource-group $ECLIPSE_CHE_RESOURCE_GROUP \
+  --zone-name $DOMAIN_NAME \
+  --record-set-name "*" \
+  --ipv4-address $({orch-cli} get service -n ingress-nginx ingress-nginx-controller -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+----
+[IMPORTANT]
+====
+If you use a registrar such as GoDaddy, you will need to add
+the following two DNS records in your registrar and point them to the
+IP address of the ingress controller:
+
+* type: `A`
+* names: `@` and `*`
+====
+
+.Additional resources
+
+* link:https://learn.microsoft.com/en-us/azure/dns/dns-getstarted-cli[Create a Microsoft Azure DNS zone and record using Microsoft Azure CLI]

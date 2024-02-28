@@ -92,6 +92,9 @@ kind: CheCluster
 apiVersion: org.eclipse.che/v2
 spec:
   components:
+    devfileRegistry:
+      disableInternalRegistry: false
+      externalDevfileRegistries: {}
     pluginRegistry:
       openVSXURL: ""
 EOF
