@@ -11,17 +11,28 @@ You must have access to `/dev/fuse` to use fuse-overlayfs. This section describe
 
 .Prerequisites
 
-* The administrator has enabled access to `/dev/fuse` by following xref:administration-guide:configuring-fuse.adoc[].
+* For OpenShift versions older than 4.15, the administrator has enabled access to `/dev/fuse` by following xref:administration-guide:configuring-fuse.adoc[].
 * Determine a workspace to use fuse-overlayfs with.
 
 .Procedure
 
 . Use the `pod-overrides` attribute to add the required annotations defined in xref:administration-guide:configuring-fuse.adoc[] to the workspace. The `pod-overrides` attribute allows merging certain fields in the workspace pod's `spec`.
 +
+For OpenShift versions older than 4.15:
++
 [subs="+quotes,+attributes,+macros"]
 ----
 $ {orch-cli} patch devworkspace __<DevWorkspace_name>__ \
   --patch '{"spec":{"template":{"attributes":{"pod-overrides":{"metadata":{"annotations":{"io.kubernetes.cri-o.Devices":"/dev/fuse","io.openshift.podman-fuse":""}}}}}}}' \
+  --type=merge
+----
++
+For OpenShift version 4.15 and later:
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ {orch-cli} patch devworkspace __<DevWorkspace_name>__ \
+  --patch '{"spec":{"template":{"attributes":{"pod-overrides":{"metadata":{"annotations":{"io.kubernetes.cri-o.Devices":"/dev/fuse"}}}}}}}' \
   --type=merge
 ----
 
