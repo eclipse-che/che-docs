@@ -1,0 +1,230 @@
+:_content-type: PROCEDURE
+:navtitle: Installing {prod-short} on OIDC Unsupported {kubernetes}
+:description: Installing {prod-short} on {kubernetes} that doesn't support OIDC yet.
+:keywords: overview, installing-che-on-unsupported-{kubernetes}
+:page-aliases: installation-guide:installing-che-on-minikube-keycloak-oidc, overview:installing-che-on-minikube-keycloak-oidc
+
+[id="installing-{prod-id-short}-on-unsupported-kubernetes"]
+= Installing {prod-short} on OIDC Unsupported {kubernetes} Cluster with Keycloak as the OIDC provider
+
+You can deploy {prod-short} into a {kubernetes} cluster that doesn't support OIDC.
+
+WARNING: vCluster is a third party tool. See link:https://www.vcluster.com/docs/what-are-virtual-clusters[Introduction to vCluster]
+
+.Prerequisites
+
+* Helm CLI. See link:https://helm.sh/docs/intro/install/[Installing Helm].
+
+* vCluster CLI. See link:https://www.vcluster.com/docs/getting-started/setup[Installing vCluster CLI].
+
+* `{orch-cli}` stable release with `oidc-login` plugin. See link:https://kubernetes.io/docs/tasks/tools/#kubectl[Installing `{orch-cli}`], link:https://github.com/int128/kubelogin[Installing `kubelogin`].
+
+* `{prod-cli}`. See xref:installing-the-chectl-management-tool.adoc[].
+
+* External OIDC Server. Example: Keycloak. 
+
+.Procedure
+. Setup the {kubernetes} cluster with vCluster `values.yaml`:
++
+[subs="+attributes"]
+----
+# OIDC IssuerURL
+$ IssuerURL=<issuer_url>
+# Kubernetes ClientId
+$ KubernetesClientId=<public_client_id>
+
+$ cat > vcluster-values.yaml << EOF
+api:
+  extraArgs:
+    - --oidc-issuer-url=$IssuerURL
+    - --oidc-client-id=$KubernetesClientId
+    - --oidc-username-claim=email
+    - --oidc-groups-claim=groups
+init:
+  manifestsTemplate: |-
+    ---
+    kind: ClusterRoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: oidc-cluster-admin
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cluster-admin
+    subjects:
+    - kind: Group
+      name: {{ .Values.ClusterAdminGroup }}
+service:
+  type: LoadBalancer
+EOF
+----
+. Create vCluster using Helm Chart:
++
+[subs="+attributes"]
+----
+$ kubectl create ns che-cluster
+$ helm repo add loft-sh https://charts.loft.sh && helm repo update && helm install che-cluster loft-sh/vcluster-k8s -n che-cluster -f ./vcluster-values.yaml --set ClusterAdminGroup=vcluster-admin
+----
+.vCluster Verification steps
+
+. Verify the vCluster cluster status:
++
+[subs="+attributes,+quotes"]
+----
+$ vCluster list
+----
+.Determine LB for the vCluster
+. Determine the LB and note it for later:
++
+[subs="+attributes,+quotes"]
+----
+$ {orch-cli} get svc che-cluster-lb -n che-cluster
+----
+
+. Retrieve the KubeConfig file
++
+IMPORTANT: The secret may take additional minute or two to be created.
++
+[subs="+attributes"]
+----
+$ {orch-cli} get secret vc-che-cluster -n che-cluster --template={{.data.config}} | base64 -d > config
+----
+
+. The config file should look similar to this.
+[subs="+attributes"]
+----
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJR1JpYVJkMnFQc0l3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TkRBek1EWXhOakUwTWpsYUZ3MHpOREF6TURReE5qRTBNamxhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkREDACTEDb1BqOW9mWmREDACTEDo1MjdMc3YwcHltb2xZZEFhN2xEYzlQM3Y0b2wrVApLQmNmTmVsMFhtQzc1YTd1SWVpZmJrUmNLQUk4N2xZVXJNa2p2K3FsMGR0bTcrbXpjM3Y5WG9kdjdKQUFKSlgxClAzY2JQd3RXZ1dVVGgrVkRVTnk0cmJEQ1VkSTZHMVJiR1FtbHRzeURTcHp6anRVRFpId0Fvcnh0YXZHeldrblYKTW1NOEFDa090RE5VCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    server: https://localhost:8443
+  name: my-vcluster
+contexts:
+- context:
+    cluster: my-vcluster
+    user: my-vcluster
+  name: my-vcluster
+current-context: my-vcluster
+kind: Config
+preferences: {}
+users:
+- name: my-vcluster
+  user:
+    client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURJVENDQWdtZ0F3SUJBZ0lJZVFRb3NqRnFUUUl3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5aUWpONUljSlRubDF4aFhKV3M0cE1UYmtRCkw3TVlKUEU3KzdJMVZZNVFUeDVNYUlKZVBQWE9aa1NzL0xnZlNVOUZENFFnNERnNjVukxSUdxCnhjdGduQXcwYWZXdTZ1eGFNK0lIYXA1S2RSWFRtbVpvYkhEMVlKMTZJV0Fzd2paeHhSMmhFNVY4Z2xudldndFkKcURUNnBOVWpqaXZPYUxqMmJGQ3JLSWZEcm56UVUxQlp5VnRVMjNsSlFLRkxCT3B2akE9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcEFJQkFBS0NBUUVBcy85RUZNb2lQbFBMN3JLZ3cyTGtVMDJxdmlzMDFLVlNvQ0VjMTR1ajR3V21ScTd6CnlhckpLVEZ4cCs4NElWbWtKcXdoaFFNL1pjZ0dXQXp2MjdSbkt4MDRkbXdNcHFNdytxMzNPU3FXc2Z3TVlFWFYKRmlzVFZCU3RkWExRVGI0bFV3Y0FNZDREYmFTSGpMWVFzUGNLaXIxQXE0K2ZCVzRjRW8rbWNkMFlGNUoKMWF3NkpOa0VQcndOZHpNUjJEU1VxN2ozbFdpSXl1VXBCcURiSFBCSUd5NHY5bHZ1cXlFUXEzZnVzOC9YUXJpWdyRDZRQlI1eHJ6ZGEyTXZiazVhbWVEUnVnNC8yCktzZnB3dXl4Tml0bndRbkJ4TnExQVFLQmdRQ3Q2aHR5R2cvYVIyQ2Q4eXYwNXArZVMvOXNvOUxjdWRLcGFLaW0KRm9OUDFnNENOaUFVUGwvR0tJOGJ4c2R5SzB0TlY2bHBNN2xmVUc0eVVKUmFvbThlemIzSFdMZjJXdGdkTUJ3cwpWSVplNDlQcjhkc2J1dTFQM2ZrelFyWlZoK291dmlvTmFJTGxneEtocStqYmhBZXZVUFMwdUFlSUt0THowV0IxCjgrT3V3UUtCZ1FEQU4vbzhkaFlTZjB2ZU9YOWdPQTEvR3Iwa1VYMHBzZitrSGZ5MlFHYU4vMjNmV1RrM1YvRTUKRzJrbVNiVjJIcXh3b3VRWDgzZ3ltbmJUTGorbUZ6SXFmcWE1ZHVDRXFiMEs4Y2U0RU1GVUQxd01vVEd6bzBmNQpvR3FUNW5CY1Ezc1V4Q2ZiRngyRk4zK0MyTFhRMnNRczVOTXIxZWNLZU9pdFovWlNXMlUzWmc9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
+
+----
+. Update the KubeConfig file
+. Replace the `server:` URL with the LB IP you noted earlier. (e.g. 10.1.2.3:443)
+. Search and replace all occurreces of the words my-vcluster  with che-cluster.
+
+. Replace the users part in the yaml with the following: 
+[subs="+attributes"]
+----
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1beta1
+      command: kubectl
+      args:
+      - oidc-login
+      - get-token
+      - --oidc-issuer-url=<issuer_url>
+      - --oidc-client-id=<client_id>
+      - --oidc-extra-scope="email offline_access profile openid"
+----
+. The final KubeConfig would look similar to this
+[subs="+attributes"]
+----
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMvakNDQWVhZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJek1EUXlNREUyTURJME1Wb1hEVE16TURReE56RTJNREkwTVZvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTGNCClJXcXp2NVpyRzMzeFZlbmR4b3NKeUtGc3k5SC94THBaYUpJM0lOZjQrMkY3bTZ2TWVTQm1BdmFuRFc1Wndzci8KQXZzaXhnWS9lSVFoV1NYTDcxdW9jcHllUldWQzdNc25CcjNuMVozRytpdnFhWXlhKzVGd0NrMmYxU1JNdWdlRwo4NDVUb1VmL1dqZy9MdGJCZ2lhck0rLzJCSFVYL0NoL2N3Qy9RdTltRTdnalk5a2RKM2YyUnBlT1ovdzF6dDZ3CkhVbUU2a01oQ00xSXBEZTMrNDNMc295TlA4WlcvM09sNVIxRlFFNG96V3BZckxJeGlycTd1MHZDME5aSFVkQzUKRXBkWUNDZVNVbStWM0MxdWRMV1R2eFl2RVZNNlRpL21jbHhvQ1l6cjd5WHU2dzZuUlZWMlJXMGxQejZCZng5RApHK2V5RFpaWGhHcjhZK1dmUWtNQ0F3RUFBYU5aTUZjd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZBU05mTlpBOENUK1k4YXV1MXRSeUlBMVZSc2dNQlVHQTFVZEVRUU8KTUF5Q0NtdDFZbVZ5Ym1WMFpYTXdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUJBSjZQb1psN3BLN3hUK0VnSTM5aQpjNURrVjViaFFpSGpKdG5hT3lmcm5pV3pNVHBVQ1I1S3lzU0t3MmdOMUk4dFZKMStUYWNYdktOeUIyL2hjQXlPClNuNjZ2NTdoSGlQd0dsTzZqbkRpcE5lM1BndTVkUnFxT2V3Zldzd25TeTFoZWpWc2NsZ1BBQmhyWldQSmlYYW8KUDRKa0cwSEpRNXdJVmlMcW5Xd2JkY2dtaGd5aHZobFJKUk9CMU5rZkNzUTNWZnJXYU9nMncvck45aGJXOHhmcApJNnp5em5vWkpjcVZ2RFVMWG5SSTBQd1hMK2tNMnVmalhSM3BJM3BPeTJzdlltZVBUOGlaK0JqYjJ1ZkNnUnJGCmhSbk5wbHFPRGJXa01tTlBEOWZVYlIxd1hNZXJQaHIrVEQveHVmZ2VhZUxRdlhuQ2s2S1NMZmNIb0dlWVVCR1oKWVZVPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+    server: https://10.1.2.3:443
+  name: che-cluster
+contexts:
+- context:
+    cluster: che-cluster
+    user: che-cluster
+  name: che-cluster
+current-context: che-cluster
+kind: Config
+preferences: {}
+users:
+- name: che-cluster
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1beta1
+      command: kubectl
+      args:
+      - oidc-login
+      - get-token
+      - --oidc-issuer-url=https://mykeycloak.com/auth/realms/che
+      - --oidc-client-id=che-kubernetes
+      - --oidc-extra-scope="email offline_access profile openid"
+----
+. Backup existing KubeConfig and move the modifed KubeConfig file in the current user's `.kube` or `$KUBECONFIG` folder.
+
+. Verify the vCluster cluster status:
+
++
+[subs="+attributes,+quotes"]
+----
+$ kubectl get ns
+----
++
+IMPORTANT: If you face error: unknown command "oidc-login" for "kubectl".
++
+
+. If everything is configured correctly, you will be redirected to authenticate with your Auth server and then be granted admin access to the vCluster instance. 
+
++
+IMPORTANT: Make sure the user has `vcluster-admin` group assigned.
++
+
+. Prepare the `CheCluster` patch:
++
+[subs="+attributes"]
+----
+$ cat > che-patch.yaml << EOF
+kind: CheCluster
+apiVersion: org.eclipse.che/v2
+spec:
+  networking:
+    auth:
+      oAuthClientName: <client_id>
+      oAuthSecret: <client_secret>
+      identityProviderURL: <issuer_url>
+  components:
+    cheServer:
+      extraProperties:
+        CHE_OIDC_USERNAME__CLAIM: email
+EOF
+----
+
+. Create the {prod-short} instance with `{prod-cli}`:
++
+[subs="+attributes"]
+----
+$ {prod-cli} server:deploy --platform k8s --domain $DOMAIN --che-operator-cr-patch-yaml che-patch.yaml
+----
+
+.Verification steps
+
+. Verify the {prod-short} instance status:
++
+[subs="+attributes,+quotes"]
+----
+$ {prod-cli} server:status
+----
+
+. Navigate to the {prod-short} cluster instance:
++
+[subs="+attributes,+quotes"]
+----
+$ {prod-cli} dashboard:open
+----
+. Log in to the {prod-short} instance.
+
+.Additional resources
+
+* xref:configuring-che-with-self-signed-certificate.adoc[]
