@@ -20,7 +20,7 @@ spec:
       identityProviderURL: "https://sts.windows.net/$(az account show --query "tenantId" --output tsv)/v2.0/"
       identityToken: access_token
       oAuthClientName: $(az ad app list --query "[?displayName=='$ECLIPSE_CHE_APPLICATION_DISPLAY_NAME'].appId" --output tsv)
-      oAuthSecret: $(az ad app credential reset --id $ECLIPSE_CHE_APPLICATION_ID --query "password" --output tsv)
+      oAuthSecret: $(az ad app credential reset --id $(az ad app list --query "[?displayName=='$ECLIPSE_CHE_APPLICATION_DISPLAY_NAME'].id" --output tsv) --query "password" --output tsv)
       oAuthScope: openid email profile 6dae42f8-4368-4678-94ff-3960e28e3630/user.read
       gateway:
         deployment:
