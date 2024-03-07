@@ -1,10 +1,10 @@
 :_content-type: PROCEDURE
-:navtitle: Installing {prod-short} in OIDC Unsupported {kubernetes}
+:navtitle: Installing {prod-short} in an OIDC Unsupported {kubernetes}
 :description: Installing {prod-short} in {kubernetes} that doesn't support OIDC yet.
-:keywords: installing-che-in-unsupported-{kubernetes}
+:keywords: installing-che-in-an-unsupported-{kubernetes}
 :page-aliases: installation-guide:installing-che-in-oidc-unsupported-kubernetes
 
-[id="installing-{prod-id-short}-on-unsupported-kubernetes"]
+[id="installing-{prod-id-short}-in-odic-unsupported-kubernetes"]
 = Installing {prod-short} in OIDC Unsupported {kubernetes} Cluster
 
 You can deploy {prod-short} into a {kubernetes} cluster that doesn't support OIDC.
@@ -80,13 +80,13 @@ $ {orch-cli} get svc che-cluster-lb -n che-cluster
 ----
 . Retrieve the KubeConfig file
 +
-IMPORTANT: The secret may take additional minute or two to be created.
+IMPORTANT: The secret might take an additional minute or two to be created.
 +
 ----
 $ {orch-cli} get secret vc-che-cluster -n che-cluster --template={{.data.config}} | base64 -d > config
 ----
 
-. The config file should look similar to this.
+. Open the `config` file. The `config` file should look similar to this.
 +
 ----
 apiVersion: v1
@@ -110,11 +110,10 @@ users:
     client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcEFJQkFBS0NBUUVBcy85RUZNb2lQbFBMN3JLZ3cyTGtVMDJxdmlzMDFLVlNvQ0VjMTR1ajR3V21ScTd6CnlhckpLVEZ4cCs4NElWbWtKcXdoaFFNL1pjZ0dXQXp2MjdSbkt4MDRkbXdNcHFNdytxMzNPU3FXc2Z3TVlFWFYKRmlzVFZCU3RkWExRVGI0bFV3Y0FNZDREYmFTSGpMWVFzUGNLaXIxQXE0K2ZCVzRjRW8rbWNkMFlGNUoKMWF3NkpOa0VQcndOZHpNUjJEU1VxN2ozbFdpSXl1VXBCcURiSFBCSUd5NHY5bHZ1cXlFUXEzZnVzOC9YUXJpWdyRDZRQlI1eHJ6ZGEyTXZiazVhbWVEUnVnNC8yCktzZnB3dXl4Tml0bndRbkJ4TnExQVFLQmdRQ3Q2aHR5R2cvYVIyQ2Q4eXYwNXArZVMvOXNvOUxjdWRLcGFLaW0KRm9OUDFnNENOaUFVUGwvR0tJOGJ4c2R5SzB0TlY2bHBNN2xmVUc0eVVKUmFvbThlemIzSFdMZjJXdGdkTUJ3cwpWSVplNDlQcjhkc2J1dTFQM2ZrelFyWlZoK291dmlvTmFJTGxneEtocStqYmhBZXZVUFMwdUFlSUt0THowV0IxCjgrT3V3UUtCZ1FEQU4vbzhkaFlTZjB2ZU9YOWdPQTEvR3Iwa1VYMHBzZitrSGZ5MlFHYU4vMjNmV1RrM1YvRTUKRzJrbVNiVjJIcXh3b3VRWDgzZ3ltbmJUTGorbUZ6SXFmcWE1ZHVDRXFiMEs4Y2U0RU1GVUQxd01vVEd6bzBmNQpvR3FUNW5CY1Ezc1V4Q2ZiRngyRk4zK0MyTFhRMnNRczVOTXIxZWNLZU9pdFovWlNXMlUzWmc9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
 ----
 +
-. Update the KubeConfig file
 . Replace the `server:` URL with the LB IP you noted earlier. (e.g. 10.1.2.3:443)
 . Search and replace all occurrences of the words my-vcluster  with che-cluster.
 
-. Replace the users part in the YAML with the following: 
+. Replace the users part in the YAML similar the following replacing `oidc-issuer-url` and `oidc-client-id` as per your auth configurations. 
 +
 ----
   user:
@@ -160,7 +159,7 @@ users:
       - --oidc-extra-scope="email offline_access profile openid"
 ----
 +
-. Backup existing KubeConfig and move the modifed KubeConfig file in the current user's `.kube` or `$KUBECONFIG` folder.
+. Set the created `kubeconfig` as current by backingup existing `kubeconfig` in the current user's `.kube` or `$KUBECONFIG` folder and replacing it with the newly created one.
 
 . Verify the vCluster cluster status:
 
@@ -170,13 +169,13 @@ users:
 $ kubectl get ns
 ----
 
-. If everything is configured correctly, you will be redirected to authenticate with your Auth server and then be granted admin access to the vCluster instance. 
+. If everything is configured correctly, you will be redirected to authenticate with your auth server in the browser. Once authenticated you will be able to view all the namspaces. 
 
 +
-IMPORTANT: Make sure the user has `vcluster-admin` group assigned.
+IMPORTANT: Make sure the user has `vcluster-admin` group assignedav.
 +
 
-. Prepare the `CheCluster` patch:
+. Prepare the `CheCluster` patch.
 +
 [subs="+attributes"]
 ----
@@ -218,4 +217,4 @@ $ {prod-cli} server:status
 ----
 $ {prod-cli} dashboard:open
 ----
-. Log in to the {prod-short} instance.
+. Log in to the {prod-short} instance with the user credentials.
