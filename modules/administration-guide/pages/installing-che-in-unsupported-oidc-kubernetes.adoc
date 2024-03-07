@@ -24,7 +24,7 @@ WARNING: vCluster is a third party tool. See link:https://www.vcluster.com/docs/
 * External OIDC Server. Example: Keycloak. 
 
 .Procedure
-. Setup the {kubernetes} cluster with vCluster `values.yaml`:
+. Create `values.yaml` for vCluster's helm chart:
 +
 [subs="+attributes"]
 ----
@@ -65,7 +65,6 @@ EOF
 $ kubectl create ns che-cluster
 $ helm repo add loft-sh https://charts.loft.sh && helm repo update && helm install che-cluster loft-sh/vcluster-k8s -n che-cluster -f ./vcluster-values.yaml --set ClusterAdminGroup=vcluster-admin
 ----
-.vCluster Verification steps
 
 . Verify the vCluster cluster status:
 +
@@ -73,25 +72,22 @@ $ helm repo add loft-sh https://charts.loft.sh && helm repo update && helm insta
 ----
 $ vCluster list
 ----
-.Determine LB for the vCluster
 . Determine the LB and note it for later:
 +
 [subs="+attributes,+quotes"]
 ----
 $ {orch-cli} get svc che-cluster-lb -n che-cluster
 ----
-
 . Retrieve the KubeConfig file
 +
 IMPORTANT: The secret may take additional minute or two to be created.
 +
-[subs="+attributes"]
 ----
 $ {orch-cli} get secret vc-che-cluster -n che-cluster --template={{.data.config}} | base64 -d > config
 ----
 
 . The config file should look similar to this.
-[subs="+attributes"]
++
 ----
 apiVersion: v1
 clusters:
@@ -112,14 +108,14 @@ users:
   user:
     client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURJVENDQWdtZ0F3SUJBZ0lJZVFRb3NqRnFUUUl3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5aUWpONUljSlRubDF4aFhKV3M0cE1UYmtRCkw3TVlKUEU3KzdJMVZZNVFUeDVNYUlKZVBQWE9aa1NzL0xnZlNVOUZENFFnNERnNjVukxSUdxCnhjdGduQXcwYWZXdTZ1eGFNK0lIYXA1S2RSWFRtbVpvYkhEMVlKMTZJV0Fzd2paeHhSMmhFNVY4Z2xudldndFkKcURUNnBOVWpqaXZPYUxqMmJGQ3JLSWZEcm56UVUxQlp5VnRVMjNsSlFLRkxCT3B2akE9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
     client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcEFJQkFBS0NBUUVBcy85RUZNb2lQbFBMN3JLZ3cyTGtVMDJxdmlzMDFLVlNvQ0VjMTR1ajR3V21ScTd6CnlhckpLVEZ4cCs4NElWbWtKcXdoaFFNL1pjZ0dXQXp2MjdSbkt4MDRkbXdNcHFNdytxMzNPU3FXc2Z3TVlFWFYKRmlzVFZCU3RkWExRVGI0bFV3Y0FNZDREYmFTSGpMWVFzUGNLaXIxQXE0K2ZCVzRjRW8rbWNkMFlGNUoKMWF3NkpOa0VQcndOZHpNUjJEU1VxN2ozbFdpSXl1VXBCcURiSFBCSUd5NHY5bHZ1cXlFUXEzZnVzOC9YUXJpWdyRDZRQlI1eHJ6ZGEyTXZiazVhbWVEUnVnNC8yCktzZnB3dXl4Tml0bndRbkJ4TnExQVFLQmdRQ3Q2aHR5R2cvYVIyQ2Q4eXYwNXArZVMvOXNvOUxjdWRLcGFLaW0KRm9OUDFnNENOaUFVUGwvR0tJOGJ4c2R5SzB0TlY2bHBNN2xmVUc0eVVKUmFvbThlemIzSFdMZjJXdGdkTUJ3cwpWSVplNDlQcjhkc2J1dTFQM2ZrelFyWlZoK291dmlvTmFJTGxneEtocStqYmhBZXZVUFMwdUFlSUt0THowV0IxCjgrT3V3UUtCZ1FEQU4vbzhkaFlTZjB2ZU9YOWdPQTEvR3Iwa1VYMHBzZitrSGZ5MlFHYU4vMjNmV1RrM1YvRTUKRzJrbVNiVjJIcXh3b3VRWDgzZ3ltbmJUTGorbUZ6SXFmcWE1ZHVDRXFiMEs4Y2U0RU1GVUQxd01vVEd6bzBmNQpvR3FUNW5CY1Ezc1V4Q2ZiRngyRk4zK0MyTFhRMnNRczVOTXIxZWNLZU9pdFovWlNXMlUzWmc9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
-
 ----
++
 . Update the KubeConfig file
 . Replace the `server:` URL with the LB IP you noted earlier. (e.g. 10.1.2.3:443)
 . Search and replace all occurreces of the words my-vcluster  with che-cluster.
 
 . Replace the users part in the yaml with the following: 
-[subs="+attributes"]
++
 ----
   user:
     exec:
@@ -132,8 +128,9 @@ users:
       - --oidc-client-id=<client_id>
       - --oidc-extra-scope="email offline_access profile openid"
 ----
++
 . The final KubeConfig would look similar to this
-[subs="+attributes"]
++
 ----
 apiVersion: v1
 clusters:
@@ -162,6 +159,7 @@ users:
       - --oidc-client-id=che-kubernetes
       - --oidc-extra-scope="email offline_access profile openid"
 ----
++
 . Backup existing KubeConfig and move the modifed KubeConfig file in the current user's `.kube` or `$KUBECONFIG` folder.
 
 . Verify the vCluster cluster status:
@@ -171,9 +169,6 @@ users:
 ----
 $ kubectl get ns
 ----
-+
-IMPORTANT: If you face error: unknown command "oidc-login" for "kubectl".
-+
 
 . If everything is configured correctly, you will be redirected to authenticate with your Auth server and then be granted admin access to the vCluster instance. 
 
@@ -208,7 +203,7 @@ EOF
 $ {prod-cli} server:deploy --platform k8s --domain $DOMAIN --che-operator-cr-patch-yaml che-patch.yaml
 ----
 
-.Verification steps
+. Verification steps
 
 . Verify the {prod-short} instance status:
 +
@@ -224,7 +219,3 @@ $ {prod-cli} server:status
 $ {prod-cli} dashboard:open
 ----
 . Log in to the {prod-short} instance.
-
-.Additional resources
-
-* xref:configuring-che-with-self-signed-certificate.adoc[]
