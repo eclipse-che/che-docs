@@ -7,6 +7,10 @@
 [id="mounting-git-configuration"]
 = Mounting Git configuration
 
+[NOTE]
+====
+The `user.name` and `user.email` fields will be set automatically to the `gitconfig` content from a git provider, connected to {prod-short} by a xref:using-a-git-provider-access-token.adoc[Git-provider access token] or a token generated via OAuth, if username and email are set on the provider's user profile page.
+====
 Follow the instructions below to mount a Git config file in a workspace.
 
 .Prerequisites
@@ -31,11 +35,11 @@ metadata:
     controller.devfile.io/mount-as: subpath
     controller.devfile.io/mount-path: /etc/
 data:
-  gitconfig: "[user] \n  name = __<git_user_name>__ \n  email = __<git_user_email>__" <2>
+  gitconfig: <gitconfig content> <2>
 ----
 +
 <1> A user namespace. Visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
-<2> Your Git user name and email.
+<2> The content of your gitconfig file content.
 
 . Apply the ConfigMap.
 +
