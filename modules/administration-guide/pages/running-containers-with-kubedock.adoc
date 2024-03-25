@@ -1,0 +1,31 @@
+:_content-type: ASSEMBLY
+:description: Running containers with kubedock
+:keywords: kubedock, container
+:navtitle: Running containers with kubedock
+:page-aliases:
+
+[id="running-containers-swith-kubedock"]
+= Running containers with kubedock
+
+With this update, link:https://github.com/joyrex2001/[kubedock] is now a part of the UDI ({prod-short} default image). If the environment variable `KUBEDOCK_ENABLED` is set to `true` in a workspace (this can be done using a devfile), the kubedock server is started at startup.
+
+When `KUBEDOCK_ENABLED=true` then the following commands will be executed with kubedock. The remaining commands, in particular, `podman build`, will be executed by the local Podman:
+
+* `podman run`
+* `podman ps`
+* `podman exec`
+* `podman cp`
+* `podman logs`
+* `podman inspect`
+* `podman kill`
+* `podman rm`
+* `podman wait`
+* `podman stop`
+* `podman start`
+
+The kubedock approach allows to run containers from a container running on Kubernetes but has a few limits:
+
+    podman build -t <image> . && podman run <image> doesn't work and should be replaced with podman build -t <image> . && podman push <image> && podman run <image>. That's because kubedock runs the container as a Kubernetes pod and, as a result, the kubelet on the node will try to pull <image> and will fail if it cannot find it.
+    Clients that use the podman or docker API need to be configured to point to kubedock setting CONTAINER_HOST=tcp://127.0.0.1:2475 or DOCKER_HOST=tcp://127.0.0.1:2475 when they run containers and configured to point to local podman when building the container (something impracticable in some cases).
+    Some podman comands such as generate kube are not supported yet
+    If the option --env is provided then the command podman run fails
