@@ -78,6 +78,7 @@ WORKDIR /tmp
 ENV NODE_PATH="/usr/local/lib/node_modules/"
 # Install Node.js packages, one by one to avoid timeouts
 RUN set -x \
+    && npm install --no-save --global @antora/assembler \
     && npm install --no-save --global @antora/cli \
     && npm install --no-save --global @antora/collector-extension \
     && npm install --no-save --global @antora/lunr-extension \
