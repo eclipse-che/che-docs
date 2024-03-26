@@ -21,17 +21,127 @@ WARNING: vCluster is a third party tool. See link:https://www.vcluster.com/docs/
 
 * `{prod-cli}`. See xref:installing-the-chectl-management-tool.adoc[].
 
-* External OIDC Server. Example: Keycloak. 
+* Deploy `cert-manager`. See link:https://cert-manager.io/docs/installation[Installing cert-manager].
+
+* Ingress Controller. See link:https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/[Ingress Controllers]
 
 .Procedure
+. Deploy https://www.keycloak.org/[Keycloak]:
++
+[subs="+attributes"]
+----
+$ export $KEYCLOAK_DOMAIN <keycloak_domain>
+$ export $USER_EMAIL <user_email>
+$ export $INGRESS_CLASS <ingress_class>
+
+$ {orch-cli} apply -f - <<EOF
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+  namespace: cert-manager
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: $USER_EMAIL
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - http01:
+        ingress:
+          ingressClassName: $INGRESS_CLASS
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: keycloak
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  namespace: keycloak
+  labels:
+    app: keycloak
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  selector:
+    app: keycloak
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: keycloak
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:24.0.1
+          args: ["start-dev"]
+          env:
+            - name: KEYCLOAK_ADMIN 
+              value: "admin"
+            - name: KC_HTTP_RELATIVE_PATH  
+              value: "/auth"
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: "admin"
+            - name: KC_PROXY
+              value: "edge"
+          ports:
+            - name: http
+              containerPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keycloak
+  namespace: keycloak
+  annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: $INGRESS_CLASS
+  tls:
+    - hosts:
+        - $KEYCLOAK_DOMAIN
+      secretName: oneauth-secret
+  rules:
+    - host: $KEYCLOAK_DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 80
+EOF
+----
+. Create ClientID and Client Secret in Keycloak
+
 . Create `values.yaml` for vCluster's helm chart:
 +
 [subs="+attributes"]
 ----
 # OIDC IssuerURL
-$ IssuerURL=<issuer_url>
+$ IssuerURL=auth.theiris.club
 # Kubernetes ClientId
-$ KubernetesClientId=<public_client_id>
+$ KubernetesClientId=kubectl-public
 
 $ cat > vcluster-values.yaml << EOF
 api:
@@ -72,7 +182,7 @@ $ helm repo add loft-sh https://charts.loft.sh && helm repo update && helm insta
 ----
 $ vCluster list
 ----
-. Determine the LB and note it for later:
+. Determine the LoadBalancer's external IP and note it for later.
 +
 [subs="+attributes,+quotes"]
 ----
