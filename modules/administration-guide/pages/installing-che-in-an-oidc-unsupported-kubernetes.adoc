@@ -23,7 +23,7 @@ WARNING: vCluster is a third party tool. See link:https://www.vcluster.com/docs/
 
 * Deploy `cert-manager`. See link:https://cert-manager.io/docs/installation[Installing cert-manager].
 
-* Ingress Controller. See link:https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/[Ingress Controllers]
+* Ingress Controller configured with necessary DNS Mapping. See link:https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/[Ingress Controllers]
 
 .Procedure
 . Deploy https://www.keycloak.org/[Keycloak]:
@@ -132,7 +132,11 @@ spec:
                   number: 80
 EOF
 ----
-. Create ClientID and Client Secret in Keycloak. Access the Keycloak UI using the URL `https://$KEYCLOAK_DOMAIN/auth` and log in with the credentials `admin/admin`. Navigate to `Client` Page and Create Client with the following configurations
+. Access Keycloak UI by reaching out to the `https://KEYCLOAK_DOMAIN/auth` URL in any browser, login in with the user credentials. Now to configure Admin User Account. Navigate to Users, click `admin` and make sure First Name, Last Name, and Email are filled in and Email Verified is set to `True`.  
++
+image::che-in-oidc-unsupported-kubernetes-configure-user.png[Keycloak Configure User]
++
+. Create ClientID in Keycloak for `vCluster` and {orch-cli}. Access the Keycloak UI using the URL `https://$KEYCLOAK_DOMAIN/auth` and log in with the credentials `admin/admin`. Navigate to `Client` Page and Create Client with the following configurations
 +
 image::installing-che-in-oidc-unsupported-kubernetes/che-in-oidc-unsupported-kubernetes-step-1.png[Keycloak Create Client Step 1]
 image::installing-che-in-oidc-unsupported-kubernetes/che-in-oidc-unsupported-kubernetes-step-2.png[Keycloak Create Client Step 2]
@@ -143,6 +147,13 @@ image::installing-che-in-oidc-unsupported-kubernetes/che-in-oidc-unsupported-kub
 +
 image::installing-che-in-oidc-unsupported-kubernetes/che-in-oidc-unsupported-kubernetes-create-group.png[Keycloak Create Group]
 image::installing-che-in-oidc-unsupported-kubernetes/che-in-oidc-unsupported-kubernetes-assign-group.png[Keycloak Assign Group]
++
+. To Create ClientID in Keycloak for {prod-short}, access the Keycloak UI and Navigate to `Client` Page. Create Client with the following configurations. Note down the client credientials, client ID and client secret created by follwing these steps, this will be used later when deploying {prod-short} using {prod-cli}. 
++
+image::che-in-oidc-unsupported-kubernetes-create-private-client-step-1.png[Keycloak Create Client for Eclipse Che Step 1]
+image::che-in-oidc-unsupported-kubernetes-create-private-client-step-2.png[Keycloak Create Client for Eclipse Che Step 2]
+image::che-in-oidc-unsupported-kubernetes-create-private-client-step-3.png[Keycloak Create Client for Eclipse Che Step 3]
+image::che-in-oidc-unsupported-kubernetes-create-private-client-step-4.png[Keycloak Client Credentials for Eclipse Che]
 +
 . Create `values.yaml` for vCluster's helm chart:
 +
@@ -232,7 +243,7 @@ users:
 ----
 +
 . Replace the `server:` URL with the LB IP you noted earlier. (e.g. 10.1.2.3:443)
-. Search and replace all occurrences of the words my-vcluster  with che-cluster.
+. Search and replace all occurrences of the word `my-vcluster`  with `che-cluster`.
 
 . Replace the users part in the YAML similar the following replacing `oidc-issuer-url` and `oidc-client-id` as per your auth configurations. 
 +
@@ -245,7 +256,7 @@ users:
       - oidc-login
       - get-token
       - --oidc-issuer-url=<issuer_url>
-      - --oidc-client-id=<client_id>
+      - --oidc-client-id=kubernetes-public
       - --oidc-extra-scope="email offline_access profile openid"
 ----
 +
@@ -275,12 +286,12 @@ users:
       args:
       - oidc-login
       - get-token
-      - --oidc-issuer-url=https://mykeycloak.com/auth/realms/che
-      - --oidc-client-id=che-kubernetes
+      - --oidc-issuer-url=https://auth.sample_keycloak.com/auth/realms/master
+      - --oidc-client-id=kubectl-public
       - --oidc-extra-scope="email offline_access profile openid"
 ----
 +
-. Make the newly created `kubeconfig` the current one by backing up the existing `kubeconfig`` file in the user's .kube or $KUBECONFIG folder and replacing it with the new `config` file.
+. Make the newly created `kubeconfig` the current one by backing up the existing `kubeconfig` file in the user's .kube or $KUBECONFIG folder and replacing it with the new `config` file.
 
 . Verify the vCluster cluster status:
 
@@ -300,15 +311,22 @@ IMPORTANT: Make sure the user has `vcluster-admin` group assigned.
 +
 [subs="+attributes"]
 ----
+$ export CHE_CLIENT_ID=che-private
+
+# Use the client secret created in the previous steps.
+$ export CHE_CLIENT_SECRET=<client_secret>
+
+$ export ECLIPSE_CHE_DOMAIN=<Che Deployment URL>  
+
 $ cat > che-patch.yaml << EOF
 kind: CheCluster
 apiVersion: org.eclipse.che/v2
 spec:
   networking:
     auth:
-      oAuthClientName: <client_id>
-      oAuthSecret: <client_secret>
-      identityProviderURL: <issuer_url>
+      oAuthClientName: $CHE_CLIENT_ID
+      oAuthSecret: $CHE_CLIENT_SECRET
+      identityProviderURL: $ISSUER_URL
   components:
     cheServer:
       extraProperties:
@@ -320,7 +338,7 @@ EOF
 +
 [subs="+attributes"]
 ----
-$ {prod-cli} server:deploy --platform k8s --domain $DOMAIN --che-operator-cr-patch-yaml che-patch.yaml
+$ {prod-cli} server:deploy --platform k8s --domain $ECLIPSE_CHE_DOMAIN --che-operator-cr-patch-yaml che-patch.yaml
 ----
 
 . Verification steps
