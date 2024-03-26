@@ -307,6 +307,20 @@ $ kubectl get ns
 IMPORTANT: Make sure the user has `vcluster-admin` group assigned.
 +
 
+. Install Ingress Controller in the virtual `che-cluster` by pasting the following script.
+
+[subs="+attributes"]
+----
+$ helm install  cert-manager jetstack/cert-manager  --namespace cert-manager  --create-namespace  --version v1.14.4  --set installCRDs=true && helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update && helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+    --version 4.7.1 \
+    --namespace ingress-basic \
+    --create-namespace \
+    --set controller.replicaCount=1 \
+----
+
+. 
+
 . Prepare the `CheCluster` patch.
 +
 [subs="+attributes"]
@@ -323,6 +337,7 @@ kind: CheCluster
 apiVersion: org.eclipse.che/v2
 spec:
   networking:
+    ingressClassName: nginx
     auth:
       oAuthClientName: $CHE_CLIENT_ID
       oAuthSecret: $CHE_CLIENT_SECRET
