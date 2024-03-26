@@ -30,9 +30,9 @@ WARNING: vCluster is a third party tool. See link:https://www.vcluster.com/docs/
 +
 [subs="+attributes"]
 ----
-$ export $KEYCLOAK_DOMAIN <keycloak_domain>
-$ export $USER_EMAIL <user_email>
-$ export $INGRESS_CLASS <ingress_class>
+$ export KEYCLOAK_DOMAIN=<keycloak_domain>
+$ export USER_EMAIL=<user_email>
+$ export INGRESS_CLASS=<ingress_class>
 
 $ {orch-cli} apply -f - <<EOF
 apiVersion: cert-manager.io/v1
@@ -118,7 +118,7 @@ spec:
   tls:
     - hosts:
         - $KEYCLOAK_DOMAIN
-      secretName: oneauth-secret
+      secretName: keycloak-tls
   rules:
     - host: $KEYCLOAK_DOMAIN
       http:
@@ -132,22 +132,33 @@ spec:
                   number: 80
 EOF
 ----
-. Create ClientID and Client Secret in Keycloak
+. Create ClientID and Client Secret in Keycloak. Access the Keycloak UI using the URL `https://$KEYCLOAK_DOMAIN/auth` and log in with the credentials `admin/admin`. Navigate to `Client` Page and Create Client with the following configurations
++
+image::installing-che-in-oidc-unsupported-kubernetes/che-in-oidc-unsupported-kubernetes-step-1.png[Keycloak Create Client Step 1]
+image::installing-che-in-oidc-unsupported-kubernetes/che-in-oidc-unsupported-kubernetes-step-2.png[Keycloak Create Client Step 2]
+image::installing-che-in-oidc-unsupported-kubernetes/che-in-oidc-unsupported-kubernetes-step-3.png[Keycloak Create Client Step 3]
++
 
+. Create `vcluster-admin` group in Keycloak and assign the user to the group. Assign `cluster-admin` role to the `admin` user. Navigate to Users page and select `admin` user.
++
+image::installing-che-in-oidc-unsupported-kubernetes/che-in-oidc-unsupported-kubernetes-create-group.png[Keycloak Create Group]
+image::installing-che-in-oidc-unsupported-kubernetes/che-in-oidc-unsupported-kubernetes-assign-group.png[Keycloak Assign Group]
++
 . Create `values.yaml` for vCluster's helm chart:
 +
 [subs="+attributes"]
 ----
 # OIDC IssuerURL
-$ IssuerURL=auth.theiris.club
+$ export ISSUER_URL=https://$KEYCLOAK_DOMAIN/auth/realms/master
 # Kubernetes ClientId
-$ KubernetesClientId=kubectl-public
+$ export KUBERNETES_CLIENT_ID=kubectl-public
 
 $ cat > vcluster-values.yaml << EOF
 api:
+  image: registry.k8s.io/kube-apiserver:v1.27.1
   extraArgs:
-    - --oidc-issuer-url=$IssuerURL
-    - --oidc-client-id=$KubernetesClientId
+    - --oidc-issuer-url=$ISSUER_URL
+    - --oidc-client-id=$KUBERNETES_CLIENT_ID
     - --oidc-username-claim=email
     - --oidc-groups-claim=groups
 init:
@@ -190,7 +201,7 @@ $ {orch-cli} get svc che-cluster-lb -n che-cluster
 ----
 . Retrieve the KubeConfig file
 +
-IMPORTANT: The secret might take an additional minute or two to be created.
+IMPORTANT: The secret might take an additional minute or two to be created after all the pods in `che-cluster` namespace ends up `READY`.
 +
 ----
 $ {orch-cli} get secret vc-che-cluster -n che-cluster --template={{.data.config}} | base64 -d > config
