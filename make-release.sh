@@ -66,15 +66,15 @@ updateYaml() {
     return 1
   else
     if [[ $(git rev-parse --abbrev-ref HEAD) == *"${BRANCH}"* ]]; then
-        # special fields for updating PR for 7.x.y branch
-        git clone https://github.com/devfile/devworkspace-operator /tmp/dwo
-        pushd /tmp/dwo
-            DWO_VERSION=$(git describe --tags $(git rev-list --tags --max-count=1) )
-        popd
         replaceFieldSed $playbookfile 'version' "${BRANCH}"
         replaceFieldSed $playbookfile 'prerelease' "false"
         replaceFieldSed $playbookfile '    devworkspace-operator-version-patch' "\"${DWO_VERSION#v}\""
     fi
+    # special fields for updating PR for 7.x.y branch
+    git clone https://github.com/devfile/devworkspace-operator /tmp/dwo
+    pushd /tmp/dwo
+        DWO_VERSION=$(git describe --tags $(git rev-list --tags --max-count=1) )
+    popd
     replaceFieldSed $playbookfile '    prod-ver' "\"${BASE1}.${BASE2}\""
     replaceFieldSed $playbookfile '    prod-ver-patch' "\"$NEWVERSION\""
   fi
