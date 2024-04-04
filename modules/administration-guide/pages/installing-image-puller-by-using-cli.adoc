@@ -1,0 +1,40 @@
+:_content-type: PROCEDURE
+:description: Installing {image-puller-name-short} by using CLI
+:keywords: administration-guide, image-puller, CLI
+:navtitle: Installing {image-puller-name-short} by using CLI
+:page-aliases: .:installing-image-puller-on-openshift-using-openshift-templates.adoc,installing-image-puller-on-openshift-using-openshift-templates.adoc
+
+[id="installing-image-puller-by-using-the-cli"]
+= Installing {image-puller-name-short} by using the CLI
+
+You can install the {image-puller-name} on {platforms-name} cluster by using CLI.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Clone the {image-puller-name-short} repository:
++
+include::example$snip_{project-context}-cloning-image-puller-project.adoc[]
+
+. Follow the link:https://github.com/che-incubator/{image-puller-repository-name}?tab=readme-ov-file#about[instruction]
+to install the {image-puller-name} on {platforms-name} cluster.
+
+.Verification steps
+
+. Verify the existence of a `{image-puller-deployment-name}` deployment and a `{image-puller-deployment-name}` DaemonSet.
+The DaemonSet needs to have a Pod for each node in the cluster:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} get deployment,daemonset,pod --namespace {image-puller-namespace}
+----
+
+. Verify the values of the `{image-puller-deployment-name}` `ConfigMap`.
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} get configmap {image-puller-deployment-name} --output yaml
+----
