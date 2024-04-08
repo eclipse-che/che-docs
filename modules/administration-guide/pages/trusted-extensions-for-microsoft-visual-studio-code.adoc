@@ -1,0 +1,32 @@
+:_content-type: PROCEDURE
+:description: Configure trusted extensions for Microsoft Visual Studio Code
+:keywords: extensions, vs-code, vsx, open-vsx, marketplace
+:navtitle: Configure trusted extensions for Microsoft Visual Studio Code
+
+[id="visual-studio-code-trusted-extensions"]
+= Configure trusted extensions for Microsoft Visual Studio Code
+
+
+The `trustedExtensionAuthAccess` field in the `product.json` file of Visual Studio Code is used to specify which extensions are trusted to access authentication tokens.
+[source,json]
+----
+	"trustedExtensionAuthAccess": [
+		"<publisher1>.<extension1>",
+		"<publisher2>.<extension2>"
+	]
+----
+
+This is particularly useful when you have extensions that require access to services such as GitHub, Microsoft, or any other service that requires OAuth. By adding the extension IDs to this field, you’re granting them the permission to access these tokens.
+
+Note that this should be used with caution as it could potentially lead to security risks if misused. Only trusted extensions should be given this access.
+
+.Procedure
+Since the VS Code editor is bundled within `che-code` image, it is possible to change the `product.json` file only when the workspace is started up.
+To do that it needs to define __VSCODE_TRUSTED_EXTENSIONS__ environment variable and specify one or several extensions separated by comma.
+[source,yaml]
+----
+   env:
+     - name: VSCODE_TRUSTED_EXTENSIONS
+       value: "<publisher1>.<extension1>,<publisher2>.<extension2>"
+----
+The value of the variable will be parsed on the workspace startup and the corresponding `trustedExtensionAuthAccess` section will be added to the `product.json`.
