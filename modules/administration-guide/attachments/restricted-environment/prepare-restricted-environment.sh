@@ -94,7 +94,7 @@ spec:
   components:
     devfileRegistry:
       disableInternalRegistry: false
-      externalDevfileRegistries: {}
+      externalDevfileRegistries: []
     pluginRegistry:
       openVSXURL: ""
 EOF
