@@ -28,13 +28,37 @@ Use the `trustedExtensionAuthAccess` field with caution as it could potentially 
 ====
 Since the Visual Studio Code editor is bundled within `che-code` image, you can only change the `product.json` file when the workspace is started up.
 ====
-* Define the __VSCODE_TRUSTED_EXTENSIONS__ environment variable and specify one or several extensions separated by comma.
+
+The first you need to define __VSCODE_TRUSTED_EXTENSIONS__ environment variable and specify one or several extensions separated by comma.
+You can define the variable in the devfile or in the ConfigMap.
+
+====
+* Define the __VSCODE_TRUSTED_EXTENSIONS__ environment variable in the devfile.yaml.
 [source,yaml]
 ----
    env:
      - name: VSCODE_TRUSTED_EXTENSIONS
        value: "<publisher1>.<extension1>,<publisher2>.<extension2>"
 ----
+====
+
+====
+* Create a ConfigMap with __VSCODE_TRUSTED_EXTENSIONS__ environment variable.
+[source,yaml]
+----
+   kind: ConfigMap
+   apiVersion: v1
+   metadata:
+     name: trusted-extensions
+     labels:
+       controller.devfile.io/mount-to-devworkspace: 'true'
+       controller.devfile.io/watch-configmap: 'true'
+     annotations:
+       controller.devfile.io/mount-as: env
+   data:
+     VSCODE_TRUSTED_EXTENSIONS: '<publisher1>.<extension1>,<publisher2>.<extension2>'
+----
+====
 
 .Verification
 
