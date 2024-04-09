@@ -1,15 +1,13 @@
 :_content-type: PROCEDURE
-:description: Configuring {image-puller-name-short} to pre-pull default {prod-short} images
+:description: Configuring {image-puller-name-short} to pre-pull custom images
 :keywords: administration-guide, image-puller, CLI
-:navtitle: Configuring {image-puller-name-short} to pre-pull default {prod-short} images
+:navtitle: You can configure {image-puller-name} to pre-pull custom images
 :page-aliases:
 
-[id="configuring-image-puller-to-pre-pull-default-che-images"]
-= Configuring {image-puller-name-short} to pre-pull default {prod-short} images
+[id="configuring-image-puller-to-pre-pull-custom-images"]
+= Configuring {image-puller-name-short} to pre-pull custom images
 
-You can configure {image-puller-name} to pre-pull default {prod-short} images.
-{prod} operator will control the list of images to pre-pull and automatically updates them
-on {prod-short} upgrade.
+You can configure {image-puller-name} to pre-pull custom images.
 
 .Prerequisites
 
@@ -21,9 +19,9 @@ on {prod-short} upgrade.
 
 .Procedure
 
-. Configure the {image-puller-name-short} to pre-pull {prod-short} images.
+. Configure the {image-puller-name-short} to pre-pull custom images.
 +
-[source,shell,subs="+attributes,"]
+[source,shell,subs="+attributes,+quotes"]
 ----
 {orch-cli} patch checluster/{prod-checluster} \
     --namespace {prod-namespace} \
@@ -32,9 +30,13 @@ on {prod-short} upgrade.
               "spec": {
                 "components": {
                   "imagePuller": {
-                    "enable": true
+                    "enable": true,
+                    "spec": {
+                      "images": "__NAME-1__=__IMAGE-1__;__NAME-2__=__IMAGE-2__" <1>
+                    }
                   }
                 }
               }
             }'
 ----
+<1> The semicolon separated list of images

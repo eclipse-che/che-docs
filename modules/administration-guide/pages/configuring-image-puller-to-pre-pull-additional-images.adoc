@@ -7,9 +7,7 @@
 [id="configuring-image-puller-to-pre-pull-additional-images"]
 = Configuring {image-puller-name-short} to pre-pull additional images
 
-You can configure {image-puller-name} to pre-pull {prod-short} images.
-{prod} operator will control the list of images to pre-pull and automatically updates them
-on {prod-short} upgrade.
+You can configure {image-puller-name} to pre-pull additional {prod-short} images.
 
 .Prerequisites
 
@@ -21,20 +19,32 @@ on {prod-short} upgrade.
 
 .Procedure
 
-. Configure the {image-puller-name-short} to pre-pull {prod-short} images.
+. Create `{image-puller-namespace}` namespace:
 +
 [source,shell,subs="+attributes,"]
 ----
-{orch-cli} patch checluster/{prod-checluster} \
-    --namespace {prod-namespace} \
-    --type='merge' \
-    --patch '{
-                "spec": {
-                    "components": {
-                        "imagePuller": {
-                            "enable": true,
-                        }
-                    }
-                }
-            }'
+{orch-cli} create namespace {image-puller-namespace}
 ----
+
+. Create `{image-puller-cr-name}` Custom Resource:
++
+[source,shell,subs="+attributes,"]
+----
+{orch-cli} apply -f - <<EOF
+apiVersion: che.eclipse.org/v1alpha1
+kind: KubernetesImagePuller
+metadata:
+  name: k8s-image-puller-images
+  namespace: {image-puller-namespace}
+spec:
+  images: "__NAME-1__=__IMAGE-1__;__NAME-2__=__IMAGE-2__" <1>
+EOF
+----
+<1> The semicolon separated list of images
+
+.Addition resources
+
+* https://github.com/che-incubator/kubernetes-image-puller[{image-puller-name} source code repository]
+
+* https://github.com/che-incubator/kubernetes-image-puller-operator[{image-puller-operator-name} source code repository]
+
