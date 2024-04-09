@@ -1,0 +1,40 @@
+:_content-type: PROCEDURE
+:description: Configuring {image-puller-name-short} to pre-pull default {prod-short} images
+:keywords: administration-guide, image-puller, CLI
+:navtitle: Configuring {image-puller-name-short} to pre-pull default {prod-short} images
+:page-aliases:
+
+[id="configuring-image-puller-to-pre-pull-default-che-images"]
+= Configuring {image-puller-name-short} to pre-pull default {prod-short} images
+
+You can configure {image-puller-name} to pre-pull default {prod-short} images.
+{prod} operator will control the list of images to pre-pull and automatically updates them
+on {prod-short} upgrade.
+
+.Prerequisites
+
+* Your organization's instance of {prod-short} is installed and running on {kubernetes} cluster.
+
+* {image-puller-name-short} is installed on {kubernetes} cluster.
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Configure the {image-puller-name-short} to pre-pull {prod-short} images.
++
+[source,shell,subs="+attributes,"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+    --namespace {prod-namespace} \
+    --type='merge' \
+    --patch '{
+              "spec": {
+                "components": {
+                  "imagePuller": {
+                    "enable": true
+                  }
+                }
+              }
+            }'
+----

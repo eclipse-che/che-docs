@@ -1,0 +1,50 @@
+:_content-type: PROCEDURE
+:description: Configuring {image-puller-name-short} to pre-pull additional images
+:keywords: administration-guide, image-puller, CLI
+:navtitle: Configuring {image-puller-name-short} to pre-pull additional images
+:page-aliases:
+
+[id="configuring-image-puller-to-pre-pull-additional-images"]
+= Configuring {image-puller-name-short} to pre-pull additional images
+
+You can configure {image-puller-name} to pre-pull additional {prod-short} images.
+
+.Prerequisites
+
+* Your organization's instance of {prod-short} is installed and running on {kubernetes} cluster.
+
+* {image-puller-name-short} is installed on {kubernetes} cluster.
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Create `{image-puller-namespace}` namespace:
++
+[source,shell,subs="+attributes,"]
+----
+{orch-cli} create namespace {image-puller-namespace}
+----
+
+. Create `{image-puller-cr-name}` Custom Resource:
++
+[source,shell,subs="+attributes,"]
+----
+{orch-cli} apply -f - <<EOF
+apiVersion: che.eclipse.org/v1alpha1
+kind: KubernetesImagePuller
+metadata:
+  name: k8s-image-puller-images
+  namespace: {image-puller-namespace}
+spec:
+  images: "__NAME-1__=__IMAGE-1__;__NAME-2__=__IMAGE-2__" <1>
+EOF
+----
+<1> The semicolon separated list of images
+
+.Addition resources
+
+* https://github.com/che-incubator/kubernetes-image-puller[{image-puller-name} source code repository]
+
+* https://github.com/che-incubator/kubernetes-image-puller-operator[{image-puller-operator-name} source code repository]
+
