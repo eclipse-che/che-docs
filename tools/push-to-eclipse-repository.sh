@@ -13,7 +13,7 @@ set -ex
 
 GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
 export GIT_SSH_COMMAND
-git clone --depth=1 "ssh://genie.che@git.eclipse.org:29418/www.eclipse.org/che.git" .
+git clone --depth=1 "git@github.com:eclipse-che/che-website-publish.git" .
 git checkout master
 ls -ltr
 rm -rf docs/ _/
