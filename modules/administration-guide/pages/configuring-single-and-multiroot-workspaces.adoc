@@ -1,0 +1,99 @@
+:_content-type: PROCEDURE
+:description: Configuring single and multiroot workspaces
+:keywords: singleroot, multiroot, workspace
+:navtitle: Configuring single and multiroot workspaces
+// :page-aliases:
+
+[id="configuring-single-and-multiroot-workspaces"]
+= Configuring single and multi root workspaces
+
+Multi-root Workspaces is a feature in Microsoft Visual Studio Code that allows you to work with multiple project folders in the same workspace. This is useful when you are working on several related projects at once. For example, you might have a repository with a product's documentation and another with the product's code.
+
+[NOTE]
+====
+Starting with Dev Spaces 3.11, the workspace is set to open in multi-root mode by default.
+====
+
+Once workspace is started, the `</projects/.code-workspace>` workspace file is generated. The workspace file will contain all the projects described in the Devfile.
+====
+[source,json]
+----
+{
+	"folders": [
+		{
+			"name": "<project-1>",
+			"path": "</projects/project-1>"
+		},
+		{
+			"name": "<project-2>",
+			"path": "</projects/project-2>"
+		}
+	]
+}
+----
+====
+
+If the workspace file is already exist, it will be updated, all missing projects will be taken from the Devfile.
+If a project is removed from the Devfile, it will be left in the workspace file.
+
+You can change thee default behavior and provide your own workspace file or switch to the single-root workspace.
+
+.Procedure
++
+.1. Provide your own workspace file.
+
+You can easily use your own workspace file. For that you need to name it `.code-workspace` and put it to the root of your repository. 
+Then after workspace creation, the Microsoft Visual Studio Code will use the workspace file as it is.
+
+====
+[source,json]
+----
+{
+	"folders": [
+		{
+			"name": "<project-name>",
+			"path": "."
+		}
+	]
+}
+----
+====
+
+[IMPORTANT]
+====
+Be careful when creating a file. In case of errors, an empty Microsoft Visual Studio Code will be opened.
+====
+
+[IMPORTANT]
+====
+In case you have several projects, the workspace file will be taken from the first project.
+If the workspace file does not exist in the first project, a new one will be created and placed in the `/projects` directory. 
+====
+
+.2. Specify alternative workspace file.
+
+You can open Microsoft Visual Studio Code specifying any workspace file on the file system.
+To do that you need to define __VSCODE_DEFAULT_WORKSPACE__ environment variable in your Devfile and specify the right location to the workspace file.
+
+====
+[source,yaml]
+----
+   env:
+     - name: VSCODE_DEFAULT_WORKSPACE
+       value: "</projects/project-name/workspace-file>"
+----
+====
+
+.3. Open a workspace in a single-root mode.
+
+You can open Microsoft Visual Studio Code in single-root mode.
+For that you need to define __VSCODE_DEFAULT_WORKSPACE__ environment variable and set it to the root.
+
+====
+[source,yaml]
+----
+   env:
+     - name: VSCODE_DEFAULT_WORKSPACE
+       value: "</>"
+----
+====
