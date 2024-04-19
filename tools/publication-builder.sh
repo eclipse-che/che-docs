@@ -23,9 +23,5 @@ rm -f build/site/index.html
 # Add a custom redirect in the docs directory
 cp tools/index.html build/site/docs/index.html
 
-# Add required tools
-cp tools/Jenkinsfile build/site/Jenkinsfile
-cp tools/push-to-eclipse-repository.sh build/site/push-to-eclipse-repository.sh
-
 # Validate internal links
 htmltest --skip-external
