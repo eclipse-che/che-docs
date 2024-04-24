@@ -35,10 +35,10 @@ Pulling 5 images on 20 nodes, with a container memory limit of `20Mi` requires `
 
 . Clone the {image-puller-name-short} repository and get in the directory containing the OpenShift templates:
 +
-[source,bash,subs="+attributes,+quotes"]
+[subs="+attributes,+quotes"]
 ----
-git clone https://github.com/che-incubator/{image-puller-repository-name}
-cd {image-puller-repository-name}/deploy/openshift
+$ git clone https://github.com/che-incubator/{image-puller-repository-name}
+$ cd {image-puller-repository-name}/deploy/openshift
 ----
 
 . Configure the `app.yaml`, `configmap.yaml` and `serviceaccount.yaml` OpenShift templates using following parameters:
@@ -127,18 +127,18 @@ cd {image-puller-repository-name}/deploy/openshift
 
 . Create an OpenShift project to host the {image-puller-name-short}:
 +
-[source,bash,subs="+attributes,+quotes"]
+[subs="+attributes,+quotes"]
 ----
-oc new-project __<{image-puller-namespace}>__
+$ oc new-project __<{image-puller-namespace}>__
 ----
 
 . Process and apply the templates to install the puller:
 +
-[source,bash,subs="+attributes,+quotes"]
+[subs="+attributes,+quotes"]
 ----
-oc process -f serviceaccount.yaml | oc apply -f -
-oc process -f configmap.yaml | oc apply -f -
-oc process -f app.yaml | oc apply -f -
+$ oc process -f serviceaccount.yaml | oc apply -f -
+$ oc process -f configmap.yaml | oc apply -f -
+$ oc process -f app.yaml | oc apply -f -
 ----
 
 
@@ -146,14 +146,14 @@ oc process -f app.yaml | oc apply -f -
 
 . Verify the existence of a __<{image-puller-deployment-name}>__ deployment and a __<{image-puller-deployment-name}>__ DaemonSet. The DaemonSet needs to have a Pod for each node in the cluster:
 +
-[source,bash,subs="+attributes,+quotes"]
+[source%nowrap,dummy,subs="+quotes,+attributes"]
 ----
-oc get deployment,daemonset,pod --namespace __<{image-puller-namespace}>__
+$ oc get deployment,daemonset,pod --namespace __<{image-puller-namespace}>__
 ----
 
 . Verify the values of the __<{image-puller-deployment-name}>__ `ConfigMap`.
 +
-[source,bash,subs="+attributes,+quotes"]
+[source%nowrap,dummy,subs="+quotes,+attributes"]
 ----
-oc get configmap __<{image-puller-deployment-name}>__ --output yaml
+$ oc get configmap __<{image-puller-deployment-name}>__ --output yaml
 ----
