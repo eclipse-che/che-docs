@@ -7,15 +7,19 @@
 [id="running-containers-with-kubedock"]
 = Running containers with kubedock
 
-Use link:https://github.com/joyrex2001/[kubedock] to run containers as {kubernetes} pods.
+link:https://github.com/joyrex2001/[Kubedock] is a minimal container engine implementation that gives you a podman-/docker-like experience inside a {prod-short} workspace. Kubedock is especially useful when you are dealing with ad-hoc, ephemeral, and testing containers, such as in the use cases listed below:
 
-link:https://github.com/joyrex2001/[Kubedock] is a minimal container engine implementation that gives you a podman- or docker-like experience inside a {prod-short} workspace. Kubedock is especially useful when you are dealing with ad-hoc, ephemeral and testing containers, such as in the use cases listed below:
+* Executing application tests which rely on link:https://testcontainers.com/[Testcontainers] framework.
 
-* Executing applications tests which rely on Testcontainers framework - kubedock will dynamically spin up required test container image , on the fly, as an OpenShift pod, giving user seamless experience.
+* Using link:https://quarkus.io/guides/dev-services[Quarkus Dev Services].
 
-* Quarkus Dev Services - which are internally relying on Testcontainers as well.
+* Running a container stored in remote container registry, for local development purposes
 
-* When you are in need to you to run a container stored in remote container registry, for local development purposes and for whatever reasons you don't want to pollute the devfile . It's very important to mention (even though this is obvious!) that even though it gives you podman-like experience which you are used to from your local development environment, the absolute hard requirement is that the particular image which is being used via kubedock must be compatible with OpenShift. I specifically have security requirements in mind - i.e. not every container image which can be executed in your local machine, can also be executed on OpenShift. So if you do podman run - it will fail with kubedock, and it will work locally. (edited)
+[IMPORTANT]
+====
+The image you choose to use with kubedock must be compliant with Openshift security requirements.
+Otherwise, running the image with kubedock will result in a failure even though the same image runs locally without issues.
+====
 
 .Enabling kubedock
 
@@ -33,22 +37,26 @@ After enabling the kubedock environment variable, kubedock will run the followin
 * `podman stop`
 * `podman start`
 
-Other commands such as `podman build` are started by the local Podman instead.
+Other commands such as `podman build` are started by the local podman instead.
 
 [IMPORTANT]
 ====
-Using kubedock has the following limitations:
+Using `podman` commands with kubedock has following limitations
 
 * The `podman build -t <image> . && podman run <image>` command will fail. Use `podman build -t <image> . && podman push <image> && podman run <image>` instead.
 * The `podman generate kube` command is not supported.
 * `--env` option causes the `podman run` command to fail.
 ====
 
+.Prerequisites
+* An image compliant with Openshift security requirements.
+
 .Process
-. Add
-. ...
+. Add `KUBEDOCK_ENABLED=true` environment variable to the devfile.
 
 [NOTE]
 ====
-//Clients that use the podman or docker API need to be configured to point to kubedock setting CONTAINER_HOST=tcp://127.0.0.1:2475 or DOCKER_HOST=tcp://127.0.0.1:2475 when they run containers and configured to point to local podman when building the container (something impracticable in some cases).
+You must configure podman or docker API to point to kubedock setting
+`CONTAINER_HOST=tcp://127.0.0.1:2475` or `DOCKER_HOST=tcp://127.0.0.1:2475` when running containers.
+However, you must configure podman to point to local podman when building the container.
 ====
