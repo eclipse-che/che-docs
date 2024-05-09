@@ -5,21 +5,29 @@ link:https://devfile.io/[Devfiles] are `yaml` text files used for development en
 
 .{prod}-specific devfile features
 
+[NOTE]
+====    
+{prod} is expected to work with most of the popular images defined in the `components` section of devfile. For production purposes, it is recommended to use one of the link:https://catalog.redhat.com/software/containers/search?gs&q=ubi[Universal Base Images] as a base image for defining the Cloud Development Environment.
+====
+
+[WARNING]
+====
+Some images can not be used as-is for defining Cloud Development Environment since Visual Studio Code - Open Source ("Code - OSS") can not be started in the containers with missing `openssl` and `libbrotli`. Missing libraries should be explicitly installed on the Dockerfile level e.g. `RUN yum install compat-openssl11 libbrotli`
+====
+
 .Devfile and Universal Developer Image
 
 You do not need a devfile to start a workspace. If you do not include a devfile in your project repository, {prod} automatically loads a default devfile with a Universal Developer Image (UDI).
 
-.{prod-short} devfile registry
+.Devfile Registry
 
-link:https://github.com/eclipse-che/che-devfile-registry[{prod-short} devfile registry] contains ready-to-use devfiles for different languages and technologies.
- 
-[NOTE]
-====
-Devfiles included in the registry are specific to {prod} and should be treated as samples rather than templates. They might require updates to work with other versions of the components featured in the samples.
-====
+link:https://registry.devfile.io/viewer[{Devfile Registry] contains ready-to-use community-supported devfiles for different languages and technologies. Devfiles included in the registry should be treated as samples rather than templates.
+
 
 .Additional resources
 
-* link:https://devfile.io/docs/2.1.0/what-is-a-devfile[What is a devfile]
-* link:https://devfile.io/docs/2.1.0/benefits-of-devfile[Benefits of devfile]
-* link:https://devfile.io/docs/2.1.0/overview[Devfile customization overview]
+* link:https://devfile.io/docs/2.2.2/what-is-a-devfile[What is a devfile]
+* link:https://devfile.io/docs/2.2.0/benefits-of-devfile[Benefits of devfile]
+* link:https://devfile.io/docs/2.2.2/overview[Devfile customization overview]
+* link:https://devfile.io/[Devfile.io]
+* link:https://che.eclipseprojects.io/2024/02/05/@mario.loriedo-cde-customization.html[Customizing Cloud Development Environments]
