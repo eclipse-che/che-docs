@@ -73,7 +73,7 @@ helm install cert-manager jetstack/cert-manager \
 +
 [source,shell,subs="+attributes"]
 ----
-KEYCLOAK_HOST=keycloak.${DOMAIN_NAME}
+KEYCLOAK_HOST=keycloak.$\{DOMAIN_NAME}
 ----
 +
 [IMPORTANT]
@@ -101,7 +101,7 @@ Use the following command to figure out the external IP address of the NGINX Ing
 Use the following command to wait until `Keycloak` host is known:
 [source,shell,subs="attributes+"]
 ----
-until ping -c1 ${KEYCLOAK_HOST} >/dev/null 2>&1; do :; done
+until ping -c1 $\{KEYCLOAK_HOST} >/dev/null 2>&1; do :; done
 ----
 ====
 
@@ -167,7 +167,7 @@ spec:
   isCA: false
   commonName: keycloak
   dnsNames:
-    - ${KEYCLOAK_HOST}
+    - $\{KEYCLOAK_HOST}
   privateKey:
     algorithm: RSA
     encoding: PKCS1
@@ -252,10 +252,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - ${KEYCLOAK_HOST}
+        - $\{KEYCLOAK_HOST}
       secretName: keycloak.tls
   rules:
-  - host: ${KEYCLOAK_HOST}
+  - host: $\{KEYCLOAK_HOST}
     http:
       paths:
       - path: /
@@ -433,7 +433,7 @@ cat > /tmp/vcluster-values.yaml << EOF
 api:
   image: registry.k8s.io/kube-apiserver:v1.27.1
   extraArgs:
-    - --oidc-issuer-url=https://${KEYCLOAK_HOST}/realms/che
+    - --oidc-issuer-url=https://$\{KEYCLOAK_HOST}/realms/che
     - --oidc-client-id=che-public
     - --oidc-username-claim=email
     - --oidc-groups-claim=groups
@@ -530,7 +530,7 @@ vcluster list
     --exec-arg=\
 oidc-login,\
 get-token,\
---oidc-issuer-url=https://${KEYCLOAK_HOST}/realms/che,\
+--oidc-issuer-url=https://$\{KEYCLOAK_HOST}/realms/che,\
 --certificate-authority=/tmp/keycloak-ca.crt,\
 --oidc-client-id=che-public,\
 --oidc-extra-scope="email offline_access profile openid"
@@ -607,7 +607,7 @@ Use the following command to figure out the external IP address of the NGINX Ing
 Use the following command to wait until {kubernetes} host is known:
 [source,shell,subs="attributes+"]
 ----
-until ping -c1 ${DOMAIN_NAME} >/dev/null 2>&1; do :; done
+until ping -c1 $\{DOMAIN_NAME} >/dev/null 2>&1; do :; done
 ----
 ====
 
