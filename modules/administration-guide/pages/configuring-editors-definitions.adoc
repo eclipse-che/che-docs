@@ -1,0 +1,172 @@
+:_content-type: PROCEDURE
+:description: Configuring editors definitions
+:keywords: administration guide, configuring, dashboard, editors
+:navtitle: Configuring editors definitions
+:page-aliases: installation-guide:configuring-editors-definitions.adoc
+
+[id="configuring-editors-definitions"]
+= Configuring editors definitions
+
+This procedure describes how to configure {prod-short} editors definitions.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Create the `my-editor-definition-devfile.yaml` YAML file with editor definition configuration. Here are all the supported values, including optional ones:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+# Version of the devile schema
+schemaVersion: 2.2.2
+# Meta information of the editor
+metadata:
+  # The name of the editor
+  name: Editor name
+  displayName: Display Name
+  description: Run Editor Foo on top of Eclipse Che
+  # (OPTIONAL) Array of tags of the current editor. Tech-Preview means it's considered experimental and is not recommended for production environments. While it can include new features and improvements, it may still contain bugs or undergo significant changes before reaching a stable version.
+  tags:
+    - Tech-Preview
+  # (OPTIONAL) Additional attributes
+  attributes:
+    title: This is my editor
+    publisher: publisher
+    version: version
+    repository: https://github.com/editor/repository/
+    firstPublicationDate: '2024-01-01'
+    icon-mediatype: image/svg+xml
+    icon-data: |
+      __<icon-content>__
+# List of editor components
+components:
+  # Name of the component
+  - name: che-code-injector
+    # Configuration of devworkspace-related container
+    container:
+      # Image of the container
+      image: 'quay.io/che-incubator/che-code:insiders'
+      # The command to run in the dockerimage component instead of the default one provided in the image
+      command:
+        - /entrypoint-init-container.sh
+      # (OPTIONAL) List of volumes mounts that should be mounted in this container
+      volumeMounts:
+          # The name of the mount
+        - name: checode
+          # The path of the mount
+          path: /checode
+      # (OPTIONAL) The memory limit of the container
+      memoryLimit: 256Mi
+      # (OPTIONAL) The memory request of the container
+      memoryRequest: 32Mi
+      # (OPTIONAL) The CPU limit of the container
+      cpuLimit: 500m
+      # (OPTIONAL) The CPU request of the container
+      cpuRequest: 30m
+  # Name of the component
+  - name: che-code-runtime-description
+    # (OPTIONAL) Map of implementation-dependant free-form YAML attributes
+    attributes:
+      # The component within the architecture
+      app.kubernetes.io/component: che-code-runtime
+      # The name of a higher level application this one is part of
+      app.kubernetes.io/part-of: che-code.eclipse.org
+      # Defines a container component as a "container contribution". If a flattened DevWorkspace has a container component with the merge-contribution attribute, then any container contributions are merged into that container component
+      controller.devfile.io/container-contribution: true
+    container:
+      # Can be dummy image because the compoent is expected to be injected into workspace dev component
+      image: quay.io/devfile/universal-developer-image:latest
+      # (OPTIONAL) List of volumes mounts that should be mounted in this container
+      volumeMounts:
+          # The name of the mount
+        - name: checode
+          # (OPTIONAL) The path in the component container where the volume should be mounted. If not path is mentioned, default path is the is /<name>
+          path: /checode
+      # (OPTIONAL) The memory limit of the container
+      memoryLimit: 1024Mi
+      # (OPTIONAL) The memory request of the container
+      memoryRequest: 256Mi
+      # (OPTIONAL) The CPU limit of the container
+      cpuLimit: 500m
+      # (OPTIONAL) The CPU request of the container
+      cpuRequest: 30m
+      # (OPTIONAL) Environment variables used in this container
+      env:
+        - name: ENV_NAME
+          value: value
+      # Component endpoints
+      endpoints:
+        # Name of the editor
+        - name: che-code
+          # (OPTIONAL) Map of implementation-dependant string-based free-form attributes
+          attributes:
+            # Type of the endpoint. It only allows for it's value to be set to main  which indicates that the endpoint should be used as the mainUrl in the workspace status (i.e. it should be the URL used to access the editor in this context)
+            type: main
+            # An attribute that instructs the service to automatically redirect the unauthenticated requests for current user authentication. Setting this attribute to true has security consequences because it makes Cross-site request forgery (CSRF) attacks possible. The default value of the attribute is false.
+            cookiesAuthEnabled: true
+            # Defines an endpoint as "discoverable", meaning that a service should be created using the endpoint name (i.e. instead of generating a service name for all endpoints, this endpoint should be statically accessible)
+            discoverable: false
+            # Used to secure the endpoint with authorization on OpenShift, so that not anyone on the cluster can access the endpoint, the attribute enables authentication.
+            urlRewriteSupported: true
+          # Port number to be used within the container component
+          targetPort: 3100
+          # (OPTIONAL) Describes how the endpoint should be exposed on the network (public, internal, none)
+          exposure: public
+          # (OPTIONAL) Describes whether the endpoint should be secured and protected by some authentication process
+          secure: true
+          # (OPTIONAL) Describes the application and transport protocols of the traffic that will go through this endpoint
+          protocol: https
+    # Mandatory name that allows referencing the component from other elements
+  - name: checode
+    # (OPTIONAL) Allows specifying the definition of a volume shared by several other components. Ephemeral volumes are not stored persistently across restarts. Defaults to false
+    volume: {ephemeral: true}
+# (OPTIONAL) Bindings of commands to events. Each command is referred-to by its name
+events:
+  # IDs of commands that should be executed before the devworkspace start. This commands would typically be executed in init container
+  preStart:
+    - init-container-command
+  # IDs of commands that should be executed after the devworkspace is completely started. In the case of Che-Code, these commands should be executed after all plugins and extensions have started, including project cloning. This means that those commands are not triggered until the user opens the IDE in his browser
+  postStart:
+    - init-che-code-command
+# (OPTIONAL) Predefined, ready-to-use, devworkspace-related commands
+commands:
+    # Mandatory identifier that allows referencing this command
+  - id: init-container-command
+    apply:
+      # Describes component to which given action relates
+      component: che-code-injector
+    # Mandatory identifier that allows referencing this command
+  - id: init-che-code-command
+    # CLI Command executed in an existing component container
+    exec:
+      # Describes component to which given action relates
+      component: che-code-runtime-description
+      # The actual command-line string
+      commandLine: 'nohup /checode/entrypoint-volume.sh > /checode/entrypoint-logs.txt
+        2>&1 &'
+----
+
+. Create a ConfigMap with the editor definition content:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} create configmap my-editor-definition --from-file=my-editor-definition-devfile.yaml -n {prod-namespace}
+----
+
+. Add the required labels to the ConfigMap:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} label configmap my-editor-definition app.kubernetes.io/part-of=che.eclipse.org app.kubernetes.io/component=editor-definition -n {prod-namespace}
+----
+
+. Refresh the {prod-short} Dashboard page to see new available editors.
+
+.Additional resources
+
+* link:https://devfile.io/docs/2.2.2/what-is-a-devfile[Devfile documentation]
+
+* {editor-definition-samples-link}
+
