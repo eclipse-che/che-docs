@@ -1,0 +1,683 @@
+:_content-type: PROCEDURE
+:navtitle: Installing {prod-short} on the virtual {kubernetes} cluster
+:description: Installing {prod-short} on the virtual {kubernetes} cluster
+:keywords: installing-{prod-short}-on-the-virtual-kubernetes-cluster
+:page-aliases:
+
+[id="installing-{prod-short}-on-the-virtual-kubernetes-cluster.adoc"]
+= Installing {prod-short} on the virtual {kubernetes} cluster
+
+
+Virtual clusters are fully working {kubernetes} clusters that run on top of other  {kubernetes} clusters. Compared to fully separate "real" clusters, virtual clusters reuse worker nodes and networking of the host cluster. They have their own control plane and schedule all workloads into a single {namespace} of the host cluster. Similar to virtual machines, virtual clusters partition a single physical cluster into multiple separate ones.
+
+`vCluster` offers a solution for deploying {prod-short} in scenarios where it normally would be impossible. This includes situations where the {kubernetes} cluster version is incompatible with {prod-short}, or when the cloud service provider lacks support for external OIDC. Utilizing `vClusters` allows bypassing these constraints and enables {prod-short} to function as needed.
+
+.Prerequisites
+
+* `helm`: The package manager for {kubernetes}. See: link:https://helm.sh/docs/intro/install/[Installing Helm].
+
+* `vcluster`: The command line tool for managing virtual {kubernetes} clusters. See link:https://www.vcluster.com/docs/getting-started/setup[Installing vCluster CLI].
+
+* `{orch-cli}`: The Kubernetes command-line tool. See link:https://kubernetes.io/docs/tasks/tools/#kubectl[Installing {orch-cli}].
+
+* `kubelogin`: The plugin for `kubectl` also known as `kubectl oidc-login`. See https://github.com/int128/kubelogin[Installing kubelogin].
+
+* `{prod-cli}`: The command line tool for {prod}. See: xref:installing-the-chectl-management-tool.adoc[].
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster.
+
+.Procedure
+
+. Define the cluster domain name.
++
+[source,shell]
+----
+DOMAIN_NAME=<KUBERNETES_CLUSTER_DOMAIN_NAME>
+----
+
+. Install link:https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/[Ingress Controller].
+Check your {kubernetes} provider documentation on how to install it.
++
+[TIP]
+====
+Use the following command to install link:https://docs.nginx.com/nginx-ingress-controller/[NGINX Ingress Controller]
+on Azure Kubernetes Service cluster:
+[source,shell,subs="attributes+"]
+----
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+    --namespace ingress-nginx \
+    --create-namespace \
+    --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz \
+    --set controller.service.externalTrafficPolicy=Cluster
+----
+====
+
+. Install the link:https://cert-manager.io[cert-manager]:
++
+[source,shell,subs="attributes+"]
+----
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+
+helm install cert-manager jetstack/cert-manager \
+  --wait \
+  --create-namespace \
+  --namespace cert-manager \
+  --set installCRDs=true
+----
+
+. Define the `Keycloak` host:
++
+[source,shell,subs="+attributes"]
+----
+KEYCLOAK_HOST=keycloak.$\{DOMAIN_NAME}
+----
++
+[IMPORTANT]
+====
+If you use a registrar such as GoDaddy, you will need to add the following DNS record
+in your registrar and point it to the IP address of the ingress controller:
+
+* type: `**A**`
+* name: `**keycloak**`
+====
++
+[TIP]
+====
+Use the following command to figure out the external IP address of the NGINX Ingress Controller:
+[source,shell,subs="attributes+"]
+----
+{orch-cli} get services ingress-nginx-controller \
+  --namespace ingress-nginx \
+  --output jsonpath="{.status.loadBalancer.ingress[0].ip}"
+----
+====
++
+[TIP]
+====
+Use the following command to wait until `Keycloak` host is known:
+[source,shell,subs="attributes+"]
+----
+until ping -c1 $\{KEYCLOAK_HOST} >/dev/null 2>&1; do :; done
+----
+====
+
+. Install link:https://www.keycloak.org/[Keycloak] with a self-signed certificate:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} apply -f - <<EOF
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: keycloak
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: keycloak-selfsigned
+  namespace: keycloak
+  labels:
+    app: keycloak
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: keycloak-selfsigned
+  namespace: keycloak
+  labels:
+    app: keycloak
+spec:
+  isCA: true
+  commonName: keycloak-selfsigned-ca
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: keycloak-selfsigned
+    kind: Issuer
+    group: cert-manager.io
+  secretName: ca.crt
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: keycloak
+  namespace: keycloak
+  labels:
+    app: keycloak
+spec:
+  ca:
+    secretName: ca.crt
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: keycloak
+  namespace: keycloak
+  labels:
+    app: keycloak
+spec:
+  isCA: false
+  commonName: keycloak
+  dnsNames:
+    - $\{KEYCLOAK_HOST}
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 4096
+  issuerRef:
+    kind: Issuer
+    name: keycloak
+    group: cert-manager.io
+  secretName: keycloak.tls
+  subject:
+    organizations:
+      - Local Eclipse Che
+  usages:
+    - server auth
+    - digital signature
+    - key encipherment
+    - key agreement
+    - data encipherment
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  namespace: keycloak
+  labels:
+    app: keycloak
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: keycloak
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: keycloak
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - name: keycloak
+        image: quay.io/keycloak/keycloak:24.0.2
+        args: ["start-dev"]
+        env:
+        - name: KEYCLOAK_ADMIN
+          value: "admin"
+        - name: KEYCLOAK_ADMIN_PASSWORD
+          value: "admin"
+        - name: KC_PROXY
+          value: "edge"
+        ports:
+        - name: http
+          containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /realms/master
+            port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keycloak
+  namespace: keycloak
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: '3600'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '3600'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - $\{KEYCLOAK_HOST}
+      secretName: keycloak.tls
+  rules:
+  - host: $\{KEYCLOAK_HOST}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: keycloak
+            port:
+              number: 8080
+EOF
+----
+
+. Wait until the `Keycloak` pod is ready:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} wait --for=condition=ready pod -l app=keycloak -n keycloak --timeout=120s
+----
+
+. Configure `Keycloak` to create `che` realm:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
+    "/opt/keycloak/bin/kcadm.sh config credentials \
+        --server http://localhost:8080 \
+        --realm master \
+        --user admin  \
+        --password admin && \
+    /opt/keycloak/bin/kcadm.sh create realms \
+        -s realm='che' \
+        -s displayName='Eclipse Che' \
+        -s enabled=true \
+        -s registrationAllowed=false \
+        -s resetPasswordAllowed=true"
+----
+
+. Configure `Keycloak` to create `che-public` client:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
+    "/opt/keycloak/bin/kcadm.sh config credentials \
+        --server http://localhost:8080 \
+        --realm master \
+        --user admin  \
+        --password admin && \
+    /opt/keycloak/bin/kcadm.sh create clients \
+        -r 'che' \
+        -s name=che-public \
+        -s clientId=che-public \
+        -s id=che-public \
+        -s redirectUris='[\"*\"]' \
+        -s webOrigins='[\"*\"]' \
+        -s attributes='{\"post.logout.redirect.uris\": \"*\", \"oidc.ciba.grant.enabled\" : \"false\", \"oauth2.device.authorization.grant.enabled\" : \"false\", \"backchannel.logout.session.required\" : \"true\", \"backchannel.logout.revoke.offline.tokens\" : \"false\"}' \
+        -s standardFlowEnabled=true \
+        -s publicClient=true \
+        -s frontchannelLogout=true \
+        -s directAccessGrantsEnabled=true && \
+    /opt/keycloak/bin/kcadm.sh create clients/che-public/protocol-mappers/models \
+        -r 'che' \
+        -s name=groups \
+        -s protocol=openid-connect \
+        -s protocolMapper=oidc-group-membership-mapper \
+        -s consentRequired=false \
+        -s config='{\"full.path\" : \"false\", \"introspection.token.claim\" : \"true\", \"userinfo.token.claim\" : \"true\", \"id.token.claim\" : \"true\", \"lightweight.claim\" : \"false\", \"access.token.claim\" : \"true\", \"claim.name\" : \"groups\"}'"
+----
+
+. Configure `Keycloak` to create `che` user and the `vcluster` group:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
+    "/opt/keycloak/bin/kcadm.sh config credentials \
+        --server http://localhost:8080 \
+        --realm master \
+        --user admin  \
+        --password admin && \
+    /opt/keycloak/bin/kcadm.sh create users \
+        -r 'che' \
+        -s enabled=true \
+        -s username=che \
+        -s email=\"che@che\" \
+        -s emailVerified=true \
+        -s firstName=\"Eclipse\" \
+        -s lastName=\"Che\" && \
+    /opt/keycloak/bin/kcadm.sh set-password \
+        -r 'che' \
+        --username che \
+        --new-password che && \
+    /opt/keycloak/bin/kcadm.sh create groups \
+        -r 'che' \
+        -s name=vcluster"
+----
+
+. Configure `Keycloak` to add `che` user to `vcluster` group:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
+    "/opt/keycloak/bin/kcadm.sh config credentials \
+        --server http://localhost:8080 \
+        --realm master \
+        --user admin  \
+        --password admin && \
+    USER_ID=\$(/opt/keycloak/bin/kcadm.sh get users \
+        -r 'che' \
+        -q 'username=che' \
+                |  sed -n 's|.*\"id\" : \"\(.*\)\",|\1|p') && \
+    GROUP_ID=\$(/opt/keycloak/bin/kcadm.sh get groups \
+        -r 'che' \
+        -q 'name=vcluster' \
+                |  sed -n 's|.*\"id\" : \"\(.*\)\",|\1|p') && \
+    /opt/keycloak/bin/kcadm.sh update users/\$USER_ID/groups/\$GROUP_ID \
+        -r 'che'"
+----
+
+. Configure `Keycloak` to create `che-private` client:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
+    "/opt/keycloak/bin/kcadm.sh config credentials \
+        --server http://localhost:8080 \
+        --realm master \
+        --user admin  \
+        --password admin && \
+    /opt/keycloak/bin/kcadm.sh create clients \
+        -r 'che' \
+        -s name=che-private \
+        -s clientId=che-private \
+        -s id=che-private \
+        -s redirectUris='[\"*\"]' \
+        -s webOrigins='[\"*\"]' \
+        -s attributes='{\"post.logout.redirect.uris\": \"*\", \"oidc.ciba.grant.enabled\" : \"false\", \"oauth2.device.authorization.grant.enabled\" : \"false\", \"backchannel.logout.session.required\" : \"true\", \"backchannel.logout.revoke.offline.tokens\" : \"false\"}' \
+        -s standardFlowEnabled=true \
+        -s publicClient=false \
+        -s frontchannelLogout=true \
+        -s serviceAccountsEnabled=true \
+        -s directAccessGrantsEnabled=true && \
+    /opt/keycloak/bin/kcadm.sh create clients/che-private/protocol-mappers/models \
+        -r 'che' \
+        -s name=groups \
+        -s protocol=openid-connect \
+        -s protocolMapper=oidc-group-membership-mapper \
+        -s consentRequired=false \
+        -s config='{\"full.path\" : \"false\", \"introspection.token.claim\" : \"true\", \"userinfo.token.claim\" : \"true\", \"id.token.claim\" : \"true\", \"lightweight.claim\" : \"false\", \"access.token.claim\" : \"true\", \"claim.name\" : \"groups\"}' && \
+    /opt/keycloak/bin/kcadm.sh create clients/che-private/protocol-mappers/models \
+        -r 'che' \
+        -s name=audience \
+        -s protocol=openid-connect \
+        -s protocolMapper=oidc-audience-mapper \
+        -s config='{\"included.client.audience\" : \"che-public\", \"access.token.claim\" : \"true\", \"id.token.claim\" : \"true\"}'"
+----
+
+. Print and save `che-private` client secret:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
+    "/opt/keycloak/bin/kcadm.sh config credentials \
+        --server http://localhost:8080 \
+        --realm master \
+        --user admin  \
+        --password admin && \
+    /opt/keycloak/bin/kcadm.sh get clients/che-private/client-secret \
+        -r che"
+----
+
+. Prepare values for `vCluster` helm chart:
++
+[source,shell,subs="+attributes"]
+----
+cat > /tmp/vcluster-values.yaml << EOF
+api:
+  image: registry.k8s.io/kube-apiserver:v1.27.1
+  extraArgs:
+    - --oidc-issuer-url=https://$\{KEYCLOAK_HOST}/realms/che
+    - --oidc-client-id=che-public
+    - --oidc-username-claim=email
+    - --oidc-groups-claim=groups
+    - --oidc-ca-file=/tmp/certificates/keycloak-ca.crt
+
+init:
+  manifestsTemplate: |-
+    ---
+    kind: ClusterRoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: oidc-cluster-admin
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cluster-admin
+    subjects:
+    - kind: Group
+      name: vcluster
+service:
+  type: LoadBalancer
+EOF
+----
+
+. Install `vCluster`:
++
+[source,shell,subs="+attributes"]
+----
+helm repo add loft-sh https://charts.loft.sh
+helm repo update
+
+helm install vcluster loft-sh/vcluster-k8s \
+  --create-namespace \
+  --namespace vcluster \
+  --values /tmp/vcluster-values.yaml
+----
+
+. Mount `Keycloak` CA certificate into the `vcluster` pod:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} get secret ca.crt \
+    --output "jsonpath={.data['ca\.crt']}" \
+    --namespace keycloak \
+      | base64 -d > /tmp/keycloak-ca.crt
+
+{orch-cli} create configmap keycloak-cert \
+    --from-file=keycloak-ca.crt=/tmp/keycloak-ca.crt \
+    --namespace vcluster
+
+{orch-cli} patch deployment vcluster -n vcluster --type json -p='[
+  {
+    "op": "add",
+    "path": "/spec/template/spec/volumes/-",
+    "value": {
+      "name": "keycloak-cert",
+      "configMap": {
+        "name": "keycloak-cert"
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/spec/template/spec/containers/0/volumeMounts/-",
+    "value": {
+      "name": "keycloak-cert",
+      "mountPath": "/tmp/certificates"
+    }
+  }
+]'
+----
+
+. Wait until `vc-vcluster` secret is created:
+[source,shell,subs="+attributes"]
++
+----
+timeout 120 bash -c 'while :; do {orch-cli} get secret vc-vcluster -n vcluster && break || sleep 5; done'
+----
+
+. Verify the `vCluster` cluster status:
++
+[source,shell,subs="+attributes"]
+----
+vcluster list
+----
+
+. Update `kubeconfig` file:
+[source,shell,subs="+attributes"]
++
+----
+{orch-cli} config set-credentials vcluster \
+    --exec-api-version=client.authentication.k8s.io/v1beta1 \
+    --exec-command=kubectl \
+    --exec-arg=\
+oidc-login,\
+get-token,\
+--oidc-issuer-url=https://$\{KEYCLOAK_HOST}/realms/che,\
+--certificate-authority=/tmp/keycloak-ca.crt,\
+--oidc-client-id=che-public,\
+--oidc-extra-scope="email offline_access profile openid"
+
+{orch-cli} get secret vc-vcluster -n vcluster -o jsonpath="{.data.certificate-authority}" | base64 -d > /tmp/vcluster-ca.crt
+{orch-cli} config set-cluster vcluster \
+    --server=https://$(kubectl get svc vcluster-lb \
+                    --namespace vcluster \
+                    --output jsonpath="{.status.loadBalancer.ingress[0].ip}"):443 \
+    --certificate-authority=/tmp/vcluster-ca.crt
+
+{orch-cli} config set-context vcluster \
+    --cluster=vcluster \
+    --user=vcluster
+----
+
+. Use `vcluster` `kubeconfig` context:
+[source,shell,subs="+attributes"]
++
+----
+{orch-cli} config use-context vcluster
+----
+
+. View the pods in the cluster. By running the following command, you will be redirected to the authenticate page:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} get pods --all-namespaces
+----
+. Verification
++
+All pods in the running state are displayed.
+
+. Install link:https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/[Ingress Controller] on the virtual {kubernetes} cluster.
++
+[TIP]
+====
+Use the following command to install link:https://docs.nginx.com/nginx-ingress-controller/[NGINX Ingress Controller]
+on Azure Kubernetes Service cluster:
+[source,shell,subs="attributes+"]
+----
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+    --namespace ingress-nginx \
+    --create-namespace \
+    --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz \
+    --set controller.service.externalTrafficPolicy=Cluster
+----
+====
++
+[IMPORTANT]
+====
+If you use a registrar such as GoDaddy, you will need to add the following two DNS records in your registrar and point them to the IP address of the ingress controller:
+
+* type: `**A**`
+* name: `**@**` and `*****`
+====
++
+[TIP]
+====
+Use the following command to figure out the external IP address of the NGINX Ingress Controller:
+[source,shell,subs="attributes+"]
+----
+{orch-cli} get services ingress-nginx-controller \
+--namespace ingress-nginx \
+--output jsonpath="{.status.loadBalancer.ingress[0].ip}"
+----
+====
++
+[TIP]
+====
+Use the following command to wait until {kubernetes} host is known:
+[source,shell,subs="attributes+"]
+----
+until ping -c1 $\{DOMAIN_NAME} >/dev/null 2>&1; do :; done
+----
+====
+
+. Create `CheCluster` patch YAML file and replace `CHE_PRIVATE_CLIENT_SECRET` saved above:
++
+[source,shell,subs="+attributes,+quotes"]
+----
+cat > /tmp/che-patch.yaml << EOF
+kind: CheCluster
+apiVersion: org.eclipse.che/v2
+spec:
+  networking:
+    ingressClassName: nginx
+    auth:
+      oAuthClientName: che-private
+      oAuthSecret: __CHE_PRIVATE_CLIENT_SECRET__
+      identityProviderURL: https://$KEYCLOAK_HOST/realms/che
+      gateway:
+        oAuthProxy:
+          cookieExpireSeconds: 300
+  components:
+    cheServer:
+      extraProperties:
+        CHE_OIDC_USERNAME__CLAIM: email
+EOF
+----
+
+. Create `{prod-namespace}` namespace:
++
+[source,shell,subs="+attributes,"]
+----
+{orch-cli} create namespace {prod-namespace}
+----
+
+. Copy `Keycloak` CA certificate into the `{prod-namespace}` namespace:
++
+[source,shell,subs="+attributes,"]
+----
+{orch-cli} create configmap keycloak-certs \
+        --from-file=keycloak-ca.crt=/tmp/keycloak-ca.crt \
+        --namespace {prod-namespace}
+
+{orch-cli} label configmap keycloak-certs \
+        app.kubernetes.io/part-of=che.eclipse.org \
+        app.kubernetes.io/component=ca-bundle \
+        --namespace {prod-namespace}
+----
+
+. Deploy {prod-short}:
++
+[source,shell,subs="+attributes,"]
+----
+{prod-cli} server:deploy \
+        --platform k8s \
+        --domain $DOMAIN_NAME \
+        --che-operator-cr-patch-yaml /tmp/che-patch.yaml
+----
+
+.Verification steps
+. Verify the {prod-short} instance status:
++
+[source,shell,subs="+attributes,"]
+----
+{prod-cli} server:status
+----
+
+. Navigate to the {prod-short} cluster instance:
++
+[source,shell,subs="+attributes,"]
+----
+{prod-cli} dashboard:open
+----
+. Log in to the {prod-short} instance with *Username:* `che` and *Password:* `che`.
