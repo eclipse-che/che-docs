@@ -15,7 +15,12 @@ This procedure describes how to configure {prod-short} editors definitions.
 
 .Procedure
 
-. Create the `my-editor-definition-devfile.yaml` YAML file with editor definition configuration. Ensure to provide the actual values for `publisher` and `version` under `metadata.attributes`. Below you can find the supported values, including optional ones:
+. Create the `my-editor-definition-devfile.yaml` YAML file with editor definition configuration.
++
+Ensure to provide the actual values for `publisher` and `version` under `metadata.attributes`.
+They are used to construct the editor id along with editor name in the following format `publisher/name/version`.
++
+Below you can find the supported values, including optional ones:
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
@@ -23,7 +28,7 @@ This procedure describes how to configure {prod-short} editors definitions.
 schemaVersion: 2.2.2
 # Meta information of the editor
 metadata:
-  # The name of the editor
+  # (MANDATORY) The editor name
   name: EditorName
   displayName: Display Name
   description: Run Editor Foo on top of Eclipse Che
@@ -33,7 +38,9 @@ metadata:
   # Additional attributes
   attributes:
     title: This is my editor
+    # (MANDATORY) The publisher name
     publisher: publisher
+    # (MANDATORY) The editor version
     version: version
     repository: https://github.com/editor/repository/
     firstPublicationDate: '2024-01-01'
