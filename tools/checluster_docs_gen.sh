@@ -159,9 +159,10 @@ parse_section() {
     else
       DESCR_BUFF=$(echo "$section" | yq -M '.properties.'"$PROP"'.description')
     fi
-    DESCR_BUFF="${DESCR_BUFF:1:-1}"       # Removes first and last quotes "
-    DESCR_BUFF="${DESCR_BUFF//\\\"/\"}"   # Removes escaped quotes "
-    DESCR_BUFF="${DESCR_BUFF//:/\\:}"     # Escapes colons
+    DESCR_BUFF="${DESCR_BUFF:1:-1}"                 # Removes first and last quotes "
+    DESCR_BUFF="${DESCR_BUFF//\\\"/\"}"             # Removes escaped quotes "
+    DESCR_BUFF="${DESCR_BUFF//:/\\:}"               # Escapes colons
+    DESCR_BUFF="${DESCR_BUFF//\\n/ }"               # Replace newlines with spaces
     DESCR_BUFF="$(sed 's|Eclipse Che|{prod-short}|g' <<<$DESCR_BUFF)"
     DESCR_BUFF="$(sed 's|Che |{prod-short} |g' <<<$DESCR_BUFF)"
 
