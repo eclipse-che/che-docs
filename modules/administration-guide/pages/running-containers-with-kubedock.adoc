@@ -7,7 +7,7 @@
 [id="running-containers-with-kubedock"]
 = Running containers with kubedock
 
-link:https://github.com/joyrex2001/[Kubedock] is a minimal container engine implementation that gives you a Podman-/docker-like experience inside a {prod-short} workspace. Kubedock is especially useful when you are dealing with ad-hoc, ephemeral, and testing containers, such as in the use cases listed below:
+link:https://github.com/joyrex2001/[Kubedock] is a minimal container engine implementation that gives you a Podman-/docker-like experience inside a {prod-short} workspace. Kubedock is especially useful when dealing with ad-hoc, ephemeral, and testing containers, such as in the use cases listed below:
 
 * Executing application tests which rely on link:https://testcontainers.com/[Testcontainers] framework.
 
@@ -17,8 +17,8 @@ link:https://github.com/joyrex2001/[Kubedock] is a minimal container engine impl
 
 [IMPORTANT]
 ====
-The image you choose to use with kubedock must be compliant with Openshift security requirements.
-Otherwise, running the image with kubedock will result in a failure even though the same image runs locally without issues.
+The image you wish to use with kubedock must be compliant with link:https://docs.openshift.com/container-platform/{ocp4-ver}/openshift_images/create-images.html#images-create-guide-openshift_create-images[Openshift Container Platform guidelines].
+Otherwise, running the image with kubedock will result in a failure even if the same image runs locally without issues.
 ====
 
 .Enabling kubedock
@@ -37,7 +37,7 @@ After enabling the kubedock environment variable, kubedock will run the followin
 * `podman stop`
 * `podman start`
 
-Other commands such as `podman build` are started by the local Podman instead.
+Other commands such as `podman build` are started by the local Podman.
 
 [IMPORTANT]
 ====
@@ -49,14 +49,18 @@ Using `podman` commands with kubedock has following limitations
 ====
 
 .Prerequisites
-* An image compliant with Openshift security requirements.
+* An image compliant with link:https://docs.openshift.com/container-platform/{ocp4-ver}/openshift_images/create-images.html#images-create-guide-openshift_create-images[Openshift Container Platform guidelines].
 
 .Process
-. Add `KUBEDOCK_ENABLED=true` environment variable to the devfile.
+* Add `KUBEDOCK_ENABLED=true` environment variable to the devfile.
+** (OPTIONAL) Use the `KUBEDOCK_PARAM` variable to specify additional kubedock parameters.
 
-[NOTE]
+[IMPORTANT]
 ====
-You must configure Podman or docker API to point to kubedock setting
+You must configure the Podman or docker API to point to kubedock setting
 `CONTAINER_HOST=tcp://127.0.0.1:2475` or `DOCKER_HOST=tcp://127.0.0.1:2475` when running containers.
 However, you must configure Podman to point to local Podman when building the container.
 ====
+
+.Additional resources
+* link:https://github.com/agiertli/quarkus-workshops/blob/main/devfile.yaml[Sample devfile]
