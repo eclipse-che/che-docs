@@ -32,7 +32,8 @@ schemaVersion: 2.2.2
 # Meta information of the editor
 metadata:
   # (MANDATORY) The editor name
-  name: EditorName
+  # Must consist of lower case alphanumeric characters, '-' or '.'
+  name: editor-name
   displayName: Display Name
   description: Run Editor Foo on top of Eclipse Che
   # (OPTIONAL) Array of tags of the current editor. The Tech-Preview tag means the option is considered experimental and is not recommended for production environments. While it can include new features and improvements, it may still contain bugs or undergo significant changes before reaching a stable version.
@@ -173,6 +174,19 @@ commands:
 ----
 
 . Refresh the {prod-short} Dashboard page to see new available editor.
+
+== Retrieving the editor definition
+
+The editor definition is also served by the {prod-short} dashboard API from the following URL:
+
+`pass:c,a,q[{prod-url}]/dashboard/api/editors/devfile?che-editor=__<editor id>__`
+
+For the example from xref:configuring-editors-definitions.adoc[], the editor definition can be retrieved by accessing the following URL:
+
+`pass:c,a,q[{prod-url}]/dashboard/api/editors/devfile?che-editor=publisher/editor-name/version`
+
+TIP: When retrieving the editor definition from within the {orch-name} cluster, the {prod-short} dashboard API can be accessed via the dashboard service:
+`\http://che-dashboard.{prod-namespace}.svc.cluster.local:8080/dashboard/api/editors/devfile?che-editor=__<editor id>__`
 
 .Additional resources
 
