@@ -53,14 +53,74 @@ Using `podman` commands with kubedock has following limitations
 
 .Process
 * Add `KUBEDOCK_ENABLED=true` environment variable to the devfile.
-** (OPTIONAL) Use the `KUBEDOCK_PARAM` variable to specify additional kubedock parameters.
+** (OPTIONAL) Use the `KUBEDOCK_PARAM` variable to specify additional kubedock parameters. The list of variables is available link:https://github.com/joyrex2001/kubedock/blob/master/cmd/server.go[here]. Alternatively, you can use the following command to view the available options:
++
+[subs="+attributes,+quotes"]
+----
+# kubedock server --help
+----
+
+.Example
+[source,yaml,subs="+quotes,attributes"]
+----
+schemaVersion: 2.2.0
+metadata:
+  name: superheroes-workshop
+components:
+  - name: tools
+    container:
+      image: quay.io/devfile/universal-developer-image:latest
+      #image: quay.io/openshiftlabs/quarkus-workshop-stack:3.9
+      memoryLimit: 8Gi
+      memoryRequest: 1Gi
+      cpuLimit: "2"
+      cpuRequest: 200m
+      env:
+        - name: KUBEDOCK_PARAMS
+          value: "--reverse-proxy --kubeconfig /home/user/.kube/config --initimage quay.io/agiertli/kubedock:0.13.0"
+        - name: USE_JAVA17
+          value: "true"
+        - value: /home/jboss/.m2
+          name: MAVEN_CONFIG
+        - value: -Xmx4G -Xss128M -XX:MetaspaceSize=1G -XX:MaxMetaspaceSize=2G
+          name: MAVEN_OPTS
+        - name: KUBEDOCK_ENABLED
+          value: 'true'
+        - name: DOCKER_HOST
+          value: 'tcp://127.0.0.1:2475'
+        - name: TESTCONTAINERS_RYUK_DISABLED
+          value: 'true'
+        - name: TESTCONTAINERS_CHECKS_DISABLE
+          value: 'true'
+      endpoints:
+        - exposure: none
+          name: kubedock
+          protocol: tcp
+          targetPort: 2475
+        - exposure: public
+          name: http-booster
+          protocol: http
+          targetPort: 8080
+          attributes:
+            discoverable: true
+            urlRewriteSupported: true
+        - exposure: internal
+          name: debug
+          protocol: http
+          targetPort: 5005
+      volumeMounts:
+        - name: m2
+          path: /home/user/.m2
+  - name: m2
+    volume:
+      size: 10G
+----
 
 [IMPORTANT]
 ====
 You must configure the Podman or docker API to point to kubedock setting
 `CONTAINER_HOST=tcp://127.0.0.1:2475` or `DOCKER_HOST=tcp://127.0.0.1:2475` when running containers.
-However, you must configure Podman to point to local Podman when building the container.
+
+At the same time, you must configure Podman to point to local Podman when building the container.
 ====
 
-.Additional resources
-* link:https://github.com/agiertli/quarkus-workshops/blob/main/devfile.yaml[Sample devfile]
