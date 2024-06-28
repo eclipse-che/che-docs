@@ -1,0 +1,83 @@
+:_content-type: PROCEDURE
+:description: Enabling fuse-overlayfs for all workspaces
+:keywords: administration-guide, enable, fuse, all, workspaces
+:navtitle: Enabling fuse-overlayfs for all workspaces
+:page-aliases: 
+
+[id="enabling-fuse-overlayfs-for-all-workspaces"]
+= Enabling fuse-overlayfs for all workspaces
+
+.Prerequisites
+
+* The xref:administration-guide:enabling-access-to-dev-fuse-for-openshift.adoc[] section has been completed. This is not required for OpenShift versions 4.15 and later.
+
+* An active `{orch-cli}` session with administrative permissions to the destination OpenShift cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Create a ConfigMap that mounts the `storage.conf` file for all user workspaces. 
++
+====
+[source,yaml,subs="+quotes,+attributes"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: fuse-overlay
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /home/user/.config/containers/
+data:
+  storage.conf: |
+    [storage]
+    driver = "overlay"
+
+    [storage.options.overlay]
+    mount_program="/usr/bin/fuse-overlayfs"
+----
+====
+
+. Set the necessary annotation in the `spec.devEnvironments.annotations` field of the CheCluster custom resource.
++
+====
+[source,yaml,subs="+quotes,+attributes"]
+----
+kind: CheCluster
+apiVersion: org.eclipse.che/v2
+spec:
+  devEnvironments:
+    workspacePodAnnotations:
+      io.kubernetes.cri-o.Devices: /dev/fuse
+----
+====
++
+[NOTE]
+====
+For OpenShift versions before 4.15, the `io.openshift.podman-fuse: ""` annotation is also required.
+====
+
+.Verification steps
+
+. Start a workspace and verify that the storage driver is `overlay`.
++
+[subs="+attributes,+quotes"]
+----
+$ podman info | grep overlay
+----
+
++
+Example output:
++
+[subs="+attributes,+quotes"]
+----
+graphDriverName: overlay
+  overlay.mount_program:
+    Executable: /usr/bin/fuse-overlayfs
+    Package: fuse-overlayfs-1.12-1.module+el8.9.0+20326+387084d0.x86_64
+      fuse-overlayfs: version 1.12
+  Backing Filesystem: overlayfs
+----
