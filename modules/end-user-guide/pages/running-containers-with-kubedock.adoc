@@ -1,0 +1,125 @@
+:_content-type: PROCEDURE
+:description: Running containers with kubedock
+:keywords: kubedock, container
+:navtitle: Running containers with kubedock
+:page-aliases:
+
+[id="running-containers-with-kubedock"]
+= Running containers with kubedock
+
+link:https://github.com/joyrex2001/kubedock[Kubedock] is a minimal container engine implementation that gives you a Podman-/docker-like experience inside a {prod-short} workspace. Kubedock is especially useful when dealing with ad-hoc, ephemeral, and testing containers, such as in the use cases listed below:
+
+* Executing application tests which rely on link:https://testcontainers.com/[Testcontainers] framework.
+
+* Using link:https://quarkus.io/guides/dev-services[Quarkus Dev Services].
+
+* Running a container stored in remote container registry, for local development purposes
+
+[IMPORTANT]
+====
+The image you want to use with kubedock must be compliant with link:https://docs.openshift.com/container-platform/{ocp4-ver}/openshift_images/create-images.html#images-create-guide-openshift_create-images[Openshift Container Platform guidelines].
+Otherwise, running the image with kubedock will result in a failure even if the same image runs locally without issues.
+====
+
+.Enabling kubedock
+
+After enabling the kubedock environment variable, kubedock will run the following `podman` commands:
+
+* `podman run`
+* `podman ps`
+* `podman exec`
+* `podman cp`
+* `podman logs`
+* `podman inspect`
+* `podman kill`
+* `podman rm`
+* `podman wait`
+* `podman stop`
+* `podman start`
+
+Other commands such as `podman build` are started by the local Podman.
+
+[IMPORTANT]
+====
+Using `podman` commands with kubedock has following limitations
+
+* The `podman build -t <image> . && podman run <image>` command will fail. Use `podman build -t <image> . && podman push <image> && podman run <image>` instead.
+* The `podman generate kube` command is not supported.
+* `--env` option causes the `podman run` command to fail.
+====
+
+.Prerequisites
+* An image compliant with link:https://docs.openshift.com/container-platform/{ocp4-ver}/openshift_images/create-images.html#images-create-guide-openshift_create-images[Openshift Container Platform guidelines].
+
+.Process
+* Add `KUBEDOCK_ENABLED=true` environment variable to the devfile.
+** (OPTIONAL) Use the `KUBEDOCK_PARAM` variable to specify additional kubedock parameters. The list of variables is available link:https://github.com/joyrex2001/kubedock/blob/master/cmd/server.go[here]. Alternatively, you can use the following command to view the available options:
++
+[subs="+attributes,+quotes"]
+----
+# kubedock server --help
+----
+
+.Example
+[source,yaml,subs="+quotes,attributes"]
+----
+schemaVersion: 2.2.0
+metadata:
+  name: kubedock-sample-devfile
+components:
+  - name: tools
+    container:
+      image: quay.io/devfile/universal-developer-image:latest
+      memoryLimit: 8Gi
+      memoryRequest: 1Gi
+      cpuLimit: "2"
+      cpuRequest: 200m
+      env:
+        - name: KUBEDOCK_PARAMS
+          value: "--reverse-proxy --kubeconfig /home/user/.kube/config --initimage quay.io/agiertli/kubedock:0.13.0"
+        - name: USE_JAVA17
+          value: "true"
+        - value: /home/jboss/.m2
+          name: MAVEN_CONFIG
+        - value: -Xmx4G -Xss128M -XX:MetaspaceSize=1G -XX:MaxMetaspaceSize=2G
+          name: MAVEN_OPTS
+        - name: KUBEDOCK_ENABLED
+          value: 'true'
+        - name: DOCKER_HOST
+          value: 'tcp://127.0.0.1:2475'
+        - name: TESTCONTAINERS_RYUK_DISABLED
+          value: 'true'
+        - name: TESTCONTAINERS_CHECKS_DISABLE
+          value: 'true'
+      endpoints:
+        - exposure: none
+          name: kubedock
+          protocol: tcp
+          targetPort: 2475
+        - exposure: public
+          name: http-booster
+          protocol: http
+          targetPort: 8080
+          attributes:
+            discoverable: true
+            urlRewriteSupported: true
+        - exposure: internal
+          name: debug
+          protocol: http
+          targetPort: 5005
+      volumeMounts:
+        - name: m2
+          path: /home/user/.m2
+  - name: m2
+    volume:
+      size: 10G
+----
+
+[IMPORTANT]
+====
+You must configure the Podman or docker API to point to kubedock setting
+`CONTAINER_HOST=tcp://127.0.0.1:2475` or `DOCKER_HOST=tcp://127.0.0.1:2475` when running containers.
+
+At the same time, you must configure Podman to point to local Podman when building the container.
+====
+
