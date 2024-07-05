@@ -11,6 +11,14 @@ TIP: To get the latest security fixes after a {prod-short} update, rebuild your 
 
 pass:[<!-- vale RedHat.TermsErrors = YES -->]
 
+.Prerequisites
+
+* Linux operating system.
+
+* Podman tool to build an image.
+
+* NodeJS version 18.20.3 or higher.
+
 .Procedure
 
 . Get the publisher and extension names of each chosen extension:
@@ -35,21 +43,20 @@ If the extension publisher is unavailable or unwilling to publish the extension 
 
 include::example$snip_{project-context}-steps-to-add-or-remove-extensions-in-openvsx-sync-json.adoc[]
 
-** To add extensions, add the publisher and extension names to the `openvsx-sync.json` file.
-** To remove extensions, remove the publisher and extension names from the `openvsx-sync.json` file.
+** To add extensions, add the publisher, name and extension version to the `openvsx-sync.json` file.
+** To remove extensions, remove the publisher, name and extension version from the `openvsx-sync.json` file.
 ** Use the following JSON syntax:
 +
 [source,json,subs="+quotes"]
 ----
     {
-        "id": "__<publisher>__.__<extension>__"
+        "id": "__<publisher>__.__<name>__",
+        "version": "__<extension_version>__"
     }
 ----
 +
 [TIP]
 ====
-
-* The latest extension version on link:https://open-vsx.org[open-vsx.org] is the default. Alternatively, you can add `"version": "__<extension_version>__"` on a new line to specify a version.
 
 * If you have a closed-source extension or an extension developed only for internal use in your organization, you can add the extension directly from a `.vsix` file by using a URL accessible to your custom plugin registry container:
 +
