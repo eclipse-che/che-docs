@@ -9,14 +9,14 @@
 
 If you configured the cluster to adjust the number of nodes depending on resource needs, you need additional configuration to maintain the seamless operation of {prod-short} workspaces.
 
-Special consideration must be made for workspaces when the autoscaler adds and removes nodes.
+Workspaces need special consideration when the autoscaler adds and removes nodes.
 
-When a new node is being added, workspace startup can take longer than usual until the node provisioning is complete.
+When a new node is being added by the autoscaler, workspace startup can take longer than usual until the node provisioning is complete.
 
 Conversely when a node is being removed, ideally nodes that are running workspace pods should not be evicted by the autoscaler to avoid any interruptions while using the workspace and potentially losing any unsaved data.
 
 == When the autoscaler adds a new node
-To ensure proper workspace startup while a new node is being added, additional configurations need to be made to the {prod-short} installation.
+You need to make additional configurations to the {prod-short} installation to ensure proper workspace startup while a new node is being added.
 
 .Procedure
 
@@ -40,7 +40,7 @@ config:
 ----
 
 == When the autoscaler removes a node
-To prevent workspace pods from being evicted when the autoscaler needs to remove a node, the `"cluster-autoscaler.kubernetes.io/safe-to-evict": "true"` can be added to every workspace pod.
+To prevent workspace pods from being evicted when the autoscaler needs to remove a node, add the `"cluster-autoscaler.kubernetes.io/safe-to-evict": "true"` annotation to every workspace pod.
 
 .Procedure
 
