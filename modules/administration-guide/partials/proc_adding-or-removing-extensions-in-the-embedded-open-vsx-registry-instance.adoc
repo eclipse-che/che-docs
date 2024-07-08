@@ -13,15 +13,15 @@ pass:[<!-- vale RedHat.TermsErrors = YES -->]
 
 .Procedure
 
-. Get the publisher and extension names of each chosen extension:
+. Get the publisher and extension name of each chosen extension:
 
-.. Find the extension on the link:https://www.open-vsx.org/[Open VSX registry website] and copy the URL of the extension's listing page.
+.. Find the extension on the link:https://open-vsx.org/[Open VSX registry website] and copy the URL of the extension's listing page and extension's version.
 
-.. Extract the __<publisher>__ and __<extension>__ names from the copied URL:
+.. Extract the __<publisher>__ and __<extension>__ name from the copied URL:
 +
 [subs="+quotes"]
 ----
-https://www.open-vsx.org/extension/__<publisher>__/__<extension>__
+https://open-vsx.org/extension/__<publisher>__/__<name>__
 ----
 +
 [TIP]
@@ -33,30 +33,53 @@ If the extension publisher is unavailable or unwilling to publish the extension 
 
 ====
 
+. Build the custom plugin registry image and update CheCluster custom resource:
++
+[TIP]
+====
+
+* During the build process, each extension will be verified for compatibility with the version of Visual Studio Code used in {prod-short}.
+
+====
+
+.. Using {prod-short} instance:
+
+... Login to your {prod-short} instance as an administrator.
+
+include::example$snip_{project-context}-steps-to-build-custom-plugin-registry-in-workspace.adoc[]
+
+.. Using Linux operating system:
++
+[TIP]
+====
+
+* Podman and NodeJS version 18.20.3 or higher should be installed in the system.
+
+====
+
 include::example$snip_{project-context}-steps-to-add-or-remove-extensions-in-openvsx-sync-json.adoc[]
 
-** To add extensions, add the publisher and extension names to the `openvsx-sync.json` file.
-** To remove extensions, remove the publisher and extension names from the `openvsx-sync.json` file.
+** To add extensions, add the publisher, name and extension version to the `openvsx-sync.json` file.
+** To remove extensions, remove the publisher, name and extension version from the `openvsx-sync.json` file.
 ** Use the following JSON syntax:
 +
 [source,json,subs="+quotes"]
 ----
     {
-        "id": "__<publisher>__.__<extension>__"
+        "id": "__<publisher>__.__<name>__",
+        "version": "__<extension_version>__"
     }
 ----
 +
 [TIP]
 ====
 
-* The latest extension version on link:https://open-vsx.org[open-vsx.org] is the default. Alternatively, you can add `"version": "__<extension_version>__"` on a new line to specify a version.
-
 * If you have a closed-source extension or an extension developed only for internal use in your organization, you can add the extension directly from a `.vsix` file by using a URL accessible to your custom plugin registry container:
 +
 [source,json,subs="+quotes"]
 ----
     {
-        "id": "__<publisher>__.__<extension>__",
+        "id": "__<publisher>__.__<name>__",
         "download": "__<url_to_download_vsix_file>__",
         "version": "__<extension_version>__"
     }
@@ -66,23 +89,23 @@ include::example$snip_{project-context}-steps-to-add-or-remove-extensions-in-ope
 
 ====
 
-. Build the plugin registry container image and publish it to a container registry like link:https://quay.io/[quay.io]:
+... Build the plugin registry container image and publish it to a container registry such as link:https://quay.io/[quay.io]:
 
-.. {empty}
+.... {empty}
 +
 [subs="+attributes,+quotes"]
 ----
 $ ./build.sh -o __<username>__ -r quay.io -t custom
 ----
 
-.. {empty}
+.... {empty}
 +
 [subs="+attributes,+quotes"]
 ----
 $ {docker-cli} push quay.io/__<username/plugin_registry:custom>__
 ----
 
-. Edit the `CheCluster` custom resource in your organization's cluster to point to the image (for example, on link:https://quay.io/[quay.io]) and save the changes:
+... Edit the `CheCluster` custom resource in your organization's cluster to point to the image (for example, on link:https://quay.io/[quay.io]) and save the changes:
 +
 [source,yaml,subs="+quotes"]
 ----
