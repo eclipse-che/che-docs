@@ -1,0 +1,65 @@
+:_content-type: PROCEDURE
+:description: Configuring machine autoscaling
+:keywords: administration guide, machine, autoscaling, scaling
+:navtitle: Configuring machine autoscaling
+:page-aliases:
+
+[id="configuring-machine-autoscaling"]
+= Configuring machine autoscaling
+
+If a cluster has been configured to adjust the number of cluster nodes depending on resource needs, additional configuration is required to maintain the seamless operation of workspaces.
+
+Special consideration must be made for workspaces when the autoscaler adds and removes nodes.
+
+When a new node is being added, workspace startup can take longer than usual until the node provisioning is complete.
+
+Conversely when a node is being removed, ideally nodes that are running workspace pods should not be evicted by the autoscaler to avoid any interruptions while using the workspace and potentially losing any unsaved data.
+
+== When the autoscaler adds a new node
+To ensure proper workspace startup while a new node is being added, additional configurations need to be made to the {prod-short} installation.
+
+.Procedure
+
+. In the CheCluster Custom Resource, set the `spec.devEnvironments.startTimeoutSeconds` field to at least 600 seconds to allow time for a new node to be provisioned when needed during workspace startup.
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+spec:
+  devEnvironments:
+    startTimeoutSeconds: 600
+----
+
+. In the DevWorkspaceOperatorConfig Custom Resource in the {prod-namespace} namespace, add the `FailedScheduling` event to the `config.workpsace.ignoredUnrecoverableEvents` field. This allows the workspace startup to not fail if not enough nodes are available. When the new node is provisioned, this allows the workspace startup to continue. 
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+config:
+  workspace:
+    ignoredUnrecoverableEvents:
+    - FailedScheduling
+----
+
+== When the autoscaler removes a node
+To prevent workspace pods from being evicted when the autoscaler needs to remove a node, the `"cluster-autoscaler.kubernetes.io/safe-to-evict": "true"` can be added to every workspace pod.
+
+.Procedure
+
+. In the CheCluster Custom Resource, add the `cluster-autoscaler.kubernetes.io/safe-to-evict: "true"` annotation in the `spec.devEnvironments.workspacesPodAnnotations` field.
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+spec:
+  devEnvironments:
+    workspacesPodAnnotations:
+      cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+----
+
+.Verification steps
+
+. Start a workspace and verify that the workspace pod contains the `cluster-autoscaler.kubernetes.io/safe-to-evict: "true"` annotation.
++
+[subs="+attributes,+quotes"]
+----
+$ {orch-cli} get pod __<workspace_pod_name>__ -o jsonpath='{.metadata.annotations.cluster-autoscaler\.kubernetes\.io/safe-to-evict}'
+true
+----
