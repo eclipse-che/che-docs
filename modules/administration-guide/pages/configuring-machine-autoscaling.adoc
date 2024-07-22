@@ -20,24 +20,18 @@ You need to make additional configurations to the {prod-short} installation to e
 
 .Procedure
 
-. In the CheCluster Custom Resource, set the `spec.devEnvironments.startTimeoutSeconds` field to at least 600 seconds to allow time for a new node to be provisioned when needed during workspace startup.
+. In the CheCluster Custom Resource, set the following fields to allow proper workspace startup when the autoscaler is provisioning a new node.
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
 spec:
   devEnvironments:
-    startTimeoutSeconds: 600
+    startTimeoutSeconds: 600 <1>
+    ignoredUnrecoverableEvents: <2>
+      - FailedScheduling
 ----
-
-. In the DevWorkspaceOperatorConfig Custom Resource in the {prod-namespace} namespace, add the `FailedScheduling` event to the `config.workpsace.ignoredUnrecoverableEvents` field. This allows the workspace startup to not fail if not enough nodes are available. When the new node is provisioned, this allows the workspace startup to continue. 
-+
-[source,yaml,subs="+quotes,+attributes"]
-----
-config:
-  workspace:
-    ignoredUnrecoverableEvents:
-    - FailedScheduling
-----
+<1> Set to at least 600 seconds to allow time for a new node to be provisioned during workspace startup.
+<2> Ignore the `FailedScheduling` event to allow workspace startup to continue when a new node is provisioned. 
 
 == When the autoscaler removes a node
 To prevent workspace pods from being evicted when the autoscaler needs to remove a node, add the `"cluster-autoscaler.kubernetes.io/safe-to-evict": "true"` annotation to every workspace pod.
