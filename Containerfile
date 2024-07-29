@@ -72,6 +72,11 @@ RUN set -x \
     yq \
     && yq --version
 
+# Install Python packages
+RUN set -x \
+    ruby --version \
+    dnf remove -y ruby
+
 # WORKDIR is a Node.js prerequisite
 WORKDIR /tmp
 # Avoid error: Local gulp not found in /projects
