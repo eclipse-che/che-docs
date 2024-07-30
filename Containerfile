@@ -52,7 +52,6 @@ RUN set -x \
     nodejs \
     python3-pip \
     rsync \
-    rubygem-bundler \
     shyaml \
     tar \
     tox \
@@ -64,7 +63,6 @@ RUN set -x \
     && dnf clean all --quiet \
     && dot -v \
     && node --version \
-    && ruby --version \
     && vale --version
 
 # Install Python packages
@@ -74,12 +72,10 @@ RUN set -x \
     yq \
     && yq --version
 
-# Install Ruby packages (requires Ruby 2.7)
+# Install Python packages
 RUN set -x \
-    && gem install asciidoctor-pdf \
-    && which asciidoctor-pdf \
-    && asciidoctor --version \
-    && asciidoctor-pdf --version
+    ruby --version \
+    dnf remove -y ruby
 
 # WORKDIR is a Node.js prerequisite
 WORKDIR /tmp
@@ -97,6 +93,7 @@ RUN set -x \
     && npm install --no-save --global asciidoctor-kroki \
     && npm install --no-save --global gulp gulp-cli gulp-connect \
     && npm install --no-save --global js-yaml \
+    && npm install --no-save --global asciidoctor \
     && which antora \
     && antora --version \
     && rm /tmp/* --recursive --force
@@ -113,7 +110,6 @@ WORKDIR /projects
 RUN set -x \
     && antora --version \
     && asciidoctor --version \
-    && asciidoctor-pdf --version \
     && bash --version \
     && curl --version \
     && git --version \
