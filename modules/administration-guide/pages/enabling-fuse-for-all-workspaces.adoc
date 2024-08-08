@@ -40,6 +40,8 @@ data:
     mount_program="/usr/bin/fuse-overlayfs"
 ----
 ====
++
+WARNING: Creating this ConfigMap will cause all running workspaces to restart.
 
 . Set the necessary annotation in the `spec.devEnvironments.workspacesPodAnnotations` field of the CheCluster custom resource.
 +
@@ -81,3 +83,15 @@ graphDriverName: overlay
       fuse-overlayfs: version 1.12
   Backing Filesystem: overlayfs
 ----
++
+[NOTE]
+====
+The following error might occur for existing workspaces:
+
+[source]
+----
+ERRO[0000] User-selected graph driver "overlay" overwritten by graph driver "vfs" from database - delete libpod local files ("/home/user/.local/share/containers/storage") to resolve.  May prevent use of images created by other tools 
+----
+
+In this case, delete the libpod local files as mentioned in the error message. 
+====
