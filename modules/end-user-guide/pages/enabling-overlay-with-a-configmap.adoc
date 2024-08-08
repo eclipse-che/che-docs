@@ -69,6 +69,8 @@ data:
     [storage.options.overlay]
     mount_program="/usr/bin/fuse-overlayfs"
 ----
++
+WARNING: Creating this ConfigMap will cause all of your running workspaces to restart.
 
 .Verification steps
 
@@ -91,3 +93,15 @@ graphDriverName: overlay
       fuse-overlayfs: version 1.12
   Backing Filesystem: overlayfs
 ----
++
+[NOTE]
+====
+The following error might occur for existing workspaces:
+
+[source]
+----
+ERRO[0000] User-selected graph driver "overlay" overwritten by graph driver "vfs" from database - delete libpod local files ("/home/user/.local/share/containers/storage") to resolve.  May prevent use of images created by other tools 
+----
+
+In this case, delete the libpod local files as mentioned in the error message. 
+====
