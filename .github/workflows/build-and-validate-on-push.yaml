@@ -19,7 +19,7 @@ jobs:
   build:
     name: Build and validate
     runs-on: ubuntu-22.04
-    container: "quay.io/eclipse/che-docs:next"
+    container: "quay.io/mkuznets/che-docs:next"
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -47,7 +47,9 @@ jobs:
 
       - name: Build using antora
         id: antora-build
-        run: CI=true antora generate antora-playbook-for-development.yml --stacktrace --log-failure-level=warn
+        run: |
+          set -x
+          CI=true antora generate antora-playbook-for-development.yml --stacktrace --log-failure-level=warn
 
       - name: Upload artifact doc-content
         uses: actions/upload-artifact@v3
