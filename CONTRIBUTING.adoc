@@ -42,6 +42,31 @@ To understand the nature of topics, see the link:https://redhat-documentation.gi
 
 ** link:https://www.shellcheck.net/[ShellCheck] validates the shell scripts.
 
+== Project branches and workflows
+
+- main branch - hosts documentation for next version of che.
+- release branches (e.g. 7.89.x) - hosts documentations for stable versions of che.
+- `publication branch` stores published documents
+- `publication-builder` branch hosts a structure and a workflow for publishing
+
+Che Docs uses GitHub actions workflows for performing CI / release builds, as well as Pull request check jobs.
+
+CI jobs:
+- build-and-validate-on-push.yaml - assemble the project using the current `che-docs:next` image. Triggered on commit to the main branch
+- container-build - build `quay.io/eclipse/che-docs:next` image.
+- call-publication-builder - Triggered on commit to the main or release branch. Invoke publication-builder workflow to publish documentation in `publication` branch. 
+
+Release jobs:
+- release.yml - see link:https://github.com/eclipse/che-docs/blob/main/RELEASE.adoc[Release Eclipse Che documentation].
+
+PR Check jobs:
+- build-and-validate-on-pr.yaml - assemble the project from the PR branch, using `cquay.io/eclipse/che-docs:next` container image.
+- container-on-pull-request - build `che-docs` image.
+- call-publication-builder.yaml
+- publish-netlify - triggered after `build-and-validate-on-pr` completion. Assembled documentation is deployed for preview using netlify platform
+- vale - Vale linting check
+- try-in-web-ide - view pull request through Eclipse Che. See https://eclipse.dev/che/docs/stable/end-user-guide/try-in-web-ide-github-action/
+
 [id="documentation-workflow"]
 == The documentation workflow
 
