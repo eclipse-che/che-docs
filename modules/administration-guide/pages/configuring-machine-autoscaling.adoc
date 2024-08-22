@@ -34,26 +34,26 @@ spec:
 <2> Ignore the `FailedScheduling` event to allow workspace startup to continue when a new node is provisioned. 
 
 == When the autoscaler removes a node
-To prevent workspace pods from being evicted when the autoscaler needs to remove a node, add the `"cluster-autoscaler.kubernetes.io/safe-to-evict": "true"` annotation to every workspace pod.
+To prevent workspace pods from being evicted when the autoscaler needs to remove a node, add the `"cluster-autoscaler.kubernetes.io/safe-to-evict": "false"` annotation to every workspace pod.
 
 .Procedure
 
-. In the CheCluster Custom Resource, add the `cluster-autoscaler.kubernetes.io/safe-to-evict: "true"` annotation in the `spec.devEnvironments.workspacesPodAnnotations` field.
+. In the CheCluster Custom Resource, add the `cluster-autoscaler.kubernetes.io/safe-to-evict: "false"` annotation in the `spec.devEnvironments.workspacesPodAnnotations` field.
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
 spec:
   devEnvironments:
     workspacesPodAnnotations:
-      cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+      cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
 ----
 
 .Verification steps
 
-. Start a workspace and verify that the workspace pod contains the `cluster-autoscaler.kubernetes.io/safe-to-evict: "true"` annotation.
+. Start a workspace and verify that the workspace pod contains the `cluster-autoscaler.kubernetes.io/safe-to-evict: "false"` annotation.
 +
 [subs="+attributes,+quotes"]
 ----
 $ {orch-cli} get pod __<workspace_pod_name>__ -o jsonpath='{.metadata.annotations.cluster-autoscaler\.kubernetes\.io/safe-to-evict}'
-true
+false
 ----
