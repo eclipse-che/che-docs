@@ -1,0 +1,106 @@
+:_content-type: CONCEPT
+:description: Security best practices
+:keywords: administration-guide, security
+:navtitle: Security best practices
+//:page-aliases:
+
+[id="security-best-practices"]
+= Security best practices
+
+Get an overview of key security best practices for {prod} that can help foster a more resilient development environment.
+
+.Openshift
+
+{prod} runs on top of OpenShift, which provides the platform and the foundation for the products functioning atop. OpenShift documentation is the entry point for security hardening.
+
+.Project isolation
+
+In OpenShift, project isolation is similar to namespace isolation in Kubernetes but is achieved through the concept of projects. A project in OpenShift is a top-level organizational unit that provides isolation and collaboration between different applications, teams, or workloads within a cluster.
+
+By default, {prod-short} will provision a unique `<username>-devspaces` project for each user. Alternatively, the cluster administrator can disable project self-provisioning on the OpenShift level, and turn off automatic namespace provisioning in the CheCluster custom resource:
+
+[source, yaml]
+----
+devEnvironments:
+  defaultNamespace:
+    autoProvision: false
+----
+This setup allows achieving curated access to the {prod-short},
+where cluster administrators control provisioning for each user
+and can explicitly configure various settings including resource limits and quotas.
+More details about the project provisioning can be found in the link:https://eclipse.dev/che/docs/stable/administration-guide/mounting-a-secret-as-a-file-or-an-environment-variable-into-a-container/#mounting-a-secret-or-a-configmap-as-an-environment-variable-into-a-container[product documentation].
+
+.Role-based access control (RBAC)
+
+By default, the {prod-short} operator will create the following ClusterRoles:
+
+* `<namespace>-cheworkspaces-clusterrole`
+* `<namespace>-cheworkspaces-devworkspace-clusterrole`
+
+[NOTE]
+====
+The `<namespace>` prefix corresponds to the project name where the {prod} CheCluster CR is located.
+====
+
+The first time a user accesses {prod}, the corresponding RoleBinding will be created in the `<username>-devspaces` project, which would allow to perform certain actions with the following resources listed in Table 1 in the user's namespace.
+
+.Resources and corresponding Actions allowed in the user's namespace.
+[cols="1,1"]
+|===
+|Resources |Actions
+
+|pods
+|"get", "list", "watch", "create", "delete", "update", "patch"
+
+|pods/exec
+|"get", "create"
+
+|pods/log
+|"get", "list", "watch"
+
+|pods/portforward
+|"get", "list", "create"
+
+|configmaps
+|“get", "list", "create", "update", "patch", "delete"
+
+|events
+|“watch”
+
+|secrets
+|"get", "list", "create", "update", "patch", "delete"
+
+|services
+|"get", "list", "create", "delete", "update", "patch"
+
+|routes
+|”get", "list", "create", "delete"
+
+|persistentvolumeclaims
+|“get", "list", "watch", "create", "delete", "update", "patch"
+
+|apps/deployments
+|"get", "list", "watch", "create", "patch", "delete"
+
+|apps/replicasets
+|"get", "list", "patch", "delete"
+
+|namespaces
+|"get", "list"
+
+|projects
+|“get”
+
+|devworkspace
+|"get", "create", "delete", "list", "update", "patch", "watch"
+
+|devworkspacetemplates
+|"get", "create", "delete", "list", "update", "patch", "watch"
+|===
+
+
+
+
+
+
+
