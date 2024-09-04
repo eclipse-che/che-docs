@@ -1,0 +1,99 @@
+:_content-type: PROCEDURE
+:description: Concealing editors definitions
+:keywords: administration guide, concealing, dashboard, editors
+:navtitle: Concealing editors definitions
+:page-aliases: installation-guide:concealing-editors-definitions.adoc
+
+[id="concealing-editors-definitions"]
+= Concealing editors definitions
+
+Learn how to conceal {prod-short} editor definitions.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Find out the namespace where the {prod-short} Operator is deployed:
++
+[source,shell,subs="+attributes"]
+----
+OPERATOR_NAMESPACE=$({orch-cli} get pods -l app.kubernetes.io/component={prod-operator} -o jsonpath={".items[0].metadata.namespace"} --all-namespaces)
+----
+
+. Find out the available editors definitions:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} exec -n ${OPERATOR_NAMESPACE} deploy/{prod-operator} -- ls /tmp/editors-definitions
+----
+The output should look similar to the following:
++
+[source]
+----
+che-code-insiders.yaml
+che-code-latest.yaml
+che-idea-latest.yaml
+che-idea-next.yaml
+che-idea-server-latest.yaml
+che-idea-server-next.yaml
+----
+
+. Choose an editor definition to conceal.
+For example, to conceal the `che-idea-next.yaml` editor definition, set the editor definition file name:
++
+[source,shell,subs="+attributes"]
+----
+CHE_EDITOR_CONCEAL_FILE_NAME=che-idea-next.yaml
+----
+
+. Define the ConfigMap name for the concealed editor definition:
++
+[source,shell,subs="+attributes"]
+----
+CHE_EDITOR_CONCEAL_CONFIGMAP_NAME=che-conceal-${CHE_EDITOR_CONCEAL_FILE_NAME}
+----
+
+. Create a ConfigMap:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} create configmap ${CHE_EDITOR_CONCEAL_CONFIGMAP_NAME} \
+    --namespace ${OPERATOR_NAMESPACE} \
+    --from-literal=${CHE_EDITOR_CONCEAL_FILE_NAME}=""
+----
+
+. Find out the resource to patch. If the {prod-short} Operator is deployed using a Subscription, set the resource to patch to the Subscription. Otherwise, set the resource to patch to the Deployment:
++
+[source,shell,subs="+attributes"]
+----
+K8S_RESOURCE="deployment/{prod-operator}"
+VOLUMES="/spec/template/spec/volumes/-"
+VOLUME_MOUNTS="/spec/template/spec/containers/0/volumeMounts/-"
+
+SUBSCRIPTION_EXISTS=$({orch-cli} get subscription {prod-operator-subscription} --namespace ${OPERATOR_NAMESPACE} --no-headers 2>/dev/null || true)
+if [ -n "${SUBSCRIPTION_EXISTS}" ]; then
+  K8S_RESOURCE="subscription/{prod-operator-subscription}"
+  VOLUMES="/spec/config/volumes/-"
+  VOLUME_MOUNTS="/spec/config/volumeMounts/-"
+fi
+
+----
+
+. Patch resource to mount empty file instead of the editor definition file:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} patch ${RESOURCE_TO_PATCH} \
+  --namespace ${OPERATOR_NAMESPACE} \
+  --type "json" \
+  --patch '[{"op":"add","path":"'${VOLUMES}'","value":{"name":"'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'", "configMap": {"name": "'${CHE_EDITOR_CONCEAL_CONFIGMAP_NAME}'"}}}, {"op":"add","path":"'${VOLUME_MOUNTS}'","value":{"name": "'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'", "subPath":"'${CHE_EDITOR_CONCEAL_FILE_NAME}'","mountPath": "/tmp/editors-definitions/'${CHE_EDITOR_CONCEAL_FILE_NAME}'"}}]'
+----
+
+.Additional resources
+
+* xref:configuring-editors-definitions.adoc[]
+
+* {editor-definition-samples-link}
+
