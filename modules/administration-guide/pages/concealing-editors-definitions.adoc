@@ -17,14 +17,14 @@ Learn how to conceal {prod-short} editor definitions.
 
 . Find out the namespace where the {prod-short} Operator is deployed:
 +
-[source,shell,subs="+attributes"]
+[source,subs="+attributes"]
 ----
 OPERATOR_NAMESPACE=$({orch-cli} get pods -l app.kubernetes.io/component={prod-operator} -o jsonpath={".items[0].metadata.namespace"} --all-namespaces)
 ----
 
 . Find out the available editors definitions:
 +
-[source,shell,subs="+attributes"]
+[source,subs="+attributes"]
 ----
 {orch-cli} exec -n ${OPERATOR_NAMESPACE} deploy/{prod-operator} -- ls /tmp/editors-definitions
 ----
@@ -43,21 +43,21 @@ che-idea-server-next.yaml
 . Choose an editor definition to conceal.
 For example, to conceal the `che-idea-next.yaml` editor definition, set the editor definition file name:
 +
-[source,shell,subs="+attributes"]
+[source,subs="+attributes"]
 ----
 CHE_EDITOR_CONCEAL_FILE_NAME=che-idea-next.yaml
 ----
 
 . Define the ConfigMap name for the concealed editor definition:
 +
-[source,shell,subs="+attributes"]
+[source,subs="+attributes"]
 ----
 CHE_EDITOR_CONCEAL_CONFIGMAP_NAME=che-conceal-${CHE_EDITOR_CONCEAL_FILE_NAME}
 ----
 
 . Create a ConfigMap:
 +
-[source,shell,subs="+attributes"]
+[source,subs="+attributes"]
 ----
 {orch-cli} create configmap ${CHE_EDITOR_CONCEAL_CONFIGMAP_NAME} \
     --namespace ${OPERATOR_NAMESPACE} \
@@ -66,7 +66,7 @@ CHE_EDITOR_CONCEAL_CONFIGMAP_NAME=che-conceal-${CHE_EDITOR_CONCEAL_FILE_NAME}
 
 . Find out the resource to patch. If the {prod-short} Operator is deployed using a Subscription, set the resource to patch to the Subscription. Otherwise, set the resource to patch to the Deployment:
 +
-[source,shell,subs="+attributes"]
+[source,subs="+attributes"]
 ----
 K8S_RESOURCE="deployment/{prod-operator}"
 VOLUMES="/spec/template/spec/volumes/-"
@@ -83,7 +83,7 @@ fi
 
 . Patch resource to mount empty file instead of the editor definition file:
 +
-[source,shell,subs="+attributes"]
+[source,subs="+attributes"]
 ----
 {orch-cli} patch ${RESOURCE_TO_PATCH} \
   --namespace ${OPERATOR_NAMESPACE} \
