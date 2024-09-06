@@ -2,12 +2,11 @@
 :description: Concealing editors definitions
 :keywords: administration guide, concealing, dashboard, editors
 :navtitle: Concealing editors definitions
-//:page-aliases: installation-guide:concealing-editors-definitions.adoc
 
 [id="concealing-editors-definitions"]
 = Concealing editors definitions
 
-Learn how to conceal {prod-short} editor definitions.
+Learn how to conceal {prod-short} editor definitions. It can be useful when you want to hide some of the editors from the Dashboard UI, e.g. IntelliJ and have only Code OSS.
 
 .Prerequisites
 
@@ -36,8 +35,6 @@ che-code-insiders.yaml
 che-code-latest.yaml
 che-idea-latest.yaml
 che-idea-next.yaml
-che-idea-server-latest.yaml
-che-idea-server-next.yaml
 ----
 
 . Choose an editor definition to conceal.
@@ -55,7 +52,7 @@ CHE_EDITOR_CONCEAL_FILE_NAME=che-idea-next.yaml
 CHE_EDITOR_CONCEAL_CONFIGMAP_NAME=che-conceal-${CHE_EDITOR_CONCEAL_FILE_NAME}
 ----
 
-. Create a ConfigMap:
+. Create the ConfigMap:
 +
 [source,subs="+attributes"]
 ----
@@ -64,36 +61,110 @@ CHE_EDITOR_CONCEAL_CONFIGMAP_NAME=che-conceal-${CHE_EDITOR_CONCEAL_FILE_NAME}
     --from-literal=${CHE_EDITOR_CONCEAL_FILE_NAME}=""
 ----
 
-. Find out the resource to patch. If the {prod-short} Operator is deployed using a Subscription, set the resource to patch to the Subscription. Otherwise, set the resource to patch to the Deployment:
+. Find out the Operator subscription namespace if it exists:
 +
 [source,subs="+attributes"]
 ----
-K8S_RESOURCE="deployment/{prod-operator}"
-VOLUMES="/spec/template/spec/volumes/-"
-VOLUME_MOUNTS="/spec/template/spec/containers/0/volumeMounts/-"
+SUBSCRIPTION_NAMESPACE=$({orch-cli} get subscription \
+    --all-namespaces \
+    --field-selector=metadata.name={prod-operator-subscription} \
+    --output jsonpath='{.items[0].metadata.namespace}' 2>/dev/null
+)
+----
 
-SUBSCRIPTION_EXISTS=$({orch-cli} get subscription {prod-operator-subscription} --namespace ${OPERATOR_NAMESPACE} --no-headers 2>/dev/null || true)
-if [ -n "${SUBSCRIPTION_EXISTS}" ]; then
-  K8S_RESOURCE="subscription/{prod-operator-subscription}"
-  VOLUMES="/spec/config/volumes/-"
-  VOLUME_MOUNTS="/spec/config/volumeMounts/-"
+. Patch the {kubernetes} resource to mount the ConfigMap with the concealed editor definition. The resource to patch depends on the existence of the Operator subscription. If the subscription exists, then the subscription should be patched, otherwise the Operator deployment:
++
+[source,subs="+attributes"]
+----
+if [[ -n ${SUBSCRIPTION_NAMESPACE} ]]; then
+    if [[ $({orch-cli} get subscription {prod-operator-subscription} --namespace ${SUBSCRIPTION_NAMESPACE} --output jsonpath='{.spec.config}') == "" ]]; then
+        {orch-cli} patch subscription {prod-operator-subscription} \
+          --namespace ${SUBSCRIPTION_NAMESPACE} \
+          --type json \
+          --patch '[{
+                "op":"add",
+                "path":"/spec/config",
+                "value": {}
+            }]'
+    fi
+
+    if [[ $({orch-cli} get subscription {prod-operator-subscription} --namespace ${SUBSCRIPTION_NAMESPACE} --output jsonpath='{.spec.config.volumes}') == "" ]]; then
+        {orch-cli} patch subscription {prod-operator-subscription} \
+          --namespace ${SUBSCRIPTION_NAMESPACE} \
+          --type json \
+          --patch '[{
+                "op":"add",
+                "path":"/spec/config/volumes",
+                "value": []
+            }]'
+    fi
+
+    if [[ $({orch-cli} get subscription {prod-operator-subscription} --namespace ${SUBSCRIPTION_NAMESPACE} --output jsonpath='{.spec.config.volumeMounts}') == "" ]]; then
+        {orch-cli} patch subscription {prod-operator-subscription} \
+          --namespace ${SUBSCRIPTION_NAMESPACE} \
+          --type json \
+          --patch '[{
+                "op":"add",
+                "path":"/spec/config/volumeMounts",
+                "value": []
+            }]'
+    fi
+
+    {orch-cli} patch subscription {prod-operator-subscription} \
+      --namespace ${SUBSCRIPTION_NAMESPACE} \
+      --type json \
+      --patch '[{
+        "op":"add",
+        "path":"/spec/config/volumes/-",
+        "value": {
+            "name":"'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'",
+            "configMap": {
+                "name": "'${CHE_EDITOR_CONCEAL_CONFIGMAP_NAME}'"
+            }
+        }
+      },
+      {
+        "op":"add",
+        "path":"/spec/config/volumeMounts/-",
+        "value":{
+            "name": "'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'",
+            "subPath":"'${CHE_EDITOR_CONCEAL_FILE_NAME}'",
+            "mountPath": "/tmp/editors-definitions/'${CHE_EDITOR_CONCEAL_FILE_NAME}'"
+        }
+      }]'
+else
+    {orch-cli} patch deployment {prod-operator} \
+      --namespace ${OPERATOR_NAMESPACE} \
+      --type json \
+      --patch '[{
+        "op":"add",
+        "path":"/spec/template/spec/volumes/-",
+        "value": {
+            "name":"'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'",
+            "configMap": {
+                "name": "'${CHE_EDITOR_CONCEAL_CONFIGMAP_NAME}'"
+            }
+        }
+    },
+    {
+        "op":"add",
+        "path":"/spec/template/spec/containers/0/volumeMounts/-",
+        "value":{
+            "name": "'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'",
+            "subPath":"'${CHE_EDITOR_CONCEAL_FILE_NAME}'",
+            "mountPath": "/tmp/editors-definitions/'${CHE_EDITOR_CONCEAL_FILE_NAME}'"
+        }
+    }
+]'
 fi
-
 ----
 
-. Patch resource to mount empty file instead of the editor definition file:
-+
-[source,subs="+attributes"]
-----
-{orch-cli} patch ${RESOURCE_TO_PATCH} \
-  --namespace ${OPERATOR_NAMESPACE} \
-  --type "json" \
-  --patch '[{"op":"add","path":"'${VOLUMES}'","value":{"name":"'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'", "configMap": {"name": "'${CHE_EDITOR_CONCEAL_CONFIGMAP_NAME}'"}}}, {"op":"add","path":"'${VOLUME_MOUNTS}'","value":{"name": "'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'", "subPath":"'${CHE_EDITOR_CONCEAL_FILE_NAME}'","mountPath": "/tmp/editors-definitions/'${CHE_EDITOR_CONCEAL_FILE_NAME}'"}}]'
-----
 
 .Additional resources
 
 * xref:configuring-editors-definitions.adoc[]
+
+* xref:configuring-default-editor-definition.adoc[]
 
 * {editor-definition-samples-link}
 
