@@ -49,7 +49,7 @@ CHE_EDITOR_CONCEAL_FILE_NAME=che-idea-next.yaml
 +
 [source,subs="+attributes"]
 ----
-CHE_EDITOR_CONCEAL_CONFIGMAP_NAME=che-conceal-${CHE_EDITOR_CONCEAL_FILE_NAME}
+CHE_EDITOR_CONCEAL_CONFIGMAP_NAME=che-conceal-$CHE_EDITOR_CONCEAL_FILE_NAME
 ----
 
 . Create the ConfigMap:
@@ -58,7 +58,7 @@ CHE_EDITOR_CONCEAL_CONFIGMAP_NAME=che-conceal-${CHE_EDITOR_CONCEAL_FILE_NAME}
 ----
 {orch-cli} create configmap ${CHE_EDITOR_CONCEAL_CONFIGMAP_NAME} \
     --namespace ${OPERATOR_NAMESPACE} \
-    --from-literal=${CHE_EDITOR_CONCEAL_FILE_NAME}=""
+    --from-literal=$CHE_EDITOR_CONCEAL_FILE_NAME=""
 ----
 
 . Find out the Operator subscription namespace if it exists:
@@ -128,8 +128,8 @@ if [[ -n ${SUBSCRIPTION_NAMESPACE} ]]; then
         "path":"/spec/config/volumeMounts/-",
         "value":{
             "name": "'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'",
-            "subPath":"'${CHE_EDITOR_CONCEAL_FILE_NAME}'",
-            "mountPath": "/tmp/editors-definitions/'${CHE_EDITOR_CONCEAL_FILE_NAME}'"
+            "subPath":"'$CHE_EDITOR_CONCEAL_FILE_NAME'",
+            "mountPath": "/tmp/editors-definitions/'$CHE_EDITOR_CONCEAL_FILE_NAME'"
         }
       }]'
 else
