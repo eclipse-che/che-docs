@@ -12,6 +12,8 @@ Learn how to conceal {prod-short} editor definitions. It can be useful when you 
 
 * An active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
 
+* `jq`. See link:https://stedolan.github.io/jq/download/[Downloading `jq`].
+
 .Procedure
 
 . Find out the namespace where the {prod-short} Operator is deployed:
@@ -21,7 +23,7 @@ Learn how to conceal {prod-short} editor definitions. It can be useful when you 
 OPERATOR_NAMESPACE=$({orch-cli} get pods -l app.kubernetes.io/component={prod-operator} -o jsonpath={".items[0].metadata.namespace"} --all-namespaces)
 ----
 
-. Find out the available editors definitions:
+. Find out the available editors definitions files:
 +
 [source,subs="+attributes"]
 ----
@@ -72,7 +74,7 @@ SUBSCRIPTION_NAMESPACE=$({orch-cli} get subscription \
 )
 ----
 
-. Patch the {kubernetes} resource to mount the ConfigMap with the concealed editor definition. The resource to patch depends on the existence of the Operator subscription. If the subscription exists, then the subscription should be patched, otherwise the Operator deployment:
+. Patch the {kubernetes} resource to mount the ConfigMap with the empty editor definition. The resource to patch depends on the existence of the Operator subscription. If the subscription exists, then the subscription should be patched, otherwise the Operator deployment:
 +
 [source,subs="+attributes"]
 ----
