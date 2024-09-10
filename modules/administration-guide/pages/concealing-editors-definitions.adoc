@@ -25,7 +25,7 @@ OPERATOR_NAMESPACE=$({orch-cli} get pods -l app.kubernetes.io/component={prod-op
 +
 [source,subs="+attributes"]
 ----
-{orch-cli} exec -n ${OPERATOR_NAMESPACE} deploy/{prod-operator} -- ls /tmp/editors-definitions
+{orch-cli} exec -n $OPERATOR_NAMESPACE deploy/{prod-operator} -- ls /tmp/editors-definitions
 ----
 The output should look similar to the following:
 +
@@ -56,8 +56,8 @@ CHE_EDITOR_CONCEAL_CONFIGMAP_NAME=che-conceal-$CHE_EDITOR_CONCEAL_FILE_NAME
 +
 [source,subs="+attributes"]
 ----
-{orch-cli} create configmap ${CHE_EDITOR_CONCEAL_CONFIGMAP_NAME} \
-    --namespace ${OPERATOR_NAMESPACE} \
+{orch-cli} create configmap $CHE_EDITOR_CONCEAL_CONFIGMAP_NAME \
+    --namespace $OPERATOR_NAMESPACE \
     --from-literal=$CHE_EDITOR_CONCEAL_FILE_NAME=""
 ----
 
@@ -76,10 +76,10 @@ SUBSCRIPTION_NAMESPACE=$({orch-cli} get subscription \
 +
 [source,subs="+attributes"]
 ----
-if [[ -n ${SUBSCRIPTION_NAMESPACE} ]]; then
-    if [[ $({orch-cli} get subscription {prod-operator-subscription} --namespace ${SUBSCRIPTION_NAMESPACE} --output jsonpath='{.spec.config}') == "" ]]; then
+if [[ -n $SUBSCRIPTION_NAMESPACE ]]; then
+    if [[ $({orch-cli} get subscription {prod-operator-subscription} --namespace $SUBSCRIPTION_NAMESPACE --output jsonpath='{.spec.config}') == "" ]]; then
         {orch-cli} patch subscription {prod-operator-subscription} \
-          --namespace ${SUBSCRIPTION_NAMESPACE} \
+          --namespace $SUBSCRIPTION_NAMESPACE \
           --type json \
           --patch '[{
                 "op":"add",
@@ -88,9 +88,9 @@ if [[ -n ${SUBSCRIPTION_NAMESPACE} ]]; then
             }]'
     fi
 
-    if [[ $({orch-cli} get subscription {prod-operator-subscription} --namespace ${SUBSCRIPTION_NAMESPACE} --output jsonpath='{.spec.config.volumes}') == "" ]]; then
+    if [[ $({orch-cli} get subscription {prod-operator-subscription} --namespace $SUBSCRIPTION_NAMESPACE --output jsonpath='{.spec.config.volumes}') == "" ]]; then
         {orch-cli} patch subscription {prod-operator-subscription} \
-          --namespace ${SUBSCRIPTION_NAMESPACE} \
+          --namespace $SUBSCRIPTION_NAMESPACE \
           --type json \
           --patch '[{
                 "op":"add",
@@ -99,9 +99,9 @@ if [[ -n ${SUBSCRIPTION_NAMESPACE} ]]; then
             }]'
     fi
 
-    if [[ $({orch-cli} get subscription {prod-operator-subscription} --namespace ${SUBSCRIPTION_NAMESPACE} --output jsonpath='{.spec.config.volumeMounts}') == "" ]]; then
+    if [[ $({orch-cli} get subscription {prod-operator-subscription} --namespace $SUBSCRIPTION_NAMESPACE --output jsonpath='{.spec.config.volumeMounts}') == "" ]]; then
         {orch-cli} patch subscription {prod-operator-subscription} \
-          --namespace ${SUBSCRIPTION_NAMESPACE} \
+          --namespace $SUBSCRIPTION_NAMESPACE \
           --type json \
           --patch '[{
                 "op":"add",
@@ -111,7 +111,7 @@ if [[ -n ${SUBSCRIPTION_NAMESPACE} ]]; then
     fi
 
     {orch-cli} patch subscription {prod-operator-subscription} \
-      --namespace ${SUBSCRIPTION_NAMESPACE} \
+      --namespace $SUBSCRIPTION_NAMESPACE \
       --type json \
       --patch '[{
         "op":"add",
@@ -119,7 +119,7 @@ if [[ -n ${SUBSCRIPTION_NAMESPACE} ]]; then
         "value": {
             "name":"'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'",
             "configMap": {
-                "name": "'${CHE_EDITOR_CONCEAL_CONFIGMAP_NAME}'"
+                "name": "'$CHE_EDITOR_CONCEAL_CONFIGMAP_NAME'"
             }
         }
       },
@@ -134,7 +134,7 @@ if [[ -n ${SUBSCRIPTION_NAMESPACE} ]]; then
       }]'
 else
     {orch-cli} patch deployment {prod-operator} \
-      --namespace ${OPERATOR_NAMESPACE} \
+      --namespace $OPERATOR_NAMESPACE \
       --type json \
       --patch '[{
         "op":"add",
@@ -142,7 +142,7 @@ else
         "value": {
             "name":"'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'",
             "configMap": {
-                "name": "'${CHE_EDITOR_CONCEAL_CONFIGMAP_NAME}'"
+                "name": "'$CHE_EDITOR_CONCEAL_CONFIGMAP_NAME'"
             }
         }
     },
@@ -151,8 +151,8 @@ else
         "path":"/spec/template/spec/containers/0/volumeMounts/-",
         "value":{
             "name": "'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'",
-            "subPath":"'${CHE_EDITOR_CONCEAL_FILE_NAME}'",
-            "mountPath": "/tmp/editors-definitions/'${CHE_EDITOR_CONCEAL_FILE_NAME}'"
+            "subPath":"'$CHE_EDITOR_CONCEAL_FILE_NAME'",
+            "mountPath": "/tmp/editors-definitions/'$CHE_EDITOR_CONCEAL_FILE_NAME'"
         }
     }
 ]'
