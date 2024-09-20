@@ -1,0 +1,33 @@
+:_content-type: PROCEDURE
+:description: Configuring allowed URLs for Cloud Development Environments
+:keywords: administration guide, configuring-allowed-sources
+:navtitle: Configuring allowed URLs for Cloud Development Environments
+
+[id="configuring-allowed-urls-for-cloud-development-environments"]
+= Configuring allowed URLs for Cloud Development Environments
+
+Allowed URLs play an important role in securing the initiation of Cloud Development Environments (CDEs), ensuring that they can only be launched from authorized sources. By utilizing wildcard support, such as `*`, organizations can implement flexible URL patterns, allowing for dynamic and secure CDE initiation across various paths within a domain.
+
+. Configure allowed sources:
++
+[source,subs="+quotes,+attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+    --namespace {prod-namespace} \
+    --type='merge' \
+    -p \
+'{
+   "spec": {
+     "devEnvironments": {
+       "allowedSources": {
+         "urls": ["url_1", "url_2"] <1>
+       }
+     }
+   }
+ }'
+----
+<1> The array of approved URLs for starting Cloud Development Environments (CDEs). CDEs can only be initiated from these URLs. Wildcards `\*` are supported in URLs. For example, `https://example.com/*` would allow CDEs to be initiated from any path within `example.com`.
+
+.Additional resources
+
+* xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]
