@@ -1,0 +1,47 @@
+:_content-type: REFERENCE
+:description: Minimum set of permissions required to install {prod-short} on OpenShift using the web console
+:keywords: permissions, openshift, installing
+:navtitle: Permissions to install {prod-short} on OpenShift using web console
+
+[id="permissions-to-install-che-on-openshift-using-the-web-console"]
+= Permissions to install {prod-short} on OpenShift using the web console
+
+Here you can find the minimal set of permissions required to install {prod-short} on an OpenShift cluster using the web console:
+
+[source,yaml,subs="+quotes,+attributes"]
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {prod-id-short}-install-web-console
+rules:
+- apiGroups: ["org.eclipse.che"]
+  resources: ["checlusters"]
+  verbs: ["*"]
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "list", "create"]
+- apiGroups: ["project.openshift.io"]
+  resources: ["projects"]
+  verbs: ["get", "list", "create"]
+  # OLM resources permissions
+- apiGroups: ["operators.coreos.com"]
+  resources: ["subscriptions"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: ["operators.coreos.com"]
+  resources: ["operatorgroups"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["operators.coreos.com"]
+  resources: ["clusterserviceversions", "catalogsources", "installplans"]
+  verbs: ["get", "list", "watch", "delete"]
+- apiGroups: ["packages.operators.coreos.com"]
+  resources: ["packagemanifests", "packagemanifests/icon"]
+  verbs: ["get", "list", "watch"]
+  # Workaround related to viewing operators in OperatorHub
+- apiGroups: ["operator.openshift.io"]
+  resources: ["cloudcredentials"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["config.openshift.io"]
+  resources: ["infrastructures", "authentications"]
+  verbs: ["get", "list", "watch"]
+----
