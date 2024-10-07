@@ -25,7 +25,7 @@ devEnvironments:
   defaultNamespace:
     autoProvision: false
 ----
-This setup allows achieving curated access to the {prod-short},
+This setup allows achieving curated access to {prod-short},
 where cluster administrators control provisioning for each user
 and can explicitly configure various settings including resource limits and quotas.
 More details about the project provisioning can be found in the link:https://eclipse.dev/che/docs/stable/administration-guide/mounting-a-secret-as-a-file-or-an-environment-variable-into-a-container/#mounting-a-secret-or-a-configmap-as-an-environment-variable-into-a-container[product documentation].
@@ -98,8 +98,163 @@ The first time a user accesses {prod}, the corresponding RoleBinding will be cre
 |"get", "create", "delete", "list", "update", "patch", "watch"
 |===
 
+[IMPORTANT]
+====
+Each user is granted permissions only to their namespace, and can not access other user’s resources.
+Cluster administrators can add extra permissions to users.
+They should not remove permissions granted by default.
+Refer to the link:https://eclipse.dev/che/docs/stable/administration-guide/configuring-cluster-roles-for-users/[product documentation] for configuring cluster roles for {prod} users.
+More details about the role-based access control are available in the link:https://docs.openshift.com/container-platform/4.14/authentication/using-rbac.html[OpenShift documentation].
+====
 
+.Dev environment isolation
 
+The isolation of the development environments is implemented using OpenShift projects. Every developer has a project in which the following objects will be created and managed:
+
+* Cloud Development Environment (CDE) Pods, including the IDE server.
+* Secrets containing developer credentials, such as a Git token, SSH keys, and a Kubernetes token.
+* ConfigMaps with developer-specific configuration, such as the Git name and email.
+* Volumes that persist data such, as the source code, even when the CDE Pod is stopped.
+
+[IMPORTANT]
+====
+Access to the resources in a namespace must be limited to the developer owning it. Granting read access to another developer is equivalent to sharing the developer credentials and should be avoided.
+====
+
+.Enhanced authorization
+
+Even though the current trend is
+to split an infrastructure into a number of "fit for purpose" clusters
+instead of having a gigantic monolith OpenShift cluster,
+administrators might still want to provide granular access and restrict certain functionality for particular users.
+
+[NOTE]
+====
+A "fit for purpose" OpenShift cluster refers to a cluster that is specifically designed and configured to meet the requirements and goals of a particular use case or workload, tailored to optimize performance, resource utilization, and other factors based on the characteristics of the workloads it will be managing. For {prod}, it is recommended to have this type of cluster provisioned.
+====
+
+Considering this,
+optional properties
+that allow setting up granular access for different groups and users have been added to the CheCluster Custom Resource:
+`allowUsers`, `allowGroups`,`denyUsers`, and `denyGroups`.
+Below is an example of access configuration:
+
+[source, code]
+----
+ networking:
+    auth:
+      advancedAuthorization:
+        allowUsers:
+          - user-a
+          - user-b
+        denyUsers:
+          - user-c
+        allowGroups:
+          - openshift-group-a
+          - openshift-group-b
+        denyGroups:
+          - openshift-group-c
+----
+
+[NOTE]
+====
+Users in the `denyUsers` and `denyGroup`  categories will not be able to use {prod} and will see a warning shown when trying to access the User Dashboard.
+====
+
+.Authentication
+
+Only authenticated OpenShift users can access {prod}.
+The Gateway Pod rejects unauthenticated users.
+uses a role-based access control (RBAC) sub-system
+to determine whether a developer is authorized to access a Cloud Development Environment (CDE) or not.
+The CDE Gateway container is responsible for checking developers Kubernetes roles.
+If their roles allow access to the CDE Pod then the connection to the development environment is allowed.
+By default, only the owner of the namespace has access to the CDE Pod.
+
+[IMPORTANT]
+====
+Anyone that has `read` access to DevWorkspace Access to the resources in a namespace must be limited to the developer owning it. Granting `read` access to another developer is equivalent to sharing the developer credentials and should be avoided.
+====
+
+.Security context and security context constraint
+
+{prod} adds `SETGID` and `SETUID` capabilities to the specification of the CDE Pod container security context:
+
+[source, code]
+----
+"spec": {
+  "containers": [
+    "securityContext": {
+            "allowPrivilegeEscalation": true,
+            "capabilities": {
+               "add": ["SETGID", "SETUID"],
+               "drop": ["ALL","KILL","MKNOD"]
+            },
+            "readOnlyRootFilesystem": false,
+            "runAsNonRoot": true,
+            "runAsUser": 1001110000
+   }
+  ]
+ }
+----
+
+This provides the ability for users to build container images from within a CDE.
+
+By default, {prod} assigns a specific `SecurityContextConstraint` (SCC) to the users that allows them to start a Pod with such capabilities. This SCC grants more capabilities to the users compared to the default `restricted` SCC but less capability compared to the `anyuid` SCC. This default SCC is pre-created in the {prod-short} namespace and named `container-build`.
+
+Extra capabilities and the assignment of the SCC to the {prod-short} users can be prevented by setting the following property in the CheCluster Custom Resource:
+
+[source, code]
+----
+spec:
+  devEnvironments:
+    disableContainerBuildCapabilities: true
+----
+
+.Resource Quotas and Limit Ranges
+
+Resource Quotas and Limit Ranges are Kubernetes features
+that can be used to help prevent bad actors or resource abuse within a cluster.
+They help in controlling and managing resource consumption by pods and containers.
+By combining Resource Quotas and Limit Ranges,
+you can enforce project-specific policies to prevent bad actors from consuming excessive resources.
+
+These mechanisms contribute to better resource management, stability, and fairness within an OpenShift cluster.
+More details about link:https://docs.openshift.com/container-platform/4.14/applications/quotas/quotas-setting-per-project.html[Resource Quotas] and link:https://docs.openshift.com/container-platform/4.14/nodes/clusters/nodes-cluster-limit-ranges.html[Limit Ranges] can be found in the OpenShift documentation.
+
+.Disconnected environment
+
+An air-gapped OpenShift disconnected cluster refers to an OpenShift cluster
+that is isolated from the internet or any external network.
+This isolation is often done for security reasons,
+to protect sensitive or critical systems from potential cyber threats.
+In an air-gapped environment,
+the cluster cannot access external repositories or registries to download container images, updates, or dependencies.
+is supported and can be installed in a restricted environment.
+Installation instructions can be found in the link:https://eclipse.dev/che/docs/stable/administration-guide/installing-che-in-a-restricted-environment/[official documentation].
+
+.Managing extensions
+
+By default, {prod}
+includes the embedded Open VSX registry
+which contains a limited set of extensions used by Microsoft Visual Studio Code -
+Open Source editor.
+Alternatively, cluster administrators can specify a different plugin registry in the Custom Resource e.g.,
+https://open-vsx.org that contains thousands of extensions,
+or build a custom Open VSX registry.
+More details about managing IDE extensions can be found in link:https://eclipse.dev/che/docs/stable/administration-guide/extensions-for-microsoft-visual-studio-code-open-source/[the official documentation].
+
+[IMPORTANT]
+==== Installing extra extensions may increase the potential for risks. To minimize these risks, make sure to only install extensions from reliable sources and regularly update them.
+====
+
+.Secrets
+
+The data that is stored as Kubernetes secrets in the users’ namespaces like Personal Access Tokens, SSH keys is sensitive information and should be kept confidential.
+
+.Git repositories
+
+It is crucial to operate within Git repositories that you are familiar with and trust. Before incorporating new dependencies into the repository, verify that they are well-maintained and regularly release updates to address any identified security vulnerabilities in their code.
 
 
 
