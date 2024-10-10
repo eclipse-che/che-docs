@@ -1,0 +1,31 @@
+:_content-type: PROCEDURE
+:description: Retrieving the default list of images for {image-puller-name}
+:keywords: administration-guide, image-puller
+:navtitle: Retrieving the default list of images for {image-puller-name}
+
+[id="retrieving-default-list-of-images-for-kubernetes-image-puller"]
+= Retrieving the default list of images for {image-puller-name}
+
+This article provides instructions on retrieving the default list of images for {image-puller-name}.
+
+.Prerequisites
+
+* Your organization's instance of {prod-short} is installed and running on {kubernetes} cluster.
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Find out the namespace where the {prod-short} Operator is deployed:
++
+[source,subs="+attributes"]
+----
+OPERATOR_NAMESPACE=$({orch-cli} get pods -l app.kubernetes.io/component={prod-operator} -o jsonpath={".items[0].metadata.namespace"} --all-namespaces)
+----
+
+. Find out the images that can be pre-pulled by the {image-puller-name-short}:
++
+[source,subs="+attributes"]
+----
+{orch-cli} exec -n $OPERATOR_NAMESPACE deploy/{prod-operator} -- cat /tmp/external_images.txt
+----
