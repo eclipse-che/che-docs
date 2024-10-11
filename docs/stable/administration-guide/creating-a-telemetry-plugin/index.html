@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Creating a telemetry plugin :: Eclipse Che Documentation</title>
+    <link rel="canonical" href="https://www.eclipse.org/che/docs/stable/administration-guide/creating-a-telemetry-plugin/">
+    <meta name="description" content="Creating a telemetry plugin">
+    <meta name="keywords" content="extensions, telemetry">
+    <meta name="generator" content="Antora 3.1.9">
+    <link rel="stylesheet" href="../../../../docs/_/css/site.css">
+<link rel="stylesheet" href="../../../../docs/_/css/extra.css">
+<link rel="stylesheet" href="../../../../docs/_/font-awesome-4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="../../../../docs/_/img/favicon.ico" type="image/x-icon">
+<script>var uiRootPath = '../../../../docs/_'</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-37306001-2"></script>
+    <script>function gtag(){dataLayer.push(arguments)};window.dataLayer=window.dataLayer||[];gtag('js',new Date());gtag('config','UA-37306001-2')</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="navbar-item">
+        <button class="navbar-burger" data-target="topbar-nav">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <img src="../../../../docs/_/img/icon-eclipse-che.svg" class="navbar-logo" alt="Eclipse Che logo">
+        <a href="https://www.eclipse.org/che/docs/index.html">Eclipse Che Documentation</a>
+      </div>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item search hide-for-print">
+          <div id="search-field" class="field">
+            <input id="search-input" type="text" placeholder="Search the docs">
+          </div>
+        </div>
+        <a class="navbar-item" href="https://www.eclipse.org/che/">Home</a>
+        <a class="navbar-item" href="https://che.eclipseprojects.io/">Blog</a>
+        <a class="navbar-item" href="https://github.com/eclipse/che">Source Code</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="docs" data-version="7.93.x">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title"><a href="../../overview/introduction-to-eclipse-che/">Documentation</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../overview/introduction-to-eclipse-che/">Introduction to Che</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../hosted-che/hosted-che/">Eclipse Che hosted by Red Hat</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">User Guide</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../end-user-guide/getting-started-with-che/">Getting started with Che</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../end-user-guide/starting-a-workspace-from-a-git-repository-url/">Starting a workspace from a Git repository URL</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../end-user-guide/optional-parameters-for-the-urls-for-starting-a-new-workspace/">Optional parameters for the URLs for starting a new workspace</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../../end-user-guide/url-parameter-concatenation/">URL parameter concatenation</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../../end-user-guide/url-parameter-for-the-ide/">URL parameter for the IDE</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../../end-user-guide/url-parameter-for-the-ide-image/">URL parameter for the IDE image</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../../end-user-guide/url-parameter-for-starting-duplicate-workspaces/">URL parameter for starting duplicate workspaces</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../../end-user-guide/url-parameter-for-the-devfile-file-name/">URL parameter for the devfile file name</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../../end-user-guide/url-parameter-for-the-devfile-file-path/">URL parameter for the devfile file path</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../../end-user-guide/url-parameter-for-the-workspace-storage/">URL parameter for the workspace storage</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../../end-user-guide/url-parameter-for-additional-remotes/">URL parameter for additional remotes</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../../end-user-guide/url-parameter-for-container-image/">URL parameter for a container image</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/starting-a-workspace-from-a-raw-devfile-url/">Starting a workspace from a raw devfile URL</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/basic-actions-you-can-perform-on-a-workspace/">Basic actions you can perform on a workspace</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/authenticating-to-a-git-server-from-a-workspace/">Authenticating to a Git server from a workspace</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../end-user-guide/using-the-fuse-overlay-storage-driver/">Using the fuse-overlayfs storage driver for Podman and Buildah</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../end-user-guide/accessing-fuse/">Accessing /dev/fuse</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../end-user-guide/enabling-overlay-with-a-configmap/">Enabling fuse-overlayfs with a ConfigMap</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/running-containers-with-kubedock/">Running containers with kubedock</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../end-user-guide/using-che-in-team-workflow/">Using Che in team workflow</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/first-time-contributors/">Badge for first-time contributors</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/benefits-of-pull-requests-review-in-che/">Reviewing pull and merge requests</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/try-in-web-ide-github-action/">Try in Web IDE GitHub action</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../end-user-guide/customizing-workspace-components/">Customizing workspace components</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../end-user-guide/devfile-introduction/">Introduction to devfile in Che</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../end-user-guide/ides-in-workspaces/">IDEs in workspaces</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/microsoft-visual-studio-code-open-source-ide/">Microsoft Visual Studio Code - Open Source</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/idea-ultimate/">Connecting JetBrains IntelliJ IDEA Ultimate Edition to a Che workspace</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/defining-a-common-ide/">Defining a common IDE</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../end-user-guide/using-credentials-and-configurations-in-workspaces/">Using credentials and configurations in workspaces</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../end-user-guide/mounting-secrets/">Mounting Secrets</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../end-user-guide/creating-image-pull-secrets/">Creating image pull Secrets</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../end-user-guide/using-a-git-provider-access-token/">Using a Git-provider access token</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../end-user-guide/mounting-configmaps/">Mounting ConfigMaps</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../end-user-guide/mounting-git-configuration/">Mounting Git configuration</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../end-user-guide/enabling-artifact-repositories-in-a-restricted-environment/">Enabling artifact repositories in a restricted environment</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../end-user-guide/enabling-maven-artifact-repositories/">Maven</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../end-user-guide/enabling-gradle-artifact-repositories/">Gradle</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../end-user-guide/enabling-npm-artifact-repositories/">npm</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../end-user-guide/enabling-python-artifact-repositories/">Python</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../end-user-guide/enabling-go-artifact-repositories/">Go</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../end-user-guide/enabling-nuget-artifact-repositories/">NuGet</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../end-user-guide/requesting-persistent-storage-for-workspaces/">Requesting persistent storage for workspaces</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../end-user-guide/integrating-with-kubernetes/">Integrating with Kubernetes</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/managing-workspaces-with-apis/">Managing workspaces with Kubernetes APIs</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/automatic-token-injection/">Automatic Kubernetes token injection</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/navigating-che-from-openshift-developer-perspective/">Navigating Che from OpenShift Developer Perspective</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/navigating-openshift-web-console-from-che/">Navigating OpenShift web console from Che</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../end-user-guide/troubleshooting-che/">Troubleshooting Che</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../end-user-guide/viewing-che-workspaces-logs/">Viewing Che workspaces logs</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../end-user-guide/viewing-workspace-logs-in-cli/">Workspace logs in CLI</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../end-user-guide/viewing-workspace-logs-in-the-openshift-console/">Workspace logs in OpenShift console</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../end-user-guide/viewing-language-servers-and-debug-adapters-logs-in-visual-studio-code/">Language servers and debug adapters logs in the editor</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/troubleshooting-slow-workspaces/">Troubleshooting slow workspaces</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/troubleshooting-network-problems/">Troubleshooting network problems</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../end-user-guide/troubleshooting-webview-loading-error/">Troubleshooting webview loading error</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Administration Guide</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../preparing-the-installation/">Preparing the installation</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../supported-platforms/">Supported platforms</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../installing-the-chectl-management-tool/">Installing the chectl management tool</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../architecture-overview/">Architecture</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../server-components/">Server components</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../che-operator/">Che operator</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../devworkspace-operator/">DevWorkspace operator</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../gateway/">Gateway</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../dashboard/">User dashboard</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../che-server/">Che server</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../che-devfile-registry/">Devfile registry</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../plugin-registry/">Plug-in registry</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../user-workspaces/">User workspaces</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../calculating-che-resource-requirements/">Calculating Che resource requirements</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../installing-che/">Installing Che</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../installing-che-on-the-virtual-kubernetes-cluster/">Installing Che on the virtual Kubernetes cluster</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../installing-che-in-the-cloud/">Installing Che in the cloud</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../installing-che-on-openshift-using-cli/">Installing Che on OpenShift using CLI</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../installing-che-on-openshift-using-the-web-console/">Installing Che on OpenShift using the web console</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../installing-che-in-a-restricted-environment/">Installing Che in a restricted environment</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../installing-che-on-microsoft-azure/">Installing Che on Microsoft Azure</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../installing-che-locally/">Installing Che locally</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../installing-che-on-red-hat-openshift-local/">Installing Che on Red Hat OpenShift Local</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../installing-che-on-minikube/">Installing Che on Minikube</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../installing-che-on-minikube-keycloak-oidc/">Installing Che on Minikube with Keycloak as the OIDC provider</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../finding-the-fully-qualified-domain-name-fqdn/">Finding the fully qualified domain name (FQDN)</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../permissions-to-install-che/">Permissions to install Che</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../permissions-to-install-che-on-openshift-using-cli/">Permissions to install Che on OpenShift using CLI</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../permissions-to-install-che-on-openshift-using-the-web-console/">Permissions to install Che on OpenShift using web console</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../configuring-che/">Configuring Che</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../understanding-the-checluster-custom-resource/">Understanding the <code>CheCluster</code> Custom Resource</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../using-chectl-to-configure-the-checluster-custom-resource-during-installation/">Using chectl to configure the <code>CheCluster</code> Custom Resource during installation</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../using-the-cli-to-configure-the-checluster-custom-resource/">Using the CLI to configure the CheCluster Custom Resource</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../checluster-custom-resource-fields-reference/"><code>CheCluster</code> Custom Resource fields reference</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../configuring-namespace-provisioning/">Configuring namespaces</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-workspace-target-namespace/">Configuring namespace name</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../provisioning-namespaces-in-advance/">Provisioning namespaces in advance</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../configuring-server-components/">Configuring server components</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../mounting-a-secret-as-a-file-or-an-environment-variable-into-a-container/">Mounting a Secret or a ConfigMap as a file or an environment variable into a Eclipse&#160;Che container</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../advanced-configuration-options-for-the-che-server-component/">Advanced configuration options for Che server</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../configuring-autoscaling/">Configuring autoscaling</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-number-of-replicas/">Configuring number of replicas for a Eclipse&#160;Che container</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-machine-autoscaling/">Configuring machine autoscaling</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../configuring-workspaces-globally/">Configuring workspaces globally</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../limiting-the-number-of-workspaces-that-a-user-can-keep/">Limiting the number of workspaces that a user can keep</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../limiting-the-number-of-workspaces-that-all-users-can-run-simultaneously/">Limiting the number of workspaces that all users can run simultaneously</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../enabling-users-to-run-multiple-workspaces-simultaneously/">Enabling users to run multiple workspaces simultaneously</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../deploying-che-with-support-for-git-repositories-with-self-signed-certificates/">Git with self-signed certificates</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-workspaces-nodeselector/">Configuring workspaces nodeSelector</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-the-open-vsx-registry-url/">Open VSX registry URL</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-a-user-namespace/">Configuring a user namespace</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-allowed-urls-for-cloud-development-environments/">Configuring allowed URLs for Cloud Development Environments</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../caching-images-for-faster-workspace-start/">Caching images for faster workspace start</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../installing-kubernetes-image-puller/">Installing Kubernetes Image Puller</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../installing-image-puller-on-kubernetes-by-using-cli/">Installing the Kubernetes Image Puller operator on Kubernetes cluster by using CLI</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../installing-image-puller-on-openshift-using-cli/">Installing Image Puller on OpenShift using CLI</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../installing-image-puller-on-openshift-by-using-the-web-console/">Installing Image Puller on OpenShift by using the web console</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../configuring-kubernetes-image-puller/">Configuring Kubernetes Image Puller</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../configuring-image-puller-to-pre-pull-default-che-images/">Configuring Image Puller to pre-pull default Che images</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../configuring-image-puller-to-pre-pull-custom-images/">Configuring Image Puller to pre-pull custom images</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../configuring-image-puller-to-pre-pull-additional-images/">Configuring Image Puller to pre-pull additional images</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../retrieving-default-list-of-images-for-kubernetes-image-puller/">Retrieving the default list of images for Kubernetes Image Puller</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../configuring-observability/">Configuring observability</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../the-woopra-telemetry-plugin/">The Woopra telemetry plugin</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="./">Creating a telemetry plugin</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../configuring-server-logging/">Configuring server logging</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../collecting-logs-using-chectl/">Collecting logs using chectl</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../monitoring-the-dev-workspace-operator/">Monitoring the DevWorkspace Operator</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../monitoring-che/">Monitoring Che Server</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../configuring-networking/">Configuring networking</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-network-policies/">Configuring network policies</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-che-hostname/">Configuring Che hostname</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-che-with-self-signed-certificate/">Configuring Che with self-signed certificates</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../importing-untrusted-tls-certificates/">Importing untrusted TLS certificates to Che</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../adding-labels-and-annotations/">Adding labels and annotations</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../configuring-storage/">Configuring storage</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-storage-classes/">Configuring storage classes</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-the-storage-strategy/">Configuring the storage strategy</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-storage-sizes/">Configuring storage sizes</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../configuring-dashboard/">Configuring dashboard</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-getting-started-samples/">Configuring getting started samples</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-editors-definitions/">Configuring editors definitions</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-default-editor-definition/">Configuring default editor definition</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../concealing-editors-definitions/">Concealing editors definitions</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../customizing-openshift-che-consolelink-icon/">Customizing OpenShift Eclipse Che ConsoleLink icon</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../managing-identities-and-authorizations/">Managing identities and authorizations</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../configuring-oauth-for-git-providers/">Configuring OAuth for Git providers</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../configuring-oauth-2-for-github/">Configuring OAuth 2.0 for GitHub</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../configuring-oauth-2-for-gitlab/">Configuring OAuth 2.0 for GitLab</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../configuring-oauth-2-for-a-bitbucket-server/">Configuring OAuth 2.0 for a Bitbucket Server</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../configuring-oauth-2-for-the-bitbucket-cloud/">Configuring OAuth 2.0 for the Bitbucket Cloud</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../configuring-oauth-1-for-a-bitbucket-server/">Configuring OAuth 1.0 for a Bitbucket Server</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../configuring-oauth-2-for-microsoft-azure-devops-services/">Configuring OAuth 2.0 for Microsoft Azure DevOps Services</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-cluster-roles-for-users/">Configuring cluster roles for Che users</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../configuring-advanced-authorization/">Configuring advanced authorization</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../removing-user-data-in-compliance-with-the-gdpr/">Removing user data in compliance with the GDPR</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../configuring-fuse/">Configuring fuse-overlayfs</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../enabling-access-to-dev-fuse-for-openshift/">Enabling access to for OpenShift version older than 4.15</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../enabling-fuse-for-all-workspaces/">Enabling fuse-overlayfs for all workspaces</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../managing-ide-extensions/">Managing IDE extensions</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../extensions-for-microsoft-visual-studio-code-open-source/">Extensions for Microsoft Visual Studio Code - Open Source</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../trusted-extensions-for-microsoft-visual-studio-code/">Configure trusted extensions for Microsoft Visual Studio Code</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../configuring-visual-studio-code/">Configuring Visual Studio Code - Open Source ("Code - OSS")</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../configuring-single-and-multiroot-workspaces/">Configuring single and multiroot workspaces</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../managing-workloads-using-the-che-server-api/">Using the Che server API</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../upgrading-che/">Upgrading Che</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../upgrading-the-chectl-management-tool/">Upgrading the chectl management tool</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../specifying-the-update-approval-strategy/">Specifying the update approval strategy</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../upgrading-che-using-the-web-console/">Upgrading Che using the OpenShift web console</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../upgrading-che-using-the-cli-management-tool/">Upgrading Che using the CLI management tool</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../upgrading-che-using-the-cli-management-tool-in-restricted-environment/">Upgrading Che in a restricted environment</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../repairing-the-devworkspace-operator-on-openshift/">Repairing the DevWorkspace Operator on OpenShift</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../uninstalling-che/">Uninstalling Che</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../extensions/extensions/">Extensions</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../extensions/openshift-connector-overview/">OpenShift Connector</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../extensions/features-of-openshift-connector/">Features of OpenShift Connector</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../extensions/installing-openshift-connector-in-che/">Installing OpenShift Connector in Eclipse Che</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../extensions/authenticating-with-openshift-connector-from-che/">Authenticating with OpenShift Connector from Eclipse Che</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../extensions/creating-components-with-openshift-connector-in-che/">Creating Components with OpenShift Connector in Eclipse Che</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../extensions/connecting-source-code-from-github-to-a-openshift-component-using-openshift-connector/">Connecting source code from GitHub to a OpenShift Component</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../glossary/che-glossary/">Che glossary</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Documentation</span>
+    <span class="version">7.93.x</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <div class="title"><a href="../../overview/introduction-to-eclipse-che/">Documentation</a></div>
+      <ul class="versions">
+        <li class="version">
+          <a href="../../../next/overview/introduction-to-eclipse-che/">next</a>
+        </li>
+        <li class="version is-current is-latest">
+          <a href="../../overview/introduction-to-eclipse-che/">7.93.x</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../../overview/introduction-to-eclipse-che/" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../../overview/introduction-to-eclipse-che/">Documentation</a></li>
+    <li>Administration Guide</li>
+    <li><a href="../configuring-che/">Configuring Che</a></li>
+    <li><a href="../configuring-observability/">Configuring observability</a></li>
+    <li><a href="./">Creating a telemetry plugin</a></li>
+  </ul>
+</nav>
+<div class="page-versions">
+  <button class="version-menu-toggle" title="Show other versions of page">7.93.x</button>
+  <div class="version-menu">
+    <a class="version" href="../../../next/administration-guide/creating-a-telemetry-plugin/">next</a>
+    <a class="version is-current" href="./">7.93.x</a>
+  </div>
+</div>
+<div class="edit-this-page"><a href="https://github.com/eclipse-che/che-docs/edit/7.93.x/modules/administration-guide/pages/creating-a-telemetry-plugin.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Creating a telemetry plugin</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>This section shows how to create an <code>AnalyticsManager</code> class that extends <a href="https://github.com/che-incubator/che-workspace-telemetry-client/blob/master/backend-base/src/main/java/org/eclipse/che/incubator/workspace/telemetry/base/AbstractAnalyticsManager.java"><code>AbstractAnalyticsManager</code></a> and implements the following methods:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>isEnabled()</code> - determines whether the telemetry backend is functioning correctly. This can mean always returning <code>true</code>, or have more complex checks, for example, returning <code>false</code> when a connection property is missing.</p>
+</li>
+<li>
+<p><code>destroy()</code> - cleanup method that is run before shutting down the telemetry backend. This method sends the <code>WORKSPACE_STOPPED</code> event.</p>
+</li>
+<li>
+<p><code>onActivity()</code> - notifies that some activity is still happening for a given user. This is mainly used to send <code>WORKSPACE_INACTIVE</code> events.</p>
+</li>
+<li>
+<p><code>onEvent()</code> - submits telemetry events to the telemetry server, such as <code>WORKSPACE_USED</code> or <code>WORKSPACE_STARTED</code>.</p>
+</li>
+<li>
+<p><code>increaseDuration()</code> - increases the duration of a current event rather than sending many events in a small frame of time.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The following sections cover:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Creating a telemetry server to echo events to standard output.</p>
+</li>
+<li>
+<p>Extending the Che telemetry client and implementing a user&#8217;s custom backend.</p>
+</li>
+<li>
+<p>Creating a <code>plugin.yaml</code> file representing a DevWorkspace plugin for the custom backend.</p>
+</li>
+<li>
+<p>Specifying of a location of a custom plugin to Che by setting the <code>workspacesDefaultPlugins</code> attribute from the <code>CheCluster</code> custom resource.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_getting_started"><a class="anchor" href="#_getting_started"></a>Getting started</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This document describes the steps required to extend the Che telemetry system to communicate with to a custom backend:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Creating a server process that receives events</p>
+</li>
+<li>
+<p>Extending Che libraries to create a backend that sends events to the server</p>
+</li>
+<li>
+<p>Packaging the telemetry backend in a container and deploying it to an image registry</p>
+</li>
+<li>
+<p>Adding a plugin for your backend and instructing Che to load the plugin in your DevWorkspaces</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>A finished example of the telemetry backend is available <a href="https://github.com/che-incubator/devworkspace-telemetry-example-plugin">here</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_creating_a_server_that_receives_events"><a class="anchor" href="#_creating_a_server_that_receives_events"></a>Creating a server that receives events</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For demonstration purposes, this example shows how to create a server that receives events from our telemetry plugin and writes them to standard output.</p>
+</div>
+<div class="paragraph">
+<p>For production use cases, consider integrating with a third-party telemetry system (for example, Segment, Woopra) rather than creating your own telemetry server. In this case, use your provider&#8217;s APIs to send events from your custom backend to their system.</p>
+</div>
+<div class="paragraph">
+<p>The following Go code starts a server on port <code>8080</code> and writes events to standard output:</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 1. <code>main.go</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-go hljs" data-lang="go">package main
+
+import (
+	"io/ioutil"
+	"net/http"
+
+	"go.uber.org/zap"
+)
+
+var logger *zap.SugaredLogger
+
+func event(w http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	case "GET":
+		logger.Info("GET /event")
+	case "POST":
+		logger.Info("POST /event")
+	}
+	body, err := req.GetBody()
+	if err != nil {
+		logger.With("err", err).Info("error getting body")
+		return
+	}
+	responseBody, err := ioutil.ReadAll(body)
+	if err != nil {
+		logger.With("error", err).Info("error reading response body")
+		return
+	}
+	logger.With("body", string(responseBody)).Info("got event")
+}
+
+func activity(w http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	case "GET":
+		logger.Info("GET /activity, doing nothing")
+	case "POST":
+		logger.Info("POST /activity")
+		body, err := req.GetBody()
+		if err != nil {
+			logger.With("error", err).Info("error getting body")
+			return
+		}
+		responseBody, err := ioutil.ReadAll(body)
+		if err != nil {
+			logger.With("error", err).Info("error reading response body")
+			return
+		}
+		logger.With("body", string(responseBody)).Info("got activity")
+	}
+}
+
+func main() {
+
+	log, _ := zap.NewProduction()
+	logger = log.Sugar()
+
+	http.HandleFunc("/event", event)
+	http.HandleFunc("/activity", activity)
+	logger.Info("Added Handlers")
+
+	logger.Info("Starting to serve")
+	http.ListenAndServe(":8080", nil)
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a container image based on this code and expose it as a deployment in OpenShift in the <code>eclipse-che</code> namespace. The code for the example telemetry server is available at <a href="https://github.com/che-incubator/telemetry-server-example">telemetry-server-example</a>. To deploy the telemetry server, clone the repository and build the container:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ git clone https://github.com/che-incubator/telemetry-server-example
+$ cd telemetry-server-example
+$ docker build -t registry/organization/telemetry-server-example:latest .
+$ docker push registry/organization/telemetry-server-example:latest</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Both <code>manifest_with_ingress.yaml</code> and <code>manifest_with_route</code> contain definitions for a Deployment and Service. The former also defines a Kubernetes Ingress, while the latter defines an OpenShift Route.</p>
+</div>
+<div class="paragraph">
+<p>In the manifest file, replace the <code>image</code> and <code>host</code> fields to match the image you pushed, and the public hostname of your Kubernetes or OpenShift cluster. Then run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ kubectl apply -f manifest_with_[ingress|route].yaml -n eclipse-che</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_creating_the_back_end_project"><a class="anchor" href="#_creating_the_back_end_project"></a>Creating the back-end project</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+For fast feedback when developing, it is recommended to do development inside a DevWorkspace. This way, you can run the application in a cluster and receive events from the front-end telemetry plugin.
+</td>
+</tr>
+</table>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Maven Quarkus project scaffolding:</p>
+<div class="listingblock">
+<div class="content">
+<pre>mvn io.quarkus:quarkus-maven-plugin:2.7.1.Final:create \
+    -DprojectGroupId=mygroup -DprojectArtifactId=devworkspace-telemetry-example-plugin \
+-DprojectVersion=1.0.0-SNAPSHOT</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Remove the files under <code>src/main/java/mygroup</code> and <code>src/test/java/mygroup</code>.</p>
+</li>
+<li>
+<p>Consult the <a href="https://github.com/che-incubator/che-workspace-telemetry-client/packages">GitHub packages</a> for the latest version and Maven coordinates of <code>backend-base</code>.</p>
+</li>
+<li>
+<p>Add the following dependencies to your <code>pom.xml</code>:</p>
+<div class="exampleblock">
+<div class="title">Example 2. <code>pom.xml</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;!-- Required --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.eclipse.che.incubator.workspace-telemetry&lt;/groupId&gt;
+    &lt;artifactId&gt;backend-base&lt;/artifactId&gt;
+    &lt;version&gt;LATEST VERSION FROM PREVIOUS STEP&lt;/version&gt;
+&lt;/dependency&gt;
+
+
+&lt;!-- Used to make http requests to the telemetry server --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;io.quarkus&lt;/groupId&gt;
+    &lt;artifactId&gt;quarkus-rest-client&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;io.quarkus&lt;/groupId&gt;
+    &lt;artifactId&gt;quarkus-rest-client-jackson&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Create a personal access token with <code>read:packages</code> permissions to download the <code>org.eclipse.che.incubator.workspace-telemetry:backend-base</code> dependency from <a href="https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages">GitHub packages</a>.</p>
+</li>
+<li>
+<p>Add your GitHub username, personal access token and <code>che-incubator</code> repository details in your <code>~/.m2/settings.xml</code> file:</p>
+<div class="exampleblock">
+<div class="title">Example 3. <code>settings.xml</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+http://maven.apache.org/xsd/settings-1.0.0.xsd"&gt;
+   &lt;servers&gt;
+      &lt;server&gt;
+         &lt;id&gt;che-incubator&lt;/id&gt;
+         &lt;username&gt;YOUR GITHUB USERNAME&lt;/username&gt;
+         &lt;password&gt;YOUR GITHUB TOKEN&lt;/password&gt;
+      &lt;/server&gt;
+   &lt;/servers&gt;
+
+   &lt;profiles&gt;
+      &lt;profile&gt;
+         &lt;id&gt;github&lt;/id&gt;
+         &lt;activation&gt;
+            &lt;activeByDefault&gt;true&lt;/activeByDefault&gt;
+         &lt;/activation&gt;
+         &lt;repositories&gt;
+            &lt;repository&gt;
+               &lt;id&gt;central&lt;/id&gt;
+               &lt;url&gt;https://repo1.maven.org/maven2&lt;/url&gt;
+               &lt;releases&gt;&lt;enabled&gt;true&lt;/enabled&gt;&lt;/releases&gt;
+               &lt;snapshots&gt;&lt;enabled&gt;false&lt;/enabled&gt;&lt;/snapshots&gt;
+               &lt;/repository&gt;
+               &lt;repository&gt;
+               &lt;id&gt;che-incubator&lt;/id&gt;
+               &lt;url&gt;https://maven.pkg.github.com/che-incubator/che-workspace-telemetry-client&lt;/url&gt;
+            &lt;/repository&gt;
+         &lt;/repositories&gt;
+      &lt;/profile&gt;
+   &lt;/profiles&gt;
+&lt;/settings&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_creating_a_concrete_implementation_of_analyticsmanager_and_adding_specialized_logic"><a class="anchor" href="#_creating_a_concrete_implementation_of_analyticsmanager_and_adding_specialized_logic"></a>Creating a concrete implementation of AnalyticsManager and adding specialized logic</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Create two files in your project under <code>src/main/java/mygroup</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>MainConfiguration.java</code> - contains configuration provided to <code>AnalyticsManager</code>.</p>
+</li>
+<li>
+<p><code>AnalyticsManager.java</code> - contains logic specific to the telemetry system.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="title">Example 4. <code>MainConfiguration.java</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package org.my.group;
+
+import java.util.Optional;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Alternative;
+
+import org.eclipse.che.incubator.workspace.telemetry.base.BaseConfiguration;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+@Dependent
+@Alternative
+public class MainConfiguration extends BaseConfiguration {
+    @ConfigProperty(name = "welcome.message")      <i class="conum" data-value="1"></i><b>(1)</b>
+    Optional&lt;String&gt; welcomeMessage;               <i class="conum" data-value="2"></i><b>(2)</b>
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A MicroProfile configuration annotation is used to inject the <code>welcome.message</code> configuration.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For more details on how to set configuration properties specific to your backend, see the Quarkus <a href="https://quarkus.io/guides/config-reference">Configuration Reference Guide</a>.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 5. <code>AnalyticsManager.java</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package org.my.group;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Alternative;
+import javax.inject.Inject;
+
+import org.eclipse.che.incubator.workspace.telemetry.base.AbstractAnalyticsManager;
+import org.eclipse.che.incubator.workspace.telemetry.base.AnalyticsEvent;
+import org.eclipse.che.incubator.workspace.telemetry.finder.DevWorkspaceFinder;
+import org.eclipse.che.incubator.workspace.telemetry.finder.UsernameFinder;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.slf4j.Logger;
+
+import static org.slf4j.LoggerFactory.getLogger;
+
+@Dependent
+@Alternative
+public class AnalyticsManager extends AbstractAnalyticsManager {
+
+    private static final Logger LOG = getLogger(AbstractAnalyticsManager.class);
+
+    public AnalyticsManager(MainConfiguration mainConfiguration, DevWorkspaceFinder devworkspaceFinder, UsernameFinder usernameFinder) {
+        super(mainConfiguration, devworkspaceFinder, usernameFinder);
+
+        mainConfiguration.welcomeMessage.ifPresentOrElse(     <i class="conum" data-value="1"></i><b>(1)</b>
+            (str) -&gt; LOG.info("The welcome message is: {}", str),
+            () -&gt; LOG.info("No welcome message provided")
+        );
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public void destroy() {}
+
+    @Override
+    public void onEvent(AnalyticsEvent event, String ownerId, String ip, String userAgent, String resolution, Map&lt;String, Object&gt; properties) {
+        LOG.info("The received event is: {}", event);         <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+
+    @Override
+    public void increaseDuration(AnalyticsEvent event, Map&lt;String, Object&gt; properties) { }
+
+    @Override
+    public void onActivity() {}
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Log the welcome message if it was provided.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Log the event received from the front-end plugin.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Since <code>org.my.group.AnalyticsManager</code> and <code>org.my.group.MainConfiguration</code> are alternative beans, specify them using the <code>quarkus.arc.selected-alternatives</code> property in <code>src/main/resources/application.properties</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 6. <code>application.properties</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre>quarkus.arc.selected-alternatives=MainConfiguration,AnalyticsManager</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="running-the-application"><a class="anchor" href="#running-the-application"></a>Running the application within a DevWorkspace</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Set the <code>DEVWORKSPACE_TELEMETRY_BACKEND_PORT</code> environment variable in the DevWorkspace. Here, the value is set to <code>4167</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre>spec:
+  template:
+    attributes:
+      workspaceEnv:
+        - name: DEVWORKSPACE_TELEMETRY_BACKEND_PORT
+          value: '4167'</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Restart the DevWorkspace from the Eclipse&#160;Che dashboard.</p>
+</li>
+<li>
+<p>Run the following command within a DevWorkspace&#8217;s terminal window to start the application. Use the <code>--settings</code> flag to specify path to the location of the <code>settings.xml</code> file that contains the GitHub access token.</p>
+<div class="listingblock">
+<div class="content">
+<pre>$ mvn --settings=settings.xml quarkus:dev -Dquarkus.http.port=${DEVWORKSPACE_TELEMETRY_BACKEND_PORT}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The application now receives telemetry events through port <code>4167</code> from the front-end plugin.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="olist arabic">
+<div class="title">Verification steps</div>
+<ol class="arabic">
+<li>
+<p>Verify that the following output is logged:</p>
+<div class="listingblock">
+<div class="content">
+<pre>INFO  [org.ecl.che.inc.AnalyticsManager] (Quarkus Main Thread) No welcome message provided
+INFO  [io.quarkus] (Quarkus Main Thread) devworkspace-telemetry-example-plugin 1.0.0-SNAPSHOT on JVM (powered by Quarkus 2.7.2.Final) started in 0.323s. Listening on: http://localhost:4167
+INFO  [io.quarkus] (Quarkus Main Thread) Profile dev activated. Live Coding activated.
+INFO  [io.quarkus] (Quarkus Main Thread) Installed features: [cdi, kubernetes-client, rest-client, rest-client-jackson, resteasy, resteasy-jsonb, smallrye-context-propagation, smallrye-openapi, swagger-ui, vertx]</pre>
+</div>
+</div>
+</li>
+<li>
+<p>To verify that the <code>onEvent()</code> method of <code>AnalyticsManager</code> receives events from the front-end plugin, press the <kbd>l</kbd> key to disable Quarkus live coding and edit any file within the IDE. The following output should be logged:</p>
+<div class="listingblock">
+<div class="content">
+<pre>INFO  [io.qua.dep.dev.RuntimeUpdatesProcessor] (Aesh InputStream Reader) Live reload disabled
+INFO  [org.ecl.che.inc.AnalyticsManager] (executor-thread-2) The received event is: Edit Workspace File in Che</pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_implementing_isenabled"><a class="anchor" href="#_implementing_isenabled"></a>Implementing <code>isEnabled()</code></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For the purposes of the example, this method always returns <code>true</code> whenever it is called.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 7. <code>AnalyticsManager.java</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Override
+public boolean isEnabled() {
+    return true;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>It is possible to put more complex logic in <code>isEnabled()</code>. For example, the <a href="https://github.com/che-incubator/devworkspace-telemetry-woopra-plugin/blob/main/src/main/java/com/redhat/devworkspace/services/telemetry/woopra/AnalyticsManager.java">hosted Che Woopra backend</a> checks that a configuration property exists before determining if the backend is enabled.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_implementing_onevent"><a class="anchor" href="#_implementing_onevent"></a>Implementing <code>onEvent()</code></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>onEvent()</code> sends the event received by the backend to the telemetry system. For the example application, it sends an HTTP POST payload to the <code>/event</code> endpoint from the telemetry server.</p>
+</div>
+<div class="sect2">
+<h3 id="_sending_a_post_request_to_the_example_telemetry_server"><a class="anchor" href="#_sending_a_post_request_to_the_example_telemetry_server"></a>Sending a POST request to the example telemetry server</h3>
+<div class="paragraph">
+<p>For the following example, the telemetry server application is deployed to OpenShift at the following URL: <code>http://little-telemetry-server-che.apps-crc.testing</code>, where <code>apps-crc.testing</code> is the ingress domain name of the OpenShift cluster.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Set up the RESTEasy REST Client by creating <code>TelemetryService.java</code></p>
+<div class="exampleblock">
+<div class="title">Example 8. <code>TelemetryService.java</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package org.my.group;
+
+import java.util.Map;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+
+@RegisterRestClient
+public interface TelemetryService {
+    @POST
+    @Path("/event") <i class="conum" data-value="1"></i><b>(1)</b>
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response sendEvent(Map&lt;String, Object&gt; payload);
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The endpoint to make the <code>POST</code> request to.</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Specify the base URL for <code>TelemetryService</code> in the <code>src/main/resources/application.properties</code> file:</p>
+<div class="exampleblock">
+<div class="title">Example 9. <code>application.properties</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre>org.my.group.TelemetryService/mp-rest/url=http://little-telemetry-server-che.apps-crc.testing</pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Inject <code>TelemetryService</code> into <code>AnalyticsManager</code> and send a <code>POST</code> request in <code>onEvent()</code></p>
+<div class="exampleblock">
+<div class="title">Example 10. <code>AnalyticsManager.java</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Dependent
+@Alternative
+public class AnalyticsManager extends AbstractAnalyticsManager {
+    @Inject
+    @RestClient
+    TelemetryService telemetryService;
+
+...
+
+@Override
+public void onEvent(AnalyticsEvent event, String ownerId, String ip, String userAgent, String resolution, Map&lt;String, Object&gt; properties) {
+    Map&lt;String, Object&gt; payload = new HashMap&lt;String, Object&gt;(properties);
+    payload.put("event", event);
+    telemetryService.sendEvent(payload);
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>This sends an HTTP request to the telemetry server and automatically delays identical events for a small period of time. The default duration is 1500 milliseconds.</p>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_implementing_increaseduration"><a class="anchor" href="#_implementing_increaseduration"></a>Implementing <code>increaseDuration()</code></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Many telemetry systems recognize event duration. The <code>AbstractAnalyticsManager</code> merges similar events that happen in the same frame of time into one event. This implementation of <code>increaseDuration()</code> is a no-op. This method uses the APIs of the user&#8217;s telemetry provider to alter the event or event properties to reflect the increased duration of an event.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 11. <code>AnalyticsManager.java</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Override
+public void increaseDuration(AnalyticsEvent event, Map&lt;String, Object&gt; properties) {}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_implementing_onactivity"><a class="anchor" href="#_implementing_onactivity"></a>Implementing <code>onActivity()</code></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Set an inactive timeout limit, and use <code>onActivity()</code> to send a <code>WORKSPACE_INACTIVE</code> event if the last event time is longer than the timeout.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 12. <code>AnalyticsManager.java</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public class AnalyticsManager extends AbstractAnalyticsManager {
+
+    ...
+
+    private long inactiveTimeLimit = 60000 * 3;
+
+    ...
+
+    @Override
+    public void onActivity() {
+        if (System.currentTimeMillis() - lastEventTime &gt;= inactiveTimeLimit) {
+            onEvent(WORKSPACE_INACTIVE, lastOwnerId, lastIp, lastUserAgent, lastResolution, commonProperties);
+        }
+    }</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_implementing_destroy"><a class="anchor" href="#_implementing_destroy"></a>Implementing <code>destroy()</code></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When <code>destroy()</code> is called, send a <code>WORKSPACE_STOPPED</code> event and shutdown any resources such as connection pools.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 13. <code>AnalyticsManager.java</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Override
+public void destroy() {
+    onEvent(WORKSPACE_STOPPED, lastOwnerId, lastIp, lastUserAgent, lastResolution, commonProperties);       
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Running <code>mvn quarkus:dev</code> as described in <a href="#running-the-application">Running the application within a DevWorkspace</a> and terminating the application with <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>C</kbd></span> sends a <code>WORKSPACE_STOPPED</code> event to the server.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="packaging-the-quarkus-application"><a class="anchor" href="#packaging-the-quarkus-application"></a>Packaging the Quarkus application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>See <a href="https://quarkus.io/guides/building-native-image#using-a-multi-stage-docker-build">the Quarkus documentation</a> for the best instructions to package the application in a container. Build and push the container to a container registry of your choice.</p>
+</div>
+<div class="sect2">
+<h3 id="_sample_dockerfile_for_building_a_quarkus_image_running_with_jvm"><a class="anchor" href="#_sample_dockerfile_for_building_a_quarkus_image_running_with_jvm"></a>Sample Dockerfile for building a Quarkus image running with JVM</h3>
+<div class="exampleblock">
+<div class="title">Example 14. <code>Dockerfile.jvm</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">FROM registry.access.redhat.com/ubi8/openjdk-11:1.11
+
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en'
+
+COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/
+COPY --chown=185 target/quarkus-app/*.jar /deployments/
+COPY --chown=185 target/quarkus-app/app/ /deployments/app/
+COPY --chown=185 target/quarkus-app/quarkus/ /deployments/quarkus/
+
+EXPOSE 8080
+USER 185
+
+ENTRYPOINT ["java", "-Dquarkus.http.host=0.0.0.0", "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", "-Dquarkus.http.port=${DEVWORKSPACE_TELEMETRY_BACKEND_PORT}", "-jar", "/deployments/quarkus-run.jar"]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>To build the image, run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mvn package &amp;&amp; \
+docker build -f src/main/docker/Dockerfile.jvm -t image:tag .</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sample_dockerfile_for_building_a_quarkus_native_image"><a class="anchor" href="#_sample_dockerfile_for_building_a_quarkus_native_image"></a>Sample Dockerfile for building a Quarkus native image</h3>
+<div class="exampleblock">
+<div class="title">Example 15. <code>Dockerfile.native</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">FROM registry.access.redhat.com/ubi8/ubi-minimal:8.5
+WORKDIR /work/
+RUN chown 1001 /work \
+    &amp;&amp; chmod "g+rwX" /work \
+    &amp;&amp; chown 1001:root /work
+COPY --chown=1001:root target/*-runner /work/application
+
+EXPOSE 8080
+USER 1001
+
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=$DEVWORKSPACE_TELEMETRY_BACKEND_PORT}"]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>To build the image, run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mvn package -Pnative -Dquarkus.native.container-build=true &amp;&amp; \
+docker build -f src/main/docker/Dockerfile.native -t image:tag .</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_creating_a_plugin_yaml_for_your_plugin"><a class="anchor" href="#_creating_a_plugin_yaml_for_your_plugin"></a>Creating a <code>plugin.yaml</code> for your plugin</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Create a <code>plugin.yaml</code> devfile v2 file representing a DevWorkspace plugin that runs your custom backend in a DevWorkspace Pod. For more information about devfile v2, see <a href="https://devfile.io/docs/2.1.0/overview">Devfile v2 documentation</a></p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 16. <code>plugin.yaml</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">schemaVersion: 2.1.0
+metadata:
+  name: devworkspace-telemetry-backend-plugin
+  version: 0.0.1
+  description: A Demo telemetry backend
+  displayName: Devworkspace Telemetry Backend
+components:
+  - name: devworkspace-telemetry-backend-plugin
+    attributes:
+      workspaceEnv:
+        - name: DEVWORKSPACE_TELEMETRY_BACKEND_PORT
+          value: '4167'
+    container:
+      image: YOUR IMAGE            <i class="conum" data-value="1"></i><b>(1)</b>
+      env:
+        - name: WELCOME_MESSAGE    <i class="conum" data-value="2"></i><b>(2)</b>
+          value: 'hello world!'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Specify the container image built from <a href="#packaging-the-quarkus-application">Packaging the Quarkus application</a>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Set the value for the <code>welcome.message</code> optional configuration property from Example 4.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Typically, the user deploys this file to a corporate web server. This guide demonstrates how to create an Apache web server on OpenShift and host the plugin there.</p>
+</div>
+<div class="paragraph">
+<p>Create a <code>ConfigMap</code> object that references the new <code>plugin.yaml</code> file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ oc create configmap --from-file=plugin.yaml -n eclipse-che telemetry-plugin-yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a deployment, a service, and a route to expose the web server. The deployment references this <code>ConfigMap</code> object and places it in the <code>/var/www/html</code> directory.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 17. <code>manifest.yaml</code></div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: apache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apache
+  template:
+    metadata:
+      labels:
+        app: apache
+    spec:
+      volumes:
+        - name: plugin-yaml
+          configMap:
+            name: telemetry-plugin-yaml
+            defaultMode: 420
+      containers:
+        - name: apache
+          image: 'registry.redhat.io/rhscl/httpd-24-rhel7:latest'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - name: plugin-yaml
+              mountPath: /var/www/html
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: apache
+spec:
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: apache
+  type: ClusterIP
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: apache
+spec:
+  host: apache-che.apps-crc.testing
+  to:
+    kind: Service
+    name: apache
+    weight: 100
+  port:
+    targetPort: 8080
+  wildcardPolicy: None</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ oc apply -f manifest.yaml</pre>
+</div>
+</div>
+<div class="ulist">
+<div class="title">Verification steps</div>
+<ul>
+<li>
+<p>After the deployment has started, confirm that <code>plugin.yaml</code> is available in the web server:</p>
+<div class="listingblock">
+<div class="content">
+<pre>$ curl apache-che.apps-crc.testing/plugin.yaml</pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="specifying-the-telemetry-plugin-in-a-devworkspace"><a class="anchor" href="#specifying-the-telemetry-plugin-in-a-devworkspace"></a>Specifying the telemetry plugin in a DevWorkspace</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Add the following to the <code>components</code> field of an existing DevWorkspace:</p>
+<div class="listingblock">
+<div class="content">
+<pre>components:
+  ...
+  - name: telemetry-plugin
+    plugin:
+      uri: http://apache-che.apps-crc.testing/plugin.yaml</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Start the DevWorkspace from the Che dashboard.</p>
+</li>
+</ol>
+</div>
+<div class="olist arabic">
+<div class="title">Verification steps</div>
+<ol class="arabic">
+<li>
+<p>Verify that the telemetry plugin container is running in the DevWorkspace pod. Here, this is verified by checking the Workspace view within the editor.</p>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/creating-a-telemetry-plugin/devworkspace_telemetry_plugin.png" alt="DevWorkspace telemetry plugin">
+</div>
+</div>
+</li>
+<li>
+<p>Edit files within the editor and observe their events in the example telemetry server&#8217;s logs.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_applying_the_telemetry_plugin_for_all_devworkspaces"><a class="anchor" href="#_applying_the_telemetry_plugin_for_all_devworkspaces"></a>Applying the telemetry plugin for all DevWorkspaces</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Set the telemetry plugin as a default plugin. Default plugins are applied on DevWorkspace startup for new and existing DevWorkspaces.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Configure the <code>CheCluster</code> Custom Resource. See <a href="../using-the-cli-to-configure-the-checluster-custom-resource/" class="xref page">Using the CLI to configure the CheCluster Custom Resource</a>.</p>
+<div class="listingblock">
+<div class="content">
+<pre>spec:
+  devEnvironments:
+    defaultPlugins:
+    - editor: eclipse/che-theia/next     <i class="conum" data-value="1"></i><b>(1)</b>
+      plugins:                           <i class="conum" data-value="2"></i><b>(2)</b>
+      - 'http://apache-che.apps-crc.testing/plugin.yaml'</pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The editor identification to set the default plugins for.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>List of URLs to devfile v2 plugins.</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<div class="title">Additional resources</div>
+<ul>
+<li>
+<p><a href="../using-the-cli-to-configure-the-checluster-custom-resource/" class="xref page">Using the CLI to configure the CheCluster Custom Resource</a>.</p>
+</li>
+</ul>
+</div>
+<div class="olist arabic">
+<div class="title">Verification steps</div>
+<ol class="arabic">
+<li>
+<p>Start a new or existing DevWorkspace from the Eclipse&#160;Che dashboard.</p>
+</li>
+<li>
+<p>Verify that the telemetry plugin is working by following the verification steps for <a href="#specifying-the-telemetry-plugin-in-a-devworkspace">Specifying the telemetry plugin in a DevWorkspace</a>.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+    <div>
+       <a href="https://www.eclipse.org/che/sitemap.xml" target="_blank">Site Map</a> |
+       <a href="https://www.eclipse.org" target="_blank">Eclipse Foundation</a> | 
+       <a href="https://www.eclipse.org/legal/privacy.php" target="_blank">Privacy Policy</a> |
+       <a href="https://www.eclipse.org/legal/termsofuse.php" target="_blank">Terms of Use</a> |
+       <a href="https://www.eclipse.org/legal/epl-2.0/" target="_blank">Eclipse Public License</a> |
+       <a href="https://www.eclipse.org/legal" target="_blank">Legal Resources</a></div>
+</footer>
+
+<script id="site-script" src="../../../../docs/_/js/site.js" data-ui-root-path="../../../../docs/_"></script>
+<script async src="../../../../docs/_/js/vendor/highlight.js"></script>
+<script src="../../../../docs/_/js/vendor/lunr.js"></script>
+<script src="../../../../docs/_/js/search-ui.js" id="search-ui-script" data-site-root-path="../../../.." data-snippet-length="142" data-stylesheet="../../../../docs/_/css/search.css"></script>
+<script async src="../../../../search-index.js"></script>
+  </body>
+</html>
