@@ -66,7 +66,7 @@ updateYaml() {
     return 1
   else
     if [[ $(git rev-parse --abbrev-ref HEAD) == *"${BRANCH}"* ]]; then
-        replaceFieldSed $playbookfile 'version' "${BRANCH}"
+        replaceFieldSed $playbookfile '^version' "${BRANCH}"
         replaceFieldSed $playbookfile 'prerelease' "false"
     fi
     # special fields for updating PR for 7.x.y branch
