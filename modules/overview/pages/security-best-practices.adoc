@@ -1,11 +1,11 @@
 :_content-type: CONCEPT
 :description: Security best practices
-:keywords: administration-guide, security
+:keywords: security, best practices
 :navtitle: Security best practices
 //:page-aliases:
 
 [id="security-best-practices"]
-= Security best practices
+= Security best practices for {prod}
 
 Get an overview of key security best practices for {prod} that can help foster a more resilient development environment.
 
@@ -25,10 +25,7 @@ devEnvironments:
   defaultNamespace:
     autoProvision: false
 ----
-This setup allows achieving curated access to {prod-short},
-where cluster administrators control provisioning for each user
-and can explicitly configure various settings including resource limits and quotas.
-More details about the project provisioning can be found in the link:https://eclipse.dev/che/docs/stable/administration-guide/mounting-a-secret-as-a-file-or-an-environment-variable-into-a-container/#mounting-a-secret-or-a-configmap-as-an-environment-variable-into-a-container[product documentation].
+include::example$snip_curated-access-to-che.adoc[]
 
 .Role-based access control (RBAC)
 
@@ -98,14 +95,8 @@ The first time a user accesses {prod}, the corresponding RoleBinding will be cre
 |"get", "create", "delete", "list", "update", "patch", "watch"
 |===
 
-[IMPORTANT]
-====
-Each user is granted permissions only to their namespace, and can not access other user’s resources.
-Cluster administrators can add extra permissions to users.
-They should not remove permissions granted by default.
-Refer to the link:https://eclipse.dev/che/docs/stable/administration-guide/configuring-cluster-roles-for-users/[product documentation] for configuring cluster roles for {prod} users.
-More details about the role-based access control are available in the link:https://docs.openshift.com/container-platform/4.14/authentication/using-rbac.html[OpenShift documentation].
-====
+include::example$snip_che-user-granted-permission.adoc[]
+
 
 .Dev environment isolation
 
@@ -231,7 +222,7 @@ to protect sensitive or critical systems from potential cyber threats.
 In an air-gapped environment,
 the cluster cannot access external repositories or registries to download container images, updates, or dependencies.
 is supported and can be installed in a restricted environment.
-Installation instructions can be found in the link:https://eclipse.dev/che/docs/stable/administration-guide/installing-che-in-a-restricted-environment/[official documentation].
+include::example$snip_che-installation-instructions.adoc[]
 
 .Managing extensions
 
@@ -242,10 +233,11 @@ Open Source editor.
 Alternatively, cluster administrators can specify a different plugin registry in the Custom Resource e.g.,
 https://open-vsx.org that contains thousands of extensions,
 or build a custom Open VSX registry.
-More details about managing IDE extensions can be found in link:https://eclipse.dev/che/docs/stable/administration-guide/extensions-for-microsoft-visual-studio-code-open-source/[the official documentation].
+include::example$snip_che-managing-extensions.adoc[]
 
 [IMPORTANT]
-==== Installing extra extensions may increase the potential for risks. To minimize these risks, make sure to only install extensions from reliable sources and regularly update them.
+====
+Installing extra extensions may increase the potential for risks. To minimize these risks, make sure to only install extensions from reliable sources and regularly update them.
 ====
 
 .Secrets
