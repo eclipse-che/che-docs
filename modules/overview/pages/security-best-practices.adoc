@@ -14,9 +14,9 @@ foster a more resilient development environment.
 
 .Project isolation in OpenShift
 
-In OpenShift, project isolation is similar to namespace isolation in Kubernetes but is achieved through the concept of projects. A project in OpenShift is a top-level organizational unit that provides isolation and collaboration between different applications, teams, or workloads within a cluster.
+In OpenShift, project isolation is similar to {namespace} isolation in {kubernetes} but is achieved through the concept of projects. A project in OpenShift is a top-level organizational unit that provides isolation and collaboration between different applications, teams, or workloads within a cluster.
 
-By default, {prod-short} provisions a unique `<username>-devspaces` project for each user. Alternatively, the cluster administrator can disable project self-provisioning on the OpenShift level, and turn off automatic namespace provisioning in the CheCluster custom resource:
+By default, {prod-short} provisions a unique `<username>-devspaces` project for each user. Alternatively, the cluster administrator can disable project self-provisioning on the OpenShift level, and turn off automatic {namespace} provisioning in the CheCluster custom resource:
 
 [source, yaml]
 ----
@@ -40,9 +40,9 @@ The `<namespace>` prefix corresponds to the project name where the {prod} CheClu
 
 The first time a user accesses {prod}, the corresponding RoleBinding is created in the `<username>-devspaces` project.
 
-All resources and actions you can grant users permission to use in their namespace is listed below.
+All resources and actions you can grant users permission to use in their {namespace} is listed below.
 
-.Overview of resources and actions available in a user's namespace.
+.Overview of resources and actions available in a user's {namespace}.
 [cols="1,1"]
 |===
 |Resources |Actions
@@ -116,10 +116,11 @@ Access to the resources in a namespace must be limited to the developer owning i
 
 .Enhanced authorization
 
-Even though the current trend is
-to split an infrastructure into a number of "fit for purpose" clusters
-instead of having a gigantic monolith OpenShift cluster,
-administrators might still want to provide granular access, and restrict the availability of certain functionalities to particular users.
+The current trend is
+to split an infrastructure into several "fit for purpose" clusters
+instead of having a gigantic monolith OpenShift cluster.
+However, administrators might still want to provide granular access,
+and restrict the availability of certain functionalities to particular users.
 
 [NOTE]
 ====
@@ -168,9 +169,9 @@ Only authenticated OpenShift users can access {prod}.
 The Gateway Pod uses a role-based access control (RBAC) subsystem
 to determine whether a developer is authorized to access a Cloud Development Environment (CDE) or not.
 
-The CDE Gateway container checks the developer's Kubernetes roles.
+The CDE Gateway container checks the developer's {kubernetes} roles.
 If their roles allow access to the CDE Pod, the connection to the development environment is allowed.
-By default, only the owner of the namespace has access to the CDE Pod.
+By default, only the owner of the {namespace} has access to the CDE Pod.
 
 [IMPORTANT]
 ====
@@ -214,7 +215,7 @@ spec:
 
 .Resource Quotas and Limit Ranges
 
-Resource Quotas and Limit Ranges are Kubernetes features you can use to help prevent bad actors or resource abuse within a cluster.
+Resource Quotas and Limit Ranges are {kubernetes} features you can use to help prevent bad actors or resource abuse within a cluster.
 They help in controlling and managing resource consumption by pods and containers.
 By combining Resource Quotas and Limit Ranges,
 you can enforce project-specific policies to prevent bad actors from consuming excessive resources.
@@ -225,7 +226,7 @@ More details about link:https://docs.openshift.com/container-platform/4.14/appli
 .Disconnected environment
 
 An air-gapped OpenShift disconnected cluster refers to an OpenShift cluster
-that is isolated from the internet or any external network.
+isolated from the internet or any external network.
 This isolation is often done for security reasons,
 to protect sensitive or critical systems from potential cyber threats.
 In an air-gapped environment,
@@ -247,12 +248,12 @@ include::example$snip_che-managing-extensions.adoc[]
 
 [IMPORTANT]
 ====
-Installing extra extensions may potentially increase risks. To minimize these risks, make sure to only install extensions from reliable sources and regularly update them.
+Installing extra extensions increases potential risks. To minimize these risks, make sure to only install extensions from reliable sources and regularly update them.
 ====
 
 .Secrets
 
-Keep sensitive data stored as Kubernetes secrets in the users’
+Keep sensitive data stored as {kubernetes} secrets in the users’
 namespaces confidential (e.g. Personal Access Tokens (PAT), and SSH keys).
 
 .Git repositories
