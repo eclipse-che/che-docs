@@ -1,0 +1,51 @@
+:_content-type: REFERENCE
+:description: Minimum set of permissions required to install {prod-short} on OpenShift using CLI
+:keywords: permissions, openshift, installing, cli
+:navtitle: Permissions to install {prod-short} on OpenShift using CLI
+
+[id="permissions-to-install-che-on-openshift-using-cli"]
+= Permissions to install {prod-short} on OpenShift using CLI
+
+Below is the minimal set of permissions required to install {prod-short} on an OpenShift cluster using {prod-cli}:
+
+[source,yaml,subs="+quotes,+attributes"]
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {prod-id-short}-install-{prod-cli}
+rules:
+- apiGroups: ["org.eclipse.che"]
+  resources: ["checlusters"]
+  verbs: ["*"]
+- apiGroups: ["project.openshift.io"]
+  resources: ["projects"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "list", "create"]
+- apiGroups: [""]
+  resources: ["pods", "configmaps"]
+  verbs: ["get", "list"]
+- apiGroups: ["route.openshift.io"]
+  resources: ["routes"]
+  verbs: ["get", "list"]
+  # OLM resources permissions
+- apiGroups: ["operators.coreos.com"]
+  resources: ["catalogsources", "subscriptions"]
+  verbs: ["create", "get", "list", "watch"]
+- apiGroups: ["operators.coreos.com"]
+  resources: ["operatorgroups", "clusterserviceversions"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["operators.coreos.com"]
+  resources: ["installplans"]
+  verbs: ["patch", "get", "list", "watch"]
+- apiGroups: ["packages.operators.coreos.com"]
+  resources: ["packagemanifests"]
+  verbs: ["get", "list"]
+----
+
+.Additional resources
+
+* https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/developer-cli-commands.html#oc-apply[`oc apply` command]
+* link:https://docs.openshift.com/container-platform/4.17/cli_reference/openshift_cli/administrator-cli-commands.html#oc-adm-policy-add-cluster-role-to-user[`oc adm policy` command]

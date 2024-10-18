@@ -15,7 +15,6 @@ from diagrams import *
 from diagrams.custom import Custom
 from diagrams.k8s.controlplane import APIServer
 from diagrams.k8s.rbac import User
-from diagrams.onprem.database import PostgreSQL
 from diagrams.onprem.network import Traefik
 from diagrams.onprem.vcs import Git
 from diagrams.outscale.compute import Compute
@@ -58,17 +57,15 @@ def architecture_diagrams(prod_short, project_context, orchestrator_name):
                  ):
         che_dashboard = Custom('User dashboard', icon_path=prod_icon)
         che_gateway = Traefik('Gateway')
-        devfile_registries = SimpleStorageService('Devfile registries')
         che_host = Custom(prod_short + ' server', icon_path=prod_icon)
         git = Git('Git provider')
-        postgres = PostgreSQL('PostgreSQL')
         plugin_registry = SimpleStorageService('Plug-in registry')
         kubernetes_api = APIServer(orchestrator_name + ' API')
         user = User('User browser')
         user >> che_gateway
-        che_gateway >> [che_dashboard, devfile_registries, che_host,
+        che_gateway >> [che_dashboard, che_host,
                         plugin_registry, kubernetes_api]
-        che_host >> [postgres, git]
+        che_host >> [git]
 
     filename = file_path + 'gateway-interactions'
     with Diagram(filename=filename,
@@ -78,12 +75,11 @@ def architecture_diagrams(prod_short, project_context, orchestrator_name):
         user = User('User')
         che_gateway = Traefik('Gateway')
         che_dashboard = Custom('User dashboard', icon_path=prod_icon)
-        devfile_registries = SimpleStorageService('Devfile registry')
         che_host = Custom(prod_short + ' server', icon_path=prod_icon)
         plugin_registry = SimpleStorageService('Plug-in registry')
         user_workspace = Compute('User workspaces')
         user >> che_gateway >> [
-            che_dashboard, che_host, devfile_registries, plugin_registry, user_workspace]
+            che_dashboard, che_host, plugin_registry, user_workspace]
 
     filename = file_path + 'dashboard-interactions'
     with Diagram(filename=filename,
@@ -91,13 +87,12 @@ def architecture_diagrams(prod_short, project_context, orchestrator_name):
                  direction="TB",
                  graph_attr=graph_attr):
         che_dashboard = Custom('User dashboard', icon_path=prod_icon)
-        devfile_registry = SimpleStorageService('Devfile registries')
         che_host = Custom(prod_short + ' server', icon_path=prod_icon)
         plugin_registry = SimpleStorageService('Plug-in registry')
         crd_workspace = APIServer(orchestrator_name + ' API')
         che_dashboard >> che_host,
         che_dashboard >> [
-            devfile_registry, plugin_registry]
+            plugin_registry]
         che_dashboard >> crd_workspace
 
     filename = file_path + 'server-interactions'
@@ -106,23 +101,12 @@ def architecture_diagrams(prod_short, project_context, orchestrator_name):
                  direction="TB",
                  graph_attr=graph_attr):
         che_host = Custom(prod_short + ' server', icon_path=prod_icon)
-        postgres = PostgreSQL('PostgreSQL')
         git_provider = Git('Git provider')
         crd_workspace = APIServer('API')
         che_dashboard = Custom('User dashboard', icon_path=prod_icon)
         che_dashboard >> che_host
         che_host >> [git_provider]
         che_host >> crd_workspace
-        che_host >> postgres
-
-    filename = file_path + 'devfile-registry-interactions'
-    with Diagram(filename=filename,
-                 show=False,
-                 direction="TB",
-                 graph_attr=graph_attr):
-        che_dashboard = Custom('User dashboard', icon_path=prod_icon)
-        devfile_registry = SimpleStorageService('Devfile registries')
-        che_dashboard >> devfile_registry
 
     filename = file_path + 'plugin-registry-interactions'
     with Diagram(filename=filename,

@@ -42,6 +42,31 @@ To understand the nature of topics, see the link:https://redhat-documentation.gi
 
 ** link:https://www.shellcheck.net/[ShellCheck] validates the shell scripts.
 
+[id="project-structure"]
+== Project structure, branches and workflows
+
+. link:https://github.com/eclipse-che/che-docs/tree/main[main branch] - hosts documentation for next version of Che.
+. release branches (e.g. link:https://github.com/eclipse-che/che-docs/tree/7.90.x[7.90.x]) - hosts documentations for stable versions of Che.
+. link:https://github.com/eclipse-che/che-docs/tree/publication[publication] branch stores published documents.
+. link:https://github.com/eclipse-che/che-docs/tree/publication-builder[publication-builder] branch hosts a structure and a workflow for publishing documentation to the link:https://github.com/eclipse-che/che-docs/tree/publication[publication] branch.
+
+Che Docs uses GitHub actions workflows for performing CI / release builds, and Pull request check jobs.
+
+CI jobs:
+. link:https://github.com/eclipse-che/che-docs/blob/main/.github/workflows/container-build.yml[build-and-validate-on-push.yaml] - assemble the project by using the current `che-docs:next` image. Triggered on commit to the main branch
+. link:https://github.com/eclipse-che/che-docs/blob/main/.github/workflows/container-build.yml[container-build] - build `quay.io/eclipse/che-docs:next` image.
+. link:https://github.com/eclipse-che/che-docs/blob/main/.github/workflows/call-publication-builder.yml[] - Triggered on commit to the main or release branch. It will call a workflow from link:https://github.com/eclipse-che/che-docs/tree/publication-builder[publication-builder] branch to publish documentation in `publication` branch. 
+
+Release jobs:
+. link:https://github.com/eclipse-che/che-docs/blob/main/.github/workflows/release.yml[Release] - see link:https://github.com/eclipse/che-docs/blob/main/RELEASE.adoc[Release Eclipse Che documentation].
+
+PR Check jobs:
+. link:https://github.com/eclipse-che/che-docs/blob/main/.github/workflows/build-and-validate-on-pr.yaml[Build and validate pull request] - assemble the project from the PR branch, using `cquay.io/eclipse/che-docs:next` container image.
+. link:https://github.com/eclipse-che/che-docs/blob/main/.github/workflows/container-on-pull-request.yaml[Build and verify container] - build `che-docs` container image.
+. link:https://github.com/eclipse-che/che-docs/blob/main/.github/workflows/publish-netlify.yaml[Publish Netlify] - triggered after `build-and-validate-on-pr` completion. Assembled documentation is deployed for preview with "Netlify" platform.
+. link:https://github.com/eclipse-che/che-docs/blob/main/.github/workflows/vale.yaml[vale] - Vale linting check
+. link:https://github.com/eclipse-che/che-docs/blob/main/.github/workflows/try-in-web-ide.yaml[Try in web IDE] - view pull request through Eclipse Che. See link:https://eclipse.dev/che/docs/stable/end-user-guide/try-in-web-ide-github-action/[]
+
 [id="documentation-workflow"]
 == The documentation workflow
 
