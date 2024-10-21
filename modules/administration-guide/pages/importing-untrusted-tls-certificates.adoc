@@ -16,7 +16,8 @@ Therefore, you must import into {prod-short} all untrusted CA chains in use by a
 * A source code repositories provider (Git)
 
 {prod-short} uses labeled ConfigMaps in {prod-short} {orch-namespace} as sources for TLS certificates.
-The ConfigMaps can have an arbitrary amount of keys with a random amount of certificates each. Operator merges all ConfigMaps into a single one `ca-certs-merged` and mounts it as a volume in the {prod-short} server, dashboard and workspace pods. By default, the Operator mounts the `ca-certs-merged` ConfigMap in users' workspaces at two locations: `/public-certs` and `/etc/pki/ca-trust/extracted/pem`. The `/etc/pki/ca-trust/extracted/pem` directory is where the system stores extracted CA certificates for trusted certificate authorities on Red Hat (e.g., CentOS, Fedora). CLI tools automatically use certificates from system-trusted locations, when user's workspace is up and running.
+The ConfigMaps can have an arbitrary amount of keys with a random amount of certificates each. Operator merges all ConfigMaps into a single one titled `ca-certs-merged`, and mounts it as a volume in the {prod-short} server, dashboard and workspace pods. 
+By default, the Operator mounts the `ca-certs-merged` ConfigMap in a user's workspace at two locations: `/public-certs` and `/etc/pki/ca-trust/extracted/pem`. The `/etc/pki/ca-trust/extracted/pem` directory is where the system stores extracted CA certificates for trusted certificate authorities on Red Hat (e.g., CentOS, Fedora). CLI tools automatically use certificates from the system-trusted locations, when the user's workspace is up and running.
 
 [NOTE]
 ====
