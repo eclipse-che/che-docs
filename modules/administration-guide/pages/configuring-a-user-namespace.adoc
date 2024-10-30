@@ -29,7 +29,7 @@ for other possible labels and annotations.
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: user-configmap
+  name: {prod-id-short}-user-configmap
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
@@ -45,7 +45,7 @@ data:
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: user-settings-xml
+  name: {prod-id-short}-user-configmap
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
@@ -73,7 +73,7 @@ for other possible labels and annotations.
 kind: Secret
 apiVersion: v1
 metadata:
-  name: user-secret
+  name: {prod-id-short}-user-secret
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
@@ -89,7 +89,7 @@ data:
 kind: Secret
 apiVersion: v1
 metadata:
-  name: user-certificates
+  name: {prod-id-short}-user-secret
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
@@ -113,7 +113,7 @@ See the link:https://devfile.io/docs/{devfile-api-version}/adding-event-bindings
 kind: Secret
 apiVersion: v1
 metadata:
-  name: user-env
+  name: {prod-id-short}-user-secret
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
@@ -139,7 +139,7 @@ To modify the 'PersistentVolumeClaim', delete it and create a new one in {prod-n
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: user-pvc
+  name: {prod-id-short}-user-pvc
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
@@ -155,7 +155,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: user-pvc
+  name: {prod-id-short}-user-pvc
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
@@ -174,9 +174,122 @@ spec:
 ----
 ====
 
+. Create the `Template` below to replicate resources included in the Template to every user {namespace}.
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: {prod-id-short}-user-namespace-configurator
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+objects:
+  ...
+parameters:
+- name: PROJECT_NAME
+- name: PROJECT_ADMIN_USER
+
+----
++
+The `objects` array can contain any number of resources, including the previously mentioned ConfigMaps, Secrets, and PersistentVolumeClaims.
++
+The `parameters` are optional and define which parameters can be used. Currently, only `PROJECT_NAME` and `PROJECT_ADMIN_USER` are supported. `PROJECT_NAME` is the name of the {prod-short} {namespace}, while `PROJECT_ADMIN_USER` is the {prod-short} user of the {namespace}.
++
+The {namespace} name in objects is omitted and replaced with the user's {namespace} name during synchronization.
++
+.Synchronizing {kubernetes} resources to a user workspace:
+====
+[source,yaml,subs="+attributes,+quotes"]
+----
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: {prod-id-short}-user-namespace-configurator
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+objects:
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: {prod-id-short}-user-resource-quota
+  spec:
+    ...
+- apiVersion: v1
+  kind: LimitRange
+  metadata:
+    name: {prod-id-short}-user-resource-constraint
+  spec:
+    ...
+- kind: ConfigMap
+  apiVersion: v1
+  metadata:
+    name: {prod-id-short}-user-configmap
+    labels:
+      app.kubernetes.io/part-of: che.eclipse.org
+      app.kubernetes.io/component: workspaces-config
+    annotations:
+      controller.devfile.io/mount-as: subpath
+      controller.devfile.io/mount-path: /home/user/
+  data:
+    ...
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    name: {prod-id-short}-user--secret
+    labels:
+      app.kubernetes.io/part-of: che.eclipse.org
+      app.kubernetes.io/component: workspaces-config
+    annotations:
+      controller.devfile.io/mount-as: subpath
+      controller.devfile.io/mount-path: /home/user/
+  stringData:
+    ...
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: {prod-id-short}-user-pvc
+    labels:
+      app.kubernetes.io/part-of: che.eclipse.org
+      app.kubernetes.io/component: workspaces-config
+      controller.devfile.io/mount-to-devworkspace: 'true'
+    annotations:
+      controller.devfile.io/mount-path: /home/user/user-pvc
+      controller.devfile.io/read-only: 'false'
+  spec:
+    ...
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    name: {prod-id-short}-user-roles
+  rules:
+    ...
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: {prod-id-short}-user-rolebinding
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: che-user-roles
+  subjects:
+  - kind: User
+    apiGroup: rbac.authorization.k8s.io
+    name: ${PROJECT_ADMIN_USER}
+parameters:
+- name: PROJECT_NAME
+- name: PROJECT_ADMIN_USER
+----
+NOTE: [.]#Creating# Template Kubernetes resources is supported only on OpenShift.
+====
+
 .Additional resources
 * xref:end-user-guide:mounting-configmaps.adoc[]
 * xref:end-user-guide:mounting-secrets.adoc[]
 * xref:end-user-guide:requesting-persistent-storage-for-workspaces.adoc[]
 * link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
-
+* link:https://docs.openshift.com/container-platform/latest/rest_api/template_apis/template-template-openshift-io-v1.html[OpenShift API reference for `Template`]
