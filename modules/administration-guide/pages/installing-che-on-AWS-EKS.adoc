@@ -1,0 +1,100 @@
+:_content-type: PROCEDURE
+:navtitle: Installing {prod-short} on the {eks} cluster
+:description: Installing {prod-short} on the {eks} cluster
+:keywords: installing-{prod-short}-on-the-eks-cluster
+:page-aliases:
+
+[id="installing-{prod-short}-on-AWS-EKS.adoc"]
+= Installing {prod-short} on the {eks} cluster
+
+.Prerequisites
+* A Che domain name
+* A certificate for the che domain name: private and public keys in PEM format
+* An external OIDC provider, you need the following information from your provider: Issuer URL, Client ID, Client Secret
+
+.Install required components
+. Install link:https://kubernetes.github.io/ingress-nginx/[Ingress-Nginx Controller]
++
+[source,shell]
+----
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.1/deploy/static/provider/aws/deploy.yaml
+----
+
+. Install the link:https://github.com/devfile/devworkspace-operator/tree/main[devworkspace-operator]
++
+[source,shell]
+----
+kubectl create namespace devworkspace
+kubectl apply -f https://raw.githubusercontent.com/devfile/devworkspace-operator/refs/heads/main/deploy/deployment/kubernetes/combined.yaml
+----
+
+. Install the link:https://github.com/eclipse-che/che-operator[eclipse-che-operator]
++
+[source,shell]
+----
+kubectl apply -f https://raw.githubusercontent.com/eclipse-che/che-operator/refs/heads/main/deploy/deployment/kubernetes/combined.yaml
+----
+
+.Integrate the external OIDC provider with the EKS cluster
+* Select your EKS cluster, and then select the `Access` tab.
+* In the OIDC Identity Providers section, select Associate Identity Provider.
+* On the Associate OIDC Identity Provider page, enter or select the following options, and then select Associate.
+[subs="+quotes,attributes"]
+----
+For Name, enter a unique name for the provider.
+For Issuer URL, enter the URL for your provider
+For Client ID, enter the OIDC identity provider's client ID 
+For Username claim, enter `email`
+----
+.Create secret for the seft sign certificate
+. Create a `che-tls` secret:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} create secret tls che-tls \
+--key <key_file> \
+--cert <cert_file> \
+-n {prod-namespace}
+----
+
+. Add the required labels to the secret:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} label secret che-tls app.kubernetes.io/part-of=che.eclipse.org -n {prod-namespace}
+----
+
+.Deploy che cluster
+. Prepare `CheCluster` manifest file
+[source,shell,subs="+attributes,+quotes"]
+----
+cat > /tmp/che-clsuter.yaml << EOF
+kind: CheCluster
+apiVersion: org.eclipse.che/v2
+metadata:
+  name: eclipse-che
+  namespace: ecclipse-che
+spec:
+  networking:
+    ingressClassName: nginx
+    auth:
+      oAuthClientName: <Client ID>
+      oAuthSecret: <Client Secret>
+      identityProviderURL: <Issuer URL>
+      gateway:
+        oAuthProxy:
+          cookieExpireSeconds: 300
+        deployment:
+          containers:
+            - name: oauth-proxy
+              env:
+                - name: OAUTH2_PROXY_COOKIE_CSRF_PER-REQUEST
+                 value: "true"
+    domain: <che domain name>
+    tlsSecretName: che-tls
+  components:
+    cheServer:
+      extraProperties:
+        CHE_OIDC_USERNAME__CLAIM: email
+EOF
+----
