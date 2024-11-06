@@ -1,0 +1,265 @@
+:_content-type: CONCEPT
+:description: Security best practices
+:keywords: security, best practices
+:navtitle: Security best practices
+//:page-aliases:
+
+[id="security-best-practices"]
+= Security best practices for {prod}
+
+Get an overview of key best security practices for {prod} that can help you
+foster a more resilient development environment.
+
+{prod} runs on top of OpenShift, which provides the platform, and the foundation for the products functioning on top of it. OpenShift documentation is the entry point for security hardening.
+
+.Project isolation in OpenShift
+
+In OpenShift, project isolation is similar to {namespace} isolation in {kubernetes} but is achieved through the concept of projects. A project in OpenShift is a top-level organizational unit that provides isolation and collaboration between different applications, teams, or workloads within a cluster.
+
+By default, {prod-short} provisions a unique `<username>-devspaces` project for each user. Alternatively, the cluster administrator can disable project self-provisioning on the OpenShift level, and turn off automatic {namespace} provisioning in the CheCluster custom resource:
+
+[source, yaml]
+----
+devEnvironments:
+  defaultNamespace:
+    autoProvision: false
+----
+include::example$snip_curated-access-to-che.adoc[]
+
+.Role-based access control (RBAC)
+
+By default, the {prod-short} operator creates the following ClusterRoles:
+
+* `<namespace>-cheworkspaces-clusterrole`
+* `<namespace>-cheworkspaces-devworkspace-clusterrole`
+
+[NOTE]
+====
+The `<namespace>` prefix corresponds to the project name where the {prod} CheCluster CR is located.
+====
+
+The first time a user accesses {prod}, the corresponding RoleBinding is created in the `<username>-devspaces` project.
+
+All resources and actions you can grant users permission to use in their {namespace} is listed below.
+
+.Overview of resources and actions available in a user's {namespace}.
+[cols="1,1"]
+|===
+|Resources |Actions
+
+|pods
+|"get", "list", "watch", "create", "delete", "update", "patch"
+
+|pods/exec
+|"get", "create"
+
+|pods/log
+|"get", "list", "watch"
+
+|pods/portforward
+|"get", "list", "create"
+
+|configmaps
+|“get", "list", "create", "update", "patch", "delete"
+
+|events
+|“watch”
+
+|secrets
+|"get", "list", "create", "update", "patch", "delete"
+
+|services
+|"get", "list", "create", "delete", "update", "patch"
+
+|routes
+|”get", "list", "create", "delete"
+
+|persistentvolumeclaims
+|“get", "list", "watch", "create", "delete", "update", "patch"
+
+|apps/deployments
+|"get", "list", "watch", "create", "patch", "delete"
+
+|apps/replicasets
+|"get", "list", "patch", "delete"
+
+|namespaces
+|"get", "list"
+
+|projects
+|“get”
+
+|devworkspace
+|"get", "create", "delete", "list", "update", "patch", "watch"
+
+|devworkspacetemplates
+|"get", "create", "delete", "list", "update", "patch", "watch"
+|===
+
+include::example$snip_che-user-granted-permission.adoc[]
+
+
+.Dev environment isolation
+
+Isolation of the development environments is implemented using OpenShift projects.
+Every developer has a project in which the following objects are created and managed:
+
+* Cloud Development Environment (CDE) Pods, including the IDE server.
+* Secrets containing developer credentials, such as a Git token, SSH keys, and a Kubernetes token.
+* ConfigMaps with developer-specific configuration, such as the Git name and email.
+* Volumes that persist data such as the source code, even when the CDE Pod is stopped.
+
+[IMPORTANT]
+====
+Access to the resources in a namespace must be limited to the developer owning it. Granting read access to another developer is equivalent to sharing the developer credentials and should be avoided.
+====
+
+.Enhanced authorization
+
+The current trend is
+to split an infrastructure into several "fit for purpose" clusters
+instead of having a gigantic monolith OpenShift cluster.
+However, administrators might still want to provide granular access,
+and restrict the availability of certain functionalities to particular users.
+
+[NOTE]
+====
+A "fit for purpose" OpenShift cluster refers to a cluster that is specifically designed
+and configured to meet the requirements and goals of a particular use case or workload.
+It is tailored to optimize performance, resource utilization,
+and other factors based on the characteristics of the workloads it will be managing.
+For {prod}, it is recommended to have this type of cluster provisioned.
+====
+
+For this purpose,
+optional properties that you can use to set up granular access for different groups and users are available in the CheCluster Custom Resource:
+
+* `allowUsers`
+* `allowGroups`
+* `denyUsers`
+* `denyGroups`
+
+Below is an example of access configuration:
+
+[source, code]
+----
+ networking:
+    auth:
+      advancedAuthorization:
+        allowUsers:
+          - user-a
+          - user-b
+        denyUsers:
+          - user-c
+        allowGroups:
+          - openshift-group-a
+          - openshift-group-b
+        denyGroups:
+          - openshift-group-c
+----
+
+[NOTE]
+====
+Users in the `denyUsers` and `denyGroup`  categories will not be able to use {prod} and will see a warning when trying to access the User Dashboard.
+====
+
+.Authentication
+
+Only authenticated OpenShift users can access {prod}.
+The Gateway Pod uses a role-based access control (RBAC) subsystem
+to determine whether a developer is authorized to access a Cloud Development Environment (CDE) or not.
+
+The CDE Gateway container checks the developer's {kubernetes} roles.
+If their roles allow access to the CDE Pod, the connection to the development environment is allowed.
+By default, only the owner of the {namespace} has access to the CDE Pod.
+
+[IMPORTANT]
+====
+Access to the resources in a namespace must be limited to the developer owning it. Granting `read` access to another developer is equivalent to sharing the developer credentials and should be avoided.
+====
+
+.Security context and security context constraint
+
+{prod} adds `SETGID` and `SETUID` capabilities to the specification of the CDE Pod container security context:
+
+[source, code]
+----
+"spec": {
+  "containers": [
+    "securityContext": {
+            "allowPrivilegeEscalation": true,
+            "capabilities": {
+               "add": ["SETGID", "SETUID"],
+               "drop": ["ALL","KILL","MKNOD"]
+            },
+            "readOnlyRootFilesystem": false,
+            "runAsNonRoot": true,
+            "runAsUser": 1001110000
+   }
+  ]
+ }
+----
+
+This provides the ability for users to build container images from within a CDE.
+
+By default, {prod} assigns a specific `SecurityContextConstraint` (SCC) to the users that allows them to start a Pod with such capabilities. This SCC grants more capabilities to the users compared to the default `restricted` SCC but less capability compared to the `anyuid` SCC. This default SCC is pre-created in the {prod-short} namespace and named `container-build`.
+
+Setting the following property in the CheCluster Custom Resource prevents assigning extra capabilities and SCC to users:
+
+[source, code]
+----
+spec:
+  devEnvironments:
+    disableContainerBuildCapabilities: true
+----
+
+.Resource Quotas and Limit Ranges
+
+Resource Quotas and Limit Ranges are {kubernetes} features you can use to help prevent bad actors or resource abuse within a cluster.
+They help in controlling and managing resource consumption by pods and containers.
+By combining Resource Quotas and Limit Ranges,
+you can enforce project-specific policies to prevent bad actors from consuming excessive resources.
+
+These mechanisms contribute to better resource management, stability, and fairness within an OpenShift cluster.
+More details about link:https://docs.openshift.com/container-platform/4.14/applications/quotas/quotas-setting-per-project.html[Resource Quotas] and link:https://docs.openshift.com/container-platform/4.14/nodes/clusters/nodes-cluster-limit-ranges.html[Limit Ranges] are available in the OpenShift documentation.
+
+.Disconnected environment
+
+An air-gapped OpenShift disconnected cluster refers to an OpenShift cluster
+isolated from the internet or any external network.
+This isolation is often done for security reasons,
+to protect sensitive or critical systems from potential cyber threats.
+In an air-gapped environment,
+the cluster cannot access external repositories or registries to download container images, updates, or dependencies.
+
+{prod} is supported and can be installed in a restricted environment.
+include::example$snip_che-installation-instructions.adoc[]
+
+.Managing extensions
+
+By default, {prod}
+includes the embedded Open VSX registry
+which contains a limited set of extensions used by Microsoft Visual Studio Code -
+Open Source editor.
+Alternatively, cluster administrators can specify a different plugin registry in the Custom Resource, e.g.
+https://open-vsx.org that contains thousands of extensions.
+They can also build a custom Open VSX registry.
+include::example$snip_che-managing-extensions.adoc[]
+
+[IMPORTANT]
+====
+Installing extra extensions increases potential risks. To minimize these risks, make sure to only install extensions from reliable sources and regularly update them.
+====
+
+.Secrets
+
+Keep sensitive data stored as {kubernetes} secrets in the users’
+namespaces confidential (e.g. Personal Access Tokens (PAT), and SSH keys).
+
+.Git repositories
+
+It is crucial to operate within Git repositories that you are familiar with and that you trust. Before incorporating new dependencies into the repository, verify that they are well-maintained and regularly release updates to address any identified security vulnerabilities in their code.
+
+
+
+
