@@ -8,9 +8,7 @@
 = Configuring a user namespace
 
 This procedure walks you through the process of using {prod-short}
-to replicate `ConfigMaps`, `Secrets` and `PersistentVolumeClaim` from `{prod-namespace}` namespace to numerous
-user-specific namespaces. The {prod-short} automates the synchronization of important configuration
-data such as shared credentials, configuration files, and certificates to user namespaces.
+to replicate `ConfigMaps`, `Secrets`, `PersistentVolumeClaim` and other {kubernetes} objects from `{prod-namespace}` namespace to numerous user-specific namespaces. The {prod-short} automates the synchronization of important configuration data such as shared credentials, configuration files, and certificates to user namespaces.
 
 If you make changes to a {kubernetes} resource in an {prod-namespace} namespace,
 {prod-short} will immediately replicate the changes across all users namespaces.
@@ -29,7 +27,7 @@ for other possible labels and annotations.
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: user-configmap
+  name: {prod-id-short}-user-configmap
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
@@ -45,7 +43,7 @@ data:
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: user-settings-xml
+  name: {prod-id-short}-user-configmap
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
@@ -73,7 +71,7 @@ for other possible labels and annotations.
 kind: Secret
 apiVersion: v1
 metadata:
-  name: user-secret
+  name: {prod-id-short}-user-secret
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
@@ -89,7 +87,7 @@ data:
 kind: Secret
 apiVersion: v1
 metadata:
-  name: user-certificates
+  name: {prod-id-short}-user-secret
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
@@ -113,7 +111,7 @@ See the link:https://devfile.io/docs/{devfile-api-version}/adding-event-bindings
 kind: Secret
 apiVersion: v1
 metadata:
-  name: user-env
+  name: {prod-id-short}-user-secret
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
@@ -132,14 +130,14 @@ To enhance the configurability, you can customize the `PersistentVolumeClaim` by
 See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
 for other possible labels and annotations.
 +
-To modify the 'PersistentVolumeClaim', delete it and create a new one in {prod-namespace} namespace.
+To modify the `PersistentVolumeClaim`, delete it and create a new one in {prod-namespace} namespace.
 +
 [source,yaml,subs="+attributes,+quotes"]
 ----
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: user-pvc
+  name: {prod-id-short}-user-pvc
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
@@ -155,7 +153,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: user-pvc
+  name: {prod-id-short}-user-pvc
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
@@ -174,9 +172,91 @@ spec:
 ----
 ====
 
+. To leverage the OpenShift Kubernetes Engine, you can create a `Template` object to replicate all resources defined within the template across each user {namespace}.
++
+Aside from the previously mentioned `ConfigMap`, `Secret`, and `PersistentVolumeClaim`, `Template` objects can include:
++
+* `LimitRange`
+* `NetworkPolicy`
+* `ResourceQuota`
+* `Role`
+* `RoleBinding`
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: {prod-id-short}-user-namespace-configurator
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+objects:
+  ...
+parameters:
+- name: PROJECT_NAME
+- name: PROJECT_ADMIN_USER
+
+----
++
+The `parameters` are optional and define which parameters can be used. Currently, only `PROJECT_NAME` and `PROJECT_ADMIN_USER` are supported. `PROJECT_NAME` is the name of the {prod-short} {namespace}, while `PROJECT_ADMIN_USER` is the {prod-short} user of the {namespace}.
++
+The {namespace} name in objects will be replaced with the user's {namespace} name during synchronization.
++
+.Replicating {kubernetes} resources to a user namespace:
+====
+[source,yaml,subs="+attributes,+quotes"]
+----
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: {prod-id-short}-user-namespace-configurator
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+objects:
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: {prod-id-short}-user-resource-quota
+  spec:
+    ...
+- apiVersion: v1
+  kind: LimitRange
+  metadata:
+    name: {prod-id-short}-user-resource-constraint
+  spec:
+    ...
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    name: {prod-id-short}-user-roles
+  rules:
+    ...
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: {prod-id-short}-user-rolebinding
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: {prod-id-short}-user-roles
+  subjects:
+  - kind: User
+    apiGroup: rbac.authorization.k8s.io
+    name: $\{PROJECT_ADMIN_USER}
+parameters:
+- name: PROJECT_ADMIN_USER
+----
+NOTE: Creating Template Kubernetes resources is supported only on OpenShift.
+====
+
 .Additional resources
 * xref:end-user-guide:mounting-configmaps.adoc[]
 * xref:end-user-guide:mounting-secrets.adoc[]
 * xref:end-user-guide:requesting-persistent-storage-for-workspaces.adoc[]
 * link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
-
+* link:https://docs.openshift.com/container-platform/latest/rest_api/template_apis/template-template-openshift-io-v1.html[OpenShift API reference for `Template`]
+* link:https://docs.openshift.com/container-platform/latest/applications/projects/configuring-project-creation.html[Configuring OpenShift project creation]
