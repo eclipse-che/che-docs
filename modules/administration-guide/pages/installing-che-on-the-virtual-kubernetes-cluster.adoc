@@ -628,7 +628,13 @@ spec:
       gateway:
         oAuthProxy:
           cookieExpireSeconds: 300
-  components:
+        deployment:
+            containers:
+            - env:
+                - name: OAUTH2_PROXY_BACKEND_LOGOUT_URL
+                  value: "http://$KEYCLOAK_HOST/realms/che/protocol/openid-connect/logout?id_token_hint=\{id_token}"
+            name: oauth-proxy
+components:
     cheServer:
       extraProperties:
         CHE_OIDC_USERNAME__CLAIM: email
