@@ -339,7 +339,7 @@ helm install che \
     --set networking.auth.identityProviderURL=https://keycloak.$(minikube ip).nip.io/realms/che . && \
 sleep 5s && \
 {orch-cli} patch checluster/eclipse-che --patch '{"spec": {"components": {"cheServer": {"extraProperties": {"CHE_OIDC_USERNAME__CLAIM": "email"}}}}}' --type=merge -n eclipse-che
-{orch-cli} patch checluster/eclipse-che --patch '{"spec": {"networking": {"auth": {"gateway": {"deployment": {"containers": [{"name": "oauth-proxy", "env":[{"name": "OAUTH2_PROXY_BACKEND_LOGOUT_URL", "value": "http://keycloak.$(minikube ip).nip.io/realms/che/protocol/openid-connect/logout?id_token_hint={id_token}"}]}]}}}}}}' --type=merge -n eclipse-che
+{orch-cli} patch checluster/eclipse-che --patch '{"spec": {"networking": {"auth": {"gateway": {"deployment": {"containers": [{"name": "oauth-proxy", "env":[{"name": "OAUTH2_PROXY_BACKEND_LOGOUT_URL", "value": "http://keycloak.$(minikube ip).nip.io/realms/che/protocol/openid-connect/logout?id_token_hint=\{id_token}"}]}]}}}}}}' --type=merge -n eclipse-che
 ----
 
 .Verification steps
