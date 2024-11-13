@@ -1,0 +1,137 @@
+:_content-type: PROCEDURE
+:description: Configure default extensions
+:keywords: extensions, workspace
+:navtitle: Configure default extensions
+// :page-aliases:
+
+[id="visual-studio-code-default-extensions"]
+= Configure default extensions
+
+Default extensions, like recommended extensions, allow you to work with a pre-installed set of extensions.
+
+Recommended extension is specified by adding the extension identifier to the workspace file or to the *.vscode/extensions.json* file of your project.
+When the editor is started up, the recommended extension will be fetched from the extension marketplace and installed.
+
+Default extension is specified by putting the extension binary *.vsix* file path to the __DEFAULT_EXTENSIONS__ environment variable.
+After the startup, the editor checks for the environment variable, and if it is specified, takes the path to the extension and installs it in the background without disturbing the user.
+
+[NOTE]
+====
+It is possible to specify several extensions separated by semicolon.
+
+[source,yaml]
+----
+  DEFAULT_EXTENSIONS='/projects/extension-1.vsix;/projects/extension-2.vsix'
+----
+====
+
+Below you can find several examples how to add a *.vsix* files to your workspace and how to define DEFAULT_EXTENSIONS environment variable.
+
+.Procedure
+
+* Put the extension binary to the source repository.
++
+The easiest way is to put the extension binary to the Git repository and define the environment variable in the devfile.
+If the *extension.vsix* file exists in the repository root, the __DEFAULT_EXTENSIONS__ could be set for a tooling container.
+Just specify it in your *.devfile.yaml* like below.
++
+[source,yaml]
+----
+components:
+  - name: tools
+    container:
+      image: quay.io/devfile/universal-developer-image:ubi8-latest
+      env:
+        - name: 'DEFAULT_EXTENSIONS'
+          value: '/projects/sample/extension.vsix'
+----
+
+* Use Devfile *postStart* event to fetch the extension binary from the network.
++
+It is possible to use *curl* or *wget* to download extensions to your workspace.
+For that you need to:
++
+** specify a devfile command to donload one or several extensions to your workpace
+** add a *postStart* event to run the command on workspace startup
+** define __DEFAULT_EXTENSIONS__ environment variable in the Devfile
++
+Following sample demonstrate what should be added to the devfile to add two extensions.
++
+[source,yaml]
+----
+components:
+  - name: tools
+    container:
+      image: quay.io/devfile/universal-developer-image:ubi8-latest
+      env:
+        - name: DEFAULT_EXTENSIONS
+          value: '/tmp/extension-1.vsix;/tmp/extension-2.vsix'
+
+commands:
+  - id: add-default-extensions
+    exec:
+      # name of the tooling container
+      component: tools
+      # download several extensions using curl
+      commandLine: |
+        curl https://.../extension-1.vsix --location -o /tmp/extension-1.vsix
+        curl https://.../extension-2.vsix --location -o /tmp/extension-2.vsix
+
+events:
+  postStart:
+    - add-default-extensions
+----
+
+* Include extension *.vsix* binaries to *che-code* image.
++
+Having default extensions bundled in the editor image along with __DEFAULT_EXTENSIONS__ environment variable defined in a configmap, will allow you to use default extensions without the need to change the Devfile.
++
+Following steps will help you to add the extensions you need to the editor image.
++
+1. Create a directory, prepare and put one or several *.vsix* extensions to this directory.
++
+2. Create a Dockerfile with following content.
++
+[source,]
+----
+# inherit che-incubator/che-code:latest 
+FROM quay.io/che-incubator/che-code:latest
+USER 0
+
+# copy all .vsix files to /default-extensions directory
+RUN mkdir --mode=775 /default-extensions
+COPY --chmod=755 *.vsix /default-extensions/
+
+# add instruction to the script to copy default extensions to the working container
+RUN echo "cp -r /default-extensions /checode/" >> /entrypoint-init-container.sh
+----
++
+3. Build the image and then push it to the registry.
++
+[,console]
+----
+$ docker build -t yourname/che-code:next .
+$ docker push yourname/che-code:next
+----
++
+4. Add new configmap, define __DEFAULT_EXTENSIONS__ environment variable, specify absolute paths to the extensions. 
++
+[source,yaml]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: vscode-default-extensions
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+  annotations:
+    controller.devfile.io/mount-as: env
+data:
+  DEFAULT_EXTENSIONS: '/checode/default-extensions/extension1.vsix;/checode/default-extensions/extension2.vsix'
+----
++
+5. Create a workspace using *yourname/che-code:next* image.
+First, open the dashboard and navigate to *Create Workspace*.
+Then, in the *Editor Selector* section expand *Use an Editor Definition* and put the editor URI to the *Editor Image*.
+Finally, create a workspace by clicking on any sample or by putting a git resitory URL.
