@@ -53,16 +53,16 @@ components:
           value: '/projects/example-project/extension.vsix'
 ----
 
-* Use Devfile *postStart* event to fetch the extension binary from the network.
+* Use the Devfile *postStart* event to fetch extension binaries from the network.
 +
 It is possible to use *curl* or *wget* to download extensions to your workspace.
 For that you need to:
 +
 ** specify a devfile command to donload one or several extensions to your workpace
 ** add a *postStart* event to run the command on workspace startup
-** define __DEFAULT_EXTENSIONS__ environment variable in the Devfile
+** define the __DEFAULT_EXTENSIONS__ environment variable in the Devfile
 +
-Following sample demonstrate what should be added to the devfile to add two extensions.
+The following sample demonstrates what should be added to the devfile to add two extensions.
 +
 [source,yaml]
 ----
@@ -92,13 +92,13 @@ events:
     - add-default-extensions
 ----
 
-* Include extension *.vsix* binaries to *che-code* image.
+* Include the extensions' *.vsix* binaries in the *che-code* image.
 +
-Having default extensions bundled in the editor image along with __DEFAULT_EXTENSIONS__ environment variable defined in a config map, will allow you to use default extensions without the need to change the Devfile.
+Having default extensions bundled in the editor image along with the __DEFAULT_EXTENSIONS__ environment variable defined in a ConfigMap, will allow you to apply the default extensions without the need to change the Devfile.
 +
 Following steps will help you to add the extensions you need to the editor image.
 +
-1. Create a directory, prepare and put one or several *.vsix* extensions to this directory.
+1. Create a directory and place one or several *.vsix* extensions in this directory.
 +
 2. Create a Dockerfile with following content.
 +
@@ -116,7 +116,7 @@ COPY --chmod=755 *.vsix /default-extensions/
 RUN echo "cp -r /default-extensions /checode/" >> /entrypoint-init-container.sh
 ----
 +
-3. Build the image and then push it to the registry.
+3. Build the image and then push it to a registry.
 +
 [,console]
 ----
@@ -124,7 +124,7 @@ $ docker build -t yourname/che-code:next .
 $ docker push yourname/che-code:next
 ----
 +
-4. Add new config map, define __DEFAULT_EXTENSIONS__ environment variable, specify absolute paths to the extensions. 
+4. Add the new ConfigMap, define the __DEFAULT_EXTENSIONS__ environment variable and specify the absolute paths to the extensions. This ConfigMap sets the environment variable to all workspaces in the user's {orch-namespace}.
 +
 [source,yaml]
 ----
@@ -142,6 +142,6 @@ data:
 ----
 +
 5. Create a workspace using *yourname/che-code:next* image.
-First, open the dashboard and navigate to *Create Workspace*.
-Then, in the *Editor Selector* section expand *Use an Editor Definition* and put the editor URI to the *Editor Image*.
-Finally, create a workspace by clicking on any sample or by putting a git resitory URL.
+First, open the dashboard and navigate to the *Create Workspace* tab on the left-hand side.
+Then, in the *Editor Selector* section expand the *Use an Editor Definition* dropdown and set the editor URI to the *Editor Image*.
+Finally, create a workspace by clicking on any sample or by setting a git repository URL.
