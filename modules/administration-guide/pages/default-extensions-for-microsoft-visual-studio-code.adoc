@@ -91,6 +91,18 @@ events:
   postStart:
     - add-default-extensions
 ----
++
+[WARNING]
+====
+It some cases *curl* may download *gzip* compressed file. This may make it impossible to install the extension.
+To fix that try to save the file to *.vsix.gz* and then decompress it with *gunzip*. It will replace *.vsix.gz* with unpacked *.vsix* file.
+
+[source,yaml]
+----
+curl https://some-extension-url --location -o /tmp/extension.vsix.gz
+gunzip /tmp/extension.vsix.gz
+----
+====
 
 * Include the extensions' *.vsix* binaries in the *che-code* image.
 +
@@ -142,6 +154,6 @@ data:
 ----
 +
 5. Create a workspace using *yourname/che-code:next* image.
-First, open the dashboard and navigate to the *Create Workspace* tab on the left-hand side.
+First, open the dashboard and navigate to the *Create Workspace* tab on the left side.
 Then, in the *Editor Selector* section expand the *Use an Editor Definition* dropdown and set the editor URI to the *Editor Image*.
 Finally, create a workspace by clicking on any sample or by setting a git repository URL.
