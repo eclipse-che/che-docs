@@ -39,6 +39,7 @@ The easiest way is to put the extension binary to the Git repository and define 
 If the *extension.vsix* file exists in the repository root, the __DEFAULT_EXTENSIONS__ could be set for a tooling container.
 Just specify it in your *.devfile.yaml* like below.
 +
+====
 [source,yaml]
 ----
 schemaVersion: 2.3.0
@@ -52,18 +53,22 @@ components:
         - name: 'DEFAULT_EXTENSIONS'
           value: '/projects/example-project/extension.vsix'
 ----
+====
 
 * Use the Devfile *postStart* event to fetch extension binaries from the network.
 +
 It is possible to use *curl* or *wget* to download extensions to your workspace.
 For that you need to:
 +
-** specify a devfile command to donload one or several extensions to your workpace
+--
+** specify a devfile command to download one or several extensions to your workpace
 ** add a *postStart* event to run the command on workspace startup
 ** define the __DEFAULT_EXTENSIONS__ environment variable in the Devfile
+--
 +
 The following sample demonstrates what should be added to the devfile to add two extensions.
 +
+====
 [source,yaml]
 ----
 schemaVersion: 2.3.0
@@ -91,6 +96,7 @@ events:
   postStart:
     - add-default-extensions
 ----
+====
 +
 [WARNING]
 ====
@@ -114,6 +120,7 @@ Following steps will help you to add the extensions you need to the editor image
 +
 2. Create a Dockerfile with following content.
 +
+====
 [source,]
 ----
 # inherit che-incubator/che-code:latest 
@@ -127,17 +134,21 @@ COPY --chmod=755 *.vsix /default-extensions/
 # add instruction to the script to copy default extensions to the working container
 RUN echo "cp -r /default-extensions /checode/" >> /entrypoint-init-container.sh
 ----
+====
 +
 3. Build the image and then push it to a registry.
 +
+====
 [,console]
 ----
 $ docker build -t yourname/che-code:next .
 $ docker push yourname/che-code:next
 ----
+====
 +
 4. Add the new ConfigMap in the user's {orch-namespace}, define the __DEFAULT_EXTENSIONS__ environment variable and specify the absolute paths to the extensions. This ConfigMap sets the environment variable to all workspaces in the user's {orch-namespace}.
 +
+====
 [source,yaml]
 ----
 kind: ConfigMap
@@ -152,6 +163,7 @@ metadata:
 data:
   DEFAULT_EXTENSIONS: '/checode/default-extensions/extension1.vsix;/checode/default-extensions/extension2.vsix'
 ----
+====
 +
 5. Create a workspace using *yourname/che-code:next* image.
 First, open the dashboard and navigate to the *Create Workspace* tab on the left side.
