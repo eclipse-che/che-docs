@@ -7,19 +7,15 @@
 [id="visual-studio-code-default-extensions"]
 = Configure default extensions
 
-Default extensions, like recommended extensions, allow you to work with a pre-installed set of extensions.
+Default extensions are a pre-installed set of extensions, specified by putting the extension binary `.vsix` file path to the __DEFAULT_EXTENSIONS__ environment variable.
 
-Recommended extension is specified by adding the extension identifier to the workspace file or to the *.vscode/extensions.json* file of your project.
-When the editor starts, the recommended extension will be fetched from the extension marketplace and installed.
+After startup, the editor checks for this environment variable, and if it is specified, takes the path to the extensions and installs it in the background without disturbing the user.
 
-Default extensions are specified by putting the extension binary *.vsix* file path to the __DEFAULT_EXTENSIONS__ environment variable.
-After startup, the editor checks for the environment variable, and if it is specified, takes the path to the extensions and installs it in the background without disturbing the user.
-
-Recommended extensions from *.vscode/extensions.json* and default extensions from the __DEFAULT_EXTENSIONS__ environment variable both installs extensions on editor startup. Recommended extensions are useful when extensions are different per workspace and when the desired extensions are available in the plugin registry configured in {prod-short}. Default extensions described in this documentation are useful for installing .vsix extensions by default from the editor level.
+Default extensions described in this documentation are useful for installing .vsix extensions by default from the editor level.
 
 [NOTE]
 ====
-It is possible to specify several extensions separated by semicolon.
+You can specify several extensions separated by semicolon.
 
 [source,yaml]
 ----
@@ -27,17 +23,22 @@ It is possible to specify several extensions separated by semicolon.
 ----
 ====
 
-Below you can find several examples how to add *.vsix* files to your workspace and how to define the DEFAULT_EXTENSIONS environment variable.
+Read on to learn how to define the DEFAULT_EXTENSIONS environment variable with multiple examples of adding `.vsix` files to your workspace.
 
 .Procedure
 
-This documentation describes three different ways to embed default .vsix extensions for your workspace.
+There are three different ways to embed default `.vsix` extensions into your workspace:
 
-* Put the extension binary to the source repository.
+* Put the extension binary into the source repository.
+* Use the devfile `postStart` event to fetch extension binaries from the network.
+* Include the extensions' `.vsix` binaries in the `che-code` image.
+
+.Putting the extension binary into the source repository
 +
-The easiest way is to put the extension binary to the Git repository and define the environment variable in the devfile.
-If the *extension.vsix* file exists in the repository root, the __DEFAULT_EXTENSIONS__ could be set for a tooling container.
-Just specify it in your *.devfile.yaml* like below.
+Putting the extension binary into the Git repository and defining the environment variable in the devfile is the easiest way to add default extensions to your workspace.
+If the `extension.vsix` file exists in the repository root, you can set the __DEFAULT_EXTENSIONS__ for a tooling container.
+.Procedure
+* Specify __DEFAULT_EXTENSIONS__ in your `.devfile.yaml` as shown in the following example:
 +
 ====
 [source,yaml]
@@ -55,9 +56,9 @@ components:
 ----
 ====
 
-* Use the Devfile *postStart* event to fetch extension binaries from the network.
+.Using the devfile *postStart* event to fetch extension binaries from the network
 +
-It is possible to use *curl* or *wget* to download extensions to your workspace.
+You can use cURL or GNU Wget to download extensions to your workspace.
 For that you need to:
 +
 --
@@ -66,7 +67,8 @@ For that you need to:
 ** define the __DEFAULT_EXTENSIONS__ environment variable in the Devfile
 --
 +
-The following sample demonstrates what should be added to the devfile to add two extensions.
+.Procedure
+* Add the values shown in the following example to the devfile:
 +
 ====
 [source,yaml]
@@ -110,9 +112,9 @@ gunzip /tmp/extension.vsix.gz
 ----
 ====
 
-* Include the extensions' *.vsix* binaries in the *che-code* image.
+.Including the extensions `.vsix` binaries in the `che-code` image.
 +
-Having default extensions bundled in the editor image along with the __DEFAULT_EXTENSIONS__ environment variable defined in a ConfigMap, will allow you to apply the default extensions without the need to change the Devfile.
+With default extensions bundled in the editor image along with the __DEFAULT_EXTENSIONS__ environment variable defined in a ConfigMap, you can apply the default extensions without changing the devfile.
 +
 Following steps will help you to add the extensions you need to the editor image.
 +
@@ -167,5 +169,5 @@ data:
 +
 5. Create a workspace using *yourname/che-code:next* image.
 First, open the dashboard and navigate to the *Create Workspace* tab on the left side.
-Then, in the *Editor Selector* section expand the *Use an Editor Definition* dropdown and set the editor URI to the *Editor Image*.
-Finally, create a workspace by clicking on any sample or by setting a git repository URL.
+.. In the *Editor Selector* section, expand the *Use an Editor Definition* dropdown and set the editor URI to the *Editor Image*.
+.. Create a workspace by clicking on any sample or by using a Git repository URL.
