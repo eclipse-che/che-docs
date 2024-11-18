@@ -25,8 +25,6 @@ You can specify several extensions separated by semicolon.
 
 Read on to learn how to define the DEFAULT_EXTENSIONS environment variable with multiple examples of adding `.vsix` files to your workspace.
 
-.Procedure
-
 There are three different ways to embed default `.vsix` extensions into your workspace:
 
 * Put the extension binary into the source repository.
@@ -34,9 +32,10 @@ There are three different ways to embed default `.vsix` extensions into your wor
 * Include the extensions' `.vsix` binaries in the `che-code` image.
 
 .Putting the extension binary into the source repository
-+
+
 Putting the extension binary into the Git repository and defining the environment variable in the devfile is the easiest way to add default extensions to your workspace.
 If the `extension.vsix` file exists in the repository root, you can set the __DEFAULT_EXTENSIONS__ for a tooling container.
+
 .Procedure
 * Specify __DEFAULT_EXTENSIONS__ in your `.devfile.yaml` as shown in the following example:
 +
@@ -57,16 +56,16 @@ components:
 ====
 
 .Using the devfile *postStart* event to fetch extension binaries from the network
-+
+
 You can use cURL or GNU Wget to download extensions to your workspace.
 For that you need to:
-+
+
 --
 ** specify a devfile command to download one or several extensions to your workpace
 ** add a *postStart* event to run the command on workspace startup
 ** define the __DEFAULT_EXTENSIONS__ environment variable in the Devfile
 --
-+
+
 .Procedure
 * Add the values shown in the following example to the devfile:
 +
@@ -113,14 +112,15 @@ gunzip /tmp/extension.vsix.gz
 ====
 
 .Including the extensions `.vsix` binaries in the `che-code` image.
-+
+
 With default extensions bundled in the editor image along with the __DEFAULT_EXTENSIONS__ environment variable defined in a ConfigMap, you can apply the default extensions without changing the devfile.
-+
+
 Following steps will help you to add the extensions you need to the editor image.
-+
-1. Create a directory and place one or several *.vsix* extensions in this directory.
-+
-2. Create a Dockerfile with following content.
+
+.Procedure
+* Create a directory and place one or several *.vsix* extensions in this directory.
+
+* Create a Dockerfile with following content.
 +
 ====
 [source,]
@@ -137,8 +137,8 @@ COPY --chmod=755 *.vsix /default-extensions/
 RUN echo "cp -r /default-extensions /checode/" >> /entrypoint-init-container.sh
 ----
 ====
-+
-3. Build the image and then push it to a registry.
+
+* Build the image and then push it to a registry.
 +
 ====
 [,console]
@@ -147,8 +147,8 @@ $ docker build -t yourname/che-code:next .
 $ docker push yourname/che-code:next
 ----
 ====
-+
-4. Add the new ConfigMap in the user's {orch-namespace}, define the __DEFAULT_EXTENSIONS__ environment variable and specify the absolute paths to the extensions. This ConfigMap sets the environment variable to all workspaces in the user's {orch-namespace}.
+
+* Add the new ConfigMap in the user's {orch-namespace}, define the __DEFAULT_EXTENSIONS__ environment variable and specify the absolute paths to the extensions. This ConfigMap sets the environment variable to all workspaces in the user's {orch-namespace}.
 +
 ====
 [source,yaml]
@@ -166,8 +166,11 @@ data:
   DEFAULT_EXTENSIONS: '/checode/default-extensions/extension1.vsix;/checode/default-extensions/extension2.vsix'
 ----
 ====
-+
-5. Create a workspace using *yourname/che-code:next* image.
+
+* Create a workspace using *yourname/che-code:next* image.
 First, open the dashboard and navigate to the *Create Workspace* tab on the left side.
++
+--
 .. In the *Editor Selector* section, expand the *Use an Editor Definition* dropdown and set the editor URI to the *Editor Image*.
 .. Create a workspace by clicking on any sample or by using a Git repository URL.
+--
