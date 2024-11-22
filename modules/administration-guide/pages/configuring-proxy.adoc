@@ -1,0 +1,64 @@
+:_content-type: PROCEDURE
+:description: Configuring proxy
+:keywords: administration guide, proxy, networking
+:navtitle: Configuring proxy
+:page-aliases:
+
+[id="configuring-proxy"]
+= Configuring proxy
+
+This guide explains how to configure a proxy server for {prod}. The steps include creating a {kubernetes} Secret for proxy credentials and configuring the necessary proxy settings in the CheCluster custom resource. The proxy settings are propagated to the operands and workspaces via environment variables.
+
+.Procedure
+
+. Create a Secret in the {prod-namespace} {namespace} that contains a user and password for a proxy server. The secret must have the `app.kubernetes.io/part-of=che.eclipse.org` label. Omit this step if the proxy server does not require authentication.
++
+[source,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} apply -f - <<EOF
+kind: Secret
+apiVersion: v1
+metadata:
+  name: {prod-id-short}-proxy-credentials
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+type: Opaque
+stringData:
+  user: __<user>__          <1>
+  password: __<password>__  <2>
+EOF
+----
+<1> The username for the proxy server.
+<2> The password for the proxy server.
+
+. Configure the proxy or override the cluster-wide proxy configuration by setting the following properties in the CheCluster custom resource:
++
+[source,subs="+quotes,attributes,macros"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+    --namespace {prod-namespace} \
+    --type='merge' -p \
+'{"spec":
+    {"components":
+        {"cheServer":
+            {"proxy":
+                {"credentialsSecretName" : "__<secretName>__",      <1>
+                 "nonProxyHosts"         : ["__<host_1>__"],        <2>
+                 "port"                  : "__<port>__",            <3>
+                 "url"                   : "__<serverUrl>__"}}}}}'  <4>
+----
+<1> The credentials secret name created in the previous step.
+<2> The list of hosts that can be reached directly, without using the proxy. Please use the following form `.<DOMAIN>` to specify a wildcard domain. {prod-short} Operator automatically adds .svc and Kubernetes service host to the list of non-proxy hosts. In OpenShift, {prod-short} Operator combines the non-proxy host list from the cluster-wide proxy configuration with the custom resource.
++
+[IMPORTANT]
+====
+In some proxy configurations, `localhost` may not translate to `127.0.0.1`. Both `localhost` and `127.0.0.1` should be specified in this situation.
+====
+<3> The port of the proxy server.
+<4> URL (protocol+hostname) of the proxy server.
+
+
+.Additional resources
+
+* link:https://docs.openshift.com/container-platform/latest/networking/enable-cluster-wide-proxy.html[Configuring the cluster-wide proxy on OpenShift]
