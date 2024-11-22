@@ -1,0 +1,41 @@
+:_content-type: PROCEDURE
+:description: Configuring workspace endpoints base domain
+:keywords: administration guide, workspaces, networking, endpoints, domain
+:navtitle: Configuring workspace endpoints base domain
+:page-aliases:
+
+[id="configuring-workspaces-endpoints-base-domain"]
+= Configuring workspace endpoints base domain
+
+Learn how to configure the base domain for workspace endpoints.
+By default, {prod-short} Operator automatically detects the base domain. To change it, you need to configure the `CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX` property in the `CheCluster` Custom Resource.
+[source,yaml,subs="+quotes"]
+----
+spec:
+  components:
+    cheServer:
+      extraProperties:
+        CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX: "<...>" <1>
+
+----
+<1> Workspace endpoints base domain, for example, `my-{prod-id-short}.example.com`.
+
+.Procedure
+
+. Configure the workspace endpoints base domain:
++
+[source,subs="+quotes,attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+    --namespace {prod-namespace} \
+    --type='merge' -p \
+'{"spec":
+    {"components":
+        {"cheServer":
+            {"extraProperties":
+                {"CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX": "my-{prod-id-short}.example.com"}}}}}'
+----
+
+.Additional resources
+
+* xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]
