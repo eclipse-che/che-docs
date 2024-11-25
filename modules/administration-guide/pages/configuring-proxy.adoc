@@ -7,7 +7,9 @@
 [id="configuring-proxy"]
 = Configuring proxy
 
-This guide explains how to configure a proxy server for {prod}. The steps include creating a {kubernetes} Secret for proxy credentials and configuring the necessary proxy settings in the CheCluster custom resource. The proxy settings are propagated to the operands and workspaces via environment variables.
+This guide explains how to configure a proxy for {prod}. The steps include creating a {kubernetes} Secret for proxy credentials and configuring the necessary proxy settings in the CheCluster custom resource. The proxy settings are propagated to the operands and workspaces via environment variables.
+
+On OpenShift cluster no additional configuration is required. {prod-short} Operator automatically uses OpenShift cluster-wide proxy configuration. However, you can override the proxy settings by specifying them  in the CheCluster custom resource.
 
 .Procedure
 
@@ -58,6 +60,14 @@ In some proxy configurations, `localhost` may not translate to `127.0.0.1`. Both
 <3> The port of the proxy server.
 <4> URL (protocol+hostname) of the proxy server.
 
+
+.Verification steps
+
+. Start a workspace
+
+. Verify that the workspace pod contains `HTTP_PROXY`, `HTTPS_PROXY`, `http_proxy` and `https_proxy` environment variables, each set to `__<protocol>__://<user>:<password@<serverUrl>:<port>`.
+
+. Verify that the workspace pod contains `NO_PROXY` and `no_proxy` environment variables, each set to comma-separated list of non-proxy hosts.
 
 .Additional resources
 
