@@ -48,7 +48,7 @@ EOF
                 {"credentialsSecretName" : "__<secretName>__",      <1>
                  "nonProxyHosts"         : ["__<host_1>__"],        <2>
                  "port"                  : "__<port>__",            <3>
-                 "url"                   : "__<serverUrl>__"}}}}}'  <4>
+                 "url"                   : "__<protocol>__://__<domain>__"}}}}}'  <4>
 ----
 <1> The credentials secret name created in the previous step.
 <2> The list of hosts that can be reached directly, without using the proxy. Please use the following form `.<DOMAIN>` to specify a wildcard domain. {prod-short} Operator automatically adds .svc and Kubernetes service host to the list of non-proxy hosts. In OpenShift, {prod-short} Operator combines the non-proxy host list from the cluster-wide proxy configuration with the custom resource.
@@ -58,14 +58,14 @@ EOF
 In some proxy configurations, `localhost` may not translate to `127.0.0.1`. Both `localhost` and `127.0.0.1` should be specified in this situation.
 ====
 <3> The port of the proxy server.
-<4> URL (protocol+hostname) of the proxy server.
+<4> Protocol and domain of the proxy server.
 
 
 .Verification steps
 
 . Start a workspace
 
-. Verify that the workspace pod contains `HTTP_PROXY`, `HTTPS_PROXY`, `http_proxy` and `https_proxy` environment variables, each set to `__<protocol>__://<user>:<password@<serverUrl>:<port>`.
+. Verify that the workspace pod contains `HTTP_PROXY`, `HTTPS_PROXY`, `http_proxy` and `https_proxy` environment variables, each set to `__<protocol>__://<user>:<password@<domain>:<port>`.
 
 . Verify that the workspace pod contains `NO_PROXY` and `no_proxy` environment variables, each set to comma-separated list of non-proxy hosts.
 
