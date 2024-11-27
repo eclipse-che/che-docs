@@ -1,0 +1,39 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-on-amazon-elastic-kubernetes-service
+
+[id="configuring-environment-variables-for-amazon-elastic-kubernetes-service"]
+= Configuring environment variables for {eks-short}
+
+Follow this guide to define environment variables and update your `kubeconfig` to connect to {eks-short}.
+
+.Prerequisites
+
+* Amazon EKS cluster. See: link:https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html[Create an Amazon EKS cluster]
+
+.Procedure
+
+. Define the cluster name:
++
+[source,subs="attributes+"]
+----
+CHE_EKS_CLUSTER_NAME=che
+----
+
+. Define the region:
++
+[source,subs="attributes+"]
+----
+CHE_EKS_CLUSTER_REGION=eu-central-1
+----
+
+. Update `kubeconfig`:
++
+[source,subs="attributes+"]
+----
+aws eks update-kubeconfig --region $CHE_EKS_CLUSTER_REGION --name $CHE_EKS_CLUSTER_NAME
+----
+
+.Additional resources
+
+* link:https://aws.amazon.com/eks/[{eks}]

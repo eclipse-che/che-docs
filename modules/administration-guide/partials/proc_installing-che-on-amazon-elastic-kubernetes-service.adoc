@@ -1,0 +1,55 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-on-amazon-elastic-kubernetes-service
+
+[id="installing-che-on-amazon-elastic-kubernetes-service"]
+= Installing {prod-short} on {eks-short}
+
+Follow these instructions to install {prod-short} on {eks-short}.
+
+.Procedure
+
+. Prepare a CheCluster patch YAML file:
++
+[source,shell,subs="attributes+"]
+----
+cat > che-cluster-patch.yaml << EOF
+spec:
+  networking:
+    auth:
+      oAuthClientName: k8s-client
+      oAuthSecret: eclipse-che
+      identityProviderURL: "https://$KEYCLOAK_HOST/realms/che"
+      gateway:
+        oAuthProxy:
+          cookieExpireSeconds: 300
+        deployment:
+          containers:
+          - env:
+             - name: OAUTH2_PROXY_BACKEND_LOGOUT_URL
+               value: "http://$KEYCLOAK_HOST/realms/che/protocol/openid-connect/logout?id_token_hint=\{id_token}"
+            name: oauth-proxy
+  components:
+    cheServer:
+      extraProperties:
+        CHE_OIDC_EMAIL__CLAIM: email
+EOF
+----
+
+. Deploy {prod-short}:
++
+[source,subs="attributes+"]
+----
+{prod-cli} server:deploy \
+    --platform k8s \
+    --domain $DOMAIN_NAME \
+    --che-operator-cr-patch-yaml che-patch.yaml \
+    --skip-cert-manager
+----
+
+. Navigate to the {prod-short} cluster instance:
++
+[subs="+attributes,+quotes"]
+----
+{prod-cli} dashboard:open
+----

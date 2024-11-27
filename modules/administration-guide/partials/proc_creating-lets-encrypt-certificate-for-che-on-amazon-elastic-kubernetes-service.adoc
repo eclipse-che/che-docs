@@ -1,0 +1,174 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-on-amazon-elastic-kubernetes-service
+
+[id="creating-lets-encrypt-certificate-for-{prod-id-short}-on-amazon-elastic-kubernetes-service"]
+= Creating Let's Encrypt certificate for {prod-short} on {eks-short}
+
+Follow these instructions to create a Let's Encrypt certificate for {prod-short} on {eks-short}.
+
+.Procedure
+
+. Create an IAM OIDC provider:
++
+[source,subs="attributes+"]
+----
+eksctl utils associate-iam-oidc-provider --cluster $CHE_EKS_CLUSTER_NAME --approve
+----
+
+. Create a service principal:
++
+[source,subs="attributes+"]
+----
+aws iam create-policy \
+     --policy-name cert-manager-acme-dns01-route53 \
+     --description "This policy allows cert-manager to manage ACME DNS01 records in Route53 hosted zones. See https://cert-manager.io/docs/configuration/acme/dns01/route53" \
+     --policy-document file:///dev/stdin <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "route53:GetChange",
+      "Resource": "arn:aws:route53:::change/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "route53:ChangeResourceRecordSets",
+        "route53:ListResourceRecordSets"
+      ],
+      "Resource": "arn:aws:route53:::hostedzone/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "route53:ListHostedZonesByName",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+----
+
+. Create an IAM role and associate it with a Kubernetes Service Account:
++
+[source,subs="attributes+"]
+----
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+
+eksctl create iamserviceaccount \
+  --name cert-manager-acme-dns01-route53 \
+  --namespace cert-manager \
+  --cluster $CHE_EKS_CLUSTER_NAME \
+  --role-name cert-manager-acme-dns01-route53 \
+  --attach-policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/cert-manager-acme-dns01-route53 \
+  --approve
+----
+
+. Grant permission for `cert-manager` to create Service Account tokens:
++
+[source,subs="attributes+"]
+----
+{orch-cli} apply -f - << EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cert-manager-acme-dns01-route53-tokenrequest
+  namespace: cert-manager
+rules:
+  - apiGroups: ['']
+    resources: ['serviceaccounts/token']
+    resourceNames: ['cert-manager-acme-dns01-route53']
+    verbs: ['create']
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cert-manager-acme-dns01-route53-tokenrequest
+  namespace: cert-manager
+subjects:
+  - kind: ServiceAccount
+    name: cert-manager
+    namespace: cert-manager
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cert-manager-acme-dns01-route53-tokenrequest
+EOF
+----
+
+. Create the Issuer:
++
+[source,subs="+attributes,+quotes"]
+----
+{orch-cli} apply -f - << EOF
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: {prod-id-short}-letsencrypt
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: __<email_address>__ <1>
+    privateKeySecretRef:
+      name: {prod-id-short}-letsencrypt-production
+    solvers:
+    - dns01:
+        route53:
+          region: $CHE_EKS_CLUSTER_REGION
+          role: arn:aws:iam::$\{AWS_ACCOUNT_ID}:role/cert-manager-acme-dns01-route53
+          auth:
+            kubernetes:
+              serviceAccountRef:
+                name: cert-manager-acme-dns01-route53
+EOF
+----
+<1> Replace `__<email_address>__` with your email address.
+
+. Create the {prod-namespace} namespace:
++
+[source,subs="attributes+"]
+----
+{orch-cli} create namespace {prod-namespace}
+----
+
+. Create the Certificate:
++
+[source,subs="+attributes,+quotes"]
+----
+{orch-cli} apply -f - << EOF
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: che-tls
+  namespace: {prod-namespace}
+spec:
+  secretName: che-tls
+  issuerRef:
+    name: {prod-id-short}-letsencrypt
+    kind: ClusterIssuer
+  commonName: '$DOMAIN_NAME'
+  dnsNames:
+  - '$DOMAIN_NAME'
+  - '*.$DOMAIN_NAME'
+  usages:
+    - server auth
+    - digital signature
+    - key encipherment
+    - key agreement
+    - data encipherment
+EOF
+----
+
+. Wait for the `che-tls` secret to be created:
++
+[source,subs="attributes+"]
+----
+until {orch-cli} get secret -n {prod-namespace} che-tls; do sleep 5s; done
+----
+
+.Additional resources
+
+* link:https://cert-manager.io/docs/tutorials/getting-started-aws-letsencrypt/[cert-manager Installation Guide]
+
+

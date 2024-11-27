@@ -1,0 +1,113 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-on-amazon-elastic-kubernetes-service
+
+[id="configuring-DNS-on-amazon-elastic-kubernetes-service"]
+= Configuring DNS on {eks-short}
+
+Configure DNS on {eks-short}.
+
+.Prerequisites
+
+* A registered domain. See: link:https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/domain-register.html[Registering a new domain on {eks-short}].
+
+.Procedure
+
+. Define the previously registered domain name:
++
+[source,shell]
+----
+DOMAIN_NAME=eclipse-che-eks-clould.click
+----
+
+. Define domain name for Keycloak OIDC provider:
++
+[source,shell]
+----
+KEYCLOAK_DOMAIN_NAME=keycloak.$DOMAIN_NAME
+----
+
+. Find out the hosted zone ID for the domain:
++
+[source,shell]
+----
+HOSTED_ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name $DOMAIN_NAME --query "HostedZones[0].Id" --output text)
+----
+
+. Find out the Canonical Hosted Zone ID for the load balancer:
++
+[source,shell]
+----
+CANONICAL_HOSTED_ZONE_ID=$(aws elbv2 describe-load-balancers --query "LoadBalancers[0].CanonicalHostedZoneId" --output text)
+----
+
+. Find out the DNS name for the load balancer:
++
+[source,shell]
+----
+DNS_NAME=$({orch-cli} get service -n ingress-nginx ingress-nginx-controller -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+----
+
+. Create a DNS record set:
++
+[source,subs="attributes+"]
+----
+aws route53 change-resource-record-sets \
+  --hosted-zone-id $HOSTED_ZONE_ID \
+  --change-batch '
+  {
+    "Comment": "Ceating a record set",
+     "Changes": [{
+      "Action"              : "CREATE",
+       "ResourceRecordSet"  : {
+         "Name"              : "'"$DOMAIN_NAME"'",
+         "Type"             : "A",
+         "AliasTarget"      : {
+            "HostedZoneId"            : "'"$CANONICAL_HOSTED_ZONE_ID"'",
+            "DNSName"                 : "'"$DNS_NAME"'",
+            "EvaluateTargetHealth"    : false
+        }
+      }
+    }]
+  }
+  '
+----
+
+. Verify that you can access the domain externally:
++
+[source,subs="attributes+"]
+----
+until curl $DOMAIN_NAME; do sleep 5s; done
+----
+
+. Create a DNS record set:
++
+[source,subs="attributes+"]
+----
+aws route53 change-resource-record-sets \
+  --hosted-zone-id $HOSTED_ZONE_ID \
+  --change-batch '
+  {
+    "Comment": "Ceating a record set",
+     "Changes": [{
+      "Action"              : "CREATE",
+       "ResourceRecordSet"  : {
+         "Name"              : "'"KEYCLOAK_DOMAIN_NAME"'",
+         "Type"             : "A",
+         "AliasTarget"      : {
+            "HostedZoneId"            : "'"$CANONICAL_HOSTED_ZONE_ID"'",
+            "DNSName"                 : "'"$DNS_NAME"'",
+            "EvaluateTargetHealth"    : false
+        }
+      }
+    }]
+  }
+  '
+----
+
+. Verify that you can access the Keycloak domain externally:
++
+[source,subs="attributes+"]
+----
+until curl $KEYCLOAK_DOMAIN_NAME; do sleep 5s; done
+----
