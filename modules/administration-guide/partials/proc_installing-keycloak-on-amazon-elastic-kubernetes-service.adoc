@@ -9,7 +9,7 @@ Learn how to install https://www.keycloak.org/[Keycloak] as the OpenID Connect (
 +
 [source,subs="+attributes"]
 ----
-KEYCLOAK_HOST=keycloak.$DOMAIN_NAME
+KEYCLOAK_DOMAIN=keycloak.$DOMAIN_NAME
 ----
 
 . Install Keycloak:
@@ -37,9 +37,9 @@ spec:
   issuerRef:
     name: che-letsencrypt
     kind: ClusterIssuer
-  commonName: '$KEYCLOAK_HOST'
+  commonName: '$KEYCLOAK_DOMAIN'
   dnsNames:
-  - '$KEYCLOAK_HOST'
+  - '$KEYCLOAK_DOMAIN'
   usages:
     - server auth
     - digital signature
@@ -112,10 +112,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - $KEYCLOAK_HOST
+        - $KEYCLOAK_DOMAIN
       secretName: keycloak.tls
   rules:
-  - host: $KEYCLOAK_HOST
+  - host: $KEYCLOAK_DOMAIN
     http:
       paths:
       - path: /
