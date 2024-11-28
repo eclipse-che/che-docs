@@ -19,7 +19,7 @@ spec:
     auth:
       oAuthClientName: k8s-client
       oAuthSecret: eclipse-che
-      identityProviderURL: "https://$KEYCLOAK_DOMAIN/realms/che"
+      identityProviderURL: "https://$KEYCLOAK_DOMAIN_NAME/realms/che"
       gateway:
         oAuthProxy:
           cookieExpireSeconds: 300
@@ -27,7 +27,7 @@ spec:
           containers:
           - env:
              - name: OAUTH2_PROXY_BACKEND_LOGOUT_URL
-               value: "http://$KEYCLOAK_DOMAIN/realms/che/protocol/openid-connect/logout?id_token_hint=\{id_token}"
+               value: "http://$KEYCLOAK_DOMAIN_NAME/realms/che/protocol/openid-connect/logout?id_token_hint=\{id_token}"
             name: oauth-proxy
   components:
     cheServer:
@@ -42,7 +42,7 @@ EOF
 ----
 {prod-cli} server:deploy \
     --platform k8s \
-    --domain $DOMAIN_NAME \
+    --domain $CHE_DOMAIN_NAME \
     --che-operator-cr-patch-yaml che-patch.yaml \
     --skip-cert-manager
 ----

@@ -9,22 +9,23 @@ Follow these instructions to associate Keycloak an OIDC identity provider on {ek
 
 .Procedure
 
-. Associate an identity provider using `eksctl`:
+. Associate Keycloak an identity provider using `eksctl`:
 +
 [source,shell,subs="attributes+"]
 ----
 eksctl associate identityprovider \
-  --cluster $CHE_EKS_CLUSTER_NAME \
-  --region $CHE_EKS_CLUSTER_REGION \
   --wait \
   --config-file - << EOF
 ---
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
+metadata:
+  name: $CHE_EKS_CLUSTER_NAME
+  region: $CHE_EKS_CLUSTER_REGION
 identityProviders:
   - name: {prod-id-short}-oidc
     type: oidc
-    issuerUrl: https://$KEYCLOAK_DOMAIN/realms/che
+    issuerUrl: https://$KEYCLOAK_DOMAIN_NAME/realms/che
     clientId: k8s-client
     usernameClaim: email
 EOF

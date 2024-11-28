@@ -1,16 +1,9 @@
 [id="installing-keycloak-on-amazon-elastic-kubernetes-service"]
 = Installing Keycloak on {eks}
 
-Learn how to install https://www.keycloak.org/[Keycloak] as the OpenID Connect (OIDC) provider.
+Follow these instructions to install https://www.keycloak.org/[Keycloak] as the OpenID Connect (OIDC) provider.
 
 .Procedure
-
-. Define Keycloak host name:
-+
-[source,subs="+attributes"]
-----
-KEYCLOAK_DOMAIN=keycloak.$DOMAIN_NAME
-----
 
 . Install Keycloak:
 +
@@ -37,9 +30,9 @@ spec:
   issuerRef:
     name: che-letsencrypt
     kind: ClusterIssuer
-  commonName: '$KEYCLOAK_DOMAIN'
+  commonName: '$KEYCLOAK_DOMAIN_NAME'
   dnsNames:
-  - '$KEYCLOAK_DOMAIN'
+  - '$KEYCLOAK_DOMAIN_NAME'
   usages:
     - server auth
     - digital signature
@@ -112,10 +105,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - $KEYCLOAK_DOMAIN
+        - $KEYCLOAK_DOMAIN_NAME
       secretName: keycloak.tls
   rules:
-  - host: $KEYCLOAK_DOMAIN
+  - host: $KEYCLOAK_DOMAIN_NAME
     http:
       paths:
       - path: /

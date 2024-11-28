@@ -54,8 +54,6 @@ EOF
 +
 [source,subs="attributes+"]
 ----
-AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
-
 eksctl create iamserviceaccount \
   --name cert-manager-acme-dns01-route53 \
   --namespace cert-manager \
@@ -147,10 +145,10 @@ spec:
   issuerRef:
     name: {prod-id-short}-letsencrypt
     kind: ClusterIssuer
-  commonName: '$DOMAIN_NAME'
+  commonName: '$CHE_DOMAIN_NAME'
   dnsNames:
-  - '$DOMAIN_NAME'
-  - '*.$DOMAIN_NAME'
+  - '$CHE_DOMAIN_NAME'
+  - '*.$CHE_DOMAIN_NAME'
   usages:
     - server auth
     - digital signature

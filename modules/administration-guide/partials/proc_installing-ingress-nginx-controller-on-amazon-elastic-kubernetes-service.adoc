@@ -5,7 +5,7 @@
 [id="installing-ingress-nginx-controller-on-amazon-elastic-kubernetes-service"]
 = Installing Ingress-Nginx Controller on {eks-short}
 
-Use the following instructions to install the link:https://kubernetes.github.io/ingress-nginx/[Ingress-Nginx Controller] on {eks-short}.
+Follow these instructions to install the link:https://kubernetes.github.io/ingress-nginx/[Ingress-Nginx Controller] on {eks-short}.
 
 .Procedure
 
@@ -25,20 +25,8 @@ helm install ingress-nginx ingress-nginx/ingress-nginx \
   --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-type"=nlb
 ----
 
-. Wait for the external IP:
-+
-[source,subs="attributes+"]
-----
-{orch-cli} get services ingress-nginx-controller --namespace ingress-nginx
-----
-The output will be similar to:
-+
-[source,subs="attributes+"]
-----
-NAME                                 TYPE           CLUSTER-IP     EXTERNAL-IP             PORT(S)                      AGE
-ingress-nginx-controller             LoadBalancer   10.0.65.52     XXX.elb.amazonaws.com   80:32711/TCP,443:31294/TCP   75s
-----
-. Verify that you can access the load balancer externally:
+. Verify that you can access the load balancer externally.
+It may take a few minutes for the load balancer to be created:
 +
 [source,subs="attributes+"]
 ----
