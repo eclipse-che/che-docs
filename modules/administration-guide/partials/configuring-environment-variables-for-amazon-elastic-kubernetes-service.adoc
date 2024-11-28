@@ -41,6 +41,38 @@ CHE_EKS_CLUSTER_REGION=eu-central-1
 aws eks update-kubeconfig --region $CHE_EKS_CLUSTER_REGION --name $CHE_EKS_CLUSTER_NAME
 ----
 
+. Ensure that you have default storage class set:
++
+[source,subs="attributes+"]
+----
+{orch-cli} get storageclass
+----
++
+The output should display a storage class with `default` next to its name:
++
+[source,subs="attributes+"]
+----
+NAME            PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+gp2 (default)   kubernetes.io/aws-ebs   Delete          WaitForFirstConsumer   false                  126m
+----
+
+. Ensure that you have default storage class set:
++
+[source,subs="attributes+"]
+----
+{orch-cli} get storageclass
+----
++
+The output should display a storage class with `default` next to its name:
++
+[source,subs="attributes+"]
+----
+NAME            PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+gp2 (default)   kubernetes.io/aws-ebs   Delete          WaitForFirstConsumer   false                  126m
+----
+
 .Additional resources
 
 * link:https://aws.amazon.com/eks/[{eks}]
+* link:https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class/[Change the default storage class on {kubernetes} cluster]
+* link:https://docs.aws.amazon.com/eks/latest/userguide/create-managed-node-group.html[Create a managed node group for {eks-short}]
