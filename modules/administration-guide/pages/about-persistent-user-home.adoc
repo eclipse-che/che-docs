@@ -43,7 +43,7 @@ Using the `stow` command to populate `/home/user` content in the persistent volu
 . Creating symbolic links is faster and consumes less storage than creating copies of the `/home/user` directory content in the persistent volume. To put it differently, the persistent volume in this case contains symbolic links and not the actual files themselves.
 . If the tools image is updated with newer versions of existing binaries, configs, and files, the init container does not need to `stow` the new versions, as the existing symbolic links will link to the newer versions in `/home/tooling` already.
 
-NOTE: If the tooling image is updated with additional binaries or files, they won't be symbolically linked to the `/home/user` directory since the stow command won't be run again. In this case, the user must delete the `/home/user/.stow_completed` file and restart the workspace to rerun stow.
+NOTE: If the tooling image is updated with additional binaries or files, they won't be symbolically linked to the `/home/user` directory since the `stow` command won't be run again. In this case, the user must delete the `/home/user/.stow_completed` file and restart the workspace to rerun `stow`.
 
 .`persistUserHome` tools image requirements
 
@@ -51,7 +51,7 @@ The `persistUserHome` depends on the tools image used for the workspace. By defa
 
 If you are using a custom image, there are three requirements that should be met to support the `persistUserHome` feature.
 
-. The tools image should contain `stow` version 2.4.0.
+. The tools image should contain `stow` version >= 2.4.0.
 . The `$HOME` environment variable is set to `/home/user`.
 . In the tools image, the directory that is intended to contain the `/home/user` content is `/home/tooling`.
 
