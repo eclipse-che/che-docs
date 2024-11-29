@@ -15,11 +15,13 @@ For newly started workspaces, this feature creates a PVC mounted to the `/home/u
 In this documentation, a "tools container" will be used to refer to the first container in the devfile.
 This container is the container that includes the project source code by default.
 
-When the PVC is mounted for the first time, the persistent volume contents are empty and therefore must be populated with the `/home/user` folder content.
+When the PVC is mounted for the first time, the persistent volume's content are empty and therefore must be populated with the `/home/user` directory content.
 
 By default, the `persistUserHome` feature creates an init container for each new workspace pod named `init-persistent-home`.
 This init container is created with the tools container image and is responsible for running a `stow` command to create symbolic links
-in the persistent volume to populate the `/home/user` folder.
+in the persistent volume to populate the `/home/user` directory.
+
+NOTE: For files that cannot be symbolically linked to the `/home/user` directory such as the `.viminfo` and `.bashrc` file, `cp` is used instead of `stow`.
 
 The primary function of the `stow` command is to run:
 [subs="+quotes,attributes"]
@@ -27,19 +29,21 @@ The primary function of the `stow` command is to run:
 stow -t /home/user/ -d /home/tooling/ --no-folding
 ----
 
-The command above creates symbolic links in `/home/user` for files and folders located in /home/tooling. This populates the persistent volume with symbolic links to the content in /home/tooling. As a result, it the `persistentUserHome` feature expects the tooling image to have it's `/home/user/` content within `/home/tooling`.
+The command above creates symbolic links in `/home/user` for files and directories located in /home/tooling. This populates the persistent volume with symbolic links to the content in `/home/tooling`. As a result, it the `persistentUserHome` feature expects the tooling image to have its `/home/user/` content within `/home/tooling`.
 
-For example, if the tools container image contains files in the `home/tooling` folder such as `.config` and `.config-folder/another-file`, stow will create symbolic links in the persistent volume in the following manner:
+For example, if the tools container image contains files in the `home/tooling` directory such as `.config` and `.config-folder/another-file`, stow will create symbolic links in the persistent volume in the following manner:
 
 .Tools container with `persistUserHome` enabled
 image::persistent-user-home/tools-container-example.png[Persistent user home example scenario]
 
-The init container writes the output of the `stow` command to `/home/user/.stow.log` and will only run `stow` the first time the PVC is mounted to the workspace. 
+The init container writes the output of the `stow` command to `/home/user/.stow.log` and will only run `stow` the first time the persistent volume is mounted to the workspace. 
 
-Using the `stow` command to populate `/home/user` content in the persistent volume provides two main advantages.
+Using the `stow` command to populate `/home/user` content in the persistent volume provides two main advantages:
 
-. Creating symbolic links is faster than creating copies of the `/home/user` folder content in the persistent volume. To put it differently, the persistent volume in this case contains symbolic links and not the actual files themselves.
+. Creating symbolic links is faster and consumes less storage than creating copies of the `/home/user` directory content in the persistent volume. To put it differently, the persistent volume in this case contains symbolic links and not the actual files themselves.
 . If the tools image is updated with newer versions of existing binaries, configs, and files, the init container does not need to `stow` the new versions, as the existing symbolic links will link to the newer versions in `/home/tooling` already.
+
+NOTE: If the tooling image is updated with additional binaries or files, they won't be symbolically linked to the `/home/user` directory since the stow command won't be run again. In this case, the user must delete the `/home/user/.stow_completed` file and restart the workspace to rerun stow.
 
 .`persistUserHome` tools image requirements
 
@@ -48,8 +52,8 @@ The `persistUserHome` depends on the tools image used for the workspace. By defa
 If you are using a custom image, there are three requirements that should be met to support the `persistUserHome` feature.
 
 . The tools image should contain `stow` version 2.4.0.
-. The home directory should be `/home/user`.
-. In the tools image, the directory that contains the `/home/user` content is `/home/tooling`.
+. The `$HOME` environment variable is set to `/home/user`.
+. In the tools image, the directory that is intended to contain the `/home/user` content is `/home/tooling`.
 
 Due to requirement three, the default UDI image for example adds the `/home/user` content to `/home/tooling` instead, and runs:
 
@@ -58,5 +62,4 @@ Due to requirement three, the default UDI image for example adds the `/home/user
 RUN stow -t /home/user/ -d /home/tooling/ --no-folding 
 ----
 
-in the Dockerfile so that `/home/tooling` is accessible from `/home/user` even when not using the `persistUserHome` feature.
-
+in the Dockerfile so that files in `/home/tooling` is accessible from `/home/user` even when not using the `persistUserHome` feature.
