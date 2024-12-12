@@ -9,15 +9,19 @@
 
 You can install the {image-puller-name} on OpenShift by using OpenShift `oc` management tool.
 
+[IMPORTANT]
+====
+If the ImagePuller is installed with the `oc` CLI, it cannot be configured via the `CheCluster` Custom Resource.
+====
+
 .Prerequisites
 
 * An active `oc` session with administrative permissions to the OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the OpenShift CLI].
 
 .Procedure
 
-. Gather a list of relevant container images to pull by navigating to the links:
-* `pass:c,a,q[{prod-url}]/plugin-registry/v3/external_images.txt`
-* `pass:c,a,q[{prod-url}]/devfile-registry/devfiles/external_images.txt`
+. Gather a list of relevant container images to pull by following the doc:
+xref:retrieving-default-list-of-images-for-kubernetes-image-puller.adoc[]
 
 . Define the memory requests and limits parameters to ensure pulled containers and the platform have enough memory to run.
 +
@@ -37,8 +41,8 @@ Pulling 5 images on 20 nodes, with a container memory limit of `20Mi` requires `
 +
 [subs="+attributes,+quotes"]
 ----
-$ git clone https://github.com/che-incubator/{image-puller-repository-name}
-$ cd {image-puller-repository-name}/deploy/openshift
+git clone https://github.com/che-incubator/{image-puller-repository-name}
+cd {image-puller-repository-name}/deploy/openshift
 ----
 
 . Configure the `app.yaml`, `configmap.yaml` and `serviceaccount.yaml` OpenShift templates using following parameters:
@@ -133,16 +137,16 @@ $ cd {image-puller-repository-name}/deploy/openshift
 +
 [subs="+attributes,+quotes"]
 ----
-$ oc new-project __<{image-puller-namespace}>__
+oc new-project __<{image-puller-namespace}>__
 ----
 
 . Process and apply the templates to install the puller:
 +
 [subs="+attributes,+quotes"]
 ----
-$ oc process -f serviceaccount.yaml | oc apply -f -
-$ oc process -f configmap.yaml | oc apply -f -
-$ oc process -f app.yaml | oc apply -f -
+oc process -f serviceaccount.yaml | oc apply -f -
+oc process -f configmap.yaml | oc apply -f -
+oc process -f app.yaml | oc apply -f -
 ----
 
 
@@ -152,12 +156,16 @@ $ oc process -f app.yaml | oc apply -f -
 +
 [source%nowrap,dummy,subs="+quotes,+attributes"]
 ----
-$ oc get deployment,daemonset,pod --namespace __<{image-puller-namespace}>__
+oc get deployment,daemonset,pod --namespace __<{image-puller-namespace}>__
 ----
 
 . Verify the values of the __<{image-puller-deployment-name}>__ `ConfigMap`.
 +
 [source%nowrap,dummy,subs="+quotes,+attributes"]
 ----
-$ oc get configmap __<{image-puller-deployment-name}>__ --output yaml
+oc get configmap __<{image-puller-deployment-name}>__ --output yaml
 ----
+
+.Additional resources
+
+* xref:retrieving-default-list-of-images-for-kubernetes-image-puller.adoc[]
