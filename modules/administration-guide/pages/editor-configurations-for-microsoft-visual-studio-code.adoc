@@ -1,0 +1,70 @@
+:_content-type: PROCEDURE
+:description: Applying editor configurations
+:keywords: settings, extensions, configurations
+:navtitle: Applying editor configurations
+// :page-aliases:
+
+[id="visual-studio-code-editor-configs"]
+= Applying editor configurations
+
+You can configure Visual Studio Code - Open Source editor by adding configurations to a ConfigMap.
+These configurations are applied to any workspace you open.
+Once a workspace is started, the editor checks for this ConfigMap and stores configurations to the corresponding config files.
+
+The following sections are currently supported:
+
+* settings.json
+* extensions.json
+
+The `settings.json` section contains various settings that allow to customize different parts of the Code - OSS editor. +
+The `extensions.json` section contains recommented extensions are installed when a workspace is started.
+
+.Procedure
+
+* Add a new ConfigMap to the user's {orch-namespace}, define the `settings.json`  and `extensions.json` sections, specify the settings you want to add, and the IDs of the extensions you want to install.
++
+====
+[source,yaml]
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vscode-editor-configurations
+data: 
+  extensions.json: |
+    {
+      "recommendations": [
+          "dbaeumer.vscode-eslint",
+          "github.vscode-pull-request-github"
+      ]
+    }
+  settings.json: |
+    {
+      "window.header": "A HEADER MESSAGE",
+      "window.commandCenter": false,
+      "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#CCA700",
+        "titleBar.activeForeground": "#ffffff"
+      }
+    }
+immutable: false
+----
+====
+
+* Start or restart your workspace 
+
+[NOTE]
+====
+Make sure that the Configmap contains data in a valid JSON format.
+====
+
+.Verification
+. Verify that settings defined in the ConfigMap are applied using one of the following methods:
+* Use `F1 → Preferences: Open Remote Settings` to check if the defined settings are applied. 
+* Ensure that the settings from the ConfigMap are present in the `/checode/remote/data/Machine/settings.json` file by using the `F1 → File: Open File...` command to inspect the file's content.
+
+. Verify that extensions defined in the ConfigMap are applied:
+* Go to the `Extensions` view (`F1 → View: Show Extensions`) and check that the extensions are installed
+* Ensure that the extensions from the ConfigMap are present in the `.code-workspace` file by using the `F1 → File: Open File...` command. By default, the workspace file is placed at `/projects/.code-workspace`.
+
+
