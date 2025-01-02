@@ -7,6 +7,11 @@
 [id="enabling-fuse-overlayfs-for-all-workspaces"]
 = Enabling fuse-overlayfs for all workspaces
 
+For Podman 5.x, the `/home/user/.config` must be owned by the current user for Podman to function correctly.
+The `storage.conf` file for Podman is typically stored in this folder.
+This document explains how to configure the container entrypoint script for the workspace so that fuse-overlayfs is being used.
+The Universal Developer Image (UDI) already contains the necessary configuration by default.
+
 .Prerequisites
 
 * The xref:administration-guide:enabling-access-to-dev-fuse-for-openshift.adoc[] section has been completed. This is not required for OpenShift versions 4.15 and later.
@@ -14,34 +19,6 @@
 * An active `{orch-cli}` session with administrative permissions to the destination OpenShift cluster. See {orch-cli-link}.
 
 .Procedure
-
-. Create a ConfigMap that mounts the `storage.conf` file for all user workspaces. 
-+
-====
-[source,yaml,subs="+quotes,+attributes"]
-----
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: fuse-overlay
-  namespace: {prod-namespace}
-  labels:
-    app.kubernetes.io/part-of: che.eclipse.org
-    app.kubernetes.io/component: workspaces-config
-  annotations:
-    controller.devfile.io/mount-as: subpath
-    controller.devfile.io/mount-path: /home/user/.config/containers/
-data:
-  storage.conf: |
-    [storage]
-    driver = "overlay"
-
-    [storage.options.overlay]
-    mount_program="/usr/bin/fuse-overlayfs"
-----
-====
-+
-WARNING: Creating this ConfigMap will cause all running workspaces to restart.
 
 . Set the necessary annotation in the `spec.devEnvironments.workspacesPodAnnotations` field of the CheCluster custom resource.
 +
@@ -62,9 +39,51 @@ spec:
 For OpenShift versions before 4.15, the `io.openshift.podman-fuse: ""` annotation is also required.
 ====
 
+. If you are using a custom image for the workspace container, create the `/home/user/.config` folder and configure the `storage.conf` file on runtime via the entrypoint.
+To do this, create add the following to the workspace container image's entrypoint script before building the image.
++
+====
+[source,bash,subs="+quotes,+macros"]
+----
+# Configure container builds to use vfs or fuse-overlayfs
+if [ ! -d "${HOME}/.config/containers" ]; then
+  mkdir -p ${HOME}/.config/containers
+  if [ -c "/dev/fuse" ] && [ -f "/usr/bin/fuse-overlayfs" ]; then
+    (echo '[storage]';echo 'driver = "overlay"';echo '[storage.options.overlay]';echo 'mount_program = "/usr/bin/fuse-overlayfs"') > ${HOME}/.config/containers/storage.conf
+  else
+    (echo '[storage]';echo 'driver = "vfs"') > "${HOME}"/.config/containers/storage.conf
+  fi
+fi
+----
+====
++
+This ensures that if the `/home/user/.config` doesn't already exist, the folder is created and owned by `user`.
+The `/home/user/.config` may already exist for example, if it was stored in a persistent volume.
++
+[NOTE]
+====
+This is configured in the UDI by default. Therefore this step is only required if you are using a custom image for the workspace container.
+====
+
 .Verification steps
 
-. Start a workspace and verify that the storage driver is `overlay`.
+. Start a workspace and verify that the owner for `/home/user/.config` is `user`.
++
+[subs="+attributes,+quotes"]
+----
+$ ls -la /home/user
+----
+
++
+Example output:
++
+[subs="+attributes,+quotes"]
+----
+...
+drwxrwsr-x.  3 user 1000660000   24 Dec 24 15:40 .config
+----
+
+. Verify that the storage driver is `overlay`.
 +
 [subs="+attributes,+quotes"]
 ----
@@ -79,8 +98,8 @@ Example output:
 graphDriverName: overlay
   overlay.mount_program:
     Executable: /usr/bin/fuse-overlayfs
-    Package: fuse-overlayfs-1.12-1.module+el8.9.0+20326+387084d0.x86_64
-      fuse-overlayfs: version 1.12
+    Package: fuse-overlayfs-1.14-1.el9.x86_64
+      fuse-overlayfs: version 1.13-dev
   Backing Filesystem: overlayfs
 ----
 +
