@@ -9,12 +9,12 @@
 
 For Podman 5.x, the `/home/user/.config` must be owned by the current user for Podman to function correctly.
 The `storage.conf` file for Podman is typically stored in this folder.
-This document explains how to configure the container entrypoint script for the workspace so that fuse-overlayfs is being used.
+This document explains how to configure the workspace's container entrypoint script for the workspace so that fuse-overlayfs is being used for all workspaces using that container.
 The Universal Developer Image (UDI) already contains the necessary configuration by default.
 
 .Prerequisites
 
-* The xref:administration-guide:enabling-access-to-dev-fuse-for-openshift.adoc[] section has been completed. This is not required for OpenShift versions 4.15 and later.
+* For OpenShift versions 4.14 and lower, the xref:administration-guide:enabling-access-to-dev-fuse-for-openshift.adoc[] section has been completed.
 
 * An active `{orch-cli}` session with administrative permissions to the destination OpenShift cluster. See {orch-cli-link}.
 
@@ -36,14 +36,14 @@ spec:
 +
 [NOTE]
 ====
-For OpenShift versions before 4.15, the `io.openshift.podman-fuse: ""` annotation is also required.
+For OpenShift versions 4.14 and lower, the `io.openshift.podman-fuse: ""` annotation is also required.
 ====
 
-. If you are using a custom image for the workspace container, create the `/home/user/.config` folder and configure the `storage.conf` file on runtime via the entrypoint.
-To do this, create add the following to the workspace container image's entrypoint script before building the image.
+. Optional: If you are using a custom image for the workspace container, create the `/home/user/.config` folder and configure the `storage.conf` file on runtime via the entrypoint.
+To do this, add the following to the workspace container image's entrypoint script before building the image.
 +
 ====
-[source,bash,subs="+quotes,+macros"]
+[source,subs="+quotes,+macros"]
 ----
 # Configure container builds to use vfs or fuse-overlayfs
 if [ ! -d "${HOME}/.config/containers" ]; then
