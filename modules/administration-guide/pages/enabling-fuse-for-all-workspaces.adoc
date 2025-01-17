@@ -9,7 +9,8 @@
 
 Learn about configuring the workspace's container entrypoint script so that fuse-overlayfs is used for all workspaces using that container.
 
-The Universal Developer Image (UDI) already contains the necessary configuration by default. However, you must configure the script manually if you use custom images.
+The Universal Developer Image (UDI) already contains the necessary configuration by default.
+However, you must configure the script manually if you use custom images due to Podman 5.x requiring the `/home/user/.config` folder to be owned by the current user.
 
 .Prerequisites
 
@@ -40,6 +41,7 @@ For OpenShift versions 4.14 and lower, the `io.openshift.podman-fuse: ""` annota
 
 . [OPTIONAL] If you are using a custom image for the workspace container, create the `/home/user/.config` folder and configure the `storage.conf` file on runtime via the entrypoint.
 To do this, add the following to the workspace container image's entrypoint script before building the image.
+Creating the `/home/user/.config` folder in the entrypoint results in the folder being owned by the current user which is not known at image build time.
 +
 ====
 [source,subs="+quotes,+macros"]
