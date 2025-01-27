@@ -1,0 +1,24 @@
+[id="installing-cert-manager-on-amazon-elastic-kubernetes-service"]
+= Installing cert-manager on {eks-short}
+
+Follow these instructions to install the link:https://cert-manager.io[cert-manager] on {eks-short}.
+
+.Procedure
+
+. Install `cert-manager` using `Helm`:
++
+[source,subs="attributes+"]
+----
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+
+helm install cert-manager jetstack/cert-manager \
+  --wait \
+  --create-namespace \
+  --namespace cert-manager \
+  --set crds.enabled=true
+----
+
+.Additional resources
+
+* link:https://cert-manager.io/docs/tutorials/getting-started-aws-letsencrypt/[cert-manager Installation Guide]

@@ -1,0 +1,36 @@
+// Module included in the following assemblies:
+//
+// installing-{prod-id-short}-on-amazon-elastic-kubernetes-service
+
+[id="associate-keycloak-as-oidc-identity-provider-on-amazon-elastic-kubernetes-service"]
+= Associate keycloak as OIDC identity provider on {eks-short}
+
+Follow these instructions to associate Keycloak an OIDC identity provider on {eks-short}.
+
+.Procedure
+
+. Associate Keycloak an identity provider using `eksctl`:
++
+[source,shell,subs="attributes+"]
+----
+eksctl associate identityprovider \
+  --wait \
+  --config-file - << EOF
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: $CHE_EKS_CLUSTER_NAME
+  region: $CHE_EKS_CLUSTER_REGION
+identityProviders:
+  - name: keycloak-oidc
+    type: oidc
+    issuerUrl: https://$KEYCLOAK_DOMAIN_NAME/realms/che
+    clientId: k8s-client
+    usernameClaim: email
+EOF
+----
+
+.Additional resources
+
+* link:https://docs.aws.amazon.com/eks/latest/userguide/authenticate-oidc-identity-provider.html[Grant users access to {kubernetes} with an external OIDC provider]

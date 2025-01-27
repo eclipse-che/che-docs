@@ -9,8 +9,6 @@
 schemaVersion: 2.2.2
 metadata:
   name: che-docs
-attributes:
-  controller.devfile.io/storage-type: ephemeral
 components:
   - name: tools
     container:
@@ -44,3 +42,11 @@ commands:
         kind: build
       workingDir: "${PROJECT_SOURCE}"
     id: start-preview-server
+  - exec:
+      commandLine: vale sync
+      component: tools
+      group:
+        isDefault: false
+        kind: build
+      workingDir: "${PROJECT_SOURCE}"
+    id: vale-sync

@@ -36,7 +36,7 @@ LABEL \
 # Install system packages
 RUN set -x \
     && dnf install --assumeyes --quiet dnf-plugins-core \
-    && dnf copr enable --assumeyes --quiet mczernek/vale \
+    && dnf copr enable --assumeyes --quiet mczernek/vale fedora-40-x86_64 \
     && dnf install --assumeyes --quiet \
     ShellCheck \
     bash \
@@ -52,7 +52,6 @@ RUN set -x \
     nodejs \
     python3-pip \
     rsync \
-    rubygem-bundler \
     shyaml \
     tar \
     tox \
@@ -64,7 +63,6 @@ RUN set -x \
     && dnf clean all --quiet \
     && dot -v \
     && node --version \
-    && ruby --version \
     && vale --version
 
 # Install Python packages
@@ -74,19 +72,13 @@ RUN set -x \
     yq \
     && yq --version
 
-# Install Ruby packages (requires Ruby 2.7)
-RUN set -x \
-    && gem install asciidoctor-pdf \
-    && which asciidoctor-pdf \
-    && asciidoctor --version \
-    && asciidoctor-pdf --version
-
 # WORKDIR is a Node.js prerequisite
 WORKDIR /tmp
 # Avoid error: Local gulp not found in /projects
 ENV NODE_PATH="/usr/local/lib/node_modules/"
 # Install Node.js packages, one by one to avoid timeouts
 RUN set -x \
+    && npm install --no-save --global @antora/assembler \
     && npm install --no-save --global @antora/cli \
     && npm install --no-save --global @antora/collector-extension \
     && npm install --no-save --global @antora/lunr-extension \
@@ -96,6 +88,7 @@ RUN set -x \
     && npm install --no-save --global asciidoctor-kroki \
     && npm install --no-save --global gulp gulp-cli gulp-connect \
     && npm install --no-save --global js-yaml \
+    && npm install --no-save --global asciidoctor \
     && which antora \
     && antora --version \
     && rm /tmp/* --recursive --force
@@ -112,7 +105,6 @@ WORKDIR /projects
 RUN set -x \
     && antora --version \
     && asciidoctor --version \
-    && asciidoctor-pdf --version \
     && bash --version \
     && curl --version \
     && git --version \

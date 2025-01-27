@@ -1,0 +1,68 @@
+:_content-type: PROCEDURE
+:description: Configure trusted extensions for Microsoft Visual Studio Code
+:keywords: extensions, vs-code, vsx, open-vsx, marketplace
+:navtitle: Configure trusted extensions for Microsoft Visual Studio Code
+
+[id="visual-studio-code-trusted-extensions"]
+= Configure trusted extensions for Microsoft Visual Studio Code
+
+
+You can use the `trustedExtensionAuthAccess` field in the `product.json` file of Microsoft Visual Studio Code to specify which extensions are trusted to access authentication tokens.
+[source,json]
+----
+	"trustedExtensionAuthAccess": [
+		"<publisher1>.<extension1>",
+		"<publisher2>.<extension2>"
+	]
+----
+
+This is particularly useful when you have extensions that require access to services such as GitHub, Microsoft, or any other service that requires OAuth. By adding the extension IDs to this field, you are granting them the permission to access these tokens.
+
+You can define the variable in the devfile or in the ConfigMap. Pick the option that better suits your needs.
+With a ConfigMap, the variable will be propagated on all your workspaces and you do not need to add the variable to each the devfile you are using.
+[WARNING]
+====
+Use the `trustedExtensionAuthAccess` field with caution as it could potentially lead to security risks if misused. Give access only to trusted extensions.
+====
+
+.Procedure
+[IMPORTANT]
+====
+Since the Microsoft Visual Studio Code editor is bundled within `che-code` image, you can only change the `product.json` file when the workspace is started up.
+====
+
+
+. Define the __VSCODE_TRUSTED_EXTENSIONS__ environment variable. Choose between defining the variable in devfile.yaml or mounting a ConfigMap with the variable instead.
+.. Define the __VSCODE_TRUSTED_EXTENSIONS__ environment variable in devfile.yaml:
++
+====
+[source,yaml]
+----
+   env:
+     - name: VSCODE_TRUSTED_EXTENSIONS
+       value: "<publisher1>.<extension1>,<publisher2>.<extension2>"
+----
+====
+
+.. Mount a ConfigMap with __VSCODE_TRUSTED_EXTENSIONS__ environment variable:
++
+====
+[source,yaml]
+----
+   kind: ConfigMap
+   apiVersion: v1
+   metadata:
+     name: trusted-extensions
+     labels:
+       controller.devfile.io/mount-to-devworkspace: 'true'
+       controller.devfile.io/watch-configmap: 'true'
+     annotations:
+       controller.devfile.io/mount-as: env
+   data:
+     VSCODE_TRUSTED_EXTENSIONS: '<publisher1>.<extension1>,<publisher2>.<extension2>'
+----
+====
+
+.Verification
+
+* The value of the variable will be parsed on the workspace startup and the corresponding `trustedExtensionAuthAccess` section will be added to the `product.json`.

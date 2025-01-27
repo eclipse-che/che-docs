@@ -2,27 +2,48 @@
 :description: Installing {image-puller-name-short} on OpenShift using CLI
 :keywords: administration-guide, image-puller, openshift, openshift-templates, CLI
 :navtitle: Installing {image-puller-name-short} on OpenShift using CLI
-:page-aliases: .:installing-image-puller-on-openshift-using-openshift-templates.adoc,installing-image-puller-on-openshift-using-openshift-templates.adoc
+// :page-aliases: .:installing-image-puller-on-openshift-using-openshift-templates.adoc,installing-image-puller-on-openshift-using-openshift-templates.adoc
 
-[id="installing-image-puller-on-openshift-by-using-the-cli"]
+[id="installing-image-puller-on-openshift-using-the-cli"]
 = Installing {image-puller-name-short} on OpenShift by using the CLI
 
 You can install the {image-puller-name} on OpenShift by using OpenShift `oc` management tool.
 
+[IMPORTANT]
+====
+If the ImagePuller is installed with the `oc` CLI, it cannot be configured via the `CheCluster` Custom Resource.
+====
+
 .Prerequisites
-
-* xref:defining-the-list-of-images-to-pull.adoc[].
-
-* xref:defining-the-memory-parameters-for-the-image-puller.adoc[].
 
 * An active `oc` session with administrative permissions to the OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the OpenShift CLI].
 
 .Procedure
 
+. Gather a list of relevant container images to pull by following the doc:
+xref:retrieving-default-list-of-images-for-kubernetes-image-puller.adoc[]
+
+. Define the memory requests and limits parameters to ensure pulled containers and the platform have enough memory to run.
++
+When defining the minimal value for `CACHING_MEMORY_REQUEST` or `CACHING_MEMORY_LIMIT`, consider the necessary amount of memory required to run each of the container images to pull.
++
+When defining the maximal value for `CACHING_MEMORY_REQUEST` or `CACHING_MEMORY_LIMIT`, consider the total memory allocated to the DaemonSet Pods in the cluster:
++
+----
+(memory limit) * (number of images) * (number of nodes in the cluster)
+----
++
+====
+Pulling 5 images on 20 nodes, with a container memory limit of `20Mi` requires `2000Mi` of memory.
+====
+
 . Clone the {image-puller-name-short} repository and get in the directory containing the OpenShift templates:
 +
-include::example$snip_{project-context}-cloning-image-puller-project.adoc[]
-
+[subs="+attributes,+quotes"]
+----
+git clone https://github.com/che-incubator/{image-puller-repository-name}
+cd {image-puller-repository-name}/deploy/openshift
+----
 
 . Configure the `app.yaml`, `configmap.yaml` and `serviceaccount.yaml` OpenShift templates using following parameters:
 +
@@ -31,19 +52,19 @@ include::example$snip_{project-context}-cloning-image-puller-project.adoc[]
 |===
 |Value |Usage |Default
 
-|`DEPLOYMENT_NAME` 
-|The value of `DEPLOYMENT_NAME` in the ConfigMap 
+|`DEPLOYMENT_NAME`
+|The value of `DEPLOYMENT_NAME` in the ConfigMap
 |`{image-puller-deployment-name}`
 
-|`IMAGE` 
-|Image used for the `{image-puller-deployment-name}` deployment 
+|`IMAGE`
+|Image used for the `{image-puller-deployment-name}` deployment
 |`{image-puller-image-name}`
 
-|`IMAGE_TAG` 
-|The image tag to pull 
+|`IMAGE_TAG`
+|The image tag to pull
 |`latest`
 
-|`SERVICEACCOUNT_NAME` 
+|`SERVICEACCOUNT_NAME`
 |The name of the ServiceAccount created and used by the deployment
 |`kubernetes-image-puller`
 
@@ -54,44 +75,44 @@ include::example$snip_{project-context}-cloning-image-puller-project.adoc[]
 |===
 |Value |Usage |Default
 
-|`CACHING_CPU_LIMIT` 
-|The value of `CACHING_CPU_LIMIT` in the ConfigMap 
+|`CACHING_CPU_LIMIT`
+|The value of `CACHING_CPU_LIMIT` in the ConfigMap
 |`.2`
 
-|`CACHING_CPU_REQUEST` 
-|The value of `CACHING_CPU_REQUEST` in the ConfigMap 
+|`CACHING_CPU_REQUEST`
+|The value of `CACHING_CPU_REQUEST` in the ConfigMap
 |`.05`
 
-|`CACHING_INTERVAL_HOURS` 
-|The value of `CACHING_INTERVAL_HOURS` in the ConfigMap 
+|`CACHING_INTERVAL_HOURS`
+|The value of `CACHING_INTERVAL_HOURS` in the ConfigMap
 |``"1"``
 
-|`CACHING_MEMORY_LIMIT` 
-|The value of `CACHING_MEMORY_LIMIT` in the ConfigMap 
+|`CACHING_MEMORY_LIMIT`
+|The value of `CACHING_MEMORY_LIMIT` in the ConfigMap
 |`"20Mi"`
 
-|`CACHING_MEMORY_REQUEST` 
-|The value of `CACHING_MEMORY_REQUEST` in the ConfigMap 
+|`CACHING_MEMORY_REQUEST`
+|The value of `CACHING_MEMORY_REQUEST` in the ConfigMap
 |`"10Mi"`
 
-|`DAEMONSET_NAME` 
-|The value of `DAEMONSET_NAME` in the ConfigMap 
+|`DAEMONSET_NAME`
+|The value of `DAEMONSET_NAME` in the ConfigMap
 |`{image-puller-deployment-name}`
 
-|`DEPLOYMENT_NAME` 
-|The value of `DEPLOYMENT_NAME` in the ConfigMap 
+|`DEPLOYMENT_NAME`
+|The value of `DEPLOYMENT_NAME` in the ConfigMap
 |`{image-puller-deployment-name}`
 
-|`IMAGES` 
-|The value of `IMAGES` in the ConfigMap  
-|`{image-puller-images}`
+|`IMAGES`
+|The value of `IMAGES` in the ConfigMap
+|`{}`
 
-|`NAMESPACE` 
-|The value of `NAMESPACE` in the ConfigMap  
+|`NAMESPACE`
+|The value of `NAMESPACE` in the ConfigMap
 |`{image-puller-namespace}`
 
-|`NODE_SELECTOR` 
-|The value of `NODE_SELECTOR` in the ConfigMap 
+|`NODE_SELECTOR`
+|The value of `NODE_SELECTOR` in the ConfigMap
 |`"{}"`
 |===
 +
@@ -100,9 +121,13 @@ include::example$snip_{project-context}-cloning-image-puller-project.adoc[]
 |===
 |Value |Usage |Default
 
-|`SERVICEACCOUNT_NAME` 
+|`SERVICEACCOUNT_NAME`
 |The name of the ServiceAccount created and used by the deployment
 |`kubernetes-image-puller`
+
+|`KIP_IMAGE`
+|The image puller image to copy the sleep binary from
+|`{image-puller-image-name}:latest`
 
 |===
 
@@ -112,16 +137,16 @@ include::example$snip_{project-context}-cloning-image-puller-project.adoc[]
 +
 [subs="+attributes,+quotes"]
 ----
-$ oc new-project __<{image-puller-namespace}>__
+oc new-project __<{image-puller-namespace}>__
 ----
 
 . Process and apply the templates to install the puller:
 +
 [subs="+attributes,+quotes"]
 ----
-$ oc process -f serviceaccount.yaml | oc apply -f -
-$ oc process -f configmap.yaml | oc apply -f -
-$ oc process -f app.yaml | oc apply -f -
+oc process -f serviceaccount.yaml | oc apply -f -
+oc process -f configmap.yaml | oc apply -f -
+oc process -f app.yaml | oc apply -f -
 ----
 
 
@@ -131,12 +156,16 @@ $ oc process -f app.yaml | oc apply -f -
 +
 [source%nowrap,dummy,subs="+quotes,+attributes"]
 ----
-$ oc get deployment,daemonset,pod --namespace __<{image-puller-namespace}>__
+oc get deployment,daemonset,pod --namespace __<{image-puller-namespace}>__
 ----
 
 . Verify the values of the __<{image-puller-deployment-name}>__ `ConfigMap`.
 +
 [source%nowrap,dummy,subs="+quotes,+attributes"]
 ----
-$ oc get configmap __<{image-puller-deployment-name}>__ --output yaml
+oc get configmap __<{image-puller-deployment-name}>__ --output yaml
 ----
+
+.Additional resources
+
+* xref:retrieving-default-list-of-images-for-kubernetes-image-puller.adoc[]

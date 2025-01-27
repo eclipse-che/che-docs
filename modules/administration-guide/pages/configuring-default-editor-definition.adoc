@@ -1,0 +1,45 @@
+:_content-type: PROCEDURE
+:description: Configuring default editor
+:keywords: administration guide, dashboard, editors
+:navtitle: Configuring default editor definition
+
+[id="configuring-default-editor-definition"]
+= Configuring default editor definition
+
+Learn how to configure {prod-short} default editor definition.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
+
+* `jq`. See link:https://stedolan.github.io/jq/download/[Downloading `jq`].
+
+.Procedure
+
+. Find out the IDs of the available editors:
++
+[source,subs="+quotes,+attributes"]
+----
+{orch-cli} exec deploy/{prod-id-short}-dashboard -n {prod-namespace}  \
+    -- curl -s http://localhost:8080/dashboard/api/editors | jq -r '.[] | "\(.metadata.attributes.publisher)/\(.metadata.name)/\(.metadata.attributes.version)"'
+----
+
+. Configure the `defaultEditor`:
++
+[source,subs="+quotes,+attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+    --namespace {prod-namespace} \
+    --type='merge' \
+    -p '{"spec":{"devEnvironments":{"defaultEditor": "__<default_editor>__"}}}'# <1>
+----
+<1> The default editor for creating a workspace can be specified using either a plugin ID or a URI. The plugin ID should follow the format: `publisher/name/version`. See available editors IDs in the first step.
+
+.Additional resources
+
+* xref:configuring-editors-definitions.adoc[]
+
+* xref:concealing-editors-definitions.adoc[]
+
+* {editor-definition-samples-link}
+

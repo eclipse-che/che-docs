@@ -1,0 +1,142 @@
+:_content-type: PROCEDURE
+:description: Enabling access to /dev/fuse for OpenShift version older than 4.15 containers
+:keywords: administration-guide, configuring, fuse, /dev/fuse
+:navtitle: Enabling access to for OpenShift version older than 4.15
+:page-aliases:
+
+[id="enabling-container-access-to-dev-fuse-for-openshift"]
+= Enabling container access to /dev/fuse for OpenShift older than 4.15
+
+To use fuse-overlayfs, you must make `/dev/fuse` accessible to workspace containers first.
+
+[NOTE]
+====
+This procedure is not necessary for OpenShift versions 4.15 and later, since the `/dev/fuse` device is available by default. See link:https://docs.openshift.com/container-platform/4.15/release_notes/ocp-4-15-release-notes.html#ocp-4-15-nodes-dev-fuse[Release Notes].
+====
+
+[WARNING]
+====
+Creating `MachineConfig` resources on an OpenShift cluster is a potentially dangerous task, as you are making advanced, system-level changes to the cluster.
+
+View the link:https://docs.openshift.com/container-platform/{ocp4-ver}/post_installation_configuration/machine-configuration-tasks.html#machine-config-overview-post-install-machine-configuration-tasks[MachineConfig documentation] for more details and possible risks.
+
+====
+
+.Prerequisites
+
+* The link:https://docs.openshift.com/container-platform/{ocp4-ver}/installing/install_config/installing-customizing.html#installation-special-config-butane-install_installing-customizing[Butane] tool (`butane`) is installed in the operating system you are using.
+
+* An active `{orch-cli}` session with administrative permissions to the destination OpenShift cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Set the environment variable based on the type of your OpenShift cluster: a single node cluster, or a multi node cluster with separate control plane and worker nodes.
++
+* For a single node cluster, set:
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ NODE_ROLE=master
+----
++
+* For a multi node cluster, set:
+[subs="+quotes,+attributes,+macros"]
++
+----
+$ NODE_ROLE=worker
+----
+
+. Set the environment variable for the OpenShift Butane config version. This variable is the major and minor version of the OpenShift cluster. For example, `4.12.0`, `4.13.0`, or `4.14.0`.
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ VERSION=4.12.0
+----
++
+. Create a `MachineConfig` resource that creates a drop-in CRI-O configuration file named `99-podman-fuse` in the `NODE_ROLE` nodes. This configuration file makes access to the `/dev/fuse` device possible for certain pods.
++
+[source,subs="+quotes,+macros"]
+----
+cat << EOF | butane | oc apply -f -
+variant: openshift
+version: ${VERSION}
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: ${NODE_ROLE}
+  name: 99-podman-dev-fuse-${NODE_ROLE}
+storage:
+  files:
+  - path: /etc/crio/crio.conf.d/99-podman-fuse <1>
+    mode: 0644
+    overwrite: true
+    contents: <2>
+      inline: |
+        [crio.runtime.workloads.podman-fuse] <3>
+        activation_annotation = "io.openshift.podman-fuse" <4>
+        allowed_annotations = [
+          "io.kubernetes.cri-o.Devices" <5>
+        ]
+        [crio.runtime]
+        allowed_devices = ["/dev/fuse"] <6>
+EOF
+----
+<1> The absolute file path to the new drop-in configuration file for CRI-O.
+<2> The content of the new drop-in configuration file.
+<3> Define a `podman-fuse` workload.
+<4> The pod annotation that activates the `podman-fuse` workload settings.
+<5> List of annotations the `podman-fuse` workload is allowed to process.
+<6> List of devices on the host that a user can specify with the `io.kubernetes.cri-o.Devices` annotation.
++
+. After applying the `MachineConfig` resource, scheduling will be temporarily disabled for each node with the `worker` role as changes are applied. View the nodes' statuses.
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ oc get nodes
+----
++
+Example output:
++
+[subs="+quotes,+attributes,+macros"]
+----
+NAME                           STATUS                     ROLES    AGE   VERSION
+ip-10-0-136-161.ec2.internal   Ready                      worker   28m   v1.27.9
+ip-10-0-136-243.ec2.internal   Ready                      master   34m   v1.27.9
+ip-10-0-141-105.ec2.internal   Ready,SchedulingDisabled   worker   28m   v1.27.9
+ip-10-0-142-249.ec2.internal   Ready                      master   34m   v1.27.9
+ip-10-0-153-11.ec2.internal    Ready                      worker   28m   v1.27.9
+ip-10-0-153-150.ec2.internal   Ready                      master   34m   v1.27.9
+----
++
+. Once all nodes with the `worker` role have a status `Ready`, `/dev/fuse` will be available to any pod with the following annotations.
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+io.openshift.podman-fuse: ''
+io.kubernetes.cri-o.Devices: /dev/fuse
+----
+
+.Verification steps
+
+. Get the name of a node with a `worker` role:
++
+[subs="+attributes,+quotes"]
+----
+$ oc get nodes
+----
+
+. Open an `oc debug` session to a worker node.
++
+[subs="+attributes,+quotes"]
+----
+$ oc debug node/__<nodename>__
+----
+
+. Verify that a new CRI-O config file named `99-podman-fuse` exists.
++
+[subs="+attributes,+quotes"]
+----
+sh-4.4# stat /host/etc/crio/crio.conf.d/99-podman-fuse
+----
+
+== Using fuse-overlayfs for Podman and Buildah within a workspace
+Users can follow xref:end-user-guide:using-the-fuse-overlay-storage-driver.adoc[] to update existing workspaces to use the fuse-overlayfs storage driver for Podman and Buildah.

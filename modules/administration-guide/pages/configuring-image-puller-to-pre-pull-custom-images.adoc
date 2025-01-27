@@ -1,0 +1,42 @@
+:_content-type: PROCEDURE
+:description: Configuring {image-puller-name-short} to pre-pull custom images
+:keywords: administration-guide, image-puller, CLI
+:navtitle: Configuring {image-puller-name-short} to pre-pull custom images
+:page-aliases:
+
+[id="configuring-image-puller-to-pre-pull-custom-images"]
+= Configuring {image-puller-name-short} to pre-pull custom images
+
+You can configure {image-puller-name} to pre-pull custom images.
+
+.Prerequisites
+
+* Your organization's instance of {prod-short} is installed and running on {kubernetes} cluster.
+
+* {image-puller-name-short} is installed on {kubernetes} cluster.
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Configure the {image-puller-name-short} to pre-pull custom images.
++
+[source,shell,subs="+attributes,+quotes"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+    --namespace {prod-namespace} \
+    --type='merge' \
+    --patch '{
+              "spec": {
+                "components": {
+                  "imagePuller": {
+                    "enable": true,
+                    "spec": {
+                      "images": "__NAME-1__=__IMAGE-1__;__NAME-2__=__IMAGE-2__" <1>
+                    }
+                  }
+                }
+              }
+            }'
+----
+<1> The semicolon separated list of images
