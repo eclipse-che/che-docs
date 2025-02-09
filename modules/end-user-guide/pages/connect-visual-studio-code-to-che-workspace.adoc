@@ -4,13 +4,13 @@
 
 {prod} supports connecting your desktop Visual Studio Code to a running {prod-short} workspace over link:https://code.visualstudio.com/docs/remote/tunnels/[Remote Tunnels].
 
-.Prerequisites
-
-. link:https://code.visualstudio.com/[Visual Studio Code] is installed.
-
 .Connecting Visual Studio Code desktop to a new workspace
 
 The following steps will help you to connect your workspace with your local Visual Studio Code.
+
+.Prerequisites
+
+. link:https://code.visualstudio.com/[Visual Studio Code] is installed.
 
 .Procedure
 
@@ -25,20 +25,48 @@ image::vscode-remote/login.png[Open Gateway prompt,link="{imagesdir}/vscode-remo
 
 . Proceed the login using your Microsoft or GitHub account.
 +
-Click `Copy & Continue to Microsoft` or `Copy & Continue to GitHub` button in the appeared popup to copy the authentication code to the clipboard and open the authenticating popup.
+Click `Copy & Continue to Microsoft` or `Copy & Continue to GitHub` button in the appeared dialog to copy the authentication code to the clipboard and open the authenticating pop-up.
 +
 image::vscode-remote/login-with-provider.png[Open Gateway prompt,link="{imagesdir}/vscode-remote/login-with-provider.png"]
 
 . Complete authenticating.
 +
-In the appeared popup you can paste the code from the clipboard and follow the instructions.
-On successful authentication, close the popup and wait while a tunnel to your workspace will be created.
+In the appeared pop-up you can paste the code from the clipboard and follow the instructions.
+On successful authentication, close the pop-up and wait while a tunnel to your workspace will be created.
 +
 image::vscode-remote/open-visual-studio-code.png[Open Gateway prompt,link="{imagesdir}/vscode-remote/open-visual-studio-code.png"]
 
 . Open your workspace in Visual Studio Code desktop.
 +
 Click `Open in Visual Studio Code desktop` to open your workspace in your desktop Visual Studio Code.
-In the appeared popup click `Open Visual Studio Code - URL Handler` to confirm opening the desktop application.
+In the appeared pop-up click `Open Visual Studio Code - URL Handler` to confirm opening the desktop application.
 +
 image::vscode-remote/confirm-opening-vscode-desktop.png[Open Gateway prompt,link="{imagesdir}/vscode-remote/confirm-opening-vscode-desktop.png"]
+
+.Connecting Visual Studio Code to an existing workspace
+
+With link:https://code.visualstudio.com/docs/editor/command-line[Visual Studio Code Command Line Interface (CLI)] you can crate a tunnel to an existing workspace.
+
+.Prerequisites
+
+. link:https://code.visualstudio.com/[Visual Studio Code] is installed.
+. link:https://marketplace.visualstudio.com/items?itemName=ms-vscode.remote-server[Remote - Tunnels] extension is installed.
+
+.Procedure
+
+. Install Visual Studio Code CLI to your workspace.
++
+Open a terminal and run the following command to install Visual Studio Code CLI to `/checode` directory.
++
+[source,shell,subs="attributes+"]
+----
+curl 'https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64' --location -o /tmp/code.tar.gz && \
+tar -xvzf /tmp/code.tar.gz --directory=/checode
+----
+
+. Launch CLI and login using your Microsoft or GitHub account.
++
+[source,shell,subs="attributes+"]
+----
+/checode/code tunnel --accept-server-license-terms --name $DEVWORKSPACE_NAME
+----
