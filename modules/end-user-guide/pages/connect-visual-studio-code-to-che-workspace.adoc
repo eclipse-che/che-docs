@@ -63,6 +63,22 @@ Open a terminal and run the following command to install Visual Studio Code CLI 
 curl 'https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64' --location -o /tmp/code.tar.gz && \
 tar -xvzf /tmp/code.tar.gz --directory=/checode
 ----
++
+[IMPORTANT]
+====
+If you don't have `gzip` installed to your workspace, you won't be able to install the CLI using the above command.
+In this case you need to:
+
+- link:https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64[download CLI] to your desktop by hands,
+unpack and upload the extracted binary to your workspace root
+- move CLI binary to `/checode` directory and make in executable
+
+[source,shell,subs="attributes+"]
+----
+mv $PROJECT_SOURCE/code /checode && chmod +x /checode/code
+----
+
+====
 
 . Launch CLI and login using your Microsoft or GitHub account.
 +
@@ -70,3 +86,20 @@ tar -xvzf /tmp/code.tar.gz --directory=/checode
 ----
 /checode/code tunnel --accept-server-license-terms --name $DEVWORKSPACE_NAME
 ----
++
+image::vscode-remote/cli-create-tunnel.png[Open Gateway prompt,link="{imagesdir}/vscode-remote/cli-create-tunnel.png"]
++
+After successful login, you will be prompted to open the workspace in your browser.
+
+. Open your workspace in local Visual Studio Code.
++
+Open your local Visual Studio Code and navigate to `Remote Explorer` view, a new tunnel to your workspace should appear.
+With buttons on the right, open your workspace in a current or in a new window.
++
+image::vscode-remote/vscode-remote-explorer.png[Open Gateway prompt,link="{imagesdir}/vscode-remote/vscode-remote-explorer.png"]
+
+[IMPORTANT]
+====
+A tunnel to your workspace will not appear if you are not signed in yet.
+If so, sign in using the account you are used to create a tunnel.
+====
