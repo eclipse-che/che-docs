@@ -116,6 +116,20 @@ __<Secret_prepared_in_step_5>__
 EOF
 ----
 ====
+. Azure DevOps Server. If you are using Azure DevOps Server, you must also modify the xref:mounting-git-configuration.adoc[workspace's
+gitconfig] with the following section:
++
+```
+[http]
+    extraheader = "Authorization: Basic <base64-encoded(:personal-access-token)>"
+```
+To generate the key-value pair, use the following command:
++
+```
+echo -n "extraheader = Authorization: Basic "$(printf ":%s" <personal access token> | base64)
+```
++
+see link:https://learn.microsoft.com/en-us/azure/devops/repos/git/auth-overview?view=azure-devops&tabs=Linux#personal-access-tokens[the documentation page] for more information.
 
 .Verification
 
