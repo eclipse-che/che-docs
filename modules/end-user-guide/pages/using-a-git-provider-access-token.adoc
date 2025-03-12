@@ -130,6 +130,8 @@ To generate the key-value pair, use the following command:
 echo -n "extraheader = \"Authorization: Basic "$(printf ":%s" <personal access token> | base64)\"
 ```
 see link:https://learn.microsoft.com/en-us/azure/devops/repos/git/auth-overview?view=azure-devops&tabs=Linux#personal-access-tokens[the documentation page] for more information.
+
+This header is needed for remote git operations to Azure Devops Server, e.g. `git clone`. This authorization method has higher priority over the git credentials store, so git will fail on remote operations to other git providers. To be able to use other providers you need to remove the `extraheader` from the gitconfig.
 ====
 
 .Verification
