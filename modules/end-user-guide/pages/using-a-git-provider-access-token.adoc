@@ -84,7 +84,7 @@ type: Opaque
 <1> Your {prod-short} user ID.
 <2> The Git provider name: `github` or `gitlab` or `bitbucket-server` or `azure-devops`.
 <3> The Git provider URL.
-<4> This line is only applicable to `azure-devops`: your Git provider user organization.
+<4> This line is only applicable to `azure-devops`: your Git provider user organization, or collection if Azure DevOps Server is used.
 
 . Visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
 
@@ -115,6 +115,23 @@ $ oc apply -f - <<EOF
 __<Secret_prepared_in_step_5>__
 EOF
 ----
+====
+
+[IMPORTANT]
+====
+If you are using Azure DevOps Server, you must also modify the xref:mounting-git-configuration.adoc[workspace's
+gitconfig] with the following section:
+```
+[http]
+    extraheader = "Authorization: Basic <base64-encoded(:personal-access-token)>"
+```
+To generate the key-value pair, use the following command:
+```
+echo -n "extraheader = \"Authorization: Basic "$(printf ":%s" <personal access token> | base64)\"
+```
+see link:https://learn.microsoft.com/en-us/azure/devops/repos/git/auth-overview?view=azure-devops&tabs=Linux#personal-access-tokens[the documentation page] for more information.
+
+The `extraheader` configuration is needed for remote git operations to Azure Devops Server, e.g. `git clone`. This authorization method has a higher priority over the git credentials store, and as a result, the remote operations to other Git providers will fail.
 ====
 
 .Verification
