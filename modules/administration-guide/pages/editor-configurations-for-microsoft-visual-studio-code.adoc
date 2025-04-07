@@ -16,14 +16,16 @@ The following sections are currently supported:
 * settings.json
 * extensions.json
 * product.json
+* configurations.json
 
 The *settings.json* section contains various settings with which you can customize different parts of the Code - OSS editor. +
 The *extensions.json* section contains recommended extensions that are installed when a workspace is started. +
-The *product.json* section contains properties that you need to add to the editor's *product.json* file. If the property already exists, its value will be updated.
+The *product.json* section contains properties that you need to add to the editor's *product.json* file. If the property already exists, its value will be updated. +
+The *configurations.json* section contains properties related to Code - OSS editor configuration. For example, you can use the `extensions.install-from-vsix-enabled` property to disable `Install from VSIX` command.
 
 .Procedure
 
-* Add a new ConfigMap to the user's {orch-namespace}, define the `settings.json`  and `extensions.json` sections, specify the settings you want to add, and the IDs of the extensions you want to install.
+* Add a new ConfigMap to the user's {orch-namespace}, define the supported sections, and specify the properties you want to add.
 +
 ====
 [source,yaml]
@@ -62,6 +64,10 @@ data:
         "<publisher2>.<extension2>"
       ]
     }
+  configurations.json: |
+    {
+      "extensions.install-from-vsix-enabled": false
+    }
 immutable: false
 ----
 ====
@@ -72,6 +78,8 @@ immutable: false
 ====
 Make sure that the Configmap contains data in a valid JSON format.
 ====
+
+TIP: Consider adding the ConfigMap to the {prod-namespace} namespace. It allows to replicate the ConfigMap across all user namespaces while preventing modifications within user's namespaces. See xref:configuring-a-user-namespace.adoc[].
 
 .Verification
 . Verify that settings defined in the ConfigMap are applied using one of the following methods:
@@ -86,3 +94,8 @@ Make sure that the Configmap contains data in a valid JSON format.
 * Open a terminal, run the command `cat /checode/entrypoint-logs.txt | grep "Node.js dir"` and copy the Visual Studio Code path.
 * Press `Ctrl + O`, paste the copied path and open *product.json* file.
 * Ensure that *product.json* file contains all the properties defined in the ConfigMap.
+
+. Verify that `extensions.install-from-vsix-enabled` property defined in the ConfigMap is applied to the Code - OSS editor:
+* Open the Command Palette (use `F1`) to check that `Install from VSIX` command is not present in the list of commands.
+* Use `F1 → Open View → Extensions` to open the `Extensions` panel, then click `...` on the view (`Views and More Actions` tooltip) to check that `Install from VSIX` action is absent in the list of actions.
+* Go to the Explorer, find a file with the `vsix` extension (redhat.vscode-yaml-1.17.0.vsix, for example), open menu for that file. `Install from VSIX` action should be absent in the menu.
