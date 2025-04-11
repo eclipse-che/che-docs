@@ -17,7 +17,7 @@ In reverse, if a {kubernetes} resource is modified in a user namespace,
 
 .Procedure
 
-. Create the `ConfigMap` below to replicate into every user namespace.
+. Create the `ConfigMap` below to replicate into every user {orch-namespace}.
 To enhance the configurability, you can customize the `ConfigMap` by adding additional labels and annotations.
 By default, the ConfigMap is automatically mounted into user workspaces.
 If you do not want the ConfigMap to be mounted, explicitly add the following labels to override the behavior:
@@ -30,7 +30,7 @@ controller.devfile.io/mount-to-devworkspace: "false"
 See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
 for other possible labels and annotations.
 +
-.Replicate a ConfigMap into every user namespace:
+.Replicate a ConfigMap into every user {orch-namespace}:
 ====
 [source,yaml,subs="+attributes,+quotes"]
 ----
@@ -49,7 +49,7 @@ data:
 ----
 ====
 +
-.Replicate a ConfigMap into every user namespace and automatically mount a `settings.xml` file into every user container by path `/home/user/.m2`:
+.Replicate a ConfigMap into every user {orch-namespace} and automatically mount a `settings.xml` file into every user container by path `/home/user/.m2`:
 ====
 [source,yaml,subs="+attributes,+quotes"]
 ----
@@ -74,7 +74,7 @@ data:
 ----
 ====
 
-. Create the `Secret` below to replicate into every user namespace.
+. Create the `Secret` below to replicate into every user {orch-namespace}.
 To enhance the configurability, you can customize the `Secret` by adding additional labels and annotations.
 By default, the Secret is automatically mounted into user workspaces.
 If you do not want the Secret to be mounted, explicitly add the following labels to override the behavior:
@@ -87,7 +87,7 @@ controller.devfile.io/mount-to-devworkspace: "false"
 See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
 for other possible labels and annotations.
 +
-.Replicate a Secret into every user namespace:
+.Replicate a Secret into every user {orch-namespace}:
 ====
 [source,yaml,subs="+attributes,+quotes"]
 ----
@@ -108,7 +108,7 @@ stringData:
 ----
 ====
 +
-.Replicate a Secret into every user namespace and automatically mount a `trusted-certificates.crt` file into every user container by path `/etc/pki/ca-trust/source/anchors`:
+.Replicate a Secret into every user {orch-namespace} and automatically mount a `trusted-certificates.crt` file into every user container by path `/etc/pki/ca-trust/source/anchors`:
 ====
 [source,yaml,subs="+attributes,+quotes"]
 ----
@@ -132,7 +132,7 @@ It can be achieved manually or by adding this command to a `postStart` event in 
 See the link:https://devfile.io/docs/{devfile-api-version}/adding-event-bindings#post-start-object[Adding event bindings in a devfile].
 ====
 +
-.Replicate a Secret into every user namespace and automatically mount as environment variables into every user container:
+.Replicate a Secret into every user {orch-namespace} and automatically mount as environment variables into every user container:
 ====
 [source,yaml,subs="+attributes,+quotes"]
 ----
@@ -153,7 +153,7 @@ stringData:
 ====
 
 
-. Create the `PersistentVolumeClaim` below to replicate it to every user namespace.
+. Create the `PersistentVolumeClaim` below to replicate it to every user {orch-namespace}.
 +
 To enhance the configurability, you can customize the `PersistentVolumeClaim` by adding additional labels and annotations.
 See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
@@ -201,7 +201,7 @@ spec:
 ----
 ====
 
-. To leverage the OpenShift Kubernetes Engine, you can create a `Template` object to replicate all resources defined within the template across each user {namespace}.
+. To leverage the OpenShift Kubernetes Engine, you can create a `Template` object to replicate all resources defined within the template across each user {orch-namespace}.
 +
 Aside from the previously mentioned `ConfigMap`, `Secret`, and `PersistentVolumeClaim`, `Template` objects can include:
 +
@@ -233,7 +233,7 @@ The `parameters` are optional and define which parameters can be used. Currently
 +
 The {namespace} name in objects will be replaced with the user's {namespace} name during synchronization.
 +
-.Replicating {kubernetes} resources to a user namespace:
+.Replicating {kubernetes} resources to a user {orch-namespace}:
 ====
 [source,yaml,subs="+attributes,+quotes"]
 ----
