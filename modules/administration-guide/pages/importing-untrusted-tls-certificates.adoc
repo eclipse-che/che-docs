@@ -20,10 +20,21 @@ The ConfigMaps can have an arbitrary amount of keys with a random amount of cert
 All certificates are mounted into:
 
 * `/public-certs` location of {prod-short} server and dashboard pods
-* `/public-certs` and `/etc/pki/ca-trust/extracted/pem` locations of workspaces pods
+* `/etc/pki/ca-trust/extracted/pem` locations of workspaces pods
 
-The `/etc/pki/ca-trust/extracted/pem` directory is where the system stores extracted CA certificates for trusted certificate authorities on Red Hat (e.g., CentOS, Fedora). CLI tools automatically use certificates from the system-trusted locations, when the user's workspace is up and running.
+Configure the `CheCluster` custom resource to disable CA bundle mounting at `/etc/pki/ca-trust/extracted/pem`. The certificates will instead be mounted at `/public-certs` to keep the behaviour from the previous version.
 
+[NOTE]
+====
+Configure the `CheCluster` Custom Resource in order to disable the mounting of the CA bundle under the path `/etc/pki/ca-trust/extracted/pem`. Certificates will be mounted under the path `/public-certs` in this case.
+[source,yaml]
+----
+spec:
+  devEnvironments:
+    trustedCerts:
+      disableWorkspaceCaBundleMount: true
+----
+====
 [IMPORTANT]
 ====
 On OpenShift cluster, {prod-short} operator automatically adds Red Hat Enterprise Linux CoreOS (RHCOS) trust bundle into mounted certificates.
@@ -76,7 +87,7 @@ This command returns CA bundle certificates in PEM format:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get configmap \
+{orch-cli} get configmap \
     --namespace={prod-namespace} \
     --output='jsonpath={.items[0:].data.custom-ca-certificates\.pem}' \
     --selector=app.kubernetes.io/component=ca-bundle,app.kubernetes.io/part-of=che.eclipse.org
@@ -86,7 +97,7 @@ $ {orch-cli} get configmap \
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} logs deploy/{prod-id-short} --namespace={prod-namespace} \
+{orch-cli} logs deploy/{prod-id-short} --namespace={prod-namespace} \
     | grep tls-ca-bundle.pem
 ----
 
@@ -97,7 +108,7 @@ This command returns {prod-short} CA bundle certificates in PEM format:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get configmap che-trusted-ca-certs \
+{orch-cli} get configmap che-trusted-ca-certs \
     --namespace=__<workspace_namespace>__ \
     --output='jsonpath={.data.tls-ca-bundle\.pem}'
 ----
@@ -106,7 +117,7 @@ $ {orch-cli} get configmap che-trusted-ca-certs \
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get pod \
+{orch-cli} get pod \
     --namespace=__<workspace_namespace>__ \
     --selector='controller.devfile.io/devworkspace_name=__<workspace_name>__' \
     --output='jsonpath={.items[0:].spec.volumes[0:].configMap.name}' \
@@ -117,7 +128,7 @@ $ {orch-cli} get pod \
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} get pod \
+{orch-cli} get pod \
     --namespace=__<workspace_namespace>__ \
     --selector='controller.devfile.io/devworkspace_name=__<workspace_name>__' \
     --output='jsonpath={.items[0:].metadata.name}' \
@@ -128,9 +139,9 @@ This command returns {prod-short} CA bundle certificates in PEM format:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-$ {orch-cli} exec __<workspace_pod_name>__ \
+{orch-cli} exec __<workspace_pod_name>__ \
     --namespace=__<workspace_namespace>__ \
-    -- cat /public-certs/tls-ca-bundle.pem
+    -- cat /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
 ----
 
 .Additional resources
