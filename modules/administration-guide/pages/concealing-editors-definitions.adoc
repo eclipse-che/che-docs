@@ -16,158 +16,28 @@ Learn how to conceal {prod-short} editor definitions. This is useful when you wa
 
 .Procedure
 
-. Find out the namespace where the {prod-short} Operator is deployed:
+include::example$snip_che-editor-id-list.adoc[]
+
+. Configure the `CheCluster` Custom Resource. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
 +
-[source,subs="+attributes"]
+[source,yaml]
 ----
-OPERATOR_NAMESPACE=$({orch-cli} get pods -l app.kubernetes.io/component={prod-operator} -o jsonpath={".items[0].metadata.namespace"} --all-namespaces)
+spec:
+  components:
+    dashboard:
+      deployment:
+        containers:
+        - env:
+          - name: CHE_HIDE_EDITORS_BY_ID
+            value: 'che-incubator/che-webstorm-server/latest, che-incubator/che-webstorm-server/next'    <1>
 ----
-
-. Find out the available editors definitions files:
-+
-[source,subs="+attributes"]
-----
-{orch-cli} exec -n $OPERATOR_NAMESPACE deploy/{prod-operator} -- ls /tmp/editors-definitions
-----
-The output should look similar to the following example:
-+
-[source]
-----
-che-code-insiders.yaml
-che-code-latest.yaml
-che-idea-latest.yaml
-che-idea-next.yaml
-----
-
-. Choose an editor definition to conceal.
-For example, to conceal the `che-idea-next.yaml` editor definition, set the editor definition file name:
-+
-[source,subs="+attributes"]
-----
-CHE_EDITOR_CONCEAL_FILE_NAME=che-idea-next.yaml
-----
-
-. Define the ConfigMap name for the concealed editor definition:
-+
-[source,subs="+attributes"]
-----
-CHE_EDITOR_CONCEAL_CONFIGMAP_NAME=che-conceal-$CHE_EDITOR_CONCEAL_FILE_NAME
-----
-
-. Create the ConfigMap:
-+
-[source,subs="+attributes"]
-----
-{orch-cli} create configmap $CHE_EDITOR_CONCEAL_CONFIGMAP_NAME \
-    --namespace $OPERATOR_NAMESPACE \
-    --from-literal=$CHE_EDITOR_CONCEAL_FILE_NAME=""
-----
-
-. Find out the Operator subscription name and namespace (if it exists):
-+
-[source,subs="+attributes"]
-----
-SUBSCRIPTION=$({orch-cli} get subscriptions \
-    --all-namespaces \
-    --output json \
-        | jq -r '.items[] | select(.spec.name=="{prod-operator-package-name}")')
-SUBSCRIPTION_NAMESPACE=$(echo $SUBSCRIPTION | jq -r '.metadata.namespace')
-SUBSCRIPTION_NAME=$(echo $SUBSCRIPTION | jq -r '.metadata.name')
-----
-
-. Patch the {kubernetes} resource to mount the ConfigMap with the empty editor definition. The resource to patch depends on the existence of the Operator subscription. If the subscription exists, then the subscription should be patched. If not, patch the Operator deployment:
-+
-[source,subs="+attributes"]
-----
-if [[ -n $SUBSCRIPTION_NAMESPACE ]]; then
-    if [[ $({orch-cli} get subscription $SUBSCRIPTION_NAME --namespace $SUBSCRIPTION_NAMESPACE --output jsonpath='{.spec.config}') == "" ]]; then
-        {orch-cli} patch subscription $SUBSCRIPTION_NAME \
-          --namespace $SUBSCRIPTION_NAMESPACE \
-          --type json \
-          --patch '[{
-                "op":"add",
-                "path":"/spec/config",
-                "value": {}
-            }]'
-    fi
-
-    if [[ $({orch-cli} get subscription $SUBSCRIPTION_NAME --namespace $SUBSCRIPTION_NAMESPACE --output jsonpath='{.spec.config.volumes}') == "" ]]; then
-        {orch-cli} patch subscription $SUBSCRIPTION_NAME \
-          --namespace $SUBSCRIPTION_NAMESPACE \
-          --type json \
-          --patch '[{
-                "op":"add",
-                "path":"/spec/config/volumes",
-                "value": []
-            }]'
-    fi
-
-    if [[ $({orch-cli} get subscription $SUBSCRIPTION_NAME --namespace $SUBSCRIPTION_NAMESPACE --output jsonpath='{.spec.config.volumeMounts}') == "" ]]; then
-        {orch-cli} patch subscription $SUBSCRIPTION_NAME \
-          --namespace $SUBSCRIPTION_NAMESPACE \
-          --type json \
-          --patch '[{
-                "op":"add",
-                "path":"/spec/config/volumeMounts",
-                "value": []
-            }]'
-    fi
-
-    {orch-cli} patch subscription $SUBSCRIPTION_NAME \
-      --namespace $SUBSCRIPTION_NAMESPACE \
-      --type json \
-      --patch '[{
-        "op":"add",
-        "path":"/spec/config/volumes/-",
-        "value": {
-            "name":"'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'",
-            "configMap": {
-                "name": "'$CHE_EDITOR_CONCEAL_CONFIGMAP_NAME'"
-            }
-        }
-      },
-      {
-        "op":"add",
-        "path":"/spec/config/volumeMounts/-",
-        "value":{
-            "name": "'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'",
-            "subPath":"'$CHE_EDITOR_CONCEAL_FILE_NAME'",
-            "mountPath": "/tmp/editors-definitions/'$CHE_EDITOR_CONCEAL_FILE_NAME'"
-        }
-      }]'
-else
-    {orch-cli} patch deployment {prod-operator} \
-      --namespace $OPERATOR_NAMESPACE \
-      --type json \
-      --patch '[{
-        "op":"add",
-        "path":"/spec/template/spec/volumes/-",
-        "value": {
-            "name":"'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'",
-            "configMap": {
-                "name": "'$CHE_EDITOR_CONCEAL_CONFIGMAP_NAME'"
-            }
-        }
-    },
-    {
-        "op":"add",
-        "path":"/spec/template/spec/containers/0/volumeMounts/-",
-        "value":{
-            "name": "'$(echo ${CHE_EDITOR_CONCEAL_FILE_NAME%.*})'",
-            "subPath":"'$CHE_EDITOR_CONCEAL_FILE_NAME'",
-            "mountPath": "/tmp/editors-definitions/'$CHE_EDITOR_CONCEAL_FILE_NAME'"
-        }
-    }
-]'
-fi
-----
-
+<1> A string containing comma-separated IDs of editors to hide.
 
 .Additional resources
 
-* xref:configuring-editors-definitions.adoc[]
+* xref:using-chectl-to-configure-the-checluster-custom-resource-during-installation.adoc[]
 
-* xref:configuring-default-editor-definition.adoc[]
+* xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]
 
 * {editor-definition-samples-link}
 
