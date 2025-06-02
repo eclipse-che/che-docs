@@ -1,0 +1,38 @@
+:_content-type: CONCEPT
+:description: URL parameter for a memory limit
+:keywords: parameter, URL, container, memory limit
+:navtitle: URL parameter for a memory limit
+//:page-aliases:
+
+[id="url-parameter-for-memory-limit"]
+= URL parameter for a memory limit
+
+You can use the `memoryLimit` parameter to specify or override container memory limit
+when starting a new workspace from a devfile URL. This is useful when you want to ensure that the workspace has enough memory allocated for your development tasks.
+
+The URL parameter for the memory limit is `memoryLimit=`:
+
+[source,subs="+quotes,+attributes,+macros"]
+----
+pass:c,a,q[{prod-url}]#__<git_repository_url>__?memoryLimit=__<container_memory_limit>__
+----
+You can specify the memory limit in bytes, or use a suffix such as `Mi` for mebibytes or `Gi` for gibibytes.
+
+.Example
+
+====
+
+`pass:c,a,q[{prod-url}]#https://github.com/eclipse-che/che-docs?memoryLimit=4Gi`
+
+====
+[IMPORTANT]
+
+When you specify the `memoryLimit` parameter, it will override the memory limit defined in the devfile for the first container.
+
+The sum of the limits from the target devfile and from the editor-definition will be applied to the workspace pod `spec.containers[0].resources.limits.memory`.
+
+.Additional resources
+
+* link:https://devfile.io/docs/2.3.0/limiting-resources-usage[Limiting resources usage]
+
+* {editor-definition-samples-link}
