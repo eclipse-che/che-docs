@@ -13,17 +13,18 @@ Such a scale imposes high infrastructure demands and introduces potential bottle
 
 [NOTE]
 ====
-CDE workloads are complex to scale mainly because of the fact that underlying IDE solutions, such as link:https://github.com/microsoft/vscode[Visual Studio Code - Open Source ("Code - OSS")] or link:https://www.jetbrains.com/remote-development/gateway/[JetBrains Gateway], are designed as single-user applications rather than multitenant services.
+CDE workloads are complex to scale mainly because the underlying IDE solutions, such as link:https://github.com/microsoft/vscode[Visual Studio Code - Open Source ("Code - OSS")] or link:https://www.jetbrains.com/remote-development/gateway/[JetBrains Gateway], are designed as single-user applications rather than multitenant services.
 ====
 
 .Resource quantity and object maximums
 
 While there is no strict limit on the number of resources in a {kubernetes} cluster,
-there are certain link:https://kubernetes.io/docs/setup/best-practices/cluster-large/[considerations for large clusters] to keep in mind.
+there are certain link:https://kubernetes.io/docs/setup/best-practices/cluster-large/[considerations for large clusters] to remember
 
 [NOTE]
 ====
-Learn more about the {kubernetes} scalability in the link:https://kubernetespodcast.com/episode/111-scalability/["Scalability, with Wojciech Tyczynski"] {kubernetes} Podcast.
+Learn more about the {kubernetes} scalability in the link:https://kubernetespodcast.com/episode/111-scalability/["Scalability,
+with Wojciech Tyczynski" episode of Kubernetes Podcast].
 ====
 
 link:https://www.redhat.com/en/technologies/cloud-computing/openshift[OpenShift Container Platform], which is a certified distribution of {kubernetes}, also provides a set of tested maximums for various resources, which can serve as an initial guideline for planning your environment:
@@ -128,11 +129,11 @@ You can find more details about DevWorkspace Operator Configuration in the link:
 .OLMConfig
 
 When an operator is installed by the link:https://olm.operatorframework.io/[Operator Lifecycle Manager (OLM)],
-a stripped-down copy of its CSV is created in every namespace the operator is configured to watch.
+a stripped-down copy of its CSV is created in every {namespace} the operator is configured to watch.
 These stripped-down CSVs are known as “Copied CSVs”
 and communicate to users which controllers are actively reconciling resource events in a given namespace.
 On especially large clusters, with namespaces and installed operators tending in the hundreds or thousands,
-Copied CSVs consume an untenable amount of resources; e.g. OLM’s memory usage, cluster etcd limits,
+Copied CSVs consume an untenable amount of resources; e.g., OLM’s memory usage, cluster etcd limits,
 networking, etc. To eliminate the CSVs copied to every namespace, configure the `OLMConfig` object accordingly:
 
 [source,yaml]
@@ -180,11 +181,6 @@ and using a load balancer or DNS-based routing to direct traffic to the appropri
 This approach can help
 improve performance and reliability by distributing the workload across multiple clusters
 and providing redundancy in case of cluster failures.
-
-[NOTE]
-====
-
-====
 
 From the infrastructure perspective, the Developer Sandbox consists of multiple link:https://www.redhat.com/en/technologies/cloud-computing/openshift/aws[ROSA] clusters. On each cluster, the productized version of {prod} is installed and configured using link:https://argo-cd.readthedocs.io/en/stable/[Argo CD]. Since the user base is spread across multiple clusters, link:https://workspaces.openshift.com/[workspaces.openshift.com] is used as a single entry point to the productized {prod} instances. You can find implementation details about the multicluster redirector in the following link:https://github.com/codeready-toolchain/crw-multicluster-redirector[GitHub repository].
 
