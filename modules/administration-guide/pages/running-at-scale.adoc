@@ -13,7 +13,10 @@ Such a scale imposes high infrastructure demands and introduces potential bottle
 
 [NOTE]
 ====
-CDE workloads are complex to scale mainly because the underlying IDE solutions, such as link:https://github.com/microsoft/vscode[Visual Studio Code - Open Source ("Code - OSS")] or link:https://www.jetbrains.com/remote-development/gateway/[JetBrains Gateway], are designed as single-user applications rather than multitenant services.
+CDE workloads are complex to scale mainly because the underlying IDE solutions,
+such as link:https://github.com/microsoft/vscode[Visual Studio Code -
+Open Source ("Code - OSS")] or link:https://www.jetbrains.com/remote-development/gateway/[JetBrains Gateway],
+are designed as single-user applications, not as multitenant services.
 ====
 
 .Resource quantity and object maximums
@@ -52,7 +55,13 @@ For example, it is generally not recommended to have more than 10,000 namespaces
 
 .Resource requirements
 
-When deploying {prod} on {kubernetes}, it is crucial to accurately calculate the resource requirements and determine memory and CPU / GPU needs for each CDE to come up with the right sizing of the cluster. In general, the CDE size is limited by and can not be bigger than the worker node size. The resource requirements for CDEs can vary significantly based on the specific workloads and configurations. For example, a simple CDE may require only a few hundred megabytes of memory, while a more complex one will need several gigabytes of memory and multiple CPU cores.
+When deploying {prod} on {kubernetes},
+it is crucial to accurately calculate the resource requirements
+and determine memory and CPU / GPU needs for each CDE to come up with the right sizing of the cluster.
+In general, the CDE size is limited by and cannot be bigger than the worker node size.
+The resource requirements for CDEs can vary significantly based on the specific workloads and configurations.
+For example, a simple CDE might require only a few hundred megabytes of memory,
+while a more complex one will need several gigabytes of memory and multiple CPU cores.
 
 [NOTE]
 ====
@@ -77,9 +86,11 @@ Not only the overall number, but also the size of the objects stored in etcd is 
 Even though the data stored in a `ConfigMap` cannot exceed 1 MiB by design, a few thousand of relatively big `ConfigMap` objects can overload etcd storage.
 ====
 
-In the context of {prod}, by default the operator creates and manages the 'ca-certs-merged' ConfigMap, which contains the Certificate Authorities (CAs) bundle, in every user namespace. With a large number of TLS certificates in the cluster, this results in additional etcd usage.
+In the context of {prod}, by default the Operator creates and manages the 'ca-certs-merged' ConfigMap, which contains the Certificate Authorities (CAs) bundle, in every user namespace. With a large number of TLS certificates in the cluster, this results in additional etcd usage.
 
-To disable mounting the CA bundle using the `ConfigMap` under the `/etc/pki/ca-trust/extracted/pem` path, configure the `CheCluster` Custom Resource by setting the `disableWorkspaceCaBundleMount` property to `true`. With this configuration, only custom certificates will be mounted under the path `/public-certs`:
+To disable mounting the CA bundle by using the `ConfigMap` under the `/etc/pki/ca-trust/extracted/pem` path,
+configure the `CheCluster` Custom Resource by setting the `disableWorkspaceCaBundleMount` property to `true`.
+With this configuration, only custom certificates will be mounted under the path `/public-certs`:
 
 [source,yaml]
 ----
@@ -130,12 +141,12 @@ You can find more details about {devworkspace} Operator Configuration in the lin
 
 .OLMConfig
 
-When an operator is installed by the link:https://olm.operatorframework.io/[Operator Lifecycle Manager (OLM)],
-a stripped-down copy of its CSV is created in every {namespace} the operator is configured to watch.
+When an Operator is installed by the link:https://olm.operatorframework.io/[Operator Lifecycle Manager (OLM)],
+a stripped-down copy of its CSV is created in every {namespace} the Operator is configured to watch.
 These stripped-down CSVs are known as “Copied CSVs”
 and communicate to users which controllers are actively reconciling resource events in a given namespace.
 On especially large clusters, with namespaces and installed operators tending in the hundreds or thousands,
-Copied CSVs consume an untenable amount of resources; e.g., OLM’s memory usage, cluster etcd limits,
+Copied CSVs consume an unsustainable amount of resources; e.g., OLM memory usage, cluster etcd limits,
 networking, etc. To eliminate the CSVs copied to every namespace, configure the `OLMConfig` object accordingly:
 
 [source,yaml]
