@@ -121,17 +121,20 @@ EOF
 ====
 If you are using Azure DevOps Server, you must also modify the xref:mounting-git-configuration.adoc[workspace's
 gitconfig] with the following section:
-```
-[http]
+
+[source,http]
+----
     extraheader = "Authorization: Basic <base64-encoded(:personal-access-token)>"
-```
+----
 To generate the key-value pair, use the following command:
-```
+
+[source,commandline]
+----
 echo -n "extraheader = \"Authorization: Basic "$(printf ":%s" <personal access token> | base64)\"
-```
+----
 see link:https://learn.microsoft.com/en-us/azure/devops/repos/git/auth-overview?view=azure-devops&tabs=Linux#personal-access-tokens[the documentation page] for more information.
 
-The `extraheader` configuration is needed for remote git operations to Azure Devops Server, e.g. `git clone`. This authorization method has a higher priority over the git credentials store, and as a result, the remote operations to other Git providers will fail.
+The `extraheader` configuration is needed for remote git operations to Azure Devops Server, for example `git clone`. This authorization method has a higher priority over the git credentials store, and as a result, the remote operations to other Git providers will fail.
 ====
 
 .Verification
