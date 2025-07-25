@@ -48,9 +48,9 @@ The `DevWorkspaceOperatorConfig` (DWOC) custom resource defines configuration op
  * global configuration
  * non-global configuration
 
-The global config is a DWOC custom resource named `devworkspace-operator-config` and is expected to be located in the DWO installation namespace. By default, the global config is not created upon installation. Configuration fields set in the global configuration will apply to the DWO and all {devworkspace}s; however, the DWOC configuration can be overridden by a non-global config.
+The global configuration is a DWOC custom resource named `devworkspace-operator-config` and is usually located in the DWO installation namespace. By default, the global configuration is not created upon installation. Configuration fields set in the global configuration will apply to the DWO and all {devworkspace}s. However, the DWOC configuration can be overridden by a non-global configuration.
 
-In contrast, any other DWOC custom resource not satisfying abovementioned criteria for global configuration is considered a non-global configuration. These non-global configurations will not apply to any {devworkspace}s unless the {devworkspace} contains a reference to them. When both a global and non-global configuration define the same fields, the non-global configuration's field will take precedence.
+Any other DWOC custom resource than `devworkspace-operator-config` is considered to be non-global configuration. A non-global configuration does not apply to any {devworkspace}s unless the {devworkspace} contains a reference to the DWOC. If the global configuration and non-global configuration have the same fields, the non-global configuration field takes precedence.
 
 .Global DWOC and {prod-short}-owned DWOC comparison
 [cols="1,1,1",options="header"]
@@ -71,7 +71,7 @@ image::devworkspace-operator/devworkspace-config-attribute.png[DevWorkspace conf
 
 .DevWorkspaceRouting
 
-The `DevWorkspaceRouting` custom resource defines details about the endpoints of a {devworkspace}. Every {devworkspace} will have its corresponding `DevWorkspaceRouting` object that specifies the workspace's container endpoints. Endpoints defined from the devfile, as well as endpoints defined by the editor definition will appear in the `DevWorkspaceRouting` custom resource.
+The `DevWorkspaceRouting` custom resource defines details about the endpoints of a {devworkspace}. Every {devworkspace} has its corresponding `DevWorkspaceRouting` object that specifies the workspace's container endpoints. Endpoints defined from the devfile, as well as endpoints defined by the editor definition will appear in the `DevWorkspaceRouting` custom resource.
 
 [source,yaml]
 ----
