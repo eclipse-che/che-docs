@@ -1,0 +1,36 @@
+:_content-type: PROCEDURE
+:description: Concealing editors in the Dashboard UI
+:keywords: administration guide, concealing, dashboard, editors
+:navtitle: Concealing editors
+
+[id="concealing-editors"]
+= Concealing editors
+
+Learn how to conceal {prod-short} editors. This is useful when you want to hide selected editors from the Dashboard UI, e.g. hide the IntelliJ IDEA Ultimate and have only Visual Studio Code - Open Source visible.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
+
+* `jq`. See link:https://stedolan.github.io/jq/download/[Downloading `jq`].
+
+.Procedure
+
+include::example$snip_che-editor-id-list.adoc[]
+
+. Configure the `CheCluster` Custom Resource. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
++
+[source,yaml]
+----
+spec:
+  components:
+    dashboard:
+      deployment:
+        containers:
+        - env:
+          - name: CHE_HIDE_EDITORS_BY_ID
+            value: 'che-incubator/che-webstorm-server/latest, che-incubator/che-webstorm-server/next' <1>
+----
+<1> A string containing comma-separated IDs of editors to hide.
+
+include::example$snip_{project-context}-concealing-editors-additional-resources.adoc[]
