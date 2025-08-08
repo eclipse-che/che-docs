@@ -1,0 +1,28 @@
+. Build and Publish Open VSX image.
++
+To build and deploy the Open VSX server container image to the OpenShift internal image registry, run the 2.2. Build and Publish Open VSX Image task in the workspace: (`Terminal → Run Task… → devfile → 2.2. Build and Publish OpenVSX Image`). During execution, you’ll be prompted to enter the desired Open VSX server version. If left blank, the task will default to using v0.27.0.
++
+[TIP]
+====
+Open VSX server versions could be found on the OpenVSX GitHub realease page: https://github.com/eclipse/openvsx/releases 
+====
+
+. Build and Publish OpenVSX CLI (ovsx) Image.
++
+Run `2.3. Build and Publish OpenVSX CLI Image` task in the workspace (`Terminal → Run Task… → devfile → 2.3. Build and Publish OpenVSX CLI Imag`) to build the Open VSX CLI image and push it to OpenShift internal registry.
+
+. Deploy Open VSX.
++
+Run `2.4. Deploy OpenVSX` task in the workspace (`Terminal → Run Task… → devfile → 2.4. Deploy OpenVSX`). This command deploys the Open VSX components to an OpenShift project by processing a template file (openvsx-deployment.yml). It creates all required resources defined in the template, which includes:
++
+.. Deployments (PostgreSQL, Elasticsearch, Open VSX server, Open VSX CLI).
++
+.. Services and Routes for accessing components.
++
+.. Secrets for GitHub OAuth credentials and Open VSX personal access token.
+
++
+[TIP]
+====
+All deployment information is described in the `deploy/openshift/openvsx-deployment.yml` file with some default values like `OVSX_PAT_BASE64`. 
+====
