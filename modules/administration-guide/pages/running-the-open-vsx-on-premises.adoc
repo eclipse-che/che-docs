@@ -7,7 +7,7 @@
 [id="running-the-open-vsx-on-premises"]
 = Running the Open VSX On-Premises
 
-Provides a step-by-step instructions for deploying and configuring an on-premises Eclipse Open VSX extension registry, fully integrated with {prod-short} and OpenShift environments. It covers two setup paths - using a {prod-short} workspace or the OpenShift CLI (oc) - to help administrators set up a secure, internal Open VSX instance. This includes creating necessary OpenShift project, deploying Open VSX components, publishing extensions and integrating the registry with {prod-short}.
+Provides a step-by-step instructions for deploying and configuring an on-premises Eclipse Open VSX extension registry, fully integrated with {prod-short} and OpenShift environments. It covers two setup paths - using a {prod-short} workspace or the OpenShift CLI (`oc`) - to help administrators set up a secure, internal Open VSX instance. This includes creating necessary OpenShift project, deploying Open VSX components, publishing extensions and integrating the registry with {prod-short}.
 
 == Using {prod-short} instance
 
@@ -61,7 +61,7 @@ To publish your extensions to Open VSX, update the `extensions.txt` file as need
 +
 Start any workspace and check the available extensions in the Extensions view of the workspace IDE.
 
-== Using OpenShift CLI (oc) tool
+== Using OpenShift CLI (`oc`) tool
 
 .Prerequisites
 
@@ -98,7 +98,7 @@ oc exec -n openvsx "${OVSX_POD_NAME}" -- bash -c "rm /tmp/extension.vsix"
 [TIP]
 ====
 
-Example: Publish the redhat.vscode-yaml extension version 1.18.0:
+Example: Publish the `redhat.vscode-yaml` extension version 1.18.0:
 [bash,subs="verbatim",options="nowrap"]
 ----
 oc exec -n openvsx "${OVSX_POD_NAME}" -- bash -c "wget -O /tmp/extension.vsix https://open-vsx.org/api/redhat/vscode-yaml/1.18.0/file/redhat.vscode-yaml-1.18.0.vsix " &&
@@ -125,7 +125,7 @@ Steps for Internal Service Routing:
 +
 Delete the public route associated with the Open VSX registry to restrict external access:
 + 
-[yaml,subs="verbatim",options="nowrap"]
+[bash,subs="verbatim",options="nowrap"]
 ----
 oc delete route internal -n openvsx
 ----
@@ -134,7 +134,7 @@ oc delete route internal -n openvsx
 +
 Update the CheCluster custom resource to use the internal cluster service DNS:
 + 
-[yaml,subs="verbatim",options="nowrap"]
+[bash,subs="verbatim",options="nowrap"]
 ----
 export PATCH='{"spec":{"components":{"pluginRegistry":{"openVSXURL":"http://openvsx-server.openvsx.svc:8080"}}}}' &&
 oc patch checluster "${CHECLUSTER_NAME}" --type=merge --patch "${PATCH}" -n "${CHECLUSTER_NAMESPACE}"
