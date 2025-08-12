@@ -14,7 +14,6 @@ Provides a step-by-step instructions for deploying and configuring an on-premise
 .Prerequisites
 
 * Be logged in to a {prod-short} as an administrator.
-* Internet connection.
 
 .Procedure
 
@@ -39,27 +38,33 @@ Run the `2.5. Add OpenVSX user with PAT to the DB` task in the workspace (`Termi
 +
 [IMPORTANT]
 ====
-The user PAT and the decoded value of OVSX_PAT_BASE64 defined in the `deploy/openshift/openvsx-deployment-no-es.yml` file must be identical. In case `OVSX_PAT_BASE64` was changed, you need to use this token now, but the decoded version.
+
+The user PAT must match the decoded value of `OVSX_PAT_BASE64` specified in the deployment file. If `OVSX_PAT_BASE64` has been updated, use the new token's decoded value as the user PAT.
+
 ====
 
 . Configure {prod-short} to use the internal Open VSX.
 +
-Run the `2.6. Configure Che to use the internal Open VSX registry` task in the workspace (`Terminal → Run Task… → devfile → 2.6. Configure Che to use the internal Open VSX registry`). It applies the patch to the `CheCluster` custom resource, updating its configuration to use the specified Open VSX URL for the extension registry.
+Run the `2.6. Configure Che to use the internal Open VSX registry` task in the workspace (`Terminal → Run Task… → devfile → 2.6. Configure Che to use the internal OpenVSX registry`). It applies the patch to the `CheCluster` custom resource, updating its configuration to use the specified Open VSX URL for the extension registry.
+
+.  Publish an extension from a `.vsix` file.
++
+At the beginning, the Open VSX registry does not provide any extension. Once the `openvsx-server` pod is running and in the Ready state, extensions can be published to the registry. The `2.8. Publish a Visual Studio Code Extension from a VSIX file` command publishes an extension to the local Open VSX registry directly from a `.vsix` file. It prompts you to provide the extension's `namespace` name and the path to the `.vsix` file. 
 
 .  Publish list of extensions.
 +
-At the beginning, the Open VSX registry does not provide any extension. The `2.8. Publish list of Visual Studio Code Extensions` command automates the process of publishing a predefined list of Microsoft Visual Studio Code extensions to the internal Open VSX registry. 
+The `2.9. Publish list of Visual Studio Code Extensions` command automates the process of publishing a predefined list of Microsoft Visual Studio Code extensions based on download URLs to the internal Open VSX registry. 
 +
 [TIP]
 ====
 The command reads from the `deploy/openshift/extensions.txt` file, which lists the URLs of `.vsix` files for each extension to be published.
-To publish your extensions to Open VSX, update the `extensions.txt` file as needed, then run the 2.8. Publish list of Visual Studio Code Extensions task from the workspace:
-`Terminal → Run Task… → devfile → 2.8. Publish list of Visual Studio Code Extensions`.
+To publish your extensions to Open VSX, update the `extensions.txt` file as needed, then run the 2.9. Publish list of Visual Studio Code Extensions task from the workspace:
+`Terminal → Run Task… → devfile → 2.9. Publish list of Visual Studio Code Extensions`.
 ====
 
 . Verify that {prod-short} uses internal Open VSX.
 +
-Start any workspace and check the available extensions in the Extensions view of the workspace IDE.
+Start any workspace and check the available extensions in the Extensions view of the workspace IDE or by opening the `internal` route in the OpenVSX OpenShift project.
 
 == Using OpenShift CLI (`oc`) tool
 
@@ -136,6 +141,8 @@ Update the CheCluster custom resource to use the internal cluster service DNS:
 + 
 [bash,subs="verbatim",options="nowrap"]
 ----
+export CHECLUSTER_NAME="$(oc get checluster --all-namespaces -o json | jq -r '.items[0].metadata.name')" &&
+export CHECLUSTER_NAMESPACE="$(oc get checluster --all-namespaces -o json | jq -r '.items[0].metadata.namespace')" &&
 export PATCH='{"spec":{"components":{"pluginRegistry":{"openVSXURL":"http://openvsx-server.openvsx.svc:8080"}}}}' &&
 oc patch checluster "${CHECLUSTER_NAME}" --type=merge --patch "${PATCH}" -n "${CHECLUSTER_NAMESPACE}"
 ----
