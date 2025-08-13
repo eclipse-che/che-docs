@@ -1,0 +1,38 @@
+:_content-type: PROCEDURE
+:description: Configuring editors download urls
+:keywords: administration guide, dashboard, editors
+:navtitle: Configuring editors download urls
+
+[id="configuring-editors-download-urls"]
+= Configuring editors download URLs
+
+This procedure describes how to configure download URLs for editors. This feature is valuable in air-gapped environments where editors cannot be retrieved from the public internet. Currently, this option is intended only for JetBrains editors and should not be used for other editor types.
+
+.Prerequisites
+
+* You have an active `_orch-cli_` session with administrative permissions to the `{orch-name}` cluster. For more information, see {orch-cli-link}.
+
+* `jq`. See link:https://stedolan.github.io/jq/download/[Downloading `jq`].
+
+.Procedure
+
+include::example$snip_che-editor-id-list.adoc[]
+
+. Configure the download URLs for editors:
++
+[source,subs="+quotes,+attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+  --namespace {prod-namespace} \
+  --type='merge' \
+  -p '{
+    "spec": {
+      "devEnvironments": {
+        "editorsDownloadUrls": [
+          { "editor": "publisher1/editor-name1/version1", "url": "https://example.com/editor1.tar.gz" },
+          { "editor": "publisher2/editor-name2/version2", "url": "https://example.com/editor2.tar.gz" }
+        ]
+      }
+    }
+  }'
+----
