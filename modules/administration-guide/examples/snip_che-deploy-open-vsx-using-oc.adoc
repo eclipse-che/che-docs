@@ -58,9 +58,10 @@ Build and publish the Open VSX CLI image. To do this, run the following commands
 +
 [bash,subs="verbatim",options="nowrap"]
 ----
-export OPENVSX_CLI_IMAGE_NAME=openvsx-cli
-export OPENVSX_CLI_IMAGE=${REGISTRY}/${NAMESPACE}/${OPENVSX_CLI_IMAGE_NAME} &&
-podman build -t "${OPENVSX_CLI_IMAGE}" -f cli.Dockerfile . &&
+export OPENVSX_CLI_IMAGE_NAME=openvsx-cli &&
+export OPENVSX_CLI_VERSION=0.10.5 &&
+export OPENVSX_CLI_IMAGE=${REGISTRY}/${NAMESPACE}/${OPENVSX_CLI_IMAGE_NAME}:${OPENVSX_CLI_VERSION} &&
+podman build -t "${OPENVSX_CLI_IMAGE}" --build-arg "OVSX_VERSION=${OPENVSX_CLI_VERSION}" -f cli.Dockerfile . &&
 podman push "${OPENVSX_CLI_IMAGE}"
 ----
 +
@@ -125,8 +126,22 @@ export OPENVSX_ROUTE_URL="$(oc get route internal -n openvsx -o jsonpath='{.spec
 export PATCH='{"spec":{"components":{"pluginRegistry":{"openVSXURL":"https://'"$OPENVSX_ROUTE_URL"'"}}}}' &&
 oc patch checluster "${CHECLUSTER_NAME}" --type=merge --patch "${PATCH}" -n "${CHECLUSTER_NAMESPACE}"
 ----
++
+[TIP]
+====
+
+Refer to the xref:configuring-the-open-vsx-registry-url.adoc[] for detailed instructions on configuring the Open VSX registry URL in {prod-short}.
+
+====
 
 . Publish Visual Studio Code extensions with the `ovsx` command.
++
+[NOTE]
+====
+
+At the beginning, the Open VSX registry does not provide any extension.
+
+====
 +
 With everything configured, the next step is to publish a Visual Studio Code extension from inside the ovsx-cli container.
 To do this, you need two pieces of information: the extension `namespace` name (used for publishing), the download URL of the .vsix extension package.
