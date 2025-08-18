@@ -5,24 +5,170 @@
 :page-aliases: .:devworkspace-operator.adoc
 
 [id="devworkspace-operator"]
-= {devworkspace} operator
+= {devworkspace} Operator overview
 
-The {devworkspace} operator extends {orch-name} to provide {devworkspace} support. It introduces:
 
-{devworkspace} custom resource definition:: 
+The {devworkspace} Operator (DWO) is a dependency of {prod-short}, and is an integral part of how {prod-short} functions. One of DWO's main responsibilities is to reconcile {devworkspace} custom resources (CR).
 
-Defines the {devworkspace} {orch-name} object from the Devfile v2 specification.
+The {devworkspace} CR is a {orch-name} resource representation of a {prod-short} workspace. Whenever a user creates a workspace using {prod-short} in the background, Dashboard {prod-short} creates a {devworkspace} CR in the cluster. For every {prod-short} workspace, there is an underlying {devworkspace} CR on the cluster.
 
-{devworkspace} controller:: 
+Figure 1 shows an example of a {devworkspace} CR in a cluster:
 
-Creates and controls the necessary {orch-name} objects to run a {devworkspace}, such as pods, services, and persistent volumes.
+.Example of a {devworkspace} CR in a cluster
+image::devworkspace-operator/devworkspace-cr-example.png[DevWorkspace CR example,width=624,height=465]
 
-{devworkspace} custom resource:: 
+When creating a workspace with {prod-short} with a devfile, the {devworkspace} CR contains the devfile details. Additionally, {prod-short} adds the editor definition into the {devworkspace} CR depending on which editor was chosen for the workspace. {prod-short} will also add attributes to the {devworkspace} which further configures the workspace depending on how you configured the `CheCluster` CR.
 
-On a cluster with the {devworkspace} operator, it is possible to create {devworkspace} custom resources (CR). A {devworkspace} CR is a {orch-name} representation of a Devfile. It defines a User workspaces in a {orch-name} cluster.
+A `DevWorkspaceTemplate` is a custom resource that defines a reusable `spec.template` for {devworkspace}s.
 
+When a workspace is started, DWO reads the corresponding {devworkspace} CR and creates the necessary resources such as deployments, secrets, configmaps, routes such that at the end a workspace pod representing the development environment defined in the devfile is created.
+
+.Custom Resources overview
+
+The following Custom Resource Definitions are provided by the {devworkspace} Operator:
+
+* `{devworkspace}`
+* `DevWorkspaceTemplate`
+* `DevWorkspaceOperatorConfig`
+* `DevWorkspaceRouting`
+
+
+.{devworkspace}
+
+The {devworkspace} custom resource contains details about an {prod-short} workspace. Notably, it contains devfile details and a reference to the editor definition.
+
+.DevWorkspaceTemplate
+
+In {prod-short} the `DevWorkspaceTemplate` custom resource is typically used to define an editor (such as Visual Studio Code - Open Source) for {prod-short} workspaces. You can use this custom resource to define reusable `spec.template` content that is reused by multiple {devworkspace}s.
+
+.DevWorkspaceOperatorConfig
+
+The `DevWorkspaceOperatorConfig` (DWOC) custom resource defines configuration options for the DWO. There are two different types of DWOC:
+
+ * global configuration
+ * non-global configuration
+
+The global configuration is a DWOC custom resource named `devworkspace-operator-config` and is usually located in the DWO installation namespace. By default, the global configuration is not created upon installation. Configuration fields set in the global configuration will apply to the DWO and all {devworkspace}s. However, the DWOC configuration can be overridden by a non-global configuration.
+
+Any other DWOC custom resource than `devworkspace-operator-config` is considered to be non-global configuration. A non-global configuration does not apply to any {devworkspace}s unless the {devworkspace} contains a reference to the DWOC. If the global configuration and non-global configuration have the same fields, the non-global configuration field takes precedence.
+
+.Global DWOC and {prod-short}-owned DWOC comparison
+[cols="1,1,1",options="header"]
+|===
+| |Global DWOC |{prod-short}-owned DWOC
+|Resource name |`devworkspace-operator-config` |`devworkspace-config`
+|Namespace |DWO installation namespace |{prod-short} installation namespace
+|Default creation |Not created by default upon DWO installation |Created by default on {prod-short} installation
+|Scope |Applies to the DWO itself and all {devworkspace}s managed by DWO |Applies to {devworkspace}s created by {prod-short}
+|Precedence |Overridden by fields set in {prod-short}-owned config |Takes precedence over global config if both define the same field
+|Primary use case |Used to define default, broad settings that apply to DWO in general. |Used to define specific configuration for {devworkspace}s created by {prod-short}
+|===
+
+For example, by default {prod-short} creates and manages a non-global DWOC in the {prod-short} namespace named `devworkspace-config`. This DWOC contains configuration specific to {prod-short} workspaces, and is maintained by {prod-short} depending on how you configure the CheCluster CR. When {prod-short} creates a workspace, {prod-short} adds a reference to the {prod-short}-owned DWOC with the `controller.devfile.io/devworkspace-config` attribute.
+
+.Example of {devworkspace} configuration attribute
+image::devworkspace-operator/devworkspace-config-attribute.png[DevWorkspace config attribute example,width=624,height=280]
+
+.DevWorkspaceRouting
+
+The `DevWorkspaceRouting` custom resource defines details about the endpoints of a {devworkspace}. Every {devworkspace} has its corresponding `DevWorkspaceRouting` object that specifies the workspace's container endpoints. Endpoints defined from the devfile, as well as endpoints defined by the editor definition will appear in the `DevWorkspaceRouting` custom resource.
+
+[source,yaml]
+----
+apiVersion: controller.devfile.io/v1alpha1
+kind: DevWorkspaceRouting
+metadata:
+  annotations:
+    controller.devfile.io/devworkspace-started: 'false'
+  name: routing-workspaceb14aa33254674065
+  labels:
+    controller.devfile.io/devworkspace_id: workspaceb14aa33254674065
+spec:
+  devworkspaceId: workspaceb14aa33254674065
+  endpoints:
+    universal-developer-image:
+      - attributes:
+          cookiesAuthEnabled: true
+          discoverable: false
+          type: main
+          urlRewriteSupported: true
+        exposure: public
+        name: che-code
+        protocol: https
+        secure: true
+        targetPort: 3100
+  podSelector:
+    controller.devfile.io/devworkspace_id: workspaceb14aa33254674065
+  routingClass: che
+status:
+  exposedEndpoints:
+    ...
+----
+
+== {devworkspace} Operator's operands
+
+The {devworkspace} Operator has two operands:
+
+* controller deployment
+* webhook deployment.
+
+[source,terminal]
+----
+$ oc get pods -l 'app.kubernetes.io/part-of=devworkspace-operator' -o custom-columns=NAME:.metadata.name -n openshift-operators
+NAME
+devworkspace-controller-manager-66c6f674f5-l7rhj <1>
+devworkspace-webhook-server-d4958d9cd-gh7vr <2>
+devworkspace-webhook-server-d4958d9cd-rfvj6 <2>
+----
+
+<1> The {devworkspace} controller pod, which is responsible for reconciling custom resources
+<2> The {devworkspace} operator webhook server pods
+
+.Configuring the {devworkspace}-controller-manager deployment
+
+You can configure the `devworkspace-controller-manager` pod in the {devworkspace} Operator Subscription object:
+
+[source,yaml]
+----
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: devworkspace-operator
+  namespace: openshift-operators
+spec:
+  config:
+    affinity:
+      nodeAffinity: ...
+      podAffinity: ...
+    resources:
+      limits:
+        memory: ...
+        cpu: ...
+      requests:
+        memory: ...
+        cpu: ...
+----
+
+Learn more about configuration in this link:https://github.com/operator-framework/operator-lifecycle-manager/blob/master/doc/design/subscription-config.md[documentation].
+
+.Configuring the {devworkspace}-webhook-server deployment
+
+You can configure the `devworkspace-webhook-server` deployment in the global DWOC:
+
+[source,yaml]
+----
+apiVersion: controller.devfile.io/v1alpha1
+kind: DevWorkspaceOperatorConfig
+metadata:
+  name: devworkspace-operator-config
+  namespace: <DWO install namespace>
+config:
+  webhooks:
+    nodeSelector: <map[string]string>
+    replicas: <int>
+    tolerations: <[]corev1.Toleration>
+----
 
 .Additional resources
 
-* link:https://github.com/devfile/api[Devfile API repository]
 include::example$snip_{project-context}-devworkspace-additional-resources.adoc[]
