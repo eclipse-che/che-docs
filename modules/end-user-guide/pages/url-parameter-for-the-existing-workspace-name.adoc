@@ -7,11 +7,25 @@
 [id="url-parameter-for-the-existing-workspace-name"]
 = URL parameter for the existing workspace name
 
-If you start a new workspace with a URL that contains the `existing` URL parameter specifying an existing workspace name, the existing workspace created from the same URL is opened. If no workspace from the same URL exists yet, a new workspace is created.
+If you start a new workspace with a URL that contains the `existing` URL parameter specifying an existing workspace name, the existing workspace created from the same URL is opened.
+
+When specifying the `existing` URL parameter, several situations may arise:
+
+1. No workspaces created from the same URL, and a new workspace is created.
+
+2. The specified existing workspace name may not match any existing workspaces, and a warning will appear, in which you will need to select one of the following actions:
+ - Create a new workspace.
+ - Select an existing workspace to open.
+
+3. The specified existing workspace name may match one of the existing workspaces created from the same URL; the existing workspace is opened.
 
 [NOTE]
 ====
-If you create multiple workspaces from the same URL, the specified existing workspace name will be preferred.
+To create multiple workspaces from the same URL, you can use the `new` URL parameter:
+[source,subs="+quotes,+attributes,+macros"]
+----
+pass:c,a,q[{prod-url}]#__<git_repository_url>__?new
+----
 ====
 
 The URL parameter for the existing workspace name is `existing=`:
@@ -25,7 +39,7 @@ pass:c,a,q[{prod-url}]#__<git_repository_url>__?existing=__<existing_workspace_n
 
 ====
 
-`pass:c,a,q[{prod-url}]#https://github.com/eclipse-che/che-docs?existing=che-docs`
+`pass:c,a,q[{prod-url}]#<git_repository_url>?existing=workspace_name`
 
 ====
 
