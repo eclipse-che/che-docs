@@ -1,0 +1,153 @@
+* Installed `oc` and git tools.
+* Installed Podman.
+* Log in to the OpenShift cluster where a {prod-short} is deployed as an administrator.
++
+[TIP]
+====
+
+`$ oc login pass:c,a,q[{prod-url}] --username=__<my_user>__`
+
+====
+
+.Procedure
+
+. Create a new OpenShift project for Open VSX.
++
+[subs="+attributes,+quotes"]
+----
+oc new-project openvsx
+----
+. Clone Open VSX sources.
++
+Get Open VSX sources and navigate to the OpenShift deploy directory:
++
+[bash,subs="verbatim",options="nowrap"]
+----
+git clone https://github.com/eclipse/openvsx.git &&
+cd openvsx/deploy/openshift
+----
+
+. Prepare Open VSX server image.
++
+The next step is to build and publish the Open VSX server image. To do this, run the following commands:
++
+[bash,subs="verbatim",options="nowrap"]
+----
+export REGISTRY=quay.io &&
+export NAMESPACE=myuser &&
+export OPENVSX_SERVER_IMAGE_NAME=openvsx-server &&
+export OPENVSX_VERSION=v0.27.0 &&
+export OPENVSX_SERVER_IMAGE=${REGISTRY}/${NAMESPACE}/${OPENVSX_SERVER_IMAGE_NAME}:${OPENVSX_VERSION} &&
+podman build -t "${OPENVSX_SERVER_IMAGE}" --build-arg "OPENVSX_VERSION=${OPENVSX_VERSION}" -f openvsx.Dockerfile . &&
+podman login "${REGISTRY}" &&
+podman push "${OPENVSX_SERVER_IMAGE}"
+----
++
+[IMPORTANT]
+====
+
+Make sure to configure the correct container registry and namespace for your image. Additionally, ensure that the image is publicly accessible and can be pulled without authentication.
+
+====
+
+. Prepare Open VSX CLI image.
++
+Build and publish the Open VSX CLI image. To do this, run the following commands:
++
+[bash,subs="verbatim",options="nowrap"]
+----
+export OPENVSX_CLI_IMAGE_NAME=openvsx-cli &&
+export OPENVSX_CLI_VERSION=0.10.5 &&
+export OPENVSX_CLI_IMAGE=${REGISTRY}/${NAMESPACE}/${OPENVSX_CLI_IMAGE_NAME}:${OPENVSX_CLI_VERSION} &&
+podman build -t "${OPENVSX_CLI_IMAGE}" --build-arg "OVSX_VERSION=${OPENVSX_CLI_VERSION}" -f cli.Dockerfile . &&
+podman push "${OPENVSX_CLI_IMAGE}"
+----
++
+[IMPORTANT]
+====
+
+Ensure that the image is publicly accessible and can be pulled without authentication.
+
+====
+
+. Deploy Open VSX.
++
+[bash,subs="verbatim",options="nowrap"]
+----
+oc process -f openvsx-deployment.yml \
+-p OPENVSX_SERVER_IMAGE="${OPENVSX_SERVER_IMAGE}" \
+-p OPENVSX_CLI_IMAGE="${OPENVSX_CLI_IMAGE}" \
+| oc apply -f -
+----
+
+. Verify that all pods in the `openvsx` namespace are running and ready. It might take a few minutes for all pods to become ready. Run the following command:
++
+[bash,subs="verbatim",options="nowrap"]
+----
+oc get pods -n openvsx \
+  -o jsonpath='{range .items[*]}{@.metadata.name}{"\t"}{@.status.phase}{"\t"}{.status.containerStatuses[*].ready}{"\n"}{end}'
+----
+
+. Add Open VSX user with PAT to the database.
++
+Find PostgreSQL pod:
++
+[bash,subs="verbatim",options="nowrap"]
+----
+export POSTGRESQL_POD_NAME=$(oc get pods -n openvsx \
+   -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep '^postgresql' | head -n 1)
+----
++
+Insert username into OpenVSX database:
++
+[bash,subs="verbatim",options="nowrap"]
+----
+oc exec -n openvsx "$POSTGRESQL_POD_NAME" -- bash -c \
+   "psql -d openvsx -c \"INSERT INTO user_data (id, login_name, role) VALUES (1001, 'eclipse-che', 'privileged');\""
+----
++
+Insert user PAT into OpenVSX database:
++
+[bash,subs="verbatim",options="nowrap"]
+----
+oc exec -n openvsx "$POSTGRESQL_POD_NAME" -- bash -c \
+   "psql -d openvsx -c \"INSERT INTO personal_access_token (id, user_data, value, active, created_timestamp, accessed_timestamp, description) VALUES (1001, 1001, 'eclipse_che_token', true, current_timestamp, current_timestamp, 'extensions publisher');\""
+----
+
+. Configure {prod-short} to use the internal Open VSX.
++
+[bash,subs="verbatim",options="nowrap"]
+----
+export CHECLUSTER_NAME="$(oc get checluster --all-namespaces -o json | jq -r '.items[0].metadata.name')" &&
+export CHECLUSTER_NAMESPACE="$(oc get checluster --all-namespaces -o json | jq -r '.items[0].metadata.namespace')" &&
+export OPENVSX_ROUTE_URL="$(oc get route internal -n openvsx -o jsonpath='{.spec.host}')" &&
+export PATCH='{"spec":{"components":{"pluginRegistry":{"openVSXURL":"https://'"$OPENVSX_ROUTE_URL"'"}}}}' &&
+oc patch checluster "${CHECLUSTER_NAME}" --type=merge --patch "${PATCH}" -n "${CHECLUSTER_NAMESPACE}"
+----
++
+[TIP]
+====
+
+Refer to the xref:configuring-the-open-vsx-registry-url.adoc[] for detailed instructions on configuring the Open VSX registry URL in {prod-short}.
+
+====
+
+. Publish Visual Studio Code extensions with the `ovsx` command.
++
+[NOTE]
+====
+
+At the beginning, the Open VSX registry does not provide any extension.
+
+====
++
+With everything configured, the next step is to publish a Visual Studio Code extension from inside the ovsx-cli container.
+To do this, you need two pieces of information: the extension `namespace` name (used for publishing), the download URL of the .vsix extension package.
+Once you have this information, run the following commands to publish the extension: 
++
+.. Retrieve the name of the pod running the Open VSX server:
++ 
+[bash,subs="verbatim",options="nowrap"]
+----
+export OVSX_POD_NAME=$(oc get pods -n openvsx -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep ^ovsx-cli)
+----
