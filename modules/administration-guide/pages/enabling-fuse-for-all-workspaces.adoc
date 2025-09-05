@@ -15,34 +15,6 @@
 
 .Procedure
 
-. Create a ConfigMap that mounts the `storage.conf` file for all user workspaces. 
-+
-====
-[source,yaml,subs="+quotes,+attributes"]
-----
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: fuse-overlay
-  namespace: {prod-namespace}
-  labels:
-    app.kubernetes.io/part-of: che.eclipse.org
-    app.kubernetes.io/component: workspaces-config
-  annotations:
-    controller.devfile.io/mount-as: subpath
-    controller.devfile.io/mount-path: /home/user/.config/containers/
-data:
-  storage.conf: |
-    [storage]
-    driver = "overlay"
-
-    [storage.options.overlay]
-    mount_program="/usr/bin/fuse-overlayfs"
-----
-====
-+
-WARNING: Creating this ConfigMap will cause all running workspaces to restart.
-
 . Set the necessary annotation in the `spec.devEnvironments.workspacesPodAnnotations` field of the CheCluster custom resource.
 +
 ====
@@ -60,6 +32,25 @@ spec:
 [NOTE]
 ====
 For OpenShift versions before 4.15, the `io.openshift.podman-fuse: ""` annotation is also required.
+====
+
++
+[NOTE]
+====
+The Universal Development Image (UDI) includes the following logic in the entrypoint script to detect fuse-overlayfs and set the storage driver.
+If using a custom image, equivalent logic should be added to the image's entrypoint.
+
+[bash,subs="verbatim",options="nowrap"]
+----
+if [ ! -d "${HOME}/.config/containers" ]; then
+  mkdir -p ${HOME}/.config/containers
+  if [ -c "/dev/fuse" ] && [ -f "/usr/bin/fuse-overlayfs" ]; then
+    (echo '[storage]';echo 'driver = "overlay"';echo '[storage.options.overlay]';echo 'mount_program = "/usr/bin/fuse-overlayfs"') > ${HOME}/.config/containers/storage.conf
+  else
+    (echo '[storage]';echo 'driver = "vfs"') > "${HOME}"/.config/containers/storage.conf
+  fi
+fi
+----
 ====
 
 .Verification steps
