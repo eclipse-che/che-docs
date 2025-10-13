@@ -8,195 +8,126 @@
 = Configuring a user namespace
 
 This procedure walks you through the process of using {prod-short}
-to replicate `ConfigMaps`, `Secrets`, `PersistentVolumeClaim` and other {kubernetes} objects from `{prod-namespace}` namespace to numerous user-specific namespaces. The {prod-short} automates the synchronization of important configuration data such as shared credentials, configuration files, and certificates to user namespaces.
+to synchronize `ConfigMaps`, `Secrets`, `PersistentVolumeClaim` and other {kubernetes} objects
+from `{prod-namespace}` namespace to numerous user-specific namespaces.
+The {prod-short} automates the synchronization of important configuration data such as
+shared credentials, configuration files, and certificates to user namespaces.
 
 If you make changes to a {kubernetes} resource in an {prod-namespace} namespace,
-{prod-short} will immediately replicate the changes across all users namespaces.
+{prod-short} will immediately synchronize the changes across all users namespaces.
 In reverse, if a {kubernetes} resource is modified in a user namespace,
 {prod-short} will immediately revert the changes.
 
 .Procedure
 
-. Create the `ConfigMap` below to replicate into every user {orch-namespace}.
+. Create the `ConfigMap` below to create and mount it into every workspace.
++
+====
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {prod-id-short}-user-configmap
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+data:
+  ...
+----
+====
 To enhance the configurability, you can customize the `ConfigMap` by adding additional labels and annotations.
-By default, the ConfigMap is automatically mounted into user workspaces.
-If you do not want the ConfigMap to be mounted, explicitly add the following labels to override the behavior:
++
+Add the labels if you do not want the ConfigMap to be mounted automatically:
 +
 [source,yaml,subs="+attributes,+quotes"]
 ----
 controller.devfile.io/watch-configmap: "false"
 controller.devfile.io/mount-to-devworkspace: "false"
 ----
-See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
++
+Add the annotation below if you want the ConfigMap to be retained in a user {namespace}
+after being deleted from {prod-namespace} namespace:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+che.eclipse.org/sync-retain-on-delete: "true"
+----
++
+See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[mounting volumes, configmaps, and secrets]
 for other possible labels and annotations.
-+
-.Replicate a ConfigMap into every user {orch-namespace}:
-====
-[source,yaml,subs="+attributes,+quotes"]
-----
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: {prod-id-short}-user-configmap
-  namespace: {prod-namespace}
-  labels:
-    app.kubernetes.io/part-of: che.eclipse.org
-    app.kubernetes.io/component: workspaces-config
-    controller.devfile.io/watch-configmap: "false"
-    controller.devfile.io/mount-to-devworkspace: "false"
-data:
-  ...
-----
-====
-+
-.Replicate a ConfigMap into every user {orch-namespace} and automatically mount a `settings.xml` file into every user container by path `/home/user/.m2`:
-====
-[source,yaml,subs="+attributes,+quotes"]
-----
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: {prod-id-short}-user-configmap
-  namespace: {prod-namespace}
-  labels:
-    app.kubernetes.io/part-of: che.eclipse.org
-    app.kubernetes.io/component: workspaces-config
-  annotations:
-    controller.devfile.io/mount-as: subpath
-    controller.devfile.io/mount-path: /home/user/.m2
-data:
-  settings.xml: |
-    <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
-      <localRepository>/home/user/.m2/repository</localRepository>
-      <interactiveMode>true</interactiveMode>
-      <offline>false</offline>
-    </settings>
-----
-====
 
-. Create the `Secret` below to replicate into every user {orch-namespace}.
+
+. Create the `Secret` below to create and mount it into every workspace.
++
+====
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: {prod-id-short}-user-secret
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+stringData:
+    ...
+----
+====
 To enhance the configurability, you can customize the `Secret` by adding additional labels and annotations.
-By default, the Secret is automatically mounted into user workspaces.
-If you do not want the Secret to be mounted, explicitly add the following labels to override the behavior:
++
+Add the labels if you do not want the Secret to be mounted automatically:
 +
 [source,yaml,subs="+attributes,+quotes"]
 ----
 controller.devfile.io/watch-secret: "false"
 controller.devfile.io/mount-to-devworkspace: "false"
 ----
-See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
-for other possible labels and annotations.
 +
-.Replicate a Secret into every user {orch-namespace}:
-====
+Add the annotation below if you want the Secret to be retained in a user {namespace}
+after being deleted from {prod-namespace} namespace:
++
 [source,yaml,subs="+attributes,+quotes"]
 ----
-kind: Secret
+che.eclipse.org/sync-retain-on-delete: "true"
+----
++
+See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[mounting volumes, configmaps, and secrets]
+for other possible labels and annotations.
+
+
+. Create the `PersistentVolumeClaim` below to create it to every user {orch-namespace}.
++
+[source,yaml,subs="+attributes,+quotes"]
+----
 apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: {prod-id-short}-user-secret
+  name: {prod-id-short}-user-pvc
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
     app.kubernetes.io/component: workspaces-config
-    controller.devfile.io/watch-secret: "false"
-    controller.devfile.io/mount-to-devworkspace: "false"
-  annotations:
-    controller.devfile.io/mount-as: env
-stringData:
+spec:
   ...
 ----
-====
-+
-.Replicate a Secret into every user {orch-namespace} and automatically mount a `secret.data` file into every user container by path `/home/user/secrets`:
-====
-[source,yaml,subs="+attributes,+quotes"]
-----
-kind: Secret
-apiVersion: v1
-metadata:
-  name: {prod-id-short}-user-secret
-  namespace: {prod-namespace}
-  labels:
-    app.kubernetes.io/part-of: che.eclipse.org
-    app.kubernetes.io/component: workspaces-config
-  annotations:
-    controller.devfile.io/mount-as: subpath
-    controller.devfile.io/mount-path: /home/user/secrets
-stringData:
-  secret.data: |
-    ...
-----
-====
-+
-.Replicate a Secret into every user {orch-namespace} and automatically mount as environment variables into every user container:
-====
-[source,yaml,subs="+attributes,+quotes"]
-----
-kind: Secret
-apiVersion: v1
-metadata:
-  name: {prod-id-short}-user-secret
-  namespace: {prod-namespace}
-  labels:
-    app.kubernetes.io/part-of: che.eclipse.org
-    app.kubernetes.io/component: workspaces-config
-  annotations:
-    controller.devfile.io/mount-as: env
-stringData:
-  ENV_VAR_1: value_1
-  ENV_VAR_2: value_2
-----
-====
-
-
-. Create the `PersistentVolumeClaim` below to replicate it to every user {orch-namespace}.
 +
 To enhance the configurability, you can customize the `PersistentVolumeClaim` by adding additional labels and annotations.
-See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
++
+The `PersistentVolumeClaim` is not deleted in a user {namespace} by default, if the one from {prod-namespace} is deleted.
+Add the annotation below if you want the `PersistentVolumeClaim` to be deleted in a user {namespace} as well:
+
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+che.eclipse.org/sync-retain-on-delete: "false"
+----
++
+See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[mounting volumes, configmaps, and secrets]
 for other possible labels and annotations.
 +
-To modify the `PersistentVolumeClaim`, delete it and create a new one in {prod-namespace} namespace.
-+
-[source,yaml,subs="+attributes,+quotes"]
-----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {prod-id-short}-user-pvc
-  namespace: {prod-namespace}
-  labels:
-    app.kubernetes.io/part-of: che.eclipse.org
-    app.kubernetes.io/component: workspaces-config
-spec:
-  ...
-----
-+
-.Mounting a `PersistentVolumeClaim` to a user workspace:
-====
-[source,yaml,subs="+attributes,+quotes"]
-----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {prod-id-short}-user-pvc
-  namespace: {prod-namespace}
-  labels:
-    app.kubernetes.io/part-of: che.eclipse.org
-    app.kubernetes.io/component: workspaces-config
-    controller.devfile.io/mount-to-devworkspace: 'true'
-  annotations:
-    controller.devfile.io/mount-path: /home/user/data
-    controller.devfile.io/read-only: 'true'
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
-  volumeMode: Filesystem
-----
-====
 
 . To leverage the OpenShift Kubernetes Engine, you can create a `Template` object to replicate all resources defined within the template across each user {orch-namespace}.
 +
