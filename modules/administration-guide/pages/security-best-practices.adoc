@@ -114,6 +114,90 @@ Every developer has a project in which the following objects are created and man
 Access to the resources in a namespace must be limited to the developer owning it. Granting read access to another developer is equivalent to sharing the developer credentials and should be avoided.
 ====
 
+.Network policies
+
+Network policies provide network-level isolation between {namespace} and pods in {kubernetes}.
+By default, {prod-short} requires specific network policies to ensure proper communication between components
+while maintaining security boundaries.
+
+The following network policies are essential for {prod-short} operation:
+
+* Allow traffic from OpenShift API server to DevWorkspace webhook server. This policy enables the OpenShift API server to communicate with the DevWorkspace webhook server in the {prod-short} namespace.
++
+[source,yaml,subs="+quotes,attributes"]
+----
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-openshift-apiserver
+  namespace: {prod-namespace}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: devworkspace-webhook-server
+  ingress:
+    - from:
+        - podSelector: {}
+          namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: openshift-apiserver
+  policyTypes:
+    - Ingress
+----
+
+* Allow traffic from workspace namespaces to {prod-short} namespace.
+This policy permits pods in workspace namespaces to communicate with services in the {prod-short}
+namespace.
++
+[source,yaml,subs="+quotes,attributes"]
+----
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-workspaces-namespaces
+  namespace: {prod-namespace}
+spec:
+  podSelector: {}
+  ingress:
+    - from:
+        - podSelector: {}
+          namespaceSelector:
+            matchLabels:
+              app.kubernetes.io/component: workspaces-namespace
+  policyTypes:
+    - Ingress
+----
+
+* Allow traffic from {prod-short} namespace to user workspaces.
+This policy is configured as a template and applied to user workspace namespaces
+to allow ingress traffic from the {prod-short} namespace.
++
+[source,yaml,subs="+quotes,attributes"]
+----
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: {prod-id-short}-user-namespace-network-policy-configurator
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/component: workspaces-config
+    app.kubernetes.io/part-of: che.eclipse.org
+objects:
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-from-{prod-namespace}
+    spec:
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: {prod-namespace}
+      podSelector: {}
+      policyTypes:
+        - Ingress
+----
+
 .Enhanced authorization
 
 The current trend is
