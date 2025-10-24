@@ -83,6 +83,9 @@ spec:
       - name: tooling-container
         container:
           image: quay.io/devfile/universal-developer-image:ubi9-latest
+          env:
+            - name: CHE_DASHBOARD_URL
+              value: pass:c,a,q[{prod-url}]/dashboard/ <7>
 ----
 <1> Name of the `DevWorkspace` custom resource. This will be the name of the new workspace.
 <2> User namespace, which is the target {orch-namespace} for the new workspace.
@@ -90,6 +93,7 @@ spec:
 <4> URL reference to the link:https://github.com/microsoft/vscode[Microsoft Visual Studio Code - Open Source] IDE devfile.
 <5> Details about the Git repository to clone into the workspace when it starts.
 <6> List of components such as workspace containers and volume components.
+<7> URL to {prod-short} dashboard
 ====
 
 . Apply the `DevWorkspace` custom resource to the cluster.
