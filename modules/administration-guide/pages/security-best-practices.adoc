@@ -223,6 +223,23 @@ you can enforce project-specific policies to prevent bad actors from consuming e
 These mechanisms contribute to better resource management, stability, and fairness within an OpenShift cluster.
 More details about link:https://docs.openshift.com/container-platform/4.14/applications/quotas/quotas-setting-per-project.html[Resource Quotas] and link:https://docs.openshift.com/container-platform/4.14/nodes/clusters/nodes-cluster-limit-ranges.html[Limit Ranges] are available in the OpenShift documentation.
 
+.Network policies
+
+Network policies provide an additional layer of security by controlling network traffic between
+Pods in a {kubernetes} cluster. By default, every Pod can communicate with every other Pod and service on the cluster,
+see link:https://docs.redhat.com/en/documentation/openshift_container_platform/{ocp4-ver}/html/networking_overview/index#about-openshift-sdn[OpenShift networking overview].
+
+Implementing network policies allows you to:
+
+* Control ingress and egress traffic to and from workspace Pods
+* Limit the attack surface by denying unauthorized network access
+
+When configuring network policies for {prod},
+ensure that Pods in the {prod-short} namespace can still communicate with Pods in user namespaces,
+as this is required for proper functionality.
+
+For detailed instructions on implementing network policies with {prod}, see xref:configuring-network-policies.adoc[].
+
 .Disconnected environment
 
 An air-gapped OpenShift disconnected cluster refers to an OpenShift cluster
