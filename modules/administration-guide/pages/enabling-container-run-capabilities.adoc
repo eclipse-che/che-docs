@@ -1,0 +1,45 @@
+:_content-type: PROCEDURE
+:description: Enabling container run capabilities
+:keywords: administration-guide, container, podman, nested containers
+:navtitle: Enabling container run capabilities
+:page-aliases:
+
+[id="enabling-container-run-capabilities"]
+= Enabling container run capabilities
+
+You can enable container run capabilities in {prod-short} workspaces to
+allow running nested containers using tools like Podman. This feature leverages Linux kernel
+user namespaces for isolation, enabling users to build and run container
+images within their workspaces.
+
+[IMPORTANT]
+====
+* Previously created workspaces cannot be started after enabling this feature. Users will need to create new workspaces.
+====
+
+[IMPORTANT]
+====
+* This feature is available on OpenShift 4.20 and later versions.
+====
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+* An instance of {prod-short} running in {orch-name}.
+
+
+.Procedure
+
+. Configure the `CheCluster` custom resource to enable container run capabilities:
++
+[source,subs="+quotes,attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} -n {prod-namespace} \
+  --type='merge' -p \
+  '{"spec":{"devEnvironments":{"disableContainerRunCapabilities":false}}}'
+----
+
+.Additional resources
+
+* link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html-single/release_notes/index#ocp-release-notes-machine-config-operator-namespace_release-notes{ocp4-ver}/authentication/managing-security-context-constraints.html[Linux user namespace support]
