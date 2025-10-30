@@ -108,7 +108,7 @@ This command returns {prod-short} CA bundle certificates in PEM format:
 +
 [subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
 ----
-{orch-cli} get configmap che-trusted-ca-certs \
+{orch-cli} get configmap ca-certs-merged \
     --namespace=__<workspace_namespace>__ \
     --output='jsonpath={.data.tls-ca-bundle\.pem}'
 ----
@@ -142,6 +142,15 @@ This command returns {prod-short} CA bundle certificates in PEM format:
 {orch-cli} exec __<workspace_pod_name>__ \
     --namespace=__<workspace_namespace>__ \
     -- cat /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+----
++
+Or if `disableWorkspaceCaBundleMount` set to `true`:
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+{orch-cli} exec __<workspace_pod_name>__ \
+    --namespace=__<workspace_namespace>__ \
+    -- cat /public-certs/tls-ca-bundle.pem
 ----
 
 .Additional resources
