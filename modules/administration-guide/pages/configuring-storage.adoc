@@ -7,9 +7,19 @@
 [id="configuring-storage"]
 = Configuring storage
 
-[WARNING]
+[IMPORTANT]
+
+.Understanding supported storage protocols and requirements
+
 ====
-{prod-short} does not support the Network File System (NFS) protocol.
+{prod} workspaces require storage with **volumeMode: FileSystem** because the development environment is designed to store project files, code, and configurations in a standard, hierarchical directory structure (such as /projects).
+
+While Network File System (NFS) is one of the few protocols that natively supports the necessary **ReadWriteMany (RWX)** access mode for running concurrent workspaces (the Per-User strategy), standard {Kubernetes} NFS provisioning presents certain operational challenges:
+
+* *Quota Enforcement Failure:* Kubernetes Persistent Volume Claims (PVCs) cannot reliably enforce storage quotas on a generic NFS volume. This limitation means a single workspace could exceed its allocated storage, potentially consuming the entire shared volume and leading to resource exhaustion, which causes widespread instability for all other users.
+* *Stability and Concurrency:* Generic NFS implementations often lack the robust locking and cache coherency required to maintain data integrity when multiple cluster nodes access the same volume concurrently, potentially leading to workspace instability.
+
+To overcome these stability and quota issues, it is recommended to use certified **clustered or managed storage solutions** that provide robust CSI drivers. These solutions use the NFS protocol but enforce enterprise-grade features, including strict quota enforcement and high-performance RWX file access, ensuring reliable operation for the Per-User strategy. Examples include community-supported distributed storage projects or third-party CSI drivers offered by most cloud providers.
 ====
 
 * xref:configuring-storage-classes.adoc[]
