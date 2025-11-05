@@ -66,14 +66,23 @@ fetch_conf_files_content() {
 
 parse_content() {
   parse_section "devEnvironments" "Development environment configuration options."
+  parse_section "devEnvironments.properties.allowedSources" "\`allowedSources\` options."
+  parse_section "devEnvironments.properties.containerBuildConfiguration" "\`containerBuildConfiguration\` options."
+  parse_section "devEnvironments.properties.containerRunConfiguration" "\`containerRunConfiguration\` options."
   parse_section "devEnvironments.properties.defaultNamespace" "\`defaultNamespace\` options."
   parse_section "devEnvironments.properties.defaultPlugins" "\`defaultPlugins\` options."
+  parse_section "devEnvironments.properties.editorsDownloadUrls" "\`editorsDownloadUrls\` options."
   parse_section "devEnvironments.properties.gatewayContainer" "\`gatewayContainer\` options."
+  parse_section "devEnvironments.properties.networking" "\`networking\` options."
+  parse_section "devEnvironments.properties.networking.properties.externalTLSConfig" "\`externalTLSConfig\` options."
+  parse_section "devEnvironments.properties.persistUserHome" "\`persistUserHome\` options."
+  parse_section "devEnvironments.properties.projectCloneContainer" "\`projectCloneContainer\` options."
+  parse_section "devEnvironments.properties.security" "\`security\` options."
   parse_section "devEnvironments.properties.storage" "\`storage\` options."
   parse_section "devEnvironments.properties.storage.properties.perUserStrategyPvcConfig" "\`per-user\` PVC strategy options."
   parse_section "devEnvironments.properties.storage.properties.perWorkspaceStrategyPvcConfig" "\`per-workspace\` PVC strategy options."
   parse_section "devEnvironments.properties.trustedCerts" "\`trustedCerts\` options."
-  parse_section "devEnvironments.properties.containerBuildConfiguration" "\`containerBuildConfiguration\` options."
+  parse_section "devEnvironments.properties.user" "\`user\` options."
 
   parse_section "components" "{prod-short} components configuration."
 
