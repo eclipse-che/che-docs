@@ -97,6 +97,7 @@ parse_content() {
 
   parse_section "components.properties.dashboard" "Configuration settings related to the Dashboard component used by the {prod-short} installation."
   parse_section "components.properties.dashboard.properties.headerMessage" "\`headerMessage\` options."
+  parse_section "components.properties.dashboard.properties.branding" "\`branding\` options."
 
   parse_section "components.properties.imagePuller" "Kubernetes Image Puller component configuration."
 
@@ -111,6 +112,7 @@ parse_content() {
   parse_section "networking" "Networking, {prod-short} authentication and TLS configuration."
   parse_section "networking.properties.auth" "\`auth\` options."
   parse_section "networking.properties.auth.properties.gateway" "\`gateway\` options."
+  parse_section "networking.properties.auth.properties.advancedAuthorization" "\`advancedAuthorization\` options."
 
   parse_section "containerRegistry" "Configuration of an alternative registry that stores {prod-short} images."
 
