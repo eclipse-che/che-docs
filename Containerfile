@@ -36,7 +36,7 @@ LABEL \
 # Install system packages
 RUN set -x \
     && dnf install --assumeyes --quiet dnf-plugins-core \
-    && dnf copr enable --assumeyes --quiet mczernek/vale fedora-40-x86_64 \
+    && dnf copr enable --assumeyes --quiet mczernek/vale fedora-43-x86_64 \
     && dnf install --assumeyes --quiet \
     ShellCheck \
     bash \
