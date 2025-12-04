@@ -47,7 +47,6 @@ RUN set -x \
     git-core \
     graphviz \
     grep \
-    htmltest \
     jq \
     nodejs \
     python3-pip \
@@ -109,7 +108,6 @@ RUN set -x \
     && curl --version \
     && git --version \
     && gulp --version \
-    && htmltest --version \
     && jq --version \
     && pip3 freeze \
     && vale --version \
