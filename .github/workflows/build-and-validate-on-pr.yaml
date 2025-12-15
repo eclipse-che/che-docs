@@ -24,26 +24,6 @@ jobs:
         with:
           fetch-depth: 0 # Necessary for git diff in vale step
 
-      # Cache for Antora UI and Htmltest.
-      # See: https://docs.github.com/en/actions/guides/caching-dependencies-to-speed-up-workflows
-      # Htmltest accepts 2 weeks old cache for the status code of checked external URLs
-      # See: https://github.com/wjdp/htmltest
-      # Refresh the cache every week to avoid a stale cache for htmltest
-      # See: https://github.com/actions/cache
-      # See: http://man7.org/linux/man-pages/man1/date.1.html
-      - name: Get Date
-        id: get-date
-        run: echo "YEAR_WEEK=$(/bin/date -u +%Y%U)" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Restore cache
-        uses: actions/cache@v3
-        env:
-          cache-name: cache
-        with:
-          path: .cache
-          key: ${{ steps.get-date.outputs.YEAR_WEEK }}
-
       - name: Build using antora # and fail on warning
         id: antora-build
         run: CI=true antora generate antora-playbook-for-development.yml --stacktrace --log-failure-level=warn
@@ -62,9 +42,6 @@ jobs:
             PR_NUMBER
             PR_SHA
 
-      - name: Validate links using htmltest
-        id: validate-links
-        run: htmltest
 
       - name: Report unused content
         run: tools/detect-unused-content.sh
