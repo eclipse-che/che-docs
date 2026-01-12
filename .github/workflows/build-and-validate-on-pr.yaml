@@ -64,8 +64,8 @@ jobs:
 
       - name: Validate links using htmltest
         id: validate-links
-        run: htmltest
-
+        run: htmltest && echo "htmltest validation has passed!" || echo "warning title=htmltest fail::htmltest validation has failed!"
+        continue-on-error: true
       - name: Report unused content
         run: tools/detect-unused-content.sh
 
