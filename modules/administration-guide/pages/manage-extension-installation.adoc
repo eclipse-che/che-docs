@@ -1,0 +1,153 @@
+:_content-type: PROCEDURE
+:description: Manage extension installation with ConfigMap
+:keywords: extensions, workspace
+:navtitle: Manage extension installation with ConfigMap
+// :page-aliases:
+
+[id="visual-studio-code-manage-extensions-installation"]
+= Manage extension installation with ConfigMap
+
+This page describes how Code - OSS manages extension installation using a ConfigMap. 
+With these controls, you can enforce a fine-grained allow/deny list using the `AllowedExtensions` policy and block installs via the CLI, default extensions, and the `workbench.extensions.command.installFromVSIX` API command. 
+The sections below show how to enable and enforce these controls in Code - OSS.
+
+
+The following items are currently supported:
+
+* BlockCliExtensionsInstallation property - when enabled, blocks installation of extensions via CLI
+* BlockDefaultExtensionsInstallation property - when enabled, blocks installation of default extensions, see xref:default-extensions-for-microsoft-visual-studio-code.adoc[] 
+* BlockInstallFromVSIXCommandExtensionsInstallation property - when enabled, blocks installation of extensions via the workbench.extensions.command.installFromVSIX API command
+* AllowedExtensions section - provides fine-grained control over Code - OSS extension installation; when this policy is applied, already installed extensions that are not allowed are disabled and show the warning `Some extensions are disabled because they are not allowed by your system administrator`. For conceptual background, see link:https://code.visualstudio.com/docs/setup/enterprise#_configure-allowed-extensions/[Configure allowed extensions].
+
+.Procedure
+
+* Add a new ConfigMap to the {prod-namespace} namespace and specify the properties you want to add.
++
+====
+[source,yaml]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: vscode-editor-configurations
+  namespace: eclipse-che
+  
+  labels:
+    app.kubernetes.io/component: workspaces-config
+    app.kubernetes.io/part-of: che.eclipse.org
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /checode-config
+    controller.devfile.io/read-only: 'true'
+  
+data:
+  policy.json: |
+    {
+      "BlockCliExtensionsInstallation": true,
+      "BlockDefaultExtensionsInstallation": true,
+      "BlockInstallFromVSIXCommandExtensionsInstallation": true,
+      "AllowedExtensions": { 
+          "*": true,
+          "dbaeumer.vscode-eslint": false,
+          "ms-python.python": false,
+          "redhat": false
+       }
+    }
+----
+====
+
+[NOTE]
+====
+Make sure that the Configmap contains data in a valid JSON format.
+====
+
+* Start or restart your workspace 
+
+
+TIP: To completely disable extension installation, set all extensions to disallowed:
+====
+[source,yaml]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: vscode-editor-configurations
+  namespace: eclipse-che
+  
+  labels:
+    app.kubernetes.io/component: workspaces-config
+    app.kubernetes.io/part-of: che.eclipse.org
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /checode-config
+    controller.devfile.io/read-only: 'true'
+  
+data:
+  policy.json: |
+    {
+      "AllowedExtensions": {
+        "*": false
+      }
+    }
+----
+====
+
+* Optional: To add the ConfigMap in the user's namespace, use the following example:
++
+====
+[source,yaml]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: vscode-editor-configurations
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /checode-config
+    controller.devfile.io/read-only: 'true'
+data:
+  policy.json: |
+    {
+      "AllowedExtensions": { 
+          "*": false
+       }
+    }
+----
+====
++
+[WARNING]
+====
+When the ConfigMap is stored in the user's namespace, the user can edit its values.
+====
+
+.Verification
+. Verify that the `BlockCliExtensionsInstallation` property is applied:
+* Press `F1` → `Preferences: Open Settings (UI)`, and enter `BlockCliExtensionsInstallation` in the search field => The setting from the ConfigMap should appear in Settings.
+* Provide a file with the `.vsix` extension (for example, `redhat.java-1.43.1.vsix`) in your workspace.
+* Open a terminal and use the CLI to install the extension, for example: `/checode/checode-linux-libc/ubi9/bin/remote-cli/code-oss --install-extension /projects/web-nodejs-sample/redhat.java-1.43.1.vsix`
+* The extension should not install; the terminal shows: `Installation of extensions via CLI has been blocked by an administrator`.
+
+. Verify that the `BlockDefaultExtensionsInstallation` property is applied:
+* Press `F1` → `Preferences: Open Settings (UI)`, and enter `BlockDefaultExtensionsInstallation` in the search field => The setting from the ConfigMap should appear in Settings.
+* Configure default extensions: see xref:default-extensions-for-microsoft-visual-studio-code.adoc[].
+* Open the Extensions view.
+* Verify that default extensions are not installed when the workspace started/restarted.
+
+. Verify that the `BlockInstallFromVSIXCommandExtensionsInstallation` property is applied:
+* Press `F1` → `Preferences: Open Settings (UI)`, and enter `BlockInstallFromVSIXCommandExtensionsInstallation` in the search field => The setting from the ConfigMap should appear in Settings.
+* This property blocks installing extensions via the `workbench.extensions.command.installFromVSIX` API command.
+* For example, an extension might call: `vscode.commands.executeCommand('workbench.extensions.command.installFromVSIX', URL);`
+* It is not possible to install an extension from a `.vsix` when this property is set to `true`.
+
+. Verify that rules defined in the `AllowedExtensions` section are applied:
+* Press `F1` → `Preferences: Open Settings (UI)`, and enter `extensions.allowed` in the search field.
+* All settings from the `AllowedExtensions` section of the ConfigMap should be present in Settings.
+* Use `F1 → Open View → Extensions` to open the Extensions view, disallowed extensions has `This extension cannot be installed because it is not in the allowed list` warning  
+* Try to install allowed and disallowed extensions to verify that the ConfigMap rules are enforced.
+
+. Verify that rules defined in the `AllowedExtensions` section are applied:
+* Press `F1` → `Preferences: Open Settings (UI)`, and enter `extensions.allowed` in the search field.
+* All settings from the `AllowedExtensions` section of the ConfigMap should be present in Settings.
