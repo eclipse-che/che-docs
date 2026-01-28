@@ -1,0 +1,51 @@
+:_content-type: PROCEDURE
+:description: Mounting SSH configuration
+:keywords: SSH, config
+:navtitle: Mounting SSH configuration
+:page-aliases:
+
+[id="mounting-ssh-configuration"]
+= Mounting SSH configuration
+
+[NOTE]
+====
+The default SSH config will be set automatically to the `ssh_config` content from the SSH Secret, added from the `User Preferences` menu. It can be extended by mounting additional SSH Config file with `*.conf` extension to the `/etc/ssh/ssh_config.d/` directory.
+====
+Follow the instructions below to mount an SSH config file in a workspace.
+
+.Prerequisites
+
+* You have logged in to the cluster.
+
+.Procedure
+
+. Prepare a new {orch-name} ConfigMap.
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: workspace-userdata-sshconfig-configmap
+  namespace: __<user_namespace>__ <1>
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /etc/ssh/ssh_config.d/
+data:
+  ssh-config.conf: <ssh config content> <2>
+----
++
+<1> A user namespace. Visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
+<2> The content of your SSH Config file.
+
+. Apply the ConfigMap.
++
+[source,subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f - <<EOF
+__<ConfigMap_prepared_in_step_1>__
+EOF
+----
