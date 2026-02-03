@@ -1,0 +1,131 @@
+:_content-type: PROCEDURE
+
+[id="adding-or-removing-extensions-on-linux_{context}"]
+= Adding or removing extensions by using a Linux operating system
+
+[role="_abstract"]
+You can build and publish a custom plugin registry using the Linux command line. This results in a custom build of the Open VSX registry that can be used in your organization's workspaces.
+
+.Prerequisites
+
+* Podman is installed.
+* Node.js version 18.20.3 or higher is installed.
+* You have created a link:https://access.redhat.com/terms-based-registry/[Red Hat Registry Service Account] and have the username and token available.
+* You have read the link:https://aka.ms/vsmarketplace-ToU[Terms of Use] for the link:https://marketplace.visualstudio.com/VSCode[Microsoft Visual Studio Marketplace] before using its resources.
+* (Optional) You can rebuild the container based on the latest tag or SHA to get the latest security fixes after a {prod-short} update.
+
+.Procedure
+
+. Clone the plugin registry repository:
++
+[source,bash]
+----
+$ git clone https://github.com/eclipse-che/che-plugin-registry.git
+----
+
+. Change to the plugin registry directory:
++
+[source,bash]
+----
+$ cd che-plugin-registry
+----
+
+. Check out the Git tag that corresponds to your {prod-short} version:
++
+[source,bash,subs="+quotes"]
+----
+$ git checkout __<product_version>__
+----
+
+. Log in to the Red Hat registry:
++
+[source,bash]
+----
+$ podman login registry.redhat.io
+----
+
+. Identify the publisher and extension name for each extension you want to add:
+.. Find the extension on the link:https://open-vsx.org/[Open VSX registry website].
+.. Copy the URL of the extension's listing page.
+.. Extract the `<publisher>` and `<name>` from the URL:
++
+[subs="+quotes"]
+----
+https://open-vsx.org/extension/__<publisher>__/__<name>__
+----
++
+[TIP]
+====
+If the extension is only available from link:https://marketplace.visualstudio.com/VSCode[Microsoft Visual Studio Marketplace], but not link:https://open-vsx.org[Open VSX], you can ask the extension publisher to publish it on link:https://open-vsx.org[open-vsx.org] according to these link:https://github.com/eclipse/openvsx/wiki/Publishing-Extensions#how-to-publish-an-extension[instructions], potentially using this link:https://github.com/marketplace/actions/publish-vs-code-extension[GitHub action].
+
+If the extension publisher is unavailable or unwilling to publish the extension to link:https://open-vsx.org[open-vsx.org], and if there is no Open VSX equivalent of the extension, consider link:https://github.com/open-vsx/publish-extensions/issues[reporting an issue] to the Open VSX team.
+====
+
+. Open the `openvsx-sync.json` file.
+
+. Add or remove extensions using the following JSON syntax:
++
+[source,json,subs="+quotes"]
+----
+{
+    "id": "__<publisher>__.__<name>__",
+    "version": "__<extension_version>__"
+}
+----
++
+[TIP]
+====
+If you have a closed-source extension or an extension developed only for internal use in your organization, you can add the extension directly from a `.vsix` file by using a URL accessible to your custom plugin registry container:
+
+[source,json,subs="+quotes"]
+----
+{
+    "id": "__<publisher>__.__<name>__",
+    "download": "__<url_to_download_vsix_file>__",
+    "version": "__<extension_version>__"
+}
+----
+====
+
+. Build the plugin registry container image:
++
+[source,bash,subs="+quotes"]
+----
+$ ./build.sh -o __<username>__ -r quay.io -t custom
+----
++
+[NOTE]
+====
+Verify that the `CHE_CODE_VERSION` in the `build-config.json` file matches the version of the editor currently used with {prod-short}. Update it if necessary.
+====
+
+. Push the image to a container registry such as link:https://quay.io/[quay.io]:
++
+[source,bash,subs="+quotes"]
+----
+$ podman push quay.io/__<username>__/plugin_registry:custom
+----
+
+. Edit the `CheCluster` custom resource in your organization's cluster to point to the image and save the changes:
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  components:
+    pluginRegistry:
+      deployment:
+        containers:
+          - image: quay.io/__<username>__/plugin_registry:custom
+      openVSXURL: ''
+----
+
+.Verification
+
+. Check that the `plugin-registry` pod has restarted and is running.
+. Restart your workspace.
+. Open the *Extensions* view in the IDE and verify that your added extensions are available.
+
+.Additional resources
+
+* link:https://github.com/eclipse-che/che-plugin-registry[Plugin registry repository]
+* xref:running-the-open-vsx-on-premises.adoc[Running the Open VSX On-Premises]
