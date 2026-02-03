@@ -1,19 +1,25 @@
-:_content-type: CONCEPT
+:_content-type: PROCEDURE
 
-[id="selecting-an-open-vsx-registry-instance"]
+[id="selecting-an-open-vsx-registry-instance_{context}"]
 = Selecting an Open VSX registry instance
 
 include::example$snip_{project-context}-default-vsx-registry.adoc[]
 
-If the default Open VSX registry instance is not what you need, you can select one of the following instances:
+If the default Open VSX registry instance does not meet your requirements, you can select one of the following instances:
 
 include::example$snip_{project-context}-non-default-vsx-registry-instance.adoc[]
 
 * A standalone Open VSX registry instance that is deployed on a network accessible from {prod-short} workspace pods.
 
+.Prerequisites
+
+* You have administrator access to the cluster where {prod-short} is deployed.
+* You have the `oc` CLI tool installed if you are using the command line.
+
 .Procedure
 
-* Edit the `openVSXURL` value in the `CheCluster` custom resource:
+. Log on to the cluster as an administrator.
+. Edit the `CheCluster` custom resource to update the `openVSXURL` value:
 +
 [source,yaml,subs="+quotes"]
 ----
@@ -23,18 +29,19 @@ spec:
       openVSXURL: "__<url_of_an_open_vsx_registry_instance>__" # <1>
 ----
 <1> For example: `openVSXURL: "pass:c,a,q[https://open-vsx.org]"`.
-+
-[WARNING]
-====
-To ensure the stability and performance of the community-supported Open VSX Registry, API usage is organized into defined tiers. The Eclipse Foundation implements these limits to protect infrastructure from high-frequency automated traffic and to provide consistent service quality for all users. For more information, see link:https://github.com/EclipseFdn/open-vsx.org/wiki/rate-limiting[Rate Limits and Usage Tiers] and the link:https://github.com/EclipseFdn/open-vsx.org/wiki[open-vsx.org wiki].
-====
-+
+
+.Save the changes to the custom resource.
+
 [IMPORTANT]
 ====
-* Using link:https://open-vsx.org[https://open-vsx.org] is not recommended in an air-gapped environment, isolated from the internet. In order to reduce the risk of malware infections and unauthorized access to your code use the embedded or self-hosted Open VSX registry with a curated set of extensions.
+* Do not use link:https://open-vsx.org[https://open-vsx.org] in an air-gapped environment or an environment that is isolated from the internet. To reduce the risk of malware infections and unauthorized access to your code, use the embedded or a self-hosted Open VSX registry with a curated set of extensions.
 
-* To select the embedded Open VSX registry instance in the `plugin-registry` pod, use `openVSXURL: ''`. You can xref:adding-or-removing-extensions-in-the-embedded-open-vsx-registry-instance[customize the list of included extensions].
+* To select the embedded Open VSX registry instance in the `plugin-registry` pod, use `openVSXURL: ''`. You can customize the list of included extensions xref:adding-or-removing-extensions-in-a-workspace_{context}[using a workspace] or xref:adding-or-removing-extensions-on-linux_{context}[using a Linux operating system].
 
-* You can also point `openVSXURL` at the URL of a standalone Open VSX registry instance if its URL is accessible from within your organization's cluster and not blocked by a proxy. 
-
+* You can point `openVSXURL` to the URL of a standalone Open VSX registry instance if the URL is accessible from within the organization's cluster and not blocked by a proxy. 
 ====
+
+.Verification
+
+. Confirm that the `plugin-registry` pod has restarted.
+. Open a workspace and verify that extensions are available from the selected registry instance in the *Extensions* view.
