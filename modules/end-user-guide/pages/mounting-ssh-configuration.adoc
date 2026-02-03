@@ -1,0 +1,54 @@
+:_content-type: PROCEDURE
+:description: Mounting SSH configuration
+:keywords: SSH, config
+:navtitle: Mounting SSH configuration
+:page-aliases:
+
+[id="mounting-ssh-configuration"]
+= Mounting SSH configuration
+
+[role="_abstract"]
+This procedure describes how to mount custom SSH configurations into your workspaces. By creating and applying a **ConfigMap**, you can extend the default SSH settings with additional parameters or host-specific configurations. This ensures that your development environment maintains consistent connectivity to remote repositories and servers. Use this method to automate the propagation of SSH credentials and settings across multiple workspaces within your cluster.
+
+[NOTE]
+====
+The system sets the default SSH configuration automatically based on the `ssh_config` content from the SSH secret added in the **User Preferences** menu. You can extend this configuration by mounting an additional SSH configuration file with a `.conf` extension to the `/etc/ssh/ssh_config.d/` directory.
+====
+To mount an SSH configuration file in a workspace, complete the following steps.
+
+.Prerequisites
+
+* You are logged in to the cluster.
+
+.Procedure
+
+. Create a new {orch-name} **ConfigMap**.
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: workspace-userdata-sshconfig-configmap
+  namespace: __<user_namespace>__ <1>
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /etc/ssh/ssh_config.d/
+data:
+  ssh-config.conf: <ssh config content> <2>
+----
++
+<1> A user namespace. Visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to retrieve your {prod-short} user namespace `name`.
+<2> The content of your SSH configuration file.
+
+. Apply the **ConfigMap**.
++
+[source,subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f - <<EOF
+__<ConfigMap_prepared_in_step_1>__
+EOF
+----

@@ -54,9 +54,30 @@ after being deleted from {prod-namespace} namespace:
 ----
 che.eclipse.org/sync-retain-on-delete: "true"
 ----
+For example, to mount a default SSH configuration into every workspace, you must create a ConfigMap:
 +
-See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[mounting volumes, configmaps, and secrets]
-for other possible labels and annotations.
+====
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ssh-config-configmap
+  namespace: eclipse-che
+  labels:
+    app.kubernetes.io/component: workspaces-config
+    app.kubernetes.io/part-of: che.eclipse.org
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /etc/ssh/ssh_config.d/
+data:
+  ssh.conf: <ssh config content>
+----
+====
++
+This **ConfigMap** propagates the SSH configuration as an extension to the existing default SSH configuration by using the `Include /etc/ssh/ssh_config.d/*.conf` argument. For more information, review the link:https://man.openbsd.org/ssh_config#Include[Include] definition.
++
+For other labels and annotations, see link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Mounting volumes, configmaps, and secrets].
 
 
 . Create the `Secret` below to create and mount it into every workspace.
