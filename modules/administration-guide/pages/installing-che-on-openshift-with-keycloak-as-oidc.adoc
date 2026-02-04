@@ -1,0 +1,236 @@
+:_content-type: PROCEDURE
+:description: Installing {prod-short} on OpenShift with {keycloak} as external identity provider
+:keywords: overview, installing, openshift, keycloak, oidc
+:navtitle: Installing {prod-short} on OpenShift with {keycloak} as external identity provider
+
+
+[id="installing-che-on-openshift-with-keycloak-as-oidc"]
+= Installing {prod-short} on OpenShift with {keycloak} as external identity provider
+
+You can Install {prod-short} on OpenShift when Keycloak is configured as an external identity provider for the cluster.
+
+.Prerequisites
+
+* An active `oc` session with administrative permissions to the OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the OpenShift CLI].
+
+* {keycloak} is configured as an external identity provider for OpenShift. See link:https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html/authentication_and_authorization/external-auth[Enabling direct authentication with an external OIDC identity provider].
+
+.Procedure
+
+. Define the namespace where {keycloak} is installed:
++
+[source,shell]
+----
+KEYCLOAK_NAMESPACE=<KEYCLOAK_NAMESPACE>
+----
+
+. Define the {keycloak} realm used for OpenShift authentication:
++
+[source,shell]
+----
+OPENSHIFT_REALM=<REALM>
+----
+
+. Define the {keycloak} URL:
++
+[source,shell]
+----
+KEYCLOAK_URL=https://$({orch-cli} get route keycloak -n $KEYCLOAK_NAMESPACE --template='{{ .spec.host }}')
+----
+
+. Create a `{prod-id}` client in the {keycloak} Admin Console:
++
+--
+.. Within the realm used for OpenShift authentication, select *Clients* on the left-hand navigation bar.
+.. Select the *Create client* button.
+.. On the *General Settings* page:
++
+... Enter `eclipse-che` in the *Client ID* field.
+... Optionally enter a *Name* and *Description* for the OAuth client.
+... Click *Next*.
+.. On the *Capability config* page:
++
+... Toggle *Client authentication* to *On*.
+... Click *Next*.
+... Click *Save*.
+
+.. Navigate to the *Credentials* tab of the newly created client and copy the *Client secret* value. You will need this value in a later step.
+--
+
+. Add the `{prod-id}` client to the audiences list in the OpenShift authentication configuration:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} patch authentication.config/cluster --type=json \
+  -p='[{"op": "add", "path": "/spec/oidcProviders/0/issuer/audiences/-", "value": "{prod-id}"}]'
+----
++
+[NOTE]
+====
+If you have multiple OIDC providers configured, adjust the array index in the path (currently `0`) to match your {keycloak} provider's position in the configuration.
+====
+
+. Wait for the `kube-apiserver` cluster operator to roll out the configuration changes:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+watch {orch-cli} get co kube-apiserver
+----
+
+. Create a {orch-namespace} for {prod-short}:
++
+[subs="+quotes,attributes"]
+----
+{orch-cli} create {orch-namespace} {prod-namespace}
+----
+
+. Create a secret for the OAuth client in the {prod-short} namespace:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+{orch-cli} apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {prod-id}-oauth-secret
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+stringData:
+  oAuthSecret: __<CLIENT_SECRET>__ <1>
+EOF
+----
+<1> The client secret value from the `eclipse-che` client in Keycloak.
+
+
+. Create the `ConfigMap` with a {keycloak} certificate in the `{prod-namespace}` namespace.
+If {keycloak} uses a certificate that is already trusted by OpenShift, this step may be omitted.
++
+[source,shell,subs="+attributes"]
+----
+openssl s_client \
+  -connect "$(echo "$KEYCLOAK_URL" | sed 's|https://||'):443" \
+  -showcerts < /dev/null \
+| sed -n '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/p' \
+> keycloak-ca.crt
+
+{orch-cli} create configmap keycloak-certs \
+    --from-file=keycloak-ca.crt=keycloak-ca.crt \
+    -n {prod-namespace} && \
+{orch-cli} label configmap keycloak-certs \
+    app.kubernetes.io/part-of=che.eclipse.org \
+    app.kubernetes.io/component=ca-bundle \
+    -n {prod-namespace}
+----
+
+. Prepare the `CheCluster` patch:
++
+[source,shell,subs="+attributes"]
+----
+cat > che-patch.yaml << EOF
+kind: CheCluster
+apiVersion: org.eclipse.che/v2
+spec:
+  networking:
+    auth:
+      oAuthClientName: {prod-id}
+      oAuthSecret: {prod-id}-oauth-secret
+      identityProviderURL: "$KEYCLOAK_URL/realms/$OPENSHIFT_REALM"
+      gateway:
+        oAuthProxy:
+          cookieExpireSeconds: 300
+        deployment:
+          containers:
+            - name: oauth-proxy
+              env:
+                - name: OAUTH2_PROXY_CODE_CHALLENGE_METHOD
+                  value: S256
+                - name: OAUTH2_PROXY_BACKEND_LOGOUT_URL
+                  value: "$KEYCLOAK_URL/realms/$OPENSHIFT_REALM/protocol/openid-connect/logout?id_token_hint={id_token}"
+  components:
+    cheServer:
+      extraProperties:
+        CHE_OIDC_GROUPS__CLAIM: '<GROUPS_CLAIM>' <1>
+        CHE_OIDC_GROUPS__PREFIX: '<GROUPS_PREFIX>' <2>
+        CHE_OIDC_USERNAME__CLAIM: '<USERNAME_CLAIM>' <3>
+        CHE_OIDC_USERNAME__PREFIX: '<USERNAME_PREFIX>' <4>
+EOF
+----
+<1> The claim to use for extracting user groups.
+<2> The prefix to add to group names. Empty string means no prefix.
+<3> The claim to use for extracting the username.
+<4> The prefix to add to usernames from the external authentication system.
++
+[NOTE]
+====
+These values must match the corresponding claim and prefix settings configured in the `authentication.config/cluster` resource. To view the current cluster configuration, run:
+
+[source,shell,subs="+attributes"]
+----
+{orch-cli} get authentication.config/cluster -o yaml
+----
+====
++
+. Create the {prod-short} instance with `{prod-cli}`:
++
+[source,shell,subs="+attributes"]
+----
+{prod-cli} server:deploy \
+  --platform openshift \
+  --che-operator-cr-patch-yaml che-patch.yaml
+----
+
+. Update a `{prod-id}` client to set {prod-short} callback URL:
++
+--
+.. Open {keycloak} Admin Console
+.. Within the realm used for OpenShift authentication, click on `{prod-id}` client
+... In the *Valid redirect URIs* field, enter the redirect URIs for your {prod-short} installation.
+Can be obtained with the following command:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+echo "$({orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath='{.status.cheURL}')/oauth/callback"
+----
+... Click *Save*.
+--
+
+. Create a `ClusterRoleBinding` to grant users access to {prod-short}:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} apply -f - <<EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: openshift-developers
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: self-provisioner <1>
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: Group
+  name: __<GROUP_NAME>__ <2>
+EOF
+----
+<1> Users must have at least the `self-provisioner` role to access {prod-short}.
+<2> The name of the user group from {keycloak} that should be granted access to {prod-short}.
+
+.Verification steps
+
+. Verify the {prod-short} instance status:
++
+[source,shell,subs="+attributes"]
+----
+{prod-cli} server:status
+----
+
+. Navigate to the {prod-short} cluster instance:
++
+[source,shell,subs="+attributes"]
+----
+{prod-cli} dashboard:open
+----
+
+. Log in to the {prod-short} instance.
