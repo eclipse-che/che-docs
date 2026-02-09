@@ -33,7 +33,7 @@ OPENSHIFT_REALM=<REALM>
 
 . Define the {keycloak} URL:
 +
-[source,shell]
+[source,shell,subs="+quotes,+attributes"]
 ----
 KEYCLOAK_URL=https://$({orch-cli} get route keycloak -n $KEYCLOAK_NAMESPACE --template='{{ .spec.host }}')
 ----
@@ -41,11 +41,11 @@ KEYCLOAK_URL=https://$({orch-cli} get route keycloak -n $KEYCLOAK_NAMESPACE --te
 . Create a `{prod-id}` client in the {keycloak} Admin Console:
 +
 --
-.. Within the realm used for OpenShift authentication, select *Clients* on the left-hand navigation bar.
+.. Within the realm used for OpenShift authentication, select *Clients* on the left side of the navigation bar.
 .. Select the *Create client* button.
 .. On the *General Settings* page:
 +
-... Enter `eclipse-che` in the *Client ID* field.
+... Enter `{prod-id}` in the *Client ID* field.
 ... Optionally enter a *Name* and *Description* for the OAuth client.
 ... Click *Next*.
 .. On the *Capability config* page:
@@ -61,13 +61,21 @@ KEYCLOAK_URL=https://$({orch-cli} get route keycloak -n $KEYCLOAK_NAMESPACE --te
 +
 [source,shell,subs="+quotes,+attributes"]
 ----
-{orch-cli} patch authentication.config/cluster --type=json \
-  -p='[{"op": "add", "path": "/spec/oidcProviders/0/issuer/audiences/-", "value": "{prod-id}"}]'
+{orch-cli} patch authentication.config/cluster \
+  --type='json' \
+  -p='[
+    {
+      "op": "add",
+      "path": "/spec/oidcProviders/0/issuer/audiences/-",
+      "value": "{prod-id}"
+    }
+  ]'
 ----
 +
 [NOTE]
 ====
-If you have multiple OIDC providers configured, adjust the array index in the path (currently `0`) to match your {keycloak} provider's position in the configuration.
+If you have multiple OIDC providers configured, adjust the array index in the path
+(currently 0) to match your {keycloak} provider's position in the configuration.
 ====
 
 . Wait for the `kube-apiserver` cluster operator to roll out the configuration changes:
@@ -92,7 +100,7 @@ watch {orch-cli} get co kube-apiserver
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {prod-id}-oauth-secret
+  name: oauth-secret
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
@@ -100,7 +108,7 @@ stringData:
   oAuthSecret: __<CLIENT_SECRET>__ <1>
 EOF
 ----
-<1> The client secret value from the `eclipse-che` client in Keycloak.
+<1> The client secret value from the `{prod-id} client in {keycloak}.
 
 
 . Create the `ConfigMap` with a {keycloak} certificate in the `{prod-namespace}` namespace.
@@ -134,7 +142,7 @@ spec:
   networking:
     auth:
       oAuthClientName: {prod-id}
-      oAuthSecret: {prod-id}-oauth-secret
+      oAuthSecret: oauth-secret
       identityProviderURL: "$KEYCLOAK_URL/realms/$OPENSHIFT_REALM"
       gateway:
         oAuthProxy:
