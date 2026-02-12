@@ -179,12 +179,31 @@ This approach can help
 improve performance and reliability by distributing the workload across multiple clusters
 and providing redundancy in case of cluster failures.
 
-.Scheme of a multi-cluster environment
+.Developer Sandbox Example
+
+You can test running {prod-short} in a multi-cluster environment by using the link:https://developers.redhat.com/developer-sandbox[Developer Sandbox],
+a free trial environment by Red Hat with pre-configured tools and services.
+From an infrastructure perspective,
+the Developer Sandbox consists of multiple link:https://www.redhat.com/en/technologies/cloud-computing/openshift/aws[ROSA] clusters.
+On each cluster,
+the productized version of {prod} is installed
+and configured using link:https://argo-cd.readthedocs.io/en/stable/[Argo CD].
+Since the user base is spread across multiple clusters,
+link:https://workspaces.openshift.com/[workspaces.openshift.com] is used as a single entry point to the productized {prod} instances.
+
 image::running-at-scale/snip_{project-context}-multi-cluster.png[Scheme of a multi-cluster environment]
+
+You can find implementation details about the multicluster redirector in the following link:https://github.com/codeready-toolchain/crw-multicluster-redirector[GitHub repository].
+
+[IMPORTANT]
+====
+The multi-cluster architecture of link:https://workspaces.openshift.com/[workspaces.openshift.com] is part of the link:https://developers.redhat.com/developer-sandbox[Developer Sandbox].
+It is a Developer Sandbox-specific solution that cannot be reused as-is in other environments. However, you can use it as a reference for implementing a similar solution well-tailored to your specific multicluster needs.
+====
 
 .The Multicluster Redirector Solution
 
-Red Hat offers an open-source Quarkus-based service called the `devspaces-multicluster-redirector` that acts as a single gateway for developers, automatically redirecting them to the correct {prod} instance on the correct cluster based on their OpenShift group membership.
+Red Hat offers an open-source Quarkus-based service called the that acts as a single gateway for developers, automatically redirecting them to the correct {prod} instance on the correct cluster based on their OpenShift group membership.
 The community-supported version is currently available in the link:https://github.com/codeready-toolchain/crw-multicluster-redirector[GitHub repository].
 
 .Architecture and Requirements
@@ -215,15 +234,3 @@ The routing process follows these steps:
 . User redirects to their designated cluster instance
 
 When users belong to multiple OpenShift groups, the system displays a selection dashboard allowing developers to choose their desired {prod} instance.
-
-.Developer Sandbox Example
-
-You can test running {prod-short} in a multi-cluster environment by using the link:https://developers.redhat.com/developer-sandbox[Developer Sandbox],
-a free trial environment by Red Hat with pre-configured tools and services.
-From an infrastructure perspective,
-the Developer Sandbox consists of multiple link:https://www.redhat.com/en/technologies/cloud-computing/openshift/aws[ROSA] clusters.
-On each cluster,
-the productized version of {prod} is installed
-and configured using link:https://argo-cd.readthedocs.io/en/stable/[Argo CD].
-Since the user base is spread across multiple clusters,
-link:https://workspaces.openshift.com/[workspaces.openshift.com] is used as a single entry point to the productized {prod} instances.
