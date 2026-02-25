@@ -1,0 +1,114 @@
+:_mod-docs-content-type: PROCEDURE
+[id="proc_deleting-extension-from-postgresql-database_{context}"]
+= Deleting an extension from the PostgreSQL database directly
+[role="_abstract"]
+Remove extension records and related data directly in the PostgreSQL database when the administrator API is not available or when you must clean up specific data. If the extension uses local storage, you must also remove its files from the Open VSX server pod.
+
+.Prerequisites
+
+* You have access to the OpenShift cluster where Open VSX is deployed (namespace `openvsx`).
+* You know the namespace name and extension name that you want to delete.
+
+.Procedure
+
+. Open a command prompt in the PostgreSQL pod and connect to the database:
++
+[source,bash,options="nowrap"]
+----
+export POSTGRESQL_POD_NAME=$(oc get pods -n openvsx \
+   -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep '^postgresql' | head -n 1)
+oc exec -it $POSTGRESQL_POD_NAME -n openvsx -- /bin/bash
+----
++
+Inside the pod, run `psql`:
++
+[source,terminal,options="nowrap"]
+----
+psql
+----
++
+At the `postgres=#` prompt, connect to the database:
++
+[source,terminal,options="nowrap"]
+----
+\c openvsx
+----
++
+You are now connected to the `openvsx` database as the `postgres` user.
+. Find the namespace ID and extension ID:
++
+Identify the `namespace` ID. Replace `__<namespace_name>__` with the actual `namespace`:
++
+[source,sql,subs="+quotes",options="nowrap"]
+----
+SELECT id, name FROM namespace WHERE name = '__<namespace_name>__';
+----
++
+Identify the extension ID. Replace `__<namespace_id>__` and `__<extension_name>__` with the values from the previous query:
++
+[source,sql,subs="+quotes",options="nowrap"]
+----
+SELECT id, name, namespace_id FROM extension WHERE namespace_id = __<namespace_id>__ AND name = '__<extension_name>__';
+----
++
+Note the ID of the extension to use as `__<extension_id>__` in the next steps.
+. Optional: Preview extension versions and file resources:
++
+Preview the versions:
++
+[source,sql,subs="+quotes",options="nowrap"]
+----
+SELECT id, version, pre_release, semver_pre_release, semver_is_pre_release FROM extension_version WHERE extension_id = __<extension_id>__ ORDER BY timestamp DESC;
+----
++
+Preview the file resources:
++
+[source,sql,subs="+quotes",options="nowrap"]
+----
+SELECT id, name, type, storage_type FROM file_resource WHERE extension_id = __<extension_id>__ ORDER BY id;
+----
++
+If the `storage_type` value is `local`, you must also remove the extension files from the file system on the Open VSX server pod.
+. Delete the extension from the database:
++
+Run the following commands in a single transaction. Replace `__<extension_id>__` with the extension ID from step 2.
++
+[source,sql,subs="+quotes",options="nowrap"]
+----
+BEGIN;
+-- 1. Delete all file resources for the extension
+DELETE FROM file_resource WHERE extension_id = __<extension_id>__;
+-- 2. Delete all extension reviews
+DELETE FROM extension_review WHERE extension_id = __<extension_id>__;
+-- 3. Delete all versions of the extension
+DELETE FROM extension_version WHERE extension_id = __<extension_id>__;
+-- 4. Delete the extension entry itself
+DELETE FROM extension WHERE id = __<extension_id>__;
+COMMIT;
+----
++
+[IMPORTANT]
+====
+Run these commands in order within one transaction. Do not skip the `COMMIT` command, or the system does not apply the changes.
+====
+. If applicable, remove the extension files from local storage:
++
+If the extension used local storage, remove its files from the Open VSX server pod.
++
+Get the Open VSX server pod name:
++
+[source,bash,options="nowrap"]
+----
+export OPENVSX_POD_NAME=$(oc get pods -n openvsx -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep '^openvsx-server' | head -n 1)
+----
++
+Access the pod and delete the extension folder for the publisher and extension you removed:
++
+[source,bash,subs="+quotes",options="nowrap"]
+----
+oc exec -it $OPENVSX_POD_NAME -n openvsx -- /bin/bash -c "rm -rf /tmp/extensions/__<publisher>__/__<extension>__"
+----
+
+.Verification
+
+* Refresh your Open VSX registry and verify that the extension no longer appears in the gallery.
