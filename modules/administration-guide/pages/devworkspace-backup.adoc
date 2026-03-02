@@ -1,4 +1,4 @@
-:_content-type: CONCEPT
+:_content-type: ASSEMBLY
 :description: DevWorkspace backup
 :keywords: backup, storage
 :navtitle: DevWorkspace backup
@@ -7,102 +7,30 @@
 [id="devworkspace-backup"]
 = Workspace backup for {prod}
 
-The {devworkspace} backup job allows for periodic backups of {devworkspace} data to a specified backup location.
-Once enabled and configured, the backup job will run at defined intervals to create backups of {devworkspace} data.
-The backup controller depends on an OCI-compatible registry e.g.,https://docs.redhat.com/en/documentation/openshift_container_platform/{ocp4-ver}/html/registry/registry-overview#registry-integrated-openshift-registry_registry-overview[OpenShift build-in registry]
-or https://quay.io[quay.io] used as an image artifact storage for backup archives.
+The {devworkspace} backup job provides periodic backups of {devworkspace} data to a specified location.
+After you enable and configure the job, it runs at defined intervals to create backups of {devworkspace} data.
+The backup controller requires an OCI-compliant registry, such as the e.g.,https://docs.redhat.com/en/documentation/openshift_container_platform/{ocp4-ver}/html/registry/registry-overview#registry-integrated-openshift-registry_registry-overview[OpenShift build-in registry]
+integrated registry or link:https://quay.io[Quay.io], to store backup archives as image artifacts.
 
 The backup makes a snapshot of *stopped* Workspace PVCs and stores them as tar.gz archives in the specified OCI registry.
 
 NOTE: By default, the {devworkspace} backup job is disabled.
 
-The backup is configurable using `DevWorkspaceOperatorConfig` with the following fields:
+You can configure the backup by using the `DevWorkspaceOperatorConfig` resource with the following fields:
 
-* *`enable`*: Set to `true` to enable the backup job, `false` to disable it. Default: `false`.
-* *`schedule`*: A Cron expression defining how often the backup job runs. Default: `"0 1 * * *"`.
-* *`registry.path`*: A base registry location where the backup archives will be pushed.
+* `enable`: Set to `true` to enable the backup job or `false` to disable it. The default value is `false`.
+* `schedule`: A Cron expression that defines the backup frequency. The default value is `"0 1 * * *"`.
+* `registry.path`: The base registry location for backup archives.
 +
-The value provided for registry.path is only the first segment of the final location. The full registry path is assembled dynamically, incorporating the name of the workspace and the :latest tag, following this pattern:
+The value for `registry.path` is the first segment of the final location. The full path is assembled dynamically by using the workspace name and the `:latest` tag in the following pattern:
 +
 `<registry.path>/<namespace>/<devworkspace-name>:latest`
 
-* *`registry.authSecret`*: (Optional) The name of the Kubernetes Secret containing credentials to access the OCI registry. If not provided, it is assumed that the registry is public or uses integrated OpenShift registry.
-* *`oras.extraArgs`*: (Optional) Additional arguments to pass to the `oras` CLI tool during push and pull operations.
+* `registry.authSecret`: (Optional) The name of the Kubernetes secret that contains credentials for the OCI registry. If you do not provide a secret, the system assumes the registry is public or uses the **Red Hat OpenShift** integrated registry.
+* `oras.extraArgs`: (Optional) Additional arguments for to the `oras` CLI tool during push and pull operations.
 
 
 There are several configuration options to customize the logic:
 
-== Integrated OpenShift container registry
-This option is available only on OpenShift clusters with https://docs.redhat.com/en/documentation/openshift_container_platform/{ocp4-ver}/html/registry/setting-up-and-configuring-the-registry[integrated container registry] enabled and requires no additional configuration.
-
-To enable the backup use following configuration in the global DWOC:
-
-[source,yaml,subs="+attributes,+quotes"]
-----
-apiVersion: controller.devfile.io/v1alpha1
-kind: DevWorkspaceOperatorConfig
-metadata:
-  name: devworkspace-operator-config
-  namespace: $OPERATOR_INSTALL_NAMESPACE
-config:
-  routing:
-    defaultRoutingClass: basic
-  workspace:
-    backupCronJob:
-      enable: true
-      registry:
-        path: default-route-openshift-image-registry.apps.{cluster ID}.openshiftapps.com
-      schedule: '0 */4 * * *' # cron expression with backup frequency
-    imagePullPolicy: Always
-----
-
-**Note:** The `path` field must contain the URL to your OpenShift integrated registry given by the cluster.
-
-To get a default path to registry run following command:
-
-[source,shell,subs="+attributes,+quotes"]
-----
-echo "https://$(oc get route default-route -n openshift-image-registry --template='{{ .spec.host }}'))"
----
-
-Once the backup job is finished, the backup archives will be available in the {devworkspace} {namespace} under a repository
-with a matching {devworkspace} name.
-
-== Regular OCI-compatible registry
-To use a regular OCI-compatible registry for backups, you need to provide registry credentials. Depending on your
-RBAC policy, the token can be provided via a secret in the Operator {namespace} or in each {devworkspace} {namespace}.
-Having the secret in the {devworkspace} {namespace} allows for using different registry accounts per {namespace} with more
-granular access control.
-
-[source,yaml,subs="+attributes,+quotes"]
-----
-kind: DevWorkspaceOperatorConfig
-apiVersion: controller.devfile.io/v1alpha1
-metadata:
-  name: devworkspace-operator-config
-  namespace: $OPERATOR_INSTALL_NAMESPACE
-config:
-  routing:
-    defaultRoutingClass: basic
-  workspace:
-    backupCronJob:
-      enable: true
-      registry:
-        authSecret: my-secret
-        path: quay.io/my-company-org
-      schedule: '0 */4 * * *'
-    imagePullPolicy: Always
-----
-The `authSecret` must point to a real {kubernetes} Secret of type `kubernetes.io/dockerconfigjson` containing credentials to access the registry.
-
-To create one, you can use the following command:
-
-[source,shell,subs="+attributes,+quotes"]
-----
-kubectl create secret docker-registry my-secret --from-file=config.json -n devworkspace-controller
-----
-The secret must contain a label `controller.devfile.io/watch-secret=true` to be recognized by the {devworkspace} Operator.
-[source,shell,subs="+attributes,+quotes"]
-----
-kubectl label secret my-secret controller.devfile.io/watch-secret=true -n devworkspace-controller
-----
+* xref:devworkspace-backup-integrated-openshift-registry.adoc[]
+* xref:devworkspace-backup-regular-oci-registry.adoc[]
