@@ -9,11 +9,11 @@
 
 The {devworkspace} backup job allows for periodic backups of {devworkspace} data to a specified backup location.
 Once enabled and configured, the backup job will run at defined intervals to create backups of {devworkspace} data.
-The backup controller depends on an OCI-compatible registry e.g.,
-https://docs.redhat.com/en/documentation/openshift_container_platform/4.8/html/registry/registry-overview#registry-integrated-openshift-registry_registry-overview[OpenShift build-in registry]
+The backup controller depends on an OCI-compatible registry e.g.,https://docs.redhat.com/en/documentation/openshift_container_platform/{ocp4-ver}/html/registry/registry-overview#registry-integrated-openshift-registry_registry-overview[OpenShift build-in registry]
 or https://quay.io[quay.io] used as an image artifact storage for backup archives.
 
-The backup makes a snapshot of Workspace PVCs and stores them as tar.gz archives in the specified OCI registry.
+The backup makes a snapshot of *stopped* Workspace PVCs and stores them as tar.gz archives in the specified OCI registry.
+
 NOTE: By default, the {devworkspace} backup job is disabled.
 
 The backup is configurable using `DevWorkspaceOperatorConfig` with the following fields:
@@ -33,7 +33,7 @@ The value provided for registry.path is only the first segment of the final loca
 There are several configuration options to customize the logic:
 
 == Integrated OpenShift container registry
-This option is available only on OpenShift clusters with integrated container registry enabled and requires no additional configuration.
+This option is available only on OpenShift clusters with https://docs.redhat.com/en/documentation/openshift_container_platform/{ocp4-ver}/html/registry/setting-up-and-configuring-the-registry[integrated container registry] enabled and requires no additional configuration.
 
 To enable the backup use following configuration in the global DWOC:
 
@@ -57,6 +57,13 @@ config:
 ----
 
 **Note:** The `path` field must contain the URL to your OpenShift integrated registry given by the cluster.
+
+To get a default path to registry run following command:
+
+[source,shell,subs="+attributes,+quotes"]
+----
+echo "https://$(oc get route default-route -n openshift-image-registry --template='{{ .spec.host }}'))"
+---
 
 Once the backup job is finished, the backup archives will be available in the {devworkspace} {namespace} under a repository
 with a matching {devworkspace} name.
@@ -88,7 +95,7 @@ config:
 ----
 The `authSecret` must point to a real {kubernetes} Secret of type `kubernetes.io/dockerconfigjson` containing credentials to access the registry.
 
-To create one you can use following command:
+To create one, you can use the following command:
 
 [source,shell,subs="+attributes,+quotes"]
 ----
