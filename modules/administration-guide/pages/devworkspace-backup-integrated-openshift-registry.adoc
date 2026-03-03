@@ -1,0 +1,43 @@
+:_content-type: PROCEDURE
+:description: Configuring DevWorkspace backup with the integrated OpenShift container registry
+:keywords: backup, storage, openshift, registry
+:navtitle: Integrated OpenShift container registry
+//:page-aliases:
+
+[id="devworkspace-backup-integrated-openshift-registry"]
+= Configuring backup with the integrated OpenShift container registry
+
+This option is available only on OpenShift clusters with https://docs.redhat.com/en/documentation/openshift_container_platform/{ocp4-ver}/html/registry/setting-up-and-configuring-the-registry[integrated container registry] enabled and requires no additional configuration.
+
+To enable the backup use following configuration in the global DWOC:
+
+[source,yaml,subs="+attributes,+quotes"]
+----
+apiVersion: controller.devfile.io/v1alpha1
+kind: DevWorkspaceOperatorConfig
+metadata:
+  name: devworkspace-operator-config
+  namespace: $OPERATOR_INSTALL_NAMESPACE
+config:
+  routing:
+    defaultRoutingClass: basic
+  workspace:
+    backupCronJob:
+      enable: true
+      registry:
+        path: default-route-openshift-image-registry.apps.{cluster ID}.openshiftapps.com
+      schedule: '0 */4 * * *' # cron expression with backup frequency
+    imagePullPolicy: Always
+----
+
+**Note:** The `path` field must contain the URL to your OpenShift integrated registry given by the cluster.
+
+To get a default path to registry run following command:
+
+[source,shell,subs="+attributes,+quotes"]
+----
+echo "https://$(oc get route default-route -n openshift-image-registry --template='{{ .spec.host }}'))"
+----
+
+Once the backup job is finished, the backup archives will be available in the {devworkspace} {namespace} under a repository
+with a matching {devworkspace} name.

@@ -1,0 +1,49 @@
+:_content-type: PROCEDURE
+:description: Configuring DevWorkspace backup with a regular OCI-compatible registry
+:keywords: backup, storage, oci, registry, quay
+:navtitle: Regular OCI-compatible registry
+//:page-aliases:
+
+[id="devworkspace-backup-regular-oci-registry"]
+= Configuring backup with a regular OCI-compatible registry
+
+To use a regular OCI-compatible registry for backups, you need to provide registry credentials. Depending on your
+RBAC policy, the token can be provided via a secret in the Operator {namespace} or in each {devworkspace} {namespace}.
+Having the secret in the {devworkspace} {namespace} allows for using different registry accounts per {namespace} with more
+granular access control.
+
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: DevWorkspaceOperatorConfig
+apiVersion: controller.devfile.io/v1alpha1
+metadata:
+  name: devworkspace-operator-config
+  namespace: $OPERATOR_INSTALL_NAMESPACE
+config:
+  routing:
+    defaultRoutingClass: basic
+  workspace:
+    backupCronJob:
+      enable: true
+      registry:
+        authSecret: my-secret
+        path: quay.io/my-company-org
+      schedule: '0 */4 * * *'
+    imagePullPolicy: Always
+----
+
+The `authSecret` must point to a real {kubernetes} Secret of type `kubernetes.io/dockerconfigjson` containing credentials to access the registry.
+
+To create one, you can use the following command:
+
+[source,shell,subs="+attributes,+quotes"]
+----
+kubectl create secret docker-registry my-secret --from-file=config.json -n devworkspace-controller
+----
+
+The secret must contain a label `controller.devfile.io/watch-secret=true` to be recognized by the {devworkspace} Operator.
+
+[source,shell,subs="+attributes,+quotes"]
+----
+kubectl label secret my-secret controller.devfile.io/watch-secret=true -n devworkspace-controller
+----
