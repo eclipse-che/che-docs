@@ -7,10 +7,10 @@ On ARM64 (aarch64) OpenShift clusters, you must override the gateway sidecar ima
 
 Run the following commands to patch the {prod} Operator subscription:
 
-[source,bash,subs="+quotes"]
+[source,shell,subs="+quotes,+attributes"]
 ----
 ECLIPSE_CHE_SUBSCRIPTION=$(
-  oc get subscription -A -o jsonpath='{.items[?(@.spec.name=="eclipse-che")]}'
+  {orch-cli} get subscription -A -o jsonpath='{.items[?(@.spec.name=="{prod-operator-package-name}")]}'
 )
 
 ECLIPSE_CHE_SUBSCRIPTION_NAME=$(
@@ -21,7 +21,7 @@ ECLIPSE_CHE_SUBSCRIPTION_NAMESPACE=$(
   echo "$ECLIPSE_CHE_SUBSCRIPTION" | jq -r '.metadata.namespace'
 )
 
-oc patch subscription "$ECLIPSE_CHE_SUBSCRIPTION_NAME" \
+{orch-cli} patch subscription "$ECLIPSE_CHE_SUBSCRIPTION_NAME" \
   -n "$ECLIPSE_CHE_SUBSCRIPTION_NAMESPACE" \
   --type=merge \
   -p '{
