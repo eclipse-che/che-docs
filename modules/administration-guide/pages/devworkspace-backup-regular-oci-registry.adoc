@@ -18,7 +18,7 @@ kind: DevWorkspaceOperatorConfig
 apiVersion: controller.devfile.io/v1alpha1
 metadata:
   name: devworkspace-operator-config
-  namespace: $OPERATOR_INSTALL_NAMESPACE
+  namespace: $OPERATOR_INSTALL_NAMESPACE <1>
 config:
   routing:
     defaultRoutingClass: basic
@@ -31,6 +31,7 @@ config:
       schedule: '0 */4 * * *'
     imagePullPolicy: Always
 ----
+<1> For Red Hat OpenShift, the default installation namespace for the {devworkspace} operator is `openshift-operators`. See the xref:devworkspace-operator.adoc[{devworkspace} operator overview].
 
 The `authSecret` must point to a real {kubernetes} Secret of type `kubernetes.io/dockerconfigjson` containing credentials to access the registry.
 
