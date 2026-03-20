@@ -1,0 +1,43 @@
+:_content-type: SNIPPET
+
+[NOTE]
+====
+On ARM64 (AArch64) OpenShift clusters, you must override the gateway sidecar images after installing the {prod} Operator, because the default images are not available for ARM64.
+
+To patch the {prod} Operator subscription, run the following commands:
+
+[source,shell,subs="+quotes,+attributes"]
+----
+ECLIPSE_CHE_SUBSCRIPTION=$(
+  {orch-cli} get subscription -A -o jsonpath='{.items[?(@.spec.name=="{prod-operator-package-name}")]}'
+)
+
+ECLIPSE_CHE_SUBSCRIPTION_NAME=$(
+  echo "$ECLIPSE_CHE_SUBSCRIPTION" | jq -r '.metadata.name'
+)
+
+ECLIPSE_CHE_SUBSCRIPTION_NAMESPACE=$(
+  echo "$ECLIPSE_CHE_SUBSCRIPTION" | jq -r '.metadata.namespace'
+)
+
+{orch-cli} patch subscription "$ECLIPSE_CHE_SUBSCRIPTION_NAME" \
+  -n "$ECLIPSE_CHE_SUBSCRIPTION_NAMESPACE" \
+  --type=merge \
+  -p '{
+    "spec": {
+      "config": {
+        "env": [
+          {
+            "name": "RELATED_IMAGE_gateway_authentication_sidecar",
+            "value": "quay.io/openshift/origin-oauth-proxy:4.9"
+          },
+          {
+            "name": "RELATED_IMAGE_gateway_authorization_sidecar",
+            "value": "quay.io/openshift/origin-kube-rbac-proxy:4.9"
+          }
+        ]
+      }
+    }
+  }'
+----
+====
