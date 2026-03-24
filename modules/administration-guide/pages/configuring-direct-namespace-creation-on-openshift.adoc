@@ -1,0 +1,52 @@
+:_content-type: PROCEDURE
+:description: Configuring {prod-short} to create standard {orch-namespace}s directly on OpenShift instead of using the ProjectRequest API
+:keywords: administration-guide, configuring, namespace, openshift, project, direct
+:navtitle: Configuring direct namespace creation on OpenShift
+:page-aliases:
+
+[id="configuring-direct-namespace-creation-on-openshift"]
+= Configuring direct namespace creation on OpenShift
+
+By default, on OpenShift, {prod-short} uses the ProjectRequest API to create user namespaces. This triggers any cluster-specific Project Templates configured by the OpenShift administrator.
+
+If you want {prod-short} to create standard {orch-namespace}s directly, bypassing the ProjectRequest API and Project Templates, you can enable direct namespace creation. This is useful when Project Templates are not needed or when you want to avoid the overhead of the ProjectRequest workflow.
+
+NOTE: This setting applies only to OpenShift clusters and has no effect on {orch-name}.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the OpenShift cluster. See {orch-cli-link}.
+
+* An existing {prod} installation.
+
+.Procedure
+
+. Set the `createNamespaceDirectly` field to `true` in the `spec.devEnvironments.defaultNamespace` section of the CheCluster custom resource.
++
+====
+[source,yaml,subs="+quotes,+attributes"]
+----
+kind: CheCluster
+apiVersion: org.eclipse.che/v2
+spec:
+  devEnvironments:
+    defaultNamespace:
+      createNamespaceDirectly: true
+----
+====
+
+.Verification
+
+* Start a new workspace and verify that the user {orch-namespace} is created as a standard {orch-namespace} rather than an OpenShift Project.
++
+[subs="+attributes,+quotes"]
+----
+$ {orch-cli} get namespace __<user-namespace>__ -o jsonpath='{.metadata.labels}'
+----
++
+A directly created {orch-namespace} will not contain OpenShift Project-specific labels.
+
+.Additional resources
+
+* xref:configuring-namespace-provisioning.adoc[]
+* xref:configuring-workspace-target-namespace.adoc[]
