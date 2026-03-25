@@ -1,0 +1,39 @@
+:_content-type: PROCEDURE
+:description: Configuring {prod-short} to create standard {orch-namespace}s instead of OpenShift projects
+:keywords: administration guide, configuring, namespace, openshift, project
+:navtitle: Configuring direct {orch-namespace} creation on OpenShift
+:page-aliases:
+
+[id="configuring-direct-namespace-creation-on-openshift"]
+= Configuring direct {orch-namespace} creation on OpenShift
+
+By default, on {ocp} clusters, {prod-short} uses the OpenShift ProjectRequest API to create user {orch-namespace}s.
+The ProjectRequest API triggers any cluster-specific Project Templates configured by the cluster administrator.
+
+If you want {prod-short} to create standard {kubernetes} {orch-namespace}s directly, bypassing the ProjectRequest API and its associated Project Templates, you can enable the `createNamespaceDirectly` option.
+
+.Prerequisites
+
+* An active `{prod-cli}` session with administrative permissions to the destination {ocp} cluster. See xref:installing-the-chectl-management-tool.adoc[].
+
+.Procedure
+
+* Configure the `CheCluster` Custom Resource. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+spec:
+  devEnvironments:
+    defaultNamespace:
+      createNamespaceDirectly: true
+----
+
+.Verification
+
+* Start a workspace and verify that {prod-short} creates a standard {kubernetes} {orch-namespace} instead of an OpenShift project.
+
+.Additional resources
+
+* xref:configuring-namespace-provisioning.adoc[]
+
+* xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]
