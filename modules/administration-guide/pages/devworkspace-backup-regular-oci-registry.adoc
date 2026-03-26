@@ -34,17 +34,18 @@ config:
 <1> For Red Hat OpenShift, the default installation namespace for the {devworkspace} operator is `openshift-operators`. See the xref:devworkspace-operator.adoc[{devworkspace} operator overview].
 
 The `authSecret` must point to a real {kubernetes} Secret of type `kubernetes.io/dockerconfigjson` containing credentials to access the registry.
+The secret should be created in the installation {namespace} for the {devworkspace} operator.
 
 To create one, you can use the following command:
 
 [source,shell,subs="+attributes,+quotes"]
 ----
-kubectl create secret docker-registry my-secret --from-file=config.json -n devworkspace-controller
+kubectl create secret docker-registry my-secret --from-file=config.json
 ----
 
 The secret must contain a label `controller.devfile.io/watch-secret=true` to be recognized by the {devworkspace} Operator.
 
 [source,shell,subs="+attributes,+quotes"]
 ----
-kubectl label secret my-secret controller.devfile.io/watch-secret=true -n devworkspace-controller
+kubectl label secret my-secret controller.devfile.io/watch-secret=true
 ----
