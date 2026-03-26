@@ -1,0 +1,33 @@
+:_content-type: CONCEPT
+:description: Restoring a Che workspace from a DevWorkspace backup
+:keywords: workspace, backup, restore, devworkspace, dashboard
+:navtitle: Restoring workspaces from backups
+:page-aliases:
+
+[id="restoring-workspaces-from-backups"]
+= Restoring workspaces from backups
+
+When backups are enabled for {devworkspace} instances on your cluster, a cron job backs up workspace data for stopped workspaces.
+
+Backup storage, registry access, and schedules are configured cluster-wide by administrators in the {devworkspace} Operator.
+For administrator steps, see xref:administration-guide:devworkspace-backup.adoc[].
+
+Backing up and restoring workspaces allows you to recover uncommitted source code changes. Restored workspaces use a minimal devfile rather than the original project devfile.
+
+From the {prod-short} dashboard you can:
+
+* Open the list of backups and inspect backup status.
+* Restore a workspace from a backup that is already available to you (*internal* backup), or from an image reference you provide (*external* backup).
+* Choose compute limits and the editor for the new workspace before you start the restore.
+
+When the restored workspace is ready, the dashboard opens it in a new browser tab.
+
+[NOTE]
+====
+A restored workspace is created from a minimal devfile with the restored source code being transferred to the workspace from an init container.
+The *Devfile* tab in the workspace will not show the original devfile from the workspace's Git repository.
+====
+
+include::proc-viewing-backups-in-the-dashboard.adoc[leveloffset=+1]
+
+include::proc-restoring-a-workspace-from-backup.adoc[leveloffset=+1]
