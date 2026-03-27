@@ -23,7 +23,7 @@ Get Open VSX sources and navigate to the OpenShift deploy directory:
 +
 [bash,subs="verbatim",options="nowrap"]
 ----
-git clone https://github.com/eclipse/openvsx.git &&
+git clone https://github.com/eclipse-openvsx/openvsx &&
 cd openvsx/deploy/openshift
 ----
 
@@ -36,7 +36,7 @@ The next step is to build and publish the Open VSX server image. To do this, run
 export REGISTRY=quay.io &&
 export NAMESPACE=myuser &&
 export OPENVSX_SERVER_IMAGE_NAME=openvsx-server &&
-export OPENVSX_VERSION=v0.27.0 &&
+export OPENVSX_VERSION=v0.33.0 &&
 export OPENVSX_SERVER_IMAGE=${REGISTRY}/${NAMESPACE}/${OPENVSX_SERVER_IMAGE_NAME}:${OPENVSX_VERSION} &&
 podman build -t "${OPENVSX_SERVER_IMAGE}" --build-arg "OPENVSX_VERSION=${OPENVSX_VERSION}" -f openvsx.Dockerfile . &&
 podman login "${REGISTRY}" &&
@@ -111,7 +111,7 @@ Insert user PAT into OpenVSX database:
 [bash,subs="verbatim",options="nowrap"]
 ----
 oc exec -n openvsx "$POSTGRESQL_POD_NAME" -- bash -c \
-   "psql -d openvsx -c \"INSERT INTO personal_access_token (id, user_data, value, active, created_timestamp, accessed_timestamp, description) VALUES (1001, 1001, 'eclipse_che_token', true, current_timestamp, current_timestamp, 'extensions publisher');\""
+   "psql -d openvsx -c \"INSERT INTO personal_access_token (id, user_data, value, active, created_timestamp, accessed_timestamp, description, notified) VALUES (1001, 1001, 'eclipse_che_token', true, current_timestamp, current_timestamp, 'extensions publisher', false);\""
 ----
 
 . Configure {prod-short} to use the internal Open VSX.
