@@ -17,24 +17,17 @@ Install {prod-short} on an OpenShift cluster that uses {keycloak} as an external
 
 .Procedure
 
-. Define the namespace where {keycloak} is installed:
-+
-[source,bash,subs="+quotes"]
-----
-KEYCLOAK_NAMESPACE=__<KEYCLOAK_NAMESPACE>__
-----
-
-. Define the {keycloak} realm used for OpenShift authentication:
-+
-[source,shell]
-----
-OPENSHIFT_REALM=<REALM>
-----
-
-. Define the {keycloak} URL:
+. Define the environment variables:
 +
 [source,shell,subs="+quotes,+attributes"]
 ----
+# The {keycloak} namespace:
+KEYCLOAK_NAMESPACE=__<KEYCLOAK_NAMESPACE>__
+
+# The {keycloak} realm used for OpenShift authentication:
+OPENSHIFT_REALM=<REALM>
+
+# The {keycloak} URL
 KEYCLOAK_URL=https://$({orch-cli} get route keycloak -n $KEYCLOAK_NAMESPACE --template='{{ .spec.host }}')
 ----
 
