@@ -82,7 +82,7 @@ RUN set -x \
     && npm install --no-save --global @antora/cli \
     && npm install --no-save --global @antora/collector-extension \
     && npm install --no-save --global @antora/lunr-extension \
-    && npm install --no-save --global @antora/pdf-extension \
+    && npm install --no-save --global @antora/pdf-extension@1.0.0-beta.14 \
     && npm install --no-save --global @antora/site-generator \
     && npm install --no-save --global asciidoctor-emoji \
     && npm install --no-save --global asciidoctor-kroki \
