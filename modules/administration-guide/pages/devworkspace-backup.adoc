@@ -14,12 +14,15 @@ integrated registry or link:https://quay.io[Quay.io], to store backup archives a
 
 The backup makes a snapshot of *stopped* Workspace PVCs and stores them as tar.gz archives in the specified OCI registry.
 
+Users can restore backups from the {prod-short} dashboard. See xref:end-user-guide:restoring-workspaces-from-backups.adoc[].
+
 NOTE: By default, the {devworkspace} backup job is disabled.
 
 You can configure the backup by using the `DevWorkspaceOperatorConfig` resource with the following fields:
 
 * `enable`: Set to `true` to enable the backup job or `false` to disable it. The default value is `false`.
 * `schedule`: A Cron expression that defines the backup frequency. The default value is `"0 1 * * *"`.
+* `backoffLimit`: The value of the backup job's `spec.backoffLimit`, which specifies the number of retries before marking this job failed. The default value for the backups jobs is `1`.
 * `registry.path`: The base registry location for backup archives.
 +
 The value for `registry.path` is the first segment of the final location. The full path is assembled dynamically by using the workspace name and the `:latest` tag in the following pattern:

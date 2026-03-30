@@ -17,7 +17,7 @@ apiVersion: controller.devfile.io/v1alpha1
 kind: DevWorkspaceOperatorConfig
 metadata:
   name: devworkspace-operator-config
-  namespace: $OPERATOR_INSTALL_NAMESPACE
+  namespace: $OPERATOR_INSTALL_NAMESPACE <1>
 config:
   routing:
     defaultRoutingClass: basic
@@ -26,9 +26,13 @@ config:
       enable: true
       registry:
         path: default-route-openshift-image-registry.apps.{cluster ID}.openshiftapps.com
+      oras:
+        extraArgs: '--insecure' <2>
       schedule: '0 */4 * * *' # cron expression with backup frequency
     imagePullPolicy: Always
 ----
+<1> For Red Hat OpenShift, the default installation namespace for the {devworkspace} operator is `openshift-operators`. See the xref:devworkspace-operator.adoc[{devworkspace} operator overview].
+<2> The `--insecure` flag can be required depending on the integrated registry's routing configuration.
 
 **Note:** The `path` field must contain the URL to your OpenShift integrated registry given by the cluster.
 
