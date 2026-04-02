@@ -21,14 +21,11 @@ Install {prod-short} on an OpenShift cluster that uses {keycloak} as an external
 +
 [source,shell,subs="+quotes,+attributes"]
 ----
-# The {keycloak} namespace:
-KEYCLOAK_NAMESPACE=__<KEYCLOAK_NAMESPACE>__
-
 # The {keycloak} realm used for OpenShift authentication:
-OPENSHIFT_REALM=<REALM>
+OPENSHIFT_REALM=__<REALM>__
 
-# The {keycloak} URL
-KEYCLOAK_URL=https://$({orch-cli} get route keycloak -n $KEYCLOAK_NAMESPACE --template='{{ .spec.host }}')
+# The {keycloak} URL:
+KEYCLOAK_URL=__<KEYCLOAK_URL>__
 ----
 
 . Create a `{prod-id}` client in the {keycloak} Admin Console:
@@ -159,7 +156,7 @@ EOF
 <1> The claim to use for extracting user groups.
 <2> The prefix to add to group names. Empty string means no prefix.
 <3> The claim to use for extracting the username.
-<4> The prefix to add to usernames from the external authentication system.
+<4> The prefix to add to usernames. Empty string means no prefix.
 +
 [NOTE]
 ====
@@ -180,17 +177,20 @@ These values must match the corresponding claim and prefix settings configured i
   --che-operator-cr-patch-yaml che-patch.yaml
 ----
 
-. Update a `{prod-id}` client to set {prod-short} callback URL:
+. Update a `{prod-id}` client to set {prod-short} redirect URI and web origin:
++
+Obtain {prod} URL with the following command:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+echo "$({orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath='{.status.cheURL}')"
+----
 +
 --
 .. Open the {keycloak} Admin Console.
 .. Within the realm used for OpenShift authentication, click the `{prod-id}` client.
-... In the *Valid redirect URIs* field, enter the redirect URI for your {prod-short} installation. To obtain the redirect URI, run the following command:
-+
-[source,shell,subs="+quotes,+attributes"]
-----
-echo "$({orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath='{.status.cheURL}')/oauth/callback"
-----
+... In the *Valid redirect URIs* field, entry the URL above with `/oauth/callback` appended
+... In the *Web origins* field, entry the URL above.
 ... Click *Save*.
 --
 
@@ -213,7 +213,7 @@ subjects:
   name: __<GROUP_NAME>__ <2>
 EOF
 ----
-<1> Users must have at least the `self-provisioner` role to access {prod-short}.
+<1> Users must have the `self-provisioner` role, in order to create a {platforms-namespace}.
 <2> The name of the user group from {keycloak} that should be granted access to {prod-short}.
 
 .Verification
