@@ -1,0 +1,22 @@
+:_content-type: SNIPPET
+
+[NOTE]
+====
+If the installation {namespace} for the {devworkspace} operator is not `openshift-operators`, you must define it as an environment variable for the {prod} dashboard in the `CheCluster` Custom Resource.
+
+[source,yaml,subs="+attributes,+quotes"]
+----
+apiVersion: org.eclipse.che/v2
+kind: CheCluster
+spec:
+  components:
+    dashboard:
+      deployment:
+        containers:
+          - env:
+              - name: DWO_NAMESPACE
+                value: $OPERATOR_INSTALL_NAMESPACE <1>
+            name: che-dashboard
+----
+<1> For Red Hat OpenShift, the default installation namespace for the {devworkspace} operator is `openshift-operators`. See the xref:devworkspace-operator.adoc[{devworkspace} operator overview].
+====
