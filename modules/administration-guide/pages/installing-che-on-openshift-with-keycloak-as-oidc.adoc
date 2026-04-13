@@ -68,7 +68,7 @@ If you have multiple OIDC providers configured, adjust the array index in the pa
 (currently 0) to match your {keycloak} provider's position in the configuration.
 ====
 
-. Wait for the `kube-apiserver` cluster operator to roll out the configuration changes:
+. Wait for the `kube-apiserver` cluster Operator to roll out the configuration changes:
 +
 [source,shell,subs="+quotes,+attributes"]
 ----
@@ -194,28 +194,6 @@ echo "$({orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonp
 ... In the *Web origins* field, entry the URL above.
 ... Click *Save*.
 --
-
-. Create a `ClusterRoleBinding` to grant users access to {prod-short}:
-+
-[source,shell,subs="+quotes,+attributes"]
-----
-{orch-cli} apply -f - <<EOF
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: openshift-developers
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: self-provisioner <1>
-subjects:
-- apiGroup: rbac.authorization.k8s.io
-  kind: Group
-  name: __<GROUP_NAME>__ <2>
-EOF
-----
-<1> Users must have the `self-provisioner` role to create a {platforms-namespace}.
-<2> The name of the user group from {keycloak} that should be granted access to {prod-short}.
 
 .Verification
 
