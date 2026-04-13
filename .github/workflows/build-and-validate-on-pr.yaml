@@ -44,9 +44,9 @@ jobs:
           path: .cache
           key: ${{ steps.get-date.outputs.YEAR_WEEK }}
 
-      - name: Build using antora # and fail on warning
+      - name: Build using antora # and fail on error
         id: antora-build
-        run: CI=true antora generate antora-playbook-for-development.yml --stacktrace --log-failure-level=warn
+        run: CI=true antora generate antora-playbook-for-development.yml --stacktrace --log-failure-level=error
 
       - name: Store pull request details for publish-netlify
         run: |
