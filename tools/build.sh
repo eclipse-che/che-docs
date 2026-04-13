@@ -11,5 +11,5 @@
 # Fail on errors
 set -ex
 umask 002
-CI=true antora generate antora-playbook-for-development.yml --stacktrace --log-failure-level=warn
+CI=true antora generate antora-playbook-for-development.yml --stacktrace --log-failure-level=error
 htmltest
