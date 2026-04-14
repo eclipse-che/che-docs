@@ -1,0 +1,51 @@
+:_content-type: PROCEDURE
+:description: Customizing OpenShift Eclipse Che branding images
+:keywords: administration guide, customizing, branding, images
+:navtitle: Customizing OpenShift Eclipse Che branding images
+:page-aliases: installation-guide:customizing-openshift-che-consolelink-icon.adoc, customizing-openshift-che-consolelink-icon.adoc
+
+[id="customizing-openshift-che-branding-images"]
+= Customizing {ocp} {prod} branding images
+
+This procedure describes how to customize {prod} branding images, such as the logo displayed in the {prod} dashboard and the link:https://docs.openshift.com/container-platform/{ocp4-ver}/rest_api/console_apis/consolelink-console-openshift-io-v1.html[ConsoleLink] icon.
+
+The branding images are located in the `assets/branding` directory. Supported image formats, in priority order: `jpg`, `jpeg`, `png`, `gif`, `webp`, `svg`. The `svg` format is used as the default fallback.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Create a Secret to override branding images:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {prod-deployment}-dashboard-customization
+  namespace: {prod-namespace}
+  annotations:
+    che.eclipse.org/mount-as: subpath
+    che.eclipse.org/mount-path: /public/dashboard/assets/branding
+  labels:
+    app.kubernetes.io/component: {prod-deployment}-dashboard-secret
+    app.kubernetes.io/part-of: che.eclipse.org
+data:
+  loader.svg: __<Base64_encoded_content_of_the_image>__ <1>
+  favicon.ico: __<Base64_encoded_content_of_the_image>__ <2>
+type: Opaque
+EOF
+----
+<1> The loader image file name and Base64-encoded content with disabled line wrapping. You can use any supported format (`jpg`, `jpeg`, `png`, `gif`, `webp`, `svg`). For example, `loader.png` with its Base64-encoded content.
+<2> The favicon file name and Base64-encoded content with disabled line wrapping.
++
+NOTE: You can override one or all images from the `/public/dashboard/assets/branding` directory. Only the images specified in the Secret `data` section are overridden; unspecified images remain unchanged.
+
+. Wait until the rollout of {prod-deployment}-dashboard finishes.
+
+.Additional resources
+
+* link:https://docs.openshift.com/container-platform/{ocp4-ver}/web_console/customizing-the-web-console.html#creating-custom-links_customizing-web-console[Creating custom links in the web console]
