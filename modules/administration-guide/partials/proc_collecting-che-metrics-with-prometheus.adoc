@@ -3,100 +3,15 @@
 [id="collecting-{prod-id-short}-metrics-with-prometheus"]
 = Collecting {prod-short} Server metrics with Prometheus
 
-To use the in-cluster Prometheus instance to collect, store, and query JVM metrics for {prod-short} Server:
+When the Prometheus Operator is available on the cluster and {prod-short} Server metrics are enabled, {prod-short} Operator automatically creates and manages the Prometheus resources required to collect {prod-short} Server JVM metrics. This includes the `ServiceMonitor`, `Role`, and `RoleBinding` resources, and the `openshift.io/cluster-monitoring` label on the {prod-short} namespace.
 
 .Prerequisites
 
 * Your organization's instance of {prod-short} is installed and running in Red Hat OpenShift.
 
-* An active `oc` session with administrative permissions to the destination OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the CLI].
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
 
-* {prod-short} is exposing metrics on port `8087`. See xref:enabling-and-exposing-{prod-id-short}-metrics[Enabling and exposing {prod-short} server JVM metrics].
-
-.Procedure
-
-. Create the ServiceMonitor for detecting the {prod-short} JVM metrics Service.
-+
-.ServiceMonitor
-====
-[source,yaml,subs="+quotes,+attributes,+macros"]
-----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: che-host
-  namespace: {prod-namespace} <1>
-spec:
-  endpoints:
-    - interval: 10s <2>
-      port: metrics
-      scheme: http
-  namespaceSelector:
-    matchNames:
-      - {prod-namespace} <1>
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: {prod-deployment}
-----
-<1> The {prod-short} namespace. The default is `{prod-namespace}`.
-<2> The rate at which a target is scraped.
-====
-
-. Create a Role and RoleBinding to allow Prometheus to view the metrics.
-
-+
-.Role
-====
-[source,yaml,subs="+quotes,+attributes,+macros"]
-----
-kind: Role
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: prometheus-k8s
-  namespace: {prod-namespace} <1>
-rules:
-  - verbs:
-      - get
-      - list
-      - watch
-    apiGroups:
-      - ''
-    resources:
-      - services
-      - endpoints
-      - pods
-----
-<1> The {prod-short} namespace. The default is `{prod-namespace}`.
-====
-
-+
-.RoleBinding
-====
-[source,yaml,subs="+quotes,+attributes,+macros"]
-----
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: view-{prod-id-short}-openshift-monitoring-prometheus-k8s
-  namespace: {prod-namespace} <1>
-subjects:
-  - kind: ServiceAccount
-    name: prometheus-k8s
-    namespace: openshift-monitoring
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: prometheus-k8s
-----
-<1> The {prod-short} namespace. The default is `{prod-namespace}`.
-====
-
-. Allow the in-cluster Prometheus instance to detect the ServiceMonitor in the {prod-short} namespace. The default {prod-short} namespace is `{prod-namespace}`.
-+
-[source,terminal,subs="+attributes,quotes"]
-----
-$ oc label namespace {prod-namespace} openshift.io/cluster-monitoring=true
-----
+* {prod-short} Server metrics are enabled. See xref:enabling-and-exposing-{prod-id-short}-metrics[Enabling and exposing {prod-short} Server metrics].
 
 .Verification
 
@@ -127,7 +42,6 @@ $ oc logs --tail=20 __<prometheus_pod_name>__ -c prometheus -n openshift-monitor
 
 [role="_additional-resources"]
 .Additional resources
-
 
 * link:https://prometheus.io/docs/prometheus/latest/querying/basics/[Querying Prometheus]
 
