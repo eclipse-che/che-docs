@@ -2,56 +2,30 @@
 = Collecting {devworkspace} Operator metrics
 
 [role="_abstract"]
-To use the in-cluster Prometheus instance to collect, store, and query metrics about the {devworkspace} Operator:
+When the Prometheus Operator is available on the cluster, {prod-short} Operator automatically creates and manages the Prometheus resources required to collect {devworkspace} Operator metrics. This includes the `ServiceMonitor`, `Role`, and `RoleBinding` resources, and the `openshift.io/cluster-monitoring` label on the {prod-short} namespace.
+
+The `spec.devEnvironments.metrics` field in the CheCluster custom resource controls {devworkspace} Operator metrics collection. The default value is `true`.
 
 .Prerequisites
 
 * Your organization's instance of {prod-short} is installed and running in Red Hat OpenShift.
 
-* An active `oc` session with administrative permissions to the destination OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the CLI].
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
 
 * The `devworkspace-controller-metrics` Service is exposing metrics on port `8443`. This is preconfigured by default.
 
 .Procedure
 
-. Create the ServiceMonitor for detecting the Dev Workspace Operator metrics Service.
+* Configure the `spec.devEnvironments.metrics` field:
 +
-.ServiceMonitor
-====
-[source,yaml,subs="+quotes,+attributes,+macros"]
+[source,shell,subs="+quotes,+attributes,+macros"]
 ----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: devworkspace-controller
-  namespace: {prod-namespace} <1>
-spec:
-  endpoints:
-    - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-      interval: 10s <2>
-      port: metrics
-      scheme: https
-      tlsConfig:
-        insecureSkipVerify: true
-  namespaceSelector:
-    matchNames:
-      - openshift-operators
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: devworkspace-controller
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{"spec":{"devEnvironments":{"metrics": __<boolean>__}}}' <1>
 ----
-<1> The {prod-short} namespace. The default is `{prod-namespace}`.
-<2> The rate at which a target is scraped.
-====
-
-include::example$snip_{project-context}-create-a-role-and-rolebinding-for-prometheus-to-view-metrics.adoc[]
-
-. Allow the in-cluster Prometheus instance to detect the ServiceMonitor in the {prod-short} namespace. The default {prod-short} namespace is `{prod-namespace}`.
-+
-[source,subs="+attributes"]
-----
-$ oc label namespace {prod-namespace} openshift.io/cluster-monitoring=true
-----
+<1> `true` to enable, `false` to disable. The default is `true`.
 
 .Verification
 
