@@ -1,0 +1,54 @@
+:_content-type: PROCEDURE
+:description: Configuring the CLI Watcher to prevent {prod-short} workspace idling when long-running CLI tools are active in the terminal.
+:keywords: user-guide, workspace, idling, idle, timeout, cli-watcher, noidle
+:navtitle: Preventing workspace idling for long-running commands
+:page-aliases:
+
+[id="preventing-workspace-idling-for-long-running-commands"]
+= Preventing workspace idling for long-running commands
+
+By default, {prod-short} stops a workspace after a period of inactivity. If you run long-running CLI tools such as `helm`, `odo`, or `sleep` in the terminal, the workspace might stop before the tool finishes.
+
+To prevent this, you can configure a CLI Watcher by creating a `.noidle` configuration file. The CLI Watcher periodically checks for running processes that match the commands you specify. When it detects an active watched command, it resets the workspace idle timer.
+
+This configuration works entirely in user space. No administrator privileges or cluster-level configuration is required.
+
+.Prerequisites
+
+* A running {prod-short} workspace.
+
+.Procedure
+
+. Create a `.noidle` file with the following structure:
++
+[source,yaml]
+----
+enabled: true
+watchedCommands:
+  - helm
+  - odo
+  - sleep
+checkPeriodSeconds: 60
+----
++
+Where:
++
+--
+`enabled`:: Enables or disables the CLI Watcher. Set to `true` to activate it.
+`watchedCommands`:: A list of command names to monitor. When any of these commands are detected as a running process, the workspace idle timer is reset.
+`checkPeriodSeconds`:: The polling interval in seconds. The default value is `60`.
+--
+
+. Place the `.noidle` file in one of the following locations, listed in order of priority:
++
+--
+.. Set the `CLI_WATCHER_CONFIG` environment variable to the absolute path of your `.noidle` file. This takes the highest priority.
+.. Place the file in your project directory or any parent directory up to `$PROJECTS_ROOT`. The watcher searches upward from the current project directory.
+.. Place the file in your home directory as `~/.noidle`.
+--
++
+If no configuration file is found, the CLI Watcher waits and checks again on the next poll cycle.
+
+NOTE: The `.noidle` file supports live updates. You can add, edit, or remove the file while the workspace is running. Changes are picked up automatically on the next poll cycle.
+
+NOTE: The following processes are always excluded from watching and will not prevent workspace idling: PID 1 (the main container process) and `tail`.
