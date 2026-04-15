@@ -1,0 +1,59 @@
+:_content-type: PROCEDURE
+:description: Configuring the CLI Watcher to prevent {prod-short} workspace idling when long-running CLI tools are active in the terminal.
+:keywords: user-guide, workspace, idling, idle, timeout, cli-watcher, noidle
+:navtitle: Prevent workspace idling for long-running commands
+:page-aliases:
+
+[id="preventing-workspace-idling-for-long-running-commands"]
+= Prevent workspace idling for long-running commands
+
+[role="_abstract"]
+Prevent a workspace from stopping while long-running CLI tools such as `helm`, `odo`, or `sleep` are active in the terminal, by configuring a CLI Watcher with a `.noidle` file.
+
+The CLI Watcher periodically checks for running processes that match the commands you specify. When it detects an active watched command, it resets the workspace idle timer. This configuration works entirely in user space and does not require administrator privileges.
+
+.Prerequisites
+
+* You have a running {prod-short} workspace.
+
+.Procedure
+
+. Create a `.noidle` file in your workspace:
++
+[source,yaml]
+----
+enabled: true
+watchedCommands:
+  - helm
+  - odo
+  - sleep
+checkPeriodSeconds: 60
+----
++
+Where:
++
+--
+`enabled`:: Enables or disables the CLI Watcher. Set to `true` to activate it.
+`watchedCommands`:: A list of command names to monitor. When any of these commands are detected as a running process, the workspace idle timer is reset.
+`checkPeriodSeconds`:: The polling interval in seconds. The default value is `60`.
+--
+
+. Place the `.noidle` file in one of the following locations, listed from highest to lowest priority:
++
+* Set the `CLI_WATCHER_CONFIG` environment variable to the absolute path of your `.noidle` file.
+* Place the file in your project directory or any parent directory up to `$PROJECTS_ROOT`. The watcher searches upward from the current project directory.
+* Place the file in your home directory as `~/.noidle`.
++
+If the CLI Watcher finds no configuration file, it waits and checks again on the next poll cycle.
+
+.Verification
+
+. Start a watched command in the terminal (for example, `sleep 600`).
+. Verify that the workspace remains active beyond the configured idle timeout.
+
+[NOTE]
+====
+The `.noidle` file supports live updates. You can add, edit, or remove the file while the workspace is running. Changes are picked up automatically on the next poll cycle.
+
+The following processes are always excluded from watching and do not prevent workspace idling: PID 1 (the main container process) and `tail`.
+====
