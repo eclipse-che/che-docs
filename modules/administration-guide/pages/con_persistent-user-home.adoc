@@ -1,0 +1,84 @@
+:_content-type: CONCEPT
+:description: Persistent user home preserves the /home/user directory across workspace restarts
+:keywords: administration guide, {prod-id-short}, persistent, user, home
+:navtitle: Persistent user home
+:page-aliases: about-persistent-user-home.adoc
+
+[id="persistent-user-home"]
+= Persistent user home
+
+
+[role="_abstract"]
+{prod} preserves the `/home/user` directory across workspace restarts for each non-ephemeral workspace, so that user-specific configurations, shell history, and tooling settings persist between sessions.
+
+This feature is enabled by default. To disable it, patch the CheCluster custom resource:
+
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{"spec":{"devEnvironments":{"persistUserHome":{"enabled":false}}}}'
+----
+
+For newly started workspaces, this feature creates a persistent volume claim (PVC) mounted to the `/home/user` path of the tools container.
+In this documentation, "tools container" refers to the first container in the devfile.
+This is the container that includes the project source code by default.
+
+When the PVC is mounted for the first time, the persistent volume's contents are empty and therefore must be populated with the `/home/user` directory content.
+
+By default, the `persistUserHome` feature creates an init container for each new workspace pod named `init-persistent-home`.
+This init container is created with the tools container image.
+It runs a `stow` command to create symbolic links in the persistent volume, populating the `/home/user` directory.
+
+[NOTE]
+====
+For files that cannot be symbolically linked to the `/home/user` directory, such as `.viminfo` and `.bashrc`, `cp` is used instead of `stow`.
+====
+
+The primary function of the `stow` command is to run:
+
+[source,bash,subs="+quotes,+attributes"]
+----
+stow -t /home/user/ -d /home/tooling/ --no-folding
+----
+
+This command creates symbolic links in `/home/user` for files and directories located in `/home/tooling`. This populates the persistent volume with symbolic links to the content in `/home/tooling`. As a result, the `persistUserHome` feature expects the tooling image to have its `/home/user/` content within `/home/tooling`.
+
+For example, if the tools container image contains `.config` and `.config-folder/another-file` in the `/home/tooling` directory, `stow` creates symbolic links as follows:
+
+.Tools container with `persistUserHome` enabled
+image::persistent-user-home/tools-container-example.png[Persistent user home example scenario]
+
+The init container writes the output of the `stow` command to `/home/user/.stow.log` and only runs `stow` the first time the persistent volume is mounted to the workspace.
+
+Using the `stow` command to populate `/home/user` content in the persistent volume provides two main advantages:
+
+. Creating symbolic links is faster and consumes less storage than creating copies of the `/home/user` directory content in the persistent volume. The persistent volume contains symbolic links, not the actual files.
+. If the tools image is updated with newer versions of existing binaries, configs, and files, the init container does not need to rerun `stow`. The existing symbolic links already point to the newer versions in `/home/tooling`.
+
+[NOTE]
+====
+If the tooling image is updated with additional binaries or files, they are not symbolically linked to the `/home/user` directory. The `stow` command does not run again automatically.
+
+To rerun `stow`, delete the `/home/user/.stow_completed` file and restart the workspace.
+====
+
+== `persistUserHome` tools image requirements
+
+The `persistUserHome` depends on the tools image used for the workspace. By default {prod-short} uses the Universal Developer Image (UDI) for sample workspaces, which supports `persistUserHome` out of the box.
+
+If you are using a custom image, the tools image must meet three requirements to support the `persistUserHome` feature.
+
+. The tools image must contain `stow` version >= 2.4.0.
+. The `$HOME` environment variable is set to `/home/user`.
+. In the tools image, the directory that is intended to contain the `/home/user` content is `/home/tooling`.
+
+Because the `/home/user` content must reside in `/home/tooling`, the default UDI image for example adds the `/home/user` content to `/home/tooling` instead, and runs:
+
+[source,bash,subs="+quotes,+attributes"]
+----
+RUN stow -t /home/user/ -d /home/tooling/ --no-folding
+----
+
+in the Dockerfile so that files in `/home/tooling` are accessible from `/home/user` even when not using the `persistUserHome` feature.
