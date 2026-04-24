@@ -21,6 +21,8 @@ In reverse, if a {kubernetes} resource is modified in a user namespace,
 [WARNING]
 ====
 Applying or modifying a `Secret` or `ConfigMap` with the `controller.devfile.io/mount-to-devworkspace: 'true'` label restarts all running workspaces in the {namespace}. Ensure that users save their work before you apply these changes.
+
+To prevent workspace restarts when creating new resources, use the `controller.devfile.io/mount-on-start: "true"` annotation. Resources with this annotation will only be mounted when a workspace starts, not when created while a workspace is already running. This is useful for administrators applying global configurations to user namespaces without disrupting active workspaces.
 ====
 
 .Procedure
@@ -59,6 +61,15 @@ after being deleted from {prod-namespace} namespace:
 ----
 che.eclipse.org/sync-retain-on-delete: "true"
 ----
++
+Add the annotation below to prevent workspace restarts when the ConfigMap is created or modified:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+controller.devfile.io/mount-on-start: "true"
+----
++
+NOTE: When set to `"true"`, the ConfigMap will only be mounted when a workspace starts. If the ConfigMap is created while a workspace is already running, it will not be automatically mounted until the workspace is restarted. This prevents unwanted workspace restarts caused by newly created or modified automount resources.
 For example, to mount a default SSH configuration into every workspace, you must create a ConfigMap:
 +
 ====
@@ -120,6 +131,17 @@ after being deleted from {prod-namespace} namespace:
 che.eclipse.org/sync-retain-on-delete: "true"
 ----
 +
+Add the annotation below to prevent workspace restarts when the Secret is created or modified:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+controller.devfile.io/mount-on-start: "true"
+----
++
+NOTE: When set to `"true"`, the Secret will only be mounted when a workspace starts, preventing unwanted workspace restarts.
++
+IMPORTANT: For git credential Secrets (labelled with `controller.devfile.io/git-credential`), the `mount-on-start` annotation works collectively: since all git credentials are merged into a single mounted secret, if at least one git credential Secret lacks the `mount-on-start` annotation, all git credentials will be mounted, including those marked with `mount-on-start`. The same applies to git TLS ConfigMaps (labelled with `controller.devfile.io/git-tls-credential`).
++
 See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[mounting volumes, configmaps, and secrets]
 for other possible labels and annotations.
 
@@ -150,6 +172,15 @@ Add the annotation below if you want the `PersistentVolumeClaim` to be deleted i
 ----
 che.eclipse.org/sync-retain-on-delete: "false"
 ----
++
+Add the annotation below to prevent workspace restarts when the `PersistentVolumeClaim` is created or modified:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+controller.devfile.io/mount-on-start: "true"
+----
++
+NOTE: When set to `"true"`, the `PersistentVolumeClaim` will only be mounted when a workspace starts, preventing unwanted workspace restarts.
 +
 See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[mounting volumes, configmaps, and secrets]
 for other possible labels and annotations.
