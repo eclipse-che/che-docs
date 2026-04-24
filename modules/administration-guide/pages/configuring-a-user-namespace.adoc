@@ -1,6 +1,6 @@
 :_content-type: PROCEDURE
-:description: Configuring a user namespace
-:keywords: administration guide, configuring, user, namespace
+:description: Configuring a user namespace and controlling when resources are mounted to prevent workspace restarts
+:keywords: administration guide, configuring, user, namespace, mount-on-start, workspace restart
 :navtitle: Configuring a user namespace
 :page-aliases:
 
@@ -20,7 +20,7 @@ In reverse, if a {kubernetes} resource is modified in a user namespace,
 
 [WARNING]
 ====
-Applying or modifying a `Secret` or `ConfigMap` with the `controller.devfile.io/mount-to-devworkspace: 'true'` label restarts all running workspaces in the {namespace}. Ensure that users save their work before you apply these changes.
+Applying or modifying a `Secret` or `ConfigMap` with the `controller.devfile.io/mount-to-devworkspace: 'true'` label restarts all running workspaces in the {namespace}. To prevent workspace restarts, add the `controller.devfile.io/mount-on-start: "true"` annotation to the resource. Resources with this annotation are only mounted when a workspace starts, not when added to a running workspace.
 ====
 
 .Procedure
@@ -50,6 +50,13 @@ Add the following labels if you do not want the ConfigMap to be mounted automati
 ----
 controller.devfile.io/watch-configmap: "false"
 controller.devfile.io/mount-to-devworkspace: "false"
+----
++
+Add the annotation below to mount the ConfigMap only when a workspace starts, preventing automatic workspace restarts when the ConfigMap is created or modified while workspaces are running:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+controller.devfile.io/mount-on-start: "true"
 ----
 +
 Add the annotation below if you want the ConfigMap to be retained in a user {namespace}
@@ -112,6 +119,13 @@ controller.devfile.io/watch-secret: "false"
 controller.devfile.io/mount-to-devworkspace: "false"
 ----
 +
+Add the annotation below to mount the Secret only when a workspace starts, preventing automatic workspace restarts when the Secret is created or modified while workspaces are running:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+controller.devfile.io/mount-on-start: "true"
+----
++
 Add the annotation below if you want the Secret to be retained in a user {namespace}
 after being deleted from {prod-namespace} namespace:
 +
@@ -142,6 +156,13 @@ spec:
 +
 To enhance the configurability, you can customize the `PersistentVolumeClaim` by adding additional labels and annotations.
 +
+Add the annotation below to mount the `PersistentVolumeClaim` only when a workspace starts, preventing automatic workspace restarts when the PVC is created or modified while workspaces are running:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+controller.devfile.io/mount-on-start: "true"
+----
++
 The `PersistentVolumeClaim` is not deleted in a user {namespace} by default, if the one from {prod-namespace} is deleted.
 Add the annotation below if you want the `PersistentVolumeClaim` to be deleted in a user {namespace} as well:
 
@@ -154,6 +175,10 @@ che.eclipse.org/sync-retain-on-delete: "false"
 See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[mounting volumes, configmaps, and secrets]
 for other possible labels and annotations.
 +
+[IMPORTANT]
+====
+For git credential secrets (labeled with `controller.devfile.io/git-credential`) and git TLS configmaps (labeled with `controller.devfile.io/git-tls-credential`), the `controller.devfile.io/mount-on-start` annotation works collectively: since all git credentials are merged into a single mounted secret, if at least one git credential secret (or TLS configmap) lacks the annotation, all git credentials (or TLS configmaps) are mounted together, including those marked with `mount-on-start`. This prevents partial git credential application which could break authentication.
+====
 
 . To leverage the OpenShift Kubernetes Engine, you can create a `Template` object to replicate all resources defined within the template across each user {orch-namespace}.
 +
