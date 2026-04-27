@@ -1,0 +1,40 @@
+:_content-type: PROCEDURE
+:description: Finding the FQDN of a {prod-short} instance
+:keywords: fqdn, domain, url, dashboard
+:navtitle: Find the FQDN
+:page-aliases: finding-the-fully-qualified-domain-name-fqdn.adoc
+
+[id="proc_finding-the-fully-qualified-domain-name-fqdn"]
+= Find the fully qualified domain name (FQDN)
+
+[role="_abstract"]
+Retrieve the fully qualified domain name (FQDN) of your organization's instance of {prod-short} on the command line to access the {prod-short} dashboard URL.
+
+[TIP]
+====
+You can find the FQDN for your organization's {prod-short} instance in the *Administrator* view of the {orch-name} web console as follows. Go to *Operators* -> *Installed Operators* -> *{prod} instance Specification* -> *{prod-checluster}* -> *{prod} URL*.
+====
+
+.Prerequisites
+
+* You have an active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the OpenShift CLI].
+
+.Procedure
+
+. Run the following command:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+{orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath='{.status.cheURL}'
+----
+
+.Verification
+
+* Open the returned URL in a web browser and verify that the {prod-short} dashboard loads.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:proc_installing-che-on-openshift-using-cli.adoc[]
+* xref:proc_installing-che-on-openshift-using-the-web-console.adoc[]
+* xref:proc_installing-che-in-a-restricted-environment.adoc[]

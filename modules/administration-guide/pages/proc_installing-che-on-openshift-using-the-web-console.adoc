@@ -1,0 +1,77 @@
+:_content-type: PROCEDURE
+:description: To set up cloud development environments for your team on an OpenShift cluster, deploy {prod-short} through the web console by using OperatorHub.
+:keywords: install, openshift, web console, operatorhub
+:navtitle: Install {prod-short} on OpenShift using the web console
+:page-aliases: installation-guide:installing-che-on-openshift-4-using-operatorhub.adoc, overview:installing-che-on-openshift-4-using-operatorhub.adoc, creating-an-instance-of-the-che-operator.adoc, installing-che-on-openshift-4-using-operatorhub.adoc, installing-che-on-openshift-using-the-web-console.adoc
+
+[id="proc_installing-che-on-openshift-using-the-web-console"]
+= Install {prod-short} on OpenShift using the web console
+
+[role="_abstract"]
+To set up cloud development environments for your team on an {orch-name} cluster, deploy {prod-short} through the web console by using OperatorHub and creating a `CheCluster` instance.
+
+.Prerequisites
+
+* You have an {orch-name} web console session as a cluster administrator. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/web_console/web-console.html[Accessing the web console].
+
+* You have an active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the OpenShift CLI].
+
+* For a repeat installation: you have uninstalled the previous {prod-short} instance according to xref:proc_uninstalling-che.adoc[].
+
+.Procedure
+
+. In the *Administrator* view of the {orch-name} web console, go to *Operators* -> *OperatorHub* and search for `{prod}`.
+
+. Install the {prod} Operator.
++
+[TIP]
+====
+See link:https://docs.openshift.com/container-platform/{ocp4-ver}/operators/admin/olm-adding-operators-to-cluster.html#olm-installing-from-operatorhub-using-web-console_olm-adding-operators-to-a-cluster[Installing from OperatorHub using the web console].
+====
++
+[IMPORTANT]
+====
+The {prod} Operator depends on the {devworkspace} Operator. If you install the {prod} Operator manually to a non-default namespace, ensure that the {devworkspace} Operator is also installed in the same namespace. The Operator Lifecycle Manager installs the {devworkspace} Operator as a dependency within the {prod} Operator namespace. If the {devworkspace} Operator is already installed in a different namespace, two conflicting installations can result.
+====
++
+[IMPORTANT]
+====
+If you want to onboard link:https://docs.openshift.com/container-platform/{ocp4-ver}/web_console/web_terminal/installing-web-terminal.html[Web Terminal Operator] on the cluster, use the same installation namespace as the {prod} Operator. Both operators depend on the {devworkspace} Operator, so all three must be installed in the same namespace.
+====
+
+. Create the `{prod-namespace}` project in {orch-name} as follows:
++
+[source,bash,subs="+attributes"]
+----
+{orch-cli} create namespace {prod-namespace}
+----
+
+. Go to *Operators* -> *Installed Operators* -> *{prod} instance Specification* -> *Create CheCluster* -> *YAML view*.
+
+. In the *YAML view*, replace `namespace: openshift-operators` with `namespace: {prod-namespace}`.
+
+. Select *Create*.
++
+[TIP]
+====
+See link:https://docs.openshift.com/container-platform/{ocp4-ver}/operators/user/olm-creating-apps-from-installed-operators.html[Creating applications from installed Operators].
+====
+
+.Verification
+
+pass:[<!-- vale RedHat.Spelling = NO -->]
+
+. In *{prod} instance Specification*, go to *{prod-checluster}*, landing on the *Details* tab.
+
+pass:[<!-- vale RedHat.Spelling = YES -->]
+
+. Under *Message*, check that there is *None*, which means no errors.
+
+. Under *{prod} URL*, wait until the URL of the {prod-short} instance appears, and then open the URL to check the {prod-short} dashboard.
+
+. In the *Resources* tab, view the resources for the {prod-short} deployment and their status.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:ref_permissions-to-install-che-on-openshift-using-the-web-console.adoc[]
