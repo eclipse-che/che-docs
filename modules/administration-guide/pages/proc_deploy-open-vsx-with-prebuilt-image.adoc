@@ -44,6 +44,11 @@ Deploy a standalone Open VSX extension registry by using an existing container i
 where:
 +
 `__<openvsx_server_image>__`:: The Open VSX server container image. For example: `ghcr.io/eclipse-openvsx/openvsx-server:v0.33.0`.
++
+[IMPORTANT]
+====
+The `openvsx-deployment-no-es.yml` template is designed for images built from the link:https://github.com/eclipse-openvsx/openvsx[Open VSX repository]. If you use a different image, verify that it is compatible with this deployment template.
+====
 
 . Verify that all pods in the `openvsx` namespace are running and ready:
 +
@@ -76,7 +81,7 @@ export POSTGRESQL_POD_NAME=$({orch-cli} get pods -n openvsx \
 [source,bash,subs="+attributes,+quotes",options="nowrap"]
 ----
 {orch-cli} exec -n openvsx "$POSTGRESQL_POD_NAME" -- bash -c \
-   "psql -d openvsx -c \"INSERT INTO personal_access_token (id, user_data, value, active, created_timestamp, accessed_timestamp, description) VALUES (1001, 1001, 'eclipse_che_token', true, current_timestamp, current_timestamp, 'extensions publisher');\""
+   "psql -d openvsx -c \"INSERT INTO personal_access_token (id, user_data, value, active, created_timestamp, accessed_timestamp, description, notified) VALUES (1001, 1001, 'eclipse_che_token', true, current_timestamp, current_timestamp, 'extensions publisher', false);\""
 ----
 +
 [IMPORTANT]
@@ -100,7 +105,7 @@ export PATCH='{"spec":{"components":{"pluginRegistry":{"openVSXURL":"https://'"$
 For detailed instructions on configuring the Open VSX registry URL, see xref:configuring-the-open-vsx-registry-url.adoc[].
 ====
 
-. Publish a Visual Studio Code extension from a `.vsix` file. The Open VSX registry does not provide any extension by default. You need the extension namespace name and the download URL of the `.vsix` package.
+. Publish a Visual Studio Code extension from a `.vsix` file. The Open VSX registry does not provide any extension by default. You need the extension publisher name and the download URL of the `.vsix` package.
 
 .. Retrieve the name of the pod running the Open VSX server:
 +
@@ -150,6 +155,11 @@ done < deploy/openshift/extensions.txt
 
 * Start any workspace and verify the published extensions are available in the Extensions view of the workspace IDE.
 * Navigate to the Open VSX route URL to verify the registry UI displays the published extensions.
+
+.Next steps
+
+* To restrict the registry to internal cluster traffic, see xref:proc_configure-internal-open-vsx-access.adoc[].
+* To remove a published extension, see xref:proc_deleting-extension-using-openvsx-admin-api.adoc[].
 
 [role="_additional-resources"]
 .Additional resources

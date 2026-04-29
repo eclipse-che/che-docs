@@ -59,7 +59,7 @@ where:
 +
 `__<registry_hostname>__`:: The container registry hostname. For example: `quay.io`.
 +
-`__<registry_namespace>__`:: Your namespace or organization in the registry. For example: `myuser`.
+`__<registry_namespace>__`:: Your organization or account in the registry. For example: `myuser`.
 +
 `__<openvsx_version>__`:: The Open VSX version tag to build. For example: `v0.33.0`. Available versions are listed on the link:https://github.com/eclipse-openvsx/openvsx/releases[Open VSX releases page].
 +
@@ -125,7 +125,7 @@ export POSTGRESQL_POD_NAME=$({orch-cli} get pods -n openvsx \
 [source,bash,subs="+attributes,+quotes",options="nowrap"]
 ----
 {orch-cli} exec -n openvsx "$POSTGRESQL_POD_NAME" -- bash -c \
-   "psql -d openvsx -c \"INSERT INTO personal_access_token (id, user_data, value, active, created_timestamp, accessed_timestamp, description) VALUES (1001, 1001, 'eclipse_che_token', true, current_timestamp, current_timestamp, 'extensions publisher');\""
+   "psql -d openvsx -c \"INSERT INTO personal_access_token (id, user_data, value, active, created_timestamp, accessed_timestamp, description, notified) VALUES (1001, 1001, 'eclipse_che_token', true, current_timestamp, current_timestamp, 'extensions publisher', false);\""
 ----
 +
 [IMPORTANT]
@@ -194,6 +194,11 @@ done < deploy/openshift/extensions.txt
 
 * Start any workspace and verify the published extensions are available in the Extensions view of the workspace IDE.
 * Navigate to the Open VSX route URL to verify the registry UI displays the published extensions.
+
+.Next steps
+
+* To restrict the registry to internal cluster traffic, see xref:proc_configure-internal-open-vsx-access.adoc[].
+* To remove a published extension, see xref:proc_deleting-extension-using-openvsx-admin-api.adoc[].
 
 [role="_additional-resources"]
 .Additional resources
