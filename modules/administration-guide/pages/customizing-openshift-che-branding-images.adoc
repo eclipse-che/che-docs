@@ -1,0 +1,64 @@
+:_content-type: PROCEDURE
+:description: Customizing OpenShift Eclipse Che branding images
+:keywords: administration guide, customizing, branding, images
+:navtitle: Customizing OpenShift Eclipse Che branding images
+:page-aliases: installation-guide:customizing-openshift-che-consolelink-icon.adoc, customizing-openshift-che-consolelink-icon.adoc
+
+[id="customizing-openshift-che-branding-images"]
+= Customizing {ocp} {prod} branding images
+
+Customize the branding images for the {prod} dashboard by overriding the default images in the `assets/branding` directory. The following images can be customized:
+
+* `che-logo.svg` — the logo displayed in the dashboard header.
+* `loader.svg` — the loader icon displayed during dashboard loading. The loader image supports the following formats, in priority order: `jpg`, `jpeg`, `png`, `gif`, `webp`, `svg`. The `svg` format is used as the default fallback.
+* `favicon.ico` — the browser tab icon.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Create a Secret that mounts custom branding images into the dashboard:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {prod-deployment}-dashboard-customization
+  namespace: {prod-namespace}
+  annotations:
+    che.eclipse.org/mount-as: subpath
+    che.eclipse.org/mount-path: /public/dashboard/assets/branding
+  labels:
+    app.kubernetes.io/component: {prod-deployment}-dashboard-secret
+    app.kubernetes.io/part-of: che.eclipse.org
+data:
+  che-logo.svg: __<Base64_encoded_content_of_the_image>__ <1>
+  loader.svg: __<Base64_encoded_content_of_the_image>__ <2>
+  favicon.ico: __<Base64_encoded_content_of_the_image>__ <3>
+type: Opaque
+EOF
+----
+<1> The dashboard logo. Replace `che-logo.svg` with the Base64-encoded content of your custom logo with disabled line wrapping.
+<2> The loader icon. Replace `loader.svg` with the filename matching your image format (for example, `loader.png`, `loader.webp`). The value is the Base64-encoded content of the image with disabled line wrapping.
+<3> The favicon. The value is the Base64-encoded content of the `.ico` file with disabled line wrapping.
++
+NOTE: You can override one or all images from the `/public/dashboard/assets/branding` directory in the dashboard pod. Only the images specified in the Secret `data` section are overridden; unspecified images remain unchanged.
+
+. Verify that the rollout completes:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} rollout status deployment/{prod-deployment}-dashboard -n {prod-namespace}
+----
+
+.Verification
+
+* Open the {prod} dashboard in a browser and confirm that the custom branding images are displayed.
+
+.Additional resources
+
+* link:https://docs.openshift.com/container-platform/{ocp4-ver}/web_console/customizing-the-web-console.html#creating-custom-links_customizing-web-console[Creating custom links in the web console]
