@@ -20,7 +20,7 @@ In reverse, if a {kubernetes} resource is modified in a user namespace,
 
 [WARNING]
 ====
-By default, applying or modifying a `Secret` or `ConfigMap` with the `controller.devfile.io/mount-to-devworkspace: 'true'` label restarts all running workspaces in the {namespace}. To prevent automatic workspace restarts when mounting resources, add the `controller.devfile.io/mount-on-start: 'true'` annotation to the resource. With this annotation, the resource is mounted only when a workspace starts.
+By default, applying or modifying a `Secret` or `ConfigMap` with the `controller.devfile.io/mount-to-devworkspace: 'true'` label restarts all running workspaces in the {namespace}. To mount the resource only at workspace start and prevent automatic restarts, add the `controller.devfile.io/mount-on-start: 'true'` annotation.
 ====
 
 .Procedure
@@ -60,14 +60,15 @@ after being deleted from {prod-namespace} namespace:
 che.eclipse.org/sync-retain-on-delete: "true"
 ----
 +
-Add the annotation below to prevent workspace restarts when the ConfigMap is mounted:
+Add the following annotation to prevent workspace restarts when the ConfigMap is mounted:
 +
 [source,yaml,subs="+attributes,+quotes"]
 ----
 controller.devfile.io/mount-on-start: "true"
 ----
 +
-When `controller.devfile.io/mount-on-start: "true"` is set, the ConfigMap is mounted only when a workspace starts, not while it is already running. This prevents unexpected workspace restarts when administrators create or modify global configurations.
+With this annotation, the ConfigMap is mounted only at workspace start.
++
 For example, to mount a default SSH configuration into every workspace, you must create a ConfigMap:
 +
 ====
@@ -129,14 +130,14 @@ after being deleted from {prod-namespace} namespace:
 che.eclipse.org/sync-retain-on-delete: "true"
 ----
 +
-Add the annotation below to prevent workspace restarts when the Secret is mounted:
+Add the following annotation to prevent workspace restarts when the Secret is mounted:
 +
 [source,yaml,subs="+attributes,+quotes"]
 ----
 controller.devfile.io/mount-on-start: "true"
 ----
 +
-When `controller.devfile.io/mount-on-start: "true"` is set, the Secret is mounted only when a workspace starts, not while it is already running. This prevents unexpected workspace restarts when administrators create or modify global configurations.
+With this annotation, the Secret is mounted only at workspace start.
 +
 See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[mounting volumes, configmaps, and secrets]
 for other possible labels and annotations.
@@ -169,14 +170,14 @@ Add the annotation below if you want the `PersistentVolumeClaim` to be deleted i
 che.eclipse.org/sync-retain-on-delete: "false"
 ----
 +
-Add the annotation below to prevent workspace restarts when the `PersistentVolumeClaim` is mounted:
+Add the following annotation to prevent workspace restarts when the `PersistentVolumeClaim` is mounted:
 +
 [source,yaml,subs="+attributes,+quotes"]
 ----
 controller.devfile.io/mount-on-start: "true"
 ----
 +
-When `controller.devfile.io/mount-on-start: "true"` is set, the `PersistentVolumeClaim` is mounted only when a workspace starts, not while it is already running. This prevents unexpected workspace restarts when administrators create or modify global configurations.
+With this annotation, the `PersistentVolumeClaim` is mounted only at workspace start.
 +
 See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[mounting volumes, configmaps, and secrets]
 for other possible labels and annotations.
