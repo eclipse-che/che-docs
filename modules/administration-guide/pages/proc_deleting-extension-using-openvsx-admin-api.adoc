@@ -1,0 +1,83 @@
+:_content-type: PROCEDURE
+:description: Delete an extension from the Open VSX registry using the administrator API
+:keywords: administration guide, openvsx, delete, extension, api
+:navtitle: Delete an extension using the Open VSX API
+:page-aliases:
+
+[id="proc_deleting-extension-using-openvsx-admin-api"]
+= Delete an extension by using the Open VSX administrator API
+
+[role="_abstract"]
+Delete an extension from your private Open VSX registry by calling the administrator API with an administrator user and a Personal Access Token (PAT).
+
+.Prerequisites
+
+* You have access to the cluster where the Open VSX registry is deployed in the `openvsx` namespace.
+* You have the `{orch-cli}` tool installed.
+
+.Procedure
+
+. Add the Open VSX administrator user and PAT to the database:
++
+[source,bash,subs="+attributes,+quotes",options="nowrap"]
+----
+export POSTGRESQL_POD_NAME=$({orch-cli} get pods -n openvsx \
+   -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep '^postgresql' | head -n 1)
+----
++
+[source,bash,subs="+attributes,+quotes",options="nowrap"]
+----
+{orch-cli} exec -n openvsx "$POSTGRESQL_POD_NAME" -- bash -c \
+   "psql -d openvsx -c \"INSERT INTO user_data (id, login_name, role) VALUES (1002, 'openvsx-admin', 'admin');\""
+----
++
+[source,bash,subs="+attributes,+quotes",options="nowrap"]
+----
+{orch-cli} exec -n openvsx "$POSTGRESQL_POD_NAME" -- bash -c \
+   "psql -d openvsx -c \"INSERT INTO personal_access_token (id, user_data, value, active, created_timestamp, accessed_timestamp, description, notified) VALUES (1002, 1002, '__<your_admin_token>__', true, current_timestamp, current_timestamp, 'Admin API Token', false);\""
+----
++
+[NOTE]
+====
+Use a strong, unique value for `__<your_admin_token>__` in production environments.
+====
+
+. Delete an extension and all its versions:
++
+[source,bash,subs="+attributes,+quotes",options="nowrap"]
+----
+curl -X POST \
+  "https://__<your_openvsx_server_url>__/admin/api/extension/__<publisher>__/__<extension>__/delete?token=__<your_admin_token>__"
+----
++
+where:
++
+`__<your_openvsx_server_url>__`:: The URL of the Open VSX server.
++
+`__<publisher>__`:: The extension publisher name.
++
+`__<extension>__`:: The extension name.
++
+`__<your_admin_token>__`:: The PAT value created in step 1.
+
+. Optional: Delete a specific version of an extension:
++
+[source,bash,subs="+attributes,+quotes",options="nowrap"]
+----
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '[{"version": "__<version>__", "targetPlatform": "__<platform>__"}]' \
+  "https://__<your_openvsx_server_url>__/admin/api/extension/__<publisher>__/__<extension>__/delete?token=__<your_admin_token>__"
+----
++
+You can list multiple version and platform pairs in the JSON array.
+
+.Verification
+
+* Refresh the Open VSX registry and verify that the extension no longer appears.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:proc_deleting-extension-from-postgresql-database.adoc[]
+* xref:proc_deploy-open-vsx-from-source.adoc[]

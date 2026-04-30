@@ -1,23 +1,30 @@
-:_mod-docs-content-type: PROCEDURE
-[id="proc_deleting-extension-from-postgresql-database_{context}"]
-= Deleting an extension from the PostgreSQL database directly
+:_content-type: PROCEDURE
+:description: Delete an extension directly from the PostgreSQL database
+:keywords: administration guide, openvsx, delete, extension, postgresql, database
+:navtitle: Delete an extension from the PostgreSQL database
+:page-aliases:
+
+[id="proc_deleting-extension-from-postgresql-database"]
+= Delete an extension from the PostgreSQL database
+
 [role="_abstract"]
-Remove extension records and related data directly in the PostgreSQL database when the administrator API is not available or when you must clean up specific data. If the extension uses local storage, you must also remove its files from the Open VSX server pod.
+Remove extension records and related data directly from the PostgreSQL database when the administrator API is not available or when you need to clean up specific data. If the extension uses local storage, you must also remove its files from the Open VSX server pod.
 
 .Prerequisites
 
-* You have access to the OpenShift cluster where Open VSX is deployed (namespace `openvsx`).
+* You have access to the cluster where the Open VSX registry is deployed in the `openvsx` namespace.
+* You have the `{orch-cli}` tool installed.
 * You know the namespace name and extension name that you want to delete.
 
 .Procedure
 
 . Open a command prompt in the PostgreSQL pod and connect to the database:
 +
-[source,bash,options="nowrap"]
+[source,bash,subs="+attributes,+quotes",options="nowrap"]
 ----
-export POSTGRESQL_POD_NAME=$(oc get pods -n openvsx \
+export POSTGRESQL_POD_NAME=$({orch-cli} get pods -n openvsx \
    -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep '^postgresql' | head -n 1)
-oc exec -it $POSTGRESQL_POD_NAME -n openvsx -- /bin/bash
+{orch-cli} exec -it $POSTGRESQL_POD_NAME -n openvsx -- /bin/bash
 ----
 +
 Inside the pod, run `psql`:
@@ -35,9 +42,10 @@ At the `postgres=#` prompt, connect to the database:
 ----
 +
 You are now connected to the `openvsx` database as the `postgres` user.
+
 . Find the namespace ID and extension ID:
 +
-Identify the `namespace` ID. Replace `__<namespace_name>__` with the actual `namespace`:
+Identify the extension publisher. Replace `__<namespace_name>__` with the actual publisher name:
 +
 [source,sql,subs="+quotes",options="nowrap"]
 ----
@@ -52,6 +60,7 @@ SELECT id, name, namespace_id FROM extension WHERE namespace_id = __<namespace_i
 ----
 +
 Note the ID of the extension to use as `__<extension_id>__` in the next steps.
+
 . Optional: Preview extension versions and file resources:
 +
 Preview the versions:
@@ -69,6 +78,7 @@ SELECT id, name, type, storage_type FROM file_resource WHERE extension_id = __<e
 ----
 +
 If the `storage_type` value is `local`, you must also remove the extension files from the file system on the Open VSX server pod.
+
 . Delete the extension from the database:
 +
 Run the following commands in a single transaction. Replace `__<extension_id>__` with the extension ID from step 2.
@@ -91,24 +101,29 @@ COMMIT;
 ====
 Run these commands in order within one transaction. Do not skip the `COMMIT` command, or the system does not apply the changes.
 ====
-. If applicable, remove the extension files from local storage:
-+
-If the extension used local storage, remove its files from the Open VSX server pod.
+
+. If the extension used local storage, remove the extension files from the Open VSX server pod:
 +
 Get the Open VSX server pod name:
 +
-[source,bash,options="nowrap"]
+[source,bash,subs="+attributes,+quotes",options="nowrap"]
 ----
-export OPENVSX_POD_NAME=$(oc get pods -n openvsx -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep '^openvsx-server' | head -n 1)
+export OPENVSX_POD_NAME=$({orch-cli} get pods -n openvsx -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep '^openvsx-server' | head -n 1)
 ----
 +
-Access the pod and delete the extension folder for the publisher and extension you removed:
+Delete the extension folder:
 +
-[source,bash,subs="+quotes",options="nowrap"]
+[source,bash,subs="+attributes,+quotes",options="nowrap"]
 ----
-oc exec -it $OPENVSX_POD_NAME -n openvsx -- /bin/bash -c "rm -rf /tmp/extensions/__<publisher>__/__<extension>__"
+{orch-cli} exec -it $OPENVSX_POD_NAME -n openvsx -- /bin/bash -c "rm -rf /tmp/extensions/__<publisher>__/__<extension>__"
 ----
 
 .Verification
 
 * Refresh your Open VSX registry and verify that the extension no longer appears in the gallery.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:proc_deleting-extension-using-openvsx-admin-api.adoc[]
+* xref:proc_deploy-open-vsx-from-source.adoc[]

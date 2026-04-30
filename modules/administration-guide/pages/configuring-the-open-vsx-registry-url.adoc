@@ -1,33 +1,72 @@
 :_content-type: PROCEDURE
-:description: Configuring the Open VSX registry URL for all {prod} workspaces
-:keywords: administration guide, configuring, openvsx, registry
-:navtitle: Open VSX registry URL
+:description: Configure the Open VSX registry URL for {prod} workspaces
+:keywords: administration guide, configuring, openvsx, registry, extensions
+:navtitle: Configure the Open VSX registry URL
 :page-aliases:
 
 [id="configuring-the-open-vsx-registry-url"]
-= Configuring the Open VSX registry URL
+= Configure the Open VSX registry URL
 
-To search and install extensions, the Microsoft Visual Studio Code - Open Source editor uses an embedded Open VSX registry instance.
-You can also configure {prod-short} to use another Open VSX registry instance rather than the embedded one.
+[role="_abstract"]
+Configure {prod-short} to use an alternative Open VSX registry instance instead of the default embedded registry. Switch to the public open-vsx.org registry for internet-connected environments, or to a standalone on-premises instance for full control over available extensions.
+
+The default is the embedded instance of the Open VSX registry.
+
+If the default Open VSX registry instance does not meet your requirements, you can select one of the following instances:
+
+* The Open VSX registry instance at `pass:c,a,q[https://open-vsx.org]` that requires access to the internet.
+
+* A standalone Open VSX registry instance that is deployed on a network accessible from {prod-short} workspace pods.
+
+.Prerequisites
+
+* You have administrator access to the cluster where {prod-short} is deployed.
+* You have an active `{orch-cli}` session with administrative permissions. See {orch-cli-link}.
 
 .Procedure
-* Set the URL of your Open VSX registry instance in the CheCluster Custom Resource `spec.components.pluginRegistry.openVSXURL` field.
+
+. Edit the `CheCluster` custom resource to update the `openVSXURL` value:
 +
-[source,yaml,subs="+attributes,+quotes"]
+[source,yaml,subs="+quotes"]
 ----
 spec:
-   components:
-# [...]
-     pluginRegistry:
-       openVSXURL: __<your_open_vsx_registy>__
-# [...]
+  components:
+    pluginRegistry:
+      openVSXURL: "__<url_of_an_open_vsx_registry_instance>__"
 ----
++
+where:
++
+`__<url_of_an_open_vsx_registry_instance>__`:: The URL of the Open VSX registry instance. For example: `openVSXURL: "pass:c,a,q[https://open-vsx.org]"`.
++
+--
+* To select the embedded Open VSX registry instance in the `plugin-registry` pod, use `openVSXURL: ''`. You can customize the list of included extensions. See xref:extensions-for-microsoft-visual-studio-code-open-source.adoc[].
+
+* You can also point `openVSXURL` at the URL of a standalone Open VSX registry instance. The URL must be accessible from within your organization's cluster and not blocked by a proxy.
+--
++
+[NOTE]
+====
+To ensure the stability and performance of the community-supported Open VSX Registry, API usage is organized into defined tiers. The Eclipse Foundation implements these limits to protect infrastructure from high-frequency automated traffic and to provide consistent service quality for all users. For more information, see link:https://github.com/EclipseFdn/open-vsx.org/wiki/rate-limiting[Rate Limits and Usage Tiers] and the link:https://github.com/EclipseFdn/open-vsx.org/wiki[open-vsx.org wiki].
+====
++
+[IMPORTANT]
+====
+Using link:https://open-vsx.org[https://open-vsx.org] is not recommended in an air-gapped environment, isolated from the internet. To reduce the risk of malware infections and unauthorized access to your code, use the embedded or self-hosted Open VSX registry with a curated set of extensions.
+====
 +
 [WARNING]
 ====
 Due to the dedicated Microsoft link:https://cdn.vsassets.io/v/M190_20210811.1/_content/Microsoft-Visual-Studio-Marketplace-Terms-of-Use.pdf[Terms of Use], link:https://marketplace.visualstudio.com/vscode[Visual Studio Code Marketplace] is not supported by {prod}.
 ====
 
+.Verification
+
+* Confirm that the `plugin-registry` pod has restarted and is running.
+* Open a workspace and verify that extensions are available from the selected registry instance in the *Extensions* view.
+
+[role="_additional-resources"]
 .Additional resources
+
 * xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]
 * link:https://open-vsx.org/[Open VSX registry]
