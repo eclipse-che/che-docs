@@ -7,22 +7,13 @@
 [id="persistent-user-home"]
 = Persistent user home
 
-
 [role="_abstract"]
 {prod} preserves the `/home/user` directory across workspace restarts for each non-ephemeral workspace, so that user-specific configurations, shell history, and tooling settings persist between sessions.
 
-This feature is enabled by default. To disable it, patch the CheCluster custom resource:
-
-[source,shell,subs="+quotes,+attributes"]
-----
-{orch-cli} patch checluster {prod-checluster} \
-  --namespace {prod-namespace} \
-  --type merge \
-  --patch '{"spec":{"devEnvironments":{"persistUserHome":{"enabled":false}}}}'
-----
+This feature is enabled by default. To disable it, set `spec.devEnvironments.persistUserHome.enabled` to `false` in the CheCluster custom resource.
 
 For newly started workspaces, this feature creates a persistent volume claim (PVC) mounted to the `/home/user` path of the tools container.
-In this documentation, "tools container" refers to the first container in the devfile.
+The tools container is the first container defined in the devfile.
 This is the container that includes the project source code by default.
 
 When the PVC is mounted for the first time, the persistent volume's contents are empty and therefore must be populated with the `/home/user` directory content.
@@ -70,15 +61,15 @@ The `persistUserHome` depends on the tools image used for the workspace. By defa
 
 If you are using a custom image, the tools image must meet three requirements to support the `persistUserHome` feature.
 
-. The tools image must contain `stow` version >= 2.4.0.
-. The `$HOME` environment variable is set to `/home/user`.
-. In the tools image, the directory that is intended to contain the `/home/user` content is `/home/tooling`.
+* The tools image must contain `stow` version >= 2.4.0.
+* The `$HOME` environment variable is set to `/home/user`.
+* The directory intended to contain the `/home/user` content is `/home/tooling`.
 
 Because the `/home/user` content must reside in `/home/tooling`, the default UDI image for example adds the `/home/user` content to `/home/tooling` instead, and runs:
 
-[source,bash,subs="+quotes,+attributes"]
+[source,dockerfile,subs="+quotes,+attributes"]
 ----
 RUN stow -t /home/user/ -d /home/tooling/ --no-folding
 ----
 
-in the Dockerfile so that files in `/home/tooling` are accessible from `/home/user` even when not using the `persistUserHome` feature.
+This `RUN` instruction in the Dockerfile ensures that files in `/home/tooling` are accessible from `/home/user` even when the `persistUserHome` feature is not enabled.
