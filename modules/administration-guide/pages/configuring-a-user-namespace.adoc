@@ -18,6 +18,13 @@ If you make changes to a {kubernetes} resource in an {prod-namespace} namespace,
 In reverse, if a {kubernetes} resource is modified in a user namespace,
 {prod-short} will immediately revert the changes.
 
+[WARNING]
+====
+Applying or modifying a `Secret` or `ConfigMap` with the `controller.devfile.io/mount-to-devworkspace: 'true'` label restarts all running workspaces in the {namespace}.
+
+To mount the `Secret` or `ConfigMap` only at workspace start and prevent automatic restarts, add the `controller.devfile.io/mount-on-start: 'true'` annotation.
+====
+
 .Procedure
 
 . Create the `ConfigMap` below to create and mount it into every workspace.

@@ -21,7 +21,7 @@ Mount {kubernetes} ConfigMaps to the `{devworkspace}` containers in the {orch-na
 
 [WARNING]
 ====
-By default, applying or modifying a `ConfigMap` with the `controller.devfile.io/mount-to-devworkspace: 'true'` label restarts all running workspaces in the {namespace}. To mount the ConfigMap only at workspace start and prevent automatic restarts, add the `controller.devfile.io/mount-on-start: 'true'` annotation.
+By default, applying a `ConfigMap` with the `controller.devfile.io/mount-to-devworkspace: 'true'` label restarts all running workspaces in the {namespace}. To mount the ConfigMap only at workspace start and prevent automatic restarts, add the `controller.devfile.io/mount-on-start: 'true'` annotation.
 ====
 
 .Procedure
@@ -60,9 +60,7 @@ Defaults to `file`.
 |`controller.devfile.io/mount-on-start:`
 | When set to `true`, the ConfigMap is mounted only when a workspace starts, not while it is already running.
 
-This prevents workspace restarts when the ConfigMap is created or modified.
-
-Defaults to `false`. Without this annotation, ConfigMap changes trigger a workspace restart.
+This prevents workspace restarts when the ConfigMap is created.
 |===
 
 .Mounting a ConfigMap as environment variables
