@@ -20,7 +20,9 @@ In reverse, if a {kubernetes} resource is modified in a user namespace,
 
 [WARNING]
 ====
-Applying or modifying a `Secret` or `ConfigMap` with the `controller.devfile.io/mount-to-devworkspace: 'true'` label restarts all running workspaces in the {namespace}. Ensure that users save their work before you apply these changes.
+Applying or modifying a `Secret` or `ConfigMap` with the `controller.devfile.io/mount-to-devworkspace: 'true'` label restarts all running workspaces in the {namespace}.
+
+To mount the `Secret` or `ConfigMap` only at workspace start and prevent automatic restarts, add the `controller.devfile.io/mount-on-start: 'true'` annotation.
 ====
 
 .Procedure
@@ -44,14 +46,6 @@ data:
 ====
 To enhance the configurability, you can customize the `ConfigMap` by adding additional labels and annotations.
 +
-Add the following labels if you do not want the ConfigMap to be mounted automatically:
-+
-[source,yaml,subs="+attributes,+quotes"]
-----
-controller.devfile.io/watch-configmap: "false"
-controller.devfile.io/mount-to-devworkspace: "false"
-----
-+
 Add the annotation below if you want the ConfigMap to be retained in a user {namespace}
 after being deleted from {prod-namespace} namespace:
 +
@@ -59,6 +53,16 @@ after being deleted from {prod-namespace} namespace:
 ----
 che.eclipse.org/sync-retain-on-delete: "true"
 ----
++
+Add the following annotation to prevent workspace restarts when the ConfigMap is mounted:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+controller.devfile.io/mount-on-start: "true"
+----
++
+With this annotation, the ConfigMap is mounted only at workspace start.
++
 For example, to mount a default SSH configuration into every workspace, you must create a ConfigMap:
 +
 ====
@@ -104,14 +108,6 @@ stringData:
 ====
 To enhance the configurability, you can customize the `Secret` by adding additional labels and annotations.
 +
-Add the labels if you do not want the Secret to be mounted automatically:
-+
-[source,yaml,subs="+attributes,+quotes"]
-----
-controller.devfile.io/watch-secret: "false"
-controller.devfile.io/mount-to-devworkspace: "false"
-----
-+
 Add the annotation below if you want the Secret to be retained in a user {namespace}
 after being deleted from {prod-namespace} namespace:
 +
@@ -119,6 +115,15 @@ after being deleted from {prod-namespace} namespace:
 ----
 che.eclipse.org/sync-retain-on-delete: "true"
 ----
++
+Add the following annotation to prevent workspace restarts when the Secret is mounted:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+controller.devfile.io/mount-on-start: "true"
+----
++
+With this annotation, the Secret is mounted only at workspace start.
 +
 See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[mounting volumes, configmaps, and secrets]
 for other possible labels and annotations.
@@ -150,6 +155,15 @@ Add the annotation below if you want the `PersistentVolumeClaim` to be deleted i
 ----
 che.eclipse.org/sync-retain-on-delete: "false"
 ----
++
+Add the following annotation to prevent workspace restarts when the `PersistentVolumeClaim` is mounted:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+controller.devfile.io/mount-on-start: "true"
+----
++
+With this annotation, the `PersistentVolumeClaim` is mounted only at workspace start.
 +
 See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[mounting volumes, configmaps, and secrets]
 for other possible labels and annotations.
