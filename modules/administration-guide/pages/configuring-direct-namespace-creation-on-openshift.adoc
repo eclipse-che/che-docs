@@ -1,0 +1,44 @@
+:_content-type: PROCEDURE
+:description: Configuring {prod-short} to create standard {kubernetes} Namespaces directly on {ocp} instead of using the ProjectRequest API
+:keywords: administration guide, configuring, namespace, openshift, project, projectrequest
+:navtitle: Configuring direct namespace creation on OpenShift
+:page-aliases:
+
+[id="configuring-direct-namespace-creation-on-openshift"]
+= Configuring direct namespace creation on OpenShift
+
+By default, on {ocp} clusters, {prod-short} uses the ProjectRequest API to create projects. This triggers cluster-specific link:https://docs.openshift.com/container-platform/latest/applications/projects/configuring-project-creation.html[Project Templates], which can apply additional resources or policies.
+
+On {ocp}, you can bypass Project Templates and create standard {kubernetes} Namespaces directly. For example, this is useful when Project Templates introduce unwanted side effects.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Set the `createNamespaceDirectly` field to `true`:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{
+    "spec": {
+      "devEnvironments": {
+        "defaultNamespace": {
+          "createNamespaceDirectly": true
+        }
+      }
+    }
+  }'
+----
+
+NOTE: This setting applies only to {ocp} clusters. On {kubernetes} clusters, Namespaces are always created directly regardless of this setting.
+
+.Additional resources
+
+* xref:configuring-namespace-provisioning.adoc[]
+* xref:configuring-a-user-namespace.adoc[]
+* link:https://docs.openshift.com/container-platform/latest/applications/projects/configuring-project-creation.html[Configuring OpenShift project creation]
