@@ -33,7 +33,7 @@ Restrict your Open VSX registry to internal cluster traffic by removing the publ
 export CHECLUSTER_NAME="$({orch-cli} get checluster --all-namespaces -o json | jq -r '.items[0].metadata.name')" &&
 export CHECLUSTER_NAMESPACE="$({orch-cli} get checluster --all-namespaces -o json | jq -r '.items[0].metadata.namespace')" &&
 export PATCH='{"spec":{"components":{"pluginRegistry":{"openVSXURL":"http://openvsx-server.openvsx.svc:8080"}}}}' &&
-{orch-cli} patch checluster "${CHECLUSTER_NAME}" --type=merge --patch "${PATCH}" -n "${CHECLUSTER_NAMESPACE}"
+{orch-cli} patch checluster "$\{CHECLUSTER_NAME}" --type=merge --patch "$\{PATCH}" -n "$\{CHECLUSTER_NAMESPACE}"
 ----
 
 . Restart any running workspaces to apply the new registry URL.
