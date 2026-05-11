@@ -1,13 +1,17 @@
 :_content-type: PROCEDURE
-:description: Enable and configure AI provider support in Eclipse Che so that users can select an AI assistant when creating workspaces.
+:description: Register AI providers in Eclipse Che so that developers can select and use AI coding assistants when creating workspaces.
 :keywords: administration, ai, ai provider, gemini, claude, configmap, ai-tool-registry, api key
-:navtitle: Configuring AI Providers
+:navtitle: Configuring AI providers
 :page-aliases:
 
 [id="configuring-ai-providers"]
-= Configuring AI providers
+= Configure AI providers
 
-Enable one or more AI providers in {prod-short} so that users can select an AI coding assistant from the *Create Workspace* page and have the tool binary injected into the workspace editor container.
+:FeatureName: The AI provider feature
+include::examples/snip_che-technology-preview.adoc[]
+
+[role="_abstract"]
+Register one or more AI providers in {prod-short} so that developers can select and use AI coding assistants when creating workspaces.
 
 The AI tool registry is stored in a {kubernetes} `ConfigMap` with specific labels. When the ConfigMap exists and contains at least one provider with a matching tool, the AI Selector widget is displayed on the dashboard. When the ConfigMap is absent or empty, the widget is hidden.
 
@@ -97,12 +101,9 @@ $ {orch-cli} create configmap ai-tool-registry \
 
 [NOTE]
 ====
-To disable the AI Selector widget, delete the `ai-tool-registry` ConfigMap. Users will no longer see the AI Provider section on the Create Workspace page. Existing API key Secrets in user namespaces are not deleted automatically.
-====
+To disable the AI Selector widget, delete the `ai-tool-registry` ConfigMap. Users will no longer see the AI Provider section on the *Create Workspace* page. Existing API key Secrets in user namespaces are not deleted automatically.
 
-[NOTE]
-====
-When an administrator updates the registry (for example, removes a tool or changes the injector image tag), existing workspaces are updated automatically before their next start. The dashboard removes stale tool injectors and replaces outdated image tags without user intervention.
+When you update the registry (for example, to remove a tool or change the injector image tag), existing workspaces are updated automatically before their next start. The dashboard removes stale tool injectors and replaces outdated image tags without user intervention.
 ====
 
 .Additional resources

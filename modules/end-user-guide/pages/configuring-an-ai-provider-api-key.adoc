@@ -1,12 +1,13 @@
 :_content-type: PROCEDURE
-:description: Configuring an AI provider API key in Eclipse Che.
+:description: Store your AI provider API key so that it is automatically available as an environment variable in all your workspaces.
 :keywords: user-guide, ai, api key, gemini, claude, ai provider, environment variable, secret
-:navtitle: Configuring an AI Provider API Key
+:navtitle: Configuring an AI provider API key
 :page-aliases:
 
 [id="configuring-an-ai-provider-api-key"]
-= Configuring an AI provider API key
+= Configure an AI provider API key
 
+[role="_abstract"]
 Configure an AI provider API key so that it is automatically injected as an environment variable into all your workspaces.
 
 .Prerequisites
@@ -16,36 +17,38 @@ Configure an AI provider API key so that it is automatically injected as an envi
 
 .Procedure
 
-You can configure an API key from the *Create Workspace* page or from *User Preferences*.
+. Configure the API key using one of the following methods:
 
-== From the Create Workspace page
-
-. Navigate to *Create Workspace*.
-. In the *AI Provider* section, expand *Choose an AI Provider*.
-. Click the provider card.
-. Enter your API key and click *Save key*.
+** *From the Create Workspace page:*
++
+... Navigate to *Create Workspace*.
+... In the *AI Provider* section, expand *Choose an AI Provider*.
+... Click the provider card.
+... Enter your API key and click *Save key*.
 +
 A *Key configured* badge is displayed on the provider card.
 
-== From User Preferences
-
-. Navigate to *User Preferences > AI Providers Keys*.
-. Click *Add API Key*.
-. Select the AI provider and enter the API key.
-. Click *Save*.
-
+** *From User Preferences:*
++
+... Navigate to *User Preferences > AI Providers Keys*.
+... Click *Add API Key*.
+... Select the AI provider and enter the API key.
+... Click *Save*.
++
 To update or delete a key, use the edit or delete icons in the table row.
 
 .Verification
 
 . Start a workspace with the configured AI provider.
-. Open a terminal and verify:
+. Open a terminal and verify that the tool binary is in `PATH` and the API key variable is set:
 +
 [subs="+quotes"]
 ----
-$ which gemini
-$ echo $GEMINI_API_KEY
+$ which __<binary_name>__
+$ test -n "$__<ENV_VAR_NAME>__" && echo "API key is configured"
 ----
++
+Replace `__<binary_name>__` and `__<ENV_VAR_NAME>__` with the values for your provider (for example, `gemini` and `GEMINI_API_KEY` for the Gemini provider).
 
 NOTE: The API key is available in all workspaces in your {orch-namespace}, including already running ones.
 
