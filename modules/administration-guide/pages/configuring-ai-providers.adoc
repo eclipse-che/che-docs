@@ -1,0 +1,111 @@
+:_content-type: PROCEDURE
+:description: Enable and configure AI provider support in Eclipse Che so that users can select an AI assistant when creating workspaces.
+:keywords: administration, ai, ai provider, gemini, claude, configmap, ai-tool-registry, api key
+:navtitle: Configuring AI Providers
+:page-aliases:
+
+[id="configuring-ai-providers"]
+= Configuring AI providers
+
+Enable one or more AI providers in {prod-short} so that users can select an AI coding assistant from the *Create Workspace* page and have the tool binary injected into the workspace editor container.
+
+The AI tool registry is stored in a {kubernetes} `ConfigMap` with specific labels. When the ConfigMap exists and contains at least one provider with a matching tool, the AI Selector widget is displayed on the dashboard. When the ConfigMap is absent or empty, the widget is hidden.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+* The {prod-operator} is installed and a `{prod-checluster}` custom resource exists in the `{prod-namespace}` namespace.
+
+.Procedure
+
+. Create a `registry.json` file defining providers, tools, and default selections:
++
+[source,json,subs="+quotes"]
+----
+{
+  "providers": [
+    {
+      "id": "google/gemini",
+      "name": "Gemini",
+      "publisher": "Google",
+      "description": "Google Gemini AI assistant for the terminal.",
+      "docsUrl": "https://ai.google.dev/gemini-api/docs/quickstart",
+      "icon": "https://example.com/gemini-icon.svg"
+    },
+    {
+      "id": "anthropic/claude",
+      "name": "Claude",
+      "publisher": "Anthropic",
+      "description": "Anthropic Claude AI coding assistant for terminal.",
+      "docsUrl": "https://docs.anthropic.com/claude/reference/getting-started-with-the-api",
+      "icon": "https://example.com/claude-icon.svg"
+    }
+  ],
+  "tools": [
+    {
+      "providerId": "google/gemini",  <1>
+      "tag": "next",                  <2>
+      "name": "Gemini CLI",
+      "url": "https://ai.google.dev/gemini-api/docs",
+      "binary": "gemini",             <3>
+      "pattern": "bundle",            <4>
+      "injectorImage": "quay.io/example/gemini-cli:next",  <5>
+      "envVarName": "GEMINI_API_KEY"   <6>
+    },
+    {
+      "providerId": "anthropic/claude",
+      "tag": "next",
+      "name": "Claude Code",
+      "url": "https://claude.ai/code",
+      "binary": "claude",
+      "pattern": "init",
+      "injectorImage": "quay.io/example/claude-code:next",
+      "envVarName": "ANTHROPIC_API_KEY"
+    }
+  ],
+  "defaultAiProviders": ["google/gemini"]  <7>
+}
+----
+<1> Links the tool to a provider by the provider's `id`.
+<2> Version tag. When multiple tools share the same `providerId`, the dashboard selects by tag priority: `next` > `latest` > highest semver.
+<3> Binary name available in `PATH` after injection.
+<4> Injection pattern: `init` copies a single binary; `bundle` copies a full runtime directory and creates a symlink.
+<5> Container image used as an init container to copy the tool binary into a shared volume.
+<6> Environment variable name for the API key. The dashboard creates a {kubernetes} Secret with this key.
+<7> Optional. List of provider IDs pre-selected in the AI Selector widget for new workspaces.
+
+. Create the `ConfigMap` in the `{prod-namespace}` namespace with the required labels:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} create configmap ai-tool-registry \
+  --from-file=registry.json=registry.json \
+  -n {prod-namespace} \
+  --dry-run=client -o yaml | \
+  {orch-cli} label --local -f - \
+    app.kubernetes.io/component=ai-tool-registry \
+    app.kubernetes.io/part-of=che.eclipse.org \
+    -o yaml | \
+  {orch-cli} apply -f -
+----
+
+.Verification
+
+. Open the {prod-short} dashboard.
+. Navigate to *Create Workspace*.
+. Verify that an *AI Provider* section is visible, listing the providers you configured.
+
+[NOTE]
+====
+To disable the AI Selector widget, delete the `ai-tool-registry` ConfigMap. Users will no longer see the AI Provider section on the Create Workspace page. Existing API key Secrets in user namespaces are not deleted automatically.
+====
+
+[NOTE]
+====
+When an administrator updates the registry (for example, removes a tool or changes the injector image tag), existing workspaces are updated automatically before their next start. The dashboard removes stale tool injectors and replaces outdated image tags without user intervention.
+====
+
+.Additional resources
+
+* xref:ai-provider-api-key-secret-reference.adoc[]
+* xref:using-ai-assistants-in-workspaces.adoc[]

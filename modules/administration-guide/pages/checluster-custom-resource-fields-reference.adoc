@@ -11,9 +11,11 @@ This section describes all fields available to customize the `CheCluster` Custom
 
 * xref:a-minimal-checluster-custom-resource-example[]
 * xref:checluster-custom-resource-devEnvironments-settings[]
+** xref:checluster-custom-resource-devEnvironments-aiProviders-settings[]
 ** xref:checluster-custom-resource-devEnvironments-allowedSources-settings[]
 ** xref:checluster-custom-resource-devEnvironments-containerBuildConfiguration-settings[]
 ** xref:checluster-custom-resource-devEnvironments-containerRunConfiguration-settings[]
+** xref:checluster-custom-resource-devEnvironments-defaultAiProvider-settings[]
 ** xref:checluster-custom-resource-devEnvironments-defaultNamespace-settings[]
 ** xref:checluster-custom-resource-devEnvironments-defaultPlugins-settings[]
 ** xref:checluster-custom-resource-devEnvironments-editorsDownloadUrls-settings[]
@@ -100,3 +102,96 @@ spec:
 ====
 
 include::example$checluster-properties/checluster-properties.adoc[leveloffset=+1]
+
+[id="ai-tool-registry-configmap-reference"]
+== AI tool registry ConfigMap
+
+AI providers and tools are configured through a {kubernetes} `ConfigMap` in the `{prod-namespace}` namespace, not through the `{prod-checluster}` custom resource. The ConfigMap must have the following labels to be discovered by the dashboard:
+
+* `app.kubernetes.io/component=ai-tool-registry`
+* `app.kubernetes.io/part-of=che.eclipse.org`
+
+The ConfigMap contains a `registry.json` key with three sections: `providers`, `tools`, and `defaultAiProviders`.
+
+=== Provider fields
+
+[cols="1,1,3",options="header"]
+|===
+| Field | Type | Description
+
+| `id`
+| `string`
+| Unique identifier for the provider (for example, `google/gemini`).
+
+| `name`
+| `string`
+| Display name shown in the dashboard (for example, `Gemini`).
+
+| `publisher`
+| `string`
+| Publisher name (for example, `Google`).
+
+| `description`
+| `string` (optional)
+| Short description shown in the provider card.
+
+| `docsUrl`
+| `string` (optional)
+| URL to the provider's API key documentation, shown as a link in the dashboard.
+
+| `icon`
+| `string` (optional)
+| URL to the provider's SVG icon.
+|===
+
+=== Tool fields
+
+[cols="1,1,3",options="header"]
+|===
+| Field | Type | Description
+
+| `providerId`
+| `string`
+| Links the tool to a provider by `id` (for example, `google/gemini`).
+
+| `tag`
+| `string`
+| Version tag (for example, `next`, `latest`, `3.21`). When multiple tools share the same `providerId`, the dashboard selects by priority: `next` > `latest` > highest semver.
+
+| `name`
+| `string`
+| Display name for the tool (for example, `Gemini CLI`).
+
+| `url`
+| `string`
+| URL to the tool's homepage.
+
+| `binary`
+| `string`
+| Binary name available in `PATH` after injection (for example, `gemini`).
+
+| `pattern`
+| `string`
+| Injection pattern: `init` (single binary copied to `/injected-tools/bin/`) or `bundle` (full runtime directory copied and symlinked).
+
+| `injectorImage`
+| `string`
+| Container image used as an init container to copy the tool binary into a shared volume.
+
+| `envVarName`
+| `string` (optional)
+| Name of the environment variable for the API key (for example, `GEMINI_API_KEY`). This is also the data key in the {kubernetes} Secret.
+
+| `setupCommand`
+| `string` (optional)
+| One-time setup command run in the editor container at postStart.
+|===
+
+=== defaultAiProviders
+
+Optional. A JSON array of provider `id` values that are pre-selected in the AI Selector widget for new workspaces.
+
+.Additional resources
+
+* xref:configuring-ai-providers.adoc[]
+* xref:ai-provider-api-key-secret-reference.adoc[]
