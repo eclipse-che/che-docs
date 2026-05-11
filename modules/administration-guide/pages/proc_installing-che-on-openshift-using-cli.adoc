@@ -1,0 +1,56 @@
+:_content-type: PROCEDURE
+:description: To set up cloud development environments for your team on an OpenShift cluster, deploy {prod-short} by using the {prod-cli} CLI management tool.
+:keywords: install, openshift, cli, chectl
+:navtitle: Install {prod-short} on OpenShift using CLI
+:page-aliases: installation-guide:installing-che-on-openshift-4-using-cli.adoc, overview:installing-che-on-openshift-4-using-cli.adoc, installing-che-on-openshift-4-using-cli.adoc, installing-che-on-openshift-using-cli.adoc
+
+[id="proc_installing-che-on-openshift-using-cli"]
+= Install {prod-short} on OpenShift using CLI
+
+[role="_abstract"]
+To set up cloud development environments for your team on an {orch-name} cluster, deploy {prod-short} by using the `{prod-cli}` CLI management tool.
+
+.Prerequisites
+
+* You have an {ocp} {ocp4-ver} or later cluster.
+
+* You have an active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the OpenShift CLI].
+
+* You have the `{prod-cli}` management tool installed. See xref:installing-the-chectl-management-tool.adoc[].
+
+.Procedure
+
+. Optional: If you previously deployed {prod-short} on this {orch-name} cluster, ensure that the previous {prod-short} instance is removed:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ {prod-cli} server:delete
+----
+
+. Create the {prod-short} instance:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ {prod-cli} server:deploy --platform openshift
+----
+
+.Verification
+
+. Verify the {prod-short} instance status:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ {prod-cli} server:status
+----
+
+. Navigate to the {prod-short} cluster instance:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ {prod-cli} dashboard:open
+----
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:ref_permissions-to-install-che-on-openshift-using-cli.adoc[]

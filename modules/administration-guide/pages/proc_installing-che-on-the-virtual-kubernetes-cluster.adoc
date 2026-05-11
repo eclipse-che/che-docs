@@ -1,38 +1,36 @@
 :_content-type: PROCEDURE
-:navtitle: Installing {prod-short} on the virtual {kubernetes} cluster
-:description: Installing {prod-short} on the virtual {kubernetes} cluster
-:keywords: installing-{prod-short}-on-the-virtual-kubernetes-cluster
-:page-aliases:
+:navtitle: Install {prod-short} on the virtual {kubernetes} cluster
+:description: To deploy {prod-short} when the host cluster version is incompatible or lacks external OIDC support, use a virtual {kubernetes} cluster (vCluster).
+:keywords: installing-{prod-id-short}-on-the-virtual-kubernetes-cluster
+:page-aliases: installing-che-on-the-virtual-kubernetes-cluster.adoc
 
-[id="installing-{prod-short}-on-the-virtual-kubernetes-cluster.adoc"]
-= Installing {prod-short} on the virtual {kubernetes} cluster
+[id="installing-{prod-id-short}-on-the-virtual-kubernetes-cluster"]
+= Install {prod-short} on the virtual {kubernetes} cluster
 
-
-Virtual clusters are fully working {kubernetes} clusters that run on top of other  {kubernetes} clusters. Compared to fully separate "real" clusters, virtual clusters reuse worker nodes and networking of the host cluster. They have their own control plane and schedule all workloads into a single {namespace} of the host cluster. Similar to virtual machines, virtual clusters partition a single physical cluster into multiple separate ones.
-
-`vCluster` offers a solution for deploying {prod-short} in scenarios where it normally would be impossible. This includes situations where the {kubernetes} cluster version is incompatible with {prod-short}, or when the cloud service provider lacks support for external OIDC. Utilizing `vClusters` allows bypassing these constraints and enables {prod-short} to function as needed.
+[role="_abstract"]
+To deploy {prod-short} when the host cluster version is incompatible or lacks external OIDC support, use a virtual {kubernetes} cluster (vCluster) to bypass these constraints.
 
 .Prerequisites
 
-* `helm`: The package manager for {kubernetes}. See: link:https://helm.sh/docs/intro/install/[Installing Helm].
+* You have `helm` installed. See link:https://helm.sh/docs/intro/install/[Installing Helm].
 
-* `vcluster`: The command line tool for managing virtual {kubernetes} clusters. See link:https://www.vcluster.com/docs/getting-started/setup[Installing vCluster CLI].
+* You have `vcluster` CLI installed. See link:https://www.vcluster.com/docs/getting-started/setup[Installing vCluster CLI].
 
-* `{orch-cli}`: The Kubernetes command-line tool. See link:https://kubernetes.io/docs/tasks/tools/#kubectl[Installing {orch-cli}].
+* You have `{orch-cli}` installed. See link:https://kubernetes.io/docs/tasks/tools/#kubectl[Installing {orch-cli}].
 
-* `kubelogin`: The plugin for `kubectl` also known as `kubectl oidc-login`. See https://github.com/int128/kubelogin[Installing kubelogin].
+* You have `kubelogin` installed. See link:https://github.com/int128/kubelogin[Installing kubelogin].
 
-* `{prod-cli}`: The command line tool for {prod}. See: xref:installing-the-chectl-management-tool.adoc[].
+* You have `{prod-cli}` installed. See xref:installing-the-chectl-management-tool.adoc[].
 
-* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster.
+* You have an active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster.
 
 .Procedure
 
 . Define the cluster domain name.
 +
-[source,shell]
+[source,bash,subs="+quotes"]
 ----
-DOMAIN_NAME=<KUBERNETES_CLUSTER_DOMAIN_NAME>
+DOMAIN_NAME=__<kubernetes_cluster_domain_name>__
 ----
 
 . Install link:https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/[Ingress Controller].
@@ -42,7 +40,7 @@ Check your {kubernetes} provider documentation on how to install it.
 ====
 Use the following command to install link:https://docs.nginx.com/nginx-ingress-controller/[NGINX Ingress Controller]
 on Azure Kubernetes Service cluster:
-[source,shell,subs="attributes+"]
+[source,bash,subs="attributes+"]
 ----
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
@@ -57,7 +55,7 @@ helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
 
 . Install the link:https://cert-manager.io[cert-manager]:
 +
-[source,shell,subs="attributes+"]
+[source,bash,subs="attributes+"]
 ----
 helm repo add jetstack https://charts.jetstack.io
 helm repo update
@@ -71,24 +69,24 @@ helm install cert-manager jetstack/cert-manager \
 
 . Define the `Keycloak` host:
 +
-[source,shell,subs="+attributes"]
+[source,bash,subs="+attributes"]
 ----
 KEYCLOAK_HOST=keycloak.$\{DOMAIN_NAME}
 ----
 +
 [IMPORTANT]
 ====
-If you use a registrar such as GoDaddy, you will need to add the following DNS record
+If you use a registrar such as GoDaddy, add the following DNS record
 in your registrar and point it to the IP address of the ingress controller:
 
-* type: `**A**`
-* name: `**keycloak**`
+* type: `A`
+* name: `keycloak`
 ====
 +
 [TIP]
 ====
-Use the following command to figure out the external IP address of the NGINX Ingress Controller:
-[source,shell,subs="attributes+"]
+Run the following command to find the external IP address of the NGINX Ingress Controller:
+[source,bash,subs="attributes+"]
 ----
 {orch-cli} get services ingress-nginx-controller \
   --namespace ingress-nginx \
@@ -99,7 +97,7 @@ Use the following command to figure out the external IP address of the NGINX Ing
 [TIP]
 ====
 Use the following command to wait until `Keycloak` host is known:
-[source,shell,subs="attributes+"]
+[source,bash,subs="attributes+"]
 ----
 until ping -c1 $\{KEYCLOAK_HOST} >/dev/null 2>&1; do :; done
 ----
@@ -107,7 +105,7 @@ until ping -c1 $\{KEYCLOAK_HOST} >/dev/null 2>&1; do :; done
 
 . Install link:https://www.keycloak.org/[Keycloak] with a self-signed certificate:
 +
-[source,shell,subs="+attributes"]
+[source,bash,subs="+attributes"]
 ----
 {orch-cli} apply -f - <<EOF
 ---
@@ -270,14 +268,14 @@ EOF
 
 . Wait until the `Keycloak` pod is ready:
 +
-[source,shell,subs="+attributes"]
+[source,bash,subs="+attributes"]
 ----
 {orch-cli} wait --for=condition=ready pod -l app=keycloak -n keycloak --timeout=120s
 ----
 
 . Configure `Keycloak` to create `che` realm:
 +
-[source,shell,subs="+attributes"]
+[source,bash,subs="+attributes"]
 ----
 {orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
     "/opt/keycloak/bin/kcadm.sh config credentials \
@@ -295,7 +293,7 @@ EOF
 
 . Configure `Keycloak` to create `che-public` client:
 +
-[source,shell,subs="+attributes"]
+[source,bash,subs="+attributes"]
 ----
 {orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
     "/opt/keycloak/bin/kcadm.sh config credentials \
@@ -326,7 +324,7 @@ EOF
 
 . Configure `Keycloak` to create `che` user and the `vcluster` group:
 +
-[source,shell,subs="+attributes"]
+[source,bash,subs="+attributes"]
 ----
 {orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
     "/opt/keycloak/bin/kcadm.sh config credentials \
@@ -353,7 +351,7 @@ EOF
 
 . Configure `Keycloak` to add `che` user to `vcluster` group:
 +
-[source,shell,subs="+attributes"]
+[source,bash,subs="+attributes"]
 ----
 {orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
     "/opt/keycloak/bin/kcadm.sh config credentials \
@@ -375,7 +373,7 @@ EOF
 
 . Configure `Keycloak` to create `che-private` client:
 +
-[source,shell,subs="+attributes"]
+[source,bash,subs="+attributes"]
 ----
 {orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
     "/opt/keycloak/bin/kcadm.sh config credentials \
@@ -413,7 +411,7 @@ EOF
 
 . Print and save `che-private` client secret:
 +
-[source,shell,subs="+attributes"]
+[source,bash,subs="+attributes"]
 ----
 {orch-cli} exec deploy/keycloak -n keycloak -- bash -c \
     "/opt/keycloak/bin/kcadm.sh config credentials \
@@ -427,7 +425,7 @@ EOF
 
 . Prepare values for `vCluster` helm chart:
 +
-[source,shell,subs="+attributes"]
+[source,bash,subs="+attributes"]
 ----
 cat > /tmp/vcluster-values.yaml << EOF
 api:
@@ -460,7 +458,7 @@ EOF
 
 . Install `vCluster`:
 +
-[source,shell,subs="+attributes"]
+[source,bash,subs="+attributes"]
 ----
 helm repo add loft-sh https://charts.loft.sh
 helm repo update
@@ -473,7 +471,7 @@ helm install vcluster loft-sh/vcluster-k8s \
 
 . Mount `Keycloak` CA certificate into the `vcluster` pod:
 +
-[source,shell,subs="+attributes"]
+[source,bash,subs="+attributes"]
 ----
 {orch-cli} get secret ca.crt \
     --output "jsonpath={.data['ca\.crt']}" \
@@ -507,22 +505,22 @@ helm install vcluster loft-sh/vcluster-k8s \
 ----
 
 . Wait until `vc-vcluster` secret is created:
-[source,shell,subs="+attributes"]
 +
+[source,bash,subs="+attributes"]
 ----
 timeout 120 bash -c 'while :; do {orch-cli} get secret vc-vcluster -n vcluster && break || sleep 5; done'
 ----
 
 . Verify the `vCluster` cluster status:
 +
-[source,shell,subs="+attributes"]
+[source,bash,subs="+attributes"]
 ----
 vcluster list
 ----
 
 . Update `kubeconfig` file:
-[source,shell,subs="+attributes"]
 +
+[source,bash,subs="+attributes"]
 ----
 {orch-cli} config set-credentials vcluster \
     --exec-api-version=client.authentication.k8s.io/v1beta1 \
@@ -548,21 +546,18 @@ get-token,\
 ----
 
 . Use `vcluster` `kubeconfig` context:
-[source,shell,subs="+attributes"]
 +
+[source,bash,subs="+attributes"]
 ----
 {orch-cli} config use-context vcluster
 ----
 
-. View the pods in the cluster. By running the following command, you will be redirected to the authenticate page:
+. View the pods in the cluster. Running this command redirects to the authentication page:
 +
-[source,shell,subs="+attributes"]
+[source,bash,subs="+attributes"]
 ----
 {orch-cli} get pods --all-namespaces
 ----
-. Verification
-+
-All pods in the running state are displayed.
 
 . Install link:https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/[Ingress Controller] on the virtual {kubernetes} cluster.
 +
@@ -570,7 +565,7 @@ All pods in the running state are displayed.
 ====
 Use the following command to install link:https://docs.nginx.com/nginx-ingress-controller/[NGINX Ingress Controller]
 on Azure Kubernetes Service cluster:
-[source,shell,subs="attributes+"]
+[source,bash,subs="attributes+"]
 ----
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
@@ -585,16 +580,16 @@ helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
 +
 [IMPORTANT]
 ====
-If you use a registrar such as GoDaddy, you will need to add the following two DNS records in your registrar and point them to the IP address of the ingress controller:
+If you use a registrar such as GoDaddy, add the following two DNS records in your registrar and point them to the IP address of the ingress controller:
 
-* type: `**A**`
-* name: `**@**` and `*****`
+* type: `A`
+* name: `@` and `*`
 ====
 +
 [TIP]
 ====
-Use the following command to figure out the external IP address of the NGINX Ingress Controller:
-[source,shell,subs="attributes+"]
+Run the following command to find the external IP address of the NGINX Ingress Controller:
+[source,bash,subs="attributes+"]
 ----
 {orch-cli} get services ingress-nginx-controller \
 --namespace ingress-nginx \
@@ -605,7 +600,7 @@ Use the following command to figure out the external IP address of the NGINX Ing
 [TIP]
 ====
 Use the following command to wait until {kubernetes} host is known:
-[source,shell,subs="attributes+"]
+[source,bash,subs="attributes+"]
 ----
 until ping -c1 $\{DOMAIN_NAME} >/dev/null 2>&1; do :; done
 ----
@@ -613,7 +608,7 @@ until ping -c1 $\{DOMAIN_NAME} >/dev/null 2>&1; do :; done
 
 . Create `CheCluster` patch YAML file and replace `CHE_PRIVATE_CLIENT_SECRET` saved above:
 +
-[source,shell,subs="+attributes,+quotes"]
+[source,bash,subs="+attributes,+quotes"]
 ----
 cat > /tmp/che-patch.yaml << EOF
 kind: CheCluster
@@ -643,14 +638,14 @@ EOF
 
 . Create `{prod-namespace}` namespace:
 +
-[source,shell,subs="+attributes,"]
+[source,bash,subs="+attributes"]
 ----
 {orch-cli} create namespace {prod-namespace}
 ----
 
 . Copy `Keycloak` CA certificate into the `{prod-namespace}` namespace:
 +
-[source,shell,subs="+attributes,"]
+[source,bash,subs="+attributes"]
 ----
 {orch-cli} create configmap keycloak-certs \
         --from-file=keycloak-ca.crt=/tmp/keycloak-ca.crt \
@@ -664,7 +659,7 @@ EOF
 
 . Deploy {prod-short}:
 +
-[source,shell,subs="+attributes,"]
+[source,bash,subs="+attributes"]
 ----
 {prod-cli} server:deploy \
         --platform k8s \
@@ -672,18 +667,27 @@ EOF
         --che-operator-cr-patch-yaml /tmp/che-patch.yaml
 ----
 
-.Verification steps
+.Verification
+
+. Verify that all pods are in the running state:
++
+[source,bash,subs="+attributes"]
+----
+{orch-cli} get pods --all-namespaces
+----
+
 . Verify the {prod-short} instance status:
 +
-[source,shell,subs="+attributes,"]
+[source,bash,subs="+attributes"]
 ----
 {prod-cli} server:status
 ----
 
 . Navigate to the {prod-short} cluster instance:
 +
-[source,shell,subs="+attributes,"]
+[source,bash,subs="+attributes"]
 ----
 {prod-cli} dashboard:open
 ----
+
 . Log in to the {prod-short} instance with *Username:* `che` and *Password:* `che`.

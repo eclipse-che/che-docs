@@ -1,0 +1,83 @@
+:_content-type: PROCEDURE
+:description: To evaluate {prod-short} on a local {orch-name} cluster, deploy {prod-short} by using {rh-os-local}.
+:keywords: overview, installing, installation, local
+:navtitle: Install {prod-short} on {rh-os-local}
+:page-aliases: installation-guide:installing-che-on-codeready-containers.adoc, overview:installing-che-on-codeready-containers.adoc, installing-che-on-codeready-containers.adoc, installing-che-on-red-hat-openshift-local.adoc
+
+[id="installing-{prod-id-short}-on-red-hat-openshift-local"]
+= Install {prod-short} on {rh-os-local}
+
+[role="_abstract"]
+To evaluate {prod-short} on a local {orch-name} cluster, deploy {prod-short} by using {rh-os-local} for development and testing.
+
+.Prerequisites
+
+* You have `{prod-cli}` installed. See xref:installing-the-chectl-management-tool.adoc[].
+
+* You have a running instance of {rh-os-local}. See link:https://developers.redhat.com/products/openshift-local/overview[{rh-os-local} overview].
+
+* You know the file path of your {rh-os-local} pull secret.
+
+* You have at least 12 GB of available memory.
+
+* You have at least 64 GB of available disk space.
+
+.Procedure
+
+. Remove the previous cluster:
++
+[source,bash]
+----
+$ crc delete
+----
+
+. Configure your host machine for {rh-os-local}:
++
+[source,bash]
+----
+$ crc setup
+----
+
+. Start the {rh-os-local} virtual machine with at least 12 GB of memory and 64 GB of disk space. Specify the path to your pull secret:
++
+[source,bash,subs="+quotes"]
+----
+$ crc start --memory 12288 --disk-size=64 --pull-secret-file __<pull_secret_file>__
+----
++
+NOTE: Take note of the password for the `kubeadmin` user displayed at the end of the {rh-os-local} initiation.
+
+. Enable access to the `oc` command line interface embedded in {rh-os-local}:
++
+[source,bash]
+----
+$ eval $(crc oc-env)
+----
+
+. Install the {prod-short} instance using {prod-cli}:
++
+[source,bash,subs="+attributes"]
+----
+$ {prod-cli} server:deploy --platform crc
+----
+
+.Verification
+
+. Verify the {prod-short} instance status:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ {prod-cli} server:status
+----
+
+. Navigate to the {prod-short} cluster instance:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ {prod-cli} dashboard:open
+----
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://developers.redhat.com/products/openshift-local/overview[{rh-os-local}].
