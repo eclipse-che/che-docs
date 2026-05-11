@@ -1,14 +1,20 @@
 // monitoring-{prod-id-short}
 
 [id="enabling-and-exposing-{prod-id-short}-metrics"]
-= Enabling and exposing {prod-short} Server metrics
+= Enabling and exposing metrics
 
-{prod-short} exposes the JVM metrics on port `8087` of the `che-host` Service.
-You can configure this behaviour.
+You can enable metrics collection for {prod-short} Server and the {devworkspace} Operator.
+When enabled, the {prod-short} Operator automatically creates and manages the necessary Prometheus resources (ServiceMonitor, Role, and RoleBinding).
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+* Prometheus Operator is installed on the cluster.
 
 .Procedure
 
-* Configure the `CheCluster` Custom Resource. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
+* Configure the `CheCluster` Custom Resource to enable or disable metrics collection. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
 +
 [source,yaml,subs="+attributes,+quotes"]
 ----
@@ -16,5 +22,9 @@ spec:
   components:
     metrics:
       enable: __<boolean>__ <1>
+  devEnvironments:
+    metrics:
+      enable: __<boolean>__ <2>
 ----
-<1> `true` to enable, `false` to disable.
+<1> Enables {prod-short} Server JVM metrics on port `8087` of the `che-host` Service. Default: `false`.
+<2> Enables {devworkspace} Operator metrics on port `8443` of the `devworkspace-controller-metrics` Service. Default: `true`.

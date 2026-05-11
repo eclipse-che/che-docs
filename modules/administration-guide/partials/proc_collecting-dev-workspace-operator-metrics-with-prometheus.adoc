@@ -10,41 +10,11 @@ To use the in-cluster Prometheus instance to collect, store, and query metrics a
 
 * An active `oc` session with administrative permissions to the destination OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the CLI].
 
-* The `devworkspace-controller-metrics` Service is exposing metrics on port `8443`. This is preconfigured by default.
+* {devworkspace} Operator metrics are enabled. See xref:enabling-and-exposing-{prod-id-short}-metrics[Enabling {devworkspace} Operator metrics].
+
+* Prometheus Operator is installed on the cluster.
 
 .Procedure
-
-. Create the ServiceMonitor for detecting the Dev Workspace Operator metrics Service.
-+
-.ServiceMonitor
-====
-[source,yaml,subs="+quotes,+attributes,+macros"]
-----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: devworkspace-controller
-  namespace: {prod-namespace} <1>
-spec:
-  endpoints:
-    - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-      interval: 10s <2>
-      port: metrics
-      scheme: https
-      tlsConfig:
-        insecureSkipVerify: true
-  namespaceSelector:
-    matchNames:
-      - openshift-operators
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: devworkspace-controller
-----
-<1> The {prod-short} namespace. The default is `{prod-namespace}`.
-<2> The rate at which a target is scraped.
-====
-
-include::example$snip_{project-context}-create-a-role-and-rolebinding-for-prometheus-to-view-metrics.adoc[]
 
 . Allow the in-cluster Prometheus instance to detect the ServiceMonitor in the {prod-short} namespace. The default {prod-short} namespace is `{prod-namespace}`.
 +
@@ -52,8 +22,24 @@ include::example$snip_{project-context}-create-a-role-and-rolebinding-for-promet
 ----
 $ oc label namespace {prod-namespace} openshift.io/cluster-monitoring=true
 ----
++
+NOTE: The {prod-short} Operator automatically creates and manages the ServiceMonitor, Role, and RoleBinding resources required for Prometheus to scrape {devworkspace} Operator metrics when metrics are enabled.
 
 .Verification
+
+. Verify that the ServiceMonitor has been created:
++
+[source,terminal,subs="+attributes,quotes"]
+----
+$ oc get servicemonitor -n {prod-namespace}
+----
++
+.Example output
+[source,terminal,subs="+attributes"]
+----
+NAME                    AGE
+devworkspace-controller 5m
+----
 
 . For a fresh installation of {prod-short}, generate metrics by creating a {prod-short} workspace from the Dashboard.
 
@@ -66,19 +52,20 @@ For more metrics, see xref:ref_devworkspace-specific-metrics[].
 [TIP]
 ====
 
-To troubleshoot missing metrics, view the Prometheus container logs for possible RBAC-related errors:
+To troubleshoot missing metrics:
 
-. Get the name of the Prometheus pod:
+. Verify the ServiceMonitor, Role, and RoleBinding were created by the {prod-short} Operator:
++
+[source,terminal,subs="+attributes,quotes"]
+----
+$ oc get servicemonitor,role,rolebinding -n {prod-namespace} | grep -E "devworkspace|prometheus"
+----
+
+. View the Prometheus container logs for possible RBAC-related errors:
 +
 [source,yaml,subs="+quotes"]
 ----
 $ oc get pods -l app.kubernetes.io/name=prometheus -n openshift-monitoring -o=jsonpath='{.items[*].metadata.name}'
-----
-
-. Print the last 20 lines of the Prometheus container logs from the Prometheus pod from the previous step:
-+
-[source,yaml,subs="+quotes"]
-----
 $ oc logs --tail=20 __<prometheus_pod_name>__ -c prometheus -n openshift-monitoring
 ----
 

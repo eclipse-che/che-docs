@@ -11,85 +11,11 @@ To use the in-cluster Prometheus instance to collect, store, and query JVM metri
 
 * An active `oc` session with administrative permissions to the destination OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the CLI].
 
-* {prod-short} is exposing metrics on port `8087`. See xref:enabling-and-exposing-{prod-id-short}-metrics[Enabling and exposing {prod-short} server JVM metrics].
+* {prod-short} Server metrics are enabled. See xref:enabling-and-exposing-{prod-id-short}-metrics[Enabling and exposing {prod-short} Server JVM metrics].
+
+* Prometheus Operator is installed on the cluster.
 
 .Procedure
-
-. Create the ServiceMonitor for detecting the {prod-short} JVM metrics Service.
-+
-.ServiceMonitor
-====
-[source,yaml,subs="+quotes,+attributes,+macros"]
-----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: che-host
-  namespace: {prod-namespace} <1>
-spec:
-  endpoints:
-    - interval: 10s <2>
-      port: metrics
-      scheme: http
-  namespaceSelector:
-    matchNames:
-      - {prod-namespace} <1>
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: {prod-deployment}
-----
-<1> The {prod-short} namespace. The default is `{prod-namespace}`.
-<2> The rate at which a target is scraped.
-====
-
-. Create a Role and RoleBinding to allow Prometheus to view the metrics.
-
-+
-.Role
-====
-[source,yaml,subs="+quotes,+attributes,+macros"]
-----
-kind: Role
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: prometheus-k8s
-  namespace: {prod-namespace} <1>
-rules:
-  - verbs:
-      - get
-      - list
-      - watch
-    apiGroups:
-      - ''
-    resources:
-      - services
-      - endpoints
-      - pods
-----
-<1> The {prod-short} namespace. The default is `{prod-namespace}`.
-====
-
-+
-.RoleBinding
-====
-[source,yaml,subs="+quotes,+attributes,+macros"]
-----
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: view-{prod-id-short}-openshift-monitoring-prometheus-k8s
-  namespace: {prod-namespace} <1>
-subjects:
-  - kind: ServiceAccount
-    name: prometheus-k8s
-    namespace: openshift-monitoring
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: prometheus-k8s
-----
-<1> The {prod-short} namespace. The default is `{prod-namespace}`.
-====
 
 . Allow the in-cluster Prometheus instance to detect the ServiceMonitor in the {prod-short} namespace. The default {prod-short} namespace is `{prod-namespace}`.
 +
@@ -97,8 +23,24 @@ roleRef:
 ----
 $ oc label namespace {prod-namespace} openshift.io/cluster-monitoring=true
 ----
++
+NOTE: The {prod-short} Operator automatically creates and manages the ServiceMonitor, Role, and RoleBinding resources required for Prometheus to scrape {prod-short} Server metrics when metrics are enabled.
 
 .Verification
+
+. Verify that the ServiceMonitor has been created:
++
+[source,terminal,subs="+attributes,quotes"]
+----
+$ oc get servicemonitor -n {prod-namespace}
+----
++
+.Example output
+[source,terminal,subs="+attributes"]
+----
+NAME       AGE
+che-host   5m
+----
 
 . In the *Administrator* view of the OpenShift web console, go to *Observe* -> *Metrics*.
 
@@ -107,19 +49,20 @@ $ oc label namespace {prod-namespace} openshift.io/cluster-monitoring=true
 [TIP]
 ====
 
-To troubleshoot missing metrics, view the Prometheus container logs for possible RBAC-related errors:
+To troubleshoot missing metrics:
 
-. Get the name of the Prometheus pod:
+. Verify the ServiceMonitor, Role, and RoleBinding were created by the {prod-short} Operator:
++
+[source,terminal,subs="+attributes,quotes"]
+----
+$ oc get servicemonitor,role,rolebinding -n {prod-namespace} | grep -E "che-host|prometheus"
+----
+
+. View the Prometheus container logs for possible RBAC-related errors:
 +
 [source,yaml,subs="+quotes"]
 ----
 $ oc get pods -l app.kubernetes.io/name=prometheus -n openshift-monitoring -o=jsonpath='{.items[*].metadata.name}'
-----
-
-. Print the last 20 lines of the Prometheus container logs from the Prometheus pod from the previous step:
-+
-[source,yaml,subs="+quotes"]
-----
 $ oc logs --tail=20 __<prometheus_pod_name>__ -c prometheus -n openshift-monitoring
 ----
 
