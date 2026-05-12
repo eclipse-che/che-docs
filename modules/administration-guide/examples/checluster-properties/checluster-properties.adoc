@@ -1,0 +1,565 @@
+[id="checluster-custom-resource-devEnvironments-settings"]
+.Development environment configuration options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+allowedSources: AllowedSources defines the allowed sources on which workspaces can be started.: 
+containerBuildConfiguration: Container build configuration.: 
+containerResourceCaps: ContainerResourceCaps defines the maximum resource requirements enforced for workspace containers. If a container specifies limits or requests that exceed these values, they will be capped at the maximum. Note\: Caps only apply when resources are already specified on a container. For containers without resource specifications, use DefaultContainerResources instead. These resource caps do not apply to initContainers or the projectClone container.: 
+containerRunConfiguration: Container run configuration.: 
+defaultComponents: Default components applied to DevWorkspaces. These default components are meant to be used when a Devfile, that does not contain any components.: 
+defaultContainerResources: DefaultContainerResources defines the resource requirements (memory/cpu limit/request) used for container components that do not define limits or requests. Note\: The actual pod container resource values exactly match the sum of\: - The resource requirements configured via this field, plus - The used Editor overhead (varies from editor to editor).  For more details, see\: https\://eclipse.dev/che/docs/stable/administration-guide/calculating-che-resource-requirements/: 
+defaultEditor: The default editor to workspace create with. It could be a plugin ID or a URI. The plugin ID must have `publisher/name/version` format. The URI must start from `http\://` or `https\://`.: 
+defaultNamespace: User's default namespace.: {  "autoProvision"\: true,  "template"\: "<username>-che"}
+defaultPlugins: Default plug-ins applied to DevWorkspaces.: 
+deploymentStrategy: DeploymentStrategy defines the deployment strategy to use to replace existing workspace pods with new ones. The available deployment stragies are `Recreate` and `RollingUpdate`. With the `Recreate` deployment strategy, the existing workspace pod is killed before the new one is created. With the `RollingUpdate` deployment strategy, a new workspace pod is created and the existing workspace pod is deleted only when the new workspace pod is in a ready state. If not specified, the default `Recreate` deployment strategy is used.: 
+disableContainerBuildCapabilities: Disables the container build capabilities. When set to `false` (the default value), the devEnvironments.security.containerSecurityContext field is ignored, and the following container SecurityContext is applied\:   containerSecurityContext\:    allowPrivilegeEscalation\: true    capabilities\:      add\:      - SETGID      - SETUID: 
+disableContainerRunCapabilities: Disables container run capabilities. Can be enabled on OpenShift version 4.20 or later. When set to `false`, the value from `devEnvironments.security.containerSecurityContext` is ignored, and instead the SecurityContext defined in `devEnvironments.containerRunConfiguration.containerSecurityContext` is applied.: true
+editorsDownloadUrls: EditorsDownloadUrls provides a list of custom download URLs for JetBrains editors in a local-to-remote flow. It is particularly useful in disconnected or air-gapped environments, where editors cannot be downloaded from the public internet. Each entry contains an editor identifier in the `publisher/name/version` format and the corresponding download URL. Currently, this field is intended only for JetBrains editors and should not be used for other editor types.: 
+gatewayContainer: GatewayContainer configuration.: 
+ignoredUnrecoverableEvents: IgnoredUnrecoverableEvents defines a list of Kubernetes event names that should be ignored when deciding to fail a workspace that is starting. This option should be used if a transient cluster issue is triggering false-positives (for example, if the cluster occasionally encounters FailedScheduling events). Events listed here will not trigger workspace failures.: [  "FailedScheduling"]
+imagePullPolicy: ImagePullPolicy defines the imagePullPolicy used for containers in a DevWorkspace.: 
+initContainers: InitContainers defines a list of Kubernetes init containers that are automatically injected into all workspace pods. Typical uses cases include injecting organization tools/configs, initializing persistent home, etc.: 
+maxNumberOfRunningWorkspacesPerCluster: The maximum number of concurrently running workspaces across the entire Kubernetes cluster. This applies to all users in the system. If the value is set to -1, it means there is no limit on the number of running workspaces.: 
+maxNumberOfRunningWorkspacesPerUser: The maximum number of running workspaces per user. The value, -1, allows users to run an unlimited number of workspaces.: 
+maxNumberOfWorkspacesPerUser: Total number of workspaces, both stopped and running, that a user can keep. The value, -1, allows users to keep an unlimited number of workspaces.: -1
+metrics: Enable collection of {devworkspace} Operator metrics. When enabled, the {prod-short} Operator automatically configures Prometheus monitoring by creating the necessary ServiceMonitor, RBAC resources, and namespace labels.: true
+networking: Configuration settings related to the workspaces networking.: 
+nodeSelector: The node selector limits the nodes that can run the workspace pods.: 
+persistUserHome: PersistUserHome defines configuration options for persisting the user home directory in workspaces.: {  "enabled"\: true}
+podSchedulerName: Pod scheduler for the workspace pods. If not specified, the pod scheduler is set to the default scheduler on the cluster.: 
+projectCloneContainer: Project clone container configuration.: 
+runtimeClassName: RuntimeClassName specifies the spec.runtimeClassName for workspace pods.: 
+secondsOfInactivityBeforeIdling: Idle timeout for workspaces in seconds. This timeout is the duration after which a workspace will be idled if there is no activity. To disable workspace idling due to inactivity, set this value to -1.: 1800
+secondsOfRunBeforeIdling: Run timeout for workspaces in seconds. This timeout is the maximum duration a workspace runs. To disable workspace run timeout, set this value to -1.: -1
+security: Workspace security configuration.: 
+serviceAccount: ServiceAccount to use by the DevWorkspace operator when starting the workspaces.: 
+serviceAccountTokens: List of ServiceAccount tokens that will be mounted into workspace pods as projected volumes.: 
+startTimeoutSeconds: StartTimeoutSeconds determines the maximum duration (in seconds) that a workspace can take to start before it is automatically failed. If not specified, the default value of 300 seconds (5 minutes) is used.: 300
+storage: Workspaces persistent storage.: {  "pvcStrategy"\: "per-user"}
+tolerations: The pod tolerations of the workspace pods limit where the workspace pods can run.: 
+trustedCerts: Trusted certificate settings.: 
+user: User configuration.: 
+workspacesPodAnnotations: WorkspacesPodAnnotations defines additional annotations for workspace pods.: 
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-allowedSources-settings"]
+.`allowedSources` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+urls: The list of approved URLs for starting Cloud Development Environments (CDEs). CDEs can only be initiated from these URLs. Wildcards `*` are supported in URLs, allowing flexible matching for specific URL patterns. For instance, `https\://example.com/*` would allow CDEs to be initiated from any path within 'example.com'.: 
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-containerBuildConfiguration-settings"]
+.`containerBuildConfiguration` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+openShiftSecurityContextConstraint: OpenShift security context constraint to build containers.: "container-build"
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-containerRunConfiguration-settings"]
+.`containerRunConfiguration` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+containerSecurityContext: SecurityContext applied to all workspace containers when run capabilities are enabled. The default `procMount\: "Unmasked"` is set because the pod runs in a user namespace, which safely isolates the container's `/proc` from the host. This allows the container to modify its own sysctl settings for configuring networking for nested containers.: {  "allowPrivilegeEscalation"\: true,  "capabilities"\: {    "add"\: [      "SETGID",      "SETUID",      "CHOWN"    ]  },  "procMount"\: "Unmasked"}
+openShiftSecurityContextConstraint: Specifies the OpenShift SecurityContextConstraint used to run containers.: "container-run"
+workspacesPodAnnotations: Extra annotations applied to all workspace pods, in addition to those defined in `devEnvironments.workspacePodAnnotations`. Enables `/dev/fuse` for access to the fuse driver and `/dev/net/tun` for safe network access.: {  "io.kubernetes.cri-o.Devices"\: "/dev/fuse,/dev/net/tun"}
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-defaultNamespace-settings"]
+.`defaultNamespace` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+autoProvision: Indicates if is allowed to automatically create a user namespace. If it set to false, then user namespace must be pre-created by a cluster administrator.: true
+createKubernetesNamespaces: For OpenShift clusters only, setting this to `true` creates a standard Kubernetes Namespace. When false (default), the OpenShift ProjectRequest API is used instead to trigger cluster-specific Project Templates.: 
+template: If you don't create the user namespaces in advance, this field defines the Kubernetes namespace created when you start your first workspace. You can use `<username>` and `<userid>` placeholders, such as che-workspace-<username>.: "<username>-che"
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-defaultPlugins-settings"]
+.`defaultPlugins` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+editor: The editor ID to specify default plug-ins for. The plugin ID must have `publisher/name/version` format.: 
+plugins: Default plug-in URIs for the specified editor.: 
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-editorsDownloadUrls-settings"]
+.`editorsDownloadUrls` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+editor: The editor ID must have `publisher/name/version` format.: 
+url: ul: 
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-gatewayContainer-settings"]
+.`gatewayContainer` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+env: List of environment variables to set in the container.: 
+image: Container image. Omit it or leave it empty to use the default container image provided by the Operator.: 
+imagePullPolicy: Image pull policy. Default value is `Always` for `nightly`, `next` or `latest` images, and `IfNotPresent` in other cases.: 
+name: Container name.: 
+resources: Compute resources required by this container.: 
+securityContext: Security options the container should run with. When set, fields are merged into the container security context (same semantics as resources).: 
+volumeMounts: Pod volumes to mount into the container's filesystem. Entries are merged by volume mount name (same semantics as env).: 
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-networking-settings"]
+.`networking` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+externalTLSConfig: External TLS configuration.: 
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-networking-externalTLSConfig-settings"]
+.`externalTLSConfig` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+annotations: Annotations to be applied to ingress/route objects when external TLS is enabled.: 
+enabled: Enabled determines whether external TLS configuration is used. If set to true, the operator will not set TLS config for ingress/route objects. Instead, it ensures that any custom TLS configuration will not be reverted on synchronization.: 
+labels: Labels to be applied to ingress/route objects when external TLS is enabled.: 
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-persistUserHome-settings"]
+.`persistUserHome` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+disableInitContainer: Determines whether the init container that initializes the persistent home directory should be disabled. When the `/home/user` directory is persisted, the init container is used to initialize the directory before the workspace starts. If set to true, the init container will not be created. Disabling the init container allows home persistence to be initialized by the entrypoint present in the workspace's first container component. This field is not used if the `devEnvironments.persistUserHome.enabled` field is set to false. The init container is enabled by default.: 
+enabled: Determines whether the user home directory in workspaces should persist between workspace shutdown and startup. Must be used with the 'per-user' or 'per-workspace' PVC strategy in order to take effect.: true
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-projectCloneContainer-settings"]
+.`projectCloneContainer` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+env: List of environment variables to set in the container.: 
+image: Container image. Omit it or leave it empty to use the default container image provided by the Operator.: 
+imagePullPolicy: Image pull policy. Default value is `Always` for `nightly`, `next` or `latest` images, and `IfNotPresent` in other cases.: 
+name: Container name.: 
+resources: Compute resources required by this container.: 
+securityContext: Security options the container should run with. When set, fields are merged into the container security context (same semantics as resources).: 
+volumeMounts: Pod volumes to mount into the container's filesystem. Entries are merged by volume mount name (same semantics as env).: 
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-security-settings"]
+.`security` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+containerSecurityContext: Defines the SecurityContext applied to all workspace-related containers. When set, the specified values are merged with the default SecurityContext configuration. This setting takes effect only if both `devEnvironments.disableContainerBuildCapabilities` and `devEnvironments.disableContainerRunCapabilities` are set to `true`.: 
+podSecurityContext: PodSecurityContext used by all workspace-related pods. If set, defined values are merged into the default PodSecurityContext configuration.: 
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-storage-settings"]
+.`storage` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+perUserStrategyPvcConfig: PVC settings when using the `per-user` PVC strategy.: 
+perWorkspaceStrategyPvcConfig: PVC settings when using the `per-workspace` PVC strategy.: 
+pvcStrategy: Persistent volume claim strategy for the {prod-short} server. The supported strategies are\: `per-user` (all workspaces PVCs in one volume), `per-workspace` (each workspace is given its own individual PVC) and `ephemeral` (non-persistent storage where local changes will be lost when the workspace is stopped.): "per-user"
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-storage-perUserStrategyPvcConfig-settings"]
+.`per-user` PVC strategy options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+claimSize: Persistent Volume Claim size. To update the claim size, the storage class that provisions it must support resizing.: 
+storageAccessMode: StorageAccessMode are the desired access modes the volume should have. It is used to specify PersistentVolume access mode type to RWO/RWX when using per-user strategy, allowing user to re-use volume across multiple workspaces.  It defaults to ReadWriteOnce if not specified: 
+storageClass: Storage class for the Persistent Volume Claim. When omitted or left blank, a default storage class is used.: 
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-storage-perWorkspaceStrategyPvcConfig-settings"]
+.`per-workspace` PVC strategy options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+claimSize: Persistent Volume Claim size. To update the claim size, the storage class that provisions it must support resizing.: 
+storageAccessMode: StorageAccessMode are the desired access modes the volume should have. It is used to specify PersistentVolume access mode type to RWO/RWX when using per-user strategy, allowing user to re-use volume across multiple workspaces.  It defaults to ReadWriteOnce if not specified: 
+storageClass: Storage class for the Persistent Volume Claim. When omitted or left blank, a default storage class is used.: 
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-trustedCerts-settings"]
+.`trustedCerts` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+disableWorkspaceCaBundleMount: By default, the Operator creates and mounts the 'ca-certs-merged' ConfigMap containing the CA certificate bundle in users' workspaces at two locations\: '/public-certs' and '/etc/pki/ca-trust/extracted/pem'. The '/etc/pki/ca-trust/extracted/pem' directory is where the system stores extracted CA certificates for trusted certificate authorities on Red Hat (e.g., CentOS, Fedora). This option disables mounting the CA bundle to the '/etc/pki/ca-trust/extracted/pem' directory while still mounting it to '/public-certs'.: 
+gitTrustedCertsConfigMapName: The ConfigMap contains certificates to propagate to the {prod-short} components and to provide a particular configuration for Git. See the following page\: https\://www.eclipse.org/che/docs/stable/administration-guide/deploying-che-with-support-for-git-repositories-with-self-signed-certificates/ The ConfigMap must have a `app.kubernetes.io/part-of=che.eclipse.org` label.: 
+:=== 
+
+[id="checluster-custom-resource-devEnvironments-user-settings"]
+.`user` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+clusterRoles: Additional ClusterRoles assigned to the user. The role must have `app.kubernetes.io/part-of=che.eclipse.org` label.: 
+:=== 
+
+[id="checluster-custom-resource-components-settings"]
+.{prod-short} components configuration.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+cheServer: General configuration settings related to the {prod-short} server.: {  "debug"\: false,  "logLevel"\: "INFO"}
+dashboard: Configuration settings related to the dashboard used by the {prod-short} installation.: 
+devWorkspace: DevWorkspace Operator configuration.: 
+devfileRegistry: Configuration settings related to the devfile registry used by the {prod-short} installation.: 
+imagePuller: Kubernetes Image Puller configuration.: 
+metrics: {prod-short} server metrics configuration.: {  "enable"\: true}
+pluginRegistry: Configuration settings related to the plug-in registry used by the {prod-short} installation.: 
+:=== 
+
+[id="checluster-custom-resource-components-cheServer-settings"]
+.General configuration settings related to the {prod-short} server component.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+clusterRoles: Additional ClusterRoles assigned to {prod-short} ServiceAccount. Each role must have a `app.kubernetes.io/part-of=che.eclipse.org` label. The defaults roles are\: - `<che-namespace>-cheworkspaces-clusterrole` - `<che-namespace>-cheworkspaces-namespaces-clusterrole` - `<che-namespace>-cheworkspaces-devworkspace-clusterrole` where the <che-namespace> is the namespace where the CheCluster CR is created. The {prod-short} Operator must already have all permissions in these ClusterRoles to grant them.: 
+debug: Enables the debug mode for {prod-short} server.: false
+deployment: Deployment override options.: 
+extraProperties: A map of additional environment variables applied in the generated `che` ConfigMap to be used by the {prod-short} server in addition to the values already generated from other fields of the `CheCluster` custom resource (CR). If the `extraProperties` field contains a property normally generated in `che` ConfigMap from other CR fields, the value defined in the `extraProperties` is used instead.: 
+logLevel: The log level for the {prod-short} server\: `INFO` or `DEBUG`.: "INFO"
+proxy: Proxy server settings for Kubernetes cluster. No additional configuration is required for OpenShift cluster. By specifying these settings for the OpenShift cluster, you override the OpenShift proxy configuration.: 
+:=== 
+
+[id="checluster-custom-resource-components-cheServer-proxy-settings"]
+.`proxy` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+credentialsSecretName: The secret name that contains `user` and `password` for a proxy server. The secret must have a `app.kubernetes.io/part-of=che.eclipse.org` label.: 
+nonProxyHosts: A list of hosts that can be reached directly, bypassing the proxy. Specify wild card domain use the following form `.<DOMAIN>`, for example\:    - localhost    - 127.0.0.1    - my.host.com    - 123.42.12.32 Use only when a proxy configuration is required. The Operator respects OpenShift cluster-wide proxy configuration, defining `nonProxyHosts` in a custom resource leads to merging non-proxy hosts lists from the cluster proxy configuration, and the ones defined in the custom resources. See the following page\: https\://docs.openshift.com/container-platform/latest/networking/enable-cluster-wide-proxy.html. In some proxy configurations, localhost may not translate to 127.0.0.1. Both localhost and 127.0.0.1 should be specified in this situation.: 
+port: Proxy server port.: 
+url: URL (protocol+hostname) of the proxy server. Use only when a proxy configuration is required. The Operator respects OpenShift cluster-wide proxy configuration, defining `url` in a custom resource leads to overriding the cluster proxy configuration. See the following page\: https\://docs.openshift.com/container-platform/latest/networking/enable-cluster-wide-proxy.html.: 
+:=== 
+
+[id="checluster-custom-resource-components-pluginRegistry-settings"]
+.Configuration settings related to the Plug-in registry component used by the {prod-short} installation.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+deployment: Deployment override options.: 
+disableInternalRegistry: Disables internal plug-in registry.: 
+externalPluginRegistries: External plugin registries.: 
+openVSXURL: Open VSX registry URL. If omitted an embedded instance will be used.: 
+:=== 
+
+[id="checluster-custom-resource-components-pluginRegistry-externalPluginRegistries-settings"]
+.`externalPluginRegistries` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+url: Public URL of the plug-in registry.: 
+:=== 
+
+[id="checluster-custom-resource-components-devfileRegistry-settings"]
+.Configuration settings related to the Devfile registry component used by the {prod-short} installation.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+deployment: Deprecated deployment override options.: 
+disableInternalRegistry: Disables internal devfile registry.: 
+externalDevfileRegistries: External devfile registries serving sample ready-to-use devfiles.: 
+:=== 
+
+[id="checluster-custom-resource-components-devfileRegistry-externalDevfileRegistries-settings"]
+.`externalDevfileRegistries` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+url: The public URL of the devfile registry that serves sample ready-to-use devfiles.: 
+:=== 
+
+[id="checluster-custom-resource-components-dashboard-settings"]
+.Configuration settings related to the Dashboard component used by the {prod-short} installation.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+branding: Dashboard branding resources.: 
+deployment: Deployment override options.: 
+headerMessage: Dashboard header message.: 
+logLevel: The log level for the Dashboard.: "ERROR"
+:=== 
+
+[id="checluster-custom-resource-components-dashboard-headerMessage-settings"]
+.`headerMessage` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+show: Instructs dashboard to show the message.: 
+text: Warning message displayed on the user dashboard.: 
+:=== 
+
+[id="checluster-custom-resource-components-dashboard-branding-settings"]
+.`branding` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+logo: Dashboard logo.: 
+:=== 
+
+[id="checluster-custom-resource-components-imagePuller-settings"]
+.Kubernetes Image Puller component configuration.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+enable: Install and configure the community supported Kubernetes Image Puller Operator. When you set the value to `true` without providing any specs, it creates a default Kubernetes Image Puller object managed by the Operator. When you set the value to `false`, the Kubernetes Image Puller object is deleted, and the Operator uninstalled, regardless of whether a spec is provided. If you leave the `spec.images` field empty, a set of recommended workspace-related images is automatically detected and pre-pulled after installation. Note that while this Operator and its behavior is community-supported, its payload may be commercially-supported for pulling commercially-supported images.: 
+spec: A Kubernetes Image Puller spec to configure the image puller in the CheCluster.: 
+:=== 
+
+[id="checluster-custom-resource-components-metrics-settings"]
+.{prod-short} server metrics component configuration.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+enable: Enables `metrics` for the {prod-short} server endpoint.: true
+:=== 
+
+[id="checluster-custom-resource-gitServices-settings"]
+.Configuration settings that allows users to work with remote Git repositories.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+azure: Enables users to work with repositories hosted on Azure DevOps Service (dev.azure.com).: 
+bitbucket: Enables users to work with repositories hosted on Bitbucket (bitbucket.org or self-hosted).: 
+github: Enables users to work with repositories hosted on GitHub (github.com or GitHub Enterprise).: 
+gitlab: Enables users to work with repositories hosted on GitLab (gitlab.com or self-hosted).: 
+:=== 
+
+[id="checluster-custom-resource-gitServices-github-settings"]
+.`github` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+disableSubdomainIsolation: Disables subdomain isolation. Deprecated in favor of `che.eclipse.org/scm-github-disable-subdomain-isolation` annotation. See the following page for details\: https\://www.eclipse.org/che/docs/stable/administration-guide/configuring-oauth-2-for-github/.: 
+endpoint: GitHub server endpoint URL. Deprecated in favor of `che.eclipse.org/scm-server-endpoint` annotation. See the following page for details\: https\://www.eclipse.org/che/docs/stable/administration-guide/configuring-oauth-2-for-github/.: 
+secretName: Kubernetes secret, that contains Base64-encoded GitHub OAuth Client id and GitHub OAuth Client secret. See the following page for details\: https\://www.eclipse.org/che/docs/stable/administration-guide/configuring-oauth-2-for-github/.: 
+:=== 
+
+[id="checluster-custom-resource-gitServices-gitlab-settings"]
+.`gitlab` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+endpoint: GitLab server endpoint URL. Deprecated in favor of `che.eclipse.org/scm-server-endpoint` annotation. See the following page\: https\://www.eclipse.org/che/docs/stable/administration-guide/configuring-oauth-2-for-gitlab/.: 
+secretName: Kubernetes secret, that contains Base64-encoded GitHub Application id and GitLab Application Client secret. See the following page\: https\://www.eclipse.org/che/docs/stable/administration-guide/configuring-oauth-2-for-gitlab/.: 
+:=== 
+
+[id="checluster-custom-resource-gitServices-bitbucket-settings"]
+.`bitbucket` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+endpoint: Bitbucket server endpoint URL. Deprecated in favor of `che.eclipse.org/scm-server-endpoint` annotation. See the following page\: https\://www.eclipse.org/che/docs/stable/administration-guide/configuring-oauth-1-for-a-bitbucket-server/.: 
+secretName: Kubernetes secret, that contains Base64-encoded Bitbucket OAuth 1.0 or OAuth 2.0 data. See the following pages for details\: https\://www.eclipse.org/che/docs/stable/administration-guide/configuring-oauth-1-for-a-bitbucket-server/ and https\://www.eclipse.org/che/docs/stable/administration-guide/configuring-oauth-2-for-the-bitbucket-cloud/.: 
+:=== 
+
+[id="checluster-custom-resource-gitServices-azure-settings"]
+.`azure` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+secretName: Kubernetes secret, that contains Base64-encoded Azure DevOps Service Application ID and Client Secret. See the following page\: https\://www.eclipse.org/che/docs/stable/administration-guide/configuring-oauth-2-for-microsoft-azure-devops-services: 
+:=== 
+
+[id="checluster-custom-resource-networking-settings"]
+.Networking, {prod-short} authentication and TLS configuration.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+annotations: Defines annotations which will be set for an Ingress (a route for OpenShift platform). The defaults for kubernetes platforms are\:     kubernetes.io/ingress.class\:                       "nginx"     nginx.ingress.kubernetes.io/proxy-read-timeout\:    "3600",     nginx.ingress.kubernetes.io/proxy-connect-timeout\: "3600",     nginx.ingress.kubernetes.io/ssl-redirect\:          "true": 
+auth: Authentication settings.: {  "gateway"\: {    "configLabels"\: {      "app"\: "che",      "component"\: "che-gateway-config"    }  }}
+domain: For an OpenShift cluster, the Operator uses the domain to generate a hostname for the route. The generated hostname follows this pattern\: che-<che-namespace>.<domain>. The <che-namespace> is the namespace where the CheCluster CRD is created. In conjunction with labels, it creates a route served by a non-default Ingress controller. For a Kubernetes cluster, it contains a global ingress domain. There are no default values\: you must specify them.: 
+hostname: The public hostname of the installed {prod-short} server.: 
+ingressClassName: IngressClassName is the name of an IngressClass cluster resource. If a class name is defined in both the `IngressClassName` field and the `kubernetes.io/ingress.class` annotation, `IngressClassName` field takes precedence.: 
+labels: Defines labels which will be set for an Ingress (a route for OpenShift platform).: 
+tlsSecretName: The name of the secret used to set up Ingress TLS termination. If the field is an empty string, the default cluster certificate is used. The secret must have a `app.kubernetes.io/part-of=che.eclipse.org` label.: 
+:=== 
+
+[id="checluster-custom-resource-networking-auth-settings"]
+.`auth` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+advancedAuthorization: Advanced authorization settings. Determines which users and groups are allowed to access Che. A user is allowed to access {prod-short} if the user is in the `allowUsers` list or is a member of a group in the `allowGroups` list, and is not in the `denyUsers` list nor a member of a group in the `denyGroups` list. If `allowUsers` and `allowGroups` are empty, then all users are allowed to access Che. If `denyUsers` and `denyGroups` are empty, then no users are denied access to Che. Note\: group-based authorization (`allowGroups` and `denyGroups`) is currently supported on OpenShift only.: 
+gateway: Gateway settings.: {  "configLabels"\: {    "app"\: "che",    "component"\: "che-gateway-config"  }}
+identityProviderURL: Public URL of the Identity Provider server. For OpenShift with built-in OAuth, this field is not used, as OpenShift provides its own OAuth server.: 
+identityToken: Identity token type to be passed to upstream services. Defaults to `id_token`. For OpenShift with built-in OAuth, defaults to `access_token`.: 
+oAuthAccessTokenInactivityTimeoutSeconds: Inactivity timeout for tokens in seconds. This field is specific to OpenShift with built-in OAuth. It is set on the `OAuthClient` resource. 0 means tokens for this client never time out.: 
+oAuthAccessTokenMaxAgeSeconds: Access token max age in seconds. This field is specific to OpenShift with built-in OAuth. It is set on the `OAuthClient` resource. 0 means no expiration.: 
+oAuthClientName: Defined the OIDC client id. For OpenShift with built-in OAuth, this is the name of the `OAuthClient` resource used to set up identity federation.: 
+oAuthScope: Defines the scope requested from the OIDC provider. For OpenShift with built-in OAuth, the scope `user\:full` is used by default.: 
+oAuthSecret: Defines the OAuth client secret. It can either be a plain text secret value or the name of a Kubernetes secret containing a key `oAuthSecret` with the secret value. The Kubernetes secret must exist in the same namespace as the `CheCluster` resource and have the label `app.kubernetes.io/part-of=che.eclipse.org`. For OpenShift with built-in OAuth, this is the secret set in the `OAuthClient` resource used to set up identity federation.: 
+:=== 
+
+[id="checluster-custom-resource-networking-auth-gateway-settings"]
+.`gateway` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+configLabels: Gateway configuration labels.: {  "app"\: "che",  "component"\: "che-gateway-config"}
+deployment: Deployment override options. Since gateway deployment consists of several containers, they must be distinguished in the configuration by their names\: - `gateway` - `configbump` - `oauth-proxy` - `kube-rbac-proxy`: 
+kubeRbacProxy: Configuration for kube-rbac-proxy within the {prod-short} gateway pod.: 
+oAuthProxy: Configuration for oauth-proxy within the {prod-short} gateway pod.: 
+traefik: Configuration for Traefik within the {prod-short} gateway pod.: 
+:=== 
+
+[id="checluster-custom-resource-networking-auth-advancedAuthorization-settings"]
+.`advancedAuthorization` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+allowGroups: List of groups allowed to access {prod-short} (currently supported in OpenShift only).: 
+allowUsers: List of users allowed to access Che.: 
+denyGroups: List of groups denied to access {prod-short} (currently supported in OpenShift only).: 
+denyUsers: List of users denied to access Che.: 
+:=== 
+
+[id="checluster-custom-resource-containerRegistry-settings"]
+.Configuration of an alternative registry that stores {prod-short} images.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+hostname: An optional hostname or URL of an alternative container registry to pull images from. This value overrides the container registry hostname defined in all the default container images involved in a {prod-short} deployment. This is particularly useful for installing {prod-short} in a restricted environment.: 
+organization: An optional repository name of an alternative registry to pull images from. This value overrides the container registry organization defined in all the default container images involved in a {prod-short} deployment. This is particularly useful for installing {prod-short} in a restricted environment.: 
+:=== 
+
+[id="checluster-custom-resource-components-common-deployment-settings"]
+.`deployment` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+containers: List of containers belonging to the pod.: 
+nodeSelector: The node selector limits the nodes that can run the pod.: 
+securityContext: Security options the pod should run with.: 
+tolerations: The pod tolerations of the component pod limit where the pod can run.: 
+volumes: List of volumes that can be mounted by containers belonging to the pod. Entries are merged by volume name (same semantics as container volumeMounts); unknown names are appended, matching names replace the default volume definition.: 
+:=== 
+
+[id="checluster-custom-resource-components-common-deployment-containers-settings"]
+.`containers` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+env: List of environment variables to set in the container.: 
+image: Container image. Omit it or leave it empty to use the default container image provided by the Operator.: 
+imagePullPolicy: Image pull policy. Default value is `Always` for `nightly`, `next` or `latest` images, and `IfNotPresent` in other cases.: 
+name: Container name.: 
+resources: Compute resources required by this container.: 
+securityContext: Security options the container should run with. When set, fields are merged into the container security context (same semantics as resources).: 
+volumeMounts: Pod volumes to mount into the container's filesystem. Entries are merged by volume mount name (same semantics as env).: 
+:=== 
+
+[id="checluster-custom-resource-components-common-deployment-containers-resources-settings"]
+.`containers` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+limits: Describes the maximum amount of compute resources allowed.: 
+request: Describes the minimum amount of compute resources required.: 
+:=== 
+
+[id="checluster-custom-resource-components-common-deployment-containers-resources-request-settings"]
+.`request` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+cpu: CPU, in cores. (500m = .5 cores) If the value is not specified, then the default value is set depending on the component. If value is `0`, then no value is set for the component.: 
+memory: Memory, in bytes. (500Gi = 500GiB = 500 * 1024 * 1024 * 1024) If the value is not specified, then the default value is set depending on the component. If value is `0`, then no value is set for the component.: 
+:=== 
+
+[id="checluster-custom-resource-components-common-deployment-containers-resources-limits-settings"]
+.`limits` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+cpu: CPU, in cores. (500m = .5 cores) If the value is not specified, then the default value is set depending on the component. If value is `0`, then no value is set for the component.: 
+memory: Memory, in bytes. (500Gi = 500GiB = 500 * 1024 * 1024 * 1024) If the value is not specified, then the default value is set depending on the component. If value is `0`, then no value is set for the component.: 
+:=== 
+
+[id="checluster-custom-resource-components-common-deployment-securityContext-settings"]
+.`securityContext` options.
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+fsGroup: A special supplemental group that applies to all containers in a pod. The default value is `1724`.: 
+runAsUser: The UID to run the entrypoint of the container process. The default value is `1724`.: 
+:=== 
+
+[id="checluster-custom-resource-status-settings"]
+.`CheCluster` Custom Resource `status` defines the observed state of {prod-short} installation
+
+[cols="2,5,3", options="header"]
+:=== 
+ Property: Description: Default 
+chePhase: Specifies the current phase of the {prod-short} deployment.: 
+cheURL: Public URL of the {prod-short} server.: 
+cheVersion: Currently installed {prod-short} version.: 
+devfileRegistryURL: Deprecated the public URL of the internal devfile registry.: 
+gatewayPhase: Deprecated. Specifies the current phase of the gateway deployment.: 
+message: A human readable message indicating details about why the {prod-short} deployment is in the current phase.: 
+pluginRegistryURL: The public URL of the internal plug-in registry.: 
+reason: A brief CamelCase message indicating details about why the {prod-short} deployment is in the current phase.: 
+workspaceBaseDomain: The resolved workspace base domain. This is either the copy of the explicitly defined property of the same name in the spec or, if it is undefined in the spec and we're running on OpenShift, the automatically resolved basedomain for routes.: 
+:=== 
+
+

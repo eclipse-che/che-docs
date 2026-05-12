@@ -1,0 +1,19 @@
+// monitoring-the-dev-workspace-operator
+
+[id="enabling-dev-workspace-operator-metrics"]
+= Enabling {devworkspace} Operator metrics
+
+The {devworkspace} Operator exposes metrics on port `8443` of the `devworkspace-controller-metrics` Service.
+When metrics are enabled, the {prod-short} Operator automatically configures Prometheus monitoring on OpenShift by creating the necessary ServiceMonitor, RBAC resources, and namespace labels.
+
+.Procedure
+
+* Configure the `CheCluster` Custom Resource. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+spec:
+  devEnvironments:
+    metrics: __<boolean>__ <1>
+----
+<1> `true` to enable {devworkspace} Operator metrics collection and automatic Prometheus configuration, `false` to disable. Defaults to `true`.
