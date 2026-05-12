@@ -2,7 +2,7 @@
 = Collecting {devworkspace} Operator metrics
 
 [role="_abstract"]
-To use the in-cluster Prometheus instance to collect, store, and query metrics about the {devworkspace} Operator:
+The {prod-short} Operator automatically manages the Prometheus resources required to collect {devworkspace} Operator metrics.
 
 .Prerequisites
 
@@ -14,44 +14,13 @@ To use the in-cluster Prometheus instance to collect, store, and query metrics a
 
 .Procedure
 
-. Create the ServiceMonitor for detecting the Dev Workspace Operator metrics Service.
-+
-.ServiceMonitor
-====
-[source,yaml,subs="+quotes,+attributes,+macros"]
-----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: devworkspace-controller
-  namespace: {prod-namespace} <1>
-spec:
-  endpoints:
-    - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-      interval: 10s <2>
-      port: metrics
-      scheme: https
-      tlsConfig:
-        insecureSkipVerify: true
-  namespaceSelector:
-    matchNames:
-      - openshift-operators
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: devworkspace-controller
-----
-<1> The {prod-short} namespace. The default is `{prod-namespace}`.
-<2> The rate at which a target is scraped.
-====
+The {prod-short} Operator automatically creates and manages the following resources:
 
-include::example$snip_{project-context}-create-a-role-and-rolebinding-for-prometheus-to-view-metrics.adoc[]
+* A `ServiceMonitor` for detecting the {devworkspace} Operator metrics Service (`devworkspace-controller`)
+* A `Role` and `RoleBinding` to allow the `prometheus-k8s` ServiceAccount to scrape metrics
+* The `openshift.io/cluster-monitoring: "true"` label on the {prod-short} namespace to enable OpenShift monitoring
 
-. Allow the in-cluster Prometheus instance to detect the ServiceMonitor in the {prod-short} namespace. The default {prod-short} namespace is `{prod-namespace}`.
-+
-[source,subs="+attributes"]
-----
-$ oc label namespace {prod-namespace} openshift.io/cluster-monitoring=true
-----
+No manual configuration is required. Metrics collection is enabled by default.
 
 .Verification
 
