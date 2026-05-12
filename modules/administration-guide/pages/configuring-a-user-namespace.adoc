@@ -18,6 +18,13 @@ If you make changes to a {kubernetes} resource in an {prod-namespace} namespace,
 In reverse, if a {kubernetes} resource is modified in a user namespace,
 {prod-short} will immediately revert the changes.
 
+[WARNING]
+====
+Applying or modifying a `Secret` or `ConfigMap` with the `controller.devfile.io/mount-to-devworkspace: 'true'` label restarts all running workspaces in the {namespace}.
+
+To mount the `Secret` or `ConfigMap` only at workspace start and prevent automatic restarts, add the `controller.devfile.io/mount-on-start: 'true'` annotation.
+====
+
 .Procedure
 
 . Create the `ConfigMap` below to create and mount it into every workspace.
@@ -37,12 +44,12 @@ data:
   ...
 ----
 ====
-Optional: Use the annotations to configure how the ConfigMap is mounted.
+Optional: Use annotations to configure how the ConfigMap is mounted.
 +
 .Optional annotations
 |===
 |Annotation | Description
-,
+
 |`che.eclipse.org/sync-retain-on-delete:`
 | When set to `"true"`, the ConfigMap is retained in a user {namespace} after being deleted from {prod-namespace} namespace.
 
@@ -51,10 +58,16 @@ Optional: Use the annotations to configure how the ConfigMap is mounted.
 
 |`controller.devfile.io/mount-to-devworkspace-include:`
 | Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted only to workspaces whose names match at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
 
 |`controller.devfile.io/mount-to-devworkspace-exclude:`
-| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted to all workspaces except those whose names match a pattern.
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted to all workspaces except those whose names at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
 |===
++
+NOTE: When both annotations `controller.devfile.io/mount-to-devworkspace-include`
+and `controller.devfile.io/mount-to-devworkspace-exclude` are set, the resource is
+mounted only to workspaces that match the include pattern and do not match the exclude pattern.
 +
 For other labels and annotations, see link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Mounting volumes, configmaps, and secrets].
 +
@@ -99,7 +112,7 @@ stringData:
     ...
 ----
 ====
-Optional: Use the annotations to configure how the Secret is mounted.
+Optional: Use annotations to configure how the Secret is mounted.
 +
 .Optional annotations
 |===
@@ -112,11 +125,17 @@ Optional: Use the annotations to configure how the Secret is mounted.
 | When set to `"true"`, the Secret is mounted only at workspace start. This prevents workspace restarts when the Secret is created.
 
 |`controller.devfile.io/mount-to-devworkspace-include:`
-| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the Secret is mounted only to workspaces whose names match at least one pattern.
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted only to workspaces whose names match at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
 
 |`controller.devfile.io/mount-to-devworkspace-exclude:`
-| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the Secret is mounted to all workspaces except those whose names match a pattern.
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted to all workspaces except those whose names at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
 |===
++
+NOTE: When both annotations `controller.devfile.io/mount-to-devworkspace-include`
+and `controller.devfile.io/mount-to-devworkspace-exclude` are set, the resource is
+mounted only to workspaces that match the include pattern and do not match the exclude pattern.
 +
 For other labels and annotations, see link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Mounting volumes, configmaps, and secrets].
 
@@ -136,7 +155,7 @@ spec:
   ...
 ----
 +
-Optional: Use the annotations to configure how the `PersistentVolumeClaim` is mounted.
+Optional: Use annotations to configure how the `PersistentVolumeClaim` is mounted.
 +
 NOTE: The `PersistentVolumeClaim` is not deleted in a user {namespace} by default, if the one from {prod-namespace} is deleted.
 +
@@ -151,11 +170,17 @@ NOTE: The `PersistentVolumeClaim` is not deleted in a user {namespace} by defaul
 | When set to `"true"`, the `PersistentVolumeClaim` is mounted only at workspace start. This prevents workspace restarts when the `PersistentVolumeClaim` is created.
 
 |`controller.devfile.io/mount-to-devworkspace-include:`
-| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the `PersistentVolumeClaim` is mounted only to workspaces whose names match at least one pattern.
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted only to workspaces whose names match at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
 
 |`controller.devfile.io/mount-to-devworkspace-exclude:`
-| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the `PersistentVolumeClaim` is mounted to all workspaces except those whose names match a pattern.
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted to all workspaces except those whose names at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
 |===
++
+NOTE: When both annotations `controller.devfile.io/mount-to-devworkspace-include`
+and `controller.devfile.io/mount-to-devworkspace-exclude` are set, the resource is
+mounted only to workspaces that match the include pattern and do not match the exclude pattern.
 +
 For other labels and annotations, see link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Mounting volumes, configmaps, and secrets].
 . To leverage the OpenShift Kubernetes Engine, you can create a `Template` object to replicate all resources defined within the template across each user {orch-namespace}.
