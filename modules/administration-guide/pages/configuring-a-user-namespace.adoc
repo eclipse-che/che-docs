@@ -44,24 +44,32 @@ data:
   ...
 ----
 ====
-To enhance the configurability, you can customize the `ConfigMap` by adding additional labels and annotations.
+Optional: Use annotations to configure how the ConfigMap is mounted.
 +
-Add the annotation below if you want the ConfigMap to be retained in a user {namespace}
-after being deleted from {prod-namespace} namespace:
+.Optional annotations
+|===
+|Annotation | Description
+
+|`che.eclipse.org/sync-retain-on-delete:`
+| When set to `"true"`, the ConfigMap is retained in a user {namespace} after being deleted from {prod-namespace} namespace.
+
+|`controller.devfile.io/mount-on-start:`
+| When set to `"true"`, the ConfigMap is mounted only at workspace start. This prevents workspace restarts when the ConfigMap is created.
+
+|`controller.devfile.io/mount-to-devworkspace-include:`
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted only to workspaces whose names match at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
+
+|`controller.devfile.io/mount-to-devworkspace-exclude:`
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted to all workspaces except those whose names at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
+|===
 +
-[source,yaml,subs="+attributes,+quotes"]
-----
-che.eclipse.org/sync-retain-on-delete: "true"
-----
+NOTE: When both annotations `controller.devfile.io/mount-to-devworkspace-include`
+and `controller.devfile.io/mount-to-devworkspace-exclude` are set, the resource is
+mounted only to workspaces that match the include pattern and do not match the exclude pattern.
 +
-Add the following annotation to prevent workspace restarts when the ConfigMap is created:
-+
-[source,yaml,subs="+attributes,+quotes"]
-----
-controller.devfile.io/mount-on-start: "true"
-----
-+
-With this annotation, the ConfigMap is mounted only at workspace start.
+For other labels and annotations, see link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Mounting volumes, configmaps, and secrets].
 +
 For example, to mount a default SSH configuration into every workspace, you must create a ConfigMap:
 +
@@ -85,8 +93,6 @@ data:
 ====
 +
 This **ConfigMap** propagates the SSH configuration as an extension to the existing default SSH configuration by using the `Include /etc/ssh/ssh_config.d/*.conf` argument. For more information, review the link:https://man.openbsd.org/ssh_config#Include[Include] definition.
-+
-For other labels and annotations, see link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Mounting volumes, configmaps, and secrets].
 
 
 . Create the `Secret` below to create and mount it into every workspace.
@@ -106,28 +112,32 @@ stringData:
     ...
 ----
 ====
-To enhance the configurability, you can customize the `Secret` by adding additional labels and annotations.
+Optional: Use annotations to configure how the Secret is mounted.
 +
-Add the annotation below if you want the Secret to be retained in a user {namespace}
-after being deleted from {prod-namespace} namespace:
-+
-[source,yaml,subs="+attributes,+quotes"]
-----
-che.eclipse.org/sync-retain-on-delete: "true"
-----
-+
-Add the following annotation to prevent workspace restarts when the Secret is created:
-+
-[source,yaml,subs="+attributes,+quotes"]
-----
-controller.devfile.io/mount-on-start: "true"
-----
-+
-With this annotation, the Secret is mounted only at workspace start.
-+
-See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[mounting volumes, configmaps, and secrets]
-for other possible labels and annotations.
+.Optional annotations
+|===
+|Annotation | Description
 
+|`che.eclipse.org/sync-retain-on-delete:`
+| When set to `"true"`, the Secret is retained in a user {namespace} after being deleted from {prod-namespace} namespace.
+
+|`controller.devfile.io/mount-on-start:`
+| When set to `"true"`, the Secret is mounted only at workspace start. This prevents workspace restarts when the Secret is created.
+
+|`controller.devfile.io/mount-to-devworkspace-include:`
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted only to workspaces whose names match at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
+
+|`controller.devfile.io/mount-to-devworkspace-exclude:`
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted to all workspaces except those whose names at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
+|===
++
+NOTE: When both annotations `controller.devfile.io/mount-to-devworkspace-include`
+and `controller.devfile.io/mount-to-devworkspace-exclude` are set, the resource is
+mounted only to workspaces that match the include pattern and do not match the exclude pattern.
++
+For other labels and annotations, see link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Mounting volumes, configmaps, and secrets].
 
 . Create the `PersistentVolumeClaim` below to create it to every user {orch-namespace}.
 +
@@ -145,30 +155,34 @@ spec:
   ...
 ----
 +
-To enhance the configurability, you can customize the `PersistentVolumeClaim` by adding additional labels and annotations.
+Optional: Use annotations to configure how the `PersistentVolumeClaim` is mounted.
 +
-The `PersistentVolumeClaim` is not deleted in a user {namespace} by default, if the one from {prod-namespace} is deleted.
-Add the annotation below if you want the `PersistentVolumeClaim` to be deleted in a user {namespace} as well:
+NOTE: The `PersistentVolumeClaim` is not deleted in a user {namespace} by default, if the one from {prod-namespace} is deleted.
++
+.Optional annotations
+|===
+|Annotation | Description
 
-+
-[source,yaml,subs="+attributes,+quotes"]
-----
-che.eclipse.org/sync-retain-on-delete: "false"
-----
-+
-Add the following annotation to prevent workspace restarts when the `PersistentVolumeClaim` is created:
-+
-[source,yaml,subs="+attributes,+quotes"]
-----
-controller.devfile.io/mount-on-start: "true"
-----
-+
-With this annotation, the `PersistentVolumeClaim` is mounted only at workspace start.
-+
-See the link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[mounting volumes, configmaps, and secrets]
-for other possible labels and annotations.
-+
+|`che.eclipse.org/sync-retain-on-delete:`
+| When set to `"false"`, the `PersistentVolumeClaim` is deleted in a user {namespace} when it is deleted from {prod-namespace} namespace.
 
+|`controller.devfile.io/mount-on-start:`
+| When set to `"true"`, the `PersistentVolumeClaim` is mounted only at workspace start. This prevents workspace restarts when the `PersistentVolumeClaim` is created.
+
+|`controller.devfile.io/mount-to-devworkspace-include:`
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted only to workspaces whose names match at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
+
+|`controller.devfile.io/mount-to-devworkspace-exclude:`
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted to all workspaces except those whose names at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
+|===
++
+NOTE: When both annotations `controller.devfile.io/mount-to-devworkspace-include`
+and `controller.devfile.io/mount-to-devworkspace-exclude` are set, the resource is
+mounted only to workspaces that match the include pattern and do not match the exclude pattern.
++
+For other labels and annotations, see link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Mounting volumes, configmaps, and secrets].
 . To leverage the OpenShift Kubernetes Engine, you can create a `Template` object to replicate all resources defined within the template across each user {orch-namespace}.
 +
 Aside from the previously mentioned `ConfigMap`, `Secret`, and `PersistentVolumeClaim`, `Template` objects can include:
