@@ -1,0 +1,61 @@
+:_content-type: PROCEDURE
+:description: To evaluate {prod-short} in a local development environment, create a single-node {kubernetes} cluster with Minikube and deploy {prod-short}.
+:keywords: overview, installing-che-on-minikube
+:navtitle: Install {prod-short} on Minikube
+:page-aliases: installation-guide:installing-che-on-minikube.adoc, overview:installing-che-on-minikube.adoc, installing-che-on-minikube.adoc
+
+[id="installing-{prod-id-short}-on-minikube"]
+= Install {prod-short} on Minikube
+
+[role="_abstract"]
+To evaluate {prod-short} in a local development environment, create a single-node {kubernetes} cluster with Minikube and deploy {prod-short}.
+
+[WARNING]
+====
+Single-node {kubernetes} clusters are suited only for testing or development. Do not use such clusters to run {prod-short} for organizations or developer teams.
+====
+
+.Prerequisites
+
+* You have Minikube installed. See link:https://kubernetes.io/docs/tasks/tools/install-minikube/[Installing Minikube].
+
+* You have `{orch-cli}` installed. See link:https://kubernetes.io/docs/tasks/tools/#kubectl[Installing `{orch-cli}`].
+
+* You have `{prod-cli}` installed. See xref:installing-the-chectl-management-tool.adoc[].
+
+.Procedure
+
+. Start Minikube with required add-ons and sufficient resources:
++
+[source,bash]
+----
+$ minikube start --addons=ingress,dashboard --vm=true --memory=10240 --cpus=4 --disk-size=50GB --kubernetes-version=v1.23.9
+----
+
+. Create the {prod-short} instance:
++
+[source,bash,subs="+attributes"]
+----
+$ {prod-cli} server:deploy --platform minikube
+----
+
+.Verification
+
+. Verify the {prod-short} instance status:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ {prod-cli} server:status
+----
+
+. Navigate to the {prod-short} cluster instance:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ {prod-cli} dashboard:open
+----
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:configuring-che-with-self-signed-certificate.adoc[]
