@@ -2,7 +2,7 @@
 = Collecting {devworkspace} Operator metrics
 
 [role="_abstract"]
-To use the in-cluster Prometheus instance to collect, store, and query metrics about the {devworkspace} Operator:
+The {prod-short} Operator automatically configures the in-cluster Prometheus instance to collect, store, and query metrics about the {devworkspace} Operator.
 
 .Prerequisites
 
@@ -12,9 +12,9 @@ To use the in-cluster Prometheus instance to collect, store, and query metrics a
 
 * The `devworkspace-controller-metrics` Service is exposing metrics on port `8443`. This is preconfigured by default.
 
-.Procedure
+The {prod-short} Operator automatically creates the following resources:
 
-. Create the ServiceMonitor for detecting the Dev Workspace Operator metrics Service.
+* *ServiceMonitor* for detecting the {devworkspace} Operator metrics Service
 +
 .ServiceMonitor
 ====
@@ -44,13 +44,16 @@ spec:
 <2> The rate at which a target is scraped.
 ====
 
+* *Role and RoleBinding* to allow Prometheus to view the metrics
+
++
 include::example$snip_{project-context}-create-a-role-and-rolebinding-for-prometheus-to-view-metrics.adoc[]
 
-. Allow the in-cluster Prometheus instance to detect the ServiceMonitor in the {prod-short} namespace. The default {prod-short} namespace is `{prod-namespace}`.
+* *Namespace label* to allow the in-cluster Prometheus instance to detect the ServiceMonitor
 +
-[source,subs="+attributes"]
+[source,yaml,subs="+attributes,quotes"]
 ----
-$ oc label namespace {prod-namespace} openshift.io/cluster-monitoring=true
+openshift.io/cluster-monitoring: "true"
 ----
 
 .Verification

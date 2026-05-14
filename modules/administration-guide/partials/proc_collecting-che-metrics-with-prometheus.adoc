@@ -3,7 +3,7 @@
 [id="collecting-{prod-id-short}-metrics-with-prometheus"]
 = Collecting {prod-short} Server metrics with Prometheus
 
-To use the in-cluster Prometheus instance to collect, store, and query JVM metrics for {prod-short} Server:
+The {prod-short} Operator automatically configures the in-cluster Prometheus instance to collect, store, and query JVM metrics for {prod-short} Server.
 
 .Prerequisites
 
@@ -13,9 +13,9 @@ To use the in-cluster Prometheus instance to collect, store, and query JVM metri
 
 * {prod-short} is exposing metrics on port `8087`. See xref:enabling-and-exposing-{prod-id-short}-metrics[Enabling and exposing {prod-short} server JVM metrics].
 
-.Procedure
+The {prod-short} Operator automatically creates the following resources when metrics are enabled:
 
-. Create the ServiceMonitor for detecting the {prod-short} JVM metrics Service.
+* *ServiceMonitor* for detecting the {prod-short} JVM metrics Service
 +
 .ServiceMonitor
 ====
@@ -42,8 +42,7 @@ spec:
 <2> The rate at which a target is scraped.
 ====
 
-. Create a Role and RoleBinding to allow Prometheus to view the metrics.
-
+* *Role and RoleBinding* to allow Prometheus to view the metrics
 +
 .Role
 ====
@@ -68,7 +67,6 @@ rules:
 ----
 <1> The {prod-short} namespace. The default is `{prod-namespace}`.
 ====
-
 +
 .RoleBinding
 ====
@@ -91,11 +89,11 @@ roleRef:
 <1> The {prod-short} namespace. The default is `{prod-namespace}`.
 ====
 
-. Allow the in-cluster Prometheus instance to detect the ServiceMonitor in the {prod-short} namespace. The default {prod-short} namespace is `{prod-namespace}`.
+* *Namespace label* to allow the in-cluster Prometheus instance to detect the ServiceMonitor
 +
-[source,terminal,subs="+attributes,quotes"]
+[source,yaml,subs="+attributes,quotes"]
 ----
-$ oc label namespace {prod-namespace} openshift.io/cluster-monitoring=true
+openshift.io/cluster-monitoring: "true"
 ----
 
 .Verification
