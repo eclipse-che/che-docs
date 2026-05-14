@@ -1,12 +1,15 @@
 :_content-type: PROCEDURE
-:description: Calculating {prod-short} resource requirements
-:keywords: administration-guide, calculating-che-resource-requirements
-:navtitle: Calculating {prod-short} resource requirements
-:page-aliases: .:calculating-che-resource-requirements.adoc
+:description: Calculate the CPU and memory requirements for the {prod-short} Operator, {devworkspace} Controller, and user workspaces. Accurate resource estimates ensure your cluster can handle the expected number of concurrent users without performance issues.
+:keywords: plan, calculating-che-resource-requirements
+:navtitle: Calculate {prod-short} resource requirements
+:page-aliases: administration-guide:calculating-che-resource-requirements.adoc
 
 
 [id="calculating-{prod-id-short}-resource-requirements"]
-= Calculating {prod-short} resource requirements
+= Calculate {prod-short} resource requirements
+
+[role="_abstract"]
+Calculate the CPU and memory requirements for the {prod-short} Operator, {devworkspace} Controller, and user workspaces. Accurate resource estimates ensure your cluster can handle the expected number of concurrent users without performance issues.
 
 The {prod-short} Operator, {devworkspace} Controller, and user workspaces consist of a set of pods.
 The pods contribute to the resource consumption in CPU and memory limits and requests.
@@ -15,26 +18,21 @@ include::example$snip_{project-context}-example-devfile-disclaimer.adoc[]
 
 .Procedure
 
-. Identify the workspace resource requirements which depend on the devfile that is used for defining the development environment. This includes identifying the workspace components explicitly specified in the `components` section of the devfile.
+. Identify the workspace resource requirements from the devfile `components` section. The following example uses the link:https://github.com/che-incubator/quarkus-api-example/blob/main/devfile.yaml[Quarkus API example devfile].
 
-** Here is an link:https://github.com/che-incubator/quarkus-api-example/blob/main/devfile.yaml[example devfile] with the following components:
+** The `tools` component of the devfile defines the following requests and limits:
 +
-.`tools`
-====
-The `tools` component of the devfile defines the following requests and limits:
-
-[source,yaml,subs="+attributes,+quotes,macros"]
+[source,yaml]
 ----
     memoryLimit: 6G
     memoryRequest: 512M
     cpuRequest: 1000m
     cpuLimit: 4000m
 ----
-====
 
-** During the workspace startup, an internal `che-gateway` container is implicitly provisioned with the following requests and limits:
+** During workspace startup, an internal `che-gateway` container is implicitly provisioned with the following requests and limits:
 +
-[source,yaml,subs="+attributes,+quotes,macros"]
+[source,yaml]
 ----
     memoryLimit: 256M
     memoryRequest: 64M
@@ -42,9 +40,9 @@ The `tools` component of the devfile defines the following requests and limits:
     cpuLimit: 500m
 ----
 
-** IMPORTANT: Additional memory and CPU will be added implicitly for the Visual Studio Code - Open Source ("Code - OSS"):
+** Additional memory and CPU are added implicitly for the Visual Studio Code - Open Source ("Code - OSS") editor:
 +
-[source,yaml,subs="+attributes,+quotes,macros"]
+[source,yaml]
 ----
     memoryLimit: 1024M
     memoryRequest: 256M
@@ -52,9 +50,9 @@ The `tools` component of the devfile defines the following requests and limits:
     cpuLimit: 500m
 ----
 
-** IMPORTANT: Additional memory and CPU will be added implicitly for a JetBrains IDE (for example IntelliJ IDEA Ultimate):
+** Additional memory and CPU are added implicitly for a JetBrains IDE, for example IntelliJ IDEA Ultimate:
 +
-[source,yaml,subs="+attributes,+quotes,macros"]
+[source,yaml]
 ----
     memoryLimit: 6144M
     memoryRequest: 2048M
@@ -65,7 +63,6 @@ The `tools` component of the devfile defines the following requests and limits:
 . Calculate the sums of the resources required for each workspace. If you intend to use multiple devfiles, repeat this calculation for every expected devfile.
 +
 .Workspace requirements for the link:https://github.com/che-incubator/quarkus-api-example/blob/main/devfile.yaml[example devfile] in the previous step
-====
 [cols="1a,1a,1a,1a,1a,1a,1a",options="header"]
 |===
 |Purpose
@@ -106,7 +103,6 @@ The `tools` component of the devfile defines the following requests and limits:
 >s|5000 m
 >s|1080 m
 |===
-====
 
 . Multiply the resources calculated per workspace by the number of workspaces that you expect all of your users to run simultaneously.
 
@@ -203,14 +199,6 @@ The `tools` component of the devfile defines the following requests and limits:
 |N/A
 |N/A
 
-|{devworkspace} webhook server
-|`{devworkspace-id}-webhook-server`
-|`webhook-server`
-|300 MiB
-|20 MiB
-|200 m
-|100 m
-
 |{devworkspace} Operator Catalog
 |`{devworkspace-id}-operator-catalog`
 |`registry-server`
@@ -236,12 +224,18 @@ The `tools` component of the devfile defines the following requests and limits:
 |N/A
 
 3+>s|Total
->s|13 GiB
->s|1.2 GiB
->s|8.4
->s|1.2
+>s|12.3 GiB
+>s|1.1 GiB
+>s|8.2
+>s|1.1
 
 |===
+
+. Add the workspace resources from step 3 and the operator resources from step 4 to determine total cluster resource requirements.
+
+.Verification
+
+* Verify that the total resource requirements account for all {prod-short} Operator components, {devworkspace} Controller components, and the expected number of concurrent workspaces.
 
 .Additional resources
 
