@@ -1,0 +1,52 @@
+:_content-type: PROCEDURE
+:description: Confirm that {prod-short} is operational before onboarding users by checking the Operator pod, the CheCluster status, and the dashboard URL.
+:keywords: install, verify, check, status
+:navtitle: Verify the {prod-short} installation
+
+[id="proc_verifying-the-installation"]
+= Verify the {prod-short} installation
+
+[role="_abstract"]
+Confirm that {prod-short} is operational before onboarding users by checking the Operator pod, the `CheCluster` status, and the dashboard URL.
+
+.Prerequisites
+
+* You have installed {prod-short} on an {orch-name} cluster.
+* You have an active `{orch-cli}` session with administrative permissions to the {orch-name} cluster.
+
+.Procedure
+
+. Verify that the {prod-short} Operator pod is running:
++
+[source,bash,subs="+attributes"]
+----
+{orch-cli} get pods -n {prod-namespace} -l app.kubernetes.io/component={prod-id-short}-operator
+----
+
+. Verify that the `CheCluster` custom resource reports no errors:
++
+[source,bash,subs="+attributes"]
+----
+{orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath='{.status.chePhase}'
+----
++
+The expected output is `Active`.
+
+. Retrieve the {prod-short} dashboard URL:
++
+[source,bash,subs="+attributes"]
+----
+{orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath='{.status.cheURL}'
+----
+
+. Open the URL in a web browser and log in with your {orch-name} credentials.
+
+.Verification
+
+* The {prod-short} dashboard loads and displays the *Create Workspace* page.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:proc_installing-che-on-openshift-using-cli.adoc[]
+* xref:proc_installing-che-on-openshift-using-the-web-console.adoc[]
