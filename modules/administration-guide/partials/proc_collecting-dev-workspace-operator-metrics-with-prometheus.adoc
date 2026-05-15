@@ -8,49 +8,24 @@ To use the in-cluster Prometheus instance to collect, store, and query metrics a
 
 * Your organization's instance of {prod-short} is installed and running in Red Hat OpenShift.
 
-* An active `oc` session with administrative permissions to the destination OpenShift cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the CLI].
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
 
 * The `devworkspace-controller-metrics` Service is exposing metrics on port `8443`. This is preconfigured by default.
 
 .Procedure
 
-. Create the ServiceMonitor for detecting the Dev Workspace Operator metrics Service.
-+
-.ServiceMonitor
-====
-[source,yaml,subs="+quotes,+attributes,+macros"]
-----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: devworkspace-controller
-  namespace: {prod-namespace} <1>
-spec:
-  endpoints:
-    - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-      interval: 10s <2>
-      port: metrics
-      scheme: https
-      tlsConfig:
-        insecureSkipVerify: true
-  namespaceSelector:
-    matchNames:
-      - openshift-operators
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: devworkspace-controller
-----
-<1> The {prod-short} namespace. The default is `{prod-namespace}`.
-<2> The rate at which a target is scraped.
-====
+The {prod-operator} automatically creates the following resources when metrics are enabled:
 
-include::example$snip_{project-context}-create-a-role-and-rolebinding-for-prometheus-to-view-metrics.adoc[]
+* A `ServiceMonitor` resource named `devworkspace` for detecting the {devworkspace} Operator metrics Service
+* A `Role` and `RoleBinding` granting the `prometheus-k8s` service account permission to scrape metrics endpoints in the `openshift-operators` namespace
+
+To complete the monitoring configuration:
 
 . Allow the in-cluster Prometheus instance to detect the ServiceMonitor in the {prod-short} namespace. The default {prod-short} namespace is `{prod-namespace}`.
 +
 [source,subs="+attributes"]
 ----
-$ oc label namespace {prod-namespace} openshift.io/cluster-monitoring=true
+$ {orch-cli} label namespace {prod-namespace} openshift.io/cluster-monitoring=true
 ----
 
 .Verification
