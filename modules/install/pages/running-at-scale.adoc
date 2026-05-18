@@ -1,0 +1,205 @@
+:_content-type: CONCEPT
+:description: Scaling cloud development environments (CDEs) to thousands of concurrent workspaces imposes high infrastructure demands on etcd storage, Operator memory, and worker node capacity. This topic covers the bottlenecks, tested maximums, and architectural patterns — including multi-cluster deployments — that address these challenges.
+:keywords: install, scale, infrastructure, workload, scalability, CDE, cloud
+:navtitle: {prod-short} scalability
+:page-aliases: administration-guide:running-at-scale.adoc, plan:running-at-scale.adoc
+
+[id="running-at-scale"]
+= {prod-short} scalability
+
+[role="_abstract"]
+Scaling cloud development environments (CDEs) to thousands of concurrent workspaces imposes high infrastructure demands on etcd storage, Operator memory, and worker node capacity. This topic covers the bottlenecks, tested maximums, and architectural patterns — including multi-cluster deployments — that address these challenges.
+
+Such a scale imposes high infrastructure demands and introduces potential bottlenecks that can impact performance and stability. Addressing these challenges requires meticulous planning, strategic architectural choices, monitoring, and continuous optimization.
+
+CDE workloads are particularly complex to scale. The underlying IDE solutions, such as link:https://github.com/microsoft/vscode[Visual Studio Code - Open Source ("Code - OSS")] or link:https://www.jetbrains.com/remote-development/gateway/[JetBrains Gateway], are designed as single-user applications, not as multitenant services.
+
+== Resource quantity and object maximums
+
+While there is no strict limit on the number of resources in a {kubernetes} cluster, there are certain link:https://kubernetes.io/docs/setup/best-practices/cluster-large/[considerations for large clusters] to remember.
+
+link:https://www.redhat.com/en/technologies/cloud-computing/openshift[OpenShift Container Platform], a certified distribution of {kubernetes}, provides a set of tested maximums for various resources. These maximums can serve as an initial guideline for planning your environment:
+
+.OpenShift Container Platform tested cluster maximums
+[%header,format=csv]
+|===
+Resource type, Tested maximum
+Number of nodes,2000
+Number of pods,150000
+Number of pods per node,2500
+Number of namespace,10000
+Number of services,10000
+Number of secrets,80000
+Number of config maps,90000
+|===
+
+For more details on OpenShift Container Platform tested object maximums, see the link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/scalability_and_performance/planning-your-environment-according-to-object-maximums#planning-your-environment-according-to-object-maximums[OpenShift Container Platform scalability and performance documentation].
+
+For example, it is generally not recommended to have more than 10,000 namespaces due to potential performance and management overhead. In {prod}, each user is allocated a namespace. If you expect the user base to be large, consider spreading workloads across multiple "fit-for-purpose" clusters and potentially using solutions for multi-cluster orchestration.
+
+== Resource requirements
+
+When deploying {prod} on {kubernetes}, accurately calculate the resource requirements for each CDE, including memory and CPU or GPU needs. This determines the right sizing of the cluster. In general, the CDE size is limited by and cannot be bigger than the worker node size.
+
+The resource requirements for CDEs can vary significantly based on the specific workloads and configurations. A simple CDE might require only a few hundred megabytes of memory. A more complex one might need several gigabytes of memory and multiple CPU cores.
+
+include::example$snip_{project-context}-running-at-scale-calculate-resources.adoc[]
+
+== Using etcd
+
+The primary datastore of {kubernetes} cluster configuration and state is link:https://etcd.io/[etcd]. It holds information about nodes, pods, services, and custom resources.
+
+As a distributed key-value store, etcd does not scale well past a certain threshold. As the size of etcd grows, so does the load on the cluster, risking its stability.
+
+[IMPORTANT]
+====
+The default etcd size is 2 GB, and the recommended maximum is 8 GB. Exceeding the maximum limit can make the {kubernetes} cluster unstable and unresponsive. Even though the data stored in a `ConfigMap` cannot exceed 1 MiB by design, a few thousand relatively large `ConfigMap` objects can overload etcd storage.
+====
+
+== Object size as a factor
+
+The size of the objects stored in etcd is also a critical factor. Each object consumes space, and as the number of objects increases, the overall size of etcd grows. The larger the object, the more space it takes. For example, etcd can be overloaded with only a few thousand large {kubernetes} objects.
+
+In the context of {prod}, by default the Operator creates and manages the 'ca-certs-merged' ConfigMap, which contains the Certificate Authorities (CAs) bundle, in every user namespace. With a large number of Transport Layer Security (TLS) certificates in the cluster, this results in additional etcd usage.
+
+To disable mounting the CA bundle by using the `ConfigMap` under the `/etc/pki/ca-trust/extracted/pem` path, configure the `CheCluster` Custom Resource by setting the `disableWorkspaceCaBundleMount` property to `true`. With this configuration, only custom certificates are mounted under the path `/public-certs`:
+
+[source,yaml]
+----
+spec:
+  devEnvironments:
+    trustedCerts:
+      disableWorkspaceCaBundleMount: true
+----
+
+== {devworkspace} objects
+
+For large {kubernetes} deployments, particularly those involving a high number of custom resources such as `DevWorkspace` objects, which represent CDEs, etcd can become a significant performance bottleneck.
+
+[IMPORTANT]
+====
+Based on the load testing for 6,000 `DevWorkspace` objects, storage consumption for etcd was approximately 2.5GB.
+====
+
+Starting from {devworkspace} Operator version 0.34.0, you can configure a pruner that automatically cleans up `DevWorkspace` objects that were not in use for a certain period of time. To set the pruner up, configure the `DevWorkspaceOperatorConfig` object as follows:
+
+[source,yaml]
+----
+apiVersion: controller.devfile.io/v1alpha1
+kind: DevWorkspaceOperatorConfig
+metadata:
+  name: devworkspace-operator-config
+  namespace: crw
+config:
+  workspace:
+    cleanupCronJob:
+      enabled: true
+      dryRun: false
+      retainTime: 2592000
+      schedule: “0 0 1 * *”
+----
+
+retainTime:: By default, if a workspace was not started for more than 30 days, it is marked for deletion.
+
+schedule:: By default, the pruner runs once per month.
+
+== OLMConfig
+
+When an Operator is installed by the link:https://olm.operatorframework.io/[Operator Lifecycle Manager (OLM)], a stripped-down copy of its CSV is created in every {namespace} the Operator watches. These “Copied CSVs” communicate which controllers are reconciling resource events in a given namespace.
+
+On large clusters with hundreds or thousands of namespaces, Copied CSVs consume an unsustainable amount of resources, including OLM memory, etcd storage, and network bandwidth. To eliminate the CSVs copied to every namespace, configure the `OLMConfig` object:
+
+[source,yaml]
+----
+apiVersion: operators.coreos.com/v1
+kind: OLMConfig
+metadata:
+  name: cluster
+spec:
+  features:
+    disableCopiedCSVs: true
+----
+
+Additional information about the `disableCopiedCSVs` feature is available in its original link:https://github.com/operator-framework/enhancements/blob/master/enhancements/olm-toggle-copied-csvs.md[enhancement proposal].
+
+In clusters with many namespaces and cluster-wide Operators, Copied CSVs increase etcd storage usage and memory consumption. Disabling Copied CSVs significantly reduces the data stored in etcd and improves cluster performance and stability.
+
+Disabling Copied CSVs also reduces the memory footprint of OLM, as it no longer maintains these additional resources.
+
+For more details about disabling Copied CSVs, see the link:https://olm.operatorframework.io/docs/advanced-tasks/configuring-olm/#disabling-copied-csvs[OLM documentation].
+
+== Cluster Autoscaling
+
+Although cluster autoscaling is a powerful {kubernetes} feature, you cannot always rely on it. Consider predictive scaling by analyzing load data to detect daily or weekly usage patterns.
+
+If your workloads follow a pattern with dramatic peaks throughout the day, provision worker nodes accordingly. For example, if workspaces increase during business hours and decrease during off-hours, predictive scaling adjusts the number of worker nodes. This ensures enough resources are available during peak load while minimizing costs during off-peak hours.
+
+You can also use open-source solutions such as link:https://karpenter.sh/[Karpenter] for configuration and lifecycle management of the worker nodes. Karpenter can dynamically provision and optimize worker nodes based on the specific requirements of the workloads. This helps improve resource utilization and reduce costs.
+
+== Multi-cluster
+
+By design, {prod} is not multi-cluster aware. You can only have one instance per cluster.
+
+However, you can run {prod} in a multi-cluster environment by deploying {prod} in each cluster. Use a load balancer or Domain Name System (DNS)-based routing to direct traffic to the appropriate instance. This approach distributes the workload across clusters and provides redundancy in case of cluster failures.
+
+== Developer Sandbox example
+
+You can test running {prod-short} in a multi-cluster environment by using the link:https://developers.redhat.com/developer-sandbox[Developer Sandbox], a free trial environment by Red Hat.
+
+From an infrastructure perspective, the Developer Sandbox consists of multiple link:https://www.redhat.com/en/technologies/cloud-computing/openshift/aws[Red Hat OpenShift Service on AWS (ROSA)] clusters. On each cluster, the productized version of {prod} is installed and configured using link:https://argo-cd.readthedocs.io/en/stable/[Argo CD]. The link:https://workspaces.openshift.com/[workspaces.openshift.com] URL is used as a single entry point to the {prod} instances across clusters.
+
+image::running-at-scale/snip_{project-context}-multi-cluster.png[Scheme of a multi-cluster environment]
+
+You can find implementation details about the multicluster redirector in the link:https://github.com/codeready-toolchain/crw-multicluster-redirector[crw-multicluster-redirector GitHub repository].
+
+[IMPORTANT]
+====
+The multi-cluster architecture of link:https://workspaces.openshift.com/[workspaces.openshift.com] is part of the link:https://developers.redhat.com/developer-sandbox[Developer Sandbox]. It is a Developer Sandbox-specific solution that cannot be reused as-is in other environments. However, you can use it as a reference for implementing a similar solution well-tailored to your specific multicluster needs.
+====
+
+== The multicluster redirector solution for OpenShift Container Platform
+
+Red Hat offers an open-source, Quarkus-based service that acts as a single gateway for developers. This service automatically redirects users to the correct {prod} instance on the appropriate cluster based on their OpenShift Container Platform group membership. The community-supported version is available in the link:https://github.com/redhat-developer/devspaces-multicluster-redirector[devspaces-multicluster-redirector GitHub repository].
+
+== Architecture and requirements
+
+A critical requirement for the multicluster redirector is that all users are provisioned to the host cluster where the redirector is deployed. Users authenticate through the OAuth flow of this cluster, even if they never run workloads there. The host cluster’s OpenShift Container Platform groups determine the routing logic. See the link:https://github.com/redhat-developer/devspaces-multicluster-redirector?tab=readme-ov-file#-deploying-to-openshift[devspaces-multicluster-redirector documentation] for deployment instructions.
+
+== Configuration
+
+The routing configuration uses a `ConfigMap` that contains JSON to map OpenShift Container Platform groups to {prod} URLs. The redirector uses this file to update routing tables in real-time without requiring restarts.
+
+== Operational flow
+
+The routing process follows these steps:
+
+. Authenticate by using OAuth through a proxy sidecar.
+. Pass identity and group information through HTTP headers.
+. Verify group memberships by using OpenShift Container Platform API queries.
+. Determine the appropriate {prod} URL by using a mapping lookup.
+. Redirect the user to the designated cluster instance.
+
+If users belong to multiple OpenShift Container Platform groups, they can choose their desired {prod} instance from a selection dashboard.
+
+.Additional resources
+
+* link:https://che.eclipseprojects.io/2025/04/29/@ilya.buziuk-running-at-scale.html[Running at scale]
+* link:https://developers.redhat.com/articles/2026/01/23/enterprise-multi-cluster-scalability-openshift-dev-spaces[Enterprise multi-cluster scalability]
+* link:https://kubernetes.io/[Kubernetes]
+* link:https://github.com/microsoft/vscode[Visual Studio Code - Open Source ("Code - OSS")]
+* link:https://www.jetbrains.com/remote-development/gateway/[JetBrains Gateway]
+* link:https://kubernetes.io/docs/setup/best-practices/cluster-large/[Considerations for large clusters]
+* link:https://www.redhat.com/en/technologies/cloud-computing/openshift[OpenShift Container Platform]
+* link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/scalability_and_performance/planning-your-environment-according-to-object-maximums#planning-your-environment-according-to-object-maximums[OpenShift Container Platform tested object maximums]
+* xref:calculating-che-resource-requirements.adoc[]
+* link:https://etcd.io/[etcd]
+* link:https://olm.operatorframework.io/[Operator Lifecycle Manager (OLM)]
+* link:https://github.com/operator-framework/enhancements/blob/master/enhancements/olm-toggle-copied-csvs.md[OLM toggle Copied CSVs enhancement proposal]
+* link:https://olm.operatorframework.io/docs/advanced-tasks/configuring-olm/#disabling-copied-csvs[Disabling Copied CSVs in OLM]
+* link:https://karpenter.sh/[Karpenter]
+* link:https://developers.redhat.com/developer-sandbox[Developer Sandbox]
+* link:https://www.redhat.com/en/technologies/cloud-computing/openshift/aws[Red Hat OpenShift Service on AWS (ROSA)]
+* link:https://argo-cd.readthedocs.io/en/stable/[Argo CD]
+* link:https://workspaces.openshift.com/[workspaces.openshift.com]
+* link:https://github.com/codeready-toolchain/crw-multicluster-redirector[crw-multicluster-redirector GitHub repository]
+* link:https://github.com/redhat-developer/devspaces-multicluster-redirector[devspaces-multicluster-redirector GitHub repository]
