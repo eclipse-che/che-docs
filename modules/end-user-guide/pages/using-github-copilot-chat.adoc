@@ -1,0 +1,87 @@
+:_content-type: PROCEDURE
+:description: Set up GitHub Copilot Chat in a Che workspace
+:keywords: copilot, github-copilot, copilot-chat, ai, extensions
+:navtitle: Set up GitHub Copilot Chat
+:copilot-ext-ver: 0.36.2
+
+[id="using-github-copilot-chat"]
+= Set up GitHub Copilot Chat
+
+To get AI-assisted coding suggestions in your {prod-short} workspace, install the link:https://open-vsx.org/extension/redhat/devspaces-copilot-chat-integration/0.36.2[Dev Spaces Copilot Chat Integration] extension (version {copilot-ext-ver}) and authenticate with your GitHub account.
+
+.Prerequisites
+
+* A GitHub account with an active link:https://github.com/features/copilot[GitHub Copilot] subscription.
+* A running {prod-short} workspace with the Code - OSS editor.
+* The following URLs must be accessible from the workspace (ensure they are added to the allowlist if you are in a restricted or air-gapped environment):
++
+--
+** `https://github.com`
+** `https://api.github.com`
+** `https://api.githubcopilot.com`
+--
+
+.Procedure
+
+. Install version {copilot-ext-ver} of the *Dev Spaces Copilot Chat Integration* extension.
++
+Choose one of the following options depending on your Open VSX registry configuration:
++
+--
+* If your {prod-short} instance is configured to use the link:https://open-vsx.org[public Open VSX registry] or a standalone Open VSX registry that contains the extension:
++
+Open the Extensions view by pressing kbd:[Ctrl+Shift+X], search for `Dev Spaces Copilot Chat Integration`, select version *{copilot-ext-ver}*, and click *Install*.
+
+* If your {prod-short} instance uses the default embedded Open VSX registry or a registry that does not contain the extension, install it manually from a `.vsix` file:
++
+Download the `.vsix` file from the link:https://open-vsx.org/extension/redhat/devspaces-copilot-chat-integration/0.36.2[Open VSX registry], then press kbd:[F1] to open the Command Palette and run `Extensions: Install from VSIX...`.
+--
++
+[IMPORTANT]
+====
+Use version {copilot-ext-ver} of the extension. Other versions may not be compatible with the current {prod-short} editor.
+====
+
+. Authenticate using Device Authentication.
++
+Press kbd:[F1] to open the Command Palette, type `GitHub: Device Authentication`, and select the command.
++
+IMPORTANT: You must complete Device Authentication *before* attempting to use AI features. Initiating "Sign in to use AI Features" without a valid device authentication token causes authentication errors that require signing out and re-authenticating.
+
+. Complete the device authentication flow.
++
+A notification appears with a device code. Click the link to open the GitHub device activation page in your browser, paste the code, and authorize access.
+
+. Refresh the browser page.
++
+After successful authentication, a notification prompts you to refresh the browser page. Refresh the page to apply the authentication token. Copilot Chat is authenticated automatically and ready to use.
+
+.Verification
+
+* Open the Copilot Chat panel, type a prompt such as "Explain this file", and verify that a response appears.
+
+[NOTE]
+====
+Device Authentication is a one-time step. The credentials are saved as a Kubernetes object and persist across workspaces on the same cluster.
+====
+
+.Troubleshooting
+
+If you attempted to use Copilot Chat before completing Device Authentication, the extension may enter an error state. Typical symptoms include:
+
+* Copilot Chat appears to be connected but does not respond to prompts.
+* The Copilot Chat output log contains errors such as:
++
+[source,text]
+----
+Failed to get copilot token. reason: NotAuthorized
+GitHub Copilot could not connect to server. Extension activation failed: "Failed to get copilot token. reason: NotAuthorized"
+----
+
+This happens when *Sign in to use AI Features* is triggered before a valid Device Authentication token exists.
+
+To recover:
+
+. Click the *Accounts* icon on the left activity bar, select your account, and click *Sign Out*. A confirmation dialog appears indicating the account has been used by the Dev Spaces Copilot Chat Integration. Click *Sign Out* to confirm.
+. Press kbd:[F1] to open the Command Palette and run `GitHub: Device Authentication`. Complete the device authentication flow in the browser.
+. Refresh the browser page when prompted. Copilot Chat is now ready to use.
