@@ -47,11 +47,9 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
 
       - name: Update status comment
-        uses: actions-cool/maintain-one-comment@v3
+        uses: marocchino/sticky-pull-request-comment@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            🎊 Navigate the preview: ${{ steps.netlify-publish.outputs.NETLIFY_URL }} 🎊
-            <!-- Sticky Pull Request Comment -->
-          body-include: "<!-- Sticky Pull Request Comment -->"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           number: ${{ steps.vars.outputs.pr_number }}
+          message: |
+            🎊 Navigate the preview: ${{ steps.netlify-publish.outputs.NETLIFY_URL }} 🎊
