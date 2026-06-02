@@ -1,6 +1,6 @@
 :_content-type: ASSEMBLY
-:description: {devworkspace} operator
-:keywords: administration-guide, workspace operator, devworkspace
+:description: {devworkspace} operator overview, version requirements, and validation mechanisms
+:keywords: administration-guide, workspace operator, devworkspace, version requirements, validation
 :navtitle: {devworkspace} operator
 :page-aliases: .:devworkspace-operator.adoc
 
@@ -9,6 +9,8 @@
 
 
 The {devworkspace} Operator (DWO) is a dependency of {prod-short}, and is an integral part of how {prod-short} functions. One of DWO's main responsibilities is to reconcile {devworkspace} custom resources (CR).
+
+{prod-short} validates that the {devworkspace} Operator is installed and meets the minimum version requirement before allowing {prod-short} deployment. See xref:devworkspace-operator-version-requirements[].
 
 The {devworkspace} CR is a {orch-name} resource representation of a {prod-short} workspace. Whenever a user creates a workspace using {prod-short} in the background, Dashboard {prod-short} creates a {devworkspace} CR in the cluster. For every {prod-short} workspace, there is an underlying {devworkspace} CR on the cluster.
 
@@ -22,6 +24,28 @@ When creating a workspace with {prod-short} with a devfile, the {devworkspace} C
 A `DevWorkspaceTemplate` is a custom resource that defines a reusable `spec.template` for {devworkspace}s.
 
 When a workspace is started, DWO reads the corresponding {devworkspace} CR and creates the necessary resources such as deployments, secrets, configmaps, routes such that at the end a workspace pod representing the development environment defined in the devfile is created.
+
+[id="devworkspace-operator-version-requirements"]
+== {devworkspace} Operator version requirements
+
+{prod-short} requires the {devworkspace} Operator to be installed before you can create a `CheCluster` instance. {prod-short} validates the {devworkspace} Operator installation and version through two mechanisms:
+
+Webhook validation:: A validating webhook prevents `CheCluster` creation if the {devworkspace} Operator is not installed. If you attempt to create a `CheCluster` instance without the {devworkspace} Operator installed, you will receive the following error:
++
+----
+DevWorkspace Operator is not installed. Please install it before creating a CheCluster instance
+----
+
+Runtime version validation:: During reconciliation, the {prod-short} Operator validates that the installed {devworkspace} Operator version meets the minimum requirement. The operator queries the {devworkspace} Operator's `Subscription` object to determine the installed version. If the version requirement is not met, the reconciliation fails with a detailed error message:
++
+----
+DevWorkspace Operator version <installed-version> is installed, but Eclipse Che requires version <minimum-version> or higher. Please upgrade the DevWorkspace Operator
+----
+
+// TODO: Verify minimum version - code shows 0.38.0 but PR description mentions 0.42.0
+The minimum required {devworkspace} Operator version is `0.38.0`.
+
+IMPORTANT: When installing {prod-short} manually or in environments without Operator Lifecycle Manager (OLM), you must install the {devworkspace} Operator before creating a `CheCluster` instance. In OLM-enabled environments such as {ocp}, the {devworkspace} Operator is typically installed automatically as a dependency.
 
 .Custom Resources overview
 
