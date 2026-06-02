@@ -1,6 +1,6 @@
 :_content-type: ASSEMBLY
-:description: {devworkspace} operator
-:keywords: administration-guide, workspace operator, devworkspace
+:description: {devworkspace} operator overview, version requirements, and validation
+:keywords: administration-guide, workspace operator, devworkspace, version requirements, validation
 :navtitle: {devworkspace} operator
 :page-aliases: .:devworkspace-operator.adoc
 
@@ -22,6 +22,37 @@ When creating a workspace with {prod-short} with a devfile, the {devworkspace} C
 A `DevWorkspaceTemplate` is a custom resource that defines a reusable `spec.template` for {devworkspace}s.
 
 When a workspace is started, DWO reads the corresponding {devworkspace} CR and creates the necessary resources such as deployments, secrets, configmaps, routes such that at the end a workspace pod representing the development environment defined in the devfile is created.
+
+== {devworkspace} Operator version requirements
+
+{prod-short} requires a minimum version of the {devworkspace} Operator to function correctly. The operator enforces this requirement through two validation gates:
+
+.Validation gates
+[cols="1,2,2",options="header"]
+|===
+| Gate | When it occurs | Behavior
+
+| Webhook validation
+| CheCluster CR creation
+| Prevents CheCluster creation if the {devworkspace} Operator is not installed. Returns error: `DevWorkspace Operator is not installed. Please install it before creating a CheCluster instance`
+
+| Reconciler version validation
+| CheCluster reconciliation
+| Blocks reconciliation if the installed {devworkspace} Operator version is below the minimum required version. Logs error and updates CheCluster status with message: `DevWorkspace Operator version <installed-version> is installed, but Eclipse Che requires version <minimum-version> or higher. Please upgrade the DevWorkspace Operator`
+|===
+
+IMPORTANT: The current minimum required {devworkspace} Operator version is 0.38.0. This requirement is validated at runtime rather than through package manager dependencies.
+
+.Verification
+
+To verify the installed {devworkspace} Operator version on OpenShift:
+
+[source,bash,subs="+quotes,+attributes"]
+----
+{orch-cli} get subscription -A -o json | jq -r '.items[] | select(.spec.package=="devworkspace-operator") | .status.installedCSV'
+----
+
+The output shows the installed Cluster Service Version (CSV), for example: `devworkspace-operator.v0.40.0`.
 
 .Custom Resources overview
 
