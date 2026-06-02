@@ -1,6 +1,6 @@
 :_content-type: ASSEMBLY
-:description: {devworkspace} operator
-:keywords: administration-guide, workspace operator, devworkspace
+:description: The {devworkspace} Operator is a required prerequisite for {prod-short}, managing workspace resources and enforcing version requirements
+:keywords: administration-guide, workspace operator, devworkspace, prerequisites, version requirements
 :navtitle: {devworkspace} operator
 :page-aliases: .:devworkspace-operator.adoc
 
@@ -9,6 +9,31 @@
 
 
 The {devworkspace} Operator (DWO) is a dependency of {prod-short}, and is an integral part of how {prod-short} functions. One of DWO's main responsibilities is to reconcile {devworkspace} custom resources (CR).
+
+[id="devworkspace-operator-prerequisites"]
+== {devworkspace} Operator prerequisite
+
+The {devworkspace} Operator must be installed on the cluster before you can create a `CheCluster` custom resource to deploy {prod-short}. {prod-short} enforces this requirement through validation mechanisms:
+
+.Webhook validation
+When you attempt to create a `CheCluster` custom resource, a validating webhook checks whether the {devworkspace} Operator is installed. If the operator is not detected, the webhook rejects the `CheCluster` creation with the following error:
+
+[source,text]
+----
+DevWorkspace Operator is not installed. Please install it before creating a CheCluster instance
+----
+
+.Runtime version validation
+After the `CheCluster` is created, {prod-short} validates that the installed {devworkspace} Operator version meets the minimum requirement. If the version is too old, reconciliation fails with an error similar to:
+
+[source,text]
+----
+DevWorkspace Operator version 0.38.0 is installed, but Eclipse Che requires version 0.42.0 or higher. Please upgrade the DevWorkspace Operator
+----
+
+This error appears in both the {prod-operator} logs and the `CheCluster` custom resource status.
+
+IMPORTANT: Ensure that the {devworkspace} Operator is installed and meets the minimum version requirement before deploying {prod-short}. On OpenShift clusters using Operator Lifecycle Manager (OLM), the {devworkspace} Operator is typically installed automatically as a dependency. On other platforms, you may need to install it manually.
 
 The {devworkspace} CR is a {orch-name} resource representation of a {prod-short} workspace. Whenever a user creates a workspace using {prod-short} in the background, Dashboard {prod-short} creates a {devworkspace} CR in the cluster. For every {prod-short} workspace, there is an underlying {devworkspace} CR on the cluster.
 
