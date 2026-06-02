@@ -1,6 +1,6 @@
 :_content-type: ASSEMBLY
-:description: {devworkspace} operator
-:keywords: administration-guide, workspace operator, devworkspace
+:description: {devworkspace} operator, version requirements, and validation
+:keywords: administration-guide, workspace operator, devworkspace, version requirements, prerequisites
 :navtitle: {devworkspace} operator
 :page-aliases: .:devworkspace-operator.adoc
 
@@ -22,6 +22,37 @@ When creating a workspace with {prod-short} with a devfile, the {devworkspace} C
 A `DevWorkspaceTemplate` is a custom resource that defines a reusable `spec.template` for {devworkspace}s.
 
 When a workspace is started, DWO reads the corresponding {devworkspace} CR and creates the necessary resources such as deployments, secrets, configmaps, routes such that at the end a workspace pod representing the development environment defined in the devfile is created.
+
+[id="devworkspace-operator-version-requirements"]
+== {devworkspace} Operator version requirements
+
+{prod-short} requires the {devworkspace} Operator to be installed on the cluster before {prod-short} can be deployed. {prod-short} validates both the presence and version of the {devworkspace} Operator to ensure compatibility.
+
+.Minimum version requirement
+
+{prod-short} requires {devworkspace} Operator version *0.42.0* or higher.
+
+.Validation mechanisms
+
+{prod-short} validates the {devworkspace} Operator installation using two mechanisms:
+
+Installation validation::
+When you attempt to create a `CheCluster` custom resource, {prod-short} validates that the {devworkspace} Operator is installed on the cluster by checking for the presence of the `DevWorkspaceOperatorConfig` API. If the {devworkspace} Operator is not installed, the `CheCluster` creation fails with the following error:
++
+----
+DevWorkspace Operator is not installed. Please install DevWorkspace Operator before installing Eclipse Che
+----
+
+Version validation::
+During {prod-short} reconciliation, {prod-short} validates that the installed {devworkspace} Operator version meets the minimum version requirement. If an incompatible version is detected, {prod-short} reports an error indicating the installed version and the required minimum version:
++
+----
+DevWorkspace Operator version X.Y.Z is installed, but Eclipse Che requires version 0.42.0 or higher. Please upgrade the DevWorkspace Operator
+----
+
+// TODO: Version validation mechanism queries OLM Subscriptions, which only works on OLM-based deployments (OpenShift). For Helm/kubectl deployments on vanilla Kubernetes, version validation behavior needs clarification.
+
+IMPORTANT: Ensure the {devworkspace} Operator is installed and meets the minimum version requirement before installing {prod-short}.
 
 .Custom Resources overview
 
