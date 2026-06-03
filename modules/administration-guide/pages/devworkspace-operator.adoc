@@ -1,6 +1,6 @@
 :_content-type: ASSEMBLY
-:description: {devworkspace} operator
-:keywords: administration-guide, workspace operator, devworkspace
+:description: {devworkspace} operator prerequisite and version requirements
+:keywords: administration-guide, workspace operator, devworkspace, prerequisites, version
 :navtitle: {devworkspace} operator
 :page-aliases: .:devworkspace-operator.adoc
 
@@ -8,7 +8,7 @@
 = {devworkspace} Operator overview
 
 
-The {devworkspace} Operator (DWO) is a dependency of {prod-short}, and is an integral part of how {prod-short} functions. One of DWO's main responsibilities is to reconcile {devworkspace} custom resources (CR).
+The {devworkspace} Operator (DWO) is a required prerequisite for {prod-short}. {prod-short} validates that the {devworkspace} Operator is installed and meets the minimum version requirement before creating or reconciling workspaces. One of DWO's main responsibilities is to reconcile {devworkspace} custom resources (CR).
 
 The {devworkspace} CR is a {orch-name} resource representation of a {prod-short} workspace. Whenever a user creates a workspace using {prod-short} in the background, Dashboard {prod-short} creates a {devworkspace} CR in the cluster. For every {prod-short} workspace, there is an underlying {devworkspace} CR on the cluster.
 
@@ -22,6 +22,33 @@ When creating a workspace with {prod-short} with a devfile, the {devworkspace} C
 A `DevWorkspaceTemplate` is a custom resource that defines a reusable `spec.template` for {devworkspace}s.
 
 When a workspace is started, DWO reads the corresponding {devworkspace} CR and creates the necessary resources such as deployments, secrets, configmaps, routes such that at the end a workspace pod representing the development environment defined in the devfile is created.
+
+== {devworkspace} Operator prerequisite validation
+
+{prod-short} enforces that the {devworkspace} Operator is installed and meets the minimum version requirement through two validation gates:
+
+. **Webhook validation**: When attempting to create a `CheCluster` custom resource, {prod-short} validates that the `DevWorkspaceOperatorConfig` API is available in the cluster. If the API is not found, the `CheCluster` creation is blocked with an error message.
+
+. **Reconciliation validation**: During {prod-short} reconciliation, the operator validates that the installed {devworkspace} Operator version meets the minimum required version. If the version requirement is not met, reconciliation fails and the error is reported in the `CheCluster` status and operator logs.
+
+[id="devworkspace-operator-minimum-version"]
+=== Minimum version requirement
+
+{prod-short} requires {devworkspace} Operator version *0.42.0* or higher.
+
+If an older version is installed, the {prod-short} operator logs an error similar to:
+
+[source,terminal]
+----
+ERROR controllers.CheCluster Failed to reconcile CheCluster resources.
+The installation is not completed. Check operator logs for details. {"error": "devworkspace.DevWorkspaceVersionValidator reconciliation failed:
+DevWorkspace Operator version 0.38.0 is installed, but Eclipse Che requires version 0.42.0 or higher.
+Please upgrade the DevWorkspace Operator"}
+----
+
+The error is also reflected in the `CheCluster` custom resource status field.
+
+To resolve this issue, upgrade the {devworkspace} Operator to version 0.42.0 or higher. On {ocp}, you can upgrade the operator through the OperatorHub or by updating the Subscription resource. See xref:repairing-the-devworkspace-operator-on-openshift.adoc[].
 
 .Custom Resources overview
 
