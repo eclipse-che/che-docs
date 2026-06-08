@@ -1,0 +1,167 @@
+:_content-type: PROCEDURE
+:description: Enable the {prod} operator to deploy and manage a dedicated Open VSX registry instance with PostgreSQL
+:keywords: administration guide, openvsx, registry, extensions, operand, managed
+:navtitle: Enable the managed Open VSX registry
+:page-aliases:
+
+[id="enabling-the-managed-open-vsx-registry"]
+= Enable the managed Open VSX registry
+
+[role="_abstract"]
+Enable {prod-short} to automatically deploy and manage a dedicated Open VSX registry instance with PostgreSQL persistence. The managed registry runs as a {prod-short} operand, providing a self-contained, operator-managed extension registry that requires no manual deployment or maintenance.
+
+When enabled, the {prod-short} operator creates and manages:
+
+* **OpenVSX server** — A Spring Boot application serving the extension registry API and web interface
+* **PostgreSQL database** — Persistent storage for extension metadata and user accounts
+* **Persistent volumes** — Storage for extension files and database data
+* **Ingress** — Public or internal route for accessing the registry
+* **Database seeding** — Automatic creation of privileged user accounts and personal access tokens
+* **Extension publishing** — Optional job to pre-populate extensions from a ConfigMap
+
+The managed registry is deployed in the same namespace as {prod-short} and shares the same lifecycle. When disabled, all resources are automatically cleaned up.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Enable the managed Open VSX registry by setting `spec.components.openVSX.enable` to `true`:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{"spec":{"components":{"openVSX":{"enable":true}}}}'
+----
+
+. Wait for the {prod-short} operator to create the OpenVSX resources:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} get pods -n {prod-namespace} -l app.kubernetes.io/component=openvsx-server
+{orch-cli} get pods -n {prod-namespace} -l app.kubernetes.io/component=openvsx-postgres
+----
+
+. Retrieve the OpenVSX registry URL from the `CheCluster` status:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} get checluster {prod-checluster} \
+  -n {prod-namespace} \
+  -o jsonpath='{.status.openVSXURL}'
+----
+
+.Verification
+
+* Access the OpenVSX registry URL in a web browser to verify the registry interface is available.
+* Start a {prod-short} workspace and verify that the Microsoft Visual Studio Code - Open Source editor can browse and install extensions from the managed registry.
+
+.Additional configuration
+
+*Customize storage capacity*
+
+Configure the persistent volume sizes for the OpenVSX server and PostgreSQL database:
+
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{
+    "spec": {
+      "components": {
+        "openVSX": {
+          "server": {
+            "claimSize": "__<extension_storage_size>__"
+          },
+          "postgres": {
+            "claimSize": "__<database_storage_size>__"
+          }
+        }
+      }
+    }
+  }'
+----
++
+where:
++
+`__<extension_storage_size>__`:: Storage capacity for extension files. Default: `3Gi`.
+`__<database_storage_size>__`:: Storage capacity for PostgreSQL data. Default: `1Gi`.
+
+NOTE: Most storage classes only support volume expansion, not shrinking. Ensure the specified size is equal to or greater than the current size.
+
+*Pre-populate extensions*
+
+Publish extensions to the managed registry by editing the `openvsx-extensions` ConfigMap:
+
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} edit configmap openvsx-extensions -n {prod-namespace}
+----
+
+Add extension identifiers in the format `publisher.extension` (one per line) to the ConfigMap data. The {prod-short} operator automatically creates a job to publish the specified extensions.
+
+// TODO: Verify the exact ConfigMap structure and field name for extension list
+
+*Customize OpenVSX server configuration*
+
+Edit the `openvsx-server-config` ConfigMap to modify the Spring Boot application configuration:
+
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} edit configmap openvsx-server-config -n {prod-namespace}
+----
+
+The {prod-short} operator automatically restarts the OpenVSX server pod when the ConfigMap is modified.
+
+// TODO: Document which application.yml properties are safe to modify
+
+*Configure deployment overrides*
+
+Override the default resource requests, limits, and other deployment settings:
+
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{
+    "spec": {
+      "components": {
+        "openVSX": {
+          "server": {
+            "deployment": {
+              "containers": [{
+                "name": "openvsx-server",
+                "resources": {
+                  "requests": {
+                    "memory": "__<memory_request>__",
+                    "cpu": "__<cpu_request>__"
+                  },
+                  "limits": {
+                    "memory": "__<memory_limit>__",
+                    "cpu": "__<cpu_limit>__"
+                  }
+                }
+              }]
+            }
+          }
+        }
+      }
+    }
+  }'
+----
++
+Default resource allocations:
++
+* OpenVSX server: 512Mi request, 2Gi limit (memory); 100m request, 1 limit (CPU)
+* PostgreSQL: 256Mi request, 1024Mi limit (memory); 100m request, 1 limit (CPU)
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:managing-ide-extensions.adoc[]
+* xref:configuring-the-open-vsx-registry-url.adoc[]
