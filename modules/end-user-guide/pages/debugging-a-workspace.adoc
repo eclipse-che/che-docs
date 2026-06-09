@@ -1,0 +1,74 @@
+:_content-type: PROCEDURE
+:description: Debugging a failing {prod-short} workspace by starting it in debug mode
+:keywords: user-guide, debug, workspace, troubleshooting
+:navtitle: Debugging a workspace
+:page-aliases:
+
+[id="debugging-a-workspace"]
+= Debugging a {prod-short} workspace
+
+To diagnose workspace startup failures and inspect failing `postStart` commands, start the workspace in debug mode to keep containers running after failure.
+
+When debug mode is enabled:
+
+* If a `postStart` lifecycle command fails, the container sleeps instead of terminating, giving you time to connect and inspect the failure.
+* Logs from `postStart` commands are written to `/tmp/poststart-stdout.txt` and `/tmp/poststart-stderr.txt` inside the workspace container.
+* The workspace deployment remains available for the duration of the configured `progressTimeout` (default: 5 minutes) before scaling down.
+
+.Prerequisites
+
+* A running {prod-short} instance.
+* Access to the {prod-short} dashboard.
+
+.Procedure
+
+Start a stopped workspace in debug mode:
+
+. In the {prod-short} dashboard, go to the *Workspaces* page.
+. Click the kebab menu (*&#8942;*) for the workspace you want to debug.
+. Select *Open in Debug mode*.
++
+The workspace starts with the `controller.devfile.io/debug-start` annotation set to `true`, and the *Logs* tab opens.
+
+Restart a running workspace in debug mode:
+
+. In the {prod-short} dashboard, go to the *Workspaces* page.
+. Click the kebab menu (*&#8942;*) for the running workspace.
+. Select *Restart in Debug mode*.
++
+The workspace restarts with debug mode enabled, and the *Logs* tab opens.
+
+Inspect a failing workspace:
+
+. Wait for the workspace to report a failure in the *Logs* tab. Look for error messages or status conditions indicating startup problems. If no failure occurs within the `progressTimeout` period (default: 5 minutes), the workspace will scale down automatically.
+. Use `{orch-cli}` to exec into the workspace container:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ {orch-cli} exec --namespace='__<workspace_namespace>__' \
+  deploy/workspace__<workspace_id>__ -- /bin/bash
+----
+
+. Review the `postStart` command logs:
++
+[source,bash]
+----
+$ cat /tmp/poststart-stderr.txt
+$ cat /tmp/poststart-stdout.txt
+----
+
+.Verification
+
+* In the *Logs* tab, verify that the workspace status conditions include the message `DevWorkspace is starting in debug mode`.
+* If a `postStart` command fails, verify that the container remains running and that `/tmp/poststart-stderr.txt` contains the failure details.
+
+[IMPORTANT]
+====
+The `controller.devfile.io/debug-start` annotation is managed by the {prod-short} dashboard. Manually patching this annotation on a DevWorkspace resource using `{orch-cli}` will not persist, because the dashboard reconciles the annotation on every start or restart operation.
+
+Always use the dashboard actions described above to enable debug mode.
+====
+
+.Additional resources
+* xref:viewing-che-workspaces-logs.adoc[]
+* xref:viewing-workspace-logs-in-cli.adoc[]
