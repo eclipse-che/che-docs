@@ -1,5 +1,5 @@
 :_content-type: PROCEDURE
-:description: To manage user authentication through a centralized identity provider, deploy {prod-short} on OpenShift with {keycloak} as the external OIDC provider.
+:description: To enable centralized user authentication through an external identity provider, install {prod-short} on {orch-name} with {keycloak} as the OIDC provider.
 :keywords: install, openshift, keycloak, oidc, identity provider
 :navtitle: Install {prod-short} on OpenShift with {keycloak} as external identity provider
 :page-aliases: installing-che-on-openshift-with-keycloak-as-oidc.adoc
@@ -8,7 +8,7 @@
 = Install {prod-short} on OpenShift with {keycloak} as external identity provider
 
 [role="_abstract"]
-To manage user authentication through a centralized identity provider, deploy {prod-short} on an {orch-name} cluster with {keycloak} as the external OpenID Connect (OIDC) provider.
+To enable centralized user authentication through an external identity provider, install {prod-short} on {orch-name} with {keycloak} as the OIDC provider.
 
 .Prerequisites
 
@@ -34,15 +34,10 @@ To manage user authentication through a centralized identity provider, deploy {p
 ... Click *Next*.
 .. On the *Login settings* page:
 +
-... Entry `{prod-short}` redirect URL in the *Valid redirect URIs* field.
-... Click *Save*.
-
-.. Navigate to the *Credentials* tab of the newly created client and copy the *Client secret* value for use when applying the OAuth client secret.
---
+... Enter `{prod-short}` redirect URL in the *Valid redirect URIs* field.
 +
-[NOTE]
-====
-Run the following command to obtain `{prod}` redirect URL:
+NOTE: Run the following command to obtain the `{prod}` redirect URL:
++
 [source,bash,subs="+quotes,+attributes"]
 ----
 echo "$(
@@ -51,7 +46,11 @@ echo "$(
     -o jsonpath='{.status.cheURL}'
 )/oauth/callback"
 ----
-====
+
+... Click *Save*.
+
+.. Navigate to the *Credentials* tab of the newly created client and copy the *Client secret* value for use when applying the OAuth client secret.
+--
 . Add the `{prod-id-short}` client to the audiences list in the {orch-name} authentication configuration:
 +
 [source,bash,subs="+quotes,+attributes"]
@@ -87,7 +86,7 @@ watch {orch-cli} get co kube-apiserver
 {orch-cli} create {orch-namespace} {prod-namespace}
 ----
 
-. Create a Secret:
+. Create a Secret for OAuth authentication:
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
