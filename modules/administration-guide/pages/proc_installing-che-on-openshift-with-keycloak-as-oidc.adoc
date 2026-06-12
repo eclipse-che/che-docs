@@ -1,5 +1,5 @@
 :_content-type: PROCEDURE
-:description: To manage user authentication through a centralized identity provider, deploy {prod-short} on OpenShift with {keycloak} as the external OIDC provider.
+:description: To enable centralized user authentication through an external identity provider, install {prod-short} on {orch-name} with {keycloak} as the OIDC provider.
 :keywords: install, openshift, keycloak, oidc, identity provider
 :navtitle: Install {prod-short} on OpenShift with {keycloak} as external identity provider
 :page-aliases: installing-che-on-openshift-with-keycloak-as-oidc.adoc
@@ -8,26 +8,15 @@
 = Install {prod-short} on OpenShift with {keycloak} as external identity provider
 
 [role="_abstract"]
-To manage user authentication through a centralized identity provider, deploy {prod-short} on an {orch-name} cluster with {keycloak} as the external OpenID Connect (OIDC) provider.
+To enable centralized user authentication through an external identity provider, install {prod-short} on {orch-name} with {keycloak} as the OIDC provider.
 
 .Prerequisites
 
 * You have an active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
 
-* You have {keycloak} configured as an external identity provider for {orch-name}. See link:https://docs.redhat.com/en/documentation/openshift_container_platform/{ocp4-ver}/html/authentication_and_authorization/external-auth[Enabling direct authentication with an external OIDC identity provider].
+* You have {keycloak} configured as an external identity provider for {orch-name}. See link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/external-auth[Enabling direct authentication with an external OIDC identity provider].
 
 .Procedure
-
-. Define the environment variables:
-+
-[source,bash,subs="+quotes,+attributes"]
-----
-# The {keycloak} realm used for {orch-name} authentication:
-OPENSHIFT_REALM=__<realm>__
-
-# The {keycloak} URL:
-KEYCLOAK_URL=__<keycloak_url>__
-----
 
 . Create a `{prod-id-short}` client in the {keycloak} Admin Console:
 +
@@ -43,11 +32,25 @@ KEYCLOAK_URL=__<keycloak_url>__
 +
 ... Toggle *Client authentication* to *On*.
 ... Click *Next*.
+.. On the *Login settings* page:
++
+... Enter `{prod-short}` redirect URL in the *Valid redirect URIs* field.
++
+NOTE: Run the following command to obtain the `{prod}` redirect URL:
++
+[source,bash,subs="+quotes,+attributes"]
+----
+echo "$(
+  {orch-cli} get checluster {prod-checluster} \
+    -n {prod-namespace} \
+    -o jsonpath='{.status.cheURL}'
+)/oauth/callback"
+----
+
 ... Click *Save*.
 
 .. Navigate to the *Credentials* tab of the newly created client and copy the *Client secret* value for use when applying the OAuth client secret.
 --
-
 . Add the `{prod-id-short}` client to the audiences list in the {orch-name} authentication configuration:
 +
 [source,bash,subs="+quotes,+attributes"]
@@ -65,7 +68,8 @@ KEYCLOAK_URL=__<keycloak_url>__
 +
 [NOTE]
 ====
-If you have multiple OIDC providers configured, adjust the array index in the path (currently 0) to match your {keycloak} provider's position in the configuration.
+If you have multiple OIDC providers configured, adjust the array index in the path (currently `0`)
+to match your {keycloak} provider's position in the configuration.
 ====
 
 . Wait for the `kube-apiserver` cluster Operator to roll out the configuration changes:
@@ -82,7 +86,7 @@ watch {orch-cli} get co kube-apiserver
 {orch-cli} create {orch-namespace} {prod-namespace}
 ----
 
-. Create a secret for the OAuth client in the {prod-short} namespace:
+. Create a Secret for OAuth authentication:
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
@@ -90,51 +94,29 @@ watch {orch-cli} get co kube-apiserver
 apiVersion: v1
 kind: Secret
 metadata:
-  name: oauth-secret
+  name: {prod-id-short}-oidc-client-secret
   namespace: {prod-namespace}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
 stringData:
-  oAuthSecret: __<client_secret>__
+  oAuthSecret: __<client_secret>__ <1>
 EOF
 ----
 +
-where:
-+
-`__<client_secret>__`:: The client secret value from the `{prod-id-short}` client in {keycloak}.
-
-. Optional: Create the `ConfigMap` with a {keycloak} certificate in the `{prod-namespace}` namespace. If {keycloak} uses a certificate that is already trusted by {orch-name}, skip this step.
-+
-[source,bash,subs="+attributes"]
-----
-openssl s_client \
-  -connect "$(echo "$KEYCLOAK_URL" | sed 's|https://||'):443" \
-  -showcerts < /dev/null \
-| sed -n '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/p' \
-> keycloak-ca.crt
-
-{orch-cli} create configmap keycloak-certs \
-    --from-file=keycloak-ca.crt=keycloak-ca.crt \
-    -n {prod-namespace} && \
-{orch-cli} label configmap keycloak-certs \
-    app.kubernetes.io/part-of=che.eclipse.org \
-    app.kubernetes.io/component=ca-bundle \
-    -n {prod-namespace}
-----
+<1> The client secret value from the `{prod-id-short}` client credentials tab in {keycloak}.
 
 . Prepare the `CheCluster` patch:
 +
-[source,bash,subs="+attributes"]
+[source,yaml,subs="+quotes,+attributes"]
 ----
-cat > che-patch.yaml << EOF
+cat > che-patch.yaml <<EOF
 kind: CheCluster
 apiVersion: org.eclipse.che/v2
 spec:
   networking:
     auth:
       oAuthClientName: {prod-id-short}
-      oAuthSecret: oauth-secret
-      identityProviderURL: "$KEYCLOAK_URL/realms/$OPENSHIFT_REALM"
+      oAuthSecret: {prod-id-short}-oidc-client-secret
       gateway:
         oAuthProxy:
           cookieExpireSeconds: 300
@@ -142,39 +124,12 @@ spec:
           containers:
             - name: oauth-proxy
               env:
-                - name: OAUTH2_PROXY_CODE_CHALLENGE_METHOD
-                  value: S256
                 - name: OAUTH2_PROXY_BACKEND_LOGOUT_URL
-                  value: "$KEYCLOAK_URL/realms/$OPENSHIFT_REALM/protocol/openid-connect/logout?id_token_hint=\{id_token}"
-  components:
-    cheServer:
-      extraProperties:
-        CHE_OIDC_GROUPS__CLAIM: '<GROUPS_CLAIM>'
-        CHE_OIDC_GROUPS__PREFIX: '<GROUPS_PREFIX>'
-        CHE_OIDC_USERNAME__CLAIM: '<USERNAME_CLAIM>'
-        CHE_OIDC_USERNAME__PREFIX: '<USERNAME_PREFIX>'
+                  value: "__<issuer_url>__/protocol/openid-connect/logout?id_token_hint=\{id_token}" <1>
 EOF
 ----
 +
-where:
-+
-`CHE_OIDC_GROUPS__CLAIM`:: The claim to use for extracting user groups.
-+
-`CHE_OIDC_GROUPS__PREFIX`:: The prefix to add to group names. Empty string means no prefix.
-+
-`CHE_OIDC_USERNAME__CLAIM`:: The claim to use for extracting the username.
-+
-`CHE_OIDC_USERNAME__PREFIX`:: The prefix to add to usernames. Empty string means no prefix.
-+
-[NOTE]
-====
-These values must match the corresponding claim and prefix settings configured in the `authentication.config/cluster` resource. To view the current cluster configuration, run:
-
-[source,bash,subs="+attributes"]
-----
-{orch-cli} get authentication.config/cluster -o yaml
-----
-====
+<1> The {keycloak} OIDC issuer URL.
 
 . Create the {prod-short} instance with `{prod-cli}`:
 +
@@ -184,21 +139,6 @@ These values must match the corresponding claim and prefix settings configured i
   --platform openshift \
   --che-operator-cr-patch-yaml che-patch.yaml
 ----
-
-. Update the `{prod-id-short}` client to set the {prod-short} redirect URI and web origin.
-+
-Obtain the {prod} URL:
-+
-[source,bash,subs="+quotes,+attributes"]
-----
-echo "$({orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath='{.status.cheURL}')"
-----
-+
---
-.. In the *Valid redirect URIs* field, enter the URL above with `/oauth/callback` appended.
-.. In the *Web origins* field, enter the URL above.
-.. Click *Save*.
---
 
 .Verification
 
@@ -217,3 +157,8 @@ echo "$({orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonp
 ----
 
 . Log in to the {prod-short} instance.
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://docs.redhat.com/en/documentation/openshift_container_platform/{ocp4-ver}/html/authentication_and_authorization/external-auth[Enabling direct authentication with an external OIDC identity provider]
