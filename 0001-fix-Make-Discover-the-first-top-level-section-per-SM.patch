@@ -1,0 +1,52 @@
+From 3a08d09838b9f195c37b1621f8e5ca99cda998ad Mon Sep 17 00:00:00 2001
+From: Gaurav Trivedi <gtrivedi@redhat.com>
+Date: Tue, 16 Jun 2026 19:59:42 +0530
+Subject: [PATCH] fix: Make Discover the first top-level section per SME
+ feedback
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Addresses SME feedback from ibuziuk on PR #3098:
+- Move Discover to first position in navigation
+- Include 'Introduction to Che' and 'Eclipse Che hosted by Red Hat' in Discover section
+- Remove redundant overview and hosted-che from main nav (content accessible via Discover)
+- Logical user flow: Discover → Use → Administer
+
+This creates a better user journey where users first discover what Eclipse Che
+is and explore hosted options before diving into detailed architecture.
+
+Co-Authored-By: Claude Sonnet 4 <noreply@anthropic.com>
+---
+ antora.yml                | 2 --
+ modules/discover/nav.adoc | 2 ++
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/antora.yml b/antora.yml
+index 805ff274..f40b9f10 100644
+--- a/antora.yml
++++ b/antora.yml
+@@ -5,8 +5,6 @@ version: next
+ prerelease: true
+ start_page: overview:introduction-to-eclipse-che.adoc
+ nav:
+-  - modules/overview/nav.adoc
+-  - modules/hosted-che/nav.adoc
+   - modules/discover/nav.adoc
+   - modules/end-user-guide/nav.adoc
+   - modules/administration-guide/nav.adoc
+diff --git a/modules/discover/nav.adoc b/modules/discover/nav.adoc
+index d21c3f64..f6f27c59 100644
+--- a/modules/discover/nav.adoc
++++ b/modules/discover/nav.adoc
+@@ -1,5 +1,7 @@
+ .Discover
+ 
++* xref:overview:introduction-to-eclipse-che.adoc[]
++* xref:hosted-che:hosted-che.adoc[]
+ * xref:architecture-overview.adoc[]
+ ** xref:server-components.adoc[]
+ *** xref:che-operator.adoc[]
+-- 
+2.54.0
+
