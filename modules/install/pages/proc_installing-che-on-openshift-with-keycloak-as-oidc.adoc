@@ -41,9 +41,8 @@ NOTE: Run the following command to obtain the `{prod}` redirect URL:
 [source,bash,subs="+quotes,+attributes"]
 ----
 echo "$(
-  {orch-cli} get checluster {prod-checluster} \
-    -n {prod-namespace} \
-    -o jsonpath='{.status.cheURL}'
+  oc whoami --show-console |
+  sed 's|console-openshift-console|{prod-id}|g'
 )/oauth/callback"
 ----
 
