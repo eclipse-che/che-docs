@@ -1,0 +1,56 @@
+:_content-type: PROCEDURE
+:description: Configuring storage classes
+:keywords: administration guide, configuring, {prod-id-short}, storage class, storage classes
+:navtitle: Configuring storage classes
+:page-aliases: installation-guide:configuring-storage-classes.adoc, administration-guide:configuring-storage-classes.adoc
+
+[id="configuring-storage-classes"]
+= Configuring storage classes
+
+To configure {prod-short} to use a configured infrastructure storage, install {prod-short} using storage classes. This is especially useful when you want to bind a persistent volume provided by a non-default provisioner.
+
+{prod-short} has one component that requires persistent volumes to store data:
+
+  * A {prod-short} workspace. {prod-short} workspaces store source code using volumes, for example `/projects` volume.
+
+[NOTE]
+====
+{prod-short} workspaces source code is stored in the persistent volume only if a workspace is not ephemeral.
+====
+
+Persistent volume claims facts:
+
+* {prod-short} does not create persistent volumes in the infrastructure.
+* {prod-short} uses persistent volume claims (PVC) to mount persistent volumes.
+* The xref:discover:devworkspace-operator.adoc[Dev Workspace operator] creates persistent volume claims.
++
+Define a storage class name in the {prod-short} configuration to use the storage classes feature in the {prod-short} PVC.
+
+.Procedure
+
+Use CheCluster Custom Resource definition to define storage classes:
+
+. Define storage class names: configure the `CheCluster` Custom Resource, and install {prod-short}. See xref:install:using-chectl-to-configure-the-checluster-custom-resource-during-installation.adoc[].
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+spec:
+  devEnvironments:
+    storage:
+      perUserStrategyPvcConfig:
+        claimSize: __<claim_size>__ <1>
+        storageClass: __<storage_class_name>__ <2>
+      perWorkspaceStrategyPvcConfig:
+        claimSize: __<claim_size>__ <1>
+        storageClass: __<storage_class_name>__ <2>
+      pvcStrategy: __<pvc_strategy>__ <3>
+----
+<1> Persistent Volume Claim size.
+<2> Storage class for the Persistent Volume Claim. When omitted or left blank, a default storage class is used.
+<3> Persistent volume claim strategy. The supported strategies are: per-user (all workspaces Persistent Volume Claims in one volume), per-workspace (each workspace is given its own individual Persistent Volume Claim) and ephemeral (non-persistent storage where local changes will be lost when the workspace is stopped.)
+
+.Additional resources
+
+* xref:install:using-chectl-to-configure-the-checluster-custom-resource-during-installation.adoc[]
+
+* xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]

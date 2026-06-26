@@ -1,0 +1,49 @@
+:_content-type: PROCEDURE
+:description: Restrict the Open VSX registry to internal cluster access
+:keywords: administration guide, openvsx, security, internal, routing
+:navtitle: Configure internal Open VSX access
+:page-aliases: administration-guide:proc_configure-internal-open-vsx-access.adoc
+
+[id="proc_configure-internal-open-vsx-access"]
+= Configure internal access to the Open VSX registry
+
+[role="_abstract"]
+Restrict your Open VSX registry to internal cluster traffic by removing the public route and configuring {prod-short} to use the internal service URL. Internal routing keeps extension registry traffic within the cluster and avoids public exposure.
+
+.Prerequisites
+
+* You have Open VSX deployed in the `openvsx` namespace.
+* You have the `{orch-cli}` tool installed.
+* You are logged in to the cluster as a cluster administrator.
+* You have `jq` installed.
+
+.Procedure
+
+. Delete the public route for the Open VSX registry:
++
+[source,bash,subs="+attributes,+quotes",options="nowrap"]
+----
+{orch-cli} delete route internal -n openvsx
+----
+
+. Update the CheCluster custom resource to use the internal service DNS URL:
++
+[source,bash,subs="+attributes,+quotes",options="nowrap"]
+----
+export CHECLUSTER_NAME="$({orch-cli} get checluster --all-namespaces -o json | jq -r '.items[0].metadata.name')" &&
+export CHECLUSTER_NAMESPACE="$({orch-cli} get checluster --all-namespaces -o json | jq -r '.items[0].metadata.namespace')" &&
+export PATCH='{"spec":{"components":{"pluginRegistry":{"openVSXURL":"http://openvsx-server.openvsx.svc:8080"}}}}' &&
+{orch-cli} patch checluster "$\{CHECLUSTER_NAME}" --type=merge --patch "$\{PATCH}" -n "$\{CHECLUSTER_NAMESPACE}"
+----
+
+. Restart any running workspaces to apply the new registry URL.
+
+.Verification
+
+* Start a workspace and verify that extensions are available in the Extensions view using the internal registry.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:proc_deploy-open-vsx-from-source.adoc[]
+* xref:configuring-the-open-vsx-registry-url.adoc[]

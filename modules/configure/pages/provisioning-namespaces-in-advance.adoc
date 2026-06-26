@@ -1,0 +1,43 @@
+:_content-type: PROCEDURE
+:description: Provisioning {orch-namespace}s in advance
+:keywords: administration guide, provisioning, {orch-namespace}
+:navtitle: Provisioning {orch-namespace}s in advance
+:page-aliases: administration-guide:provisioning-namespaces-in-advance.adoc
+
+[id="preprovisioning-{orch-namespace}s"]
+= Provisioning {orch-namespace}s in advance
+
+You can provision workspaces {orch-namespace}s in advance, rather than relying on automatic provisioning. Repeat the procedure for each user.
+
+.Procedure
+
+. Disable automatic namespace provisioning on the `CheCluster` level:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+devEnvironments:
+  defaultNamespace:
+    autoProvision: false
+----
+
+. Create the __<{orch-namespace}_name>__ {orch-namespace} for __<username>__ user with the following labels and annotations:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: __<{orch-namespace}_name>__ <1>
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-namespace
+  annotations:
+    che.eclipse.org/username: __<username>__
+----
+<1> Use a {orch-namespace} name of your choosing.
+
+.Additional resources
+
+* xref:install:using-chectl-to-configure-the-checluster-custom-resource-during-installation.adoc[]
+
+* xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]

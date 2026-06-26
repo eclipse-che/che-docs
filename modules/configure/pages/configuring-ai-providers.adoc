@@ -1,0 +1,154 @@
+:_content-type: PROCEDURE
+:description: Register AI providers in Eclipse Che so that developers can select and use AI coding assistants when creating workspaces.
+:keywords: administration, ai, ai provider, opencode, configmap, ai-tool-registry, api key, injector image, dockerfile
+:navtitle: Configuring AI providers
+:page-aliases: administration-guide:configuring-ai-providers.adoc
+
+[id="configuring-ai-providers"]
+= Configure AI providers
+
+:FeatureName: The AI provider feature
+include::example$snip_che-technology-preview.adoc[]
+
+[role="_abstract"]
+Register one or more AI providers in {prod-short} so that developers can select and use AI coding assistants when creating workspaces.
+
+The AI tool registry is stored in a {kubernetes} `ConfigMap` with specific labels. When the ConfigMap exists and contains at least one provider with a matching tool, the AI Selector widget is displayed on the dashboard. When the ConfigMap is absent or empty, the widget is hidden.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+* The {prod-operator} is installed and a `{prod-checluster}` custom resource exists in the `{prod-namespace}` namespace.
+
+.Procedure
+
+. Optional: Build and push a custom AI tool injector image.
++
+The injector image is a container that carries the AI tool binary. During workspace startup, {prod-short} runs it as an init container to copy the binary into a shared volume. The following minimal `Dockerfile` is based on the link:https://github.com/che-incubator/che-ai-tool-images/blob/main/dockerfiles/opencode/Dockerfile[OpenCode injector image]:
++
+[source,dockerfile]
+----
+FROM alpine:3.21 AS builder
+
+ARG OPENCODE_VERSION=v1.2.27
+ARG TARGETARCH
+
+RUN apk add --no-cache curl tar gzip
+
+RUN set -e && \
+    case "${TARGETARCH}" in \
+      amd64) ARCH="x64" ;; \
+      arm64) ARCH="arm64" ;; \
+      *) echo "Unsupported architecture: ${TARGETARCH}" && exit 1 ;; \
+    esac && \
+    curl -fsSL -o /tmp/opencode.tar.gz \
+      "https://github.com/anomalyco/opencode/releases/download/${OPENCODE_VERSION}/opencode-linux-${ARCH}.tar.gz" && \
+    tar -xzf /tmp/opencode.tar.gz -C /tmp && \
+    mv /tmp/opencode /usr/local/bin/opencode && \
+    chmod +x /usr/local/bin/opencode
+
+FROM registry.access.redhat.com/ubi10/ubi-minimal:10.0
+
+COPY --from=builder /usr/local/bin/opencode /usr/local/bin/opencode-bin
+
+RUN printf '#!/bin/sh\n\
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"\n\
+OC_HOME="/tmp/opencode-home"\n\
+mkdir -p "$OC_HOME/.config" "$OC_HOME/.local/share"\n\
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$OC_HOME/.config}"\n\
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$OC_HOME/.local/share}"\n\
+exec "$SCRIPT_DIR/opencode-bin" "$@"\n' > /usr/local/bin/opencode && \
+    chmod +x /usr/local/bin/opencode
+
+LABEL org.opencontainers.image.description="OpenCode CLI tool for DevWorkspace injection" \
+      org.opencontainers.image.source="https://github.com/che-incubator/che-ai-tool-images.git"
+----
++
+Key design points:
++
+** *Multi-stage build*: the `builder` stage downloads the architecture-specific binary; the minimal runtime stage keeps the final image small.
+** *Wrapper script*: redirects `XDG_CONFIG_HOME`, `XDG_DATA_HOME`, and related variables to writable paths under `/tmp`, allowing the tool to run as an arbitrary UID on OpenShift.
+** *Multi-arch*: pass `--platform linux/amd64,linux/arm64` to `docker build` to produce a multi-arch image.
++
+Build and push the image:
++
+[subs="+quotes"]
+----
+$ docker build --platform linux/amd64,linux/arm64 \
+    -t __<your-registry>__/__<your-org>__/opencode:next \
+    --push .
+----
++
+See link:https://github.com/che-incubator/che-ai-tool-images[che-incubator/che-ai-tool-images] for maintained injector image examples.
+
+. Create a `registry.json` file that defines providers, tools, and optional defaults:
++
+[source,json,subs="+quotes"]
+----
+{
+  "providers": [
+    {
+      "id": "opencodeai/opencode",                       <1>
+      "name": "OpenCode",
+      "publisher": "opencode.ai",
+      "description": "Open-source terminal AI coding agent supporting 75+ LLM providers.",
+      "docsUrl": "https://opencode.ai",
+      "icon": "https://example.com/opencode-icon.svg"
+    }
+  ],
+  "tools": [
+    {
+      "providerId": "opencodeai/opencode",  <2>
+      "tag": "next",                        <3>
+      "name": "OpenCode",
+      "url": "https://opencode.ai",
+      "binary": "opencode",                 <4>
+      "pattern": "init",                    <5>
+      "injectorImage": "__<your-registry>__/__<your-org>__/opencode:next",  <6>
+      "envVarName": "OPENAI_API_KEY"        <7>
+    }
+  ],
+  "defaultAiProviders": ["opencodeai/opencode"]  <8>
+}
+----
+<1> Unique provider identifier in `__<vendor>__/__<product>__` format.
+<2> Links the tool to its provider by `id`.
+<3> Version tag. When multiple tools share the same `providerId`, the dashboard selects by priority: `next` > `latest` > highest semver.
+<4> Binary name that must be available in `PATH` inside the workspace after injection.
+<5> Injection pattern: `init` copies a single binary into the shared volume; `bundle` copies a full runtime directory and creates a symlink.
+<6> Container image that carries the tool binary. Run as an init container at workspace start.
+<7> Environment variable name for the API key. The dashboard creates a {kubernetes} Secret using this name as the data key.
+<8> Optional. Provider IDs pre-selected in the AI Selector widget for new workspaces.
+
+. Create the `ConfigMap` in the `{prod-namespace}` namespace with the required labels:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} create configmap ai-tool-registry \
+  --from-file=registry.json=registry.json \
+  -n {prod-namespace} \
+  --dry-run=client -o yaml | \
+  {orch-cli} label --local -f - \
+    app.kubernetes.io/component=ai-tool-registry \
+    app.kubernetes.io/part-of=che.eclipse.org \
+    -o yaml | \
+  {orch-cli} apply -f -
+----
+
+.Verification
+
+. Open the {prod-short} dashboard.
+. Navigate to *Create Workspace*.
+. Verify that an *AI Provider* section is visible, listing the providers you configured.
+
+[NOTE]
+====
+To disable the AI Selector widget, delete the `ai-tool-registry` ConfigMap. Users will no longer see the AI Provider section on the *Create Workspace* page. Existing API key Secrets in user namespaces are not deleted automatically.
+
+When you update the registry (for example, to remove a tool or change the injector image tag), existing workspaces are updated automatically before their next start. The dashboard removes stale tool injectors and replaces outdated image tags without user intervention.
+====
+
+.Additional resources
+
+* xref:ai-provider-api-key-secret-reference.adoc[]
+* xref:end-user-guide:using-ai-assistants-in-workspaces.adoc[]
