@@ -72,6 +72,11 @@ RUN set -x \
     yq \
     && yq --version
 
+# Install asciidoctor-pdf (required by @antora/pdf-extension to generate PDFs)
+RUN set -x \
+    && gem install asciidoctor-pdf \
+    && asciidoctor-pdf --version
+
 # WORKDIR is a Node.js prerequisite
 WORKDIR /tmp
 # Avoid error: Local gulp not found in /projects
