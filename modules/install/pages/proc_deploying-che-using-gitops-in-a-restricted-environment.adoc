@@ -29,6 +29,21 @@ In a disconnected environment, the cluster cannot pull images from public regist
 
 .Procedure
 
+. Download and execute the mirroring script to install a custom Operator catalog and mirror the related images: xref:administration-guide:attachment$restricted-environment/prepare-restricted-environment.sh[prepare-restricted-environment.sh].
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ bash prepare-restricted-environment.sh \
+  --devworkspace_operator_index {devworkspace-operator-index-disconnected-install}\
+  --devworkspace_operator_version "v{devworkspace-operator-version-patch}" \
+  --prod_operator_index "{prod-operator-index}" \
+  --prod_operator_package_name "{prod-operator-package-name}" \
+  --prod_operator_bundle_name "{prod-operator-bundle-name}" \
+  --prod_operator_version "v{prod-ver-patch}" \
+  --my_registry "__<my_registry>__" <1>
+----
+<1> The private Docker registry where the images will be mirrored
+
 . In your internal Git repository, create a directory for the {prod-short} manifests with three files: the Operator subscription, the `CheCluster` custom resource, and a Kustomize configuration.
 +
 .Repository structure
