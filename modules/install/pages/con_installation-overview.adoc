@@ -13,23 +13,27 @@
 
 == Installation methods
 
-{prod-short} supports two installation methods:
+Argo CD (GitOps):: Store the Operator subscription and `CheCluster` configuration in a Git repository and let Argo CD reconcile the deployment. Choose this method for production deployments where every configuration change must be tracked in Git, auditable, and automatically reconciled.
 
-`{prod-cli}` command-line tool:: Install and manage {prod-short} from the command line. This method provides the most control over the installation process and supports advanced configuration options during deployment.
+`{prod-cli}` command-line tool:: Install and manage {prod-short} from the command line. Choose this method when you need to quickly deploy {prod-short} for evaluation or manage it from scripts.
 
 {orch-name} web console:: Install the {prod} Operator from OperatorHub and create a `CheCluster` instance through the web console. This method uses the standard {orch-name} Operator installation workflow.
 
 == Deployment scenarios
 
-Standard installation:: Deploy {prod-short} on an {orch-name} cluster with internet access. Both the CLI and web console methods are available.
+Standard installation:: Deploy {prod-short} on a cluster with internet access. All installation methods are available.
 
-Restricted environment:: Deploy {prod-short} on an air-gapped or disconnected {orch-name} cluster. This scenario requires mirroring container images to a private registry before installation.
+GitOps deployment:: Your organization manages cluster configuration declaratively through Argo CD. Store the Operator subscription and `CheCluster` configuration in a Git repository and let Argo CD reconcile the desired state. Available for both connected and air-gapped clusters.
+
+Restricted environment:: Deploy {prod-short} on an air-gapped or disconnected cluster. This scenario requires mirroring container images to a private registry before installation. Both GitOps and CLI methods are available.
 
 External identity provider:: Deploy {prod-short} with {keycloak} as an external OpenID Connect (OIDC) identity provider instead of the default {orch-name} OAuth. This scenario applies when you need to integrate with an existing identity management system.
 
 .Additional resources
 
+* xref:proc_deploying-che-using-gitops.adoc[]
 * xref:proc_installing-che-on-openshift-using-cli.adoc[]
 * xref:proc_installing-che-on-openshift-using-the-web-console.adoc[]
+* xref:proc_deploying-che-using-gitops-in-a-restricted-environment.adoc[]
 * xref:proc_installing-che-in-a-restricted-environment.adoc[]
 * xref:proc_installing-che-on-openshift-with-keycloak-as-oidc.adoc[]
