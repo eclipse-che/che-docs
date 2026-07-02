@@ -89,7 +89,7 @@ for module in "${modules[@]}"; do
     partial=${partial#"partials/"}
     partial_with_che_context="${partial/che/{project-context\}}"
     partial_with_devspaces_context="${partial/devspaces/{project-context\}}"
-    if ! grep -q -r "$partial" . && ! grep -q -r "$partial_with_che_context" . && ! grep -q -r "$partial_with_devspaces_context" .; then
+    if ! grep -q -r "$partial" .. && ! grep -q -r "$partial_with_che_context" .. && ! grep -q -r "$partial_with_devspaces_context" ..; then
       unused_partials="$unused_partials  - $relative_dir/$partial\n"
     fi
   done
