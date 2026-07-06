@@ -1,0 +1,51 @@
+:_content-type: CONCEPT
+:navtitle: What you can do in a Cloud Development Environment
+:description: Che Cloud Development Environments provide a complete, pre-configured development setup defined by a devfile in your Git repository.
+:keywords: develop, overview, devfile, credentials, containers, storage, workflow
+
+[id="developing-with-che"]
+= What you can do in a Cloud Development Environment
+
+[role="_abstract"]
+{prod-short} Cloud Development Environments provide a complete, pre-configured development setup defined by a devfile in your Git repository. You can mount credentials, run containers, persist data, and collaborate with your team.
+
+
+*How devfiles define your environment*
+
+A `devfile.yaml` in your Git repository specifies container images, commands, endpoints, and volume mounts for your Cloud Development Environment. Devfile components map to containers in the workspace pod. When no devfile is present, {prod-short} uses the Universal Developer Image (UDI) with common language runtimes and tools pre-installed.
+
+*How credentials are injected*
+
+{orch-name} Secrets and ConfigMaps with specific labels are automatically mounted into all workspace containers by the {devworkspace} Controller. Git credentials, SSH keys, Maven settings, and API keys are injected without manual setup per Cloud Development Environment.
+
+*How storage works*
+
+Cloud Development Environment data is ephemeral by default and lost when the workspace stops. To persist data across restarts, request a PersistentVolume through a `volume` component in the devfile or apply a PersistentVolumeClaim (PVC) directly. Backup snapshots can restore uncommitted changes after a workspace is deleted.
+
+*Your development workflow*
+
+A typical development session follows this cycle: start a Cloud Development Environment from a Git URL, write and test code, commit changes, and stop the workspace. Data in `/projects` persists across restarts when using per-user storage. When you delete a workspace, backup snapshots preserve uncommitted work.
+
+.What do you need to do?
+[cols="1,2", options="header"]
+|===
+| Goal | Description
+
+| Manage credentials and configurations
+| Mount Secrets, ConfigMaps, SSH keys, and Git configuration so that tools authenticate automatically.
+
+| Use fuse-overlayfs for containers
+| Use fuse-overlayfs for Podman and Buildah, or kubedock for lightweight container execution.
+
+| Collaborate with your team
+| Add factory badges for contributors, review pull requests in cloud workspaces, and integrate with GitHub Actions.
+
+| Persist and restore workspace data
+| Request persistent storage in devfiles or PVCs, and restore Cloud Development Environments from backup snapshots.
+
+| Prevent workspace idling
+| Keep long-running commands active so that unattended tasks complete without interruption.
+
+| Customize workspace creation with URL parameters
+| Customize Cloud Development Environment creation by appending parameters to the workspace start URL.
+|===

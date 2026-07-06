@@ -1,0 +1,128 @@
+:_content-type: PROCEDURE
+:description: Enable fuse-overlayfs as the storage driver for Podman and Buildah by mounting a storage.conf ConfigMap into all workspaces in your namespace.
+:keywords: overlay, configmap, podman, storage, driver, fuse-overlayfs
+:navtitle: Enable fuse-overlayfs with a ConfigMap
+:page-aliases:
+
+[id="enabling-fuse-overlay-with-a-configmap"]
+= Enable fuse-overlayfs with a ConfigMap
+
+[role="_abstract"]
+Enable fuse-overlayfs as the storage driver for Podman and Buildah by mounting a `storage.conf` ConfigMap into all workspaces in your {orch-namespace}.
+
+
+Here are the default contents of the `/home/user/.config/containers/storage.conf` file in the UDI container:
+
+[source,toml,subs="+quotes"]
+----
+# storage.conf
+[storage]
+driver = "vfs"
+----
+
+To use fuse-overlayfs, `storage.conf` can be set to the following:
+
+[source,toml,subs="+quotes"]
+----
+# storage.conf
+[storage]
+driver = "overlay"
+
+[storage.options.overlay]
+mount_program="/usr/bin/fuse-overlayfs"
+----
+
+where:
+
+`mount_program`:: The absolute path to the `fuse-overlayfs` binary. The `/usr/bin/fuse-overlayfs` path is the default for the UDI.
+
+You can do this manually after starting a workspace. Another option is to build a new image based on the UDI with changes to `storage.conf` and use the new image for workspaces.
+
+Otherwise, you can update the `/home/user/.config/containers/storage.conf` for all workspaces in your {orch-namespace} by creating a ConfigMap that mounts the updated file. See xref:mounting-configmaps.adoc[].
+
+
+.Prerequisites
+
+* For {orch-name} versions older than 4.15, the administrator has enabled access to `/dev/fuse`. See xref:administration-guide:configuring-fuse.adoc[Configuring fuse-overlayfs].
+* You have a workspace with the required annotations as described in xref:accessing-fuse.adoc[].
++
+[NOTE]
+====
+ConfigMaps mounted by following xref:mounting-configmaps.adoc[this guide] apply to all workspaces and set the storage driver to fuse-overlayfs globally. Verify that your workspaces contain the required annotations to use fuse-overlayfs as described in xref:accessing-fuse.adoc[].
+====
+
+.Procedure
+
+. Create a ConfigMap that mounts a `/home/user/.config/containers/storage.conf` file:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: fuse-overlay
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /home/user/.config/containers
+data:
+  storage.conf: |
+    [storage]
+    driver = "overlay"
+
+    [storage.options.overlay]
+    mount_program = "/usr/bin/fuse-overlayfs"
+----
+
+. Apply the ConfigMap to your {orch-namespace}:
++
+[WARNING]
+====
+Applying this ConfigMap causes all running workspaces in the {orch-namespace} to restart.
+====
++
+[source,bash,subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f fuse-overlay.yaml -n __<your_namespace>__
+----
+
+. Start or restart your workspace.
+
+.Verification
+
+* Verify that the storage driver is `overlay`:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ podman info | grep overlay
+----
++
+Example output:
++
+[source,terminal,subs="+attributes,+quotes"]
+----
+graphDriverName: overlay
+  overlay.mount_program:
+    Executable: /usr/bin/fuse-overlayfs
+    Package: fuse-overlayfs-1.12-1.module+el8.9.0+20326+387084d0.x86_64
+      fuse-overlayfs: version 1.12
+  Backing Filesystem: overlayfs
+----
+
+[NOTE]
+====
+The following error might occur for existing workspaces:
+
+`ERRO[0000] User-selected graph driver "overlay" overwritten by graph driver "vfs" from database - delete libpod local files ("/home/user/.local/share/containers/storage") to resolve.  May prevent use of images created by other tools`
+
+In this case, delete the libpod local files shown in the error message.
+====
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:using-the-fuse-overlay-storage-driver.adoc[]
+* xref:running-containers-with-kubedock.adoc[]
+* xref:accessing-fuse.adoc[]

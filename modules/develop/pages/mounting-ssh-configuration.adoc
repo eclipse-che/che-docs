@@ -1,0 +1,86 @@
+:_content-type: PROCEDURE
+:description: Mount custom SSH configurations into workspaces by using a ConfigMap.
+:keywords: SSH, config
+:navtitle: Mount SSH configuration
+:page-aliases:
+
+[id="mounting-ssh-configuration"]
+= Mount SSH configuration
+
+[role="_abstract"]
+Mount custom SSH configurations into workspaces by using a ConfigMap. Extend the default SSH settings with additional parameters or host-specific configurations.
+
+
+[NOTE]
+====
+The system sets the default SSH configuration automatically from the SSH secret in User Preferences. You can extend it by mounting an additional `.conf` file to `/etc/ssh/ssh_config.d/`.
+====
+
+.Prerequisites
+
+* You have an active `{orch-cli}` session with your {orch-namespace}. See {orch-cli-link}.
+
+.Procedure
+
+. Create a ConfigMap with the SSH configuration:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: workspace-userdata-sshconfig-configmap
+  namespace: __<your_namespace>__
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /etc/ssh/ssh_config.d/
+data:
+  ssh-config.conf: |
+    __<ssh_config_content>__
+----
++
+where:
++
+`__<your_namespace>__`:: Your {orch-namespace} name. To find your {orch-namespace}, go to `{prod-url}/api/kubernetes/namespace`.
++
+`__<ssh_config_content>__`:: The SSH configuration file content, for example `Host`, `IdentityFile`, or `ProxyCommand` directives.
+
+. Apply the ConfigMap:
++
+[source,bash,subs="+attributes,+quotes",options="nowrap"]
+----
+{orch-cli} apply -f - <<EOF
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: workspace-userdata-sshconfig-configmap
+  namespace: __<your_namespace>__
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /etc/ssh/ssh_config.d/
+data:
+  ssh-config.conf: |
+    __<ssh_config_content>__
+EOF
+----
+
+.Verification
+
+* Start a workspace and verify the SSH configuration file is mounted:
++
+[source,terminal,subs="+quotes,+attributes"]
+----
+$ cat /etc/ssh/ssh_config.d/ssh-config.conf
+----
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:mounting-configmaps.adoc[]
+* xref:administration-guide:configuring-a-user-namespace.adoc[Configuring a user namespace]

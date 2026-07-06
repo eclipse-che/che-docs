@@ -1,0 +1,53 @@
+:_content-type: PROCEDURE
+:description: {prod-short} supports multiple Integrated Development Environments (IDEs) that can be used in workspaces. The default IDE is Microsoft Visual Studio Code - Open Source.
+:keywords: configuring, workspace, editor, ide, cloud ide
+:navtitle: IDEs in Cloud Development Environments
+:page-aliases:
+
+[id="ides-in-workspaces"]
+= IDEs in Cloud Development Environments
+
+{prod-short} supports multiple Integrated Development Environments (IDEs) that can be used in workspaces. The default IDE is Microsoft Visual Studio Code - Open Source.
+
+== Supported IDEs
+
+The default IDE in a new workspace is Microsoft Visual Studio Code - Open Source. Alternatively, you can choose another supported IDE:
+
+.Supported IDEs 
+
+[cols="1,1a,1a,1a"]
+|===
+| IDE | Status | `id` | Note
+
+| link:https://github.com/che-incubator/che-code[Microsoft Visual Studio Code - Open Source]
+| Available
+|
+* `che-incubator/che-code/latest`
+* `che-incubator/che-code/insiders`
+|
+* `latest` is the default IDE that loads in a new workspace when the URL parameter or `che-editor.yaml` is not used.
+* `insiders` is the development version.
+
+| link:https://github.com/redhat-developer/devspaces-gateway-plugin/[JetBrains IntelliJ IDEA Ultimate Edition
+(over JetBrains Gateway)]
+| Available
+|
+* `che-incubator/che-idea-server/latest`
+* `che-incubator/che-idea-server/next`
+|
+* `latest` is the stable version.
+* `next` is the development version.
+
+|===
+
+== Which IDE should I choose?
+
+Use Microsoft Visual Studio Code - Open Source if you want a browser-based experience with no local installation. Use JetBrains IntelliJ IDEA if your team already uses JetBrains IDEs and you prefer a desktop client connected to the remote workspace over SSH. Visual Studio Code - Open Source is the default and requires no additional setup. JetBrains requires installing JetBrains Gateway or JetBrains Toolbox on your local machine.
+
+== Repository-level IDE configuration in {prod-short}
+
+You can store IDE configuration files directly in the remote Git repository that contains your project source code. This way, one common IDE configuration is applied to all new workspaces that feature a clone of that repository. Such IDE configuration files might include the following:
+
+* xref:defining-a-common-ide.adoc[The /.che/che-editor.yaml file] that stores a definition of the chosen IDE.
+
+* IDE-specific configuration files that one would typically store locally for a desktop IDE. For example, xref:microsoft-visual-studio-code-open-source-ide.adoc[the /.vscode/extensions.json file.]
