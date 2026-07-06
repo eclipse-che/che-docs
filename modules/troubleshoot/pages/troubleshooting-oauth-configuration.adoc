@@ -1,0 +1,57 @@
+:_content-type: REFERENCE
+:description: Fix OAuth configuration errors when connecting to Git providers.
+:keywords: troubleshoot, oauth-configuration
+:navtitle: Fix OAuth configuration errors
+:page-aliases:
+
+[id="troubleshooting-oauth-configuration"]
+= Fix OAuth configuration errors
+
+Fix OAuth configuration errors when connecting {prod-short} to Git providers by verifying callback URLs, Secret labels, GitLab scopes, and Bitbucket public keys.
+
+
+== Callback URL mismatch
+
+Every Git provider OAuth application requires a callback URL that matches your {prod-short} instance. If the callback URL is wrong, authentication fails after the user authorizes the application.
+
+The correct callback URL for all providers is:
+
+----
+{prod-url}/api/oauth/callback
+----
+
+Verify this value in your Git provider OAuth application settings:
+
+* *GitHub*: *Authorization callback URL* field
+* *GitLab*: *Redirect URI* field
+* *Bitbucket Cloud*: *Callback URL* field
+* *Bitbucket Server* (OAuth 2.0): *Redirect URL* field
+* *Microsoft Azure DevOps*: Redirect URI registered in Microsoft Entra ID
+
+== Secret labels and namespace
+
+The {orch-name} Secret that stores the OAuth credentials must have the correct labels and be in the correct {orch-namespace}. If the labels or {orch-namespace} are wrong, {prod-short} does not detect the OAuth configuration.
+
+.Required Secret labels
+[source,yaml]
+----
+metadata:
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: oauth-scm-configuration
+----
+
+== GitLab scope requirements
+
+The GitLab authorized application must have the following scopes enabled. Missing scopes cause permission errors when developers push code or access repositories:
+
+* `api`
+* `write_repository`
+* `openid`
+
+== Bitbucket Server OAuth 1.0 public key
+
+Bitbucket Server application links using OAuth 1.0 require an RSA public key. If the public key is missing or incorrectly formatted, authentication fails silently.
+
+Verify that the content of the `public-stripped.pub` file (generated during setup) is pasted into the *Public Key* field of the incoming link configuration on Bitbucket Server.

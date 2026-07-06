@@ -1,0 +1,78 @@
+:_content-type: REFERENCE
+:description: Diagnose and resolve common workspace startup failures based on error symptoms and root causes.
+:keywords: troubleshoot, workspace-startup-failures
+:navtitle: Diagnose workspace startup failures
+:page-aliases:
+
+[id="troubleshooting-workspace-startup-failures"]
+= Diagnose workspace startup failures
+
+Diagnose and resolve common workspace startup failures based on error symptoms and root causes. The {prod-short} dashboard and the {devworkspace} Operator emit error messages that indicate pod scheduling, image pull, {devworkspace}, and resource quota issues.
+
+
+== Pod scheduling errors
+
+.Pod scheduling error messages and resolutions
+[cols="1,2",options="header"]
+|===
+| Error message | Resolution
+
+| `FailedScheduling: 0/N nodes are available: insufficient cpu` or `insufficient memory`
+| The cluster does not have enough resources to schedule the workspace Pod. Free resources by stopping idle workspaces, or add nodes to the cluster.
+
+| `FailedScheduling: 0/N nodes are available: pod has unbound immediate PersistentVolumeClaims`
+| A PersistentVolumeClaim (PVC) cannot be bound. Verify that a StorageClass is configured and that the cluster has available persistent volumes.
+
+| `node(s) didn't match Pod's node affinity/selector`
+| The workspace Pod has a `nodeSelector` or node affinity that does not match any available node. Verify the `nodeSelector` configuration in the `CheCluster` Custom Resource.
+|===
+
+== Image pull errors
+
+.Image pull error messages and resolutions
+[cols="1,2",options="header"]
+|===
+| Error message | Resolution
+
+| `ErrImagePull` or `ImagePullBackOff`
+| The container runtime cannot pull the workspace image. Verify that the image exists, the image name is correct in the devfile, and that image pull secrets are configured if the image is in a private registry.
+
+| `x509: certificate signed by unknown authority`
+| The container runtime does not trust the TLS certificate of the container registry. Import the registry Certificate Authority (CA) certificate into {prod-short}.
+|===
+
+== DevWorkspace errors
+
+.DevWorkspace error messages and resolutions
+[cols="1,2",options="header"]
+|===
+| Error message | Resolution
+
+| `DevWorkspace failed to start: timed out waiting for DevWorkspace to be ready`
+| The workspace did not reach the `Running` phase within the configured timeout. Increase `startTimeoutSeconds` in the `CheCluster` Custom Resource or investigate Pod events for resource or scheduling issues.
+
+| `Failed to create DevWorkspace: admission webhook denied the request`
+| The {devworkspace} Operator webhook rejected the DevWorkspace. Verify that the {devworkspace} Operator is running and that CRDs are up to date.
+
+| `BadRequest` or `InfrastructureFailure`
+| An infrastructure-level error prevented workspace creation. Check the {devworkspace} Operator logs for details.
+|===
+
+== Resource quota errors
+
+.Resource quota error messages and resolutions
+[cols="1,2",options="header"]
+|===
+| Error message | Resolution
+
+| `exceeded quota` or `forbidden: exceeded quota`
+| The user namespace has a ResourceQuota that prevents creating the workspace Pod or PVC. Increase the quota or reduce the workspace resource requests in the devfile.
+
+| `OOMKilled`
+| The workspace container exceeded its memory limit and was terminated. Increase the memory limit in the devfile `components` section or in the `CheCluster` Custom Resource defaults.
+|===
+
+.Additional resources
+
+* xref:optimize:configuring-machine-autoscaling.adoc[]
+* xref:install:calculating-che-resource-requirements.adoc[]
