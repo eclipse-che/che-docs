@@ -1,0 +1,79 @@
+:_content-type: CONCEPT
+:description: Go from opening the {prod-short} URL to coding in about three minutes.
+:keywords: getting started, first workspace, onboarding
+:navtitle: Your first-day experience
+
+[id="your-first-workspace"]
+= Your first-day experience
+
+[role="_abstract"]
+{prod-short} creates a Cloud Development Environment (CDE) for your project. The dashboard and CLI refer to each CDE as a *workspace*. Each Cloud Development Environment runs as a {orch-name} `DevWorkspace` custom resource on your cluster. You go from login to coding in about three minutes.
+
+include::partial$snip_persona-developer.adoc[]
+
+== From URL to code in four steps
+
+When your administrator shares the {prod-short} dashboard URL, you go from login to coding in four steps:
+
+. *Authenticate* -- {prod-short} redirects you to the login page. Enter your credentials and authorize {prod-short} to access your account.
+
+. *Create Workspace page* -- After authentication, you land on the Create Workspace page. The page has two main sections:
++
+** *Git Repo URL* -- A field where you paste the HTTPS or SSH URL of your Git repository.
+** *Select a Sample* -- Pre-configured workspace samples for languages and frameworks such as Java, Node.js, Python, and Go. Use these to explore {prod-short} without connecting your own repository.
+
+. *Start your workspace* -- When you enter a Git URL and click *Create & Open*, {prod-short} asks you to confirm that you trust the repository authors, then provisions the workspace.
+
+. *IDE loads in your browser* -- The default IDE, Microsoft Visual Studio Code - Open Source, opens in your browser tab with the repository already cloned.
+
+== Why does the first start take longer?
+
+The first workspace start takes approximately 2-3 minutes because {prod-short} pulls container images to the cluster node. The workspace starting page displays real-time progress, including:
+
+* Volume provisioning for persistent storage
+* Container image pulls for the development tools and IDE
+* Initialization of the project clone, home directory, and IDE server
+
+Subsequent starts are faster because {platforms-name} caches the container images on the node. If your administrator has deployed the {image-puller-name-short}, images are pre-cached across all nodes for near-instant starts.
+
+NOTE: Administrators can reduce first-start times by pre-caching container images on cluster nodes. See xref:administration-guide:caching-images-for-faster-workspace-start.adoc[].
+
+== What can you do in a Cloud Development Environment?
+
+A running {prod-short} workspace provides:
+
+Terminal:: A `bash` terminal in the IDE with your project directory as the working directory. The terminal prompt shows the current Git branch.
+
+Git integration:: Your repository is cloned into the workspace filesystem. If your administrator has configured OAuth for your Git provider, you can push commits without re-entering credentials.
+
+Development tools:: The Universal Developer Image (UDI) includes compilers, runtimes, and build tools for common languages. Your project's `devfile.yaml` can define additional tools and commands.
+
+Workspace URL:: Each workspace has a unique URL in the format `pass:c,a,q[{prod-url}]/__<user_name>__/__<workspace_name>__/`. Bookmark this URL to return to a running workspace.
+
+== Something went wrong?
+
+Workspace fails to start with `OOMKilled` or `FailedScheduling`::
+Your {orch-namespace} exceeded its resource quota, or the workspace requested more memory or CPU than the cluster allows. Contact your administrator to adjust resource limits.
+
+Git push returns `401 Unauthorized` or `403 Forbidden`::
+OAuth is not configured for your Git provider, or your token has expired. Configure authentication to resolve this issue.
+
+Blank IDE with a `Could not register service workers` error::
+This error occurs in Google Chrome Incognito mode or Mozilla Firefox Private Browsing mode. Use a regular browser window instead.
+
+.Additional resources
+
+* xref:authenticating-to-a-git-server-from-a-workspace.adoc[]
+
+== Joining the community
+
+Public chat::
+Join the public link:https://communityinviter.com/apps/ecd-tools/join-the-community[Eclipse Cloud Dev Tools Working Group on Slack]
+and the link:https://ecd-tools.slack.com/archives/C05SD64M85R[#forum-che channel]
+to chat with the developers.
+
+GitHub project repositories::
+Report bugs, request features, and contribute in the main link:https://github.com/eclipse/che[{prod} repository].
+
+Community meetings::
+Join us in the link:https://github.com/eclipse/che/wiki/{prod-id}-community-meetings[{prod-short} community meeting], available on-demand.
