@@ -1,13 +1,13 @@
 :_content-type: REFERENCE
-:description: Troubleshoot known issues with persisting Claude Code configuration in {prod-short} workspaces.
+:description: Diagnose and resolve issues with persisting Claude Code configuration in {prod-short} workspaces.
 :keywords: user-guide, claude-code, ai, configuration, persistence, troubleshooting
-:navtitle: Troubleshooting Claude Code configuration persistence
-:page-aliases:
+:navtitle: Troubleshoot Claude Code configuration persistence
+:page-aliases: troubleshooting-claude-code-configuration-persistence.adoc
 
-[id="troubleshooting-claude-code-configuration-persistence"]
-= Troubleshooting Claude Code configuration persistence
+[id="troubleshoot-claude-code-configuration-persistence"]
+= Troubleshoot Claude Code configuration persistence
 
-This section describes known issues with persisting Claude Code configuration in {prod-short} workspaces and how to resolve them.
+If you encounter issues with Claude Code configuration persistence in {prod-short} workspaces, use the following symptoms and solutions to diagnose and resolve them.
 
 == `.claude.json` corrupted on first start
 
@@ -49,7 +49,7 @@ When a PVC `subPath` mount target does not exist on the volume, {kubernetes} kub
 
 === Solution
 
-Do not mount `{prod-home}/.claude.json` as a direct subPath from a PVC without pre-creating the file. Either use an init pod to pre-create it (Option A) or use the `/tmp` copy pattern (Option B). See xref:sharing-claude-code-configuration-with-a-dedicated-pvc.adoc[].
+Do not mount `{prod-home}/.claude.json` as a direct subPath from a PVC without pre-creating the file. Either use an init pod to pre-create it (xref:share-claude-code-configuration-with-pvc-direct-mount.adoc[direct mount]) or use the xref:share-claude-code-configuration-with-pvc-tmp-copy.adoc[tmp copy] approach.
 
 == Permission denied writing to `~/.claude/session-env`
 
@@ -106,14 +106,6 @@ $ {orch-cli} get storageclasses
 
 Look for classes using EFS (`efs.csi.aws.com`) or NFS provisioners.
 
-== Dedicated PVC and persistent user home interaction
-
-A dedicated PVC mounted at `{prod-home}/.claude` and the persistent home PVC mounted at `{prod-home}/` coexist correctly as nested mounts.
-
-Writes to `~/.claude/` go to the dedicated PVC. Writes to other paths under `{prod-home}/` go to the persistent home PVC. There is no conflict.
-
-If you only need persistence within a single workspace and not cross-workspace sharing, `persistUserHome` alone is sufficient. A dedicated PVC is not needed.
-
 == Changes to `~/.claude.json` not persisting after restart
 
 === Symptom
@@ -122,9 +114,9 @@ After restarting a workspace, MCP server configurations added during the previou
 
 === Cause
 
-This applies to Option B (full `/tmp` copy) from the xref:sharing-claude-code-configuration-with-a-dedicated-pvc.adoc[dedicated PVC guide]. The `postStart` command copies configurations from the PVC into the home directory. Changes made during the session are written to the home directory, not back to the PVC.
+This applies to the xref:share-claude-code-configuration-with-pvc-tmp-copy.adoc[tmp copy] approach. The `postStart` command copies configurations from the PVC into the home directory. Changes made during the session are written to the home directory, not back to the PVC.
 
-Option A (direct mount) does not have this issue because changes are written directly to the PVC.
+The xref:share-claude-code-configuration-with-pvc-direct-mount.adoc[direct mount] approach does not have this issue because changes are written directly to the PVC.
 
 === Solution
 
@@ -171,10 +163,11 @@ $ {orch-cli} delete pvc __<pvc-name>__ -n __<{orch-namespace}>__
 ----
 . Recreate the PVC and start a workspace. The PV is provisioned in the correct zone.
 
-For clusters where this is a recurring issue, use Option B (full `/tmp` copy) from the xref:sharing-claude-code-configuration-with-a-dedicated-pvc.adoc[dedicated PVC guide], which does not require an init pod.
+For clusters where this is a recurring issue, use the xref:share-claude-code-configuration-with-pvc-tmp-copy.adoc[tmp copy] approach, which does not require an init pod.
 
 .Additional resources
 
-* xref:persisting-claude-code-configuration.adoc[]
-* xref:sharing-claude-code-configuration-with-a-dedicated-pvc.adoc[]
-* xref:sharing-claude-code-configuration-with-gitops.adoc[]
+* xref:persist-claude-code-configuration.adoc[]
+* xref:share-claude-code-configuration-with-pvc-direct-mount.adoc[]
+* xref:share-claude-code-configuration-with-pvc-tmp-copy.adoc[]
+* xref:share-claude-code-configuration-with-gitops.adoc[]

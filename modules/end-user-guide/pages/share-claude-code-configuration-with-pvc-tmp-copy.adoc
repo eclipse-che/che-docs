@@ -1,0 +1,103 @@
+:_content-type: PROCEDURE
+:description: Share Claude Code configuration across {prod-short} workspaces by copying files from a dedicated PVC mounted at /tmp.
+:keywords: user-guide, claude-code, ai, configuration, persistence, pvc, tmp-copy
+:navtitle: Share configuration with PVC tmp copy
+:page-aliases:
+
+[id="share-claude-code-configuration-with-pvc-tmp-copy"]
+= Share Claude Code configuration with PVC tmp copy
+
+The entire PVC is mounted at `/tmp/claude`. A `postStart` command copies everything into the home directory. No init pod is required and there are no subPath limitations. Changes must be synced back manually before stopping the workspace.
+
+The tmp copy flow:
+
+. The first workspace starts. The PVC mounts at `/tmp/claude` (empty on first run). The `postStart` command copies configuration into `{prod-home}/.claude/` and `{prod-home}/.claude.json`. On first run, nothing is copied.
+. You configure Claude Code — install plugins, add MCP servers, change settings. All writes go to the home directory, not the PVC.
+. Before stopping the workspace, you sync changes back to the PVC at `/tmp/claude`.
+. The second workspace starts. The `postStart` command copies the saved configuration from the PVC into the home directory.
+
+For a comparison with other approaches, see xref:persist-claude-code-configuration.adoc[].
+
+.Prerequisites
+
+* An active `{orch-cli}` session with permissions to create PVCs in your {orch-namespace}. See {orch-cli-link}.
+
+* Claude Code installed in the workspace container image.
+
+* For concurrent workspaces: a storage class that supports `ReadWriteMany` (RWX) access mode, such as AWS EFS or NFS. Standard block storage (gp2, gp3) supports only `ReadWriteOnce` (RWO).
+
+.Procedure
+
+. Create a file `claude-config-pvc.yaml` with the following PVC definition:
++
+====
+[source,yaml,subs="+quotes,+attributes"]
+----
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: claude-config
+  annotations:
+    controller.devfile.io/mount-path: '[{"path":"/tmp/claude","subPath":"claude"}]'
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+----
+====
+
+. Apply the PVC to your {orch-namespace}:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f claude-config-pvc.yaml -n __<your_{orch-namespace}>__
+----
+
+. Add a `postStart` command to your devfile to copy all configuration from the PVC into the home directory:
++
+====
+[source,yaml,subs="+quotes,+attributes"]
+----
+commands:
+  - id: init-claude-config
+    exec:
+      commandLine: |
+        mkdir -p {prod-home}/.claude
+        cp -a /tmp/claude/.claude/. {prod-home}/.claude/ 2>/dev/null || true
+        cp /tmp/claude/.claude.json {prod-home}/.claude.json 2>/dev/null || true
+      component: __<editor_container>__ # <1>
+events:
+  postStart:
+    - init-claude-config
+----
+<1> Replace with the name of your editor container component in the devfile.
+====
+
+. Start the workspace.
+
+. Before stopping the workspace, sync changes back to the PVC:
++
+[subs="+quotes,+attributes"]
+----
+$ cp -a {prod-home}/.claude/. /tmp/claude/.claude/ && \
+  cp {prod-home}/.claude.json /tmp/claude/.claude.json
+----
+
+.Verification
+
+. Start a workspace and configure Claude Code.
+. Sync changes back to the PVC.
+. Start a different workspace.
+. Verify that the Claude Code configuration from the first workspace is available.
+
+.Additional resources
+
+* xref:persist-claude-code-configuration.adoc[]
+* xref:share-claude-code-configuration-with-pvc-direct-mount.adoc[]
+* xref:share-claude-code-configuration-with-gitops.adoc[]
+* xref:troubleshoot-claude-code-configuration-persistence.adoc[]
+* xref:requesting-persistent-storage-for-workspaces.adoc[]
