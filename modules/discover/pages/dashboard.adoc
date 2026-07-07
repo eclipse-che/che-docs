@@ -1,42 +1,33 @@
 :_content-type: ASSEMBLY
 :description: The user dashboard is the landing page of {prod} where users create, manage, and access their workspaces.
 :keywords: dashboard, architecture, user interface, discover
-:navtitle: User dashboard
+:navtitle: Dashboard and workspace management
 :page-aliases: administration-guide:dashboard.adoc
 
 [id="dashboard"]
-= User dashboard
+= Dashboard and workspace management
 
 [role="_abstract"]
-The user dashboard is the landing page of {prod} where users create, manage, and access their workspaces. It coordinates with the {prod-short} server, plug-in registry, and {orch-name} API to convert devfiles into running workspace pods.
+The user dashboard is the landing page of {prod} where users create, manage, and access their workspaces. It coordinates with the {prod-short} server and {orch-name} API to convert devfiles into running workspace pods.
 
-include::partial$snip_persona-discover.adoc[]
-
-The user dashboard is the landing page of {prod}.
-{prod-short} users browse the user dashboard to access and manage their workspaces.
-It is a React application. 
+It is a React application.
 The {prod-short} deployment starts it in the `{prod-deployment}-dashboard` Deployment.
 
-It needs access to:
-
-* xref:che-server.adoc[]
-* xref:plugin-registry.adoc[]
-* {orch-name} API
+It needs access to the {prod-short} server and the {orch-name} Application Programming Interface (API).
 
 .User dashboard interactions with other components
 image::architecture/{project-context}-dashboard-interactions.png[User dashboard interactions with other components]
 
 When the user requests the user dashboard to start a workspace, the user dashboard executes this sequence of actions:
 
-. Sends the repository URL to xref:che-server.adoc[] and expects a devfile in return, when the user is creating a workspace from a remote devfile.
+. Sends the repository URL to the {prod-short} server and expects a devfile in return, when the user is creating a workspace from a remote devfile.
 . Reads the devfile describing the workspace.
-. Collects the additional metadata from the xref:plugin-registry.adoc[].
 . Converts the information into a {devworkspace} Custom Resource.
 . Creates the {devworkspace} Custom Resource in the user {orch-namespace} using the {orch-name} API.
 . Watches the {devworkspace} Custom Resource status.
 . Redirects the user to the running workspace IDE.
 
-
 .Additional resources
 
-include::example$snip_{project-context}-dashboard-additional-resources.adoc[]
+* xref:administration-guide:configuring-dashboard.adoc[]
+* xref:che-server.adoc[]
