@@ -1,14 +1,14 @@
 :_content-type: PROCEDURE
-:description: The Woopra telemetry plugin
+:description: Configure the Woopra telemetry plugin
 :keywords: extensions, telemetry
-:navtitle: The Woopra telemetry plugin
+:navtitle: Configure the Woopra telemetry plugin
 :page-aliases: extensions:the-woopra-telemetry-plug-in.adoc
 
 [id="the-woopra-telemetry-plugin"]
 
-= The Woopra telemetry plugin
+= Configure the Woopra telemetry plugin
 
-The link:https://github.com/che-incubator/devworkspace-telemetry-woopra-plugin[Woopra Telemetry Plugin] is a plugin built to send telemetry from a {prod} installation to Segment and Woopra.
+The Woopra Telemetry Plugin sends telemetry from a {prod} installation to Segment and Woopra.
 This plugin is used by link:https://workspaces.openshift.com[Eclipse Che hosted by Red Hat], but any {prod} deployment can take advantage of this plugin.
 There are no dependencies other than a valid Woopra domain and Segment Write key.
 The devfile v2 for the plugin, link:https://raw.githubusercontent.com/che-incubator/devworkspace-telemetry-woopra-plugin/main/plugin.yaml[plugin.yaml], has four environment variables that can be passed to the plugin:
@@ -20,18 +20,24 @@ The devfile v2 for the plugin, link:https://raw.githubusercontent.com/che-incuba
 
 To enable the Woopra plugin on the {prod} installation:
 
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+* You have a valid Woopra domain and Segment Write key.
+
 .Procedure
 
-* Deploy the `plugin.yaml` devfile v2 file to an HTTP server with the environment variables set correctly.
+. Deploy the `plugin.yaml` devfile v2 file to an HTTP server with the environment variables set correctly.
 
-. Configure the `CheCluster` Custom Resource. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
+. Configure the `CheCluster` Custom Resource. See xref:administration-guide:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
 +
 [source,yaml]
 ----
 spec:
   devEnvironments:
     defaultPlugins:
-    - editor: eclipse/che-theia/next     <1>
+    - editor: che-incubator/che-code/latest     <1>
       plugins:                           <2>
       - 'https://your-web-server/plugin.yaml'
 ----
@@ -42,4 +48,4 @@ spec:
 
 * xref:install:using-chectl-to-configure-the-checluster-custom-resource-during-installation.adoc[]
 
-* xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]
+* xref:administration-guide:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]

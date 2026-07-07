@@ -1,0 +1,47 @@
+:_content-type: CONCEPT
+:description: What you can observe about {prod-short}
+:keywords: observability, metrics, logs, monitoring, telemetry
+:navtitle: What you can observe about {prod-short}
+:page-aliases: .:retrieving-che-logs.adoc, .:viewing-kubernetes-events.adoc, viewing-kubernetes-events.adoc, .:viewing-plug-in-broker-logs.adoc, viewing-plug-in-broker-logs.adoc, retrieving-che-logs.adoc, viewing-che-server-logs.adoc, viewing-external-service-logs.adoc, che-theia-workspaces.adoc
+
+[id="configuring-observability"]
+= What you can observe about {prod-short}
+
+{prod-short} exposes metrics, logs, and telemetry data that help you monitor platform health, diagnose issues, and track workspace usage.
+
+{prod-short} provides three categories of observability data:
+
+*Metrics*
+
+The {prod-short} server exposes JVM metrics (memory usage, classloading, garbage collection) on port `8087` via the `che-host` Service `/metrics` endpoint. The {devworkspace} Operator exposes workspace startup, failure, and performance metrics on port `8443` via the `devworkspace-controller-metrics` Service `/metrics` endpoint. The {orch-name} in-cluster monitoring stack (Prometheus) scrapes both endpoints. The {prod-short} Operator automatically creates the required ServiceMonitor, Role, and RoleBinding resources. You can view these metrics on custom dashboards in the {orch-name} web console.
+
+*Logs*
+
+The {prod-short} server uses configurable log levels for individual loggers. You can increase verbosity for specific components to isolate issues, log HTTP traffic between {prod-short} and the {orch-name} API server, and collect diagnostic logs with the `{prod-cli}` command-line tool. For log configuration procedures, see xref:configuring-server-logging.adoc[].
+
+*Telemetry*
+
+Workspace activity events (start, stop, editor actions) can be sent to Segment and Woopra by using the built-in Woopra telemetry plugin, or to a custom analytics backend by using a telemetry plugin you build yourself. For details on building a custom plugin, see xref:extensions:creating-a-telemetry-plugin.adoc[].
+
+[NOTE]
+====
+{prod-short} does not include built-in alerting rules. To receive alerts when metrics exceed thresholds, configure Prometheus alerting rules for the metrics described in this guide.
+====
+
+.What do you need to observe?
+[cols="1,2", options="header"]
+|===
+| Goal | Description
+
+| xref:monitoring-che.adoc[Monitor server metrics]
+| Enable Prometheus metrics for the {prod-short} server and view JVM dashboards.
+
+| xref:monitoring-the-dev-workspace-operator.adoc[Monitor workspace metrics]
+| Enable Prometheus metrics for the {devworkspace} Operator and view workspace dashboards.
+
+| xref:configuring-server-logging.adoc[Configure logging]
+| Control server log verbosity, log HTTP traffic, and collect diagnostic logs with {prod-cli}.
+
+| xref:the-woopra-telemetry-plugin.adoc[Configure telemetry]
+| Send workspace activity data to Segment and Woopra with a CheCluster CR configuration change.
+|===
