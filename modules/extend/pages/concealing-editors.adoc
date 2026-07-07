@@ -1,0 +1,54 @@
+:page-aliases: administration-guide:concealing-editors.adoc
+:_content-type: PROCEDURE
+:description: Hide editors from the dashboard
+:keywords: administration guide, concealing, dashboard, editors
+:navtitle: Hide editors from the dashboard
+
+[id="concealing-editors"]
+= Hide editors from the dashboard
+
+[role="_abstract"]
+Hide selected {prod-short} editors from the Dashboard UI, for example IntelliJ IDEA Ultimate, and have only Visual Studio Code - Open Source visible.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
+
+* `jq`. See link:https://stedolan.github.io/jq/download/[Downloading `jq`].
+
+.Procedure
+
+include::example$snip_che-editor-id-list.adoc[]
+
+. Edit the `CheCluster` Custom Resource on the cluster:
++
+[source,subs="+attributes"]
+----
+{orch-cli} edit checluster/{prod-checluster} -n {prod-namespace}
+----
++
+[source,yaml]
+----
+spec:
+  components:
+    dashboard:
+      deployment:
+        containers:
+        - env:
+          - name: CHE_HIDE_EDITORS_BY_ID
+            value: 'che-incubator/che-webstorm-server/latest, che-incubator/che-webstorm-server/next' <1>
+----
+<1> A string containing comma-separated IDs of editors to hide.
+
+.Verification
+
+* In the {prod-short} Dashboard, go to *Create Workspace* and verify that the concealed editors are no longer visible.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:install:using-chectl-to-configure-the-checluster-custom-resource-during-installation.adoc[]
+
+* xref:administration-guide:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]
+
+* {editor-definition-samples-link}

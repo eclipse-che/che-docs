@@ -1,0 +1,208 @@
+:_content-type: PROCEDURE
+:description: Deploy the telemetry backend as a container image and host the plugin on a web server
+:keywords: telemetry, deploy, plugin, devfile, container, apache
+:navtitle: Deploy a telemetry plugin
+
+[id="deploying-a-telemetry-plugin"]
+= Deploy a telemetry plugin
+
+[role="_abstract"]
+Deploy the telemetry backend as a container image, create a devfile v2 plugin, and host the plugin on a web server so that {devworkspace}s can load it.
+
+
+This guide demonstrates hosting the plugin on an Apache web server on {orch-name}. In production, deploy the plugin file to a corporate web server.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+* You have a running instance of {prod}.
+* You have a telemetry backend created and tested. See xref:creating-a-telemetry-backend.adoc[].
+
+.Procedure
+
+. Package the Quarkus application as a container image and push it to a container registry by using one of the following options. See link:https://quarkus.io/guides/building-native-image#using-a-multi-stage-docker-build[the Quarkus documentation] for details.
++
+--
+Option A: JVM image::
++
+.. Create a `Dockerfile.jvm`:
++
+[source,dockerfile]
+----
+FROM registry.access.redhat.com/ubi8/openjdk-11:1.11
+
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en'
+
+COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/
+COPY --chown=185 target/quarkus-app/*.jar /deployments/
+COPY --chown=185 target/quarkus-app/app/ /deployments/app/
+COPY --chown=185 target/quarkus-app/quarkus/ /deployments/quarkus/
+
+EXPOSE 8080
+USER 185
+
+ENTRYPOINT ["java", "-Dquarkus.http.host=0.0.0.0", "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", "-Dquarkus.http.port=${DEVWORKSPACE_TELEMETRY_BACKEND_PORT}", "-jar", "/deployments/quarkus-run.jar"]
+----
++
+.. Build and push the image:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+mvn package && \
+{docker-cli} build -f src/main/docker/Dockerfile.jvm -t image:tag .
+----
+
+Option B: Native image::
++
+.. Create a `Dockerfile.native`:
++
+[source,dockerfile]
+----
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.5
+WORKDIR /work/
+RUN chown 1001 /work \
+    && chmod "g+rwX" /work \
+    && chown 1001:root /work
+COPY --chown=1001:root target/*-runner /work/application
+
+EXPOSE 8080
+USER 1001
+
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=${DEVWORKSPACE_TELEMETRY_BACKEND_PORT}"]
+----
++
+.. Build and push the image:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+mvn package -Pnative -Dquarkus.native.container-build=true && \
+{docker-cli} build -f src/main/docker/Dockerfile.native -t image:tag .
+----
+--
+
+. Create a `plugin.yaml` devfile v2 file representing a {devworkspace} plugin that runs your custom backend in a {devworkspace} Pod. For more information about devfile v2, see link:https://devfile.io/docs/2.1.0/overview[Devfile v2 documentation].
++
+[source,yaml,subs="+quotes"]
+----
+schemaVersion: 2.1.0
+metadata:
+  name: devworkspace-telemetry-backend-plugin
+  version: 0.0.1
+  description: A Demo telemetry backend
+  displayName: Devworkspace Telemetry Backend
+components:
+  - name: devworkspace-telemetry-backend-plugin
+    attributes:
+      workspaceEnv:
+        - name: DEVWORKSPACE_TELEMETRY_BACKEND_PORT
+          value: '4167'
+    container:
+      image: __<your_image>__
+      env:
+        - name: WELCOME_MESSAGE
+          value: 'hello world!'
+----
++
+where:
++
+`__<your_image>__`:: The container image built in the previous step.
++
+`WELCOME_MESSAGE`:: Set the value for the `welcome.message` optional configuration property.
+
+. Create a `ConfigMap` object that references the `plugin.yaml` file:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} create configmap --from-file=plugin.yaml -n {prod-namespace} telemetry-plugin-yaml
+----
+
+. Create a `manifest.yaml` file with a Deployment, a Service, and a Route to expose the Apache web server. The Deployment references this `ConfigMap` object and places the `plugin.yaml` in the `/var/www/html` directory.
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: apache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apache
+  template:
+    metadata:
+      labels:
+        app: apache
+    spec:
+      volumes:
+        - name: plugin-yaml
+          configMap:
+            name: telemetry-plugin-yaml
+            defaultMode: 420
+      containers:
+        - name: apache
+          image: 'registry.redhat.io/rhscl/httpd-24-rhel7:latest'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - name: plugin-yaml
+              mountPath: /var/www/html
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: apache
+spec:
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: apache
+  type: ClusterIP
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: apache
+spec:
+  host: apache-che.apps-crc.testing
+  to:
+    kind: Service
+    name: apache
+    weight: 100
+  port:
+    targetPort: 8080
+  wildcardPolicy: None
+----
+
+. Apply the manifest:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} apply -f manifest.yaml
+----
+
+.Verification
+
+* After the deployment has started, confirm that `plugin.yaml` is available in the web server:
++
+[source,bash]
+----
+$ curl apache-che.apps-crc.testing/plugin.yaml
+----
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:configuring-workspaces-to-load-telemetry-plugin.adoc[]
+* xref:administration-guide:using-the-cli-to-configure-the-checluster-custom-resource.adoc[Configure the CheCluster Custom Resource using the CLI]

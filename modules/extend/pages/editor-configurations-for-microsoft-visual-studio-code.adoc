@@ -1,0 +1,118 @@
+:page-aliases: administration-guide:editor-configurations-for-microsoft-visual-studio-code.adoc
+:_content-type: PROCEDURE
+:description: Apply IDE settings to all workspaces
+:keywords: settings, extensions, configurations
+:navtitle: Apply IDE settings to all workspaces
+
+[id="visual-studio-code-editor-configs"]
+= Apply IDE settings to all workspaces
+
+
+[role="_abstract"]
+Apply a {orch-name} ConfigMap to standardize the Code - OSS editor across all workspaces, giving every developer the same settings, recommended extensions, and product properties at startup.
+
+The following sections are currently supported:
+
+`settings.json`:: Contains various settings with which you can customize different parts of the Code - OSS editor.
+
+`extensions.json`:: Contains recommended extensions that are installed when a workspace is started.
+
+`product.json`:: Contains properties that you need to add to the editor's *product.json* file. If the property already exists, its value is updated.
+
+`configurations.json`:: Contains properties for Code - OSS editor configuration. For example, you can use the `extensions.install-from-vsix-enabled` property to disable the `Install from VSIX` menu item in the Extensions panel.
++
+[NOTE]
+====
+The `extensions.install-from-vsix-enabled` property disables only the UI action. Extensions can still be installed by using the `workbench.extensions.command.installFromVSIX` API command or the CLI. To block these paths as well, see xref:manage-extension-installation.adoc[].
+====
+
+`policy.json`:: Controls Code - OSS extension installation by using the `AllowedExtensions` policy and the ability to fully block extension installation. See xref:manage-extension-installation.adoc[].
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Add a new ConfigMap in valid JSON format to the user's {orch-namespace}, define the supported sections, and specify the properties you want to add.
++
+[source,yaml,subs="+quotes"]
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vscode-editor-configurations
+  labels:
+     app.kubernetes.io/part-of: che.eclipse.org
+     app.kubernetes.io/component: workspaces-config
+data:
+  extensions.json: |
+    {
+      "recommendations": [
+          "dbaeumer.vscode-eslint",
+          "github.vscode-pull-request-github"
+      ]
+    }
+  settings.json: |
+    {
+      "window.header": "A HEADER MESSAGE",
+      "window.commandCenter": false,
+      "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#CCA700",
+        "titleBar.activeForeground": "#ffffff"
+      }
+    }
+  product.json: |
+    {
+      "extensionEnabledApiProposals": {
+        "ms-python.python": [
+          "contribEditorContentMenu",
+          "quickPickSortByLabel"
+        ]
+      },
+      "trustedExtensionAuthAccess": [
+        "__<publisher1>__.__<extension1>__",
+        "__<publisher2>__.__<extension2>__"
+      ]
+    }
+  configurations.json: |
+    {
+      "extensions.install-from-vsix-enabled": false
+    }
+----
++
+where:
++
+`__<publisher1>__.__<extension1>__`, `__<publisher2>__.__<extension2>__`:: The publisher and extension name pairs for extensions that are granted trusted authentication access. Use the format `publisher.extensionName`.
+
+. Optional: To replicate the ConfigMap across all user {orch-namespace}s while preventing user modifications, add the ConfigMap to the {prod-namespace} namespace instead of individual user {orch-namespace}s.
+
+. Start or restart your workspace.
+
+.Verification
+
+. Verify that settings defined in the ConfigMap are applied using one of the following methods:
+* Use `F1 → Preferences: Open Remote Settings` to check if the defined settings are applied.
+* Ensure that the settings from the ConfigMap are present in the `/checode/remote/data/Machine/settings.json` file by using the `F1 → File: Open File...` command to inspect the file's content.
+
+. Verify that extensions defined in the ConfigMap are applied:
+* Go to the `Extensions` view (`F1 → View: Show Extensions`) and check that the extensions are installed
+* Ensure that the extensions from the ConfigMap are present in the `.code-workspace` file by using the `F1 → File: Open File...` command. By default, the workspace file is placed at `/projects/.code-workspace`.
+
+. Verify that product properties defined in the ConfigMap are being added to the Visual Studio Code *product.json*:
+* Open a terminal, run the command `cat /checode/entrypoint-logs.txt | grep -a "Node.js dir"` and copy the Visual Studio Code path.
+* Press `Ctrl + O`, paste the copied path and open *product.json* file.
+* Ensure that *product.json* file contains all the properties defined in the ConfigMap.
+
+. Verify that `extensions.install-from-vsix-enabled` property defined in the ConfigMap is applied to the Code - OSS editor:
+* Open the Command Palette (use `F1`) to check that `Install from VSIX` command is not present in the list of commands.
+* Use `F1 → Open View → Extensions` to open the `Extensions` panel, then click `...` on the view (`Views and More Actions` tooltip) to check that `Install from VSIX` action is absent in the list of actions.
+* Go to the Explorer, find a file with the `vsix` extension (redhat.vscode-yaml-1.17.0.vsix, for example), open menu for that file. `Install from VSIX` action should be absent in the menu.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:configuring-single-and-multiroot-workspaces.adoc[]
+* xref:trusted-extensions-for-microsoft-visual-studio-code.adoc[]
+* xref:default-extensions-for-microsoft-visual-studio-code.adoc[]
+* xref:manage-extension-installation.adoc[]

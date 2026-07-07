@@ -1,0 +1,57 @@
+:page-aliases: administration-guide:configuring-editors-download-urls.adoc
+:_content-type: PROCEDURE
+:description: Host editor binaries internally for air-gapped clusters
+:keywords: administration guide, dashboard, editors
+:navtitle: Host editor binaries internally for air-gapped clusters
+
+[id="configuring-editors-download-urls"]
+= Host editor binaries internally for air-gapped clusters
+
+[role="_abstract"]
+Host editor binaries internally by configuring custom download URLs for editors in air-gapped {prod-short} environments where editors cannot be retrieved from the public internet. This option applies only to JetBrains editors.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
+
+* `jq`. See link:https://stedolan.github.io/jq/download/[Downloading `jq`].
+
+.Procedure
+
+include::example$snip_che-editor-id-list.adoc[]
+
+. Configure the download URLs for editors:
++
+[source,subs="+quotes,+attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+  --namespace {prod-namespace} \
+  --type='merge' \
+  -p '{
+    "spec": {
+      "devEnvironments": {
+        "editorsDownloadUrls": [
+          { "editor": "publisher1/editor-name1/version1", "url": "https://example.com/editor1.tar.gz" },
+          { "editor": "publisher2/editor-name2/version2", "url": "https://example.com/editor2.tar.gz" }
+        ]
+      }
+    }
+  }'
+----
++
+where:
++
+`editor`:: The editor ID in the format `publisher/name/version`. Determine the IDs by running the command in step 1.
++
+`url`:: The URL of the editor archive to download.
+
+.Verification
+
+* Verify that the editor download URLs appear in the `CheCluster` Custom Resource specification.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:configuring-editors-definitions.adoc[]
+
+* xref:show-deprecated-editors.adoc[]

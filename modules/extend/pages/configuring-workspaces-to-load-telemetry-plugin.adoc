@@ -1,0 +1,64 @@
+:_content-type: PROCEDURE
+:description: Configure DevWorkspaces to load the telemetry plugin for event collection
+:keywords: telemetry, plugin, devworkspace, defaultPlugins, CheCluster
+:navtitle: Configure workspaces to load a telemetry plugin
+
+[id="configuring-workspaces-to-load-telemetry-plugin"]
+= Configure workspaces to load a telemetry plugin
+
+[role="_abstract"]
+Configure {devworkspace}s to load the telemetry plugin so that workspace activity events are sent to your telemetry backend for collection and analysis.
+
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+* You have a running instance of {prod}.
+* You have a telemetry plugin deployed and hosted on a web server. See xref:deploying-a-telemetry-plugin.adoc[].
+
+.Procedure
+
+. Add the telemetry plugin to the `components` field of an existing {devworkspace}:
++
+[source,yaml,subs="+quotes"]
+----
+components:
+  ...
+  - name: telemetry-plugin
+    plugin:
+      uri: __<telemetry_plugin_url>__
+----
+
+. Start the {devworkspace} from the {prod-short} dashboard.
+
+. Optional: Configure the `CheCluster` Custom Resource to apply the telemetry plugin as a default for all {devworkspace}s. Default plugins are applied on {devworkspace} startup for new and existing {devworkspace}s.
++
+[source,yaml,subs="+quotes"]
+----
+spec:
+  devEnvironments:
+    defaultPlugins:
+    - editor: che-incubator/che-code/latest
+      plugins:
+      - '__<telemetry_plugin_url>__'
+----
++
+where:
++
+`editor`:: The editor identification to set the default plugins for.
++
+`plugins`:: List of URLs to devfile v2 plugins.
+
+.Verification
+
+. Verify that the telemetry plugin container is running in the {devworkspace} pod by checking the Workspace view within the editor.
++
+image::creating-a-telemetry-plugin/devworkspace_telemetry_plugin.png[{devworkspace} telemetry plugin]
+
+. Edit files within the editor and observe their events in the example telemetry server's logs.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:administration-guide:using-the-cli-to-configure-the-checluster-custom-resource.adoc[Configure the CheCluster Custom Resource using the CLI]
+* xref:telemetry-plugin-overview.adoc[]

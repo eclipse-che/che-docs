@@ -1,0 +1,60 @@
+:_content-type: PROCEDURE
+:description: Create a server that receives telemetry events and writes them to standard output
+:keywords: telemetry, server, go, events, stdout
+:navtitle: Create a telemetry server
+
+[id="creating-a-telemetry-server"]
+= Create a telemetry server
+
+[role="_abstract"]
+Create a server that receives telemetry events from the {prod-short} telemetry plugin and writes them to standard output. For production, consider integrating with a third-party telemetry system such as Segment or Woopra.
+
+
+.Prerequisites
+
+* You have a running instance of {prod}.
+
+.Procedure
+
+. Create a `main.go` file for a Go application that starts a server on port `8080` and writes events to standard output:
++
+[source,go]
+----
+include::example$creating-a-telemetry-plugin/main.go[]
+----
+
+. Create a container image based on this code and expose it as a deployment in {orch-name} in the `{prod-namespace}` {orch-namespace}. Clone the repository and build the container:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ git clone https://github.com/che-incubator/telemetry-server-example
+$ cd telemetry-server-example
+$ {docker-cli} build -t registry/organization/telemetry-server-example:latest .
+$ {docker-cli} push registry/organization/telemetry-server-example:latest
+----
+
+. Deploy the telemetry server to {orch-name}.
++
+Both `manifest_with_ingress.yaml` and `manifest_with_route` contain definitions for a Deployment and Service. The former also defines a {kubernetes} Ingress, while the latter defines an {orch-name} Route.
++
+In the manifest file, replace the `image` and `host` fields to match the image you pushed, and the public hostname of your {orch-name} cluster. Then run:
++
+[source,bash,subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f manifest_with_[ingress|route].yaml -n {prod-namespace}
+----
+
+.Verification
+
+* Verify that the telemetry server pod is running:
++
+[source,bash,subs="+attributes"]
+----
+{orch-cli} get pods -n {prod-namespace} -l app=telemetry-server-example
+----
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://github.com/che-incubator/telemetry-server-example[telemetry-server-example]
+* xref:telemetry-plugin-overview.adoc[]

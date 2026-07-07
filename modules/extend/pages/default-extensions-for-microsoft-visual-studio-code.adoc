@@ -1,0 +1,146 @@
+:page-aliases: administration-guide:default-extensions-for-microsoft-visual-studio-code.adoc
+:_content-type: PROCEDURE
+:description: Preinstall extensions in every workspace
+:keywords: extensions, workspace
+:navtitle: Pre-install extensions in every workspace
+
+[id="visual-studio-code-default-extensions"]
+= Pre-install extensions in every workspace
+
+
+[role="_abstract"]
+Preinstall Visual Studio Code extensions in {prod-short} workspaces by configuring the `DEFAULT_EXTENSIONS` environment variable to provide a consistent set of editor extensions on workspace startup.
+
+After startup, the editor checks for the `DEFAULT_EXTENSIONS` environment variable and installs the specified extensions in the background. To specify multiple extensions, separate the paths with a semicolon.
+
+There are three ways to embed default `.vsix` extensions into your workspace:
+
+* Add the extension binary to the source repository.
+* Use the devfile `postStart` event to fetch extension binaries from the network.
+* Include the extensions' `.vsix` binaries in the `che-code` image.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Add the extension binary to the source repository.
++
+Adding the extension binary to the Git repository and defining the environment variable in the devfile is the easiest way to add default extensions to your workspace.
+If the `extension.vsix` file exists in the repository root, set the `DEFAULT_EXTENSIONS` environment variable for the tooling container in your `.devfile.yaml`:
++
+[source,yaml]
+----
+schemaVersion: 2.3.0
+metadata:
+  generateName: example-project
+components:
+  - name: tools
+    container:
+      image: quay.io/devfile/universal-developer-image:ubi8-latest
+      env:
+        - name: 'DEFAULT_EXTENSIONS'
+          value: '/projects/example-project/extension.vsix'
+----
+
+. Use the devfile `postStart` event to fetch extension binaries from the network.
++
+Use cURL or GNU Wget to download extensions to your workspace. Specify a devfile command to download extensions and add a `postStart` event to run the command on workspace startup. Define the `DEFAULT_EXTENSIONS` environment variable in the devfile:
++
+[source,yaml]
+----
+schemaVersion: 2.3.0
+metadata:
+  generateName: example-project
+components:
+  - name: tools
+    container:
+      image: quay.io/devfile/universal-developer-image:ubi8-latest
+      env:
+        - name: DEFAULT_EXTENSIONS
+          value: '/tmp/extension-1.vsix;/tmp/extension-2.vsix'
+
+commands:
+  - id: add-default-extensions
+    exec:
+      # name of the tooling container
+      component: tools
+      # download several extensions using curl
+      commandLine: |
+        curl https://.../extension-1.vsix --location -o /tmp/extension-1.vsix
+        curl https://.../extension-2.vsix --location -o /tmp/extension-2.vsix
+
+events:
+  postStart:
+    - add-default-extensions
+----
++
+[WARNING]
+====
+In some cases curl may download a `.gzip` compressed file. This might make installing the extension impossible. To fix that, save the file as a *.vsix.gz* file and then decompress it with *gunzip*. This replaces the *.vsix.gz* file with an unpacked *.vsix* file: `curl https://some-extension-url --location -o /tmp/extension.vsix.gz && gunzip /tmp/extension.vsix.gz`
+====
+
+. Include the extensions `.vsix` binaries in the `che-code` image.
++
+Bundling extensions in the editor image and defining the `DEFAULT_EXTENSIONS` environment variable in a ConfigMap applies default extensions without changing the devfile.
+
+.. Create a directory and place your selected `.vsix` extensions in this directory.
+
+.. Create a Dockerfile with the following content:
++
+[source,dockerfile]
+----
+# inherit che-incubator/che-code:latest
+FROM quay.io/che-incubator/che-code:latest
+USER 0
+
+# copy all .vsix files to /default-extensions directory
+RUN mkdir --mode=775 /default-extensions
+COPY --chmod=755 *.vsix /default-extensions/
+
+# add instruction to the script to copy default extensions to the working container
+RUN echo "cp -r /default-extensions /checode/" >> /entrypoint-init-container.sh
+----
+
+.. Build the image and then push it to a registry:
++
+[source,bash]
+----
+$ docker build -t yourname/che-code:next .
+$ docker push yourname/che-code:next
+----
+
+.. Add the new ConfigMap to the user's {orch-namespace}, define the `DEFAULT_EXTENSIONS` environment variable, and specify the absolute paths to the extensions. This ConfigMap sets the environment variable to all workspaces in the user's {orch-namespace}.
++
+[source,yaml]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: vscode-default-extensions
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+  annotations:
+    controller.devfile.io/mount-as: env
+data:
+  DEFAULT_EXTENSIONS: '/checode/default-extensions/extension1.vsix;/checode/default-extensions/extension2.vsix'
+----
+
+.. Open the {prod-short} Dashboard and navigate to the *Create Workspace* tab on the left side.
+
+.. In the *Editor Selector* section, expand the *Use an Editor Definition* dropdown and set the editor URI to `yourname/che-code:next`.
+
+.. Create a workspace by selecting a sample or entering a Git repository URL.
+
+.Verification
+
+* Verify that the extensions are installed in the workspace by checking the *Extensions* panel in the editor.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:configuring-single-and-multiroot-workspaces.adoc[]
+* xref:trusted-extensions-for-microsoft-visual-studio-code.adoc[]
+* xref:editor-configurations-for-microsoft-visual-studio-code.adoc[]
