@@ -1,15 +1,14 @@
 :_content-type: PROCEDURE
-:description: Repairing the {devworkspace} Operator on OpenShift
-:keywords: devworkspace, operator, repair
+:description: Fix a duplicate DevWorkspace Operator after an OLM restart or cluster upgrade.
+:keywords: devworkspace, operator, repair, duplicate
 :navtitle: Fix a duplicate {devworkspace} Operator after a cluster upgrade
 :page-aliases: administration-guide:repairing-the-devworkspace-operator-on-openshift.adoc
 
 [id="repairing-the-devworkspace-operator-on-openshift"]
 = Fix a duplicate {devworkspace} Operator after a cluster upgrade
 
-Under certain conditions, such as link:https://docs.openshift.com/container-platform/{ocp4-ver}/operators/understanding/olm/olm-understanding-olm.html[OLM] restart or cluster upgrade, the {prod2} Operator for {prod-short} might automatically install the {devworkspace} Operator even when it is already present on the cluster. In that case, you can repair the {devworkspace} Operator on OpenShift as follows:
-
-include::partial$snip_persona-admin.adoc[]
+[role="_abstract"]
+Fix a duplicate {devworkspace} Operator installation that can occur when an link:https://docs.openshift.com/container-platform/{ocp4-ver}/operators/understanding/olm/olm-understanding-olm.html[OLM] restart or cluster upgrade leaves multiple Operator entries in a *Replacing* or *Pending* loop.
 
 .Prerequisites
 
@@ -33,32 +32,40 @@ status:
 ...
 ----
 +
-TIP: You can find and edit the `DevWorkspace` and `DevWorkspaceTemplate` CRDs in the *Administrator* perspective of the OpenShift web console by searching for `DevWorkspace` in menu:Administration[CustomResourceDefinitions].
+[TIP]
+====
+You can find and edit the `DevWorkspace` and `DevWorkspaceTemplate` CRDs in the *Administrator* perspective of the OpenShift web console by searching for `DevWorkspace` in menu:Administration[CustomResourceDefinitions].
+====
 +
-NOTE: The `DevWorkspaceOperatorConfig` and `DevWorkspaceRouting` CRDs  have the conversion strategy set to `None` by default.
+[NOTE]
+====
+The `DevWorkspaceOperatorConfig` and `DevWorkspaceRouting` CRDs have the conversion strategy set to `None` by default.
+====
 
 . Remove the {devworkspace} Operator subscription:
 +
+[subs="+quotes,+attributes"]
 ----
-$ oc delete sub devworkspace-operator \
--n openshift-operators <1>
+$ {orch-cli} delete sub devworkspace-operator \
+-n __<devworkspace_operator_namespace>__ <1>
 ----
-<1> `openshift-operators` or an OpenShift {orch-namespace} where the {devworkspace} Operator is installed.
+<1> The {orch-namespace} where the {devworkspace} Operator is installed, such as `openshift-operators`.
 
 . Get the {devworkspace} Operator CSVs in the __<devworkspace_operator.vX.Y.Z>__ format:
 +
+[subs="+attributes"]
 ----
-$ oc get csv | grep devworkspace
+$ {orch-cli} get csv | grep devworkspace
 ----
 
 . Remove each {devworkspace} Operator CSV:
 +
-[subs="+quotes"]
+[subs="+quotes,+attributes"]
 ----
-$ oc delete csv __<devworkspace_operator.vX.Y.Z>__ \
--n openshift-operators <1>
+$ {orch-cli} delete csv __<devworkspace_operator.vX.Y.Z>__ \
+-n __<devworkspace_operator_namespace>__ <1>
 ----
-<1> `openshift-operators` or an OpenShift {orch-namespace} where the {devworkspace} Operator is installed.
+<1> The {orch-namespace} where the {devworkspace} Operator is installed, such as `openshift-operators`.
 
 . Re-create the {devworkspace} Operator subscription:
 +
@@ -75,13 +82,24 @@ spec:
   name: devworkspace-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  installPlanApproval: Automatic <1>
+  installPlanApproval: Automatic
   startingCSV: devworkspace-operator.v{devworkspace-operator-version-patch}
 EOF
 ----
 +
-<1> `Automatic` or `Manual`.
+`installPlanApproval`:: `Automatic` or `Manual`.
 +
-IMPORTANT: For `installPlanApproval: Manual`, in the *Administrator* perspective of the OpenShift web console, go to menu:Operators[Installed Operators] and select the following for the *{devworkspace} Operator*: menu:Upgrade available[Preview InstallPlan > Approve].
+[IMPORTANT]
+====
+For `installPlanApproval: Manual`, in the *Administrator* perspective of the OpenShift web console, go to menu:Operators[Installed Operators] and select the following for the *{devworkspace} Operator*: menu:Upgrade available[Preview InstallPlan > Approve].
+====
 
-. In the *Administrator* perspective of the OpenShift web console, go to menu:Operators[Installed Operators] and verify the *Succeeded* status of the *{devworkspace} Operator*.
+.Verification
+
+* In the *Administrator* perspective of the OpenShift web console, go to menu:Operators[Installed Operators] and verify the *Succeeded* status of the *{devworkspace} Operator*.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:specifying-the-update-approval-strategy.adoc[]
+* xref:upgrading-che-using-the-web-console.adoc[]

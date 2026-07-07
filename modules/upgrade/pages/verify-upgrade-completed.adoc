@@ -1,0 +1,81 @@
+:_content-type: PROCEDURE
+:description: Verify that all components are running the new version after upgrading.
+:keywords: upgrade, verify, verification, post-upgrade
+:navtitle: Verify the upgrade completed successfully
+:page-aliases:
+
+[id="verify-upgrade-completed"]
+= Verify the upgrade completed successfully
+
+[role="_abstract"]
+Verify that all {prod-short} components are running the new version and that the platform is functional so that you can confirm the upgrade succeeded before notifying developers.
+
+.Prerequisites
+
+* An active `{orch-cli}` session as a cluster administrator to the {platforms-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Verify that the {prod-short} Operator CSV shows the expected version and `Succeeded` phase:
++
+[subs="+attributes"]
+----
+$ {orch-cli} get csv -n {prod-namespace} -o custom-columns='NAME:.metadata.name,PHASE:.status.phase,VERSION:.spec.version'
+----
++
+Expected output:
++
+[source,terminal,subs="+attributes"]
+----
+NAME                             PHASE       VERSION
+{prod-id-short}operator.v{prod-ver-patch}   Succeeded   {prod-ver-patch}
+----
+
+. Verify that the `CheCluster` custom resource reports `Active` phase and the correct version:
++
+[subs="+attributes"]
+----
+$ {orch-cli} get checluster -n {prod-namespace} -o jsonpath='Phase: {.status.chePhase}, Version: {.status.cheVersion}'
+----
++
+Expected output:
++
+[source,terminal,subs="+attributes"]
+----
+Phase: Active, Version: {prod-ver-patch}
+----
+
+. Verify that all {prod-short} pods in the `{prod-namespace}` namespace are running and ready:
++
+[subs="+attributes"]
+----
+$ {orch-cli} get pods -n {prod-namespace}
+----
++
+All pods should show `Running` status with all containers ready.
+
+. Verify that the {prod-short} dashboard is accessible:
++
+[subs="+attributes"]
+----
+$ {orch-cli} get checluster -n {prod-namespace} -o jsonpath='{.status.cheURL}'
+----
++
+Open the returned URL in a browser and confirm the login page loads.
+
+. Verify that the {devworkspace} Operator is running the expected version:
++
+[subs="+attributes"]
+----
+$ {orch-cli} get csv -o custom-columns='NAME:.metadata.name,PHASE:.status.phase' | grep devworkspace
+----
++
+The {devworkspace} Operator CSV should show `Succeeded` phase.
+
+. Start a test workspace from the {prod-short} dashboard to confirm that workspaces function correctly after the upgrade.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:pre-upgrade-checklist.adoc[]
+* xref:upgrading-che.adoc[]
