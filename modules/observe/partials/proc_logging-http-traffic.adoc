@@ -1,0 +1,31 @@
+// configuring-server-logging
+
+[id="logging-http-traffic"]
+= Log HTTP traffic
+
+[role="_abstract"]
+Log the HTTP traffic between the {prod-short} server and the API server of the {kubernetes} or {orch-name} cluster to troubleshoot communication issues and debug API errors.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Configure the `CheCluster` Custom Resource. See xref:administration-guide:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
++
+[source,yaml]
+----
+spec:
+  components:
+    cheServer:
+      extraProperties:
+        CHE_LOGGER_CONFIG: "che.infra.request-logging=TRACE"
+----
+
+.Additional resources
+
+* xref:install:using-chectl-to-configure-the-checluster-custom-resource-during-installation.adoc[]
+
+* xref:administration-guide:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]
+

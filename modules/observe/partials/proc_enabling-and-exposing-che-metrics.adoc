@@ -1,0 +1,32 @@
+// monitoring-{prod-id-short}
+
+[id="enabling-and-exposing-{prod-id-short}-metrics"]
+= Enable {prod-short} server metrics
+
+{prod-short} exposes the JVM metrics on port `8087` of the `che-host` Service. Configure this behavior to support performance monitoring and capacity planning.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Configure the `CheCluster` Custom Resource. See xref:administration-guide:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+spec:
+  components:
+    metrics:
+      enable: __<boolean>__ <1>
+----
+<1> `true` to enable, `false` to disable.
+
+.Verification
+
+* Verify the metrics endpoint is accessible:
++
+[source,terminal,subs="+attributes"]
+----
+$ {orch-cli} get service che-host -n {prod-namespace} -o jsonpath='{.spec.ports[?(@.port==8087)]}'
+----

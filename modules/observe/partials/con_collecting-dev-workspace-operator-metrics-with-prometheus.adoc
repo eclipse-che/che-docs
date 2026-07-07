@@ -1,18 +1,20 @@
-// monitoring-{prod-id-short}
-:page-aliases: .:proc_collecting-che-metrics-with-prometheus.adoc
+:page-aliases: .:proc_collecting-dev-workspace-operator-metrics-with-prometheus.adoc
 
-[id="collecting-{prod-id-short}-metrics-with-prometheus"]
-= Verifying {prod-short} Server metrics collection with Prometheus
+[id="collecting-dev-workspace-operator-metrics-with-prometheus"]
+= Verify {devworkspace} Operator metrics with Prometheus
 
 [role="_abstract"]
-The {prod-operator} automatically creates and reconciles the required Prometheus resources (ServiceMonitor, Role, and RoleBinding) and configures {orch-namespace} labeling for monitoring {prod-short} Server JVM metrics.
-No manual configuration is required.
+Verify that {devworkspace} Operator metrics are available in Prometheus. The {prod-operator} automatically creates and reconciles the required Prometheus resources (ServiceMonitor, Role, and RoleBinding) and configures {orch-namespace} labeling.
 
 .Verification
 
+. For a fresh installation of {prod-short}, generate metrics by creating a {prod-short} workspace from the Dashboard.
+
 . In the *Administrator* view of the OpenShift web console, go to *Observe* -> *Metrics*.
 
-. Run a PromQL query to confirm that the metrics are available. For example, enter `process_uptime_seconds{job="che-host"}` and click *Run queries*.
+. Run a PromQL query to confirm that the metrics are available. For example, enter `devworkspace_started_total` and click *Run queries*.
++
+For more metrics, see xref:ref_devworkspace-specific-metrics[].
 
 [TIP]
 ====
@@ -35,10 +37,6 @@ $ oc logs --tail=20 __<prometheus_pod_name>__ -c prometheus -n openshift-monitor
 
 ====
 
-[role="_additional-resources"]
 .Additional resources
-
-
 * link:https://prometheus.io/docs/prometheus/latest/querying/basics/[Querying Prometheus]
-
 * link:https://prometheus.io/docs/concepts/metric_types/[Prometheus metric types]
