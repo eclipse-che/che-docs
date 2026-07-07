@@ -94,6 +94,45 @@ $ cp -a {prod-home}/.claude/. /tmp/claude/.claude/ && \
 . Start a different workspace.
 . Verify that the Claude Code configuration from the first workspace is available.
 
+== Filtering by workspace name
+
+Control which workspaces mount the PVC by adding annotations:
+
+[source,yaml,subs="+quotes,+attributes"]
+----
+annotations:
+  controller.devfile.io/mount-to-devworkspace-include: '__<pattern>__' # <1>
+  controller.devfile.io/mount-to-devworkspace-exclude: '__<pattern>__' # <2>
+----
+<1> Mount the PVC only to workspaces whose names match the pattern.
+<2> Mount the PVC to all workspaces except those whose names match the pattern.
+
+Supported patterns: exact match (`name`), prefix (`name\*`), suffix (`\*name`), contains (`\*name\*`). Matching is on the {devworkspace} resource name.
+
+== Concurrent workspaces
+
+|===
+| Access mode | Behavior
+
+| ReadWriteOnce (RWO)
+| One workspace at a time. Two workspaces on different nodes cause a multi-attach error.
+
+| ReadWriteMany (RWX)
+| Concurrent workspaces work. Requires a storage class that supports RWX, such as AWS EFS or NFS. Standard block storage (gp2, gp3) does not support RWX.
+|===
+
+== Compatibility with `persistUserHome`
+
+A dedicated PVC mounted at `{prod-home}/.claude` and the persistent home PVC mounted at `{prod-home}/` coexist correctly as nested mounts. Writes to `{prod-home}/.claude/` go to the dedicated PVC. Writes to other paths under `{prod-home}/` go to the persistent home PVC.
+
+If you only need persistence within a single workspace and not cross-workspace sharing, `persistUserHome` alone is sufficient.
+
+== Limitations
+
+* Requires manual PVC setup per user {orch-namespace}.
+* RWX storage may not be available on all clusters.
+* Changes must be synced back to the PVC manually before stopping the workspace. Unsaved changes are lost.
+
 .Additional resources
 
 * xref:persist-claude-code-configuration.adoc[]
