@@ -1,13 +1,15 @@
 :_content-type: PROCEDURE
 :description: Using a Git-provider access token
 :keywords: Git, credentials, access-token
-:navtitle: Using a Git-provider access token
-:page-aliases: using-a-Git-credentials-store.adoc, using-git-credentials.adoc, 
+:navtitle: Access private repositories with a personal access token
+:page-aliases: end-user-guide:using-a-git-provider-access-token.adoc, using-a-Git-credentials-store.adoc, using-git-credentials.adoc, 
 
 [id="using-a-git-provider-access-token"]
-= Using a Git-provider access token
+= Access private repositories with a personal access token
 
 pass:[<!-- vale RedHat.CaseSensitiveTerms = NO -->]
+
+include::partial$snip_persona-developer.adoc[]
 
 OAuth for GitHub, GitLab, Bitbucket, or Microsoft Azure Repos needs to be xref:administration-guide:configuring-oauth-for-git-providers.adoc[configured by the administrator] of your organization's {prod-short} instance. If your administrator could not configure it for {prod-short} users, the workaround is for you to use a personal access token. You can configure personal access tokens on the *User Preferences* page of your {prod-short} dashboard: `pass:c,a,q[{prod-url}]/dashboard/#/user-preferences?tab=personal-access-tokens`, or apply it manually as a {kubernetes} Secret in the namespace.
 
@@ -34,29 +36,20 @@ On OpenShift, you can use the `oc` command-line tool to log in to the cluster:
 .Procedure
 
 . Generate your access token on your Git provider's website.
-
 +
 [IMPORTANT]
 ====
-Personal access tokens are sensitive information and should be kept confidential. Treat them like passwords. If you are having trouble with authentication, ensure you are using the correct token and have the appropriate permissions for cloning repositories:
+Personal access tokens are sensitive information. Treat them like passwords. If you are having trouble with authentication, verify the token locally before applying it as a Secret:
 
-. Open a terminal locally on your computer
-. Use the `git` command to clone the repository using your personal access token. The format of the `git` command vary based on the Git Provider. As an example, GitHub personal access token verification can be done using the following command:
-
+[source,bash]
 ----
-git clone https://<PAT>@github.com/username/repo.git
+$ git clone https://<PAT>@github.com/username/repo.git
 ----
 
-Replace `<PAT>` with your personal access token, and `username/repo` with the appropriate repository path.
-If the token is valid and has the necessary permissions, the cloning process should be successful. Otherwise, this is an indicator of incorrect personal access token, insufficient permissions, or other issues.
-====
+Replace `<PAT>` with your personal access token, and `username/repo` with the appropriate repository path. If cloning succeeds, the token is valid and has the necessary permissions.
 
-+
-[IMPORTANT]
+For GitHub Enterprise Cloud, verify that the token is link:https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on[authorized for use within your organization with SAML single sign-on].
 ====
-For GitHub Enterprise Cloud, verify that the token is link:https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on[authorized for use within the organization].
-====
-
 
 . Go to `pass:c,a,q[{prod-url}]/api/user/id` in the web browser to get your {prod-short} user ID.
 
@@ -67,24 +60,51 @@ For GitHub Enterprise Cloud, verify that the token is link:https://docs.github.c
 kind: Secret
 apiVersion: v1
 metadata:
-  name: personal-access-token-__<your_choice_of_name_for_this_token>__
+  name: personal-access-token-__<git_provider>__
   labels:
     app.kubernetes.io/component: scm-personal-access-token
     app.kubernetes.io/part-of: che.eclipse.org
   annotations:
-    che.eclipse.org/che-userid: __<{prod-id-short}_user_id>__# <1>
-    che.eclipse.org/scm-personal-access-token-name: _<git_provider_name>_# <2>
-    che.eclipse.org/scm-url: __<git_provider_endpoint>__# <3>
-    che.eclipse.org/scm-organization: __<git_provider_organization>__# <4>
-stringData:
-  token: __<Content_of_access_token>__
+    che.eclipse.org/che-userid: __<{prod-id-short}_user_id>__
+    che.eclipse.org/scm-personal-access-token-name: __<git_provider_name>__
+    che.eclipse.org/scm-url: __<git_provider_endpoint>__
+    che.eclipse.org/scm-organization: __<git_provider_organization>__
 type: Opaque
+stringData:
+  token: __<your_personal_access_token>__
 ----
 +
-<1> Your {prod-short} user ID.
-<2> The Git provider name: `github` or `gitlab` or `bitbucket-server` or `azure-devops`.
-<3> The Git provider URL.
-<4> This line is only applicable to `azure-devops`: your Git provider user organization, or collection if Azure DevOps Server is used.
+where:
++
+che.eclipse.org/che-userid:: Your {prod-short} user ID.
++
+che.eclipse.org/scm-personal-access-token-name:: The Git provider name (`github`, `gitlab`, `bitbucket-server`, or `azure-devops`).
++
+che.eclipse.org/scm-url:: The Git provider URL endpoint, for example `https://github.com` or `https://gitlab.com`.
++
+che.eclipse.org/scm-organization:: Required only for Azure DevOps: your Git provider user organization, or collection if Azure DevOps Server is used.
++
+token:: Your personal access token.
++
+Example for GitHub:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: personal-access-token-github
+  labels:
+    app.kubernetes.io/component: scm-personal-access-token
+    app.kubernetes.io/part-of: che.eclipse.org
+  annotations:
+    che.eclipse.org/che-userid: 1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p
+    che.eclipse.org/scm-personal-access-token-name: github
+    che.eclipse.org/scm-url: https://github.com
+type: Opaque
+stringData:
+  token: ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+----
 
 . Visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
 
@@ -119,7 +139,7 @@ EOF
 
 [IMPORTANT]
 ====
-If you are using Azure DevOps Server, you must also modify the xref:mounting-git-configuration.adoc[workspace's
+If you are using Azure DevOps Server, you must also modify the xref:end-user-guide:mounting-git-configuration.adoc[workspace's
 gitconfig] with the following section:
 
 [source,http]
