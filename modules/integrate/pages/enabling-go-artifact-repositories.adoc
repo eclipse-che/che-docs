@@ -1,0 +1,57 @@
+:_content-type: PROCEDURE
+:description: Enable Go artifact repositories by setting GOPROXY and GONOSUMDB environment variables
+:keywords: go, artifact-repository, artifact-repositories
+:navtitle: Enable Go artifact repositories
+:page-aliases: using-go-artifact-repositories.adoc
+
+[id="enabling-go-artifact-repositories"]
+= Enable Go artifact repositories
+
+Configure Go to use a module proxy by setting environment variables in your workspaces.
+
+.Prerequisites
+
+* You are not running any Go workspace.
+
+include::partial$snip_warning-about-applying-a-configmap-that-sets-environment-variables.adoc[]
+
+.Procedure
+
+. Create a Secret to store the TLS certificate:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: tls-cer
+  annotations:
+    controller.devfile.io/mount-path: /home/user/certs
+    controller.devfile.io/mount-as: file
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-secret: 'true'
+data:
+  tls.cer: >-
+    __<Base64_encoded_content_of_public_cert>__ <1>
+----
+<1> Base64 encoding with disabled line wrapping.
+
+. Create a ConfigMap to set the following environment variables in the `tools` container:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: disconnected-env
+  annotations:
+    controller.devfile.io/mount-as: env
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  GOPROXY: >-
+    http://__<athens_proxy_route>__
+  SSL_CERT_FILE: /home/user/certs/tls.cer
+----

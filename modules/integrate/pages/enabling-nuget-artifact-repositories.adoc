@@ -1,0 +1,85 @@
+:_content-type: PROCEDURE
+:description: Enable a NuGet artifact repository so that .NET workspaces can restore packages from your internal NuGet feed.
+:keywords: nuget, artifact-repository, artifact-repositories
+:navtitle: Enable NuGet artifact repositories
+:page-aliases: using-nuget-artifact-repositories.adoc
+
+[id="enabling-nuget-artifact-repositories"]
+= Enable NuGet artifact repositories
+
+Enable a NuGet artifact repository so that .NET workspaces can restore packages from your internal NuGet feed.
+
+.Prerequisites
+
+* You are not running any NuGet workspace.
+
+include::partial$snip_warning-about-applying-a-configmap-that-sets-environment-variables.adoc[]
+
+.Procedure
+
+. Create a Secret to store the TLS certificate:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: tls-cer
+  annotations:
+    controller.devfile.io/mount-path: /home/user/certs
+    controller.devfile.io/mount-as: file
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-secret: 'true'
+data:
+  tls.cer: >-
+    __<Base64_encoded_content_of_public_cert>__ <1>
+----
+<1> Base64 encoding with disabled line wrapping.
+
+. Create a ConfigMap to set the environment variable for the path of the TLS certificate file in the `tools` container:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: disconnected-env
+  annotations:
+    controller.devfile.io/mount-as: env
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  SSL_CERT_FILE: /home/user/certs/tls.cer
+----
+
+. Create a ConfigMap for the `nuget.config` file:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: init-nuget
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /projects
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  nuget.config: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <configuration>
+      <packageSources>
+        <add key="nexus2" value="https://__<nuget_artifact_repository_route>__/repository/nuget-group/"/>
+      </packageSources>
+      <packageSourceCredentials>
+        <nexus2>
+            <add key="Username" value="admin" />
+            <add key="Password" value="passwd" />
+        </nexus2>
+      </packageSourceCredentials>
+    </configuration>
+----
