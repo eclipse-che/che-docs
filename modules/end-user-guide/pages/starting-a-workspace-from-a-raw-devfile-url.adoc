@@ -1,0 +1,76 @@
+:_content-type: PROCEDURE
+:description: Start a cloud development environment from a raw devfile URL
+:keywords: start-new-workspace, start-a-new-workspace, how-to-start-new-workspace, how-to-start-a-new-workspace, starting-a-new-workspace, how-to-start-workspace, how-to-start-a-workspace
+:navtitle: Start a cloud development environment from a raw devfile URL
+:page-aliases: get-started:starting-a-workspace-from-a-raw-devfile-url.adoc
+
+[id="starting-a-workspace-from-a-raw-devfile-url"]
+= Start a cloud development environment from a raw devfile URL
+
+[role="_abstract"]
+Start a cloud development environment from a devfile hosted outside your Git repository so that you can share a standard development environment across teams or test devfile changes before committing them.
+
+// vale RedHat.Spelling = NO
+
+TIP: You can also use the *Git Repo URL* field on the *Create Workspace* page of your {prod-short} dashboard to enter the URL of a devfile to start a new cloud development environment.
+
+// vale RedHat.Spelling = YES
+
+.Prerequisites
+
+* You have a running instance of {prod-short}.
+* You know the Fully Qualified Domain Name (FQDN) URL of your organization's {prod-short} instance: `pass:c,a,q[{prod-url}]`.
+* You have a devfile that includes project information to clone the Git repository. See https://devfile.io/docs/2.2.0/adding-projects.
+
+.Procedure
+
+. Optional: Open the {prod-short} dashboard to authenticate to your organization's instance of {prod-short}.
+
+. Enter the devfile URL in your browser to start a new cloud development environment.
++
+For a public repository:
++
+[source,subs="+quotes,+attributes,+macros"]
+----
+pass:c,a,q[{prod-url}]#__<devfile_url>__
+----
++
+For a private repository, include your personal access token in the URL:
++
+[source,subs="+quotes,+attributes,+macros"]
+----
+pass:c,a,q[{prod-url}]#__https://__<token>__@__<host>__/__<path_to_devfile>
+----
++
+where:
++
+`__<token>__`:: Your personal access token that you generated on the Git provider's website. This method works for GitHub, GitLab, Bitbucket, Microsoft Azure, and other providers that support Personal Access Token.
++
+[IMPORTANT]
+====
+Automated Git credential injection does not work with token-embedded URLs. To configure Git credentials separately, see xref:get-started-user:using-a-git-provider-access-token.adoc[].
+====
++
+To append optional parameters, add `?__<optional_parameters>__` to the URL. See xref:optional-parameters-for-the-urls-for-starting-a-new-workspace.adoc[Optional parameters for cloud development environment URLs] for supported parameters.
++
+For example:
++
+* Public repository: `pass:c,a,q[{prod-url}#https://raw.githubusercontent.com/che-samples/cpp-hello-world/main/devfile.yaml]`
+* Private repository: `pass:c,a,q[{prod-url}#https://__<token>__@raw.githubusercontent.com/che-samples/cpp-hello-world/main/devfile.yaml]`
+
+.Verification
+
+* After you enter the URL, the starting page is displayed in the browser tab.
+* When the cloud development environment is ready, the IDE loads automatically.
+* The cloud development environment has a unique URL: `pass:c,a,q[{prod-url}]/__<user_name>__/__<unique_url>__`.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:optional-parameters-for-the-urls-for-starting-a-new-workspace.adoc[Optional parameters for cloud development environment URLs]
+* xref:get-started-user:basic-actions-you-can-perform-on-a-workspace.adoc[]
+* xref:get-started-user:using-a-git-provider-access-token.adoc[]
+* xref:mounting-git-configuration.adoc[]
+// vale RedHat.GitLinks = NO
+* link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#configuring-devworkspaces-to-use-ssh-keys-for-git-operations[Configuring DevWorkspaces to use SSH keys for Git operations]
+// vale RedHat.GitLinks = YES

@@ -1,0 +1,62 @@
+:_content-type: PROCEDURE
+:description: Verify the platform works end-to-end
+:keywords: verify, installation, dashboard, test workspace
+:navtitle: Verify the platform works end-to-end
+
+[id="verify-the-platform-end-to-end"]
+= Verify the platform works end-to-end
+
+[role="_abstract"]
+Verify that {prod-short} is operational by checking the Operator status, opening the dashboard, and creating a test workspace. This confirms that the full pipeline works before you invite developers.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+* You have installed {prod-short} on an {orch-name} cluster. See xref:install:installing-che.adoc[Install {prod-short}].
+
+.Procedure
+
+. Verify that the {prod-short} Operator pod is running:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get pods -n {prod-namespace} -l app.kubernetes.io/component={prod-id-short}-operator
+----
+
+. Verify that the `CheCluster` custom resource reports no errors:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath='{.status.chePhase}'
+----
++
+The expected output is `Active`.
+
+. Retrieve the {prod-short} dashboard URL:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath='{.status.cheURL}'
+----
+
+. Open the URL in a web browser and log in with your {orch-name} credentials.
+
+. On the *Create Workspace* page, click any sample (for example, *Python*) to start a test workspace.
+
+. Wait for the workspace to start. The first start takes 2-3 minutes while container images are pulled to the cluster node.
+
+. Confirm that the IDE loads in your browser tab and that you can open a terminal.
+
+. Return to the *Workspaces* page and stop the test workspace by selecting *⋮* > *Stop Workspace*.
+
+.Verification
+
+* The {prod-short} dashboard loads and displays the *Create Workspace* page.
+* A test workspace starts and the IDE loads in the browser.
+* You can open a terminal in the workspace.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:install:proc_verifying-the-installation.adoc[Confirm {prod-short} is running]
+* xref:install:proc_finding-the-fully-qualified-domain-name-fqdn.adoc[Get the dashboard URL to share with your team]
