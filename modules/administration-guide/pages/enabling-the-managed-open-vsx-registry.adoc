@@ -1,0 +1,143 @@
+:_content-type: PROCEDURE
+:description: Enable the operator-managed Open VSX registry to deploy a dedicated Open VSX server and PostgreSQL database as {prod} operands
+:keywords: administration guide, openvsx, registry, extensions, managed, operator
+:navtitle: Enable the managed Open VSX registry
+:page-aliases:
+
+[id="enabling-the-managed-open-vsx-registry"]
+= Enabling the managed Open VSX registry
+
+[role="_abstract"]
+Enable {prod-short} to deploy and manage a dedicated Open VSX server with a PostgreSQL database as Operator-managed components. The managed registry is exposed through the {prod-short} gateway and provides a private, curated extension registry without requiring manual deployment or database administration.
+
+When enabled, the {prod-short} Operator creates the following resources:
+
+* An Open VSX server `Deployment` with a `PersistentVolumeClaim` for extension storage.
+* A PostgreSQL database `Deployment` with a `PersistentVolumeClaim` for data.
+* A one-shot `Job` to provision the database with the required user and access token.
+* A `ConfigMap` for listing extensions to publish to the registry.
+
+When disabled, the Operator removes all managed Open VSX resources.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Enable the managed Open VSX registry by patching the `CheCluster` custom resource:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{
+    "spec": {
+      "components": {
+        "openVSXRegistry": {
+          "enable": true
+        }
+      }
+    }
+  }'
+----
++
+The Operator deploys the Open VSX server and PostgreSQL database, provisions the database, and exposes the registry through the {prod-short} gateway.
+
+. Optional: Configure the server storage size by setting the `claimSize` field. The default is `3Gi`.
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{
+    "spec": {
+      "components": {
+        "openVSXRegistry": {
+          "server": {
+            "pvc": {
+              "claimSize": "__<size>__"
+            }
+          }
+        }
+      }
+    }
+  }'
+----
++
+where `__<size>__` is the required storage size. For example: `5Gi`.
+
+. Optional: Configure the database storage size. The default is `1Gi`.
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{
+    "spec": {
+      "components": {
+        "openVSXRegistry": {
+          "database": {
+            "pvc": {
+              "claimSize": "__<size>__"
+            }
+          }
+        }
+      }
+    }
+  }'
+----
+
+. Optional: Publish extensions to the managed registry by editing the `openvsx-extensions` `ConfigMap` in the {prod-short} {orch-namespace}. Add extension `.vsix` download URLs, one per line:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} edit configmap openvsx-extensions \
+  --namespace {prod-namespace}
+----
++
+The Operator automatically runs a publishing `Job` when the `ConfigMap` content changes.
+
+.Verification
+
+* Verify that the Open VSX server and database pods are running:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} get pods --namespace {prod-namespace} -l app=openvsx
+----
+
+* Open a workspace and verify that extensions from the managed registry are available in the *Extensions* view.
+
+[id="disabling-the-managed-open-vsx-registry"]
+== Disabling the managed Open VSX registry
+
+To remove the managed Open VSX registry and all its resources, set the `enable` field to `false`:
+
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{
+    "spec": {
+      "components": {
+        "openVSXRegistry": {
+          "enable": false
+        }
+      }
+    }
+  }'
+----
+
+The Operator removes all managed Open VSX resources, including deployments, services, persistent volume claims, and secrets.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:managing-ide-extensions.adoc[]
+* xref:configuring-the-open-vsx-registry-url.adoc[]
+* xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]
