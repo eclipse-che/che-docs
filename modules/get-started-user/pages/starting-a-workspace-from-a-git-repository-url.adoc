@@ -1,0 +1,106 @@
+:_content-type: PROCEDURE
+:description: Open your project in a cloud development environment from a Git repository URL
+:keywords: start-new-workspace, start-a-new-workspace, how-to-start-new-workspace, how-to-start-a-new-workspace, starting-a-new-workspace, clone-git-repository, clone-a-git-repository, how-to-start-workspace, how-to-start-a-workspace
+:navtitle: Open your project in a cloud development environment
+:page-aliases: end-user-guide:starting-a-workspace-from-a-git-repository-url.adoc, get-started:starting-a-workspace-from-a-git-repository-url.adoc
+
+[id="starting-a-workspace-from-a-git-repository-url"]
+= Open your project in a cloud development environment
+
+[role="_abstract"]
+Open your team's Git repository in a cloud development environment so that you can start coding without installing tools, cloning repositories, or configuring your local environment. {prod-short} handles all of this automatically.
+
+TIP: You can also use the *Git Repository URL* field on the *Create Workspace* page of your {prod-short} dashboard to enter the URL of a Git repository to start a new cloud development environment.
+
+.Prerequisites
+
+* You have a running instance of {prod-short}.
+* You know the Fully Qualified Domain Name (FQDN) URL of your organization's {prod-short} instance: `pass:c,a,q[{prod-url}]`.
+* Optional: You have xref:authenticating-to-a-git-server-from-a-workspace.adoc[authentication to the Git server] configured.
+* Optional: You have a `devfile.yaml` or `.devfile.yaml` file in the root directory of the Git repository. Without a devfile, the cloud development environment starts with the Universal Developer Image and the default IDE.
+* For private repositories: you have configured a personal access token or accepted the SCM authentication page to access the repository content. See xref:using-a-git-provider-access-token.adoc[].
+// vale RedHat.GitLinks = NO
+* For Git+SSH URLs: you have configured an SSH key for Git operations. See link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#configuring-devworkspaces-to-use-ssh-keys-for-git-operations[Configuring DevWorkspaces to use SSH keys for Git operations].
+// vale RedHat.GitLinks = YES
+
+.Procedure
+
+. Optional: Open the {prod-short} dashboard to authenticate to your organization's instance of {prod-short}.
+
+. Enter the URL in your browser or in the *Git Repository URL* field on the *Create Workspace* page to start a new cloud development environment:
++
+[source,subs="+quotes,+attributes,+macros"]
+----
+pass:c,a,q[{prod-url}]#__<git_repository_url>__
+----
++
+To append optional parameters, add `?__<optional_parameters>__` to the URL. See xref:end-user-guide:optional-parameters-for-the-urls-for-starting-a-new-workspace.adoc[Optional parameters for workspace URLs] for supported parameters.
++
+For example:
++
+* `pass:c,a,q[{prod-url}#https://github.com/che-samples/cpp-hello-world]`
+* `pass:c,a,q[{prod-url}#git@github.com:che-samples/cpp-hello-world.git]`
++
+URL syntax per Git provider:
++
+.GitHub
+[cols="1",options="header"]
+|===
+| URL pattern
+
+| Default branch: `pass:c,a,q[{prod-url}#https://__<github_host>__/__<user_or_org>__/__<repository>__]`
+| Specified branch: `pass:c,a,q[{prod-url}#https://__<github_host>__/__<user_or_org>__/__<repository>__/tree/__<branch_name>__]`
+| Pull request branch: `pass:c,a,q[{prod-url}#https://__<github_host>__/__<user_or_org>__/__<repository>__/pull/__<pull_request_id>__]`
+| Git+SSH: `pass:c,a,q[{prod-url}#git@__<github_host>__:__<user_or_org>__/__<repository>__.git]`
+|===
++
+For GitHub, you can also use a URL of a directory containing a devfile, or a direct URL to the devfile. The devfile name must be `devfile.yaml` or `.devfile.yaml`. Other Git providers do not support this feature.
++
+.GitLab
+[cols="1",options="header"]
+|===
+| URL pattern
+
+| Default branch: `pass:c,a,q[{prod-url}#https://__<gitlab_host>__/__<user_or_org>__/__<repository>__]`
+| Specified branch: `pass:c,a,q[{prod-url}#https://__<gitlab_host>__/__<user_or_org>__/__<repository>__/-/tree/__<branch_name>__]`
+| Git+SSH: `pass:c,a,q[{prod-url}#git@__<gitlab_host>__:__<user_or_org>__/__<repository>__.git]`
+|===
++
+.Bitbucket Server
+[cols="1",options="header"]
+|===
+| URL pattern
+
+| Default branch: `pass:c,a,q[{prod-url}#https://__<bb_host>__/scm/__<project-key>__/__<repository>__.git]`
+| Default branch (user profile repository): `pass:c,a,q[{prod-url}#https://__<bb_host>__/users/__<user_slug>__/repos/__<repository>__/]`
+| Specified branch: `pass:c,a,q[{prod-url}#https://__<bb_host>__/users/__<user-slug>__/repos/__<repository>__/browse?at=refs%2Fheads%2F__<branch-name>__]`
+| Git+SSH: `pass:c,a,q[{prod-url}#git@__<bb_host>__:__<user_slug>__/__<repository>__.git]`
+|===
++
+.Microsoft Azure DevOps
+[cols="1",options="header"]
+|===
+| URL pattern
+
+| Default branch: `pass:c,a,q[{prod-url}#https://__<organization>__@dev.azure.com/__<organization>__/__<project>__/_git/__<repository>__]`
+| Specified branch: `pass:c,a,q[{prod-url}#https://__<organization>__@dev.azure.com/__<organization>__/__<project>__/_git/__<repository>__?version=GB__<branch>__]`
+| Git+SSH: `pass:c,a,q[{prod-url}#git@ssh.dev.azure.com:v3/__<organization>__/__<project>__/__<repository>__]`
+|===
+
+.Verification
+
+* After you enter the URL to start a new cloud development environment in a browser tab, the starting page is displayed.
+* When the new cloud development environment is ready, the IDE loads in the browser tab.
+* A clone of the Git repository is present in the filesystem of the new cloud development environment.
+* The cloud development environment has a unique URL: `pass:c,a,q[{prod-url}]/__<user_name>__/__<unique_url>__`.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:end-user-guide:optional-parameters-for-the-urls-for-starting-a-new-workspace.adoc[Optional parameters for workspace URLs]
+* xref:basic-actions-you-can-perform-on-a-workspace.adoc[]
+* xref:using-a-git-provider-access-token.adoc[]
+* xref:end-user-guide:mounting-git-configuration.adoc[]
+// vale RedHat.GitLinks = NO
+* link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#configuring-devworkspaces-to-use-ssh-keys-for-git-operations[Configuring DevWorkspaces to use SSH keys for Git operations]
+// vale RedHat.GitLinks = YES
