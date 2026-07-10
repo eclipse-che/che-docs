@@ -1,14 +1,14 @@
 :_content-type: PROCEDURE
-:description: Deploy {prod-short} on an air-gapped {orch-name} cluster by mirroring the required container images and Operator catalogs to a private registry. This procedure covers the additional steps needed when the cluster has no direct internet access.
+:description: Deploy {prod-short} on an {orch-name} cluster with no internet access by mirroring the required container images and Operator catalogs to a private registry.
 :keywords: install, restricted, air-gapped, disconnected, openshift
-:navtitle: Install {prod-short} in a restricted environment
+:navtitle: Deploy in an air-gapped environment
 :page-aliases: installation-guide:installing-che-in-restricted-environment.adoc, installation-guide:installing-che-in-a-restricted-environment.adoc, preparing-a-restricted-environment.adoc, configuring-che-to-run-in-a-restricted-environment.adoc, installing-che-in-a-restricted-environment.adoc
 
 [id="proc_installing-che-in-a-restricted-environment"]
-= Install {prod-short} in a restricted environment on {orch-name}
+= Deploy in an air-gapped environment
 
 [role="_abstract"]
-Deploy {prod-short} on an air-gapped {orch-name} cluster by mirroring the required container images and Operator catalogs to a private registry. This procedure covers the additional steps needed when the cluster has no direct internet access.
+Deploy {prod-short} on an {orch-name} cluster with no internet access by mirroring the required container images and Operator catalogs to a private registry.
 
 On a restricted network, deploying {prod-short} and running workspaces requires the following public resources:
 
@@ -24,7 +24,22 @@ include::partial$snip_preparing-images-for-a-restricted-environment.adoc[]
 
 .Procedure
 
-. Install {prod-short} with the configuration set in the `che-operator-cr-patch.yaml` during the previous step:
+. Download and execute the mirroring script to install a custom Operator catalog and mirror the related images: xref:administration-guide:attachment$restricted-environment/prepare-restricted-environment.sh[prepare-restricted-environment.sh].
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ bash prepare-restricted-environment.sh \
+  --devworkspace_operator_index {devworkspace-operator-index-disconnected-install}\
+  --devworkspace_operator_version "v{devworkspace-operator-version-patch}" \
+  --prod_operator_index "{prod-operator-index}" \
+  --prod_operator_package_name "{prod-operator-package-name}" \
+  --prod_operator_bundle_name "{prod-operator-bundle-name}" \
+  --prod_operator_version "v{prod-ver-patch}" \
+  --my_registry "__<my_registry>__" <1>
+----
+<1> The private Docker registry where the images will be mirrored
+
+. Install {prod-short} with the configuration set in the `che-operator-cr-patch.yaml` created in step 1:
 +
 [source,bash,subs="+attributes,+quotes"]
 ----
