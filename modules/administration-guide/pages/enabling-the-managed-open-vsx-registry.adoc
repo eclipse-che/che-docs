@@ -110,7 +110,93 @@ The Operator automatically runs a publishing `Job` when the `ConfigMap` content 
 {orch-cli} get pods --namespace {prod-namespace} -l app=openvsx
 ----
 
+* Access the Open VSX registry UI by navigating to `pass:c,a,q[https://__<che_host>__/openvsx]` in a browser, where `__<che_host>__` is the hostname of your {prod-short} instance. You can retrieve the URL from the `CheCluster` status:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} get checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  -o jsonpath='{.status.openVSXURL}'
+----
+
 * Open a workspace and verify that extensions from the managed registry are available in the *Extensions* view.
+
+[id="configuring-custom-credentials-for-the-managed-open-vsx-registry"]
+== Configuring custom credentials for the managed Open VSX registry
+
+By default, the Operator generates an `openvsx-credentials` secret with random passwords and access tokens. To use custom database credentials and Open VSX user accounts, create a secret and reference it in the `CheCluster` custom resource.
+
+.Procedure
+
+. Create a secret with the required credentials:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} create secret generic __<secret_name>__ \
+  --namespace {prod-namespace} \
+  --from-literal=database-user=__<db_user>__ \
+  --from-literal=database-password=__<db_password>__ \
+  --from-literal=database-name=__<db_name>__ \
+  --from-literal=openvsx-publisher-name=__<publisher_name>__ \
+  --from-literal=openvsx-publisher-token=__<publisher_token>__ \
+  --from-literal=openvsx-admin-name=__<admin_name>__ \
+  --from-literal=openvsx-admin-token=__<admin_token>__
+----
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} label secret __<secret_name>__ \
+  --namespace {prod-namespace} \
+  app.kubernetes.io/part-of=che.eclipse.org
+----
++
+The secret must contain all of the following keys:
++
+[cols="1,2", options="header"]
+|===
+| Key | Description
+
+| `database-user`
+| PostgreSQL username.
+
+| `database-password`
+| PostgreSQL password.
+
+| `database-name`
+| PostgreSQL database name.
+
+| `openvsx-publisher-name`
+| Login name of the Open VSX publisher account with the `privileged` role.
+
+| `openvsx-publisher-token`
+| Personal access token for the publisher account.
+
+| `openvsx-admin-name`
+| Login name of the Open VSX admin account.
+
+| `openvsx-admin-token`
+| Personal access token for the admin account.
+|===
+
+. Reference the secret in the `CheCluster` custom resource:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{
+    "spec": {
+      "components": {
+        "openVSXRegistry": {
+          "credentialsSecretName": "__<secret_name>__"
+        }
+      }
+    }
+  }'
+----
+
+IMPORTANT: The secret must exist before it is referenced in the `CheCluster` custom resource. The Operator validates the secret on create and update and rejects the change if the secret is missing or incomplete.
 
 [id="disabling-the-managed-open-vsx-registry"]
 == Disabling the managed Open VSX registry
