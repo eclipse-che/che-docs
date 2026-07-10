@@ -198,6 +198,23 @@ The secret must contain all of the following keys:
 
 IMPORTANT: The secret must exist before it is referenced in the `CheCluster` custom resource. The Operator validates the secret on create and update and rejects the change if the secret is missing or incomplete.
 
+[id="customizing-the-open-vsx-server-configuration"]
+== Customizing the Open VSX server configuration
+
+The Operator creates an `openvsx-server` `ConfigMap` with a default `application.yml` configuration when the managed registry is first enabled. This `ConfigMap` is user-editable: the Operator creates it once and does not overwrite subsequent changes. Modifying the `ConfigMap` automatically triggers a rolling restart of the Open VSX server pod.
+
+.Procedure
+
+. Edit the `openvsx-server` `ConfigMap`:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} edit configmap openvsx-server \
+  --namespace {prod-namespace}
+----
++
+The `ConfigMap` contains a single `application.yml` key with the Open VSX Spring Boot configuration.
+
 [id="disabling-the-managed-open-vsx-registry"]
 == Disabling the managed Open VSX registry
 
