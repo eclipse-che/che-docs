@@ -1,0 +1,292 @@
+:_content-type: PROCEDURE
+:description: Synchronize resources across user namespaces
+:keywords: administration guide, configuring, user, namespace
+:navtitle: Synchronize resources across user namespaces
+:page-aliases: administration-guide:configuring-a-user-namespace.adoc
+
+[id="configuring-a-user-namespace"]
+= Synchronize resources across user namespaces
+
+
+Synchronize ConfigMaps, Secrets, and PVCs from a central {orch-namespace} to every user {orch-namespace}, so developers automatically receive shared resources.
+
+If you make changes to a {kubernetes} resource in an {prod-namespace} namespace,
+{prod-short} will immediately synchronize the changes across all users namespaces.
+In reverse, if a {kubernetes} resource is modified in a user namespace,
+{prod-short} will immediately revert the changes.
+
+[WARNING]
+====
+Applying or modifying a `Secret` or `ConfigMap` with the `controller.devfile.io/mount-to-devworkspace: 'true'` label restarts all running workspaces in the {namespace}.
+
+To mount the `Secret` or `ConfigMap` only at workspace start and prevent automatic restarts, add the `controller.devfile.io/mount-on-start: 'true'` annotation.
+====
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+* The {kubernetes} resources (ConfigMaps, Secrets, or PVCs) that you want to distribute to all user namespaces are prepared.
+
+.Procedure
+
+. Create the `ConfigMap` below to create and mount it into every workspace.
++
+====
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {prod-id-short}-user-configmap
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+data:
+  ...
+----
+====
+Optional: Use annotations to configure how the ConfigMap is mounted.
++
+.Optional annotations
+|===
+|Annotation | Description
+
+|`che.eclipse.org/sync-retain-on-delete:`
+| When set to `"true"`, the ConfigMap is retained in a user {namespace} after being deleted from {prod-namespace} namespace.
+
+|`controller.devfile.io/mount-on-start:`
+| When set to `"true"`, the ConfigMap is mounted only at workspace start. This prevents workspace restarts when the ConfigMap is created.
+
+|`controller.devfile.io/mount-to-devworkspace-include:`
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted only to workspaces whose names match at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
+
+|`controller.devfile.io/mount-to-devworkspace-exclude:`
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted to all workspaces except those whose names at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
+|===
++
+[NOTE]
+====
+When both annotations `controller.devfile.io/mount-to-devworkspace-include`
+and `controller.devfile.io/mount-to-devworkspace-exclude` are set, the resource is
+mounted only to workspaces that match the include pattern and do not match the exclude pattern.
+====
++
+For other labels and annotations, see link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Mounting volumes, configmaps, and secrets].
++
+For example, to mount a default SSH configuration into every workspace, you must create a ConfigMap:
++
+====
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ssh-config-configmap
+  namespace: eclipse-che
+  labels:
+    app.kubernetes.io/component: workspaces-config
+    app.kubernetes.io/part-of: che.eclipse.org
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /etc/ssh/ssh_config.d/
+data:
+  ssh.conf: <ssh config content>
+----
+====
++
+This **ConfigMap** propagates the SSH configuration as an extension to the existing default SSH configuration by using the `Include /etc/ssh/ssh_config.d/*.conf` argument. For more information, review the link:https://man.openbsd.org/ssh_config#Include[Include] definition.
+
+
+. Create the `Secret` below to create and mount it into every workspace.
++
+====
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: {prod-id-short}-user-secret
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+stringData:
+    ...
+----
+====
+Optional: Use annotations to configure how the Secret is mounted.
++
+.Optional annotations
+|===
+|Annotation | Description
+
+|`che.eclipse.org/sync-retain-on-delete:`
+| When set to `"true"`, the Secret is retained in a user {namespace} after being deleted from {prod-namespace} namespace.
+
+|`controller.devfile.io/mount-on-start:`
+| When set to `"true"`, the Secret is mounted only at workspace start. This prevents workspace restarts when the Secret is created.
+
+|`controller.devfile.io/mount-to-devworkspace-include:`
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted only to workspaces whose names match at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
+
+|`controller.devfile.io/mount-to-devworkspace-exclude:`
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted to all workspaces except those whose names at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
+|===
++
+[NOTE]
+====
+When both annotations `controller.devfile.io/mount-to-devworkspace-include`
+and `controller.devfile.io/mount-to-devworkspace-exclude` are set, the resource is
+mounted only to workspaces that match the include pattern and do not match the exclude pattern.
+====
++
+For other labels and annotations, see link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Mounting volumes, configmaps, and secrets].
+
+. Create the `PersistentVolumeClaim` below to create it to every user {orch-namespace}.
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {prod-id-short}-user-pvc
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+spec:
+  ...
+----
++
+Optional: Use annotations to configure how the `PersistentVolumeClaim` is mounted.
++
+[NOTE]
+====
+The `PersistentVolumeClaim` is not deleted in a user {namespace} by default, if the one from {prod-namespace} is deleted.
+====
++
+.Optional annotations
+|===
+|Annotation | Description
+
+|`che.eclipse.org/sync-retain-on-delete:`
+| When set to `"false"`, the `PersistentVolumeClaim` is deleted in a user {namespace} when it is deleted from {prod-namespace} namespace.
+
+|`controller.devfile.io/mount-on-start:`
+| When set to `"true"`, the `PersistentVolumeClaim` is mounted only at workspace start. This prevents workspace restarts when the `PersistentVolumeClaim` is created.
+
+|`controller.devfile.io/mount-to-devworkspace-include:`
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted only to workspaces whose names match at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
+
+|`controller.devfile.io/mount-to-devworkspace-exclude:`
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted to all workspaces except those whose names at least one pattern.
+Patterns support exact match, prefix (name*), suffix (\*name), contains (*name*).
+|===
++
+[NOTE]
+====
+When both annotations `controller.devfile.io/mount-to-devworkspace-include`
+and `controller.devfile.io/mount-to-devworkspace-exclude` are set, the resource is
+mounted only to workspaces that match the include pattern and do not match the exclude pattern.
+====
++
+For other labels and annotations, see link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Mounting volumes, configmaps, and secrets].
+. To use the OpenShift Kubernetes Engine, you can create a `Template` object to replicate all resources defined within the template across each user {orch-namespace}.
++
+Aside from the previously mentioned `ConfigMap`, `Secret`, and `PersistentVolumeClaim`, `Template` objects can include:
++
+* `LimitRange`
+* `NetworkPolicy`
+* `ResourceQuota`
+* `Role`
+* `RoleBinding`
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: {prod-id-short}-user-namespace-configurator
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+objects:
+  ...
+parameters:
+- name: PROJECT_NAME
+- name: PROJECT_ADMIN_USER
+
+----
++
+The `parameters` are optional and define which parameters can be used. Currently, only `PROJECT_NAME` and `PROJECT_ADMIN_USER` are supported. `PROJECT_NAME` is the name of the {prod-short} {namespace}, while `PROJECT_ADMIN_USER` is the {prod-short} user of the {namespace}.
++
+The {namespace} name in objects will be replaced with the user's {namespace} name during synchronization.
++
+.Replicating {kubernetes} resources to a user {orch-namespace}:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: {prod-id-short}-user-namespace-configurator
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+objects:
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: {prod-id-short}-user-resource-quota
+  spec:
+    ...
+- apiVersion: v1
+  kind: LimitRange
+  metadata:
+    name: {prod-id-short}-user-resource-constraint
+  spec:
+    ...
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    name: {prod-id-short}-user-roles
+  rules:
+    ...
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: {prod-id-short}-user-rolebinding
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: {prod-id-short}-user-roles
+  subjects:
+  - kind: User
+    apiGroup: rbac.authorization.k8s.io
+    name: $\{PROJECT_ADMIN_USER}
+parameters:
+- name: PROJECT_ADMIN_USER
+----
++
+[NOTE]
+====
+Creating Template {kubernetes} resources is supported only on OpenShift.
+====
+
+[role="_additional-resources"]
+.Additional resources
+* xref:end-user-guide:mounting-configmaps.adoc[]
+* xref:end-user-guide:mounting-secrets.adoc[]
+* xref:end-user-guide:requesting-persistent-storage-for-workspaces.adoc[]
+* link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
+* link:https://docs.openshift.com/container-platform/latest/rest_api/template_apis/template-template-openshift-io-v1.html[OpenShift API reference for `Template`]
+* link:https://docs.openshift.com/container-platform/latest/applications/projects/configuring-project-creation.html[Configuring OpenShift project creation]

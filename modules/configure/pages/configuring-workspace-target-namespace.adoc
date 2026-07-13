@@ -1,0 +1,67 @@
+:_content-type: PROCEDURE
+:description: Set the workspace namespace naming convention
+:keywords: administration guide, configuring, namespace
+:navtitle: Set the workspace namespace naming convention
+:page-aliases:
+
+[id="configuring-a-user-{orch-namespace}-name-for-automatic-provisioning"]
+= Set the workspace namespace naming convention
+
+
+Set the {orch-namespace} name template that {prod-short} uses when creating a workspace {orch-namespace}. This controls the naming convention for all auto-provisioned user namespaces.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+A valid {orch-namespace} name template follows these conventions:
+
+* The `<username>` or `<userid>` placeholder is mandatory.
+
+* Usernames and IDs cannot contain invalid characters. If the formatting of a username or ID is incompatible with the naming conventions for {orch-name} objects, {prod-short} changes the username or ID to a valid name by replacing incompatible characters with the `-` symbol. 
+
+* {prod-short} evaluates the `<userid>` placeholder into a 14 character long string, and adds a random six character long suffix to prevent IDs from colliding. The result is stored in the user preferences for reuse.
+
+* {kubernetes} limits the length of a {orch-namespace} name to 63 characters. 
+
+* OpenShift limits the length further to 49 characters.
+
+
+
+.Procedure
+
+* Configure the `CheCluster` Custom Resource. See xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+spec:
+  components:
+    devEnvironments:
+      defaultNamespace:
+        template: __<workspace_namespace_template_>__
+----
++
+.User workspaces {orch-namespace} name template examples
+====
+[%header,cols="1,1"]  
+|=== 
+|User workspaces {orch-namespace} name template
+|Resulting {orch-namespace} example
+
+|`<username>-{prod-id-short}` (default)
+|user1-{prod-id-short}
+
+|`<userid>-namespace` 
+|`cge1egvsb2nhba-namespace-ul1411` 
+
+|`<userid>-aka-<username>-namespace`
+|`cgezegvsb2nhba-aka-user1-namespace-6m2w2b`
+|=== 
+====
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:install:using-chectl-to-configure-the-checluster-custom-resource-during-installation.adoc[]
+
+* xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]

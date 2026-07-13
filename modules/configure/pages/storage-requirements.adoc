@@ -1,0 +1,31 @@
+:_content-type: CONCEPT
+:description: {prod-short} workspaces store project files in a hierarchical directory structure and require specific storage capabilities depending on the selected strategy.
+:keywords: administration guide, storage-requirements
+:navtitle: What storage your workspaces need
+:page-aliases:
+
+[id="storage-requirements"]
+= What storage your workspaces need
+
+{prod-short} workspaces store project files in a hierarchical directory structure and require specific storage capabilities depending on the selected strategy.
+
+
+All workspace storage must use `volumeMode: FileSystem`.
+
+The `per-user` storage strategy shares a single Persistent Volume Claim (PVC) across all of a user's workspaces. This requires `ReadWriteMany` (RWX) access mode so that multiple workspace pods can mount the same volume simultaneously.
+
+== Choosing a storage backend for the Per-User strategy
+
+Generic NFS provisioning supports RWX access but has two operational limitations:
+
+* *Quota enforcement:* {kubernetes} PVCs cannot reliably enforce storage quotas on generic NFS volumes. A single workspace can exceed its allocation and consume the entire shared volume, causing instability for all users on that node.
+
+* *Data integrity:* Generic NFS implementations often lack the locking and cache coherency required when multiple cluster nodes access the same volume concurrently.
+
+To avoid these issues, use a certified clustered or managed storage solution with a CSI driver that enforces quota limits and provides high-performance RWX file access. Most cloud providers offer suitable CSI drivers, and community-supported distributed storage projects are also available. For instructions on configuring the storage strategy and storage classes, see Additional resources.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:configuring-the-storage-strategy.adoc[]
+* xref:configuring-storage-classes.adoc[]

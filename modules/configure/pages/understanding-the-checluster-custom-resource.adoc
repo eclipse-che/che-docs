@@ -1,0 +1,31 @@
+:_content-type: CONCEPT
+:description: Understand how {prod-short} behavior is controlled through the CheCluster Custom Resource, the single configuration object parameterized by the {prod} Operator.
+:keywords: administration guide, understanding-the-checluster-custom-resource, configuring-che
+:navtitle: How the central configuration works
+:page-aliases: installation-guide:understanding-the-checluster-custom-resource.adoc, installation-guide:configuring-the-che-installation.adoc, administration-guide:configuring-che.adoc, installation-guide:configuring-che.adoc, installation-guide:advanced-configuration.adoc, installation-guide:advanced-configuration-options.adoc
+
+[id="understanding-the-checluster-custom-resource"]
+= How the central configuration works
+
+
+A default deployment of {prod-short} consists of a `CheCluster` Custom Resource parameterized by the {prod} Operator.
+
+
+The `CheCluster` Custom Resource is a {kubernetes} object. You can configure it by editing the `CheCluster` Custom Resource YAML file. This file contains sections to configure each component: `devWorkspace`, `cheServer`, `pluginRegistry`, `devfileRegistry`, `dashboard` and `imagePuller`.
+
+The {prod} Operator translates the `CheCluster` Custom Resource into a config map usable by each component of the {prod-short} installation.
+
+The {orch-name} platform applies the configuration to each component, and creates the necessary Pods. When {orch-name} detects changes in the configuration of a component, it restarts the Pods accordingly. For background on {orch-name} Operators and Custom Resources, see Additional resources.
+
+For example, to configure the main properties of the {prod-short} server component:
+
+. Apply the `CheCluster` Custom Resource YAML file with suitable modifications in the `cheServer` component section.
+. The Operator generates the `che` `ConfigMap`.
+. {orch-name} detects changes in the `ConfigMap` and triggers a restart of the {prod-short} Pod.
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://docs.openshift.com/container-platform/latest/operators/understanding/olm-what-operators-are.html[Understanding Operators]
+
+* {link-understanding-custom-resources}

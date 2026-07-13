@@ -1,0 +1,77 @@
+:_content-type: PROCEDURE
+:description: Route traffic through a proxy by creating a Secret for proxy credentials and setting the proxy configuration in the CheCluster custom resource.
+:keywords: administration guide, proxy, networking
+:navtitle: Route traffic through a proxy
+:page-aliases:
+
+[id="configuring-proxy"]
+= Route traffic through a proxy
+
+
+Route {prod-short} traffic through a corporate proxy when direct internet access is restricted. Create a proxy credentials Secret and configure the CheCluster Custom Resource.
+
+On OpenShift cluster, you do not need to configure proxy settings. {prod-short} Operator automatically uses OpenShift cluster-wide proxy configuration. However, you can override the proxy settings by specifying them  in the CheCluster custom resource.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+* The proxy server URL, port, and (if the proxy requires authentication) the username and password.
+
+.Procedure
+
+. (OPTIONAL) Create a Secret in the {prod-namespace} {namespace} that contains a user and password for a proxy server. The secret must have the `app.kubernetes.io/part-of=che.eclipse.org` label. Skip this step if the proxy server does not require authentication.
++
+[source,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} apply -f - <<EOF
+kind: Secret
+apiVersion: v1
+metadata:
+  name: {prod-id-short}-proxy-credentials
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+type: Opaque
+stringData:
+  user: __<user>__          <1>
+  password: __<password>__  <2>
+EOF
+----
+<1> The username for the proxy server.
+<2> The password for the proxy server.
+
+. Configure the proxy or override the cluster-wide proxy configuration for an OpenShift cluster by setting the following properties in the CheCluster custom resource:
++
+[source,subs="+quotes,attributes,macros"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+    --namespace {prod-namespace} \
+    --type='merge' -p \
+'{"spec":
+    {"components":
+        {"cheServer":
+            {"proxy":
+                {"credentialsSecretName" : "__<secretName>__",                      <1>
+                 "nonProxyHosts"         : ["__<host_1>__"],                        <2>
+                 "port"                  : "__<port>__",                            <3>
+                 "url"                   : "__<protocol>__://__<domain>__"}}}}}'    <4>
+----
+<1> The credentials secret name created in the previous step.
+<2> The list of hosts that can be reached directly, without using the proxy. Use the following form `.<DOMAIN>` to specify a wildcard domain. {prod-short} Operator automatically adds .svc and Kubernetes service host to the list of non-proxy hosts. In OpenShift, {prod-short} Operator combines the non-proxy host list from the cluster-wide proxy configuration with the custom resource. In some proxy configurations, `localhost` might not translate to `127.0.0.1`. Both `localhost` and `127.0.0.1` should be specified in this situation.
+<3> The port of the proxy server.
+<4> Protocol and domain of the proxy server.
+
+
+.Verification
+
+. Start a workspace
+
+. Verify that the workspace pod contains `HTTP_PROXY`, `HTTPS_PROXY`, `http_proxy` and `https_proxy` environment variables, each set to `<protocol>://<user>:<password>@<domain>:<port>`.
+
+. Verify that the workspace pod contains `NO_PROXY` and `no_proxy` environment variables, each set to comma-separated list of non-proxy hosts.
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://docs.openshift.com/container-platform/latest/networking/enable-cluster-wide-proxy.html[Configuring the cluster-wide proxy on OpenShift]

@@ -1,0 +1,30 @@
+:_content-type: ASSEMBLY
+:description: Use the fuse-overlayfs storage driver for Podman and Buildah in the Universal Developer Image (UDI) instead of the default vfs driver, which does not provide copy-on-write support.
+:keywords: administration-guide, fuse-overlayfs, podman, buildah, container builds
+:navtitle: When to enable fuse-overlayfs
+:page-aliases: administration-guide:configuring-fuse.adoc
+
+[id="configuring-fuse-overlayfs"]
+= When to enable fuse-overlayfs
+
+
+By default, the Universal Developer Image (UDI) contains Podman and Buildah which you can use to build and push container images within a workspace.
+However, Podman and Buildah in the UDI are configured to use the `vfs` storage driver which does not provide copy-on-write support.
+For more efficient image management, use the fuse-overlayfs storage driver which supports copy-on-write in rootless environments.
+
+This page is for platform administrators who enable fuse-overlayfs cluster-wide, and for developers who want to enable it for individual workspaces. To learn more about common roles and example tasks, see Additional resources.
+
+To enable fuse-overlayfs for workspaces for OpenShift versions older than 4.15, the administrator must first enable `/dev/fuse` access on the cluster. For details, see Additional resources.
+
+This is not necessary for OpenShift versions 4.15 and later, since the `/dev/fuse` device is available by default.
+
+After enabling `/dev/fuse` access, fuse-overlayfs can be enabled for all user workspaces within the cluster, or for workspaces belonging to certain users. For details on each approach, see Additional resources.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:discover:roles-and-tasks.adoc[]
+* xref:enabling-access-to-dev-fuse-for-openshift.adoc[]
+* link:https://docs.openshift.com/container-platform/4.15/release_notes/ocp-4-15-release-notes.html#ocp-4-15-nodes-dev-fuse[OpenShift 4.15 release notes: /dev/fuse available by default]
+* xref:enabling-fuse-for-all-workspaces.adoc[]
+* xref:end-user-guide:using-the-fuse-overlay-storage-driver.adoc[]
