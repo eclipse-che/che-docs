@@ -1,5 +1,5 @@
 :_content-type: PROCEDURE
-:description: Enable the operator-managed Open VSX registry to deploy a dedicated Open VSX server and PostgreSQL database as {prod} operands
+:description: Enable the Operator-managed Open VSX registry to deploy a dedicated Open VSX server and PostgreSQL database as {prod} operands
 :keywords: administration guide, openvsx, registry, extensions, managed, operator
 :navtitle: Enable the managed Open VSX registry
 :page-aliases:
@@ -218,8 +218,12 @@ The `ConfigMap` contains a single `application.yml` key with the Open VSX Spring
 [id="disabling-the-managed-open-vsx-registry"]
 == Disabling the managed Open VSX registry
 
-To remove the managed Open VSX registry and all its resources, set the `enable` field to `false`:
+Disable the managed Open VSX registry to remove the Open VSX server, PostgreSQL database, and all associated resources from the {orch-namespace}.
 
+.Procedure
+
+. Set the `enable` field to `false`:
++
 [source,shell,subs="+quotes,+attributes,+macros"]
 ----
 {orch-cli} patch checluster {prod-checluster} \
@@ -235,7 +239,7 @@ To remove the managed Open VSX registry and all its resources, set the `enable` 
     }
   }'
 ----
-
++
 The Operator removes all managed Open VSX resources, including deployments, services, persistent volume claims, and secrets.
 
 [role="_additional-resources"]
