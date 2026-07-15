@@ -1,0 +1,74 @@
+:_content-type: PROCEDURE
+:description: Mount your Git configuration into workspaces to set your Git identity and preferences.
+:keywords: Git, config
+:navtitle: Mount Git configuration
+:page-aliases:
+
+[id="mounting-git-configuration"]
+= Mount Git configuration
+
+[role="_abstract"]
+Mount your Git configuration into workspaces to set your Git identity and preferences.
+
+
+[NOTE]
+====
+The `user.name` and `user.email` fields are set automatically to the `gitconfig` content from a git provider that is connected to {prod-short}. This connection requires a xref:end-user-guide:using-a-git-provider-access-token.adoc[Git-provider access token] or a token generated via OAuth, and you must set the username and email on the provider's user profile page.
+====
+
+.Prerequisites
+
+* You have an active `{orch-cli}` session with your {orch-namespace}. See {orch-cli-link}.
+
+.Procedure
+
+. Create a ConfigMap with your Git configuration:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: workspace-userdata-gitconfig-configmap
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /home/user
+data:
+  .gitconfig: |
+    [user]
+      name = Your Name
+      email = your.email@example.com
+    [core]
+      editor = vim
+    [pull]
+      rebase = true
+----
+
+. Apply the ConfigMap to your {orch-namespace}:
++
+[source,bash,subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f gitconfig.yaml -n __<your_namespace>__
+----
+
+. Start or restart your workspace.
+
+.Verification
+
+. Open a terminal in your workspace.
+. Verify the Git configuration:
++
+[source,bash,subs="+quotes,+attributes"]
+----
+$ git config --list
+----
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:using-credentials-and-configurations-in-workspaces.adoc[]
+* xref:mounting-secrets.adoc[]
+* xref:creating-image-pull-secrets.adoc[]

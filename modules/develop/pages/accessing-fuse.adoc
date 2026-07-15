@@ -1,0 +1,60 @@
+:_content-type: PROCEDURE
+:description: Access /dev/fuse in workspace containers to use fuse-overlayfs as a storage driver for Podman.
+:keywords: user-guide, fuse, overlay, device, /dev/fuse, pod, overrides
+:navtitle: Access /dev/fuse in workspace containers
+:page-aliases:
+
+[id="accessing-fuse"]
+= Access /dev/fuse in workspace containers
+
+[role="_abstract"]
+Access `/dev/fuse` in workspace containers to use fuse-overlayfs as a storage driver for Podman.
+
+
+.Prerequisites
+
+* For {orch-name} versions older than 4.15: you have administrator-enabled access to `/dev/fuse`. See xref:administration-guide:configuring-fuse.adoc[Configuring fuse-overlayfs].
+* You have identified a workspace to use with fuse-overlayfs.
+
+.Procedure
+
+. Use the `pod-overrides` attribute to add the required annotations defined in xref:administration-guide:configuring-fuse.adoc[Configuring fuse-overlayfs] to the workspace. The `pod-overrides` attribute allows merging certain fields in the workspace pod's `spec`.
++
+*For {orch-name} versions older than 4.15:*
++
+[source,bash,subs="+quotes,+attributes,+macros"]
+----
+$ {orch-cli} patch devworkspace __<DevWorkspace_name>__ \
+  --patch '{"spec":{"template":{"attributes":{"pod-overrides":{"metadata":{"annotations":{"io.kubernetes.cri-o.Devices":"/dev/fuse","io.openshift.podman-fuse":""}}}}}}}' \
+  --type=merge
+----
++
+*For {orch-name} version 4.15 and later:*
++
+[source,bash,subs="+quotes,+attributes,+macros"]
+----
+$ {orch-cli} patch devworkspace __<DevWorkspace_name>__ \
+  --patch '{"spec":{"template":{"attributes":{"pod-overrides":{"metadata":{"annotations":{"io.kubernetes.cri-o.Devices":"/dev/fuse"}}}}}}}' \
+  --type=merge
+----
+
+.Verification
+
+. Start the workspace and verify that `/dev/fuse` is available in the workspace container:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ stat /dev/fuse
+----
+
+[role="_additional-resources"]
+.Next steps
+
+* xref:enabling-overlay-with-a-configmap.adoc[]
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:using-the-fuse-overlay-storage-driver.adoc[]
+* xref:running-containers-with-kubedock.adoc[]
+* xref:enabling-overlay-with-a-configmap.adoc[]

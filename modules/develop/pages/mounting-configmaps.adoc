@@ -1,0 +1,139 @@
+:_content-type: PROCEDURE
+:description: Mount {kubernetes} ConfigMaps into workspace containers to provide non-sensitive configuration data.
+:keywords: user-guide, configuring, user, configmaps, configmap, mounting, mount
+:navtitle: Mount ConfigMaps
+:page-aliases:
+
+[id="mounting-configmaps"]
+= Mount ConfigMaps
+
+[role="_abstract"]
+Mount {kubernetes} ConfigMaps into workspace containers to provide non-sensitive configuration data.
+
+
+.Prerequisites
+
+* You have an active `{orch-cli}` session with your {orch-namespace}. See {orch-cli-link}.
++
+[WARNING]
+====
+By default, applying a `ConfigMap` with the `controller.devfile.io/mount-to-devworkspace: 'true'` label restarts all running workspaces in the {orch-namespace}. To mount the ConfigMap only at workspace start and prevent automatic restarts, add the `controller.devfile.io/mount-on-start: 'true'` annotation.
+====
+
+.Procedure
+
+. Create a ConfigMap with the required labels and annotations:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: my-config
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+  annotations:
+    controller.devfile.io/mount-as: file
+    controller.devfile.io/mount-path: /etc/my-config
+data:
+  settings.json: |
+    {
+      "editor.fontSize": 14,
+      "editor.tabSize": 2
+    }
+----
++
+where:
++
+`controller.devfile.io/mount-to-devworkspace`:: Required label to mount the ConfigMap to all workspaces.
++
+`controller.devfile.io/watch-configmap`:: Watch the ConfigMap for changes and update mounted files.
++
+`controller.devfile.io/mount-as`:: Mount type: `file`, `subpath`, or `env`.
++
+`controller.devfile.io/mount-path`:: Path where the ConfigMap data is mounted.
+
+. Apply the ConfigMap to your {orch-namespace}:
++
+[source,bash,subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f my-config.yaml -n __<your_namespace>__
+----
+
+. Optional: Add annotations to the ConfigMap to customize the mounting behavior.
++
+.ConfigMap mounting annotations
+[cols="1,2",options="header"]
+|===
+| Annotation | Description
+
+| `controller.devfile.io/mount-path: __<path>__`
+| Overrides the default mount path. The default mount path is `/etc/config/__<ConfigMap_name>__`.
+
+| `controller.devfile.io/mount-as: file`
+| Each key in the ConfigMap data becomes a file in the mount path directory.
+
+| `controller.devfile.io/mount-as: subpath`
+| Similar to `file`, but uses subPath volumes for better compatibility.
+
+| `controller.devfile.io/mount-as: env`
+| Each key-value pair becomes an environment variable in all workspace containers.
+
+| `controller.devfile.io/mount-on-start: 'true'`
+| When set to `true`, the ConfigMap is mounted only when a workspace starts, not while it is already running. This prevents workspace restarts when the ConfigMap is created.
+
+| `controller.devfile.io/mount-to-devworkspace-include:`
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted only to workspaces whose names match at least one pattern.
+
+| `controller.devfile.io/mount-to-devworkspace-exclude:`
+| Specifies a comma-separated list of `{devworkspace}` name patterns. When set, the ConfigMap is mounted to all workspaces except those whose names match a pattern.
+|===
++
+[NOTE]
+====
+When both `controller.devfile.io/mount-to-devworkspace-include` and `controller.devfile.io/mount-to-devworkspace-exclude` annotations are set, the ConfigMap is mounted only to workspaces that match the include pattern and do not match the exclude pattern.
+====
++
+For example, to mount ConfigMap data as environment variables:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: my-env-config
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+  annotations:
+    controller.devfile.io/mount-as: env
+data:
+  LOG_LEVEL: debug
+  MAX_CONNECTIONS: "100"
+----
+
+. Start or restart your workspace to apply the mounted ConfigMap.
+
+.Verification
+
+* For `file` or `subpath` mounts, verify the ConfigMap data is available at the mount path:
++
+[source,bash,subs="+quotes,+attributes"]
+----
+$ cat /etc/my-config/settings.json
+----
+
+* For `env` mounts, verify the environment variables are set:
++
+[source,bash,subs="+quotes,+attributes"]
+----
+$ echo $LOG_LEVEL
+----
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:using-credentials-and-configurations-in-workspaces.adoc[]
+* xref:mounting-secrets.adoc[]
+* xref:creating-image-pull-secrets.adoc[]
