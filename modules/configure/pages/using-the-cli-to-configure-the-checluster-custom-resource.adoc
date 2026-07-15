@@ -1,0 +1,46 @@
+:_content-type: PROCEDURE
+:description: Edit the CheCluster Custom Resource YAML file to customize the behavior of a running {prod-short} instance for your environment.
+:keywords: administration guide
+:navtitle: Edit the central configuration from the command line
+:page-aliases: installation-guide:using-the-cli-to-configure-the-checluster-custom-resource.adoc, installation-guide:using-cli-to-configure-the-checluster-custom-resource.adoc
+
+[id="using-the-cli-to-configure-the-checluster-custom-resource"]
+= Edit the central configuration from the command line
+
+
+Edit the `CheCluster` Custom Resource YAML file to configure a running instance of {prod-short} from the command line.
+
+
+.Prerequisites
+
+* An instance of {prod-short} on {platforms-name}.
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Edit the CheCluster Custom Resource on the cluster:
++
+[subs="+attributes"]
+----
+$ {orch-cli} edit checluster/{prod-checluster} -n {prod-namespace}
+----
+
+. Save and close the file to apply the changes.
+
+.Verification
+
+. Verify the value of the configured property:
++
+[subs="+attributes,quotes"]
+----
+$ {orch-cli} get configmap che -o jsonpath='{.data._<configured_property>_}' \
+-n {prod-namespace}
+----
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:checluster-custom-resource-fields-reference.adoc[].
+
+* xref:advanced-configuration-options-for-the-che-server-component.adoc[].

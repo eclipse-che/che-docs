@@ -1,0 +1,49 @@
+:_content-type: ASSEMBLY
+:description: Back up {devworkspace} workspace data to an OCI-compatible registry on a recurring schedule.
+:keywords: backup, storage
+:navtitle: Back up workspaces
+//:page-aliases:
+
+[id="devworkspace-backup"]
+= Back up workspaces
+
+
+Back up {devworkspace} workspace data to an OCI-compatible registry on a recurring schedule.
+The backup controller requires an OCI-compliant registry, such as the Red Hat OpenShift built-in registry or Quay.io, to store backup archives as image artifacts. For details about supported registries, see Additional resources.
+
+
+
+The backup makes a snapshot of *stopped* Workspace PVCs and stores them as tar.gz archives in the specified OCI registry.
+
+Users can restore backups from the {prod-short} dashboard. For more information about restoring workspaces, see Additional resources.
+
+[NOTE]
+====
+By default, the {devworkspace} backup job is disabled.
+====
+
+You can configure the backup by using the `DevWorkspaceOperatorConfig` resource with the following fields:
+
+* `enable`: Set to `true` to enable the backup job or `false` to disable it. The default value is `false`.
+* `schedule`: A Cron expression that defines the backup frequency. The default value is `"0 1 * * *"`.
+* `backoffLimit`: The value of the backup job's `spec.backoffLimit`, which specifies the number of retries before marking this job failed. The default value for the backups jobs is `1`.
+* `registry.path`: The base registry location for backup archives.
++
+The value for `registry.path` is the first segment of the final location. The full path is assembled dynamically by using the workspace name and the `:latest` tag in the following pattern:
++
+`<registry.path>/<namespace>/<devworkspace-name>:latest`
+
+* `registry.authSecret`: (Optional) The name of the Kubernetes secret that contains credentials for the OCI registry. If you do not provide a secret, the system assumes the registry is public or uses the **Red Hat OpenShift** integrated registry.
+* `oras.extraArgs`: (Optional) Additional arguments for to the `oras` CLI tool during push and pull operations.
+
+
+For details on each configuration option, see Additional resources.
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://docs.redhat.com/en/documentation/openshift_container_platform/{ocp4-ver}/html/registry/registry-overview#registry-integrated-openshift-registry_registry-overview[Red Hat OpenShift built-in registry]
+* link:https://quay.io[Quay.io]
+* xref:end-user-guide:restoring-workspaces-from-backups.adoc[]
+* xref:devworkspace-backup-integrated-openshift-registry.adoc[]
+* xref:devworkspace-backup-regular-oci-registry.adoc[]

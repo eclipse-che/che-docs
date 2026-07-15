@@ -1,0 +1,43 @@
+// configuring-server-logging
+
+[id="configuring-log-levels"]
+== Set server log levels
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+* Configure the `CheCluster` Custom Resource. See xref:configure:using-the-cli-to-configure-the-checluster-custom-resource.adoc[].
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+spec:
+  components:
+    cheServer:
+      extraProperties:
+        CHE_LOGGER_CONFIG: "__<key1=value1,key2=value2>__" <1>
+----
+<1> Comma-separated list of key-value pairs, where keys are the names of the loggers as seen
+in the {prod-short} server log output and values are the required log levels.
++
+.Configuring debug mode for the `WorkspaceManager`
+====
+[source,yaml]
+----
+spec:
+  components:
+    cheServer:
+      extraProperties:
+        CHE_LOGGER_CONFIG: "org.eclipse.che.api.workspace.server.WorkspaceManager=DEBUG"
+----
+====
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:install:using-chectl-to-configure-the-checluster-custom-resource-during-installation.adoc[]
+
+* xref:configure:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]
+

@@ -1,0 +1,44 @@
+:page-aliases: administration-guide:configuring-allowed-urls-for-cloud-development-environments.adoc
+:_content-type: PROCEDURE
+:description: Restrict Cloud Development Environment (CDE) initiation to authorized source URLs, protecting your infrastructure from untrusted deployments.
+:keywords: administration guide, configuring-allowed-sources
+:navtitle: Restrict which URLs can create workspaces
+
+[id="configuring-allowed-urls-for-cloud-development-environments"]
+= Restrict which URLs can create workspaces
+
+
+Restrict which source URLs can create Cloud Development Environments (CDEs), so that workspaces can only be launched from authorized repositories. Wildcard patterns such as `https://example.com/*` allow all paths within a domain.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+
+.Procedure
+
+. Configure allowed sources:
++
+[source,subs="+quotes,+attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+    --namespace {prod-namespace} \
+    --type='merge' \
+    -p \
+'{
+   "spec": {
+     "devEnvironments": {
+       "allowedSources": {
+         "urls": ["url_1", "url_2"] <1>
+       }
+     }
+   }
+ }'
+----
+
+<1> The array of approved URLs for starting Cloud Development Environments (CDEs). CDEs can only be initiated from these URLs. Wildcards `\*` are supported in URLs. For example, `https://example.com/*` would allow CDEs to be initiated from any path within `example.com`.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]

@@ -1,0 +1,51 @@
+:_content-type: PROCEDURE
+:description: Set a custom domain for workspace URLs
+:keywords: administration guide, workspaces, networking, endpoints, domain
+:navtitle: Set a custom domain for workspace URLs
+:page-aliases:
+
+[id="configuring-workspaces-endpoints-base-domain"]
+= Set a custom domain for workspace URLs
+
+
+Set the base domain used for workspace endpoint URLs when you need workspace routes served from a different domain than the dashboard.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+* A DNS domain name configured to resolve to the cluster ingress where workspace routes will be served.
+
+By default, {prod-short} Operator automatically detects the base domain. To change it, you need to configure the `CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX` property in the `CheCluster` Custom Resource.
+[source,yaml]
+----
+spec:
+  components:
+    cheServer:
+      extraProperties:
+        CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX: "<...>" <1>
+
+----
+
+<1> Workspace endpoints base domain, for example, `my-{prod-id-short}.example.com`.
+
+.Procedure
+
+. Configure the workspace endpoints base domain:
++
+[source,subs="+quotes,attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+    --namespace {prod-namespace} \
+    --type='merge' -p \
+'{"spec":
+    {"components":
+        {"cheServer":
+            {"extraProperties":
+                {"CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX": "my-{prod-id-short}.example.com"}}}}}'
+----
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]
