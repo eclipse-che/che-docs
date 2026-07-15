@@ -1,0 +1,28 @@
+
+[id="starting-stopped-workspaces"]
+= Start stopped workspaces
+
+Start a stopped workspace by setting the `spec.started` field in the `DevWorkspace` custom resource to `true`.
+
+.Prerequisites
+
+* You have an active `{orch-cli}` session on the cluster. See {orch-cli-link}.
+
+* You have the workspace name. Run `{orch-cli} get devworkspaces` to list workspace names.
+
+* You have the relevant {prod-short} user namespace on the cluster. Visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
+
+* You are in the {prod-short} user namespace on the cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Run the following command to start a stopped workspace:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} patch devworkspace __<workspace_name>__ \
+-p '{"spec":{"started":true}}' \
+--type=merge -n __<user_namespace>__ && \
+{orch-cli} wait --for=jsonpath='{.status.phase}'=Running \
+dw/__<workspace_name>__ -n __<user_namespace>__
+----

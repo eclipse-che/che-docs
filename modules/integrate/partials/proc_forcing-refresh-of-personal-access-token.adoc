@@ -1,0 +1,38 @@
+[id="forcing-refresh-of-personal-access-token"]
+= Refresh an expired access token automatically
+
+:_content-type: PROCEDURE
+:description: Refresh expired access tokens automatically on workspace startup so that developers do not encounter authentication failures caused by stale personal access tokens.
+
+Refresh expired access tokens automatically on workspace startup so that developers do not encounter authentication failures caused by stale personal access tokens.
+
+[IMPORTANT]
+====
+This is an experimental feature.
+====
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Modify the `CheCluster` Custom Resource to enable forced token refresh:
++
+[source,yaml]
+----
+spec:
+  components:
+    cheServer:
+      extraProperties:
+        CHE_FORCE_REFRESH_PERSONAL_ACCESS_TOKEN: "true"
+----
+
+.Verification
+
+* Start a new workspace and verify that the personal access token is refreshed by checking the {prod-short} server logs.
+
+.Additional resources
+
+* xref:configuring-oauth-2-for-github.adoc[]
+* xref:configuring-oauth-2-for-gitlab.adoc[]

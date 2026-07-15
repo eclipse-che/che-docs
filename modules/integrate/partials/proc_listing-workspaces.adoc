@@ -1,0 +1,46 @@
+
+[id="listing-workspaces"]
+= List all workspaces
+
+List your workspaces from the command line to check their status, identify stopped or failed workspaces, and monitor resource usage across your {prod-short} environment.
+
+.Prerequisites
+
+* You have an active `{orch-cli}` session with permissions to `get` the `DevWorkspace` resources in your {orch-namespace} on the cluster. See {orch-cli-link}.
+
+* You know the relevant {prod-short} user namespace on the cluster. Visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
+
+* You are in the {prod-short} user namespace on the cluster. See {orch-cli-link}.
+
+.Procedure
+
+. List your workspaces:
++
+[source,subs="+attributes"]
+----
+$ {orch-cli} get devworkspaces
+----
++
+.Output
+====
+----
+NAMESPACE   NAME                 DEVWORKSPACE ID             PHASE     INFO
+user1-dev   spring-petclinic     workspace6d99e9ffb9784491   Running   https://url-to-workspace.com
+user1-dev   golang-example       workspacedf64e4a492cd4701   Stopped   Stopped
+user1-dev   python-hello-world   workspace69c26884bbc141f2   Failed    Container tooling has state CrashLoopBackOff
+----
+====
+
+. Optional: Add the `--watch` flag to show *PHASE* changes live:
++
+[source,subs="+attributes"]
+----
+$ {orch-cli} get devworkspaces --watch
+----
+
+. Optional: Add the `--all-namespaces` flag to list workspaces from all {prod-short} users. This requires administrative permissions on the cluster.
++
+[source,subs="+attributes"]
+----
+$ {orch-cli} get devworkspaces --all-namespaces
+----

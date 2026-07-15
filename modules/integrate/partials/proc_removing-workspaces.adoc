@@ -1,0 +1,29 @@
+
+[id="removing-workspaces"]
+= Remove workspaces
+
+Remove a workspace from the command line by deleting its `DevWorkspace` custom resource. The {prod-short} dashboard is the recommended method for routine operations.
+
+[WARNING]
+====
+Deleting the `DevWorkspace` custom resource also deletes other workspace resources if they were created by {prod-short}: for example, the referenced `DevWorkspaceTemplate` and per-workspace `PersistentVolumeClaims`.
+====
+
+.Prerequisites
+
+* You have an active `{orch-cli}` session on the cluster. See {orch-cli-link}.
+
+* You know the workspace name. Run `{orch-cli} get devworkspaces` to list workspace names.
+
+* You know the relevant {prod-short} user namespace on the cluster. Visit `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`. See {orch-cli-link}.
+
+* You are in the {prod-short} user namespace on the cluster.
+
+.Procedure
+
+* Run the following command to remove a workspace:
++
+[subs="+quotes,attributes"]
+----
+$ {orch-cli} delete devworkspace __<workspace_name>__ -n __<user_namespace>__
+----

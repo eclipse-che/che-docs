@@ -1,0 +1,59 @@
+:_content-type: PROCEDURE
+:description: Enable an npm artifact repository so that Node.js workspaces can install packages from your internal npm registry.
+:keywords: npm, artifact-repository, artifact-repositories
+:navtitle: Enable npm artifact repositories
+:page-aliases: using-npm-artifact-repositories.adoc
+
+[id="enabling-npm-artifact-repositories"]
+= Enable npm artifact repositories
+
+Enable an npm artifact repository so that Node.js workspaces can install packages from your internal npm registry.
+
+.Prerequisites
+
+* You are not running any npm workspace.
+
+include::partial$snip_warning-about-applying-a-configmap-that-sets-environment-variables.adoc[]
+
+.Procedure
+
+. Create a Secret to store the TLS certificate:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: tls-cer
+  annotations:
+    controller.devfile.io/mount-path: /public-certs
+    controller.devfile.io/mount-as: file
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-secret: 'true'
+data:
+  nexus.cer: >-
+    <Base64_encoded_content_of_public_cert>__ <1>
+----
+<1> Base64 encoding with disabled line wrapping.
+
+. Create a ConfigMap to set the following environment variables in the `tools` container:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: disconnected-env
+  annotations:
+    controller.devfile.io/mount-as: env
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+data:
+  NPM_CONFIG_REGISTRY: >-
+    https://__<npm_artifact_repository_route>__/repository/npm-all/
+----
+
+include::partial$proc_disabling-self-signed-certificate-validation.adoc[leveloffset=+1]
+include::partial$proc_restoring-node-extra-ca-certs-variable-value.adoc[leveloffset=+1]
