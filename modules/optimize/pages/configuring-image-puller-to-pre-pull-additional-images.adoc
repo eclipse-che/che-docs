@@ -1,15 +1,13 @@
 :_content-type: PROCEDURE
-:description: Configuring {image-puller-name-short} to pre-pull additional images
+:description: Cache additional images for faster starts
 :keywords: administration-guide, image-puller, CLI
-:navtitle: Configuring {image-puller-name-short} to pre-pull additional images
+:navtitle: Cache additional images for faster starts
 :page-aliases: administration-guide:configuring-image-puller-to-pre-pull-additional-images.adoc
 
 [id="configuring-image-puller-to-pre-pull-additional-images"]
-= Configuring {image-puller-name-short} to pre-pull additional images
+= Cache additional images for faster starts
 
-You can configure {image-puller-name} to pre-pull additional {prod-short} images.
-
-include::partial$snip_persona-admin.adoc[]
+Cache additional images with {image-puller-name} to reduce workspace startup time by ensuring that required images are already cached on each node.
 
 .Prerequisites
 
@@ -39,12 +37,24 @@ metadata:
   name: k8s-image-puller-images
   namespace: {image-puller-namespace}
 spec:
-  images: "__NAME-1__=__IMAGE-1__;__NAME-2__=__IMAGE-2__" <1>
+  images: "__NAME-1__=__IMAGE-1__;__NAME-2__=__IMAGE-2__"
 EOF
 ----
-<1> The semicolon separated list of images
++
+where:
++
+`images`:: The semicolon-separated list of images in `name=image` format.
 
-.Addition resources
+.Verification
+
+* Verify that the image puller `DaemonSet` is running in the `{image-puller-namespace}` namespace:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} get daemonset -n {image-puller-namespace}
+----
+
+.Additional resources
 
 * https://github.com/che-incubator/kubernetes-image-puller[{image-puller-name} source code repository]
 

@@ -1,17 +1,15 @@
 :_content-type: PROCEDURE
-:description: Configuring {image-puller-name-short} to pre-pull default {prod-short} images
+:description: Cache default {prod-short} images on all nodes
 :keywords: administration-guide, image-puller, CLI
-:navtitle: Configuring {image-puller-name-short} to pre-pull default {prod-short} images
+:navtitle: Cache default {prod-short} images on all nodes
 :page-aliases: administration-guide:configuring-image-puller-to-pre-pull-default-che-images.adoc
 
 [id="configuring-image-puller-to-pre-pull-default-che-images"]
-= Configuring {image-puller-name-short} to pre-pull default {prod-short} images
+= Cache default {prod-short} images on all nodes
 
-You can configure {image-puller-name} to pre-pull default {prod-short} images.
-{prod} operator will control the list of images to pre-pull and automatically updates them
+Cache default {prod-short} images on all nodes by enabling {image-puller-name}.
+The {prod} Operator controls the list of images to pre-pull and automatically updates them
 on {prod-short} upgrade.
-
-include::partial$snip_persona-admin.adoc[]
 
 .Prerequisites
 
@@ -39,6 +37,15 @@ include::partial$snip_persona-admin.adoc[]
                 }
               }
             }'
+----
+
+.Verification
+
+* Verify that the image puller is enabled:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath='{.spec.components.imagePuller.enable}'
 ----
 
 .Additional resources
