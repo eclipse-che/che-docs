@@ -1,0 +1,214 @@
+:_content-type: PROCEDURE
+:description: Deploy {prod-short} declaratively through Argo CD so that every configuration change is tracked in Git, auditable, and automatically reconciled on the cluster.
+:keywords: install, gitops, argo cd, declarative, deployment
+:navtitle: Deploy using GitOps and Argo CD
+
+[id="deploying-che-using-gitops"]
+= Deploy using GitOps and Argo CD
+
+[role="_abstract"]
+Deploy {prod-short} declaratively through Argo CD so that every configuration change is tracked in Git, auditable, and automatically reconciled on the cluster.
+
+include::partial$snip_persona-admin.adoc[]
+
+With this method, you store the Operator subscription and `CheCluster` configuration in a Git repository. Argo CD monitors the repository and applies changes to the cluster automatically. You manage {prod-short} through Git commits instead of direct cluster commands.
+
+.Prerequisites
+
+* You have a {kubernetes} or {orch-name} cluster with administrative access.
+
+* You have Argo CD installed on the cluster. See link:https://argo-cd.readthedocs.io/en/stable/getting_started/[Argo CD Getting Started].
+
+* You have an active `{orch-cli}` session with administrative permissions to the cluster.
+
+* You have a Git repository accessible from the cluster (GitHub, GitLab, Bitbucket, or an internal Git server).
+
+.Procedure
+
+. In your Git repository, create a directory for the {prod-short} manifests. The directory contains three files: the Operator subscription, the `CheCluster` custom resource, and a Kustomize configuration.
++
+.Repository structure
+[source,subs="+quotes"]
+----
+__<your-gitops-repo>__/
+└── che/
+    ├── subscription.yaml
+    ├── checluster.yaml
+    └── kustomization.yaml
+----
+
+. Create the `subscription.yaml` file with the namespace and Operator subscription:
++
+[source,yaml,subs="+attributes"]
+----
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {prod-namespace}
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: {prod-operator-package-name}
+  namespace: openshift-operators
+spec:
+  channel: {prod-stable-channel}
+  installPlanApproval: Automatic
+  name: {prod-operator-package-name}
+  source: {prod-stable-channel-catalog-source}
+  sourceNamespace: openshift-marketplace
+----
++
+NOTE: On {kubernetes} clusters without OLM, install the {prod-short} Operator using Helm or `{prod-cli}` instead of a `Subscription`.
+
+. Create the `checluster.yaml` file with the {prod-short} instance configuration:
++
+[source,yaml,subs="+attributes"]
+----
+apiVersion: org.eclipse.che/v2
+kind: CheCluster
+metadata:
+  name: {prod-checluster}
+  namespace: {prod-namespace}
+spec:
+  components:
+    cheServer:
+      debug: false
+      logLevel: INFO
+    metrics:
+      enable: true
+    pluginRegistry:
+      openVSXURL: https://open-vsx.org
+  devEnvironments:
+    startTimeoutSeconds: 300
+    defaultEditor: che-incubator/che-code/latest
+    defaultNamespace:
+      autoProvision: true
+      template: <username>-{prod-id-short}
+    storage:
+      pvcStrategy: per-user
+----
+
+. Create the `kustomization.yaml` file:
++
+[source,yaml]
+----
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - subscription.yaml
+  - checluster.yaml
+----
+
+. Commit and push the files to your Git repository.
+
+. Grant the Argo CD service account the permissions required to create namespaces and install Operators:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ {orch-cli} apply -f - <<EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argocd-cluster-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: argocd-application-controller
+    namespace: argocd
+EOF
+----
++
+Adjust the `ServiceAccount` name and {orch-namespace} to match your Argo CD installation.
+
+. Create the Argo CD `Application` resource that points to your Git repository:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ {orch-cli} apply -f - <<EOF
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {prod-id-short}
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: __<your-git-repo-url>__
+    targetRevision: main
+    path: che
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    retry:
+      limit: 10
+      backoff:
+        duration: 30s
+        factor: 2
+        maxDuration: 5m
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - SkipDryRunOnMissingResource=true
+EOF
+----
++
+`SkipDryRunOnMissingResource`:: Required because the `CheCluster` custom resource definition (CRD) does not exist until the Operator installs it. This option tells Argo CD to skip validation for unknown resource types and apply them directly.
++
+`selfHeal`:: Reverts manual changes on the cluster to match the Git repository state.
+
+. Wait for Argo CD to sync the resources. The Operator installs first, registers the `CheCluster` CRD, and then Argo CD applies the `CheCluster` custom resource.
+
+.Verification
+
+. Verify that the Argo CD Application reports `Synced` and `Healthy`:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get application {prod-id-short} -n argocd \
+    -o jsonpath='{.status.sync.status}{" "}{.status.health.status}'
+----
++
+Expected output: `Synced Healthy`
+
+. Verify that the `CheCluster` is active:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get checluster {prod-checluster} -n {prod-namespace} \
+    -o jsonpath='{.status.chePhase}'
+----
++
+Expected output: `Active`
+
+. Retrieve the {prod-short} dashboard URL and open it in a browser:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get checluster {prod-checluster} -n {prod-namespace} \
+    -o jsonpath='{.status.cheURL}'
+----
+
+.Troubleshooting
+
+* *Sync fails with "CheCluster CRD not found"*: Verify that the Argo CD Application includes `SkipDryRunOnMissingResource=true` in the `syncOptions`.
+
+* *Sync retries but CheCluster is not created*: The Operator may still be installing. Wait for the ClusterServiceVersion to reach `Succeeded`:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get csv -A | grep {prod-operator-package-name}
+----
+
+.Additional resources
+
+* link:https://argo-cd.readthedocs.io/en/stable/getting_started/[Argo CD Getting Started]
+* link:https://argo-cd.readthedocs.io/en/stable/user-guide/sync-options/[Argo CD sync options]
+* xref:administration-guide:understanding-the-checluster-custom-resource.adoc[]

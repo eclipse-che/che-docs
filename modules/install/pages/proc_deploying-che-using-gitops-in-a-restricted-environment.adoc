@@ -1,0 +1,239 @@
+:_content-type: PROCEDURE
+:description: Deploy {prod-short} in a restricted network through Argo CD by mirroring the required container images to a private registry and storing the deployment manifests in an internal Git repository.
+:keywords: install, gitops, argo cd, air-gapped, restricted, disconnected
+:navtitle: Deploy in a restricted environment using GitOps
+
+[id="deploying-che-using-gitops-in-a-restricted-environment"]
+= Deploy in a restricted environment using GitOps
+
+[role="_abstract"]
+Deploy {prod-short} in a restricted network through Argo CD by mirroring the required container images to a private registry and storing the deployment manifests in an internal Git repository.
+
+include::partial$snip_persona-admin.adoc[]
+
+In a disconnected environment, the cluster cannot pull images from public registries or sync from external Git repositories. You mirror the required images to an internal registry, store the {prod-short} manifests in an internal Git repository, and let Argo CD reconcile the deployment from inside the network.
+
+.Prerequisites
+
+* You have a {kubernetes} or {orch-name} cluster operating on a restricted network with administrative access.
+
+* You have mirrored the required {prod-short} container images and Operator catalogs to a private registry. See xref:proc_installing-che-in-a-restricted-environment.adoc[].
+
+* You have an `ImageContentSourcePolicy` or `ImageDigestMirrorSet` configured to redirect image pulls to your private registry.
+
+* You have Argo CD installed on the cluster. See link:https://argo-cd.readthedocs.io/en/stable/getting_started/[Argo CD Getting Started].
+
+* You have an active `{orch-cli}` session with administrative permissions to the cluster.
+
+* You have an internal Git repository accessible from the cluster.
+
+.Procedure
+
+. Download and execute the mirroring script to install a custom Operator catalog and mirror the related images: xref:administration-guide:attachment$restricted-environment/prepare-restricted-environment.sh[prepare-restricted-environment.sh].
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ bash prepare-restricted-environment.sh \
+  --devworkspace_operator_index {devworkspace-operator-index-disconnected-install}\
+  --devworkspace_operator_version "v{devworkspace-operator-version-patch}" \
+  --prod_operator_index "{prod-operator-index}" \
+  --prod_operator_package_name "{prod-operator-package-name}" \
+  --prod_operator_bundle_name "{prod-operator-bundle-name}" \
+  --prod_operator_version "v{prod-ver-patch}" \
+  --my_registry "__<my_registry>__" <1>
+----
+<1> The private Docker registry where the images will be mirrored
+
+. In your internal Git repository, create a directory for the {prod-short} manifests with three files: the Operator subscription, the `CheCluster` custom resource, and a Kustomize configuration.
++
+.Repository structure
+[source,subs="+quotes"]
+----
+__<your-gitops-repo>__/
+└── che/
+    ├── subscription.yaml
+    ├── checluster.yaml
+    └── kustomization.yaml
+----
+
+. Create the `subscription.yaml` file with the namespace and Operator subscription pointing to the disconnected catalog source:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {prod-namespace}
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: {prod-operator-package-name}
+  namespace: openshift-operators
+spec:
+  channel: {prod-stable-channel}
+  installPlanApproval: Automatic
+  name: {prod-operator-package-name}
+  source: {prod-operator-package-name}-disconnected-install
+  sourceNamespace: openshift-marketplace
+----
++
+The `source` field points to the disconnected catalog source created by the mirroring script.
+
+. Create the `checluster.yaml` file with the {prod-short} instance configuration pointing to your private registry:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+apiVersion: org.eclipse.che/v2
+kind: CheCluster
+metadata:
+  name: {prod-checluster}
+  namespace: {prod-namespace}
+spec:
+  components:
+    cheServer:
+      debug: false
+      logLevel: INFO
+    metrics:
+      enable: true
+    pluginRegistry:
+      openVSXURL: ""
+  containerRegistry:
+    hostname: __<your-private-registry>__
+    organization: __<your-registry-organization>__
+  devEnvironments:
+    startTimeoutSeconds: 600
+    defaultEditor: che-incubator/che-code/latest
+    defaultNamespace:
+      autoProvision: true
+      template: <username>-{prod-id-short}
+    storage:
+      pvcStrategy: per-user
+----
++
+`containerRegistry.hostname`:: The hostname of your private container registry that holds the mirrored images.
+`containerRegistry.organization`:: The organization or project path in your private registry.
+`pluginRegistry.openVSXURL`:: Set to an empty string to disable external Open VSX access. Use an internal Open VSX instance if IDE extensions are required.
+`startTimeoutSeconds`:: Increased to 600 seconds to allow for slower image pulls from internal registries.
+
+. Create the `kustomization.yaml` file:
++
+[source,yaml]
+----
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - subscription.yaml
+  - checluster.yaml
+----
+
+. Commit and push the files to your internal Git repository.
+
+. Grant the Argo CD service account the permissions required to create namespaces and install Operators:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ {orch-cli} apply -f - <<EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argocd-cluster-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: argocd-application-controller
+    namespace: argocd
+EOF
+----
++
+Adjust the `ServiceAccount` name and {orch-namespace} to match your Argo CD installation.
+
+. Create the Argo CD `Application` resource that points to your internal Git repository:
++
+[source,bash,subs="+attributes,+quotes"]
+----
+$ {orch-cli} apply -f - <<EOF
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {prod-id-short}
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: __<your-internal-git-repo-url>__
+    targetRevision: main
+    path: che
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    retry:
+      limit: 10
+      backoff:
+        duration: 30s
+        factor: 2
+        maxDuration: 5m
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - SkipDryRunOnMissingResource=true
+EOF
+----
+
+. Wait for Argo CD to sync the resources. In a restricted environment, the Operator installation takes longer because images are pulled from the internal registry.
+
+.Verification
+
+. Verify that the Argo CD Application reports `Synced` and `Healthy`:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get application {prod-id-short} -n argocd \
+    -o jsonpath='{.status.sync.status}{" "}{.status.health.status}'
+----
++
+Expected output: `Synced Healthy`
+
+. Verify that the `CheCluster` is active:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get checluster {prod-checluster} -n {prod-namespace} \
+    -o jsonpath='{.status.chePhase}'
+----
++
+Expected output: `Active`
+
+. Retrieve the {prod-short} dashboard URL and open it in a browser:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get checluster {prod-checluster} -n {prod-namespace} \
+    -o jsonpath='{.status.cheURL}'
+----
+
+.Troubleshooting
+
+* *Image pull errors*: Verify that all required images are mirrored to your private registry and that the `ImageContentSourcePolicy` or `ImageDigestMirrorSet` is configured correctly.
+
+* *Sync fails with "CheCluster CRD not found"*: Verify that the Argo CD Application includes `SkipDryRunOnMissingResource=true` in the `syncOptions`.
+
+* *Sync retries but CheCluster is not created*: The Operator may still be installing. Wait for the ClusterServiceVersion to reach `Succeeded`:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get csv -A | grep {prod-operator-package-name}
+----
+
+.Additional resources
+
+* xref:proc_deploying-che-using-gitops.adoc[]
+* xref:proc_installing-che-in-a-restricted-environment.adoc[]
+* link:https://argo-cd.readthedocs.io/en/stable/getting_started/[Argo CD Getting Started]
