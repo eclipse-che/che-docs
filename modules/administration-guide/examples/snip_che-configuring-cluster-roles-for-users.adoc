@@ -1,7 +1,7 @@
 [id="configuring-cluster-roles-for-users"]
-= Configuring cluster roles for {prod-short} users
+= Grant additional permissions to users
 
-You can grant {prod-short} users more cluster permissions by adding cluster roles to those users.
+Grant your developers additional {kubernetes} permissions by adding cluster roles so they can access resources beyond the default workspace operations.
 
 .Prerequisites
 
@@ -11,24 +11,24 @@ You can grant {prod-short} users more cluster permissions by adding cluster role
 
 . Define the user roles name:
 +
-[source,subs="+quotes,+macros"]
+[source,bash,subs="+quotes,+macros"]
 ----
 $ USER_ROLES=__<name>__ <1>
 ----
 <1> Unique resource name.
 
-. Find out the namespace where the {prod-short} Operator is deployed:
+. Determine the namespace where the {prod-short} Operator is deployed:
 +
-[source,subs="+quotes,+macros,+attributes"]
+[source,bash,subs="+quotes,+macros,+attributes"]
 ----
 $ OPERATOR_NAMESPACE=$({orch-cli} get pods -l app.kubernetes.io/component={prod-operator} -o jsonpath={".items[0].metadata.namespace"} --all-namespaces)
 ----
 
 . Create needed roles:
 +
-[source,subs="+quotes,+macros"]
+[source,bash,subs="+quotes,+macros,+attributes"]
 ----
-$ kubectl apply -f - <<EOF
+$ {orch-cli} apply -f - <<EOF
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -50,9 +50,9 @@ EOF
 
 . Delegate the roles to the {prod-short} Operator:
 +
-[source,subs="+quotes,+macros"]
+[source,bash,subs="+quotes,+macros,+attributes"]
 ----
-$ kubectl apply -f - <<EOF
+$ {orch-cli} apply -f - <<EOF
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -73,22 +73,37 @@ EOF
 
 . Configure the {prod-short} Operator to delegate the roles to the `che` service account:
 +
-[source,subs="+quotes,+macros"]
+[source,bash,subs="+quotes,+macros,+attributes"]
 ----
-$ kubectl patch checluster eclipse-che \
+$ {orch-cli} patch checluster eclipse-che \
   --patch '{"spec": {"components": {"cheServer": {"clusterRoles": ["'${USER_ROLES}'"]}}}}' \
   --type=merge -n eclipse-che
 ----
 
 . Configure the {prod-short} server to delegate the roles to a user:
 +
-[source,subs="+quotes,+macros"]
+[source,bash,subs="+quotes,+macros,+attributes"]
 ----
-$ kubectl patch checluster eclipse-che \
+$ {orch-cli} patch checluster eclipse-che \
   --patch '{"spec": {"devEnvironments": {"user": {"clusterRoles": ["'${USER_ROLES}'"]}}}}' \
   --type=merge -n eclipse-che
 ----
 
-. Wait for the rollout of the {prod-short} server components to be completed.
+. Wait for the rollout of the {prod-short} server components to complete.
 
 . Ask the user to log out and log in to have the new roles applied.
+
+.Verification
+
+* Verify that the ClusterRole exists:
++
+[source,bash,subs="+quotes,+macros,+attributes"]
+----
+$ {orch-cli} get clusterrole ${USER_ROLES}
+----
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:secure:configuring-advanced-authorization.adoc[]
+* xref:secure:removing-user-data-in-compliance-with-the-gdpr.adoc[]

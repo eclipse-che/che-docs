@@ -1,5 +1,5 @@
 :_content-type: PROCEDURE
-:description: Configuring advanced authorization
+:description: Restrict access to specific users and groups
 :keywords: authorization, user, group
 :navtitle: Restrict access to specific users and groups
 // :page-aliases:
@@ -7,9 +7,7 @@
 [id="configuring-advanced-authorization"]
 = Restrict access to specific users and groups
 
-You can determine which users and groups are allowed to access {prod-short}.
-
-include::partial$snip_persona-admin.adoc[]
+Restrict {prod-short} access to specific users and groups so that you can enforce access policies and limit the platform to authorized teams.
 
 .Prerequisites
 
@@ -37,20 +35,19 @@ spec:
 <1> List of users allowed to access {prod}.
 <2> List of groups of users allowed to access {prod} (for {ocp} only).
 <3> List of users denied access to {prod}.
-<4> List of groups of users denied to access {prod} (for {ocp} only).
+<4> List of groups of users denied access to {prod} (for {ocp} only).
 +
-. Wait for the rollout of the {prod-short} server components to be completed.
+If a user is on both `allow` and `deny` lists, access is denied. If `allowUsers` and `allowGroups` are empty, all users are allowed except the ones on the `deny` lists. If `denyUsers` and `denyGroups` are empty, only the users from `allow` lists are allowed. If both `allow` and `deny` lists are empty, all users are allowed.
 
-[NOTE]
-====
+. Wait for the rollout of the {prod-short} server components to complete.
 
-To allow a user to access {prod-short}, add them to the `allowUsers` list. Alternatively, choose a group the user is a member of and add the group to the `allowGroups` list.
-To deny a user access to {prod-short}, add them to the `denyUsers` list. Alternatively, choose a group the user is a member of and add the group to the `denyGroups` list.
-If the user is on both `allow` and `deny` lists, they are denied access to {prod-short}.
+.Verification
 
-If `allowUsers` and `allowGroups` are empty, all users are allowed to access {prod-short} except the ones on the `deny` lists.
-If `denyUsers` and `denyGroups` are empty, only the users from `allow` lists are allowed to access {prod-short}.
+* Log in to the {prod-short} dashboard as a user on the `allowUsers` list and verify access to the dashboard.
+* Log in as a user on the `denyUsers` list and verify that {prod-short} returns a `403 Forbidden` response.
 
-If both `allow` and `deny` lists are empty, all users are allowed to access {prod-short}.
+[role="_additional-resources"]
+.Additional resources
 
-====
+* xref:configuring-cluster-roles-for-users.adoc[]
+* xref:removing-user-data-in-compliance-with-the-gdpr.adoc[]
