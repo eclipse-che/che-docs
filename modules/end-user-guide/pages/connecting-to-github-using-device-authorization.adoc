@@ -1,0 +1,61 @@
+:_content-type: PROCEDURE
+:description: Connect your GitHub account to {prod-short} using the device authorization flow directly from the Dashboard.
+:keywords: user-guide, github, device-authorization, device-auth, token, oauth
+:navtitle: Connecting to GitHub using device authorization
+:page-aliases:
+
+[id="connecting-to-github-using-device-authorization"]
+= Connect to GitHub using device authorization
+
+[role="_abstract"]
+Connect your GitHub account to {prod-short} using the device authorization flow directly from the Dashboard. Device authentication tokens are GitHub OAuth tokens stored as {kubernetes} Secrets. They enable Git operations in your workspaces without requiring a personal access token.
+
+.Prerequisites
+
+* Your administrator has xref:administration-guide:configuring-oauth-2-for-github.adoc[configured GitHub OAuth] with Device Flow enabled.
+
+.Procedure
+
+. In the {prod-short} dashboard, go to *User Preferences > Device Auth Tokens*.
+
+. Click *Connect to GitHub*.
++
+A modal opens displaying a one-time code.
+
+. Click the copy button next to the code to copy it to your clipboard.
+
+. Click the link:https://github.com/login/device[github.com/login/device] link to open the GitHub device activation page.
+
+. Paste the one-time code on the GitHub page and click *Continue*.
+
+. Authorize the application when prompted by GitHub.
++
+After successful authorization, the modal closes and the new token appears in the *Device Auth Tokens* table.
+
+.Verification
+
+* Verify that the new token is listed in the *Device Auth Tokens* table with a valid status.
+
+[id="deleting-device-auth-tokens"]
+== Deleting device auth tokens
+
+Deleting a device auth token removes the {kubernetes} Secret and revokes the GitHub authorization.
+
+.Procedure
+
+* To delete a single token:
+
+.. Click the actions menu (*&#8942;*) on the token row.
+.. Click *Delete*.
+.. Select the confirmation checkbox and click *Delete*.
+
+* To delete multiple tokens:
+
+.. Select the checkboxes next to the tokens you want to delete.
+.. Click *Delete* in the toolbar.
+.. Select the confirmation checkbox and click *Delete*.
+
+.Additional resources
+
+* xref:administration-guide:configuring-oauth-2-for-github.adoc[]
+* xref:get-started:using-a-git-provider-access-token.adoc[]
