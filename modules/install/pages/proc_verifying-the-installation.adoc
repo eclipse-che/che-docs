@@ -1,10 +1,10 @@
 :_content-type: PROCEDURE
 :description: Confirm that {prod-short} is operational before onboarding users by checking the Operator pod, the CheCluster status, and the dashboard URL.
 :keywords: install, verify, check, status
-:navtitle: Verify the {prod-short} installation
+:navtitle: Confirm {prod-short} is running
 
 [id="proc_verifying-the-installation"]
-= Verify the {prod-short} installation
+= Confirm {prod-short} is running
 
 [role="_abstract"]
 Confirm that {prod-short} is operational before onboarding users by checking the Operator pod, the `CheCluster` status, and the dashboard URL.
@@ -20,8 +20,13 @@ Confirm that {prod-short} is operational before onboarding users by checking the
 +
 [source,bash,subs="+attributes"]
 ----
-{orch-cli} get pods -n {prod-namespace} -l app.kubernetes.io/component={prod-id-short}-operator
+{orch-cli} get pods --all-namespaces -l app.kubernetes.io/component={prod-id-short}-operator
 ----
++
+[NOTE]
+====
+On {orch-name}, the Operator pod runs in the namespace where the Subscription was created (typically `openshift-operators` for a cluster-wide installation), not in `{prod-namespace}`.
+====
 
 . Verify that the `CheCluster` custom resource reports no errors:
 +

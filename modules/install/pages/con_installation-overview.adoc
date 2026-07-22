@@ -1,32 +1,33 @@
 :_content-type: CONCEPT
-:description: {prod-short} deploys on {orch-name} as an Operator that manages a gateway, dashboard, server, and plug-in registry. The installation method you choose — CLI or web console — depends on your cluster environment, security requirements, and need for configuration control.
+:description: {prod-short} deploys on {orch-name} as an Operator that manages a gateway, dashboard, server, and plug-in registry. The installation method you choose depends on your cluster environment and need for configuration control.
 :keywords: install, overview, deployment, operator
-:navtitle: {prod-short} installation overview
+:navtitle: How the installation works
 
 [id="con_installation-overview"]
-= {prod-short} installation overview
+= How the installation works
 
 [role="_abstract"]
-{prod-short} deploys on {orch-name} as an Operator that manages a gateway, dashboard, server, and plug-in registry. The installation method you choose — CLI or web console — depends on your cluster environment, security requirements, and need for configuration control.
+{prod-short} deploys on {orch-name} as an Operator that manages a gateway, dashboard, server, and plug-in registry. The installation method you choose depends on your cluster environment and need for configuration control.
 
 {prod-short} consists of an Operator, a user dashboard, a gateway, and a plug-in registry. The Operator manages the full lifecycle of all server components. You deploy {prod-short} by installing the Operator and creating a `CheCluster` custom resource.
 
 == Installation methods
 
-{prod-short} supports two installation methods:
+`{prod-cli}` command-line tool:: Choose this method when you need to quickly deploy {prod-short} for evaluation, customize the `CheCluster` configuration during installation, or manage {prod-short} from scripts.
 
-`{prod-cli}` command-line tool:: Install and manage {prod-short} from the command line. This method provides the most control over the installation process and supports advanced configuration options during deployment.
+{orch-name} web console:: Choose this method when you prefer a graphical workflow through OperatorHub and do not need advanced configuration options during deployment.
 
-{orch-name} web console:: Install the {prod} Operator from OperatorHub and create a `CheCluster` instance through the web console. This method uses the standard {orch-name} Operator installation workflow.
+Both methods produce the same result: an Operator subscription and a `CheCluster` custom resource. For step-by-step deployment instructions, see Additional resources.
 
 == Deployment scenarios
 
-Standard installation:: Deploy {prod-short} on an {orch-name} cluster with internet access. Both the CLI and web console methods are available.
+Standard deployment:: Your {orch-name} cluster has internet access. Both installation methods are available. The Operator pulls container images directly from `registry.redhat.io`.
 
-Restricted environment:: Deploy {prod-short} on an air-gapped or disconnected {orch-name} cluster. This scenario requires mirroring container images to a private registry before installation.
+Air-gapped deployment:: Your cluster has no internet access. Mirror the required container images and Operator catalogs to a private registry before installation.
 
-External identity provider:: Deploy {prod-short} with {keycloak} as an external OpenID Connect (OIDC) identity provider instead of the default {orch-name} OAuth. This scenario applies when you need to integrate with an existing identity management system.
+External identity provider:: Your organization manages authentication through an existing identity system such as {keycloak}. Deploy {prod-short} with an external OIDC provider instead of the default {orch-name} OAuth.
 
+[role="_additional-resources"]
 .Additional resources
 
 * xref:proc_installing-che-on-openshift-using-cli.adoc[]
