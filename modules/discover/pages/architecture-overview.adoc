@@ -1,16 +1,14 @@
 :_content-type: CONCEPT
-:description: {prod-short} runs on three groups of components — server components, the {devworkspace} Operator, and user workspaces — that communicate through {devworkspace} custom resources on {orch-name}.
+:description: {prod-short} fits together three groups of components that communicate through {devworkspace} custom resources on {orch-name}: server components, the {devworkspace} Operator, and user workspaces.
 :keywords: architecture, discover, components, devworkspace
-:navtitle: Architecture overview
-:page-aliases: administration-guide:architecture-overview.adoc, .:che-architecture-overview.adoc, .:high-level-che-architecture.adoc, overview:high-level-che-architecture.adoc, administration-guide:high-level-che-architecture.adoc, che-architecture-overview.adoc, .:che-architecture-overview-with-che-server.adoc, .:high-level-che-architecture-with-che-server.adoc, overview:high-level-che-architecture-with-che-server.adoc, administration-guide:high-level-che-architecture-with-che-server.adoc, .:che-architecture-overview-with-devworkspace.adoc, .:high-level-che-architecture-with-devworkspace.adoc, overview:high-level-che-architecture-with-devworkspace.adoc, administration-guide:high-level-che-architecture-with-devworkspace.adoc, architecture-overview-with-devworkspace.adoc, architecture-overview-with-che-server, server-components-with-che-server.adoc, che-workspaces-architecture-with-che-server.adoc, backup-and-recovery.adoc, supported-restic-compatible-backup-servers.adoc, backing-up-of-che-instances-to-an-sftp-backup-server.adoc, backing-up-of-che-instances-to-amazon-s3.adoc, backing-up-of-che-instances-to-a-rest-backup-server.adoc, backing-up-of-che-instances-to-the-internal-backup-server.adoc, restoring-a-che-instance-from-a-backup.adoc, backups-of-persistent-volumes.adoc, readiness-init-containers.adoc, enabling-and-disabling-readiness-init-containers-for-the-operator-installer.adoc, enabling-readiness-init-containers-for-the-operator-installer.adoc, disabling-readiness-init-containers-for-the-operator-installer.adoc, enabling-and-disabling-readiness-init-containers-for-the-olm-installer.adoc, enabling-readiness-init-containers-for-the-olm-installer.adoc, disabling-readiness-init-containers-for-the-olm-installer.adoc, overview:architecture-overview.adoc, overview:che-architecture.adoc
+:navtitle: {prod-short} architecture
+:page-aliases: administration-guide:architecture-overview.adoc, administration-guide:high-level-che-architecture.adoc, administration-guide:high-level-che-architecture-with-che-server.adoc, administration-guide:high-level-che-architecture-with-devworkspace.adoc, overview:architecture-overview.adoc, overview:high-level-che-architecture.adoc, overview:high-level-che-architecture-with-che-server.adoc, overview:high-level-che-architecture-with-devworkspace.adoc, overview:che-architecture.adoc
 
 [id="architecture"]
 = {prod-short} architecture
 
 [role="_abstract"]
-{prod-short} runs on three groups of components — server components, the {devworkspace} Operator, and user workspaces — that communicate through {devworkspace} custom resources on {orch-name}. Each group has a distinct role in delivering cloud development environments, and {orch-name} RBAC controls access to all resources.
-
-include::partial$snip_persona-discover.adoc[]
+{prod-short} fits together three groups of components that communicate through {devworkspace} custom resources on {orch-name}: server components, the {devworkspace} Operator, and user workspaces. Each group has a distinct role in delivering cloud development environments, and {orch-name} RBAC controls access to all resources.
 
 .High-level {prod-short} architecture with the {devworkspace} operator
 image::architecture/{project-context}-interacting-with-devworkspace.png[]
@@ -24,19 +22,21 @@ Manage User {orch-namespace} and workspaces. The main component is the User dash
 Creates and controls the necessary {orch-name} objects to run User workspaces. Including `Pods`, `Services`, and `PersistentVolumes`.
 
 User workspaces:: 
-Container-based development environments, the IDE included.
+Container-based development environments, the Integrated Development Environment (IDE) included.
 
 The role of these {orch-name} features is central:
 
 {devworkspace} Custom Resources::
 Valid {orch-name} objects representing the User workspaces and manipulated by {prod-short}. It is the communication channel for the three groups of components.
 
-{orch-name} role-based access control (RBAC):: 
+{orch-name} role-based access control (RBAC)::
 Controls access to all resources.
+
+Additional resources links to dedicated pages for the server deployments, the {devworkspace} Operator reconciliation loop, and the structure of user workspace pods. The {devworkspace} Operator repository and the {orch-name} Custom Resources documentation provide implementation details.
 
 .Additional resources
 
-* xref:server-components.adoc[]
+* xref:what-runs-on-your-cluster.adoc[]
 * xref:devworkspace-operator.adoc[]
 * xref:user-workspaces.adoc[]
 * link:https://github.com/devfile/devworkspace-operator[{devworkspace} Operator repository]

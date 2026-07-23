@@ -1,37 +1,34 @@
 :_content-type: ASSEMBLY
 :description: The {prod-short} gateway routes requests, authenticates users with OpenID Connect (OIDC), and enforces {orch-name} RBAC policies.
 :keywords: gateway, architecture, traefik, authentication, discover
-:navtitle: Gateway
+:navtitle: Gateway and request routing
 :page-aliases: administration-guide:gateway.adoc
 
 [id="gateway"]
-= Gateway
+= Gateway and request routing
 
 [role="_abstract"]
 The {prod-short} gateway routes requests, authenticates users with OpenID Connect (OIDC), and enforces {orch-name} RBAC policies. It controls access to the dashboard, server, plug-in registry, and every user workspace.
 
-include::partial$snip_persona-discover.adoc[]
+The `che-gateway` Deployment contains four containers:
 
-The {prod-short} gateway has the following roles:
+* `gateway` (Traefik) routes requests to the correct backend service.
+* `oauth-proxy` (OAuth2 Proxy) authenticates users with OpenID Connect (OIDC).
+* `kube-rbac-proxy` applies {orch-name} Role Based Access Control (RBAC) policies to control access to any {prod-short} resource.
+* `configbump` watches for configuration changes and reloads Traefik routing rules without restarting the Pod.
 
-* Routing requests. It uses link:https://github.com/traefik/traefik[Traefik].
+Each container performs a distinct security and routing function. The security guide in Additional resources covers how to configure the access control policies that these containers enforce, and the Traefik, OAuth2 Proxy, and kube-rbac-proxy project repositories provide upstream documentation for each container.
 
-* Authenticating users with OpenID Connect (OIDC). It uses {link-oauth2-proxy}.
+.{prod-short} gateway interactions with other components
+image::architecture/{project-context}-gateway-interactions.png[Gateway interactions]
 
-* Applying {orch-name} Role based access control (RBAC) policies to control access to any {prod-short} resource. It uses {link-kube-rbac-proxy}. 
+.Additional resources
 
-The {prod-short} operator manages it as the `che-gateway` Deployment.
-
-It controls access to:
-
+* xref:secure:managing-identities-and-authorizations.adoc[]
+* link:https://github.com/traefik/traefik[Traefik]
+* link:https://github.com/oauth2-proxy/oauth2-proxy[OAuth2 Proxy]
+* link:https://github.com/brancz/kube-rbac-proxy[kube-rbac-proxy]
 * xref:dashboard.adoc[]
 * xref:che-server.adoc[]
 * xref:plugin-registry.adoc[]
 * xref:user-workspaces.adoc[]
-
-.{prod-short} gateway interactions with other components
-image::architecture/{project-context}-gateway-interactions.png[{prod-short} gateway interactions with other components]
-    
-.Additional resources
-
-* xref:secure:managing-identities-and-authorizations.adoc[]
