@@ -1,0 +1,117 @@
+:_content-type: PROCEDURE
+:description: Share Claude Code configuration across {prod-short} workspaces by storing it in a Git repository.
+:keywords: user-guide, claude-code, ai, configuration, persistence, gitops, git
+:navtitle: Share configuration with GitOps
+:page-aliases: sharing-claude-code-configuration-with-gitops.adoc
+
+[id="share-claude-code-configuration-with-gitops"]
+= Share Claude Code configuration across workspaces with GitOps
+
+Instead of using a shared PVC, you can store Claude Code configuration in a Git repository and pull it into workspaces at startup. Each workspace gets its own isolated, writable copy of the configuration.
+
+This approach eliminates multi-attach errors and last-write-wins data corruption risks that can occur with shared PVCs on clusters without RWX storage.
+
+== How it works
+
+A central Git repository stores the baseline Claude Code configuration. The repository is listed in the `projects` section of the devfile, and the {devworkspace} Operator's project-clone init container clones it automatically at workspace startup. A `postStart` command then copies the configuration files from the cloned repository into the home directory.
+
+Two usage patterns are possible:
+
+* *Read-only baseline* — administrators maintain a shared repository with team-wide settings such as security hooks, API proxies, and approved plugins. The configuration is cloned at startup and copied into the home directory. Developers do not push changes back. This is suitable for enforcing organization-wide policies.
+
+* *User-specific persistence* — each developer maintains a private branch or repository with personal configuration. The repository is cloned at startup and copied into the home directory. Optionally, a `preStop` command or manual step commits and pushes changes back before the workspace stops.
+
+For a comparison with other approaches, see xref:persist-claude-code-configuration.adoc[].
+
+.Prerequisites
+
+* An active `{orch-cli}` session with permissions to create resources in your {orch-namespace}. See {orch-cli-link}.
+
+* Claude Code installed in the workspace container image.
+
+* A Git repository containing Claude Code configuration files. The repository must be accessible from the workspace. At minimum, the repository should contain:
++
+----
+.claude/
+  settings.json
+  CLAUDE.md
+.claude.json
+----
+
+* Git credentials configured in the workspace if the repository is private. See xref:authenticating-to-a-git-server-from-a-workspace.adoc[].
+
+.Procedure
+
+. Add the configuration repository to the `projects` section of your devfile:
++
+====
+[source,yaml,subs="+quotes,+attributes"]
+----
+projects:
+  - name: claude-config
+    git:
+      remotes:
+        origin: '__<git_repository_url>__' # <1>
+----
+<1> Replace with the URL of your Claude Code configuration repository.
+====
+
+. Add a `postStart` command to copy the configuration from the cloned repository into the home directory:
++
+====
+[source,yaml,subs="+quotes,+attributes"]
+----
+commands:
+  - id: init-claude-config
+    exec:
+      commandLine: |
+        cp -a /projects/claude-config/.claude/. {prod-home}/.claude/ 2>/dev/null || true
+        cp /projects/claude-config/.claude.json {prod-home}/.claude.json 2>/dev/null || true
+      component: __<editor_container>__ # <1>
+events:
+  postStart:
+    - init-claude-config
+----
+<1> Replace with the name of your editor container component in the devfile.
+====
+
+. Start the workspace.
+
+. Optional: To persist changes back to the Git repository before stopping, commit and push from within the workspace:
++
+[subs="+quotes,+attributes"]
+----
+$ cp -a {prod-home}/.claude/. /projects/claude-config/.claude/
+$ cp {prod-home}/.claude.json /projects/claude-config/.claude.json
+$ cd /projects/claude-config
+$ git add -A && git commit -m "Update Claude Code configuration" && git push
+----
+
+.Verification
+
+. Start a workspace with the devfile containing the configuration repository.
+. Verify Claude Code starts with the expected configuration (settings, MCP servers, plugins).
+. Make a configuration change, sync back to the repository, and push.
+. Start a new workspace with the same devfile. Verify the updated configuration is available.
+
+== Advantages
+
+* No RWX storage requirement. Each workspace uses its own local storage.
+* No multi-attach errors. Concurrent workspaces are not affected.
+* Git history provides an audit trail of configuration changes.
+* Works across clusters and {prod-short} instances.
+
+== Limitations
+
+* Requires a Git repository accessible from the workspace.
+* Changes must be committed and pushed to persist. Unsaved changes are lost when the workspace stops.
+* Large files such as plugin caches (`{prod-home}/.claude/plugins/cache/`) are not suitable for Git storage. Consider adding them to `.gitignore`.
+* Merge conflicts can occur when multiple workspaces push changes to the same branch concurrently.
+
+.Additional resources
+
+* xref:persist-claude-code-configuration.adoc[]
+* xref:share-claude-code-configuration-with-pvc-direct-mount.adoc[]
+* xref:share-claude-code-configuration-with-pvc-tmp-copy.adoc[]
+* xref:troubleshoot-claude-code-configuration-persistence.adoc[]
+* xref:authenticating-to-a-git-server-from-a-workspace.adoc[]

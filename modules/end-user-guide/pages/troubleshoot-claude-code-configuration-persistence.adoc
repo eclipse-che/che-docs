@@ -1,0 +1,174 @@
+:_content-type: REFERENCE
+:description: Diagnose and resolve issues with persisting Claude Code configuration in {prod-short} workspaces.
+:keywords: user-guide, claude-code, ai, configuration, persistence, troubleshooting
+:navtitle: Troubleshoot Claude Code configuration persistence
+:page-aliases: troubleshooting-claude-code-configuration-persistence.adoc
+
+[id="troubleshoot-claude-code-configuration-persistence"]
+= Troubleshoot Claude Code configuration persistence
+
+If you encounter issues with Claude Code configuration persistence in {prod-short} workspaces, use the following symptoms and solutions to diagnose and resolve them.
+
+== `.claude.json` corrupted on first start
+
+=== Symptom
+
+----
+Claude configuration file at /home/user/.claude.json is corrupted: JSON Parse error: Unexpected EOF
+----
+
+=== Cause
+
+The `.claude.json` file was pre-created as an empty file, for example with `touch`, instead of valid JSON.
+
+=== Solution
+
+Initialize the file with valid JSON content:
+
+----
+$ echo '{}' > .claude.json
+----
+
+If you already see this error, select *Reset with default configuration* when prompted. This is a one-time prompt that does not recur.
+
+== `.claude.json` mounted as a directory
+
+=== Symptom
+
+Claude Code fails to start or reports that `{prod-home}/.claude.json` is not a valid file. Inspecting the mount shows a directory instead of a file:
+
+----
+$ stat {prod-home}/.claude.json
+  File: {prod-home}/.claude.json
+  Size: 4096       Blocks: 8    IO Block: 4096   directory
+----
+
+=== Cause
+
+When a PVC `subPath` mount target does not exist on the volume, {kubernetes} kubelet creates it as a *directory*, not a file. The mount point is locked and cannot be replaced from inside the container.
+
+=== Solution
+
+Do not mount `{prod-home}/.claude.json` as a direct subPath from a PVC without pre-creating the file. Either use an init pod to pre-create it (xref:share-claude-code-configuration-with-pvc-direct-mount.adoc[direct mount]) or use the xref:share-claude-code-configuration-with-pvc-tmp-copy.adoc[tmp copy] approach.
+
+== Permission denied writing to `~/.claude/session-env`
+
+=== Symptom
+
+----
+The workspace environment blocks write access to /home/user/.claude/session-env
+----
+
+=== Cause
+
+On OpenShift, the Security Context Constraints (SCC) assign a random UID per {orch-namespace}. If the PVC contents were created with a different UID or group, write access fails.
+
+=== Solution
+
+On OpenShift, PVC filesystems typically receive a setgid bit (`drwxrwsr-x`) with group `0`, and workspace containers run with GID `0`. When both conditions are met, writes succeed without manual permission changes.
+
+If you encounter this error, verify that:
+
+* The PVC was created in the same {orch-namespace} as the workspace.
+* The PVC contents have group `0` ownership:
++
+----
+$ stat {prod-home}/.claude
+----
++
+If the group is not `0` (root), the PVC contents were likely created by a process with a different GID. Regular workspace users cannot fix this with `chgrp` because OpenShift assigns a random UID without permission to change file groups. Delete the PVC, recreate it, and let a workspace pod be the first consumer. Files created by the workspace process will have the correct group ownership.
+
+== Multi-attach error when starting a second workspace
+
+=== Symptom
+
+----
+Multi-Attach error for volume "pvc-xxx": Volume is already exclusively attached to one node
+----
+
+=== Cause
+
+The PVC uses `ReadWriteOnce` (RWO) access mode. RWO volumes can only attach to a single node at a time. When two workspace pods are scheduled on different nodes, the second pod cannot mount the volume.
+
+=== Solution
+
+Choose one of the following:
+
+* Run only one workspace at a time.
+* Use `ReadWriteMany` (RWX) access mode with a storage class that supports it, such as AWS EFS or NFS. Standard block storage classes (gp2, gp3) do not support RWX.
+* Use `controller.devfile.io/mount-to-devworkspace-include` or `controller.devfile.io/mount-to-devworkspace-exclude` annotations on the PVC to control which workspaces mount it. See xref:share-claude-code-configuration-with-pvc-direct-mount.adoc#_filtering_by_workspace_name[Filtering by workspace name].
+
+To check available storage classes:
+
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} get storageclasses
+----
+
+Look for classes using EFS (`efs.csi.aws.com`) or NFS provisioners.
+
+== Changes to `~/.claude.json` not persisting after restart
+
+=== Symptom
+
+After restarting a workspace, MCP server configurations added during the previous session are lost.
+
+=== Cause
+
+This applies to the xref:share-claude-code-configuration-with-pvc-tmp-copy.adoc[tmp copy] approach. The `postStart` command copies configurations from the PVC into the home directory. Changes made during the session are written to the home directory, not back to the PVC.
+
+The xref:share-claude-code-configuration-with-pvc-direct-mount.adoc[direct mount] approach does not have this issue because changes are written directly to the PVC.
+
+=== Solution
+
+Sync changes back to the PVC before stopping the workspace:
+
+[subs="+quotes,+attributes"]
+----
+$ cp -a {prod-home}/.claude/. /tmp/claude/.claude/ && \
+  cp {prod-home}/.claude.json /tmp/claude/.claude.json
+----
+
+[id="pvc-scheduling-failure-after-init-pod-setup"]
+== PVC scheduling failure after init pod setup
+
+=== Symptom
+
+----
+0/N nodes are available: X node(s) didn't match PersistentVolume's node affinity
+----
+
+A workspace fails to start after a PVC was initialized using a temporary pod.
+
+=== Cause
+
+On multi-AZ clusters using RWO block storage (gp2, gp3), the PersistentVolume is provisioned in a single availability zone.
+
+This issue does not affect single-AZ clusters or clusters using RWX storage (EFS, NFS).
+
+=== Solution
+
+Do not use a separate init pod to initialize PVC contents on clusters with `WaitForFirstConsumer` storage classes. Instead:
+
+. Let the workspace pod be the first consumer of the PVC.
+. Handle file initialization with `postStart` commands from inside the workspace.
+
+If you already have a PVC stuck in the wrong availability zone:
+
+. Stop all workspaces using the PVC.
+. Delete the PVC:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} delete pvc __<pvc-name>__ -n __<{orch-namespace}>__
+----
+. Recreate the PVC and start a workspace. The PV is provisioned in the correct zone.
+
+For clusters where this is a recurring issue, use the xref:share-claude-code-configuration-with-pvc-tmp-copy.adoc[tmp copy] approach, which does not require an init pod.
+
+.Additional resources
+
+* xref:persist-claude-code-configuration.adoc[]
+* xref:share-claude-code-configuration-with-pvc-direct-mount.adoc[]
+* xref:share-claude-code-configuration-with-pvc-tmp-copy.adoc[]
+* xref:share-claude-code-configuration-with-gitops.adoc[]

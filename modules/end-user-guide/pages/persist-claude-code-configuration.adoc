@@ -1,0 +1,110 @@
+:_content-type: CONCEPT
+:description: Persist and share Claude Code configuration across {prod-short} workspaces.
+:keywords: user-guide, claude-code, ai, configuration, persistence, pvc
+:navtitle: Persist Claude Code configuration
+:page-aliases: persisting-claude-code-configuration.adoc
+
+[id="persist-claude-code-configuration"]
+= Persist Claude Code configuration in {prod-short} workspaces
+
+To reuse Claude Code skills, settings, MCP servers, and plugins across {prod-short} workspaces, persist the configuration in a shared volume or a Git repository. Without persistence, each new workspace requires a fresh setup.
+
+== Claude Code configuration files
+
+Claude Code stores configuration in two separate locations in the user's home directory:
+
+|===
+| Path | Contents
+
+| `{prod-home}/.claude/`
+| Settings, plugins, custom agents, hooks, per-project memory.
+
+| `{prod-home}/.claude.json`
+| Application settings and MCP server configurations.
+|===
+
+[IMPORTANT]
+====
+MCP server configurations are stored in `{prod-home}/.claude.json`, a separate file at the home directory root, not inside `{prod-home}/.claude/`. Both locations must be persisted.
+
+Claude Code writes runtime state to both paths during every session, including session files, caches, and usage statistics. These paths must be writable. Mounting a read-only ConfigMap or Secret directly to these paths causes Claude Code to fail.
+====
+
+== Available approaches
+
+|===
+| Approach | Summary
+
+| xref:share-claude-code-configuration-with-pvc-direct-mount.adoc[]
+| Both `{prod-home}/.claude/` and `{prod-home}/.claude.json` are mounted directly from a dedicated PVC. All changes persist automatically. Requires a one-time init pod to pre-create `.claude.json`.
+
+| xref:share-claude-code-configuration-with-pvc-tmp-copy.adoc[]
+| A dedicated PVC is mounted at `/tmp/claude`. A `postStart` command copies everything into the home directory. No init pod is required, but changes must be synced back manually before stopping the workspace.
+
+| xref:share-claude-code-configuration-with-gitops.adoc[]
+| A Git repository stores the baseline Claude Code configuration. The {devworkspace} Operator clones the repository at startup, and a `postStart` command copies the configuration into the home directory.
+|===
+
+== Claude Code file reference
+
+|===
+| Path | Purpose | Size | Regeneratable
+
+| `{prod-home}/.claude/settings.json`
+| Permissions, hooks, enabled plugins, model preferences.
+| Small
+| No
+
+| `{prod-home}/.claude/settings.local.json`
+| Local setting overrides.
+| Small
+| No
+
+| `{prod-home}/.claude/CLAUDE.md`
+| User-level instructions for Claude.
+| Small
+| No
+
+| `{prod-home}/.claude/plugins/`
+| Installed plugins and caches.
+| Large (100{nbsp}MB+)
+| Partially
+
+| `{prod-home}/.claude/agents/`
+| Custom agent definitions.
+| Small
+| No
+
+| `{prod-home}/.claude/hooks/`
+| Shell scripts for session lifecycle.
+| Small
+| No
+
+| `{prod-home}/.claude/projects/`
+| Per-project memory and settings.
+| Medium
+| No
+
+| `{prod-home}/.claude.json`
+| Application settings and MCP server configurations.
+| Small
+| No
+
+| `{prod-home}/.claude/history.jsonl`
+| Conversation history.
+| Large
+| Optional
+
+| `{prod-home}/.claude/plugins/cache/`
+| Plugin download cache.
+| Large
+| Yes
+|===
+
+.Additional resources
+
+* xref:share-claude-code-configuration-with-pvc-direct-mount.adoc[]
+* xref:share-claude-code-configuration-with-pvc-tmp-copy.adoc[]
+* xref:share-claude-code-configuration-with-gitops.adoc[]
+* xref:troubleshoot-claude-code-configuration-persistence.adoc[]
+* link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
