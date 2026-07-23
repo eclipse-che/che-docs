@@ -1,0 +1,141 @@
+:_content-type: PROCEDURE
+:description: Implement AnalyticsManager event handling methods and test the backend
+:keywords: telemetry, backend, isEnabled, onEvent, onActivity, destroy, increaseDuration
+:navtitle: Implement and test telemetry backend event handlers
+
+[id="implementing-telemetry-backend-event-handlers"]
+= Implement and test telemetry backend event handlers
+
+[role="_abstract"]
+Implement the `AnalyticsManager` event handling methods in your telemetry backend and test the backend in a running {devworkspace} to verify that events are received from the front-end plugin.
+
+
+.Prerequisites
+
+* You have a running instance of {prod}.
+* You have a telemetry backend project created. See xref:creating-a-telemetry-backend.adoc[].
+
+.Procedure
+
+. Set the `DEVWORKSPACE_TELEMETRY_BACKEND_PORT` environment variable in the {devworkspace}. Here, the value is set to `4167`.
++
+[source,yaml]
+----
+spec:
+  template:
+    attributes:
+      workspaceEnv:
+        - name: DEVWORKSPACE_TELEMETRY_BACKEND_PORT
+          value: '4167'
+----
+
+. Restart the {devworkspace} from the {prod} dashboard.
+
+. Run the following command within a {devworkspace}'s terminal window to start the application. Use the `--settings` flag to specify the path to the `settings.xml` file that contains the GitHub access token.
++
+[source,bash]
+----
+$ mvn --settings=settings.xml quarkus:dev -Dquarkus.http.port=${DEVWORKSPACE_TELEMETRY_BACKEND_PORT}
+----
++
+The application now receives telemetry events through port `4167` from the front-end plugin. Verify that the following output is logged:
++
+----
+INFO  [org.ecl.che.inc.AnalyticsManager] (Quarkus Main Thread) No welcome message provided
+INFO  [io.quarkus] (Quarkus Main Thread) devworkspace-telemetry-example-plugin 1.0.0-SNAPSHOT on JVM (powered by Quarkus 2.7.2.Final) started in 0.323s. Listening on: http://localhost:4167
+INFO  [io.quarkus] (Quarkus Main Thread) Profile dev activated. Live Coding activated.
+INFO  [io.quarkus] (Quarkus Main Thread) Installed features: [cdi, kubernetes-client, rest-client, rest-client-jackson, resteasy, resteasy-jsonb, smallrye-context-propagation, smallrye-openapi, swagger-ui, vertx]
+----
+
+. Customize `isEnabled()` in `AnalyticsManager.java`. For this example, the method always returns `true`:
++
+.`AnalyticsManager.java`
+====
+[source,java]
+----
+include::example$creating-a-telemetry-plugin/isEnabled.java[]
+----
+====
++
+The link:https://github.com/che-incubator/devworkspace-telemetry-woopra-plugin/blob/main/src/main/java/com/redhat/devworkspace/services/telemetry/woopra/AnalyticsManager.java[hosted {prod-short} Woopra backend] demonstrates a more advanced `isEnabled()` implementation that checks for a configuration property before enabling the backend.
+
+. Implement `onEvent()` to send events to the telemetry server. For the example application, it sends an HTTP POST payload to the `/event` endpoint.
+
+.. Configure the RESTEasy REST Client by creating a `TelemetryService.java` interface:
++
+.`TelemetryService.java`
+====
+[source,java]
+----
+include::example$creating-a-telemetry-plugin/TelemetryService.java[]
+----
+====
+<1> The endpoint to make the `POST` request to.
+
+.. Specify the base URL for `TelemetryService` in `src/main/resources/application.properties`:
++
+.`application.properties`
+====
+----
+org.my.group.TelemetryService/mp-rest/url=http://little-telemetry-server-che.apps-crc.testing
+----
+====
+
+.. Inject `TelemetryService` into `AnalyticsManager.java` and send a `POST` request in `onEvent()`:
++
+.`AnalyticsManager.java`
+====
+[source,java]
+----
+include::example$creating-a-telemetry-plugin/onEvent.java[]
+----
+====
++
+This sends an HTTP request to the telemetry server and automatically delays identical events for a small period of time. The default duration is 1500 milliseconds.
+
+. Implement `increaseDuration()` in `AnalyticsManager.java`. Many telemetry systems recognize event duration. The `AbstractAnalyticsManager` merges similar events that happen in the same frame of time into one event. This implementation is a no-op:
++
+.`AnalyticsManager.java`
+====
+[source,java]
+----
+include::example$creating-a-telemetry-plugin/increaseDuration.java[]
+----
+====
+
+. Implement `onActivity()` in `AnalyticsManager.java`. Set an inactive timeout limit and send a `WORKSPACE_INACTIVE` event if the last event time exceeds the timeout:
++
+.`AnalyticsManager.java`
+====
+[source,java]
+----
+include::example$creating-a-telemetry-plugin/onActivity.java[]
+----
+====
+
+. Implement `destroy()` in `AnalyticsManager.java`. When called, send a `WORKSPACE_STOPPED` event and shut down any resources such as connection pools:
++
+.`AnalyticsManager.java`
+====
+[source,java]
+----
+include::example$creating-a-telemetry-plugin/destroy.java[]
+----
+====
+
+.Verification
+
+. To verify that the `onEvent()` method receives events from the front-end plugin, press the kbd:[l] key to disable Quarkus live coding and edit any file within the IDE. The following output should be logged:
++
+----
+INFO  [io.qua.dep.dev.RuntimeUpdatesProcessor] (Aesh InputStream Reader) Live reload disabled
+INFO  [org.ecl.che.inc.AnalyticsManager] (executor-thread-2) The received event is: Edit Workspace File in Che
+----
+
+. Stop the application with kbd:[Ctrl+C] and verify that a `WORKSPACE_STOPPED` event is sent to the server.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:deploying-a-telemetry-plugin.adoc[]
+* xref:telemetry-plugin-overview.adoc[]

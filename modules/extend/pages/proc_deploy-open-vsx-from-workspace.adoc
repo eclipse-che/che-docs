@@ -1,0 +1,126 @@
+:page-aliases: administration-guide:proc_deploy-open-vsx-from-workspace.adoc
+:_content-type: PROCEDURE
+:description: Build the Open VSX extension registry inside a workspace using devfile tasks
+:keywords: administration guide, openvsx, deploy, workspace, devfile
+:navtitle: Build the extension registry inside a workspace
+
+[id="proc_deploy-open-vsx-from-workspace"]
+= Build the extension registry inside a workspace
+
+[role="_abstract"]
+Build an on-premises Open VSX extension registry by using predefined devfile tasks in a {prod-short} workspace. The workspace environment includes all necessary tools and commands defined in the `.devfile.yaml` file of the Open VSX repository.
+
+.Prerequisites
+
+* You are logged in to the cluster as a cluster administrator.
+* You have a running {prod-short} instance.
+
+.Procedure
+
+. Start a workspace by using the link:https://github.com/eclipse-openvsx/openvsx[Eclipse Open VSX repository].
++
+[WARNING]
+====
+The link:https://github.com/eclipse-openvsx/openvsx/blob/master/.devfile.yaml[.devfile.yaml] includes an `elasticsearch` component that does not support IBM Power (ppc64le) or IBM Z (s390x) architectures. To start the workspace on these architectures, remove the `elasticsearch` component from the devfile. Alternatively, use the xref:proc_deploy-open-vsx-from-source.adoc[] procedure to deploy Open VSX without starting a workspace.
+====
++
+[TIP]
+====
+The environment, including all necessary commands, is defined in the `.devfile.yaml` file.
+====
+
+. Login to the cluster as a cluster administrator from the workspace terminal:
+.. Navigate to *Terminal* -> *New Terminal*
+.. Execute: `$ oc login --token=__<USER_TOKEN>__ --server=__<CLUSTER_API_URL>__`
+. Create a new project for Open VSX.
++
+Run the `2.1. Create Namespace for OpenVSX` task in the workspace:
++
+`Terminal -> Run Task... -> devfile -> 2.1. Create Namespace for OpenVSX`
++
+This creates a new project named `openvsx` on the cluster.
+
+. Build and publish the Open VSX server image.
++
+Run the `2.2. Build and Publish Open VSX Image` task in the workspace:
++
+`Terminal -> Run Task... -> devfile -> 2.2. Build and Publish OpenVSX Image`
++
+During execution, the task prompts you to enter the Open VSX server version. If left blank, the task uses a default version.
++
+[TIP]
+====
+Available Open VSX server versions are listed on the link:https://github.com/eclipse-openvsx/openvsx/releases[Open VSX releases page].
+====
+
+. Build and publish the Open VSX CLI (`ovsx`) image.
++
+Run the `2.3. Build and Publish OpenVSX CLI Image` task in the workspace:
++
+`Terminal -> Run Task... -> devfile -> 2.3. Build and Publish OpenVSX CLI Image`
+
+. Deploy Open VSX.
++
+Run the `2.4. Deploy OpenVSX` task in the workspace:
++
+`Terminal -> Run Task... -> devfile -> 2.4. Deploy OpenVSX`
++
+This task processes the `openvsx-deployment.yml` template and creates all required resources, including:
++
+* Deployments for PostgreSQL, Elasticsearch, the Open VSX server, and the Open VSX CLI
+* Services and routes for accessing components
+* Secrets for GitHub OAuth credentials and the Open VSX Personal Access Token (PAT)
++
+[TIP]
+====
+All deployment parameters are described in the `deploy/openshift/openvsx-deployment.yml` file. The template includes default values such as `OVSX_PAT_BASE64`.
+====
+
+. Add an Open VSX user with a PAT to the database.
++
+Run the `2.5. Add OpenVSX user with PAT to the DB` task in the workspace:
++
+`Terminal -> Run Task... -> devfile -> 2.5. Add OpenVSX user with PAT to the DB`
++
+The task prompts you for the Open VSX username and user PAT. Press Enter to use the default values.
++
+[IMPORTANT]
+====
+The user PAT must match the decoded value of `OVSX_PAT_BASE64` specified in the deployment file. If you update `OVSX_PAT_BASE64`, use the new decoded value as the user PAT.
+====
+
+. Configure {prod-short} to use the internal Open VSX registry.
++
+Run the `2.6. Configure Che to use the internal Open VSX registry` task in the workspace:
++
+`Terminal -> Run Task... -> devfile -> 2.6. Configure Che to use the internal OpenVSX registry`
++
+This task patches the `CheCluster` custom resource to use the deployed Open VSX registry URL.
+
+. Publish a Visual Studio Code extension from a `.vsix` file.
++
+Run the `2.8. Publish a Visual Studio Code Extension from a VSIX file` task in the workspace:
++
+`Terminal -> Run Task... -> devfile -> 2.8. Publish a Visual Studio Code Extension from a VSIX file`
++
+The task prompts you to provide the extension publisher name and the path to the `.vsix` file.
+
+. Optional: Publish a predefined list of extensions.
++
+Update the `deploy/openshift/extensions.txt` file with the download URLs of each `.vsix` file, then run the `2.9. Publish list of Visual Studio Code Extensions` task:
++
+`Terminal -> Run Task... -> devfile -> 2.9. Publish list of Visual Studio Code Extensions`
+
+.Verification
+
+* Start any workspace and verify the published extensions are available in the Extensions view of the workspace IDE.
+* Open the `internal` route in the `openvsx` project to verify the registry UI displays the published extensions.
+
+[role="_additional-resources"]
+.Additional resources
+
+* To restrict the registry to internal cluster traffic, see xref:proc_configure-internal-open-vsx-access.adoc[].
+* To remove a published extension, see xref:proc_deleting-extension-using-openvsx-admin-api.adoc[].
+* link:https://github.com/eclipse-openvsx/openvsx/[Eclipse Open VSX sources]
+* link:https://github.com/eclipse-openvsx/openvsx/blob/master/.devfile.yaml[Open VSX devfile]
+* xref:proc_deploy-open-vsx-from-source.adoc[]
