@@ -12,7 +12,7 @@ Manage IDE extensions in {prod-short} workspaces to control which extensions are
 
 IDEs in {prod-short} use extensions to provide language support, debugging, linting, and other development tools. The Microsoft Visual Studio Code - Open Source editor manages extensions through the Open VSX registry.
 
-{prod-short} supports three registry configurations:
+{prod-short} supports four registry configurations:
 
 Embedded Open VSX registry:: Runs in the `plugin-registry` pod and supports air-gapped, offline, and proxy-restricted environments. Contains a default subset of extensions that you can customize.
 
@@ -20,11 +20,14 @@ Public Open VSX registry:: The community-hosted registry at `open-vsx.org`, acce
 
 Standalone Open VSX registry:: A self-hosted instance deployed on a network accessible from {prod-short} workspace pods. Provides full control over available extensions for organizations that need a curated, private registry.
 
+Managed Open VSX registry:: An Operator-managed Open VSX server and PostgreSQL database deployed as {prod-short} operands. The Operator handles provisioning, exposure through the {prod-short} gateway, and lifecycle management. Enable it by setting `spec.components.openVSXRegistry.enable` in the `CheCluster` custom resource.
+
 [role="_additional-resources"]
 .Additional resources
 
 * xref:extensions-for-microsoft-visual-studio-code-open-source.adoc[]
 * xref:configuring-the-open-vsx-registry-url.adoc[]
+* xref:enabling-the-managed-open-vsx-registry.adoc[]
 * xref:proc_deploy-open-vsx-from-source.adoc[]
 * xref:proc_deploy-open-vsx-from-workspace.adoc[]
 * xref:proc_configure-internal-open-vsx-access.adoc[]
