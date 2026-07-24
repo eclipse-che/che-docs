@@ -44,6 +44,8 @@ When disabled, the Operator removes all managed Open VSX resources.
 ----
 +
 The Operator deploys the Open VSX server and PostgreSQL database, provisions the database, and exposes the registry through the {prod-short} gateway.
++
+NOTE: The managed registry starts empty with no pre-installed extensions. You must publish extensions to the registry after enabling it.
 
 . Optional: Configure the server storage size by setting the `claimSize` field. The default is `3Gi`.
 +
@@ -107,7 +109,8 @@ The Operator automatically runs a publishing `Job` when the `ConfigMap` content 
 +
 [source,shell,subs="+quotes,+attributes,+macros"]
 ----
-{orch-cli} get pods --namespace {prod-namespace} -l app=openvsx
+{orch-cli} get pods --namespace {prod-namespace} -l app.kubernetes.io/component=openvsx-server
+{orch-cli} get pods --namespace {prod-namespace} -l app.kubernetes.io/component=openvsx-database
 ----
 
 * Access the Open VSX registry UI by navigating to `pass:c,a,q[https://__<che_host>__/openvsx]` in a browser, where `__<che_host>__` is the hostname of your {prod-short} instance. You can retrieve the URL from the `CheCluster` status:
@@ -214,6 +217,55 @@ The Operator creates an `openvsx-server` `ConfigMap` with a default `application
 ----
 +
 The `ConfigMap` contains a single `application.yml` key with the Open VSX Spring Boot configuration.
+
+[id="deleting-extensions-from-the-managed-open-vsx-registry"]
+== Deleting extensions from the managed Open VSX registry
+
+Delete individual extensions or specific extension versions from the managed Open VSX registry by using the Open VSX admin API.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+* The managed Open VSX registry is enabled and running.
+
+.Procedure
+
+. Get the Open VSX server pod name:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} get pods --namespace {prod-namespace} -l app.kubernetes.io/component=openvsx-server -o name
+----
+
+. Delete an entire extension with all its versions:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} exec __<openvsx_server_pod>__ \
+  --namespace {prod-namespace} -- \
+  sh -c 'curl -X POST "http://openvsx-server:8080/openvsx/admin/api/extension/__<extension_namespace>__/__<extension_name>__/delete?token=$OPENVSX_ADMIN_PAT"'
+----
++
+where:
++
+--
+`__<openvsx_server_pod>__`:: The pod name from the previous step.
+`__<extension_namespace>__`:: The namespace (publisher) of the extension. For example: `redhat`.
+`__<extension_name>__`:: The name of the extension. For example: `java`.
+--
+
+. Alternatively, to delete only a specific version of an extension:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} exec __<openvsx_server_pod>__ \
+  --namespace {prod-namespace} -- \
+  sh -c 'curl -X POST -H "Content-Type: application/json" \
+  -d '"'"'[{"version": "__<extension_version>__"}]'"'"' \
+  "http://openvsx-server:8080/openvsx/admin/api/extension/__<extension_namespace>__/__<extension_name>__/delete?token=$OPENVSX_ADMIN_PAT"'
+----
++
+where `__<extension_version>__` is the version to delete. For example: `1.2.3`.
 
 [id="disabling-the-managed-open-vsx-registry"]
 == Disabling the managed Open VSX registry
