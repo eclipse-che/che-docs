@@ -1,0 +1,61 @@
+:_content-type: PROCEDURE
+:description: Configure the DevWorkspace Operator pruner to automatically delete workspaces that have not been started within a configurable retention period.
+:keywords: optimize, etcd, cleanup, pruner, DevWorkspace, cron
+:navtitle: Configure automatic cleanup of inactive workspaces
+
+[id="configuring-automatic-cleanup-of-inactive-workspaces"]
+= Configure automatic cleanup of inactive workspaces
+
+[role="_abstract"]
+For large {kubernetes} deployments, particularly those involving a high number of custom resources such as `DevWorkspace` objects, which represent CDEs, etcd can become a significant performance bottleneck. Configure the {devworkspace} Operator pruner to automatically delete workspaces that have not been started within a configurable retention period.
+
+[IMPORTANT]
+====
+Based on the load testing for 6,000 `DevWorkspace` objects, storage consumption for etcd was approximately 2.5GB.
+====
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+* {devworkspace} Operator version 0.34.0 or later is installed on the cluster.
+
+.Procedure
+
+. Configure the `DevWorkspaceOperatorConfig` object to enable the cleanup cron job:
++
+[source,yaml,subs="+attributes"]
+----
+apiVersion: controller.devfile.io/v1alpha1
+kind: DevWorkspaceOperatorConfig
+metadata:
+  name: devworkspace-operator-config
+  namespace: {prod-namespace}
+config:
+  workspace:
+    cleanupCronJob:
+      enabled: true
+      dryRun: false
+      retainTime: 2592000
+      schedule: "0 0 1 * *"
+----
++
+retainTime:: The number of seconds a workspace must be inactive before it is marked for deletion. The default value `2592000` equals 30 days.
++
+schedule:: A cron expression that defines how often the pruner runs. The default value `"0 0 1 * *"` runs the pruner once per month.
+
+. Optional: To preview which workspaces would be deleted without removing them, set `dryRun` to `true`.
+
+.Verification
+
+* Verify that the cleanup cron job is scheduled:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get cronjobs -n {prod-namespace}
+----
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:plan:etcd-storage-limits.adoc[]
