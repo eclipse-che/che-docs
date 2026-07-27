@@ -1,0 +1,49 @@
+:_content-type: PROCEDURE
+:description: Disable Copied CSVs to reduce etcd storage usage and OLM memory consumption on large clusters.
+:keywords: optimize, etcd, OLM, CSV, namespace
+:navtitle: Disable Copied CSVs to reduce etcd usage
+
+[id="disabling-copied-csvs"]
+= Disable Copied CSVs to reduce etcd usage
+
+[role="_abstract"]
+When an Operator is installed by the Operator Lifecycle Manager (OLM), a stripped-down copy of its ClusterServiceVersion (CSV) is created in every namespace the Operator watches. On large clusters with hundreds or thousands of namespaces, Copied CSVs consume significant etcd storage, OLM memory, and network bandwidth.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Configure the `OLMConfig` object to disable Copied CSVs:
++
+[source,yaml]
+----
+apiVersion: operators.coreos.com/v1
+kind: OLMConfig
+metadata:
+  name: cluster
+spec:
+  features:
+    disableCopiedCSVs: true
+----
++
+Disabling Copied CSVs reduces etcd storage usage and the memory footprint of OLM.
+
+.Verification
+
+* Verify that Copied CSVs are no longer created in user namespaces:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get csv -n <user-namespace>
+----
++
+The command should return no Copied CSVs for namespaces that do not have their own Operator subscriptions.
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://github.com/operator-framework/enhancements/blob/master/enhancements/olm-toggle-copied-csvs.md[OLM toggle Copied CSVs enhancement proposal]
+* link:https://olm.operatorframework.io/docs/advanced-tasks/configuring-olm/#disabling-copied-csvs[Disabling Copied CSVs in OLM]
+* xref:plan:etcd-storage-limits.adoc[]

@@ -1,0 +1,49 @@
+:_content-type: PROCEDURE
+:description: Disable the full CA bundle mount to reduce etcd pressure from ca-certs-merged ConfigMaps in every user namespace.
+:keywords: optimize, etcd, CA-bundle, ConfigMap, TLS
+:navtitle: Disable the workspace CA bundle mount
+
+[id="disabling-workspace-ca-bundle-mount"]
+= Disable the workspace CA bundle mount
+
+[role="_abstract"]
+By default, the Operator creates a `ca-certs-merged` ConfigMap in every user namespace. This ConfigMap contains the full Certificate Authorities (CAs) bundle. On clusters with many TLS certificates, these ConfigMaps consume significant etcd storage. Disable the full CA bundle mount to reduce etcd pressure.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Configure the `CheCluster` Custom Resource to disable the workspace CA bundle mount:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} edit checluster/{prod-checluster} -n {prod-namespace}
+----
++
+[source,yaml]
+----
+spec:
+  devEnvironments:
+    trustedCerts:
+      disableWorkspaceCaBundleMount: true
+----
++
+With this configuration, {prod-short} no longer mounts the full CA bundle under `/etc/pki/ca-trust/extracted/pem`. Only custom certificates are mounted under `/public-certs`.
+
+.Verification
+
+* Verify that new workspaces no longer mount the full CA bundle:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get configmap ca-certs-merged -n <user-namespace>
+----
++
+The ConfigMap should not exist in namespaces for newly created workspaces.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:plan:etcd-storage-limits.adoc[]
