@@ -9,28 +9,36 @@
 [role="_abstract"]
 {prod-short} deploys on {orch-name} as an Operator that manages a gateway, dashboard, server, and plug-in registry. The installation method you choose depends on your cluster environment and need for configuration control.
 
+include::partial$snip_persona-admin.adoc[]
+
 {prod-short} consists of an Operator, a user dashboard, a gateway, and a plug-in registry. The Operator manages the full lifecycle of all server components. You deploy {prod-short} by installing the Operator and creating a `CheCluster` custom resource.
 
 == Installation methods
+
+Argo CD (GitOps):: Store the Operator subscription and `CheCluster` configuration in a Git repository and let Argo CD reconcile the deployment. Choose this method for production deployments where every configuration change must be tracked in Git, auditable, and automatically reconciled.
 
 `{prod-cli}` command-line tool:: Choose this method when you need to quickly deploy {prod-short} for evaluation, customize the `CheCluster` configuration during installation, or manage {prod-short} from scripts.
 
 {orch-name} web console:: Choose this method when you prefer a graphical workflow through OperatorHub and do not need advanced configuration options during deployment.
 
-Both methods produce the same result: an Operator subscription and a `CheCluster` custom resource. For step-by-step deployment instructions, see Additional resources.
+All methods produce the same result: an Operator subscription and a `CheCluster` custom resource. For step-by-step deployment instructions, see Additional resources.
 
 == Deployment scenarios
 
-Standard deployment:: Your {orch-name} cluster has internet access. Both installation methods are available. The Operator pulls container images directly from `registry.redhat.io`.
+Standard deployment:: Your {orch-name} cluster has internet access. All installation methods are available. The Operator pulls container images directly from `registry.redhat.io`.
 
-Air-gapped deployment:: Your cluster has no internet access. Mirror the required container images and Operator catalogs to a private registry before installation.
+GitOps deployment:: Your organization manages cluster configuration declaratively through Argo CD. Store the Operator subscription and `CheCluster` configuration in a Git repository and let Argo CD reconcile the desired state. Available for both connected and air-gapped clusters.
+
+Air-gapped deployment:: Your cluster has no internet access. Mirror the required container images and Operator catalogs to a private registry before installation. Both GitOps and CLI methods are available.
 
 External identity provider:: Your organization manages authentication through an existing identity system such as {keycloak}. Deploy {prod-short} with an external OIDC provider instead of the default {orch-name} OAuth.
 
 [role="_additional-resources"]
 .Additional resources
 
+* xref:proc_deploying-che-using-gitops.adoc[]
 * xref:proc_installing-che-on-openshift-using-cli.adoc[]
 * xref:proc_installing-che-on-openshift-using-the-web-console.adoc[]
+* xref:proc_deploying-che-using-gitops-in-a-restricted-environment.adoc[]
 * xref:proc_installing-che-in-a-restricted-environment.adoc[]
 * xref:proc_installing-che-on-openshift-with-keycloak-as-oidc.adoc[]
