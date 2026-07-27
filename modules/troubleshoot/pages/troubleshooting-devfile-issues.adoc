@@ -1,0 +1,83 @@
+:_content-type: REFERENCE
+:description: Fix common devfile issues that prevent workspaces from starting or operating correctly.
+:keywords: troubleshoot, devfile-issues
+:navtitle: Fix devfile errors
+:page-aliases:
+
+[id="troubleshooting-devfile-issues"]
+= Fix devfile errors
+
+Fix common devfile issues that prevent workspaces from starting or operating correctly. Issues include syntax errors, component failures, lifecycle command problems, and volume or endpoint misconfigurations.
+
+
+== Devfile syntax and validation errors
+
+.Devfile syntax and validation error symptoms and resolutions
+[cols="1,2",options="header"]
+|===
+| Symptom | Resolution
+
+| Workspace fails to start with `Failed to process devfile` or `invalid devfile`.
+| The devfile contains a syntax error. Validate the devfile YAML against the devfile schema. Check for incorrect indentation, missing required fields, or unsupported properties.
+
+| Workspace starts but ignores devfile changes.
+| {prod-short} caches devfile content. Delete the workspace and create a new one from the updated repository URL to apply devfile changes.
+
+| Error: `schemaVersion is required`.
+| The devfile is missing the `schemaVersion` field. Add `schemaVersion: 2.2.2` as the first line in the devfile.
+|===
+
+== Component and container errors
+
+.Component and container error symptoms and resolutions
+[cols="1,2",options="header"]
+|===
+| Symptom | Resolution
+
+| Workspace Pod shows `CrashLoopBackOff` for a devfile component.
+| The container image specified in the devfile component fails to start. Verify that the image exists and runs correctly outside of {prod-short}. Check container logs for details.
+
+| `openssl` or `libbrotli` not found error in workspace startup.
+| The container image is missing libraries required by Visual Studio Code. Add `RUN yum install compat-openssl11 libbrotli` to the Dockerfile for the image.
+
+| Devfile component does not have enough memory and is `OOMKilled`.
+| The default memory limit is insufficient for the workload. Add or increase `memoryLimit` in the devfile component.
+|===
+
+== Command and lifecycle errors
+
+.Command and lifecycle error symptoms and resolutions
+[cols="1,2",options="header"]
+|===
+| Symptom | Resolution
+
+| A `postStart` command fails silently.
+| The command exits with a non-zero code. Check workspace logs for the command output. Verify the command path and syntax. Ensure the command is executable inside the container.
+
+| Multiple `postStart` commands do not all run.
+| The devfile specification allows only one `postStart` event. Combine multiple initialization commands into a single shell script and reference that script as the `postStart` command.
+|===
+
+== Volume and endpoint errors
+
+.Volume and endpoint error symptoms and resolutions
+[cols="1,2",options="header"]
+|===
+| Symptom | Resolution
+
+| Source code changes are lost after workspace restart.
+| The `/projects` volume is not persistent. Verify that the workspace is not using ephemeral storage. Check the `pvcStrategy` in the `CheCluster` Custom Resource.
+
+| Endpoint URL returns `502 Bad Gateway` or `503 Service Unavailable`.
+| The application inside the workspace is not listening on the port declared in the devfile endpoint. Verify the `targetPort` value matches the port your application binds to.
+
+| Endpoint is not accessible from outside the workspace.
+| By default, endpoints use `public` exposure. Verify the `exposure` field in the devfile endpoint definition. If set to `internal`, the endpoint is only accessible within the workspace Pod.
+|===
+
+.Additional resources
+
+* link:https://devfile.io/docs/2.2.2/what-is-a-devfile[What is a devfile]
+* link:https://devfile.io/docs/2.2.2/adding-schema-support[Adding devfile schema support to an IDE]
+* link:https://devfile.io/docs/2.2.2/overview[Devfile customization overview]
+* xref:end-user-guide:devfile-introduction.adoc[]

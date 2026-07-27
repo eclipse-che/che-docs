@@ -1,0 +1,56 @@
+:_content-type: PROCEDURE
+:description: Troubleshoot network problems
+:keywords: user-guide, troubleshooting-network-problems
+:navtitle: Troubleshoot network problems
+:page-aliases: .:troubleshooting-network-problems.adoc, end-user-guide:troubleshooting-network-problems.adoc
+
+[id="troubleshooting-network-problems"]
+= Troubleshoot network problems
+
+
+Troubleshoot {prod-short} network connectivity issues including WebSocket failures, proxy configuration problems, and Domain Name System (DNS) resolution errors.
+
+
+.Prerequisites
+
+* You have an active {prod-short} workspace URL or dashboard URL.
+
+.Procedure
+
+. Verify that the browser supports WebSocket connections by opening the browser developer tools (F12), navigating to the *Console* tab, and running:
++
+[source,javascript]
+----
+var ws = new WebSocket('wss://echo.websocket.org');
+ws.onopen = function() { console.log('WebSocket OK'); ws.close(); };
+ws.onerror = function() { console.log('WebSocket FAILED'); };
+----
++
+If the output is `WebSocket FAILED`, WebSocket connections are blocked. Contact your network administrator to allow WSS connections on port 443.
+
+. Verify that firewall rules allow WebSocket Secure (WSS) connections on port 443 to the {prod-short} hostname.
+
+. If your network uses a proxy server, verify that the proxy allows WebSocket upgrade requests. Some proxies block HTTP upgrade headers by default.
+
+. Verify DNS resolution from a workspace terminal:
++
+[source,bash,subs="+quotes"]
+----
+nslookup __<{prod-id-short}_hostname>__
+----
++
+If the DNS lookup fails, the workspace Pod cannot resolve the {prod-short} hostname. Verify the cluster DNS configuration and any custom DNS settings in the workspace {orch-namespace}.
+
+. If you encounter `x509: certificate signed by unknown authority` errors when connecting to an HTTPS endpoint from inside a workspace, the workspace does not trust the TLS certificate.
++
+Contact your administrator to import the required Certificate Authority (CA) certificates.
+
+.Verification
+
+* Open a workspace and verify that the IDE loads without connection errors.
+* Verify that Git operations (clone, push, pull) complete without network timeouts.
+
+.Additional resources
+* xref:troubleshooting-slow-workspaces.adoc[]
+* xref:troubleshooting-webview-loading-error.adoc[]
+* xref:viewing-workspace-logs-in-cli.adoc[]

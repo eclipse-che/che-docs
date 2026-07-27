@@ -1,18 +1,18 @@
-:_content-type: PROCEDURE
-:description: Troubleshooting slow workspaces
+:_content-type: CONCEPT
+:description: Diagnose slow Cloud Development Environments
 :keywords: user-guide, troubleshooting-slow-workspaces
-:navtitle: Troubleshooting slow workspaces
-:page-aliases: .:troubleshooting-slow-workspaces.adoc
+:navtitle: Diagnose slow Cloud Development Environments
+:page-aliases: .:troubleshooting-slow-workspaces.adoc, end-user-guide:troubleshooting-slow-workspaces.adoc
 
 [id="troubleshooting-slow-workspaces"]
-= Troubleshooting slow workspaces
+= Diagnose slow Cloud Development Environments
 
-Sometimes, workspaces can take a long time to start. Tuning can reduce this start time. Depending on the options, administrators or users can do the tuning.
 
-This section includes several tuning options for starting workspaces faster or improving workspace runtime performance.
+Diagnose slow Cloud Development Environment startup and runtime performance. Administrators can pre-pull images and tune resource limits; developers can optimize devfiles and storage strategy.
+
 
 [id="improving-workspace-start-time"]
-== Improving workspace start time
+== Reduce workspace start time
 
 Caching images with {image-puller-name-short}::
 +
@@ -45,7 +45,7 @@ To avoid this problem, reduce the exposure. For example, to automatically detect
 By reducing the number of endpoints and checking endpoints of all plugins, workspace start can be faster.
 
 [id="improving-workspace-runtime-performance"]
-== Improving workspace runtime performance
+== Improve workspace runtime performance
 
 Providing enough CPU resources::
 +
@@ -59,11 +59,13 @@ components:
   - name: tools
     container:
       image: quay.io/devfile/universal-developer-image:ubi8-latest
-      cpuLimit: 4000m <1>
-      cpuRequest: 1000m <2>
+      cpuLimit: 4000m
+      cpuRequest: 1000m
 ----
-<1> Specifies the CPU limit
-<2> Specifies the CPU request
++
+cpuLimit:: Specifies the CPU limit.
++
+cpuRequest:: Specifies the CPU request.
 
 Providing enough memory::
 +
@@ -77,8 +79,10 @@ components:
   - name: tools
     container:
       image: quay.io/devfile/universal-developer-image:ubi8-latest
-      memoryLimit: 6G <1>
-      memoryRequest: 512Mi <2>
+      memoryLimit: 6G
+      memoryRequest: 512Mi
 ----
-<1> Specifies the memory limit
-<2> Specifies the memory request
++
+memoryLimit:: Specifies the memory limit.
++
+memoryRequest:: Specifies the memory request.
