@@ -1,15 +1,13 @@
 :_content-type: PROCEDURE
-:description: Configuring {image-puller-name-short} to pre-pull custom images
+:description: Cache your organization's custom images
 :keywords: administration-guide, image-puller, CLI
-:navtitle: Configuring {image-puller-name-short} to pre-pull custom images
+:navtitle: Cache your organization's custom images
 :page-aliases: administration-guide:configuring-image-puller-to-pre-pull-custom-images.adoc
 
 [id="configuring-image-puller-to-pre-pull-custom-images"]
-= Configuring {image-puller-name-short} to pre-pull custom images
+= Cache your organization's custom images
 
-You can configure {image-puller-name} to pre-pull custom images.
-
-include::partial$snip_persona-admin.adoc[]
+Cache your organization's custom images with {image-puller-name} so that workspaces using organization-specific container images start without waiting for large image downloads.
 
 .Prerequisites
 
@@ -34,11 +32,23 @@ include::partial$snip_persona-admin.adoc[]
                   "imagePuller": {
                     "enable": true,
                     "spec": {
-                      "images": "__NAME-1__=__IMAGE-1__;__NAME-2__=__IMAGE-2__" <1>
+                      "images": "__NAME-1__=__IMAGE-1__;__NAME-2__=__IMAGE-2__"
                     }
                   }
                 }
               }
             }'
 ----
-<1> The semicolon separated list of images
++
+where:
++
+`images`:: The semicolon-separated list of images in `name=image` format.
+
+.Verification
+
+* Verify that the image puller is configured with the custom images:
++
+[source,shell,subs="+attributes"]
+----
+{orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath='{.spec.components.imagePuller.spec.images}'
+----

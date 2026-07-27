@@ -1,0 +1,50 @@
+:_content-type: CONCEPT
+:description: What you can optimize in {prod-short}
+:navtitle: What you can optimize in {prod-short}
+
+[id="what-you-can-optimize"]
+= What you can optimize in {prod-short}
+
+Identify the performance areas you can tune in {prod-short} so that you choose the right optimization strategy for your deployment.
+
+A default {prod-short} installation runs all server components with a single replica and no image pre-caching. This configuration works for small teams but can cause slow workspace starts and limited capacity as usage grows. You can optimize two areas independently:
+
+Workspace startup speed::
+When a developer starts a workspace, {orch-name} pulls container images from the registry. On a cold node, this can take several minutes. The {image-puller-name} pre-caches images on every node so that workspaces start in seconds. For instructions on deploying and configuring the {image-puller-name-short}, see Additional resources.
+
+Platform scaling::
+By default, each {prod-short} server component runs with one replica. You can increase replicas for high availability and configure cluster autoscaling to add worker nodes when demand exceeds capacity. For instructions on configuring autoscaling, see Additional resources.
+
+== When to optimize
+
+Consider optimization when you observe:
+
+* Workspace startup taking more than 60 seconds on nodes that have not previously run workspaces.
+* Dashboard or gateway timeouts during peak usage when many developers start workspaces simultaneously.
+* Workspace scheduling failures because of insufficient node resources.
+
+== What affects workspace startup and platform capacity
+
+[cols="1,2,1",options="header"]
+|===
+| Area | Control | Default
+
+| Image pre-caching
+| `CheCluster` CR field `spec.components.imagePuller.enable`
+| `false` (disabled)
+
+| Server replicas
+| `CheCluster` CR field `spec.components.<component>.deployment.replicas`
+| `1` for each component
+
+| Node autoscaling
+| `MachineAutoscaler` and `ClusterAutoscaler` custom resources
+| Not configured
+|===
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:caching-images-for-faster-workspace-start.adoc[]
+* xref:configuring-autoscaling.adoc[]
+* xref:administration-guide:monitoring-che.adoc[]

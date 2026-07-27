@@ -1,0 +1,57 @@
+:_content-type: PROCEDURE
+:description: Verify workspace performance after optimization
+:navtitle: Verify workspace performance after optimization
+
+[id="verify-optimization-impact"]
+= Verify workspace performance after optimization
+
+Verify that your optimization changes improved workspace startup speed and platform capacity so that you can confirm the investment is working.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Verify that {prod-short} server components are running with the expected replica count:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get deployment -n {prod-namespace} \
+  -o custom-columns='NAME:.metadata.name,REPLICAS:.spec.replicas,AVAILABLE:.status.availableReplicas'
+----
++
+All components should show the configured number of replicas in the `AVAILABLE` column.
+
+. If you enabled the {image-puller-name}, verify that the DaemonSet is running on all schedulable nodes:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get daemonset -n {prod-namespace} -l app=kubernetes-image-puller
+----
++
+The `DESIRED` and `READY` columns should show the same number, matching your schedulable node count.
+
+. Verify that the pre-cached images are present on a node by checking the DaemonSet pod logs:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} logs -n {prod-namespace} -l app=kubernetes-image-puller --tail=5
+----
+
+. Start a workspace and observe the startup time. With image pre-caching enabled, workspaces on nodes that have the DaemonSet pod should start within 30 seconds.
+
+. Verify overall platform health:
++
+[source,bash,subs="+attributes"]
+----
+$ {orch-cli} get pods -n {prod-namespace} -o custom-columns='NAME:.metadata.name,READY:.status.containerStatuses[*].ready,STATUS:.status.phase'
+----
++
+All pods should show `Running` status with all containers ready.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:caching-images-for-faster-workspace-start.adoc[]
+* xref:configuring-autoscaling.adoc[]
