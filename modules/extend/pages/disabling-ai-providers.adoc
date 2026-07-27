@@ -1,0 +1,53 @@
+:_content-type: PROCEDURE
+:description: Disable AI coding assistants by deleting the ai-tool-registry ConfigMap
+:keywords: ai, disable, configmap, ai-tool-registry, providers
+:navtitle: Disable AI coding assistants
+
+[id="disabling-ai-providers"]
+= Disable AI coding assistants
+
+[role="_abstract"]
+Disable AI coding assistants by deleting the `ai-tool-registry` ConfigMap. The AI Provider section on the *Create Workspace* page is hidden when the ConfigMap is absent.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Delete the `ai-tool-registry` ConfigMap:
++
+[source,bash,subs="+quotes,+attributes"]
+----
+$ {orch-cli} delete configmap ai-tool-registry -n {prod-namespace}
+----
+
+. Verify that the AI provider registry is empty:
++
+[source,bash,subs="+quotes,+attributes"]
+----
+$ {orch-cli} exec deploy/{prod-id-short}-dashboard -n {prod-namespace} \
+    -- curl -s http://localhost:8080/dashboard/api/ai-registry
+----
++
+Expected output:
++
+[source,json]
+----
+{"providers":[],"tools":[],"defaultAiProviders":[]}
+----
+
+.Verification
+
+* Open the {prod-short} dashboard and navigate to *Create Workspace*. Verify that the *AI Provider* section is no longer visible.
+
+[NOTE]
+====
+Deleting the ConfigMap does not remove existing API key Secrets from user namespaces. Users who previously stored API keys retain those Secrets until they manually delete them or an administrator removes them.
+====
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:configuring-ai-providers.adoc[]
+* xref:ai-provider-api-key-secret-reference.adoc[]

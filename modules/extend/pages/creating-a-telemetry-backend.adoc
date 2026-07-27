@@ -1,0 +1,102 @@
+:_content-type: PROCEDURE
+:description: Create a Quarkus-based telemetry backend that extends the telemetry client
+:keywords: telemetry, backend, quarkus, maven, java, AnalyticsManager
+:navtitle: Create a telemetry backend
+
+[id="creating-a-telemetry-backend"]
+= Create a telemetry backend
+
+[role="_abstract"]
+Create a Quarkus-based telemetry backend that extends the {prod-short} telemetry client and implements custom event handling logic.
+
+
+[NOTE]
+====
+For fast feedback when developing, develop inside a {devworkspace}. This way, you can run the application in a cluster and receive events from the front-end telemetry plugin.
+====
+
+.Prerequisites
+
+* You have a running instance of {prod}.
+* You have a telemetry server deployed to receive events. See xref:creating-a-telemetry-server.adoc[].
+
+.Procedure
+
+. Create a Maven Quarkus project:
++
+[source,bash]
+----
+include::example$creating-a-telemetry-plugin/project_scaffolding.sh[]
+----
+
+. Remove the files under `src/main/java/mygroup` and `src/test/java/mygroup`.
+
+. Consult the link:https://github.com/che-incubator/che-workspace-telemetry-client/packages[GitHub packages] for the latest version of `backend-base` and add the following dependencies to your `pom.xml`:
++
+.`pom.xml`
+====
+[source,xml]
+----
+include::example$creating-a-telemetry-plugin/pom_snippet.xml[]
+----
+====
+
+. Create a personal access token with `read:packages` permissions from link:https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages[GitHub packages] and add your GitHub username, the token, and `che-incubator` repository details in your `~/.m2/settings.xml` file:
++
+.`settings.xml`
+====
+[source,xml]
+----
+include::example$creating-a-telemetry-plugin/settings.xml[]
+----
+====
+
+. Create `MainConfiguration.java` under `src/main/java/mygroup`. This file contains configuration provided to `AnalyticsManager`:
++
+.`MainConfiguration.java`
+====
+[source,java]
+----
+include::example$creating-a-telemetry-plugin/MainConfiguration.java[]
+----
+====
+<1> A MicroProfile configuration annotation is used to inject the `welcome.message` configuration.
++
+For more details on how to set configuration properties specific to your backend, see the Quarkus link:https://quarkus.io/guides/config-reference[Configuration Reference Guide].
+
+. Create `AnalyticsManager.java` under `src/main/java/mygroup`. This file contains logic specific to the telemetry system:
++
+.`AnalyticsManager.java`
+====
+[source,java]
+----
+include::example$creating-a-telemetry-plugin/AnalyticsManagerSkeleton.java[]
+----
+====
+<1> Log the welcome message if it was provided.
+<2> Log the event received from the front-end plugin.
+
+. Add the `quarkus.arc.selected-alternatives` property to `src/main/resources/application.properties` to specify the alternative beans:
++
+.`application.properties`
+====
+----
+quarkus.arc.selected-alternatives=MainConfiguration,AnalyticsManager
+----
+====
+
+.Verification
+
+* Run the Quarkus application and verify that it starts without errors:
++
+[source,bash]
+----
+mvn quarkus:dev
+----
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://quarkus.io/guides/config-reference[Quarkus Configuration Reference Guide]
+* xref:implementing-telemetry-backend-event-handlers.adoc[]
+* xref:telemetry-plugin-overview.adoc[]

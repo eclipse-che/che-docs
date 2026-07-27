@@ -1,0 +1,32 @@
+:page-aliases: administration-guide:creating-a-telemetry-plugin.adoc, extensions:creating-a-telemetry-plug-in.adoc
+:_content-type: CONCEPT
+:description: How telemetry plugins work in workspaces
+:keywords: telemetry, plugin, analytics, backend, AbstractAnalyticsManager
+:navtitle: How telemetry plugins work
+
+[id="telemetry-plugin-overview"]
+= How telemetry plugins work
+
+[role="_abstract"]
+A telemetry plugin for {prod-short} collects workspace usage data and sends it to your analytics backend. The plugin extends the `AbstractAnalyticsManager` class with methods for event handling, activity tracking, and shutdown.
+
+
+The `AbstractAnalyticsManager` class requires the following method implementations:
+
+* `isEnabled()` - determines whether the telemetry backend is functioning correctly. This can mean always returning `true`, or have more complex checks, for example, returning `false` when a connection property is missing.
+* `destroy()` - cleanup method that is run before shutting down the telemetry backend. This method sends the `WORKSPACE_STOPPED` event.
+* `onActivity()` - notifies that some activity is still happening for a given user. This is mainly used to send `WORKSPACE_INACTIVE` events.
+* `onEvent()` - submits telemetry events to the telemetry server, such as `WORKSPACE_USED` or `WORKSPACE_STARTED`.
+* `increaseDuration()` - increases the duration of a current event rather than sending many events in a small frame of time.
+
+A finished example of the telemetry backend is available in the `devworkspace-telemetry-example-plugin` repository. For procedures to implement each method and the complete example code, see Additional resources.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:creating-a-telemetry-server.adoc[]
+* xref:creating-a-telemetry-backend.adoc[]
+* xref:implementing-telemetry-backend-event-handlers.adoc[]
+* xref:deploying-a-telemetry-plugin.adoc[]
+* xref:configuring-workspaces-to-load-telemetry-plugin.adoc[]
+* link:https://github.com/che-incubator/devworkspace-telemetry-example-plugin[devworkspace-telemetry-example-plugin]

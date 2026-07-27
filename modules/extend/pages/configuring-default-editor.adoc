@@ -1,0 +1,48 @@
+:page-aliases: administration-guide:configuring-default-editor.adoc
+:_content-type: PROCEDURE
+:description: Set the default IDE for new workspaces
+:keywords: administration guide, dashboard, editors
+:navtitle: Set the default IDE for new workspaces
+
+[id="configuring-default-editor"]
+= Set the default IDE for new workspaces
+
+[role="_abstract"]
+Set the default editor that {prod-short} uses when creating new workspaces to ensure a consistent development experience. The default editor is specified by its plugin ID in the `publisher/name/version` format.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
+
+* `jq`. See link:https://stedolan.github.io/jq/download/[Downloading `jq`].
+
+.Procedure
+
+include::example$snip_che-editor-id-list.adoc[]
+
+. Configure the `defaultEditor`:
++
+[source,subs="+quotes,+attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+    --namespace {prod-namespace} \
+    --type='merge' \
+    -p '{"spec":{"devEnvironments":{"defaultEditor": "__<default_editor>__"}}}'
+----
++
+where:
++
+`__<default_editor>__`:: The default editor specified as a plugin ID in `publisher/name/version` format or as a URI.
+
+.Verification
+
+* Create a new workspace from the {prod-short} Dashboard and verify that the configured default editor opens.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:configuring-editors-definitions.adoc[]
+
+* xref:concealing-editors.adoc[]
+
+* {editor-definition-samples-link}

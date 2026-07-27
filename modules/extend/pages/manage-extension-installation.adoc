@@ -1,0 +1,142 @@
+:page-aliases: administration-guide:manage-extension-installation.adoc
+:_content-type: PROCEDURE
+:description: Control which extensions users can install
+:keywords: extensions, workspace
+:navtitle: Control which extensions users can install
+
+[id="visual-studio-code-manage-extensions-installation"]
+= Control which extensions users can install
+
+
+[role="_abstract"]
+Control Code - OSS extension installation by using a ConfigMap. Enforce a fine-grained allow or deny list by using the `AllowedExtensions` policy.
+
+You can also block installs through the CLI, default extensions, and the `workbench.extensions.command.installFromVSIX` API command. The following properties are supported:
+
+* `BlockCliExtensionsInstallation` -- when enabled, blocks installation of extensions through the CLI.
+* `BlockDefaultExtensionsInstallation` -- when enabled, blocks installation of default extensions. See xref:default-extensions-for-microsoft-visual-studio-code.adoc[].
+* `BlockInstallFromVSIXCommandExtensionsInstallation` -- when enabled, blocks installation of extensions through the `workbench.extensions.command.installFromVSIX` API command.
+* `AllowedExtensions` -- provides fine-grained control over Code - OSS extension installation. When this policy is applied, already installed extensions that are not allowed are disabled and display a warning. For conceptual background, see link:https://code.visualstudio.com/docs/setup/enterprise#_configure-allowed-extensions[Configure allowed extensions].
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Add a new ConfigMap to the {prod-namespace} namespace and specify the properties you want to add:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: vscode-editor-configurations
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/component: workspaces-config
+    app.kubernetes.io/part-of: che.eclipse.org
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /checode-config
+    controller.devfile.io/read-only: 'true'
+data:
+  policy.json: |
+    {
+      "BlockCliExtensionsInstallation": true,
+      "BlockDefaultExtensionsInstallation": true,
+      "BlockInstallFromVSIXCommandExtensionsInstallation": true,
+      "AllowedExtensions": {
+          "*": true,
+          "dbaeumer.vscode-eslint": false,
+          "ms-python.python": false,
+          "redhat": false
+       }
+    }
+----
++
+[NOTE]
+====
+Ensure that the ConfigMap contains data in a valid JSON format.
+====
+
+. Optional: To completely disable extension installation instead of using fine-grained control, set all extensions to disallowed:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: vscode-editor-configurations
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/component: workspaces-config
+    app.kubernetes.io/part-of: che.eclipse.org
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /checode-config
+    controller.devfile.io/read-only: 'true'
+data:
+  policy.json: |
+    {
+      "AllowedExtensions": {
+        "*": false
+      }
+    }
+----
+
+. Start or restart your workspace.
+
+. Optional: Add the ConfigMap in the user's {orch-namespace}:
++
+[source,yaml,subs="+attributes,+quotes"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: vscode-editor-configurations
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
+  annotations:
+    controller.devfile.io/mount-as: subpath
+    controller.devfile.io/mount-path: /checode-config
+    controller.devfile.io/read-only: 'true'
+data:
+  policy.json: |
+    {
+      "AllowedExtensions": {
+          "*": false
+       }
+    }
+----
++
+[NOTE]
+====
+When the ConfigMap is stored in the user's {orch-namespace}, the user can edit its values.
+====
+
+.Verification
+
+. Verify that the `BlockCliExtensionsInstallation` property is applied:
+* Press F1, select *Preferences: Open Settings (UI)*, and enter `BlockCliExtensionsInstallation` in search.
+* Provide a `.vsix` file and try CLI install. The installation fails with "Installation of extensions via CLI has been blocked by an administrator".
+
+. Verify that the `BlockDefaultExtensionsInstallation` property is applied:
+* Check Settings for the property.
+* Configure default extensions and verify they are not installed on workspace start or restart.
+
+. Verify that the `BlockInstallFromVSIXCommandExtensionsInstallation` property is applied:
+* Check Settings for the property.
+* The `workbench.extensions.command.installFromVSIX` API command is blocked.
+
+. Verify that rules defined in the `AllowedExtensions` section are applied:
+* Check *Settings* -> `extensions.allowed`.
+* Disallowed extensions display a "This extension cannot be installed because it is not in the allowed list" warning.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:editor-configurations-for-microsoft-visual-studio-code.adoc[]
+* xref:default-extensions-for-microsoft-visual-studio-code.adoc[]
+* link:https://code.visualstudio.com/docs/setup/enterprise#_configure-allowed-extensions[Configure allowed extensions]
