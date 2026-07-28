@@ -32,7 +32,7 @@ $ {orch-cli} apply -f - <<EOF
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: ${USER_ROLES}
+  name: $\{USER_ROLES}
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
 rules:
@@ -56,17 +56,17 @@ $ {orch-cli} apply -f - <<EOF
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: ${USER_ROLES}-operator
+  name: $\{USER_ROLES}-operator
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
 subjects:
   - kind: ServiceAccount
     name: che-operator
-    namespace: ${OPERATOR_NAMESPACE}
+    namespace: $\{OPERATOR_NAMESPACE}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: ${USER_ROLES}
+  name: $\{USER_ROLES}
 EOF
 
 ----
@@ -76,7 +76,7 @@ EOF
 [source,bash,subs="+quotes,+macros,+attributes"]
 ----
 $ {orch-cli} patch checluster eclipse-che \
-  --patch '{"spec": {"components": {"cheServer": {"clusterRoles": ["'${USER_ROLES}'"]}}}}' \
+  --patch '{"spec": {"components": {"cheServer": {"clusterRoles": ["'$\{USER_ROLES}'"]}}}}' \
   --type=merge -n eclipse-che
 ----
 
@@ -85,7 +85,7 @@ $ {orch-cli} patch checluster eclipse-che \
 [source,bash,subs="+quotes,+macros,+attributes"]
 ----
 $ {orch-cli} patch checluster eclipse-che \
-  --patch '{"spec": {"devEnvironments": {"user": {"clusterRoles": ["'${USER_ROLES}'"]}}}}' \
+  --patch '{"spec": {"devEnvironments": {"user": {"clusterRoles": ["'$\{USER_ROLES}'"]}}}}' \
   --type=merge -n eclipse-che
 ----
 
@@ -99,7 +99,7 @@ $ {orch-cli} patch checluster eclipse-che \
 +
 [source,bash,subs="+quotes,+macros,+attributes"]
 ----
-$ {orch-cli} get clusterrole ${USER_ROLES}
+$ {orch-cli} get clusterrole $\{USER_ROLES}
 ----
 
 [role="_additional-resources"]
