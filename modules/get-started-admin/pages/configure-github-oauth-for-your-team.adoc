@@ -1,0 +1,71 @@
+:_content-type: PROCEDURE
+:description: Configure GitHub OAuth for your team
+:keywords: github, oauth, authentication, credentials
+:navtitle: Configure GitHub OAuth for your team
+
+[id="configure-github-oauth-for-your-team"]
+= Configure GitHub OAuth for your team
+
+[role="_abstract"]
+Configure a GitHub OAuth application so that developers can clone repositories and push code from {prod-short} workspaces without manually entering credentials. This procedure covers GitHub.com and GitHub Enterprise Cloud. For other providers, see the Additional resources.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+* You are logged in to GitHub with an account that has permission to create OAuth applications for your organization.
+
+.Procedure
+
+. Go to the link:https://github.com/settings/applications/new[GitHub OAuth application registration page].
+
+. Enter the following values:
++
+.. *Application name*: `pass:c,a,q[{prod-short}]`
+.. *Homepage URL*: `pass:c,a,q[{prod-url}]/`
+.. *Authorization callback URL*: `pass:c,a,q[{prod-url}]/api/oauth/callback`
+
+. Click *Register application*.
+
+. Click *Generate new client secret*.
+
+. Copy the *Client ID* and the *Client Secret*. You need both values in the next step.
+
+. Prepare and apply the {orch-name} Secret:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: github-oauth-config
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: oauth-scm-configuration
+  annotations:
+    che.eclipse.org/oauth-scm-server: github
+type: Opaque
+stringData:
+  id: __<GitHub_OAuth_Client_ID>__
+  secret: __<GitHub_OAuth_Client_Secret>__
+----
+
+. Apply the Secret:
++
+[source,bash,subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f - <<EOF
+<Secret_prepared_in_the_previous_step>
+EOF
+----
+
+.Verification
+
+* The output displays `secret/github-oauth-config created`.
+* A developer creates a new workspace from a private GitHub repository and is not prompted for credentials.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:administration-guide:configuring-oauth-for-git-providers.adoc[Connect Git providers with OAuth for GitHub, GitLab, Bitbucket, and Azure DevOps]
+* link:https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app[GitHub Docs: Creating an OAuth App]

@@ -1,0 +1,153 @@
+:_content-type: PROCEDURE
+:description: Access private repositories with a personal access token
+:keywords: Git, credentials, access-token
+:navtitle: Access private repositories with a personal access token
+:page-aliases: end-user-guide:using-a-git-provider-access-token.adoc, using-a-Git-credentials-store.adoc, using-git-credentials.adoc, get-started:using-a-git-provider-access-token.adoc
+
+[id="using-a-git-provider-access-token"]
+= Access private repositories with a personal access token
+
+// vale RedHat.CaseSensitiveTerms = NO
+
+[role="_abstract"]
+Set up a personal access token so that you can clone private repositories and push code from your cloud development environment when your administrator has not configured OAuth for your Git provider. You can also configure personal access tokens on the *User Preferences* page of your {prod-short} dashboard: `pass:c,a,q[{prod-url}]/dashboard/#/user-preferences?tab=personal-access-tokens`.
+
+Mounting your access token as a Secret enables the {prod-short} Server to access the remote repository that is cloned during cloud development environment creation, including access to the repository's `/.che` and `/.vscode` folders.
+
+You can create and apply multiple access-token Secrets per Git provider. You must apply each Secret in your user {orch-namespace}.
+
+.Prerequisites
+
+* You have a personal access token from your Git provider:
+** link:https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token[GitHub Personal Access Token]
+** link:https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html[GitLab Personal Access Token]
+** link:https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/[Bitbucket App Password]
+** link:https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate[Azure DevOps Personal Access Token]
++
+[IMPORTANT]
+====
+Personal access tokens are sensitive information. Treat them as you would passwords. If you are having trouble with authentication, verify the token locally before applying it as a Secret:
+
+[source,bash]
+----
+$ git clone https://<PAT>@github.com/username/repo.git
+----
+
+Replace `<PAT>` with your personal access token, and `username/repo` with the appropriate repository path. If cloning succeeds, the token is valid and has the necessary permissions.
+
+For GitHub Enterprise Cloud, verify that the token is link:https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on[authorized for use within your organization with SAML single sign-on].
+====
+
+* You have an active `{orch-cli}` session with your {orch-namespace}. See {orch-cli-link}.
+
+.Procedure
+
+. Open `pass:c,a,q[{prod-url}]/api/user/id` in a browser to get your {prod-short} user ID.
+
+. Create a {orch-name} Secret with your access token:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: personal-access-token-__<git_provider>__
+  labels:
+    app.kubernetes.io/component: scm-personal-access-token
+    app.kubernetes.io/part-of: che.eclipse.org
+  annotations:
+    che.eclipse.org/che-userid: __<{prod-id-short}_user_id>__
+    che.eclipse.org/scm-personal-access-token-name: __<git_provider_name>__
+    che.eclipse.org/scm-url: __<git_provider_endpoint>__
+    che.eclipse.org/scm-organization: __<git_provider_organization>__
+type: Opaque
+stringData:
+  token: __<your_personal_access_token>__
+----
++
+where:
++
+che.eclipse.org/che-userid:: Your {prod-short} user ID.
++
+che.eclipse.org/scm-personal-access-token-name:: The Git provider name (`github`, `gitlab`, `bitbucket-server`, or `azure-devops`).
++
+// vale RedHat.CaseSensitiveTerms = NO
+che.eclipse.org/scm-url:: The Git provider URL endpoint, for example `https://github.com` or `https://gitlab.com`.
+// vale RedHat.CaseSensitiveTerms = YES
++
+che.eclipse.org/scm-organization:: Required only for Azure DevOps: your Git provider user organization, or collection if Azure DevOps Server is used.
++
+token:: Your personal access token.
++
+Example for GitHub:
++
+// vale RedHat.GitLinks = NO
+[source,yaml,subs="+quotes,+attributes"]
+----
+kind: Secret
+apiVersion: v1
+metadata:
+  name: personal-access-token-github
+  labels:
+    app.kubernetes.io/component: scm-personal-access-token
+    app.kubernetes.io/part-of: che.eclipse.org
+  annotations:
+    che.eclipse.org/che-userid: 1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p
+    che.eclipse.org/scm-personal-access-token-name: github
+    che.eclipse.org/scm-url: https://github.com
+type: Opaque
+stringData:
+  token: ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+----
+// vale RedHat.GitLinks = YES
+
+. Open `pass:c,a,q[{prod-url}]/api/kubernetes/namespace` to get your {prod-short} user namespace as `name`.
+
+. Apply the Secret to your {prod-short} user {orch-namespace}:
++
+[source,bash,subs="+quotes,+attributes"]
+----
+$ {orch-cli} apply -f personal-access-token.yaml -n __<your_user_namespace>__
+----
++
+[IMPORTANT]
+====
+If you are using Azure DevOps Server, you must also modify the xref:end-user-guide:mounting-git-configuration.adoc[cloud development environment gitconfig] with the following section:
+
+[source,http]
+----
+extraheader = "Authorization: Basic <base64-encoded(:personal-access-token)>"
+----
+
+To generate the key-value pair, use the following command:
+
+[source,bash]
+----
+echo -n "extraheader = \"Authorization: Basic "$(printf ":%s" <personal access token> | base64)\"
+----
+
+The `extraheader` configuration is needed for remote git operations to Azure DevOps Server, for example `git clone`. This authorization method has a higher priority over the git credentials store, and as a result, remote operations to other Git providers will fail.
+====
+
+. Start or restart your cloud development environment.
+
+.Verification
+
+. Open a terminal in your cloud development environment.
+. Clone a private repository or push to a repository to verify authentication:
++
+// vale RedHat.GitLinks = NO
+[source,bash,subs="+quotes,+attributes"]
+----
+$ git clone https://github.com/__<org>__/__<private-repo>__.git
+----
+// vale RedHat.GitLinks = YES
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:authenticating-to-a-git-server-from-a-workspace.adoc[]
+* xref:administration-guide:deploying-che-with-support-for-git-repositories-with-self-signed-certificates.adoc[Deploy with support for Git repositories with self-signed certificates]
+* link:https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on[Authorizing a personal access token for use with SAML single sign-on]
+
+// vale RedHat.CaseSensitiveTerms = YES
