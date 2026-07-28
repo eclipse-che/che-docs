@@ -12,15 +12,17 @@ Manage IDE extensions in {prod-short} workspaces to control which extensions are
 
 IDEs in {prod-short} use extensions to provide language support, debugging, linting, and other development tools. The Microsoft Visual Studio Code - Open Source editor manages extensions through the Open VSX registry.
 
-{prod-short} supports four registry configurations:
+{prod-short} supports five registry configurations:
 
-Embedded Open VSX registry:: Runs in the `plugin-registry` pod and supports air-gapped, offline, and proxy-restricted environments. Contains a default subset of extensions that you can customize.
+. *Embedded Open VSX registry*. Runs in the `plugin-registry` pod and supports air-gapped, offline, and proxy-restricted environments. Contains a default subset of extensions that you can customize.
 
-Public Open VSX registry:: The community-hosted registry at `open-vsx.org`, accessed over the internet. Provides the full catalog of openly published extensions.
+. *Public Open VSX registry*. The community-hosted registry at `open-vsx.org`, accessed over the internet. Provides the full catalog of openly published extensions.
 
-Standalone Open VSX registry:: A self-hosted instance deployed on a network accessible from {prod-short} workspace pods. Provides full control over available extensions for organizations that need a curated, private registry.
+. *Standalone Open VSX registry*. A self-hosted instance deployed on a network accessible from {prod-short} workspace pods. Provides full control over available extensions for organizations that need a curated, private registry.
 
-Managed Open VSX registry:: An Operator-managed Open VSX server and PostgreSQL database deployed as {prod-short} operands. The Operator handles provisioning, exposure through the {prod-short} gateway, and lifecycle management. Enable it by setting `spec.components.openVSXRegistry.enable` in the `CheCluster` custom resource.
+. *Operator-managed Open VSX registry*. An Open VSX server and PostgreSQL database deployed and managed by the {prod-short} Operator as cluster operands. The Operator handles provisioning, database setup, exposure through the {prod-short} gateway, and lifecycle management. Enable it by setting `spec.components.openVSXRegistry.enable` in the `CheCluster` custom resource.
+
+. *Managed Open VSX registry*. A commercially supported, hosted registry operated by the Eclipse Foundation. Provides a cloud-hosted Open VSX registry without requiring self-hosted infrastructure. See link:https://managed.open-vsx.org/pricing/[Open VSX Managed Registry] for available plans.
 
 [role="_additional-resources"]
 .Additional resources

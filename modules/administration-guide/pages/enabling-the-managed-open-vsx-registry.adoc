@@ -7,6 +7,11 @@
 = Enable the managed Open VSX registry
 
 [role="_abstract"]
+[IMPORTANT]
+====
+The managed Open VSX registry is a Technology Preview feature only. Technology Preview features are not supported with Red Hat production service level agreements (SLAs) and might not be functionally complete. Red Hat does not recommend using them in production. These features provide early access to upcoming product features, enabling customers to test functionality and provide feedback during the development process. For more information about the support scope of Red Hat Technology Preview features, see https://access.redhat.com/support/offerings/techpreview/.
+====
+
 Enable {prod-short} to deploy and manage a dedicated Open VSX server with a PostgreSQL database as Operator-managed components. The managed registry is exposed through the {prod-short} gateway and provides a private, curated extension registry without requiring manual deployment or database administration.
 
 When enabled, the {prod-short} Operator creates the following resources:
@@ -128,6 +133,15 @@ The Operator automatically runs a publishing `Job` when the `ConfigMap` content 
 
 By default, the Operator generates an `openvsx-credentials` secret with random passwords and access tokens. To use custom database credentials and Open VSX user accounts, create a secret and reference it in the `CheCluster` custom resource.
 
+[IMPORTANT]
+====
+The secret must exist before it is referenced in the `CheCluster` custom resource. The Operator validates the secret on create and update and rejects the change if the secret is missing or incomplete.
+====
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
 .Procedure
 
 . Create a secret with the required credentials:
@@ -191,6 +205,7 @@ The secret must contain all of the following keys:
     "spec": {
       "components": {
         "openVSXRegistry": {
+          "enable": true,
           "credentialsSecretName": "__<secret_name>__"
         }
       }
@@ -198,15 +213,44 @@ The secret must contain all of the following keys:
   }'
 ----
 
-[IMPORTANT]
-====
-The secret must exist before it is referenced in the `CheCluster` custom resource. The Operator validates the secret on create and update and rejects the change if the secret is missing or incomplete.
-====
+.Verification
+
+. Verify that the Open VSX server pod is running:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} get pods --namespace {prod-namespace} -l app.kubernetes.io/component=openvsx-server
+----
+
+. Verify that the custom credentials are injected as environment variables in the Open VSX server pod:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} exec deploy/openvsx-server \
+  --namespace {prod-namespace} -- \
+  env | grep -E 'OPENVSX_ADMIN_PAT|OPENVSX_USER_PAT'
+----
++
+The output should include `OPENVSX_ADMIN_PAT` and `OPENVSX_USER_PAT`.
+
+. Verify that the database pod uses the custom credentials:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} exec deploy/openvsx-database \
+  --namespace {prod-namespace} -- \
+  env | grep -E 'POSTGRESQL_'
+----
 
 [id="customizing-the-open-vsx-server-configuration"]
 == Customize the Open VSX server configuration
 
 The Operator creates an `openvsx-server` `ConfigMap` with a default `application.yml` configuration when the managed registry is first enabled. This `ConfigMap` is user-editable: the Operator creates it once and does not overwrite subsequent changes. Modifying the `ConfigMap` automatically triggers a rolling restart of the Open VSX server pod.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+* The managed Open VSX registry is enabled and running.
 
 .Procedure
 
@@ -219,6 +263,15 @@ The Operator creates an `openvsx-server` `ConfigMap` with a default `application
 ----
 +
 The `ConfigMap` contains a single `application.yml` key with the Open VSX Spring Boot configuration.
+
+.Verification
+
+* Verify that the Open VSX server pod has restarted with the updated configuration:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} get pods --namespace {prod-namespace} -l app.kubernetes.io/component=openvsx-server
+----
 
 [id="deleting-extensions-from-the-managed-open-vsx-registry"]
 == Delete extensions from the managed Open VSX registry
@@ -269,10 +322,18 @@ where:
 +
 where `__<extension_version>__` is the version to delete. For example: `1.2.3`.
 
+.Verification
+
+* Open the Open VSX registry UI and verify that the deleted extension is no longer listed.
+
 [id="disabling-the-managed-open-vsx-registry"]
 == Disable the managed Open VSX registry
 
 Disable the managed Open VSX registry to remove the Open VSX server, PostgreSQL database, and all associated resources from the {orch-namespace}.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
 
 .Procedure
 
@@ -295,6 +356,16 @@ Disable the managed Open VSX registry to remove the Open VSX server, PostgreSQL 
 ----
 +
 The Operator removes all managed Open VSX resources, including deployments, services, persistent volume claims, and secrets.
+
+.Verification
+
+* Verify that no Open VSX pods remain in the {orch-namespace}:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} get pods --namespace {prod-namespace} -l app.kubernetes.io/component=openvsx-server
+{orch-cli} get pods --namespace {prod-namespace} -l app.kubernetes.io/component=openvsx-database
+----
 
 [role="_additional-resources"]
 .Additional resources
