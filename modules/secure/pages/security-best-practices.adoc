@@ -33,7 +33,7 @@ For Git OAuth setup and for restricting platform access, see Additional resource
 
 These additional measures strengthen your security posture but are not required:
 
-* *Network policies.* Control ingress and egress traffic between workspace pods to limit the attack surface.
+* *Network policies.* Enable operator-managed network policies on OpenShift to restrict ingress and egress traffic, or manually configure NetworkPolicy objects to limit the attack surface.
 * *Resource quotas and limit ranges.* Prevent resource abuse by setting per-project consumption constraints.
 * *Extension management.* Restrict IDE extensions to trusted sources, especially in air-gapped environments.
 * *Self-signed certificates.* Import custom TLS certificates if your Git server or artifact repositories use internal certificate authorities.
@@ -206,7 +206,7 @@ Implementing network policies allows you to:
 * Control ingress and egress traffic to and from workspace pods
 * Limit the attack surface by denying unauthorized network access
 
-When configuring network policies for {prod}, ensure that pods in the {prod-short} namespace can still communicate with pods in user namespaces. This communication is required for proper functionality. For detailed instructions on configuring network policies, see Additional resources.
+On OpenShift, you can enable operator-managed network policies by setting `spec.networking.networkPolicy.enabled` to `true` in the CheCluster custom resource. The operator then creates fine-grained ingress and egress NetworkPolicy resources in both the {prod-short} namespace and user workspace namespaces. When configuring network policies for {prod} manually, ensure that pods in the {prod-short} namespace can still communicate with pods in user namespaces. This communication is required for proper functionality. For detailed instructions on configuring network policies, see Additional resources.
 
 == Security in disconnected and air-gapped deployments
 
