@@ -1,25 +1,25 @@
 :_content-type: PROCEDURE
-:description: Distribute Claude Code skills, commands, and agents across {prod-short} workspaces using Lola.
-:keywords: user-guide, claude-code, ai, configuration, skills, commands, lola
-:navtitle: Distribute skills with Lola
+:description: Distribute AI assistant skills, commands, and agents across {prod-short} workspaces using Lola.
+:keywords: user-guide, ai, configuration, skills, commands, lola, claude-code, cursor, copilot
+:navtitle: Distribute AI skills with Lola
 
-[id="distribute-claude-code-skills-with-lola"]
-= Distribute Claude Code skills and commands across workspaces with Lola
+[id="distribute-ai-assistant-skills-with-lola"]
+= Distribute AI assistant skills and commands across workspaces with Lola
 
-Use link:https://github.com/LobsterTrap/lola[Lola] to distribute team-authored Claude Code skills, commands, and agents from a central Git repository into {prod-short} workspaces. Lola translates module content into Claude Code's native file structure (`.claude/skills/`, `.claude/commands/`, `CLAUDE.md`), so developers receive a consistent set of standards and tools without manual setup.
+Use link:https://github.com/LobsterTrap/lola[Lola] to distribute team-authored skills, commands, and agents from a central Git repository into {prod-short} workspaces. Lola supports multiple AI assistants, including Claude Code, Cursor, Copilot, Gemini CLI, and OpenCode. It translates module content into each assistant's native file structure, so developers receive a consistent set of standards and tools without manual setup.
 
 [NOTE]
 ====
-Lola manages skills, commands, and agents — not the full Claude Code configuration. For persisting settings, MCP servers, and plugins, see xref:persist-claude-code-configuration.adoc[].
+Lola manages skills, commands, and agents — not the full AI assistant configuration. For example, to persist Claude Code settings, MCP servers, and plugins, see xref:persist-claude-code-configuration.adoc[].
 ====
 
 == How it works
 
-A team maintains a Lola module in a Git repository containing skills (coding standards, guardrails), commands (on-demand audit macros), and agent definitions. Developers add a `.lola-req` file to their project referencing the module. Running `lola sync` fetches the module and installs it into Claude Code's native directory structure.
+A team maintains a Lola module in a Git repository containing skills (coding standards, guardrails), commands (on-demand audit macros), and agent definitions. Developers add a `.lola-req` file to their project referencing the module. Running `lola sync` fetches the module and installs it into the target assistant's native directory structure.
 
 .Prerequisites
 
-* Claude Code installed in the workspace container image.
+* An AI assistant (Claude Code, Cursor, Copilot, Gemini CLI, or OpenCode) installed in the workspace container image.
 
 * Lola installed in the workspace container image or available on `PATH`. To install Lola:
 +
@@ -49,9 +49,9 @@ module/
 ====
 [source,text,subs="+quotes"]
 ----
-__<git_repository_url>__@main#subdirectory=module&assistant=claude-code # <1>
+__<git_repository_url>__@main#subdirectory=module&assistant=__<assistant>__ # <1>
 ----
-<1> Replace with the URL of your Lola module repository. The `subdirectory` fragment points to the module root inside the repository. The `assistant=claude-code` fragment targets the installation to Claude Code.
+<1> Replace `__<git_repository_url>__` with the URL of your Lola module repository. Replace `__<assistant>__` with the target assistant: `claude-code`, `cursor`, `copilot`, `gemini-cli`, or `opencode`. The `subdirectory` fragment points to the module root inside the repository.
 ====
 
 . Run `lola sync` to fetch and install the module:
@@ -61,7 +61,7 @@ __<git_repository_url>__@main#subdirectory=module&assistant=claude-code # <1>
 $ lola sync
 ----
 +
-Lola clones the module, extracts skills and commands, and writes them into `.claude/skills/`, `.claude/commands/`, and `CLAUDE.md` in the project directory.
+Lola clones the module, extracts skills and commands, and writes them into the target assistant's native directory structure in the project directory.
 
 . Optional: To automate the sync at workspace startup, add a `postStart` command to your devfile:
 +
@@ -86,22 +86,24 @@ events:
 
 . Start a workspace with the `.lola-req` file in the project root.
 . Run `lola sync` (or verify it ran via `postStart`).
-. Launch Claude Code and verify that the skills and commands from the module are available. For example, run a custom slash command defined in the module.
+. Launch the AI assistant and verify that the skills and commands from the module are available.
 
 == Advantages
 
 * Skills and commands are maintained centrally in Git.
 * Multiple modules can be combined in a single `.lola-req` file.
-* Lola translates modules into Claude Code's native file structure with no runtime overhead.
+* Supports multiple AI assistants from a single module.
+* Lola translates modules into each assistant's native file structure with no runtime overhead.
 * Works across clusters and {prod-short} instances.
 
 == Limitations
 
 * Lola must be installed in the workspace container image or installed at startup.
-* Manages skills, commands, and agents only. Does not persist MCP server configurations, plugin caches, or application settings.
+* Manages skills, commands, and agents only. Does not persist assistant-specific settings, MCP server configurations, or plugin caches.
 * Changes to skills and commands are not synced back to the source repository. The module repository is the single source of truth.
 
 .Additional resources
 
 * xref:persist-claude-code-configuration.adoc[]
 * link:https://github.com/LobsterTrap/lola[Lola — AI context package manager]
+* link:https://github.com/LobsterTrap/lola#supported-ai-assistants[Lola — supported AI assistants]
