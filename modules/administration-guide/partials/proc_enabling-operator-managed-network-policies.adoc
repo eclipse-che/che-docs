@@ -1,0 +1,87 @@
+// configuring-network-policies
+
+[id="enabling-operator-managed-network-policies"]
+= Enabling operator-managed network policies
+
+On OpenShift, the {prod-short} Operator can automatically create and manage NetworkPolicy resources for both the {prod-short} {orch-namespace} and user workspace {orch-namespace}s.
+This feature is controlled by the `spec.networking.networkPolicy.enabled` field in the CheCluster custom resource and is disabled by default.
+
+When enabled, the operator creates the following NetworkPolicy resources:
+
+.NetworkPolicy resources in the {prod-short} {orch-namespace}
+[cols="1,2", options="header"]
+|===
+| Name | Description
+
+| `allow-from-same-namespace`
+| Allows ingress traffic between {prod-short} Pods in the same {orch-namespace}.
+
+| `allow-from-workspaces`
+| Allows ingress traffic from user workspace {orch-namespace}s.
+
+| `allow-from-openshift-ingress`
+| Allows ingress traffic from the OpenShift ingress {orch-namespace}.
+
+| `allow-from-openshift-monitoring`
+| Allows ingress traffic from the OpenShift monitoring {orch-namespace}.
+
+| `allow-from-{prod-id-short}-operator`
+| Allows ingress traffic from the operator Pod to {prod-short} components.
+
+| `allow-all-egress`
+| Allows all egress traffic from {prod-short} Pods.
+|===
+
+.NetworkPolicy resources in each user workspace {orch-namespace}
+[cols="1,2", options="header"]
+|===
+| Name | Description
+
+| `allow-from-same-namespace`
+| Allows ingress traffic between Pods in the same {orch-namespace}.
+
+| `allow-from-{prod-namespace}`
+| Allows ingress traffic from the {prod-short} {orch-namespace}.
+
+| `allow-from-devworkspace-operator`
+| Allows ingress traffic from the {devworkspace} operator.
+
+| `allow-from-openshift-monitoring`
+| Allows ingress traffic from the OpenShift monitoring {orch-namespace}.
+
+| `allow-from-openshift-ingress`
+| Allows ingress traffic from the OpenShift ingress {orch-namespace}.
+
+| `allow-all-egress`
+| Allows all egress traffic from workspace Pods.
+|===
+
+.Prerequisites
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+* An instance of {prod-short} running on OpenShift.
+
+.Procedure
+. Enable operator-managed network policies:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{"spec":{"networking":{"networkPolicy":{"enabled":true}}}}'
+----
+
+.Verification
+. Verify that the NetworkPolicy resources are created in the {prod-short} {orch-namespace}:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} get networkpolicies -n {prod-namespace}
+----
++
+. Start a workspace and verify that the NetworkPolicy resources are created in the user {orch-namespace}:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} get networkpolicies -n __<user_namespace>__
+----
