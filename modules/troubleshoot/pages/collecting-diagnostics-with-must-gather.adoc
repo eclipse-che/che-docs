@@ -1,0 +1,47 @@
+:_content-type: PROCEDURE
+:description: On {ocp}, collect {prod} and DevWorkspace diagnostic data with must-gather for support and troubleshooting.
+:keywords: troubleshoot, must-gather, diagnostics, logs, support, openshift
+:navtitle: Collect diagnostics with must-gather
+:page-aliases:
+
+[id="collecting-diagnostics-with-must-gather"]
+= Collect diagnostics with must-gather
+
+[role="_abstract"]
+On {ocp} clusters, you can collect a diagnostic snapshot of the {prod-short} Operator, {devworkspace}-based Cloud Development Environments, and related cluster state by using the {prod-short} community-supported must-gather image with `oc adm must-gather`. Share this dump with others so they can help troubleshoot the issue.
+
+.Prerequisites
+
+* You are running {prod-short} on an {ocp} cluster.
+* The `oc` OpenShift CLI is installed and configured for the target cluster. See link:https://docs.openshift.com/container-platform/{ocp4-ver}/cli_reference/openshift_cli/getting-started-cli.html[Getting started with the OpenShift CLI].
+* You have `cluster-admin` permissions on the cluster.
+* {prod-short} is installed on the cluster.
+
+.Procedure
+
+. Collect {prod-short} and {devworkspace} diagnostics:
++
+[source,bash]
+----
+$ oc adm must-gather --image=quay.io/che-incubator/must-gather:latest
+----
++
+The command creates a local directory named `must-gather.local.<id>` that contains the diagnostic dump.
++
+[IMPORTANT]
+====
+This must-gather image focuses on {prod-short}, {devworkspace}, and related components.
+To collect full cluster data, run `oc adm must-gather` without specifying a custom image.
+====
+
+. Optional: Write the output to a specific directory:
++
+[source,bash,subs="+quotes"]
+----
+$ oc adm must-gather --image=quay.io/che-incubator/must-gather:latest \
+  --dest-dir=__<directory_name>__
+----
+
+.Verification
+
+* A local `must-gather.local.<id>` directory (or the directory you passed to `--dest-dir`) exists and contains the diagnostic dump.
