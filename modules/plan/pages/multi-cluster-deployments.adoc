@@ -1,0 +1,66 @@
+:_content-type: CONCEPT
+:description: Evaluate multi-cluster architectures for deployments that exceed single-cluster capacity, and review the Developer Sandbox reference implementation.
+:keywords: plan, multi-cluster, scale, redirector, Developer-Sandbox
+:navtitle: Multi-cluster architectures for large deployments
+
+[id="multi-cluster-deployments"]
+= Multi-cluster architectures for large deployments
+
+[role="_abstract"]
+Evaluate multi-cluster architectures for {prod-short} deployments that exceed single-cluster capacity, and review the Developer Sandbox reference implementation that routes developers across clusters automatically.
+
+== Workloads distributed across multiple clusters
+
+By design, {prod} is not multi-cluster aware. You can only have one instance per cluster.
+
+However, you can run {prod} in a multi-cluster environment by deploying {prod} in each cluster. Use a load balancer or Domain Name System (DNS)-based routing to direct traffic to the appropriate instance. This approach distributes the workload across clusters and provides redundancy in case of cluster failures.
+
+== Developer Sandbox that runs Dev Spaces across clusters
+
+You can test running {prod-short} in a multi-cluster environment by using the Developer Sandbox, a free trial environment by Red Hat.
+
+From an infrastructure perspective, the Developer Sandbox consists of multiple Red Hat OpenShift Service on AWS (ROSA) clusters. On each cluster, the productized version of {prod} is installed and configured using Argo CD. The workspaces.openshift.com URL is used as a single entry point to the {prod} instances across clusters.
+
+.Developer Sandbox multi-cluster architecture
+image::running-at-scale/snip_{project-context}-multi-cluster.png[Scheme of a multi-cluster environment]
+
+[IMPORTANT]
+====
+The multi-cluster architecture of workspaces.openshift.com is part of the Developer Sandbox. It is a Developer Sandbox-specific solution that cannot be reused as-is in other environments. However, you can use it as a reference for implementing a similar solution well-tailored to your specific multicluster needs.
+====
+
+== Redirector that routes developers to the correct cluster
+
+Red Hat offers an open source, Quarkus-based service that acts as a single gateway for developers. This service automatically redirects users to the correct {prod} instance on the appropriate cluster based on their {ocp} group membership. For the community-supported version, see Additional resources.
+
+=== Prerequisites for the multicluster redirector
+
+A critical requirement for the multicluster redirector is that all users are provisioned to the host cluster where the redirector is deployed. Users authenticate through the OAuth flow of this cluster, even if they never run workloads there. The host cluster's {ocp} groups determine the routing logic. For deployment instructions, see Additional resources.
+
+=== OpenShift groups that map to cluster URLs
+
+The routing configuration uses a `ConfigMap` that contains JSON to map {ocp} groups to {prod} URLs. The redirector uses this file to update routing tables in real-time without requiring restarts.
+
+=== Authentication and routing steps
+
+The routing process follows these steps:
+
+. Authenticate by using OAuth through a proxy sidecar.
+. Pass identity and group information through HTTP headers.
+. Verify group memberships by using {ocp} API queries.
+. Determine the appropriate {prod} URL by using a mapping lookup.
+. Redirect the user to the designated cluster instance.
+
+If users belong to multiple {ocp} groups, they can choose the {prod} instance they need from a selection dashboard.
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://che.eclipseprojects.io/2025/04/29/@ilya.buziuk-running-at-scale.html[Running at scale]
+* link:https://developers.redhat.com/articles/2026/01/23/enterprise-multi-cluster-scalability-openshift-dev-spaces[Enterprise multi-cluster scalability]
+* link:https://developers.redhat.com/developer-sandbox[Developer Sandbox]
+* link:https://www.redhat.com/en/technologies/cloud-computing/openshift/aws[Red Hat OpenShift Service on AWS (ROSA)]
+* link:https://argo-cd.readthedocs.io/en/stable/[Argo CD]
+* link:https://workspaces.openshift.com/[workspaces.openshift.com]
+* link:https://github.com/codeready-toolchain/crw-multicluster-redirector[crw-multicluster-redirector GitHub repository]
+* link:https://github.com/redhat-developer/devspaces-multicluster-redirector[devspaces-multicluster-redirector GitHub repository]

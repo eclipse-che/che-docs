@@ -1,0 +1,26 @@
+:_content-type: CONCEPT
+:description: Understand how {devworkspace} objects, CA certificate bundles, and Copied CSVs contribute to etcd growth so that you can take action before your cluster becomes unstable.
+:keywords: plan, etcd, storage, DevWorkspace, scale, bottleneck
+:navtitle: etcd pressure that limits cluster scale
+
+[id="etcd-storage-limits"]
+= etcd pressure that limits cluster scale
+
+[role="_abstract"]
+Scaling {prod-short} to thousands of concurrent workspaces strains etcd, the primary datastore for {kubernetes} cluster state. Three categories of objects contribute most to etcd growth: CA certificate bundles, {devworkspace} custom resources, and Copied CSVs. The procedures that follow address each one.
+
+The primary datastore of {kubernetes} cluster configuration and state is etcd. It holds information about nodes, pods, services, and custom resources.
+
+As a distributed key-value store, etcd does not scale well past a certain threshold. As the size of etcd grows, so does the load on the cluster, risking its stability.
+
+[IMPORTANT]
+====
+The default etcd size is 2 GB, and the recommended maximum is 8 GB. Exceeding the maximum limit can make the {kubernetes} cluster unstable and unresponsive. Even though the data stored in a `ConfigMap` cannot exceed 1 MiB by design, a few thousand relatively large `ConfigMap` objects can overload etcd storage.
+====
+
+The size of the objects stored in etcd is also a critical factor. Each object consumes space, and as the number of objects increases, the overall size of etcd grows. The larger the object, the more space it takes. For example, etcd can be overloaded with only a few thousand large {kubernetes} objects.
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://etcd.io/[etcd]
