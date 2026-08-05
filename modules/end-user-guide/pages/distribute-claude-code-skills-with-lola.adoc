@@ -1,0 +1,109 @@
+:_content-type: PROCEDURE
+:description: Distribute AI assistant skills, commands, and agents across {prod-short} workspaces using Lola.
+:keywords: user-guide, ai, configuration, skills, commands, lola, claude-code, cursor, copilot
+:navtitle: Distribute AI skills with Lola
+
+[id="distribute-ai-assistant-skills-with-lola"]
+= Distribute AI assistant skills and commands across workspaces with Lola
+
+Use link:https://github.com/LobsterTrap/lola[Lola] to distribute team-authored skills, commands, and agents from a central Git repository into {prod-short} workspaces. Lola supports multiple AI assistants, including Claude Code, Cursor, Copilot, Gemini CLI, and OpenCode. It translates module content into each assistant's native file structure, so developers receive a consistent set of standards and tools without manual setup.
+
+[NOTE]
+====
+Lola manages skills, commands, and agents — not the full AI assistant configuration. For example, to persist Claude Code settings, MCP servers, and plugins, see xref:persist-claude-code-configuration.adoc[].
+====
+
+== How it works
+
+A team maintains a Lola module in a Git repository containing skills (coding standards, guardrails), commands (on-demand audit macros), and agent definitions. Developers add a `.lola-req` file to their project referencing the module. Running `lola sync` fetches the module and installs it into the target assistant's native directory structure.
+
+.Prerequisites
+
+* An AI assistant (Claude Code, Cursor, Copilot, Gemini CLI, or OpenCode) installed in the workspace container image.
+
+* Lola installed in the workspace container image or available on `PATH`. To install Lola:
++
+[subs="+quotes,+attributes"]
+----
+$ uv tool install lola-ai
+----
+
+* A Git repository containing a Lola module. At minimum, the module should contain:
++
+----
+module/
+  skills/
+    <skill-name>/
+      SKILL.md
+  commands/
+    <command-name>.md
+  AGENTS.md
+----
+
+* Git credentials configured in the workspace if the module repository is private. See xref:authenticating-to-a-git-server-from-a-workspace.adoc[].
+
+.Procedure
+
+. Create a `.lola-req` file at the root of your project repository with a reference to the module:
++
+====
+[source,text,subs="+quotes"]
+----
+__<git_repository_url>__@main#subdirectory=module&assistant=__<assistant>__ # <1>
+----
+<1> Replace `__<git_repository_url>__` with the URL of your Lola module repository. Replace `__<assistant>__` with the target assistant: `claude-code`, `cursor`, `copilot`, `gemini-cli`, or `opencode`. The `subdirectory` fragment points to the module root inside the repository.
+====
+
+. Run `lola sync` to fetch and install the module:
++
+[subs="+quotes,+attributes"]
+----
+$ lola sync
+----
++
+Lola clones the module, extracts skills and commands, and writes them into the target assistant's native directory structure in the project directory.
+
+. Optional: To automate the sync at workspace startup, add a `postStart` command to your devfile:
++
+====
+[source,yaml,subs="+quotes,+attributes"]
+----
+commands:
+  - id: lola-sync
+    exec:
+      commandLine: lola sync
+      workingDir: /projects/__<project_name>__ # <1>
+      component: __<editor_container>__ # <2>
+events:
+  postStart:
+    - lola-sync
+----
+<1> Replace with the name of your project directory.
+<2> Replace with the name of a container component from the `components` section of your devfile.
+====
+
+.Verification
+
+. Start a workspace with the `.lola-req` file in the project root.
+. Run `lola sync` (or verify it ran via `postStart`).
+. Launch the AI assistant and verify that the skills and commands from the module are available.
+
+== Advantages
+
+* Skills and commands are maintained centrally in Git.
+* Multiple modules can be combined in a single `.lola-req` file.
+* Supports multiple AI assistants from a single module.
+* Lola translates modules into each assistant's native file structure with no runtime overhead.
+* Works across clusters and {prod-short} instances.
+
+== Limitations
+
+* Lola must be installed in the workspace container image or installed at startup.
+* Manages skills, commands, and agents only. Does not persist assistant-specific settings, MCP server configurations, or plugin caches.
+* Changes to skills and commands are not synced back to the source repository. The module repository is the single source of truth.
+
+.Additional resources
+
+* xref:persist-claude-code-configuration.adoc[]
+* link:https://github.com/LobsterTrap/lola[Lola — AI context package manager]
+* link:https://github.com/LobsterTrap/lola#supported-ai-assistants[Lola — supported AI assistants]
