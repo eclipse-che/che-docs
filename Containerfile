@@ -35,8 +35,6 @@ LABEL \
 
 # Install system packages
 RUN set -x \
-    && dnf install --assumeyes --quiet dnf-plugins-core \
-    && dnf copr enable --assumeyes --quiet mczernek/vale fedora-42-x86_64 \
     && dnf install --assumeyes --quiet \
     ShellCheck \
     bash \
@@ -57,12 +55,18 @@ RUN set -x \
     tox \
     tree \
     unzip \
-    vale \
     wget \
     which \
     && dnf clean all --quiet \
     && dot -v \
-    && node --version \
+    && node --version
+
+# Install vale from GitHub releases (the COPR repo lags behind upstream)
+ENV VALE_VERSION=3.17.1
+RUN set -x \
+    && wget -q "https://github.com/errata-ai/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_64-bit.tar.gz" -O /tmp/vale.tar.gz \
+    && tar -xzf /tmp/vale.tar.gz -C /usr/local/bin vale \
+    && rm /tmp/vale.tar.gz \
     && vale --version
 
 # Install Python packages
