@@ -1,0 +1,88 @@
+:_content-type: PROCEDURE
+:description: Connect your GitHub account to {prod-short} using the device authorization flow directly from the Dashboard.
+:keywords: user-guide, github, device-authorization, device-auth, token, oauth
+:navtitle: Connecting to GitHub using device authorization
+
+[id="connecting-to-github-using-device-authorization"]
+= Connecting to GitHub using device authorization
+
+[role="_abstract"]
+Connect your GitHub account to {prod-short} using the device authorization flow directly from the Dashboard. Device Auth Tokens are GitHub OAuth tokens stored as {kubernetes} Secrets. They enable Git operations in your workspaces without requiring a personal access token.
+
+.Prerequisites
+
+* Your administrator has configured a GitHub OAuth App with Device Flow enabled as described in xref:administration-guide:configuring-oauth-2-for-github.adoc[Configuring OAuth 2.0 for GitHub].
++
+NOTE: This feature requires the GitHub OAuth App configuration. It is not available when GitHub authentication is configured using a GitHub App.
+
+.Procedure
+
+. In the {prod-short} dashboard, go to *User Preferences > Device Auth Tokens*.
+
+. Click *Connect to GitHub*.
++
+A modal opens displaying a one-time code.
+
+. Click the copy button next to the code to copy it to your clipboard.
+
+. Click link:https://github.com/login/device[github.com/login/device] to open the GitHub device activation page.
++
+NOTE: For GitHub Enterprise Server, replace `github.com` with your instance hostname.
+
+. Paste the one-time code on the GitHub page and click *Continue*.
+
+. Authorize the application when prompted by GitHub.
++
+NOTE: The permissions granted are determined by the OAuth App configuration set by your administrator.
++
+After successful authorization, the modal closes and the new token appears in the *Device Auth Tokens* table.
+
+.Verification
+
+* Verify that the new token is listed in the *Device Auth Tokens* table with a valid status.
+
+[id="reconnecting-to-github"]
+== Reconnecting to GitHub
+
+Use *Reconnect* when a token has been revoked or has expired on the GitHub side. Reconnecting starts a new device authorization flow and replaces the existing token in-place, preserving any labels on the {kubernetes} Secret.
+
+.Procedure
+
+. In the {prod-short} dashboard, go to *User Preferences > Device Auth Tokens*.
+. Click the actions menu (*&#8942;*) on the token row and click *Reconnect*.
+. Complete the device authorization steps in the *Procedure* section above, starting from step 2.
+
+.Verification
+
+* Verify that the token card shows a valid status after reconnecting.
+
+[id="deleting-device-auth-tokens"]
+== Deleting device auth tokens
+
+Deleting a device auth token removes the {kubernetes} Secret and revokes the GitHub authorization. Device Auth Tokens do not expire automatically. To disconnect your GitHub account, delete the token from this page or revoke access from your GitHub account settings.
+
+.Procedure
+
+. To delete a single token:
+.. Click the actions menu (*&#8942;*) on the token row.
+.. Click *Delete*.
+.. Select the confirmation checkbox and click *Delete*.
+
+. To delete multiple tokens:
+.. Select the checkboxes next to the tokens you want to delete.
+.. Click *Delete* in the toolbar.
+.. Select the confirmation checkbox and click *Delete*.
+
+.Verification
+
+* Verify that the deleted token no longer appears in the *Device Auth Tokens* table.
+
+[id="troubleshooting-device-auth-tokens"]
+== Troubleshooting
+
+If the one-time code expires before you complete the authorization on GitHub (codes expire after approximately 15 minutes), close the modal and click *Connect to GitHub* again to start a new device authorization flow.
+
+.Additional resources
+
+* xref:administration-guide:configuring-oauth-2-for-github.adoc[]
+* For an alternative Git authentication method, see xref:get-started-user:using-a-git-provider-access-token.adoc[].

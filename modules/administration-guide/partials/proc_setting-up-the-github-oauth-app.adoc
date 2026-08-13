@@ -32,6 +32,23 @@ Set up a GitHub OAuth App using OAuth 2.0.
 
 . Copy and save the *GitHub OAuth Client Secret* for use when applying the GitHub OAuth App Secret.
 
+. *(Optional)* Scroll to the *Device flow* section and select the *Enable Device Flow* checkbox.
++
+NOTE: Enable this option to allow users to connect their GitHub accounts from the {prod-short} Dashboard using *User Preferences > Device Auth Tokens*. See xref:end-user-guide:connecting-to-github-using-device-authorization.adoc[].
+
+. If you selected *Enable Device Flow*, click *Update application*.
+
+. If you enabled Device Flow, apply the `device-auth-config` ConfigMap in the {prod-short} namespace to expose the OAuth App client ID to the Dashboard:
++
+[source,terminal,subs="+quotes,+attributes"]
+----
+$ {orch-cli} create configmap device-auth-config \
+    --from-literal=github_client_id=__<GitHub_OAuth_Client_ID>__ \
+    -n {prod-namespace}
+----
++
+NOTE: When this ConfigMap is present, the *Connect to GitHub* button appears in *User Preferences > Device Auth Tokens*. Delete the ConfigMap to hide the button.
+
 .Additional resources
 
 * link:https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app[GitHub Docs: Creating an OAuth App]
