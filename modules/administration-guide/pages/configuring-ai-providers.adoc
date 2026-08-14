@@ -1,6 +1,6 @@
 :_content-type: PROCEDURE
 :description: Register AI providers in Eclipse Che so that developers can select and use AI coding assistants when creating workspaces.
-:keywords: administration, ai, ai provider, opencode, configmap, ai-tool-registry, api key, injector image, dockerfile
+:keywords: administration, ai, ai provider, opencode, configmap, ai-tool-registry, api key, injector image, dockerfile, architecture, arch, version
 :navtitle: Configuring AI providers
 :page-aliases:
 
@@ -10,10 +10,19 @@
 :FeatureName: The AI provider feature
 include::example$snip_che-technology-preview.adoc[]
 
+[NOTE]
+====
+OpenCode supports only `x86_64` and `arm64`. IBM Z (`s390x`) and IBM Power (`ppc64le`) builds are not available because the upstream OpenCode project does not publish releases for those architectures.
+====
+
 [role="_abstract"]
 Register one or more AI providers in {prod-short} so that developers can select and use AI coding assistants when creating workspaces.
 
 The AI tool registry is stored in a {kubernetes} `ConfigMap` with specific labels. When the ConfigMap exists and contains at least one provider with a matching tool, the AI Selector widget is displayed on the dashboard. When the ConfigMap is absent or empty, the widget is hidden.
+
+{prod-short} reads the node architectures present in the cluster and filters the tool list before sending it to the dashboard. A tool is shown if at least one cluster node matches an architecture in the tool's `arch` list. Tools that omit the `arch` field are shown on all architectures.
+
+When a provider has multiple tool entries with different `tag` values, the AI Selector displays a version picker so developers can choose which image variant to inject.
 
 .Prerequisites
 
@@ -68,7 +77,7 @@ Key design points:
 +
 ** *Multi-stage build*: the `builder` stage downloads the architecture-specific binary; the minimal runtime stage keeps the final image small.
 ** *Wrapper script*: redirects `XDG_CONFIG_HOME`, `XDG_DATA_HOME`, and related variables to writable paths under `/tmp`, allowing the tool to run as an arbitrary UID on OpenShift.
-** *Multi-arch*: pass `--platform linux/amd64,linux/arm64` to `docker build` to produce a multi-arch image.
+** *Multi-arch*: pass `--platform` to `docker build` to produce a multi-arch image. OpenCode supports `linux/amd64` and `linux/arm64` only.
 +
 Build and push the image:
 +
@@ -105,22 +114,24 @@ See link:https://github.com/che-incubator/che-ai-tool-images[che-incubator/che-a
       "binary": "opencode",                 <4>
       "pattern": "init",                    <5>
       "injectorImage": "__<your-registry>__/__<your-org>__/opencode:next",  <6>
-      "envVarName": "OPENAI_API_KEY"        <7>
+      "envVarName": "OPENAI_API_KEY",       <7>
+      "arch": ["x86_64", "arm64"]           <8>
     }
   ],
-  "defaultAiProviders": ["opencodeai/opencode"]  <8>
+  "defaultAiProviders": ["opencodeai/opencode"]  <9>
 }
 ----
 <1> Unique provider identifier in `__<vendor>__/__<product>__` format.
 <2> Links the tool to its provider by `id`.
-<3> Version tag. When multiple tools share the same `providerId`, the dashboard selects by priority: `next` > `latest` > highest semver.
+<3> Version tag. When multiple tools share the same `providerId`, the dashboard shows a version picker so developers can choose which image variant to inject.
 <4> Binary name that must be available in `PATH` inside the workspace after injection.
 <5> Injection pattern: `init` copies a single binary into the shared volume; `bundle` copies a full runtime directory and creates a symlink.
 <6> Container image that carries the tool binary. Run as an init container at workspace start.
 <7> Environment variable name for the API key. The dashboard creates a {kubernetes} Secret using this name as the data key.
-<8> Optional. Provider IDs pre-selected in the AI Selector widget for new workspaces.
+<8> Optional. List of node architectures on which this tool is available. Accepted values: `x86_64`, `arm64`. When omitted, the tool is shown on all architectures. The dashboard reads the cluster node architecture and hides tools whose `arch` list does not include the running architecture.
+<9> Optional. Provider IDs pre-selected in the AI Selector widget for new workspaces.
 
-. Create the `ConfigMap` in the `{prod-namespace}` namespace with the required labels:
+. Create the `ConfigMap` in the `{prod-namespace}` {orch-namespace} with the required labels:
 +
 [subs="+quotes,+attributes"]
 ----
