@@ -1,6 +1,6 @@
 :_content-type: PROCEDURE
-:description: Preventing {prod-short} workspace idling when long-running CLI tools are active in the terminal, so that unattended tasks can complete without interruption.
-:keywords: user-guide, workspace, idling, idle, timeout, cli-watcher, noidle
+:description: Preventing {prod-short} workspace idling when long-running CLI tools or interactive processes are active in the terminal, so that unattended tasks can complete without interruption.
+:keywords: user-guide, workspace, idling, idle, timeout, cli-watcher, noidle, auto-detection, interactive-processes
 :navtitle: Prevent workspace idling for long-running commands
 :page-aliases:
 
@@ -8,9 +8,9 @@
 = Prevent workspace idling for long-running commands
 
 [role="_abstract"]
-Prevent a workspace from stopping while long-running CLI tools such as `helm`, `odo`, or `sleep` are active, so that unattended tasks can complete without interruption.
+Prevent a workspace from stopping while long-running CLI tools or interactive processes are active, so that unattended tasks can complete without interruption.
 
-The CLI Watcher periodically checks for running processes that match the commands you specify. When it detects an active watched command, it resets the workspace idle timer. This configuration works entirely in user space and does not require administrator privileges.
+The CLI Watcher periodically checks for running terminal processes and intelligently distinguishes between interactive processes (such as `vim` or REPLs) and work processes (such as `helm`, `odo`, or builds). It can automatically detect all processes or monitor specific commands you configure. When it detects activity, it resets the workspace idle timer. This configuration works entirely in user space and does not require administrator privileges.
 
 .Prerequisites
 
@@ -18,7 +18,19 @@ The CLI Watcher periodically checks for running processes that match the command
 
 .Procedure
 
-. Create a `.noidle` file in your workspace:
+. Create a `.noidle` file in your workspace. You can use automatic detection or manual configuration:
++
+*Automatic detection (recommended):*
++
+[source,yaml]
+----
+enabled: true
+interactive: auto
+----
++
+The CLI Watcher automatically detects all terminal processes and distinguishes between interactive processes (such as `vim`, `python` REPLs) and work processes (such as builds, deployments). Interactive processes prevent idling only when actively used, while work processes always prevent idling.
++
+*Manual configuration:*
 +
 [source,yaml]
 ----
@@ -26,16 +38,34 @@ enabled: true
 watchedCommands:
   - helm
   - odo
-  - sleep
-checkPeriodSeconds: 60
+  - gradle
+interactive: false
+----
++
+Manually specify which commands to monitor. Only listed processes prevent workspace idling.
++
+*Advanced configuration options:*
++
+[source,yaml]
+----
+enabled: true
+interactive: auto
+checkPeriod: 1m
+activityWindow: 2m
+gracePeriod: 30s
+maxProcessAge: 10m
 ----
 +
 Where:
 +
 --
-`enabled`:: Enables or disables the CLI Watcher. Set to `true` to activate it.
-`watchedCommands`:: A list of command names to monitor. When any of these commands are detected as a running process, the workspace idle timer is reset.
-`checkPeriodSeconds`:: The polling interval in seconds. The default value is `60`.
+`enabled`:: Enables or disables the CLI Watcher. Set to `true` to activate it. Default: `true`.
+`interactive`:: Controls how processes are treated. Options: `auto` (automatic detection), `true`/`yes` (treat all processes as interactive), `false`/`no` (treat all as work processes). Default: `auto`.
+`watchedCommands`:: Optional list of command names to monitor in manual mode. When `interactive: false` and this list is specified, only these commands prevent idling.
+`checkPeriod`:: The polling interval. Accepts duration strings such as `30s`, `1m`, `90s`. Default: `1m`.
+`activityWindow`:: Time window for detecting interactive process activity. Interactive processes must show activity within this window to prevent idling. Default: `2m`.
+`gracePeriod`:: Additional time to wait after a work process completes before allowing idling. Default: `30s`.
+`maxProcessAge`:: Maximum age for a process to be considered active. Processes older than this are ignored. Default: `10m`.
 --
 
 . Place the `.noidle` file in one of the following locations, listed from highest to lowest priority:
@@ -48,7 +78,15 @@ If the CLI Watcher finds no configuration file, it waits and checks again on the
 
 .Verification
 
-. Start a watched command in the terminal (for example, `sleep 600`).
+* In automatic detection mode (`interactive: auto`):
+. Start an interactive process (for example, `vim file.txt` or `python`).
+. Interact with the process (edit text, run commands).
+. Verify that the workspace remains active while the process is in use.
+. Leave the interactive process idle (no keyboard input) for longer than the `activityWindow`.
+. Verify that the workspace can now idle.
+
+* In manual configuration mode:
+. Start a watched command in the terminal (for example, `sleep 600` if `sleep` is in `watchedCommands`).
 . Verify that the workspace remains active beyond the configured idle timeout.
 
 [NOTE]
@@ -56,4 +94,42 @@ If the CLI Watcher finds no configuration file, it waits and checks again on the
 The `.noidle` file supports live updates. You can add, edit, or remove the file while the workspace is running. Changes are picked up automatically on the next poll cycle.
 
 The following processes are always excluded from watching and do not prevent workspace idling: PID 1 (the main container process) and `tail`.
+====
+
+[IMPORTANT]
+====
+*Migration from previous versions:*
+
+If you are upgrading from a previous version of {prod-short} and have an existing `.noidle` configuration:
+
+* The `checkPeriodSeconds` field is deprecated. Replace it with `checkPeriod` using duration syntax:
++
+[source,yaml]
+----
+# Old format
+checkPeriodSeconds: 60
+
+# New format
+checkPeriod: 1m
+----
+
+* To maintain the previous behavior (manual process watching), explicitly set `interactive: false`:
++
+[source,yaml]
+----
+enabled: true
+interactive: false  # Preserve manual watching mode
+watchedCommands:
+  - helm
+  - odo
+  - sleep
+----
+
+* To enable the new automatic detection feature, set `interactive: auto` and remove the `watchedCommands` list:
++
+[source,yaml]
+----
+enabled: true
+interactive: auto  # Enable automatic process detection
+----
 ====
