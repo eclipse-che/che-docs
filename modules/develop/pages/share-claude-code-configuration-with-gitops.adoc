@@ -7,11 +7,7 @@
 [id="share-claude-code-configuration-with-gitops"]
 = Share Claude Code configuration across workspaces with GitOps
 
-Instead of using a shared PVC, you can store Claude Code configuration in a Git repository and pull it into workspaces at startup. Each workspace gets its own isolated, writable copy of the configuration.
-
-This approach eliminates multi-attach errors and last-write-wins data corruption risks that can occur with shared PVCs on clusters without RWX storage.
-
-== How it works
+Instead of using a shared PVC, you can store Claude Code configuration in a Git repository and pull it into workspaces at startup. Each workspace gets its own isolated, writable copy of the configuration, preventing multi-attach errors and last-write-wins data corruption risks that can occur with shared PVCs on clusters without RWX storage.
 
 A central Git repository stores the baseline Claude Code configuration. The repository is listed in the `projects` section of the devfile, and the {devworkspace} Operator's project-clone init container clones it automatically at workspace startup. A `postStart` command then copies the configuration files from the cloned repository into the home directory.
 
@@ -21,7 +17,7 @@ Two usage patterns are possible:
 
 * *User-specific persistence* — each developer maintains a private branch or repository with personal configuration. The repository is cloned at startup and copied into the home directory. Optionally, a `preStop` command or manual step commits and pushes changes back before the workspace stops.
 
-For a comparison with other approaches, see xref:persist-claude-code-configuration.adoc[].
+For a comparison with other approaches, see _Claude Code configuration persistence_ in Additional resources.
 
 .Prerequisites
 
@@ -44,7 +40,6 @@ For a comparison with other approaches, see xref:persist-claude-code-configurati
 
 . Add the configuration repository to the `projects` section of your devfile:
 +
-====
 [source,yaml,subs="+quotes,+attributes"]
 ----
 projects:
@@ -54,11 +49,9 @@ projects:
         origin: '__<git_repository_url>__' # <1>
 ----
 <1> Replace with the URL of your Claude Code configuration repository.
-====
 
 . Add a `postStart` command to copy the configuration from the cloned repository into the home directory:
 +
-====
 [source,yaml,subs="+quotes,+attributes"]
 ----
 commands:
@@ -73,7 +66,6 @@ events:
     - init-claude-config
 ----
 <1> Replace with the name of a container component from the `components` section of your devfile.
-====
 
 . Start the workspace.
 
