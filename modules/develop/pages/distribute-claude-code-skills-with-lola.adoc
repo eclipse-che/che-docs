@@ -8,14 +8,12 @@
 
 Use link:https://github.com/LobsterTrap/lola[Lola] to distribute team-authored skills, commands, and agents from a central Git repository into {prod-short} workspaces. Lola supports multiple AI assistants, including Claude Code, Cursor, Copilot, Gemini CLI, and OpenCode. It translates module content into each assistant's native file structure, so developers receive a consistent set of standards and tools without manual setup.
 
+A team maintains a Lola module in a Git repository containing skills (coding standards, guardrails), commands (on-demand audit macros), and agent definitions. Developers add a `.lola-req` file to their project referencing the module. Running `lola sync` fetches the module and installs it into the target assistant's native directory structure.
+
 [NOTE]
 ====
-Lola manages skills, commands, and agents — not the full AI assistant configuration. For example, to persist Claude Code settings, MCP servers, and plugins, see xref:persist-claude-code-configuration.adoc[].
+Lola manages skills, commands, and agents only. It does not persist assistant-specific settings, MCP server configurations, or plugin caches. For full Claude Code configuration persistence, see Additional resources.
 ====
-
-== How it works
-
-A team maintains a Lola module in a Git repository containing skills (coding standards, guardrails), commands (on-demand audit macros), and agent definitions. Developers add a `.lola-req` file to their project referencing the module. Running `lola sync` fetches the module and installs it into the target assistant's native directory structure.
 
 .Prerequisites
 
@@ -46,13 +44,11 @@ module/
 
 . Create a `.lola-req` file at the root of your project repository with a reference to the module:
 +
-====
 [source,text,subs="+quotes"]
 ----
 __<git_repository_url>__@main#subdirectory=module&assistant=__<assistant>__ # <1>
 ----
 <1> Replace `__<git_repository_url>__` with the URL of your Lola module repository. Replace `__<assistant>__` with the target assistant: `claude-code`, `cursor`, `copilot`, `gemini-cli`, or `opencode`. The `subdirectory` fragment points to the module root inside the repository.
-====
 
 . Run `lola sync` to fetch and install the module:
 +
@@ -65,7 +61,6 @@ Lola clones the module, extracts skills and commands, and writes them into the t
 
 . Optional: To automate the sync at workspace startup, add a `postStart` command to your devfile:
 +
-====
 [source,yaml,subs="+quotes,+attributes"]
 ----
 commands:
@@ -80,7 +75,6 @@ events:
 ----
 <1> Replace with the name of your project directory.
 <2> Replace with the name of a container component from the `components` section of your devfile.
-====
 
 .Verification
 
