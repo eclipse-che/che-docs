@@ -22,7 +22,7 @@ jobs:
     container: "quay.io/eclipse/che-docs:next"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 
@@ -38,7 +38,7 @@ jobs:
         run: echo "YEAR_WEEK=$(/bin/date -u +%Y%U)" >> $GITHUB_OUTPUT
         shell: bash
       - name: Restore cache
-        uses: actions/cache@v3
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         env:
           cache-name: cache
         with:
@@ -50,7 +50,7 @@ jobs:
         run: CI=true antora generate antora-playbook-for-development.yml --stacktrace --log-failure-level=error
 
       - name: Upload artifact doc-content
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: doc-content
           path: build/site

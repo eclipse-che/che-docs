@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Download doc-content artifact
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@07ab29fd4a977ae4d2b275087cf67563dfdf0295 # v9
         with:
           workflow: ${{ github.event.workflow_run.workflow_id }}
           name: doc-content
@@ -38,7 +38,7 @@ jobs:
           echo "pr_sha=$(<content/PR_SHA)" >> $GITHUB_OUTPUT
 
       - name: Publish preview netlify
-        uses: netlify/actions/cli@master
+        uses: netlify/actions/cli@3185065f4ab2f6df6f2ef41ee013626e1c02a426 # master
         id: netlify-publish
         with:
           args: deploy --dir=content/build/site --functions=functions
@@ -47,7 +47,7 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
 
       - name: Update status comment
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@773744901bac0e8cbb5a0dc842800d45e9b2b405 # v2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           number: ${{ steps.vars.outputs.pr_number }}
