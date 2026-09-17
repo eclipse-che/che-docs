@@ -1,6 +1,6 @@
 :_content-type: PROCEDURE
 :description: Applying editor configurations
-:keywords: settings, extensions, configurations
+:keywords: settings, extensions, configurations, keybindings
 :navtitle: Applying editor configurations
 // :page-aliases:
 
@@ -18,18 +18,20 @@ The following sections are currently supported:
 * product.json
 * configurations.json
 * policy.json
+* keybindings.json
 
 The *settings.json* section contains various settings with which you can customize different parts of the Code - OSS editor. +
 The *extensions.json* section contains recommended extensions that are installed when a workspace is started. +
 The *product.json* section contains properties that you need to add to the editor's *product.json* file. If the property already exists, its value will be updated. +
-The *configurations.json* section contains properties for Code - OSS editor configuration. For example, you can use the `extensions.install-from-vsix-enabled` property to disable `Install from VSIX` menu item in the Extensions panel. 
+The *configurations.json* section contains properties for Code - OSS editor configuration. For example, you can use the `extensions.install-from-vsix-enabled` property to disable `Install from VSIX` menu item in the Extensions panel.
 [NOTE]
 ====
 The `extensions.install-from-vsix-enabled` property disables only the UI action. Extensions can still be installed via the `workbench.extensions.command.installFromVSIX` API command or the CLI. To block these paths as well, see xref:manage-extension-installation.adoc[].
 ====
 
 
-The *policy.json* section allows to control over Code - OSS extension installation using the AllowedExtensions policy, as well as the ability to fully block extension installation. See xref:manage-extension-installation.adoc[].
+The *policy.json* section allows to control over Code - OSS extension installation using the AllowedExtensions policy, as well as the ability to fully block extension installation. See xref:manage-extension-installation.adoc[]. +
+The *keybindings.json* section contains custom keyboard shortcuts (keybindings) that are merged into the editor on workspace startup. Administrator-provided keybindings take priority over user-defined keybindings.
 
 .Procedure
 
@@ -79,10 +81,21 @@ data:
     {
       "extensions.install-from-vsix-enabled": false
     }
+  keybindings.json: |
+    [
+      {
+        "key": "ctrl+shift+t",
+        "command": "workbench.action.tasks.runTask"
+      },
+      {
+        "key": "ctrl+shift+k",
+        "command": "workbench.action.terminal.new"
+      }
+    ]
 ----
 ====
 
-* Start or restart your workspace 
+* Start or restart your workspace
 
 [NOTE]
 ====
@@ -93,7 +106,7 @@ TIP: Consider adding the ConfigMap to the {prod-namespace} namespace. By adding 
 
 .Verification
 . Verify that settings defined in the ConfigMap are applied using one of the following methods:
-* Use `F1 → Preferences: Open Remote Settings` to check if the defined settings are applied. 
+* Use `F1 → Preferences: Open Remote Settings` to check if the defined settings are applied.
 * Ensure that the settings from the ConfigMap are present in the `/checode/remote/data/Machine/settings.json` file by using the `F1 → File: Open File...` command to inspect the file's content.
 
 . Verify that extensions defined in the ConfigMap are applied:
@@ -109,3 +122,8 @@ TIP: Consider adding the ConfigMap to the {prod-namespace} namespace. By adding 
 * Open the Command Palette (use `F1`) to check that `Install from VSIX` command is not present in the list of commands.
 * Use `F1 → Open View → Extensions` to open the `Extensions` panel, then click `...` on the view (`Views and More Actions` tooltip) to check that `Install from VSIX` action is absent in the list of actions.
 * Go to the Explorer, find a file with the `vsix` extension (redhat.vscode-yaml-1.17.0.vsix, for example), open menu for that file. `Install from VSIX` action should be absent in the menu.
+
+. Verify that keybindings defined in the ConfigMap are applied:
+* Use `F1 → Preferences: Open Keyboard Shortcuts` and search for the commands you defined (for example, `workbench.action.tasks.runTask`).
+* Confirm that the custom keybindings from the ConfigMap are shown for the commands.
+* Test the keybindings by pressing the defined key combinations to verify they trigger the expected commands.
