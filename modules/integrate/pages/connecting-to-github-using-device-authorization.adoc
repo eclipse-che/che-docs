@@ -1,19 +1,22 @@
 :_content-type: PROCEDURE
 :description: Connect your GitHub account to {prod-short} using the device authorization flow directly from the Dashboard.
 :keywords: user-guide, github, device-authorization, device-auth, token, oauth
-:navtitle: Connecting to GitHub using device authorization
+:navtitle: Connect to GitHub with device authorization
 
 [id="connecting-to-github-using-device-authorization"]
-= Connecting to GitHub using device authorization
+= Connect to GitHub with device authorization
 
 [role="_abstract"]
 Connect your GitHub account to {prod-short} using the device authorization flow directly from the Dashboard. Device Auth Tokens are GitHub OAuth tokens stored as {kubernetes} Secrets. They enable Git operations in your workspaces without requiring a personal access token.
 
 .Prerequisites
 
-* Your administrator has configured a GitHub OAuth App with Device Flow enabled as described in xref:integrate:configuring-oauth-2-for-github.adoc[Configuring OAuth 2.0 for GitHub].
+* Your administrator has configured a GitHub OAuth App with Device Flow enabled as described in xref:configuring-oauth-2-for-github.adoc[].
 +
-NOTE: This feature requires the GitHub OAuth App configuration. It is not available when GitHub authentication is configured using a GitHub App.
+[NOTE]
+====
+This feature requires the GitHub OAuth App configuration. It is not available when GitHub authentication is configured using a GitHub App.
+====
 
 .Procedure
 
@@ -27,22 +30,28 @@ A modal opens displaying a one-time code.
 
 . Click link:https://github.com/login/device[github.com/login/device] to open the GitHub device activation page.
 +
-NOTE: For GitHub Enterprise Server, replace `github.com` with your instance hostname.
+[NOTE]
+====
+For GitHub Enterprise Server, replace `github.com` with your instance hostname.
+====
 
 . Paste the one-time code on the GitHub page and click *Continue*.
 
 . Authorize the application when prompted by GitHub.
 +
-NOTE: The permissions granted are determined by the OAuth App configuration set by your administrator.
+[NOTE]
+====
+The permissions granted are determined by the OAuth App configuration set by your administrator.
+====
 +
-After successful authorization, the modal closes and the new token appears in the *Device Auth Tokens* table.
+After successful authorization, the modal closes and the new token is displayed in the *Device Auth Tokens* table.
 
 .Verification
 
 * Verify that the new token is listed in the *Device Auth Tokens* table with a valid status.
 
 [id="reconnecting-to-github"]
-== Reconnecting to GitHub
+== Reconnect to GitHub
 
 Use *Reconnect* when a token has been revoked or has expired on the GitHub side. Reconnecting starts a new device authorization flow and replaces the existing token in-place, preserving any labels on the {kubernetes} Secret.
 
@@ -57,7 +66,7 @@ Use *Reconnect* when a token has been revoked or has expired on the GitHub side.
 * Verify that the token card shows a valid status after reconnecting.
 
 [id="deleting-device-auth-tokens"]
-== Deleting device auth tokens
+== Delete a device auth token
 
 Deleting a device auth token removes the {kubernetes} Secret and revokes the GitHub authorization. Device Auth Tokens do not expire automatically. To disconnect your GitHub account, delete the token from this page or revoke access from your GitHub account settings.
 
@@ -75,14 +84,15 @@ Deleting a device auth token removes the {kubernetes} Secret and revokes the Git
 
 .Verification
 
-* Verify that the deleted token no longer appears in the *Device Auth Tokens* table.
+* Verify that the deleted token is no longer displayed in the *Device Auth Tokens* table.
 
 [id="troubleshooting-device-auth-tokens"]
-== Troubleshooting
+== Restart after an expired code
 
 If the one-time code expires before you complete the authorization on GitHub (codes expire after approximately 15 minutes), close the modal and click *Connect to GitHub* again to start a new device authorization flow.
 
+[role="_additional-resources"]
 .Additional resources
 
-* xref:integrate:configuring-oauth-2-for-github.adoc[]
+* xref:configuring-oauth-2-for-github.adoc[]
 * For an alternative Git authentication method, see xref:get-started-user:using-a-git-provider-access-token.adoc[].
