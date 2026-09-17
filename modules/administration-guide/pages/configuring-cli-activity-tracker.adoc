@@ -1,0 +1,100 @@
+:_content-type: PROCEDURE
+:description: Configuring the CLI Activity Tracker to prevent workspace idling during active CLI processes.
+:keywords: administration-guide, cli-activity-tracker, workspace, idling, idle, timeout
+:navtitle: Configuring the CLI Activity Tracker
+:page-aliases:
+
+[id="configuring-cli-activity-tracker"]
+= Configuring the CLI Activity Tracker
+
+The CLI Activity Tracker monitors running CLI processes in workspace containers and prevents workspace idling while those processes are active. As an administrator, you can enable and configure this feature cluster-wide through the `CheCluster` custom resource. The operator propagates these settings as environment variables to all workspace containers.
+
+When the CLI Activity Tracker is enabled, it periodically scans for active CLI processes. If it detects a watched process, it resets the workspace idle timer, preventing the workspace from stopping while unattended tasks such as builds, deployments, or long-running scripts are in progress.
+
+All timing fields are optional. When omitted, the CLI Activity Tracker calculates defaults dynamically based on the workspace idle timeout.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Enable the CLI Activity Tracker:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{
+    "spec": {
+      "devEnvironments": {
+        "cliActivityTracker": {
+          "enabled": true
+        }
+      }
+    }
+  }'
+----
+
+. Optional: Configure timing parameters to fine-tune the CLI Activity Tracker behavior:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{
+    "spec": {
+      "devEnvironments": {
+        "cliActivityTracker": {
+          "enabled": true,
+          "secondsOfCheckPeriod": __<check_period>__,
+          "secondsOfActivityWindow": __<activity_window>__,
+          "secondsOfGracePeriod": __<grace_period>__,
+          "secondsOfMaxProcessAge": __<max_process_age>__
+        }
+      }
+    }
+  }'
+----
++
+.CLI Activity Tracker timing parameters
+[cols="1,2", options="header"]
+|===
+| Parameter | Description
+
+| `secondsOfCheckPeriod`
+| How often (in seconds) to scan for active CLI processes.
+
+| `secondsOfActivityWindow`
+| How long (in seconds) to wait for input from interactive processes before considering them idle.
+
+| `secondsOfGracePeriod`
+| Duration (in seconds) during which newly started processes unconditionally prevent idling.
+
+| `secondsOfMaxProcessAge`
+| Safety limit (in seconds). Processes older than this value stop preventing idling.
+|===
+
+. To disable the CLI Activity Tracker, remove the `cliActivityTracker` section or set `enabled` to `false`:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{
+    "spec": {
+      "devEnvironments": {
+        "cliActivityTracker": {
+          "enabled": false
+        }
+      }
+    }
+  }'
+----
+
+.Additional resources
+
+* xref:end-user-guide:proc_preventing-workspace-idling-for-long-running-commands.adoc[]
