@@ -132,7 +132,12 @@ The Operator automatically runs a publishing `Job` when the `ConfigMap` content 
 +
 By default, the auto-update job runs weekly on Sunday at midnight (schedule: `0 0 * * 0`).
 +
-The following optional fields are available under `spec.components.openVSXRegistry.extensionAutoUpdate`:
+[NOTE]
+====
+The cluster must have outbound HTTPS access to `open-vsx.org` for the auto-update job to fetch newer extension versions.
+====
+
+. Optional: Customize the auto-update schedule and filters. The following fields are available under `spec.components.openVSXRegistry.extensionAutoUpdate`:
 +
 [cols="1,1,2", options="header"]
 |===
@@ -155,8 +160,6 @@ The following optional fields are available under `spec.components.openVSXRegist
 | List of extension IDs to skip during auto-update, in `namespace.name` format. For example: `redhat.java`, `redhat.vscode-xml`.
 |===
 +
-To customize the schedule and filter options:
-+
 [source,shell,subs="+quotes,+attributes,+macros"]
 ----
 {orch-cli} patch checluster {prod-checluster} \
@@ -177,11 +180,6 @@ To customize the schedule and filter options:
     }
   }'
 ----
-+
-[NOTE]
-====
-The cluster must have outbound HTTPS access to `open-vsx.org` for the auto-update job to fetch newer extension versions.
-====
 
 .Verification
 
