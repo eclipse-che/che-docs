@@ -1,17 +1,17 @@
 :_content-type: PROCEDURE
-:description: You can enable a Python artifact repository in Python workspaces that run in a restricted environment.
-:keywords: python, artifact-repository, artifact-repositories
-:navtitle: Python
-:page-aliases: using-python-artifact-repositories.adoc
+:description: You can enable an npm artifact repository in npm workspaces that run in a restricted environment.
+:keywords: npm, artifact-repository, artifact-repositories
+:navtitle: Enable npm artifact repositories
+:page-aliases: using-npm-artifact-repositories.adoc
 
-[id="enabling-python-artifact-repositories"]
-= Enabling Python artifact repositories
+[id="enabling-npm-artifact-repositories"]
+= Enable npm artifact repositories
 
-You can enable a Python artifact repository in Python workspaces that run in a restricted environment.
+You can enable an npm artifact repository in npm workspaces that run in a restricted environment.
 
 .Prerequisites
 
-* You are not running any Python workspace.
+* You are not running any npm workspace.
 
 include::partial$snip_warning-about-applying-a-configmap-that-sets-environment-variables.adoc[]
 
@@ -26,14 +26,14 @@ apiVersion: v1
 metadata:
   name: tls-cer
   annotations:
-    controller.devfile.io/mount-path: /home/user/certs
+    controller.devfile.io/mount-path: /public-certs
     controller.devfile.io/mount-as: file
   labels:
     controller.devfile.io/mount-to-devworkspace: 'true'
     controller.devfile.io/watch-secret: 'true'
 data:
-  tls.cer: >-
-    __<Base64_encoded_content_of_public_cert>__ <1>
+  nexus.cer: >-
+    <Base64_encoded_content_of_public_cert>__ <1>
 ----
 <1> Base64 encoding with disabled line wrapping.
 
@@ -51,7 +51,9 @@ metadata:
     controller.devfile.io/mount-to-devworkspace: 'true'
     controller.devfile.io/watch-configmap: 'true'
 data:
-  PIP_INDEX_URL: >-
-    https://__<python_artifact_repository_route>__/repository/pypi-all/
-  PIP_CERT: /home/user/certs/tls.cer
+  NPM_CONFIG_REGISTRY: >-
+    https://__<npm_artifact_repository_route>__/repository/npm-all/
 ----
+
+include::partial$proc_disabling-self-signed-certificate-validation.adoc[leveloffset=+1]
+include::partial$proc_restoring-node-extra-ca-certs-variable-value.adoc[leveloffset=+1]
