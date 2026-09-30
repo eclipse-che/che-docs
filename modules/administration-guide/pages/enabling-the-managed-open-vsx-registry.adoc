@@ -1,6 +1,6 @@
 :_content-type: PROCEDURE
-:description: Enable the Operator-managed Open VSX registry to deploy a dedicated Open VSX server and PostgreSQL database as {prod} operands
-:keywords: administration guide, openvsx, registry, extensions, managed, operator
+:description: Enable the Operator-managed Open VSX registry to deploy a dedicated Open VSX server and PostgreSQL database as {prod} operands, and configure periodic extension auto-update
+:keywords: administration guide, openvsx, registry, extensions, managed, operator, auto-update, cronjob
 :navtitle: Enable the managed Open VSX registry
 
 [id="enabling-the-managed-open-vsx-registry"]
@@ -20,12 +20,15 @@ When enabled, the {prod-short} Operator creates the following resources:
 * A PostgreSQL database `Deployment` with a `PersistentVolumeClaim` for data.
 * A one-shot `Job` to provision the database with the required user and access token.
 * A `ConfigMap` for listing extensions to publish to the registry.
+* Optional: A `CronJob` for periodic auto-update of published extensions from the upstream registry.
 
 When disabled, the Operator removes all managed Open VSX resources.
 
 .Prerequisites
 
 * An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+* Outbound HTTPS access from the cluster to `open-vsx.org` is available. This is required for the extension auto-update `CronJob` to fetch newer extension versions from the upstream registry.
 
 .Procedure
 
@@ -107,6 +110,77 @@ where `__<size>__` is the required storage size. For example: `5Gi`.
 +
 The Operator automatically runs a publishing `Job` when the `ConfigMap` content changes.
 
+. Optional: Enable periodic auto-update of published extensions. When enabled, a `CronJob` periodically checks the upstream `open-vsx.org` registry for newer versions of extensions published in the managed registry and re-publishes them automatically.
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{
+    "spec": {
+      "components": {
+        "openVSXRegistry": {
+          "extensionAutoUpdate": {
+            "enable": true
+          }
+        }
+      }
+    }
+  }'
+----
++
+By default, the auto-update job runs weekly on Sunday at midnight (schedule: `0 0 * * 0`).
++
+[NOTE]
+====
+The cluster must have outbound HTTPS access to `open-vsx.org` for the auto-update job to fetch newer extension versions.
+====
+
+. Optional: Customize the auto-update schedule and filters. The following fields are available under `spec.components.openVSXRegistry.extensionAutoUpdate`:
++
+[cols="1,1,2", options="header"]
+|===
+| Field | Default | Description
+
+| `enable`
+| `false`
+| Enables the extension auto-update `CronJob`.
+
+| `schedule`
+| `0 0 * * 0`
+| Cron schedule expression for the update job.
+
+| `vsCodeEngineVersion`
+| _not set_
+| When set, only extensions compatible with this Visual Studio Code engine version are updated. When omitted, the latest non-pre-release version of each extension is used regardless of engine compatibility.
+
+| `excludedExtensions`
+| _empty_
+| List of extension IDs to skip during auto-update, in `namespace.name` format. For example: `redhat.java`, `redhat.vscode-xml`.
+|===
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{
+    "spec": {
+      "components": {
+        "openVSXRegistry": {
+          "extensionAutoUpdate": {
+            "enable": true,
+            "schedule": "__<cron_expression>__",
+            "vsCodeEngineVersion": "__<version>__",
+            "excludedExtensions": ["__<namespace.name>__"]
+          }
+        }
+      }
+    }
+  }'
+----
+
 .Verification
 
 * Verify that the Open VSX server and database pods are running:
@@ -127,6 +201,13 @@ The Operator automatically runs a publishing `Job` when the `ConfigMap` content 
 ----
 
 * Open a workspace and verify that extensions from the managed registry are available in the *Extensions* view.
+
+* If extension auto-update is enabled, verify that the `CronJob` exists:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} get cronjob --namespace {prod-namespace} -l app.kubernetes.io/component=openvsx-server-extensions-update
+----
 
 [id="configuring-custom-credentials-for-the-managed-open-vsx-registry"]
 == Configure custom credentials for the managed Open VSX registry
