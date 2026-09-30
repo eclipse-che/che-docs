@@ -27,6 +27,16 @@ jobs:
       - name: Download doc-content artifact
         uses: dawidd6/action-download-artifact@07ab29fd4a977ae4d2b275087cf67563dfdf0295 # v9
         with:
+          # Pin to the exact run that triggered this workflow. Without run_id, the
+          # action falls back to searching for the "most recent successful" artifact
+          # for this workflow name across the whole repo, which can resolve to a
+          # completely unrelated PR's build when multiple PRs complete builds close
+          # together (see https://github.com/eclipse-che/che-docs/pull/3143).
+          run_id: ${{ github.event.workflow_run.id }}
+          # This workflow runs via workflow_run in the base repo's trusted context
+          # (that's the reason it's split from the build workflow at all), so it's
+          # safe to read a build artifact produced by a fork-originated PR run.
+          allow_forks: true
           workflow: ${{ github.event.workflow_run.workflow_id }}
           name: doc-content
           path: content
