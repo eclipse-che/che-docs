@@ -94,22 +94,40 @@ If the workspace file does not exist in the first project, a new one will be cre
 
 ** By default, when a workspace has no projects, dependent projects, or starter projects defined in its devfile and no workspace folders are configured (for example, the dashboard's built-in "Empty Workspace"), the editor opens with an empty Explorer. To automatically open the `/projects` folder instead, set the `workspace.openProjectsRootOnEmpty` setting to `true` in the `vscode-editor-configurations` ConfigMap.
 +
+.Prerequisites
+--
+* You must have an active session with permissions to create ConfigMaps in user namespaces.
+--
++
 [source,yaml]
 ----
-kind: ConfigMap
 apiVersion: v1
+kind: ConfigMap
 metadata:
   name: vscode-editor-configurations
 data:
-  settings.json: |
+  configurations.json: |
     {
       "workspace.openProjectsRootOnEmpty": true
     }
 ----
 +
-TIP: See link:https://eclipse.dev/che/docs/stable/administration-guide/editor-configurations-for-microsoft-visual-studio-code/[Editor configurations for Microsoft Visual Studio Code] for details on how to configure the `vscode-editor-configurations` ConfigMap.
+[IMPORTANT]
+====
+If the `vscode-editor-configurations` ConfigMap already exists in your namespace, merge the `workspace.openProjectsRootOnEmpty` key into the existing `configurations.json` entry instead of applying this manifest as-is, which would overwrite other settings.
+====
++
+[TIP]
+====
+See link:https://eclipse.dev/che/docs/stable/administration-guide/editor-configurations-for-microsoft-visual-studio-code/[Editor configurations for Microsoft Visual Studio Code] for details on how to configure the `vscode-editor-configurations` ConfigMap.
+====
 +
 [NOTE]
 ====
 This setting only applies when the workspace has no projects, dependent projects, or starter projects defined. Workspaces that already have folders configured are not affected.
 ====
++
+.Verification
+--
+Restart the workspace and confirm that the Explorer opens the `/projects` folder.
+--
