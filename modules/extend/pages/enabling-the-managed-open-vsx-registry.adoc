@@ -356,7 +356,12 @@ The `ConfigMap` contains a single `application.yml` key with the Open VSX Spring
 [id="deleting-extensions-from-the-managed-open-vsx-registry"]
 == Delete extensions from the managed Open VSX registry
 
-Delete individual extensions or specific extension versions from the managed Open VSX registry by using the `ovsx` command-line tool, which is included in the Open VSX server image. Use the Open VSX admin API instead when you need to delete an extension that a different user published, or to free a version number for reuse.
+Delete individual extensions or specific extension versions from the managed Open VSX registry by using the Open VSX admin API or the `ovsx` command-line tool, which is included in the Open VSX server image.
+
+Choose the method according to the personal access token that is available in the Open VSX server pod:
+
+Open VSX admin API:: Uses the admin personal access token in the `OPENVSX_ADMIN_PAT` environment variable. This token has the `admin` role, so it can delete any extension, including extensions that a different user published, and it can purge versions.
+`ovsx` command-line tool:: Uses the publisher personal access token in the `OPENVSX_USER_PAT` environment variable. This token can delete only the extensions that the managed registry published, and it cannot purge versions.
 
 [NOTE]
 ====
@@ -366,7 +371,7 @@ Deleting an extension version removes the files of that version, but the version
 [id="deleting-extensions-by-using-the-ovsx-command-line-tool"]
 === Delete extensions by using the `ovsx` command-line tool
 
-The `ovsx` tool deletes extensions through the regular Open VSX API and requires a registry of version 1.2.0 or later, which the managed registry provides. With the publisher personal access token, you can delete the extensions that the managed registry published.
+The `ovsx` tool deletes extensions through the regular Open VSX API. With the publisher personal access token, you can delete the extensions that the managed registry published.
 
 .Prerequisites
 
@@ -450,13 +455,13 @@ The admin personal access token has the `admin` role and can therefore delete an
 {orch-cli} get pods --namespace {prod-namespace} -l app.kubernetes.io/component=openvsx-server -o name
 ----
 
-. Delete an entire extension with all its versions:
+. List the versions of the extension:
 +
 [source,shell,subs="+quotes,+attributes,+macros"]
 ----
 {orch-cli} exec __<openvsx_server_pod>__ \
   --namespace {prod-namespace} -- \
-  sh -c 'curl -X POST "http://openvsx-server:8080/openvsx/admin/api/extension/__<extension_namespace>__/__<extension_name>__/delete?token=$OPENVSX_ADMIN_PAT"'
+  curl -s "http://openvsx-server:8080/openvsx/api/__<extension_namespace>__/__<extension_name>__/versions"
 ----
 +
 where:
@@ -467,33 +472,74 @@ where:
 `__<extension_name>__`:: The name of the extension. For example: `java`.
 --
 
-. Optional: Delete only a specific version of an extension:
+. Get the target platform of the version that you want to delete. The admin API requires the target platform to identify a version:
 +
 [source,shell,subs="+quotes,+attributes,+macros"]
 ----
 {orch-cli} exec __<openvsx_server_pod>__ \
   --namespace {prod-namespace} -- \
-  sh -c 'curl -X POST -H "Content-Type: application/json" \
-  -d '"'"'[{"version": "__<extension_version>__"}]'"'"' \
-  "http://openvsx-server:8080/openvsx/admin/api/extension/__<extension_namespace>__/__<extension_name>__/delete?token=$OPENVSX_ADMIN_PAT"'
+  curl -s "http://openvsx-server:8080/openvsx/api/__<extension_namespace>__/__<extension_name>__/__<extension_version>__"
 ----
 +
 where `__<extension_version>__` is the version to delete. For example: `1.2.3`.
++
+Read the value of the `targetPlatform` field from the output. Extensions that are not platform-specific use `universal`. Platform-specific extensions use a value such as `linux-x64`.
 
-. Optional: Purge a specific version of an extension to remove it from the database and storage and free its version number for reuse:
+. Delete the version:
 +
 [source,shell,subs="+quotes,+attributes,+macros"]
 ----
 {orch-cli} exec __<openvsx_server_pod>__ \
   --namespace {prod-namespace} -- \
   sh -c 'curl -X POST -H "Content-Type: application/json" \
-  -d '"'"'[{"version": "__<extension_version>__"}]'"'"' \
+  -d '"'"'[{"targetPlatform": "__<target_platform>__", "version": "__<extension_version>__"}]'"'"' \
+  "http://openvsx-server:8080/openvsx/admin/api/extension/__<extension_namespace>__/__<extension_name>__/delete?token=$OPENVSX_ADMIN_PAT"'
+----
++
+where `__<target_platform>__` is the target platform from the previous step. For example: `universal`.
++
+On success, the registry returns `{"success": "Deleted __<extension_namespace>__.__<extension_name>__ __<extension_version>__"}`.
++
+To delete several versions in one request, add an object for each version to the JSON array. The registry returns one `Deleted` line for each version.
++
+[IMPORTANT]
+====
+The request body must include the `targetPlatform` field for every version. A request body that omits this field fails with `404` and the error `Extension not found`, even when the version exists.
+
+The registry validates the whole request body before it deletes anything. If any version in the array does not exist, the request fails with `404` and no version is deleted.
+
+A request with no body at all returns `200` with an empty `{}` response and deletes nothing. Always check that the response contains a `success` message.
+====
+
+. To delete an entire extension, repeat the target platform and delete steps for every version that the version list returned.
+
+. Optional: Purge a version to remove it from the database and storage and free its version number for reuse. The request body is the same as for deleting a version:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} exec __<openvsx_server_pod>__ \
+  --namespace {prod-namespace} -- \
+  sh -c 'curl -X POST -H "Content-Type: application/json" \
+  -d '"'"'[{"targetPlatform": "__<target_platform>__", "version": "__<extension_version>__"}]'"'"' \
   "http://openvsx-server:8080/openvsx/admin/api/extension/__<extension_namespace>__/__<extension_name>__/purge?token=$OPENVSX_ADMIN_PAT"'
 ----
++
+On success, the registry returns `{"success": "Purged __<extension_namespace>__.__<extension_name>__"}`.
 
 .Verification
 
-* Open the Open VSX registry UI and verify that the deleted extension is no longer listed.
+. Verify that the registry no longer serves the extension:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} exec __<openvsx_server_pod>__ \
+  --namespace {prod-namespace} -- \
+  curl -s "http://openvsx-server:8080/openvsx/api/__<extension_namespace>__/__<extension_name>__"
+----
++
+When all versions of the extension are deleted, the output contains `"error": "Extension not found: __<extension_namespace>__.__<extension_name>__"`.
+
+. Open the Open VSX registry UI and verify that the deleted extension is no longer listed.
 
 [id="disabling-the-managed-open-vsx-registry"]
 == Disable the managed Open VSX registry
