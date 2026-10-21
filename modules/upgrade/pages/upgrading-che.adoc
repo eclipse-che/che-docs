@@ -1,15 +1,41 @@
-:_content-type: ASSEMBLY
-:description: Keep your {prod-short} deployment current by upgrading to the latest version.
-:keywords: upgrade, update, migrate
-:navtitle: Upgrade {prod-short}
+:_content-type: CONCEPT
+:description: Understand how the upgrade works, supported paths, and platform version compatibility.
+:keywords: upgrade, update, overview, supported path
+:navtitle: How the upgrade works
 :page-aliases: administration-guide:upgrading-che.adoc, installation-guide:upgrading-che.adoc, installation-guide:upgrading-che-known-issues.adoc, installation-guide:rolling-back-a-che-upgrade.adoc, installation-guide:upgrading-che-namespace-strategies-other-than-per-user.adoc, upgrading-che-namespace-strategies-other-than-per-user.adoc, upgrading-che-7-41-on-openshift.adoc
 
 
 [id="upgrading-{prod-id-short}"]
-= Upgrade {prod-short}
+= How the upgrade works
 
 [role="_abstract"]
-Keep your {prod-short} deployment current by upgrading to the latest version. Upgrading delivers bug fixes, security patches, and new capabilities to your developers with minimal disruption.
+Understand what happens during a {prod-short} upgrade so that you can plan the timing, communicate downtime expectations, and verify the result.
 
-Before you upgrade, save and push all work in running workspaces, then stop all workspaces. The Operator handles the server component upgrade automatically. Workspaces resume normally after the upgrade completes.
+When you upgrade {prod-short}, the Operator handles the server component upgrade automatically. You do not need to manually update individual pods or configurations. The Operator:
+
+* Replaces the {prod-short} server, dashboard, gateway, and plugin registry pods with the new version.
+* Upgrades the {devworkspace} Operator to the version bundled with the new release.
+* Preserves the existing `CheCluster` custom resource configuration.
+
+Running workspaces are not automatically restarted during the upgrade. Developers must stop their workspaces before the upgrade and restart them after the upgrade completes.
+
+== Supported upgrade path
+
+{prod-short} supports upgrading from the previous minor version to the current version.
+
+Direct upgrades that skip minor versions are not supported. If your deployment is more than one minor version behind, upgrade one minor version at a time.
+
+== {platforms-name} version compatibility
+
+{prod-short} {prod-ver} is supported on {platforms-name} {platforms-ver}. Before you upgrade {prod-short}, verify that your {platforms-name} cluster version is within the supported range.
+
+== Review the release notes
+
+Review the release notes before upgrading to understand new features, bug fixes, and any changes that might affect your deployment. For a complete pre-upgrade checklist, see Additional resources.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:pre-upgrade-checklist.adoc[]
+* xref:specifying-the-update-approval-strategy.adoc[]
 
