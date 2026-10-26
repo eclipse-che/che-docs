@@ -388,7 +388,10 @@ The `ovsx unpublish` command queries the registry version before it deletes anyt
 {orch-cli} get pods --namespace {prod-namespace} -l app.kubernetes.io/component=openvsx-server -o name
 ----
 
-. Delete an entire extension with all its versions:
+. Determine the scope that you want to delete, and run only one of the following commands. Each command deletes a different scope, and deleting is irreversible:
++
+--
+* To delete the entire extension with all its versions:
 +
 [source,shell,subs="+quotes,+attributes,+macros"]
 ----
@@ -397,18 +400,8 @@ The `ovsx unpublish` command queries the registry version before it deletes anyt
   sh -c 'OVSX_REGISTRY_URL=http://openvsx-server:8080/openvsx OVSX_PAT=$OPENVSX_USER_PAT \
   ovsx unpublish __<extension_namespace>__.__<extension_name>__ --force'
 ----
-+
-where:
-+
---
-`__<openvsx_server_pod>__`:: The pod name from the previous step.
-`__<extension_namespace>__`:: The namespace (publisher) of the extension. For example: `redhat`.
-`__<extension_name>__`:: The name of the extension. For example: `java`.
---
-+
-The `--force` option skips the confirmation prompt. Because the command runs in a noninteractive shell, it fails without this option.
 
-. Optional: Delete only specific versions of an extension by adding the `--versions` option. Separate multiple versions with spaces:
+* To delete only specific versions, add the `--versions` option. Separate multiple versions with spaces:
 +
 [source,shell,subs="+quotes,+attributes,+macros"]
 ----
@@ -417,10 +410,8 @@ The `--force` option skips the confirmation prompt. Because the command runs in 
   sh -c 'OVSX_REGISTRY_URL=http://openvsx-server:8080/openvsx OVSX_PAT=$OPENVSX_USER_PAT \
   ovsx unpublish __<extension_namespace>__.__<extension_name>__ --versions __<extension_version>__ --force'
 ----
-+
-where `__<extension_version>__` is the version to delete. For example: `1.2.3`.
 
-. Optional: Delete only specific target platforms of a version by adding the `--target` option. This option requires the `--versions` option:
+* To delete only specific target platforms of a version, add the `--target` option. This option requires the `--versions` option:
 +
 [source,shell,subs="+quotes,+attributes,+macros"]
 ----
@@ -430,8 +421,24 @@ where `__<extension_version>__` is the version to delete. For example: `1.2.3`.
   ovsx unpublish __<extension_namespace>__.__<extension_name>__ \
   --versions __<extension_version>__ --target __<target_platform>__ --force'
 ----
+--
 +
-where `__<target_platform>__` is the platform to delete. For example: `linux-x64`.
+where:
++
+--
+`__<openvsx_server_pod>__`:: The pod name from the previous step.
+`__<extension_namespace>__`:: The namespace (publisher) of the extension. For example: `redhat`.
+`__<extension_name>__`:: The name of the extension. For example: `java`.
+`__<extension_version>__`:: The version to delete. For example: `1.2.3`.
+`__<target_platform>__`:: The target platform to delete. For example: `linux-x64`.
+--
++
+[IMPORTANT]
+====
+Omitting the `--versions` option deletes every version of the extension. To delete a single version, you must pass `--versions`.
+
+The `--force` option skips the confirmation prompt. Because the command runs in a noninteractive shell, it fails without this option, and no prompt warns you before the deletion.
+====
 
 .Verification
 
