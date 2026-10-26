@@ -442,7 +442,13 @@ The `--force` option skips the confirmation prompt. Because the command runs in 
 
 .Verification
 
-* Open the Open VSX registry UI and verify that the deleted extension is no longer listed.
+* Open the Open VSX registry UI and verify the result for the scope that you deleted:
++
+--
+Entire extension:: The extension is no longer listed in the registry.
+Specific versions:: The deleted versions are no longer available in the *Version* list on the extension page.
+Specific target platforms:: In the extension version table, the *Target platforms* column no longer lists the deleted platforms for that version.
+--
 
 [id="deleting-extensions-by-using-the-open-vsx-admin-api"]
 === Delete extensions by using the Open VSX admin API
@@ -536,18 +542,23 @@ On success, the registry returns `{"success": "Purged __<extension_namespace>__.
 
 .Verification
 
-. Verify that the registry no longer serves the extension:
+. List the versions that the registry still serves:
 +
 [source,shell,subs="+quotes,+attributes,+macros"]
 ----
 {orch-cli} exec __<openvsx_server_pod>__ \
   --namespace {prod-namespace} -- \
-  curl -s "http://openvsx-server:8080/openvsx/api/__<extension_namespace>__/__<extension_name>__"
+  curl -s "http://openvsx-server:8080/openvsx/api/__<extension_namespace>__/__<extension_name>__/versions"
 ----
 +
-When all versions of the extension are deleted, the output contains `"error": "Extension not found: __<extension_namespace>__.__<extension_name>__"`.
+The versions that you deleted are no longer listed, and the versions that you kept remain available. When you delete every version of the extension, the request returns `404` and the output contains `"error": "Extension not found: __<extension_namespace>__.__<extension_name>__"`.
++
+[NOTE]
+====
+Do not verify a partial deletion with the `pass:c,a,q[/api/__<extension_namespace>__/__<extension_name>__]` endpoint. That endpoint returns the metadata of the latest remaining version, so it still succeeds while any version of the extension remains.
+====
 
-. Open the Open VSX registry UI and verify that the deleted extension is no longer listed.
+. Open the Open VSX registry UI and verify the result for the scope that you deleted.
 
 [id="disabling-the-managed-open-vsx-registry"]
 == Disable the managed Open VSX registry
