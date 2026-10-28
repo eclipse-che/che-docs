@@ -356,55 +356,7 @@ The `ConfigMap` contains a single `application.yml` key with the Open VSX Spring
 [id="deleting-extensions-from-the-managed-open-vsx-registry"]
 == Delete extensions from the managed Open VSX registry
 
-Delete individual extensions or specific extension versions from the managed Open VSX registry by using the Open VSX admin API.
-
-.Prerequisites
-
-* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
-* The managed Open VSX registry is enabled and running.
-
-.Procedure
-
-. Get the Open VSX server pod name:
-+
-[source,shell,subs="+quotes,+attributes,+macros"]
-----
-{orch-cli} get pods --namespace {prod-namespace} -l app.kubernetes.io/component=openvsx-server -o name
-----
-
-. Delete an entire extension with all its versions:
-+
-[source,shell,subs="+quotes,+attributes,+macros"]
-----
-{orch-cli} exec __<openvsx_server_pod>__ \
-  --namespace {prod-namespace} -- \
-  sh -c 'curl -X POST "http://openvsx-server:8080/openvsx/admin/api/extension/__<extension_namespace>__/__<extension_name>__/delete?token=$OPENVSX_ADMIN_PAT"'
-----
-+
-where:
-+
---
-`__<openvsx_server_pod>__`:: The pod name from the previous step.
-`__<extension_namespace>__`:: The namespace (publisher) of the extension. For example: `redhat`.
-`__<extension_name>__`:: The name of the extension. For example: `java`.
---
-
-. Alternatively, to delete only a specific version of an extension:
-+
-[source,shell,subs="+quotes,+attributes,+macros"]
-----
-{orch-cli} exec __<openvsx_server_pod>__ \
-  --namespace {prod-namespace} -- \
-  sh -c 'curl -X POST -H "Content-Type: application/json" \
-  -d '"'"'[{"version": "__<extension_version>__"}]'"'"' \
-  "http://openvsx-server:8080/openvsx/admin/api/extension/__<extension_namespace>__/__<extension_name>__/delete?token=$OPENVSX_ADMIN_PAT"'
-----
-+
-where `__<extension_version>__` is the version to delete. For example: `1.2.3`.
-
-.Verification
-
-* Open the Open VSX registry UI and verify that the deleted extension is no longer listed.
+To remove an extension, one of its versions, or one of its target platforms from a running managed registry, see xref:deleting-extensions-from-the-managed-open-vsx-registry.adoc[].
 
 [id="disabling-the-managed-open-vsx-registry"]
 == Disable the managed Open VSX registry
