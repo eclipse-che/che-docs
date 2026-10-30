@@ -1,0 +1,101 @@
+:_content-type: PROCEDURE
+:description: Mounting the GitLab Workflow OAuth configuration into workspaces
+:keywords: gitlab, workflow, oauth, configmap, environment-variables
+:navtitle: Mounting the GitLab Workflow OAuth configuration
+// :page-aliases:
+
+[id="mounting-the-gitlab-workflow-oauth-configuration"]
+= Mounting the GitLab Workflow OAuth configuration into workspaces
+
+Create a ConfigMap that provides the OAuth parameters of the registered GitLab application to the GitLab Workflow extension in every workspace.
+
+The GitLab Workflow extension reads the following environment variables:
+
+.Environment variables of the GitLab Workflow extension
+|===
+|Environment variable |Description
+
+|`GITLAB_WORKFLOW_INSTANCE_URL`
+|The URL of the GitLab instance that the application is registered on, for example `https://gitlab.com`. The other two variables apply only to this instance.
+
+|`GITLAB_WORKFLOW_OAUTH_CLIENT_ID`
+|The *Application ID* of the registered GitLab application.
+
+|`GITLAB_WORKFLOW_OAUTH_REDIRECT_URI`
+|The redirect URI of the application: `pass:c,a,q[{prod-url}]/api/oauth/ide-redirect`. The value must exactly match the *Redirect URI* registered in the GitLab application. Setting this variable enables the browser-based OAuth flow.
+|===
+
+[NOTE]
+====
+The configuration applies to a single GitLab instance: the one named by `GITLAB_WORKFLOW_INSTANCE_URL`. For other instances, the extension uses its own configured OAuth clients, and the browser-based flow is not available for them.
+====
+
+.Prerequisites
+
+* Registering a GitLab application for the IDE redirect is completed, and the *Application ID* of the application is at hand.
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+
+. Prepare the ConfigMap:
++
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: gitlab-workflow
+  namespace: {prod-namespace} <1>
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config <2>
+    controller.devfile.io/mount-to-devworkspace: 'true' <3>
+    controller.devfile.io/watch-configmap: 'true'
+  annotations:
+    controller.devfile.io/mount-as: env <4>
+data:
+  GITLAB_WORKFLOW_INSTANCE_URL: __<gitlab_instance_url>__ <5>
+  GITLAB_WORKFLOW_OAUTH_CLIENT_ID: __<gitlab_application_id>__ <6>
+  GITLAB_WORKFLOW_OAUTH_REDIRECT_URI: pass:c,a,q[{prod-url}]/api/oauth/ide-redirect
+----
+<1> The {prod-short} namespace. The default is `{prod-namespace}`.
+<2> Synchronizes the ConfigMap to the namespace of every user. See xref:administration-guide:configuring-a-user-namespace.adoc[].
+<3> Mounts the ConfigMap into workspaces. The `controller.devfile.io/watch-configmap` label lets the {devworkspace} Operator discover the ConfigMap.
+<4> Exposes each key of the ConfigMap as an environment variable in every container of a workspace.
+<5> The URL of the GitLab instance, for example `https://gitlab.com`.
+<6> The *Application ID* of the registered GitLab application.
+
+. Apply the ConfigMap:
++
+[subs="+quotes,+attributes,+macros"]
+----
+$ {orch-cli} apply -f - <<EOF
+__<ConfigMap_prepared_in_the_previous_step>__
+EOF
+----
+
+. Verify in the output that the ConfigMap is created.
+
+[WARNING]
+====
+Applying a ConfigMap labeled with `controller.devfile.io/mount-to-devworkspace: 'true'` restarts all running workspaces. To mount the ConfigMap only when a workspace starts, add the `controller.devfile.io/mount-on-start: 'true'` annotation to the ConfigMap. Running workspaces then pick up the ConfigMap after their next restart.
+====
+
+.Verification
+
+* Start a new workspace, open a terminal in it, and run:
++
+----
+$ env | grep GITLAB_WORKFLOW
+GITLAB_WORKFLOW_INSTANCE_URL=https://gitlab.com
+GITLAB_WORKFLOW_OAUTH_CLIENT_ID=__<gitlab_application_id>__
+GITLAB_WORKFLOW_OAUTH_REDIRECT_URI=__<redirect_uri_of_the_application>__
+----
+
+.Additional resources
+
+* xref:administration-guide:configuring-a-user-namespace.adoc[]
+// vale RedHat.GitLinks = NO
+* link:https://github.com/devfile/devworkspace-operator/blob/main/docs/additional-configuration.adoc#automatically-mounting-volumes-configmaps-and-secrets[Automatically mounting volumes, configmaps, and secrets]
+// vale RedHat.GitLinks = YES
