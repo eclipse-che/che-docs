@@ -8,7 +8,7 @@
 
 [IMPORTANT]
 ====
-The managed Open VSX registry is a Technology Preview feature only.
+For new installations, the managed Open VSX registry is the default registry and no additional configuration is required. Follow this procedure if the registry was disabled, or if you upgraded from a release where it was not the default. To use the deprecated embedded plugin registry instead, disable the Open VSX operand as described in xref:#disabling-the-managed-open-vsx-registry[Disable the managed Open VSX registry].
 ====
 
 Enable {prod-short} to deploy and manage a dedicated Open VSX server with a PostgreSQL database as Operator-managed components. The managed registry is exposed through the {prod-short} gateway and provides a private, curated extension registry without requiring manual deployment or database administration.
@@ -99,12 +99,59 @@ where `__<size>__` is the required storage size. For example: `5Gi`.
   }'
 ----
 
-. Optional: Publish extensions to the managed registry by editing the `openvsx-server-extensions` `ConfigMap` in the {prod-short} {orch-namespace}. Add extension `.vsix` download URLs, one per line:
+. Optional: Publish extensions to the managed registry by editing the `openvsx-server-extensions` `ConfigMap` in the {prod-short} {orch-namespace}:
 +
 [source,shell,subs="+quotes,+attributes,+macros"]
 ----
 {orch-cli} edit configmap openvsx-server-extensions \
   --namespace {prod-namespace}
+----
++
+The `extensions.list` key contains one extension entry per line. The following formats are supported:
++
+[cols="1,2", options="header"]
+|===
+| Format | Description
+
+| `__namespace__.__name__`
+| Publish the latest stable (non-pre-release) version from the upstream registry.
+
+| `__namespace__.__name__@__version__`
+| Publish a specific version. The upstream registry is not queried for the latest version.
+
+| `__https://...vsix__`
+| Download and publish a `.vsix` file directly from a URL. This is the legacy format and remains fully supported.
+|===
++
+Lines starting with `#` are treated as comments and ignored. Empty lines are skipped.
++
+For extensions that do not provide a universal `.vsix` (for example, native extensions such as `ms-python.debugpy`), set the optional `architecture` key in the same `ConfigMap`. When the universal `.vsix` is not found on the upstream registry, the publishing job falls back to the platform-specific `.vsix` for the configured architecture.
++
+.Example `openvsx-server-extensions` `ConfigMap`
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openvsx-server-extensions
+  namespace: {prod-namespace}
+data:
+  # Optional: target platform used as fallback for extensions without a universal .vsix
+  architecture: "linux-x64"
+  extensions.list: |
+    # Publish the latest stable version
+    redhat.vscode-yaml
+    ms-python.python
+    golang.go
+
+    # Pin to a specific version
+    redhat.java@1.34.0
+
+    # Legacy URL format (still supported)
+    https://open-vsx.org/api/redhat/vscode-xml/0.27.2024120609/file/redhat.vscode-xml-0.27.2024120609.vsix
+
+    # Native extension: no universal .vsix, falls back to linux-x64
+    ms-python.debugpy
 ----
 +
 The Operator automatically runs a publishing `Job` when the `ConfigMap` content changes.
