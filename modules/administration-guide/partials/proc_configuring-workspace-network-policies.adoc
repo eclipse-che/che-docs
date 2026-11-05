@@ -1,0 +1,67 @@
+[id="configuring-workspace-network-policies"]
+= Configure network policies for workspaces
+
+The {devworkspace} Operator provisions a separate NetworkPolicy for each workspace, restricting network traffic to and from the workspace Pods.
+Workspace network policies are controlled by the `spec.devEnvironments.networking.networkPolicy` field in the CheCluster custom resource and are disabled by default.
+
+
+.Prerequisites
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+. Enable network policies for workspaces:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{"spec":{"devEnvironments":{"networking":{"networkPolicy":{"enabled":true}}}}}'
+----
+
+. Optional: Define custom `ingress` and `egress` rules in the `spec.devEnvironments.networking.networkPolicy` field to restrict the traffic that is allowed for the workspace Pods:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+spec:
+  devEnvironments:
+    networking:
+      networkPolicy:
+        enabled: true
+        ingress:
+          - from:
+              - namespaceSelector:
+                  matchLabels:
+                    kubernetes.io/metadata.name: {prod-namespace}   <1>
+                podSelector:
+                  matchLabels:
+                    app.kubernetes.io/part-of: che.eclipse.org
+----
+<1> The {prod-short} {orch-namespace}.
+The default is `{prod-namespace}`.
++
+The `ingress` and `egress` fields accept standard {orch-name} NetworkPolicy rules and behave as follows:
++
+* When `ingress` is not specified, the default ingress rules of the {devworkspace} Operator apply, and the {prod-short} Operator adds one rule allowing traffic from the {prod-short} components.
+On OpenShift, the default rules allow traffic from the {devworkspace} Operator {orch-namespace} and from the OpenShift monitoring, ingress, and host-network {orch-namespace}s.
+* When `ingress` is specified as an empty list, all ingress traffic to the workspace Pods is denied.
+* When `ingress` is specified as a non-empty list, exactly those rules apply: the default rules are replaced, and the rule allowing traffic from the {prod-short} components is not added automatically.
+If the {prod-short} components must communicate with the workspaces, include a corresponding ingress rule.
++
+The `egress` field behaves the same way: when it is not specified, the default egress rule of the {devworkspace} Operator applies, which allows all egress traffic; when it is specified as an empty list, all egress traffic from the workspace Pods is denied; when it is specified as a non-empty list, exactly those rules apply.
+
+.Verification
+. Start a workspace and verify that the NetworkPolicy resource is created for it in the user {orch-namespace}:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} get networkpolicies -n __<user_namespace>__
+----
+
+NOTE: Changing the workspace network policy configuration does not require restarting existing workspaces.
+The new configuration is applied to a workspace the next time that workspace is reconciled, for example when it is started or stopped.
+
+.Additional resources
+* xref:checluster-custom-resource-fields-reference.adoc[]
+
+* link:https://kubernetes.io/docs/concepts/services-networking/network-policies/[Kubernetes network policies]
