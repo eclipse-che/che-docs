@@ -9,10 +9,9 @@
 = Use an alternative extension registry
 
 [role="_abstract"]
-Configure {prod-short} to use an alternative Open VSX registry instance instead of the default embedded registry. Switch to the public open-vsx.org registry for internet-connected environments, or to a standalone on-premises instance for full control over available extensions.
+By default, {prod-short} uses the managed Open VSX registry that the Operator deploys. Configure {prod-short} to use an alternative Open VSX registry instance instead: the public open-vsx.org registry for internet-connected environments, or a standalone on-premises instance for full control over available extensions.
 
-
-For new installations, the default is the managed Open VSX registry that the Operator deploys. See xref:enabling-the-managed-open-vsx-registry.adoc[].
+For more information about the default registry, see xref:enabling-the-managed-open-vsx-registry.adoc[].
 
 If the default Open VSX registry instance does not meet your requirements, you can select one of the following instances:
 
@@ -44,7 +43,7 @@ where:
 --
 * To select the deprecated embedded Open VSX registry instance in the `plugin-registry` pod, use `openVSXURL: ''` and disable the Open VSX operand by setting `spec.components.openVSXRegistry.enable` to `false`. You can customize the list of included extensions. See xref:extensions-for-microsoft-visual-studio-code-open-source.adoc[].
 
-* You can also point `openVSXURL` at the URL of a standalone Open VSX registry instance. The URL must be accessible from within your organization's cluster and not blocked by a proxy.
+* To select a standalone Open VSX registry instance, point `openVSXURL` at its URL and disable the Open VSX operand by setting `spec.components.openVSXRegistry.enable` to `false`. Keep the URL non-empty: clearing it selects the deprecated embedded registry instead. The URL must be accessible from within your organization's cluster and not blocked by a proxy.
 --
 +
 [NOTE]

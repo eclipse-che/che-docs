@@ -8,7 +8,7 @@
 
 [IMPORTANT]
 ====
-For new installations, the managed Open VSX registry is the default registry and no additional configuration is required. Follow this procedure if the registry was disabled, or if you upgraded from a release where it was not the default. To use the deprecated embedded plugin registry instead, disable the Open VSX operand as described in xref:#disabling-the-managed-open-vsx-registry[Disable the managed Open VSX registry].
+For new installations, the managed Open VSX registry is the default registry and no additional configuration is required. Follow this procedure if the registry was disabled, or if you upgraded from a release where it was not the default. To use a different registry, disable the Open VSX operand and set `spec.components.pluginRegistry.openVSXURL` to the registry you want. See xref:#disabling-the-managed-open-vsx-registry[Disable the managed Open VSX registry].
 ====
 
 Enable {prod-short} to deploy and manage a dedicated Open VSX server with a PostgreSQL database as Operator-managed components. The managed registry is exposed through the {prod-short} gateway and provides a private, curated extension registry without requiring manual deployment or database administration.
@@ -410,6 +410,8 @@ To remove an extension, one of its versions, or one of its target platforms from
 
 Disable the managed Open VSX registry to remove the Open VSX server, PostgreSQL database, and all associated resources from the {orch-namespace}.
 
+Disabling the operand only removes the managed registry. It does not select a replacement: workspaces continue to use whatever `spec.components.pluginRegistry.openVSXURL` points to. Set that field to the registry you want {prod-short} to use after the managed registry is gone.
+
 .Prerequisites
 
 * An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
@@ -436,6 +438,42 @@ Disable the managed Open VSX registry to remove the Open VSX server, PostgreSQL 
 +
 The Operator removes all managed Open VSX resources, including deployments, services, persistent volume claims, and secrets.
 
+. Select the registry to use instead by setting the `openVSXURL` field:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{
+    "spec": {
+      "components": {
+        "pluginRegistry": {
+          "openVSXURL": "__<url_of_an_open_vsx_registry_instance>__"
+        }
+      }
+    }
+  }'
+----
++
+where `__<url_of_an_open_vsx_registry_instance>__` is one of the following values:
++
+[cols="1,2", options="header"]
+|===
+| Value | Selected registry
+
+| `pass:c,a,q[https://open-vsx.org]`
+| The public Open VSX registry. Requires outbound internet access from workspace pods.
+
+| A standalone instance URL
+| A self-hosted Open VSX registry that is accessible from workspace pods. Keep this value set: clearing it selects the deprecated embedded registry instead.
+
+| `""` (empty string)
+| The deprecated embedded Open VSX registry instance in the `plugin-registry` pod. Set the empty string only when you intend to use the embedded registry.
+|===
++
+For more information, see xref:configuring-the-open-vsx-registry-url.adoc[].
+
 .Verification
 
 * Verify that no Open VSX pods remain in the {orch-namespace}:
@@ -445,6 +483,17 @@ The Operator removes all managed Open VSX resources, including deployments, serv
 {orch-cli} get pods --namespace {prod-namespace} -l app.kubernetes.io/component=openvsx-server
 {orch-cli} get pods --namespace {prod-namespace} -l app.kubernetes.io/component=openvsx-database
 ----
+
+* Verify that `openVSXURL` points to the registry you intend to use:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} get checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  -o jsonpath='{.spec.components.pluginRegistry.openVSXURL}'
+----
+
+* Open a workspace and verify that extensions from the selected registry are available in the *Extensions* view.
 
 [role="_additional-resources"]
 .Additional resources
