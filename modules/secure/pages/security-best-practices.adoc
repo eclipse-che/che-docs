@@ -7,6 +7,7 @@
 [id="security-best-practices"]
 = Protect your deployment
 
+[role="_abstract"]
 Protect your {prod} deployment by applying these security practices to safeguard developer credentials, isolate workspaces, and reduce the cluster attack surface.
 
 {prod} runs on top of OpenShift, which provides the platform, and the foundation for the products functioning on top of it. OpenShift documentation is the entry point for security hardening.
@@ -24,7 +25,7 @@ Protect your {prod} deployment by applying these security practices to safeguard
 
 These security tasks require administrator action:
 
-* *OAuth for Git providers.* Without OAuth, developers must manually create personal access token secrets. Set up OAuth for your Git providers to give developers credential-free repository access.
+* *OAuth for Git providers.* Without OAuth, developers must manually create personal access token secrets. Configure OAuth for your Git providers to give developers credential-free repository access.
 * *Access restrictions.* By default, all authenticated OpenShift users can access {prod-short}. Use the `advancedAuthorization` CheCluster property to restrict access to specific users and groups.
 
 For Git OAuth setup and for restricting platform access, see Additional resources.
@@ -206,7 +207,7 @@ Implementing network policies allows you to:
 * Control ingress and egress traffic to and from workspace pods
 * Limit the attack surface by denying unauthorized network access
 
-On OpenShift, the {prod-short} Operator can automatically manage NetworkPolicy resources for the {prod-short} namespace and user workspace namespaces. For detailed instructions on configuring network policies, see Additional resources.
+The {prod-short} Operator can automatically manage the NetworkPolicy resources for the {prod-short} components, and the {devworkspace} Operator provisions a NetworkPolicy for each workspace. For detailed instructions on configuring network policies, see Additional resources.
 
 == Security in disconnected and air-gapped deployments
 
