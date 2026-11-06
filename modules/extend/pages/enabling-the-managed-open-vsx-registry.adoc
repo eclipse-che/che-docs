@@ -7,11 +7,11 @@
 = Enable the managed Open VSX registry
 
 [role="_abstract"]
-Enable the managed Open VSX registry if it was disabled or if you upgraded from a release where it was not the default. For new installations, the registry is enabled by default. {prod-short} deploys and manages a dedicated Open VSX server with a PostgreSQL database as Operator-managed components.
+Enable the managed Open VSX registry if it was disabled or if you upgraded from a release where it was not the default. {prod-short} deploys and manages a dedicated Open VSX server with a PostgreSQL database as Operator-managed components.
 
 The managed registry is exposed through the {prod-short} gateway and provides a private, curated extension registry without requiring manual deployment or database administration.
 
-To use a public or standalone registry instead, set `spec.components.pluginRegistry.openVSXURL` to its URL. See xref:configuring-the-open-vsx-registry-url.adoc[]. Disabling the Open VSX operand is not required, but the managed registry continues to run until you disable it. See xref:#disabling-the-managed-open-vsx-registry[Disable the managed Open VSX registry].
+To use a public or standalone registry instead, set `spec.components.pluginRegistry.openVSXURL` to its URL. See xref:configuring-the-open-vsx-registry-url.adoc[].
 
 When enabled, the {prod-short} Operator creates the following resources:
 
@@ -425,7 +425,7 @@ To remove an extension, one of its versions, or one of its target platforms from
 
 Disable the managed Open VSX registry to remove the Open VSX server, PostgreSQL database, and all associated resources from the {orch-namespace}, and select the registry that workspaces use instead.
 
-Disabling the operand does not by itself change which registry workspaces use. When `spec.components.pluginRegistry.openVSXURL` is not set, workspaces use the managed registry while it is enabled, and the public registry at `pass:c,a,q[https://open-vsx.org]` after you disable it. When the field is set, workspaces use that value whether or not the managed registry is enabled.
+Disabling the operand does not by itself change which registry workspaces use. When `spec.components.pluginRegistry.openVSXURL` is set, workspaces use that value whether or not the managed registry is enabled. When the field is not set, workspaces use the managed registry while it is enabled, and the default registry for your {prod-short} installation after you disable it. The Operator defines this default, which differs between installations.
 
 .Prerequisites
 
@@ -453,7 +453,7 @@ Disabling the operand does not by itself change which registry workspaces use. W
 +
 The Operator removes all managed Open VSX resources, including deployments, services, persistent volume claims, and secrets.
 
-. Optional: To use a registry other than the public `open-vsx.org` registry, set the `openVSXURL` field:
+. Optional: To use a registry other than the default for your {prod-short} installation, set the `openVSXURL` field:
 +
 [source,shell,subs="+quotes,+attributes,+macros"]
 ----
@@ -488,7 +488,7 @@ where `__<url_of_an_open_vsx_registry_instance>__` is one of the following value
 | The deprecated embedded Open VSX registry instance in the `plugin-registry` pod. Set the empty string only when you intend to use the embedded registry.
 
 | Not set
-| The public Open VSX registry at `pass:c,a,q[https://open-vsx.org]`. Omitting the field is not the same as setting an empty string: an empty string selects the embedded registry.
+| The default registry for your {prod-short} installation. Omitting the field is not the same as setting an empty string: an empty string selects the embedded registry.
 |===
 +
 For more information, see xref:configuring-the-open-vsx-registry-url.adoc[].
@@ -518,7 +518,7 @@ For more information, see xref:configuring-the-open-vsx-registry-url.adoc[].
 | Output | Selected registry
 
 | `null`
-| The public Open VSX registry at `pass:c,a,q[https://open-vsx.org]`.
+| The default registry for your {prod-short} installation.
 
 | `""`
 | The deprecated embedded Open VSX registry instance in the `plugin-registry` pod.

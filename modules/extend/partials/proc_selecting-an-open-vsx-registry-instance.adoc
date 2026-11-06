@@ -36,12 +36,12 @@ spec:
 ====
 * Do not use link:https://open-vsx.org[https://open-vsx.org] in an air-gapped environment or an environment that is isolated from the internet. To reduce the risk of malware infections and unauthorized access to your code, use the embedded or a self-hosted Open VSX registry with a curated set of extensions.
 
-* To select the embedded Open VSX registry instance in the `plugin-registry` pod, use `openVSXURL: ''`. You can customize the list of included extensions xref:adding-or-removing-extensions-in-a-workspace_{context}[using a workspace] or xref:adding-or-removing-extensions-on-linux_{context}[using a Linux operating system].
+* To select the embedded Open VSX registry instance in the `plugin-registry` pod, set `openVSXURL: ''` and disable the Open VSX operand by setting `spec.components.openVSXRegistry.enable` to `false`. The embedded registry requires both settings, because {prod-short} does not deploy the `plugin-registry` pod while the managed Open VSX registry is enabled. You can customize the list of included extensions xref:adding-or-removing-extensions-in-a-workspace_{context}[using a workspace] or xref:adding-or-removing-extensions-on-linux_{context}[using a Linux operating system].
 
 * You can point `openVSXURL` to the URL of a standalone Open VSX registry instance if the URL is accessible from within the organization's cluster and not blocked by a proxy. 
 ====
 
 .Verification
 
-. Confirm that the `plugin-registry` pod has restarted.
 . Open a workspace and verify that extensions are available from the selected registry instance in the *Extensions* view.
+. If you selected the embedded registry, confirm that the `plugin-registry` pod is running.

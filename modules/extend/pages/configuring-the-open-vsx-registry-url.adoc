@@ -38,24 +38,11 @@ where `__<url_of_an_open_vsx_registry_instance>__` is the URL of the public or s
 +
 A non-empty `openVSXURL` value takes effect on its own. You do not have to disable the managed Open VSX registry to use a public or standalone instance. The managed registry continues to run and consume cluster resources until you disable it. To remove it, see xref:enabling-the-managed-open-vsx-registry.adoc#disabling-the-managed-open-vsx-registry[Disable the managed Open VSX registry].
 +
-[IMPORTANT]
-====
-An empty value and an unset field are not the same. An empty value selects the embedded registry. An unset field selects the default registry.
-====
+--
+* To select the embedded Open VSX registry instance in the `plugin-registry` pod, use `openVSXURL: ''`. You can customize the list of included extensions. See xref:extensions-for-microsoft-visual-studio-code-open-source.adoc[].
 
-. Optional: To select the deprecated embedded Open VSX registry instance in the `plugin-registry` pod, set `openVSXURL` to an empty string and disable the Open VSX operand:
-+
-[source,yaml,subs="+quotes"]
-----
-spec:
-  components:
-    openVSXRegistry:
-      enable: false
-    pluginRegistry:
-      openVSXURL: ""
-----
-+
-The embedded registry requires both fields. {prod-short} does not deploy the `plugin-registry` pod while the managed Open VSX registry is enabled. You can customize the list of included extensions. See xref:extensions-for-microsoft-visual-studio-code-open-source.adoc[].
+* You can also point `openVSXURL` at the URL of a standalone Open VSX registry instance. The URL must be accessible from within your organization's cluster and not blocked by a proxy.
+--
 +
 [NOTE]
 ====
