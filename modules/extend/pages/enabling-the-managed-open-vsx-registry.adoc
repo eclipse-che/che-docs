@@ -200,6 +200,7 @@ The cluster must have outbound HTTPS access to `open-vsx.org` for the auto-updat
 
 . Optional: Customize the auto-update schedule and filters. The following fields are available under `spec.components.openVSXRegistry.extensionAutoUpdate`:
 +
+.Supported fields for the `extensionAutoUpdate` key
 [cols="1,1,2", options="header"]
 |===
 | Field | Default | Description
@@ -310,6 +311,7 @@ The secret must exist before it is referenced in the `CheCluster` custom resourc
 +
 The secret must contain all of the following keys:
 +
+.Required keys for the credentials secret
 [cols="1,2", options="header"]
 |===
 | Key | Description
@@ -423,7 +425,7 @@ To remove an extension, one of its versions, or one of its target platforms from
 [id="disabling-the-managed-open-vsx-registry"]
 == Disable the managed Open VSX registry
 
-Disable the managed Open VSX registry to remove the Open VSX server, PostgreSQL database, and all associated resources from the {orch-namespace}, and select the registry that workspaces use instead.
+Disable the managed Open VSX registry to remove the Open VSX server, PostgreSQL database, and all associated resources from the {orch-namespace}, and optionally select the registry that workspaces use instead.
 
 Disabling the operand does not by itself change which registry workspaces use. When `spec.components.pluginRegistry.openVSXURL` is set, workspaces use that value whether or not the managed registry is enabled. When the field is not set, workspaces use the managed registry while it is enabled, and the default registry for your {prod-short} installation after you disable it. The Operator defines this default, which differs between installations.
 
