@@ -9,16 +9,15 @@
 = Use an alternative extension registry
 
 [role="_abstract"]
-Configure {prod-short} to use an alternative Open VSX registry instance instead of the default embedded registry. Switch to the public open-vsx.org registry for internet-connected environments, or to a standalone on-premises instance for full control over available extensions.
+Use an alternative Open VSX registry instance instead of the managed registry deployed by the Operator. Select the public open-vsx.org registry for internet-connected environments, or a standalone on-premises instance for full control over available extensions.
 
-
-The default is the embedded instance of the Open VSX registry.
-
-If the default Open VSX registry instance does not meet your requirements, you can select one of the following instances:
+If the managed Open VSX registry does not meet your requirements, you can select one of the following instances:
 
 * The Open VSX registry instance at `pass:c,a,q[https://open-vsx.org]` that requires access to the internet.
 
 * A standalone Open VSX registry instance that is deployed on a network accessible from {prod-short} workspace pods.
+
+* The deprecated embedded Open VSX registry instance that runs in the `plugin-registry` pod.
 
 .Prerequisites
 
@@ -37,15 +36,11 @@ spec:
       openVSXURL: "__<url_of_an_open_vsx_registry_instance>__"
 ----
 +
-where:
+where `__<url_of_an_open_vsx_registry_instance>__` is the URL of the public or standalone Open VSX registry instance. For example: `pass:c,a,q[https://open-vsx.org]`. The URL must be accessible from within your organization's cluster and not blocked by a proxy.
 +
-`__<url_of_an_open_vsx_registry_instance>__`:: The URL of the Open VSX registry instance. For example: `openVSXURL: "pass:c,a,q[https://open-vsx.org]"`.
+A non-empty `openVSXURL` value takes effect on its own. You do not have to disable the managed Open VSX registry to use a public or standalone instance. The managed registry continues to run and consume cluster resources until you disable it. To remove it, see xref:enabling-the-managed-open-vsx-registry.adoc#disabling-the-managed-open-vsx-registry[Disable the managed Open VSX registry].
 +
---
-* To select the embedded Open VSX registry instance in the `plugin-registry` pod, use `openVSXURL: ''`. You can customize the list of included extensions. See xref:extensions-for-microsoft-visual-studio-code-open-source.adoc[].
-
-* You can also point `openVSXURL` at the URL of a standalone Open VSX registry instance. The URL must be accessible from within your organization's cluster and not blocked by a proxy.
---
+To select the deprecated embedded Open VSX registry instance, set `openVSXURL: ''` and disable the Open VSX operand by setting `spec.components.openVSXRegistry.enable` to `false`. The embedded registry requires both settings, because {prod-short} does not deploy the `plugin-registry` pod while the managed Open VSX registry is enabled. You can customize the list of included extensions. See xref:extensions-for-microsoft-visual-studio-code-open-source.adoc[].
 +
 [NOTE]
 ====
@@ -64,11 +59,18 @@ Due to the dedicated Microsoft link:https://cdn.vsassets.io/v/M190_20210811.1/_c
 
 .Verification
 
-* Confirm that the `plugin-registry` pod has restarted and is running.
 * Open a workspace and verify that extensions are available from the selected registry instance in the *Extensions* view.
+
+* If you selected the embedded registry, confirm that the `plugin-registry` pod is running:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} get pods --namespace {prod-namespace} -l app.kubernetes.io/component=plugin-registry
+----
 
 [role="_additional-resources"]
 .Additional resources
 
+* xref:enabling-the-managed-open-vsx-registry.adoc[]
 * xref:administration-guide:using-the-cli-to-configure-the-checluster-custom-resource.adoc[]
 * link:https://open-vsx.org/[Open VSX registry]

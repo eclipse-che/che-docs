@@ -6,12 +6,12 @@
 [id="enabling-the-managed-open-vsx-registry"]
 = Enable the managed Open VSX registry
 
-[IMPORTANT]
-====
-The managed Open VSX registry is a Technology Preview feature only.
-====
+[role="_abstract"]
+Enable the managed Open VSX registry if it was disabled or if you upgraded from a release where it was not the default. {prod-short} deploys and manages a dedicated Open VSX server with a PostgreSQL database as Operator-managed components.
 
-Enable {prod-short} to deploy and manage a dedicated Open VSX server with a PostgreSQL database as Operator-managed components. The managed registry is exposed through the {prod-short} gateway and provides a private, curated extension registry without requiring manual deployment or database administration.
+The managed registry is exposed through the {prod-short} gateway and provides a private, curated extension registry without requiring manual deployment or database administration.
+
+To use a public or standalone registry instead, set `spec.components.pluginRegistry.openVSXURL` to its URL. See xref:configuring-the-open-vsx-registry-url.adoc[].
 
 When enabled, the {prod-short} Operator creates the following resources:
 
@@ -99,7 +99,7 @@ where `__<size>__` is the required storage size. For example: `5Gi`.
   }'
 ----
 
-. Optional: Publish extensions to the managed registry by editing the `openvsx-server-extensions` `ConfigMap` in the {prod-short} {orch-namespace}. Add extension `.vsix` download URLs, one per line:
+. Optional: Publish extensions to the managed registry by editing the `openvsx-server-extensions` `ConfigMap` in the {prod-short} {orch-namespace}:
 +
 [source,shell,subs="+quotes,+attributes,+macros"]
 ----
@@ -107,7 +107,69 @@ where `__<size>__` is the required storage size. For example: `5Gi`.
   --namespace {prod-namespace}
 ----
 +
+The `extensions.list` key contains one extension entry per line. The following formats are supported:
++
+.Supported formats for the `extensions.list` key
+[cols="1,2", options="header"]
+|===
+| Format | Description
+
+| `__namespace__.__name__`
+| Publish the latest stable (non-pre-release) version from the upstream registry.
+
+| `__namespace__.__name__@__version__`
+| Publish a specific version. The upstream registry is not queried for the latest version.
+
+| `__https://...vsix__`
+| Download and publish a `.vsix` file from the URL.
+|===
++
+Lines starting with `#` are treated as comments and ignored. Empty lines are skipped.
++
+.Example `extensions.list` key
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openvsx-server-extensions
+  namespace: {prod-namespace}
+data:
+  extensions.list: |
+    # Publish the latest stable version
+    redhat.vscode-yaml
+    ms-python.python
+    golang.Go
+
+    # Pin to a specific version
+    redhat.java@1.34.0
+
+    # Publish directly from a .vsix URL
+    https://open-vsx.org/api/redhat/vscode-xml/0.27.2024120609/file/redhat.vscode-xml-0.27.2024120609.vsix
+----
++
 The Operator automatically runs a publishing `Job` when the `ConfigMap` content changes.
+
+. Optional: Set a target platform fallback for extensions that do not provide a universal `.vsix`, such as native extensions like `ms-python.debugpy`. Add the `architecture` key to the same `ConfigMap`:
++
+.Example `architecture` key
+[source,yaml,subs="+quotes,+attributes,+macros"]
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openvsx-server-extensions
+  namespace: {prod-namespace}
+data:
+  architecture: "linux-x64"
+  extensions.list: |
+    # Native extension: no universal .vsix, falls back to linux-x64
+    ms-python.debugpy
+----
++
+The publishing `Job` requests the universal `.vsix` first. When the universal `.vsix` is not found on the upstream registry, the `Job` falls back to the platform-specific `.vsix` for the configured architecture. When the `architecture` key is not set, the extension is skipped and the `Job` logs a warning.
++
+The `architecture` key accepts the following target platform identifiers: `win32-x64`, `win32-arm64`, `linux-x64`, `linux-arm64`, `linux-armhf`, `alpine-x64`, `alpine-arm64`, `darwin-x64` and `darwin-arm64`.
 
 . Optional: Enable periodic auto-update of published extensions. When enabled, a `CronJob` periodically checks the upstream `open-vsx.org` registry for newer versions of extensions published in the managed registry and re-publishes them automatically.
 +
@@ -138,6 +200,7 @@ The cluster must have outbound HTTPS access to `open-vsx.org` for the auto-updat
 
 . Optional: Customize the auto-update schedule and filters. The following fields are available under `spec.components.openVSXRegistry.extensionAutoUpdate`:
 +
+.Supported fields for the `extensionAutoUpdate` key
 [cols="1,1,2", options="header"]
 |===
 | Field | Default | Description
@@ -248,6 +311,7 @@ The secret must exist before it is referenced in the `CheCluster` custom resourc
 +
 The secret must contain all of the following keys:
 +
+.Required keys for the credentials secret
 [cols="1,2", options="header"]
 |===
 | Key | Description
@@ -361,7 +425,9 @@ To remove an extension, one of its versions, or one of its target platforms from
 [id="disabling-the-managed-open-vsx-registry"]
 == Disable the managed Open VSX registry
 
-Disable the managed Open VSX registry to remove the Open VSX server, PostgreSQL database, and all associated resources from the {orch-namespace}.
+Disable the managed Open VSX registry to remove the Open VSX server, PostgreSQL database, and all associated resources from the {orch-namespace}, and optionally select the registry that workspaces use instead.
+
+Disabling the operand does not by itself change which registry workspaces use. When `spec.components.pluginRegistry.openVSXURL` is set, workspaces use that value whether or not the managed registry is enabled. When the field is not set, workspaces use the managed registry while it is enabled, and the default registry for your {prod-short} installation after you disable it. The Operator defines this default, which differs between installations.
 
 .Prerequisites
 
@@ -389,6 +455,46 @@ Disable the managed Open VSX registry to remove the Open VSX server, PostgreSQL 
 +
 The Operator removes all managed Open VSX resources, including deployments, services, persistent volume claims, and secrets.
 
+. Optional: To use a registry other than the default for your {prod-short} installation, set the `openVSXURL` field:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} patch checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{
+    "spec": {
+      "components": {
+        "pluginRegistry": {
+          "openVSXURL": "__<url_of_an_open_vsx_registry_instance>__"
+        }
+      }
+    }
+  }'
+----
++
+where `__<url_of_an_open_vsx_registry_instance>__` is one of the following values:
++
+.Supported values for the `openVSXURL` field
+[cols="1,2", options="header"]
+|===
+| Value | Selected registry
+
+| `pass:c,a,q[https://open-vsx.org]`
+| The public Open VSX registry. Requires outbound internet access from workspace pods.
+
+| A standalone instance URL
+| A self-hosted Open VSX registry that is accessible from workspace pods. Keep this value set: clearing it selects the deprecated embedded registry instead.
+
+| `""` (empty string)
+| The deprecated embedded Open VSX registry instance in the `plugin-registry` pod. Set the empty string only when you intend to use the embedded registry.
+
+| Not set
+| The default registry for your {prod-short} installation. Omitting the field is not the same as setting an empty string: an empty string selects the embedded registry.
+|===
++
+For more information, see xref:configuring-the-open-vsx-registry-url.adoc[].
+
 .Verification
 
 * Verify that no Open VSX pods remain in the {orch-namespace}:
@@ -398,6 +504,32 @@ The Operator removes all managed Open VSX resources, including deployments, serv
 {orch-cli} get pods --namespace {prod-namespace} -l app.kubernetes.io/component=openvsx-server
 {orch-cli} get pods --namespace {prod-namespace} -l app.kubernetes.io/component=openvsx-database
 ----
+
+* Verify that the `openVSXURL` field selects the registry you intend to use. An unset field and an empty string select different registries, so read the raw value rather than a `jsonpath` expression, which renders both as empty output:
++
+[source,shell,subs="+quotes,+attributes,+macros"]
+----
+{orch-cli} get checluster {prod-checluster} \
+  --namespace {prod-namespace} \
+  -o json | jq '.spec.components.pluginRegistry.openVSXURL'
+----
++
+.Expected output for the `openVSXURL` field
+[cols="1,2", options="header"]
+|===
+| Output | Selected registry
+
+| `null`
+| The default registry for your {prod-short} installation.
+
+| `""`
+| The deprecated embedded Open VSX registry instance in the `plugin-registry` pod.
+
+| `"__<url>__"`
+| The standalone Open VSX registry instance at that URL.
+|===
+
+* Open a workspace and verify that extensions from the selected registry are available in the *Extensions* view.
 
 [role="_additional-resources"]
 .Additional resources
