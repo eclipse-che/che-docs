@@ -27,7 +27,14 @@ When disabled, the Operator removes all managed Open VSX resources.
 
 * An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
 
-* Outbound HTTPS access from the cluster to `open-vsx.org` is available. This is required for the extension auto-update `CronJob` to fetch newer extension versions from the upstream registry.
+* Outbound HTTPS access from the cluster to the upstream registry is available. Both the publishing `Job` and the extension auto-update `CronJob` require it.
++
+If your cluster restricts egress traffic, add the following hosts to the allowlist:
++
+--
+* `open-vsx.org`: serves the registry API that the jobs query for extension metadata and versions.
+* `openvsx.eclipsecontent.org`: the content delivery network that serves the `.vsix` files.
+--
 
 .Procedure
 
@@ -50,6 +57,8 @@ When disabled, the Operator removes all managed Open VSX resources.
 ----
 +
 The Operator deploys the Open VSX server and PostgreSQL database, provisions the database, and exposes the registry through the {prod-short} gateway.
++
+If `spec.components.pluginRegistry.openVSXURL` is set, remove the field from the `CheCluster` custom resource to select the managed registry.
 +
 NOTE: The managed registry starts empty with no pre-installed extensions. You must publish extensions to the registry after enabling it.
 
@@ -195,7 +204,7 @@ By default, the auto-update job runs weekly on Sunday at midnight (schedule: `0 
 +
 [NOTE]
 ====
-The cluster must have outbound HTTPS access to `open-vsx.org` for the auto-update job to fetch newer extension versions.
+The cluster must have outbound HTTPS access to `open-vsx.org` and `openvsx.eclipsecontent.org` for the auto-update job to fetch newer extension versions.
 ====
 
 . Optional: Customize the auto-update schedule and filters. The following fields are available under `spec.components.openVSXRegistry.extensionAutoUpdate`:
