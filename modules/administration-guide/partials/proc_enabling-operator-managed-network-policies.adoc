@@ -1,15 +1,27 @@
+:_content-type: PROCEDURE
 [id="enabling-operator-managed-network-policies"]
-= Enable operator-managed network policies
+= Enable Operator-managed network policies
 
-On OpenShift, the {prod-short} Operator can automatically create and manage NetworkPolicy resources for both the {prod-short} {orch-namespace} and user workspace {orch-namespace}s.
-This feature is controlled by the `spec.networking.networkPolicy.enabled` field in the CheCluster custom resource and is disabled by default.
+[role="_abstract"]
+Enable Operator-managed network policies to restrict ingress traffic to the {prod-short} components, such as the gateway, server, dashboard, and registries.
+The {prod-short} Operator creates and manages the NetworkPolicy resources automatically.
+This feature is controlled by the `spec.networking.networkPolicy.enabled` CheCluster field and is disabled by default.
+
+The NetworkPolicies are created in the {prod-short} {orch-namespace} and apply only to the Pods labeled with `app.kubernetes.io/part-of=che.eclipse.org`.
+When this field is set to `false`, the NetworkPolicies previously created by the Operator are removed.
+
+[IMPORTANT]
+====
+This setting also drives network isolation for workspaces: when `spec.devEnvironments.networking.networkPolicy.enabled` is not set, it inherits the value of `spec.networking.networkPolicy.enabled`.
+Enabling it therefore also isolates workspaces, which changes traffic behavior on clusters with running workspaces.
+To protect the {prod-short} components without isolating the workspaces, explicitly set `spec.devEnvironments.networking.networkPolicy.enabled` to `false` in step 2. See xref:configuring-network-policies.adoc#configuring-workspace-network-policies[Configure network policies].
+====
 
 .Prerequisites
 * An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
-* An instance of {prod-short} running on OpenShift.
 
 .Procedure
-. Enable operator-managed network policies:
+. Enable Operator-managed network policies:
 +
 [source,shell,subs="+quotes,+attributes"]
 ----
@@ -19,24 +31,34 @@ This feature is controlled by the `spec.networking.networkPolicy.enabled` field 
   --patch '{"spec":{"networking":{"networkPolicy":{"enabled":true}}}}'
 ----
 
+. Optional: To protect the {prod-short} components without isolating the workspaces, disable network isolation for workspaces:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{"spec":{"devEnvironments":{"networking":{"networkPolicy":{"enabled":false}}}}}'
+----
+
 .Verification
-. Verify that the NetworkPolicy resources are created in the {prod-short} {orch-namespace}:
+* Verify that the NetworkPolicy resources are created in the {prod-short} {orch-namespace}:
 +
 [source,shell,subs="+quotes,+attributes"]
 ----
 {orch-cli} get networkpolicies -n {prod-namespace}
 ----
 +
-. Start a workspace and verify that the NetworkPolicy resources are created in the user {orch-namespace}:
+* Start a workspace and verify that a NetworkPolicy resource is created for it in the user {orch-namespace}:
 +
 [source,shell,subs="+quotes,+attributes"]
 ----
 {orch-cli} get networkpolicies -n __<user_namespace>__
 ----
 
-After enabling, the operator creates the following resources:
+After enabling, the Operator creates the following resources:
 
-.NetworkPolicy resources in the {prod-short} {orch-namespace}
+.NetworkPolicy resources in the {prod-short} {orch-namespace} on OpenShift
 [cols="1,2", options="header"]
 |===
 | Name | Description
@@ -50,39 +72,26 @@ After enabling, the operator creates the following resources:
 | `allow-from-openshift-ingress`
 | Allows ingress traffic from the OpenShift ingress {orch-namespace}.
 
+| `allow-from-openshift-host-network`
+| Allows ingress traffic from Pods that use the host network, for example the OpenShift router.
+
 | `allow-from-openshift-monitoring`
 | Allows ingress traffic from the OpenShift monitoring {orch-namespace}.
 
 | `allow-from-{prod-id-short}-operator`
-| Allows ingress traffic from the operator Pod to {prod-short} components.
+| Allows ingress traffic from the Operator Pod to {prod-short} components.
 
 | `allow-all-egress`
 | Allows all egress traffic from {prod-short} Pods.
 |===
 
-.NetworkPolicy resources in each user workspace {orch-namespace}
-[cols="1,2", options="header"]
-|===
-| Name | Description
+On {kubernetes}, the Operator creates only the `allow-all-ingress` and `allow-all-egress` NetworkPolicies, which allow all ingress and egress traffic.
+The {orch-namespace} of the cluster ingress controller is not known to the Operator.
+Enabling this setting on {kubernetes} does not restrict any traffic by itself: you must provision the NetworkPolicy resources for your cluster manually.
 
-| `allow-from-same-namespace`
-| Allows ingress traffic between Pods in the same {orch-namespace}.
+When network isolation for workspaces is enabled, the {devworkspace} Operator creates a `<workspace_id>-networkpolicy` NetworkPolicy resource in the user {orch-namespace} for each workspace.
+See xref:configuring-network-policies.adoc#configuring-workspace-network-policies[Configure network policies].
 
-| `allow-from-{prod-namespace}`
-| Allows ingress traffic from the {prod-short} {orch-namespace}.
-
-| `allow-from-devworkspace-operator`
-| Allows ingress traffic from the {devworkspace} operator.
-
-| `allow-from-openshift-monitoring`
-| Allows ingress traffic from the OpenShift monitoring {orch-namespace}.
-
-| `allow-from-openshift-ingress`
-| Allows ingress traffic from the OpenShift ingress {orch-namespace}.
-
-| `allow-all-egress`
-| Allows all egress traffic from workspace Pods.
-|===
-
+[role="_additional-resources"]
 .Additional resources
 * link:https://kubernetes.io/docs/concepts/services-networking/network-policies/[Kubernetes network policies]
