@@ -1,10 +1,11 @@
-:_mod-docs-content-type: PROCEDURE
+:_content-type: PROCEDURE
 [id="configuring-workspace-network-policies"]
 = Configure network policies for workspaces
 
 [role="_abstract"]
-The {devworkspace} Operator provisions a separate NetworkPolicy for each workspace that restricts traffic to and from the workspace Pods.
-Workspace network policies are controlled by the `spec.devEnvironments.networking.networkPolicy` CheCluster field and are disabled by default.
+Configure network policies for workspaces to restrict the traffic to and from workspace Pods.
+The {devworkspace} Operator provisions one NetworkPolicy for each workspace, controlled by the `spec.devEnvironments.networking.networkPolicy` CheCluster field.
+Workspace network policies are disabled by default.
 
 
 .Prerequisites
@@ -21,7 +22,8 @@ Workspace network policies are controlled by the `spec.devEnvironments.networkin
   --patch '{"spec":{"devEnvironments":{"networking":{"networkPolicy":{"enabled":true}}}}}'
 ----
 
-. Optional: Define custom `ingress` and `egress` rules in the `spec.devEnvironments.networking.networkPolicy` field to restrict the traffic that is allowed for the workspace Pods:
+. Optional: Define custom `ingress` and `egress` rules in the `spec.devEnvironments.networking.networkPolicy` field to restrict the traffic that is allowed for the workspace Pods.
+A non-empty `ingress` list replaces the default rules, so include rules for the traffic that must still be allowed, for example traffic from the {prod-short} components:
 +
 [source,yaml,subs="+quotes,+attributes"]
 ----
@@ -34,25 +36,12 @@ spec:
           - from:
               - namespaceSelector:
                   matchLabels:
-                    kubernetes.io/metadata.name: {prod-namespace}
-                podSelector:
-                  matchLabels:
-                    app.kubernetes.io/part-of: che.eclipse.org
+                    kubernetes.io/metadata.name: __<peer_namespace>__
 ----
 +
-In this example, `kubernetes.io/metadata.name` is set to `{prod-namespace}`, the {prod-short} {orch-namespace}, which is also the default value.
-The `ingress` and `egress` fields accept standard {orch-name} NetworkPolicy rules and behave as follows:
+In this example, the workspace accepts ingress traffic from Pods in the `__<peer_namespace>__` {orch-namespace}.
 +
-* When `ingress` is not specified, the default ingress rules of the {devworkspace} Operator apply, and the {prod-short} Operator adds one rule allowing traffic from the {prod-short} components.
-On OpenShift, the default rules allow traffic from the {devworkspace} Operator {orch-namespace} and from the OpenShift monitoring, ingress, and host-network {orch-namespace}s.
-* When `ingress` is specified as an empty list, all ingress traffic to the workspace Pods is denied.
-* When `ingress` is specified as a non-empty list, exactly those rules apply: the default rules are replaced, and the rule allowing traffic from the {prod-short} components is not added automatically.
-If the {prod-short} components must communicate with the workspaces, include a corresponding ingress rule.
-+
-The `egress` field behaves the same way.
-When it is not specified, the default egress rule of the {devworkspace} Operator applies, which allows all egress traffic.
-When it is specified as an empty list, all egress traffic from the workspace Pods is denied.
-When it is specified as a non-empty list, exactly those rules apply.
+For how the `ingress` and `egress` fields behave when they are not specified, empty, or non-empty, see xref:configuring-network-policies.adoc#workspace-network-policy-rules[].
 
 .Verification
 * Start a workspace and verify that the NetworkPolicy resource is created for it in the user {orch-namespace}:
@@ -64,7 +53,6 @@ When it is specified as a non-empty list, exactly those rules apply.
 
 [NOTE]
 ====
-Changing the workspace network policy configuration does not require restarting existing workspaces.
 The new configuration is applied to a workspace the next time that workspace is reconciled, for example when it is started or stopped.
 ====
 

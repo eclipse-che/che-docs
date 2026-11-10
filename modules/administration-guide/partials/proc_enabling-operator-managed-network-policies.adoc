@@ -1,16 +1,21 @@
-:_mod-docs-content-type: PROCEDURE
+:_content-type: PROCEDURE
 [id="enabling-operator-managed-network-policies"]
 = Enable Operator-managed network policies
 
 [role="_abstract"]
-The {prod-short} Operator can automatically create and manage NetworkPolicy resources for the {prod-short} components, such as the gateway, server, dashboard, and registries.
+Enable Operator-managed network policies to restrict ingress traffic to the {prod-short} components, such as the gateway, server, dashboard, and registries.
+The {prod-short} Operator creates and manages the NetworkPolicy resources automatically.
 This feature is controlled by the `spec.networking.networkPolicy.enabled` CheCluster field and is disabled by default.
 
 The NetworkPolicies are created in the {prod-short} {orch-namespace} and apply only to the Pods labeled with `app.kubernetes.io/part-of=che.eclipse.org`.
 When this field is set to `false`, the NetworkPolicies previously created by the Operator are removed.
 
+[IMPORTANT]
+====
 This setting also drives network isolation for workspaces: when `spec.devEnvironments.networking.networkPolicy.enabled` is not set, it inherits the value of `spec.networking.networkPolicy.enabled`.
-To protect the {prod-short} components without isolating the workspaces, explicitly set `spec.devEnvironments.networking.networkPolicy.enabled` to `false`. See xref:configuring-network-policies.adoc#configuring-workspace-network-policies[].
+Enabling it therefore also isolates workspaces, which changes traffic behavior on clusters with running workspaces.
+To protect the {prod-short} components without isolating the workspaces, explicitly set `spec.devEnvironments.networking.networkPolicy.enabled` to `false` in step 2. See xref:configuring-network-policies.adoc#configuring-workspace-network-policies[Configure network policies].
+====
 
 .Prerequisites
 * An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
@@ -24,6 +29,16 @@ To protect the {prod-short} components without isolating the workspaces, explici
   --namespace {prod-namespace} \
   --type merge \
   --patch '{"spec":{"networking":{"networkPolicy":{"enabled":true}}}}'
+----
+
+. Optional: To protect the {prod-short} components without isolating the workspaces, disable network isolation for workspaces:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{"spec":{"devEnvironments":{"networking":{"networkPolicy":{"enabled":false}}}}}'
 ----
 
 .Verification
@@ -75,7 +90,7 @@ The {orch-namespace} of the cluster ingress controller is not known to the Opera
 Enabling this setting on {kubernetes} does not restrict any traffic by itself: you must provision the NetworkPolicy resources for your cluster manually.
 
 When network isolation for workspaces is enabled, the {devworkspace} Operator creates a `<workspace_id>-networkpolicy` NetworkPolicy resource in the user {orch-namespace} for each workspace.
-See xref:configuring-network-policies.adoc#configuring-workspace-network-policies[].
+See xref:configuring-network-policies.adoc#configuring-workspace-network-policies[Configure network policies].
 
 [role="_additional-resources"]
 .Additional resources

@@ -1,4 +1,4 @@
-:_mod-docs-content-type: CONCEPT
+:_content-type: CONCEPT
 [id="network-policies"]
 = Network policies
 
@@ -7,3 +7,20 @@ By default, all Pods in a {orch-name} cluster can communicate with each other ac
 In {prod-short}, this allows a workspace Pod in one user {orch-namespace} to send traffic to workspace Pods in other user {orch-namespace}s.
 
 Network policies restrict network traffic to only the flows required by {prod-short} components and workspaces.
+
+[[workspace-network-policy-rules]]
+== Custom rules for workspace network policies
+
+The `ingress` and `egress` fields of the `spec.devEnvironments.networking.networkPolicy` CheCluster field accept standard {orch-name} NetworkPolicy rules and behave as follows:
+
+* When `ingress` is not specified, the default ingress rules of the {devworkspace} Operator apply, and the {prod-short} Operator adds one rule allowing traffic from the {prod-short} components.
+On OpenShift, the default rules allow traffic from the {devworkspace} Operator {orch-namespace} and from the OpenShift monitoring, ingress, host-network, and console {orch-namespace}s.
+On {kubernetes}, the default allows all ingress because the {devworkspace} Operator cannot identify the {orch-namespace} of the cluster ingress controller; define custom `ingress` rules to restrict ingress.
+* When `ingress` is specified as an empty list, all ingress traffic to the workspace Pods is denied.
+* When `ingress` is specified as a non-empty list, exactly those rules apply: the default rules are replaced, and the rule allowing traffic from the {prod-short} components is not added automatically.
+If the {prod-short} components must communicate with the workspaces, include a corresponding ingress rule.
+
+The `egress` field behaves the same way.
+When it is not specified, the default egress rule of the {devworkspace} Operator applies, which allows all egress traffic.
+When it is specified as an empty list, all egress traffic from the workspace Pods is denied.
+When it is specified as a non-empty list, exactly those rules apply.
