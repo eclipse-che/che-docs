@@ -1,0 +1,198 @@
+:_content-type: PROCEDURE
+:description: Configure a recommended AI assistant configuration that Che installs in every workspace.
+:keywords: administration, ai, lola, recommended configuration, init container, configmap, devworkspace
+:navtitle: Recommended AI configuration
+:page-aliases:
+
+[id="configuring-a-recommended-ai-agent-configuration"]
+= Configure a recommended AI assistant configuration
+
+[role="_abstract"]
+Configure {prod-short} to install a recommended Lola module in every workspace at startup. Developers can replace the module with their own or disable the installation.
+
+The configuration uses two objects and requires no change to the {prod-operator} or to the {devworkspace} operator:
+
+* An init container, `lola-init`, that every workspace pod runs before the tools container. The container installs the module with Lola into `{prod-home}`.
+* A `ConfigMap` with the module URL and ref. The {prod-operator} copies the `ConfigMap` to every {namespace} and mounts it as environment variables.
+
+.Prerequisites
+
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+* The persistent user home is enabled, which is the default. The init container mounts the `persistent-home` volume, which {prod-short} defines only when `spec.devEnvironments.persistUserHome.enabled` is `true`. See xref:con_persistent-user-home.adoc[].
+* The module repository is prepared as described in xref:preparing-a-lola-module.adoc[].
+* The image `quay.io/che-incubator/lola-init` is available to every {namespace}. The image is public and is built for amd64 and arm64. Pin it by digest: `docker buildx imagetools inspect quay.io/che-incubator/lola-init:latest` prints the digest of the multi-architecture index.
+
+.Procedure
+
+. Create the `ConfigMap` with the module URL and ref in the `{prod-namespace}` {namespace}:
++
+[source,yaml,subs="+attributes"]
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lola-config-default
+  namespace: {prod-namespace}
+  labels:
+    app.kubernetes.io/part-of: che.eclipse.org
+    app.kubernetes.io/component: workspaces-config
+  annotations:
+    controller.devfile.io/mount-as: env
+data:
+  LOLA_DEFAULT_REPO_URL: https://github.com/<org>/<module-repo>.git
+  LOLA_DEFAULT_REPO_REF: main
+----
++
+* Replace the URL and the ref with the values of your module.
+* Remove `LOLA_DEFAULT_REPO_REF` to install the default branch of the repository.
+* Keep both labels. They make the {prod-operator} synchronize the `ConfigMap` to every {namespace}.
+
+. Add the init container to the `{prod-checluster}` custom resource. Check whether the list exists:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} get {prod-checluster} -n {prod-namespace} -o jsonpath='{.spec.devEnvironments.initContainers}'
+----
+
+. If the list is empty, add the entry with a merge patch:
++
+[source,yaml,subs="+attributes"]
+----
+spec:
+  devEnvironments:
+    initContainers:
+      - name: lola-init
+        image: quay.io/che-incubator/lola-init@sha256:<digest>
+        imagePullPolicy: IfNotPresent
+        workingDir: /home/user
+        volumeMounts:
+          - name: persistent-home
+            mountPath: /home/user/
+----
+
+. If the list already contains entries, append the entry with a JSON patch. A merge patch replaces the whole list:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch {prod-checluster} -n {prod-namespace} --type json -p \
+  '[{"op":"add","path":"/spec/devEnvironments/initContainers/-","value":{"name":"lola-init","image":"quay.io/che-incubator/lola-init@sha256:<digest>","imagePullPolicy":"IfNotPresent","workingDir":"/home/user","volumeMounts":[{"name":"persistent-home","mountPath":"/home/user/"}]}}]'
+----
+
+. Start a workspace. Workspaces that were running before the change keep their pod and get the init container at their next start.
+
+.Verification
+
+* Confirm that the workspace pod contains the init container:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} get pod -l controller.devfile.io/devworkspace_name=__<workspace-name>__ \
+  -o jsonpath='{.items[0].spec.initContainers[*].name}'
+----
+* Read the init container log:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} logs -l controller.devfile.io/devworkspace_name=__<workspace-name>__ -c lola-init
+----
++
+A successful installation reports the following line:
++
+----
+[lola-init] ok module=<module-name> origin=default mode=install warnings=0 agent=<assistant-list>
+----
+* In the workspace, `{prod-home}/.lola/init-status` contains the same result.
+
+[id="choosing-the-ai-assistants"]
+== Choosing the AI assistants
+
+The init container installs the module for the assistants that `LOLA_AGENT` names: one assistant, a comma-separated subset, or `all`. Install the same module for every assistant rather than one module per assistant. With no value set, the container installs Claude Code.
+
+Supported values are `claude-code`, `opencode`, `gemini-cli`, `cursor`, `copilot-cli`, `copilot-vscode`, `openclaw`, a comma-separated combination of them, and `all`. `all` installs for every assistant that Lola supports, including assistants that Lola adds later. An unknown name fails the installation: the status file reports `failed` and names the value.
+
+The examples below show only the `env` part of the entry. Add it to the `lola-init` entry that you created in the procedure, which keeps its image and its `persistent-home` mount.
+
+One assistant for every workspace::
+Set `LOLA_AGENT` on the init container.
++
+[source,yaml,subs="+attributes"]
+----
+spec:
+  devEnvironments:
+    initContainers:
+      - name: lola-init
+        env:
+          - name: LOLA_AGENT
+            value: opencode
+----
+
+Several assistants in one workspace::
+List the assistants, separated by commas. Order and duplicates do not matter.
++
+[source,yaml,subs="+attributes"]
+----
+spec:
+  devEnvironments:
+    initContainers:
+      - name: lola-init
+        env:
+          - name: LOLA_AGENT
+            value: claude-code,opencode
+----
+
+Every assistant that Lola supports::
+Set the value to `all`. The container then installs without naming a target, so one installation covers every assistant.
++
+[source,yaml,subs="+attributes"]
+----
+spec:
+  devEnvironments:
+    initContainers:
+      - name: lola-init
+        env:
+          - name: LOLA_AGENT
+            value: all
+----
+
+A different set for some developers::
+Each developer adds `LOLA_AGENT` to the `lola-config` `Secret` in their own {namespace}. The recommended module stays, and only the set of assistants changes. Adding `LOLA_REPO_URL` to the same `Secret` replaces the module as well. See xref:develop:override-recommended-ai-agent-configuration.adoc[].
++
+[source,yaml,subs="+attributes"]
+----
+stringData:
+  LOLA_AGENT: claude-code,gemini-cli
+----
+
+A change to the list behaves like a change of the repository or the ref: the init container removes the module from every assistant of the previous set, then installs it for the new one.
+
+== Managing the recommended configuration
+
+* Change the module or the ref: edit the `ConfigMap`. The {prod-operator} updates the copies in the user namespaces and the change applies at the next workspace start. A changed URL or ref removes the previous module and installs the new one.
+* Select the AI assistants: add `LOLA_AGENT` to the environment of the init container. See xref:configuring-a-recommended-ai-agent-configuration.adoc#choosing-the-ai-assistants[]. An image that does not support this variable always installs Claude Code.
+* Update the image: read the new index digest from the registry and replace it in the `{prod-checluster}` custom resource. Do not use a digest from a build log.
+* Roll back: remove your entry from `spec.devEnvironments.initContainers` and delete the `ConfigMap`. Workspaces stop receiving the configuration at their next start. Content that is already installed in user homes remains.
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch {prod-checluster} -n {prod-namespace} --type json \
+  -p '[{"op":"remove","path":"/spec/devEnvironments/initContainers/0"}]'
+$ {orch-cli} delete configmap lola-config-default -n {prod-namespace}
+----
++
+When `lola-init` is the only entry, removing the whole `initContainers` key has the same effect. With other init containers in the list, remove only the entry of `lola-init`, by its index.
+
+[WARNING]
+====
+Creating or modifying the `ConfigMap` restarts the running workspaces that receive the synced copy, which is every {namespace} by default. Apply the change in a quiet period. To try the configuration on a few workspaces first, add the `controller.devfile.io/mount-to-devworkspace-include` annotation to the `ConfigMap`.
+====
+
+[NOTE]
+====
+A failure in the init script does not block the workspace start. The container records the failure in `{prod-home}/.lola/init-status` and the workspace starts without the AI assistant configuration. The most common cause is an unreachable repository. A missing `persistent-home` volume is different: the container cannot start, no script runs, and the workspace start fails until the volume is enabled.
+====
+
+.Additional resources
+
+* xref:preparing-a-lola-module.adoc[]
+* xref:develop:override-recommended-ai-agent-configuration.adoc[]
+* xref:develop:disable-ai-agent-configuration-initialization.adoc[]

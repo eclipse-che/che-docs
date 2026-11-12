@@ -1,0 +1,58 @@
+:_content-type: PROCEDURE
+:description: Prevent the AI assistant configuration init container from installing or changing content in your workspaces.
+:keywords: user-guide, ai, lola, configuration, opt out, disable, secret
+:navtitle: Disabling the AI configuration initialization
+:page-aliases:
+
+[id="disable-ai-agent-configuration-initialization"]
+= Disable the AI assistant configuration initialization
+
+[role="_abstract"]
+If you do not want the AI assistant configuration in your workspaces, disable the initialization for your {namespace}. The init container still runs, but it does not fetch, install, or change any content.
+
+.Prerequisites
+
+* The administrator enabled the AI assistant configuration for all workspaces. See xref:administration-guide:configuring-a-recommended-ai-agent-configuration.adoc[].
+
+.Procedure
+
+. Create the `Secret` in your {namespace} with the `LOLA_DISABLED` variable:
++
+[source,yaml,subs="+attributes"]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: lola-config
+  labels:
+    controller.devfile.io/mount-to-devworkspace: "true"
+    controller.devfile.io/watch-secret: "true"
+  annotations:
+    controller.devfile.io/mount-as: env
+stringData:
+  LOLA_DISABLED: "true"
+----
++
+* Set the value to `true` exactly. The init container ignores any other value and continues the initialization.
+* If you already have this `Secret`, add the variable to it. Other variables in the same `Secret` keep their effect.
+
+. Restart your workspace.
+
+.Verification
+
+* In the workspace, `{prod-home}/.lola/init-status` contains the following line:
++
+----
+ok <timestamp> disabled
+----
+
+== Result
+
+* New workspaces in your {namespace} start without the AI assistant configuration.
+* Content that a previous start installed remains in `{prod-home}`. To remove it, delete the installed skills, commands, and agents from the directory of each assistant of the previous start (`{prod-home}/.claude` for Claude Code, `{prod-home}/.config/opencode` for OpenCode, `{prod-home}/.cursor` for Cursor), and the MCP servers from `{prod-home}/.claude.json` and `{prod-home}/.config/opencode/opencode.json`.
+* To restore the configuration, remove the `LOLA_DISABLED` variable from the `Secret` and restart the workspace.
+
+[NOTE]
+====
+You cannot remove the init container from a workspace yourself, because it is part of the cluster configuration. To stop the initialization for the whole cluster, contact your administrator.
+====
