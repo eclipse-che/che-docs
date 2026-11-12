@@ -36,6 +36,11 @@ stringData:
 * Set the value to `true` exactly. The init container ignores any other value and continues the initialization.
 * If you already have this `Secret`, add the variable to it. Other variables in the same `Secret` keep their effect.
 
+[NOTE]
+====
+Creating the `Secret` restarts the running workspaces in your {namespace}. To avoid that, add the `controller.devfile.io/mount-on-start: "true"` annotation: the `Secret` is then mounted at the next workspace start, which is soon enough, because the init container reads it only when the pod starts. See xref:mounting-secrets.adoc[].
+====
+
 . Restart your workspace.
 
 .Verification

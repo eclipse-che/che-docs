@@ -45,6 +45,11 @@ stringData:
 * `LOLA_AGENTS` selects the AI assistants: one name, a comma-separated list such as `claude-code,opencode`, or `all`. Remove the key to leave the choice to the administrator, or to Claude Code when the administrator does not set it either.
 * A `ConfigMap` with the same keys works when the URL carries no credentials. Use a `Secret` when it does.
 
+[NOTE]
+====
+Creating the `Secret` restarts the running workspaces in your {namespace}. To avoid that, add the `controller.devfile.io/mount-on-start: "true"` annotation: the `Secret` is then mounted at the next workspace start, which is soon enough, because the init container reads it only when the pod starts. See xref:mounting-secrets.adoc[].
+====
+
 . Restart your workspace. The init container removes the content that it installed from the recommended module and installs your module.
 
 .Verification
