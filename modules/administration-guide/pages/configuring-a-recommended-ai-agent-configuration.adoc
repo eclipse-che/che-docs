@@ -51,7 +51,7 @@ data:
 +
 [subs="+quotes,+attributes"]
 ----
-$ {orch-cli} get {prod-checluster} -n {prod-namespace} -o jsonpath='{.spec.devEnvironments.initContainers}'
+$ {orch-cli} get checluster {prod-checluster} -n {prod-namespace} -o jsonpath='{.spec.devEnvironments.initContainers}'
 ----
 
 . If the list is empty, add the entry with a merge patch:
@@ -74,7 +74,7 @@ spec:
 +
 [subs="+quotes,+attributes"]
 ----
-$ {orch-cli} patch {prod-checluster} -n {prod-namespace} --type json -p \
+$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type json -p \
   '[{"op":"add","path":"/spec/devEnvironments/initContainers/-","value":{"name":"lola-init","image":"quay.io/che-incubator/lola-init@sha256:<digest>","imagePullPolicy":"IfNotPresent","workingDir":"/home/user","volumeMounts":[{"name":"persistent-home","mountPath":"/home/user/"}]}}]'
 ----
 
@@ -174,14 +174,24 @@ A change to the list behaves like a change of the repository or the ref: the ini
 * Update the image: read the new index digest from the registry and replace it in the `{prod-checluster}` custom resource. Do not use a digest from a build log.
 * Roll back: remove your entry from `spec.devEnvironments.initContainers` and delete the `ConfigMap`. Workspaces stop receiving the configuration at their next start. Content that is already installed in user homes remains.
 +
+List the entries and note the position of `lola-init`, counting from `0`:
++
 [subs="+quotes,+attributes"]
 ----
-$ {orch-cli} patch {prod-checluster} -n {prod-namespace} --type json \
-  -p '[{"op":"remove","path":"/spec/devEnvironments/initContainers/0"}]'
+$ {orch-cli} get checluster {prod-checluster} -n {prod-namespace} \
+  -o jsonpath='{.spec.devEnvironments.initContainers[*].name}'
+----
++
+Remove that position, then delete the `ConfigMap`:
++
+[subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type json \
+  -p '[{"op":"remove","path":"/spec/devEnvironments/initContainers/__<index>__"}]'
 $ {orch-cli} delete configmap lola-config-default -n {prod-namespace}
 ----
 +
-When `lola-init` is the only entry, removing the whole `initContainers` key has the same effect. With other init containers in the list, remove only the entry of `lola-init`, by its index.
+When `lola-init` is the only entry, removing the whole `initContainers` key has the same effect. With other init containers in the list, remove only the entry of `lola-init`: removing `0` deletes the first entry, which is not necessarily `lola-init`.
 
 [WARNING]
 ====
