@@ -99,21 +99,21 @@ $ {orch-cli} logs -l controller.devfile.io/devworkspace_name=__<workspace-name>_
 A successful installation reports the following line:
 +
 ----
-[lola-init] ok module=<module-name> origin=default mode=install warnings=0 agent=<assistant-list>
+[lola-init] ok module=<module-name> origin=default mode=install warnings=0 agents=<assistant-list>
 ----
 * In the workspace, `{prod-home}/.lola/init-status` contains the same result.
 
 [id="choosing-the-ai-assistants"]
 == Choosing the AI assistants
 
-The init container installs the module for the assistants that `LOLA_AGENT` names: one assistant, a comma-separated subset, or `all`. Install the same module for every assistant rather than one module per assistant. With no value set, the container installs Claude Code.
+The init container installs the module for the assistants that `LOLA_AGENTS` names: one assistant, a comma-separated subset, or `all`. Install the same module for every assistant rather than one module per assistant. With no value set, the container installs Claude Code.
 
 Supported values are `claude-code`, `opencode`, `gemini-cli`, `cursor`, `copilot-cli`, `copilot-vscode`, `openclaw`, a comma-separated combination of them, and `all`. `all` installs for every assistant that Lola supports, including assistants that Lola adds later. An unknown name fails the installation: the status file reports `failed` and names the value.
 
 The examples below show only the `env` part of the entry. Add it to the `lola-init` entry that you created in the procedure, which keeps its image and its `persistent-home` mount.
 
 One assistant for every workspace::
-Set `LOLA_AGENT` on the init container.
+Set `LOLA_AGENTS` on the init container.
 +
 [source,yaml,subs="+attributes"]
 ----
@@ -122,7 +122,7 @@ spec:
     initContainers:
       - name: lola-init
         env:
-          - name: LOLA_AGENT
+          - name: LOLA_AGENTS
             value: opencode
 ----
 
@@ -136,7 +136,7 @@ spec:
     initContainers:
       - name: lola-init
         env:
-          - name: LOLA_AGENT
+          - name: LOLA_AGENTS
             value: claude-code,opencode
 ----
 
@@ -150,17 +150,17 @@ spec:
     initContainers:
       - name: lola-init
         env:
-          - name: LOLA_AGENT
+          - name: LOLA_AGENTS
             value: all
 ----
 
 A different set for some developers::
-Each developer adds `LOLA_AGENT` to the `lola-config` `Secret` in their own {namespace}. The recommended module stays, and only the set of assistants changes. Adding `LOLA_REPO_URL` to the same `Secret` replaces the module as well. See xref:develop:override-recommended-ai-agent-configuration.adoc[].
+Each developer adds `LOLA_AGENTS` to the `lola-config` `Secret` in their own {namespace}. The recommended module stays, and only the set of assistants changes. Adding `LOLA_REPO_URL` to the same `Secret` replaces the module as well. See xref:develop:override-recommended-ai-agent-configuration.adoc[].
 +
 [source,yaml,subs="+attributes"]
 ----
 stringData:
-  LOLA_AGENT: claude-code,gemini-cli
+  LOLA_AGENTS: claude-code,gemini-cli
 ----
 
 A change to the list behaves like a change of the repository or the ref: the init container removes the module from every assistant of the previous set, then installs it for the new one.
@@ -168,7 +168,7 @@ A change to the list behaves like a change of the repository or the ref: the ini
 == Managing the recommended configuration
 
 * Change the module or the ref: edit the `ConfigMap`. The {prod-operator} updates the copies in the user namespaces and the change applies at the next workspace start. A changed URL or ref removes the previous module and installs the new one.
-* Select the AI assistants: add `LOLA_AGENT` to the environment of the init container. See xref:configuring-a-recommended-ai-agent-configuration.adoc#choosing-the-ai-assistants[]. An image that does not support this variable always installs Claude Code.
+* Select the AI assistants: add `LOLA_AGENTS` to the environment of the init container. See xref:configuring-a-recommended-ai-agent-configuration.adoc#choosing-the-ai-assistants[]. An image that does not support this variable always installs Claude Code.
 * Update the image: read the new index digest from the registry and replace it in the `{prod-checluster}` custom resource. Do not use a digest from a build log.
 * Roll back: remove your entry from `spec.devEnvironments.initContainers` and delete the `ConfigMap`. Workspaces stop receiving the configuration at their next start. Content that is already installed in user homes remains.
 +
