@@ -54,7 +54,16 @@ ok <timestamp> disabled
 == Result
 
 * New workspaces in your {namespace} start without the AI assistant configuration.
-* Content that a previous start installed remains in `{prod-home}`. To remove it, delete the installed skills, commands, and agents from the directory of each assistant of the previous start (`{prod-home}/.claude` for Claude Code, `{prod-home}/.config/opencode` for OpenCode, `{prod-home}/.cursor` for Cursor), and the MCP servers from `{prod-home}/.claude.json` and `{prod-home}/.config/opencode/opencode.json`.
+* Content that a previous start installed remains in `{prod-home}`. To remove it, delete the installed skills, commands, and agents from the directory of each assistant of the previous start: `{prod-home}/.claude` for Claude Code, `{prod-home}/.config/opencode` for OpenCode, `{prod-home}/.cursor` for Cursor, `{prod-home}/.gemini` and `{prod-home}/GEMINI.md` for Gemini CLI, `{prod-home}/.copilot` for Copilot, and `{prod-home}/.openclaw` for OpenClaw. Delete the MCP servers from `{prod-home}/.claude.json`, `{prod-home}/.config/opencode/opencode.json`, and `{prod-home}/.copilot/mcp-config.json`. See xref:administration-guide:preparing-a-lola-module.adoc[] for the destinations of every assistant.
+* In a file that you also edit yourself, such as `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`, delete only the sections between the Lola markers. Lola creates them again at the next installation:
++
+[subs="none"]
+----
+<!-- lola:skills:start -->
+<!-- lola:skills:end -->
+<!-- lola:instructions:start -->
+<!-- lola:instructions:end -->
+----
 * To restore the configuration, remove the `LOLA_DISABLED` variable from the `Secret` and restart the workspace.
 
 [NOTE]
