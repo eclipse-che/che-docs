@@ -110,7 +110,7 @@ The mode is `mode=install` on the first start, `mode=update` when the repository
 
 The init container installs the module for the assistants that `LOLA_AGENTS` names: one assistant, a comma-separated subset, or `all`. Install the same module for every assistant rather than one module per assistant. With no value set, the container installs Claude Code.
 
-Supported values are `claude-code`, `opencode`, `gemini-cli`, `cursor`, `copilot-cli`, `copilot-vscode`, `openclaw`, a comma-separated combination of them, and `all`. `all` installs for every assistant that Lola supports, including assistants that Lola adds later. An unknown name fails the installation: the status file reports `failed` and names the value.
+Supported values are `claude-code`, `opencode`, `gemini-cli`, `cursor`, `copilot-cli`, `copilot-vscode`, `openclaw`, a comma-separated combination of them, and `all`. `all` installs for every assistant that Lola installs by default, including assistants that Lola adds later. Lola leaves out `copilot-cli` there, because it writes the same location as `copilot-vscode`: add `copilot-cli` to the list explicitly to cover it. An unknown name fails the installation: the status file reports `failed` and names the value.
 
 The examples below show only the `env` part of the entry. Add it to the `lola-init` entry that you created in the procedure, which keeps its image and its `persistent-home` mount.
 
@@ -143,7 +143,7 @@ spec:
 ----
 
 Every assistant that Lola supports::
-Set the value to `all`. The container then installs without naming a target, so one installation covers every assistant.
+Set the value to `all`. The container then installs without naming a target, so one installation covers every assistant that Lola installs by default, except `copilot-cli`.
 +
 [source,yaml,subs="+attributes"]
 ----
