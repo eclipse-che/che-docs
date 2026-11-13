@@ -1,0 +1,156 @@
+:_content-type: PROCEDURE
+:description: Prepare a Lola module in Git so that Che installs its AI assistant skills, commands, and agents in workspaces.
+:keywords: administration, ai, lola, module, skills, commands, agents, agent-plugin
+:navtitle: Preparing a Lola module
+:page-aliases:
+
+[id="preparing-a-lola-module"]
+= Prepare a Lola module for {prod-short} workspaces
+
+[role="_abstract"]
+Prepare a Lola module in a Git repository so that {prod-short} installs its AI assistant skills, commands, and agents into workspaces at startup.
+
+Lola reads the module and writes its content into the native directory structure of each AI assistant that you install it for. Prepare one module for every assistant that your team uses, rather than one module per assistant: the skills, commands, agents, and instructions are the same, and only the destination directory differs.
+
+.Prerequisites
+
+* A Git repository for the module that workspaces can reach. Prefer a public repository, because a workspace can clone a private repository only when it has Git credentials configured.
+* Lola on the workstation that prepares the module, at the commit the init image pins. The released version
+predates the agent-plugin layout, so install the commit rather than the package:
++
+[subs="+quotes,+attributes"]
+----
+$ uv tool install "git+https://github.com/LobsterTrap/lola@53b3687975b373c856fc67b9a8f18c395c76fca4"
+----
+
+.Procedure
+
+. Create the module structure in the repository root. The module name is the name of the repository directory, and a name argument would create a subdirectory instead:
++
+[subs="+quotes,+attributes"]
+----
+$ lola mod init -s __<skill-name>__
+----
++
+The command creates the agent-plugin layout with example content:
++
+----
+plugin.json
+mcp.json
+skills/<skill-name>/SKILL.md
+dev.getlola/
+  AGENTS.md
+  agents/example-agent.md
+  commands/example-command.md
+----
++
+Add `--minimal` to create only the directory structure. You can also create the same files by hand.
+
+. Set the module name, version, and description in `plugin.json`. Keep the `dev.getlola` extension so that Lola finds the commands, agents, and instructions:
++
+[source,json]
+----
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "my-agent-config",
+  "version": "0.1.0",
+  "description": "Team AI assistant configuration.",
+  "extensions": {
+    "dev.getlola": {
+      "commands": "./dev.getlola/commands",
+      "agents": "./dev.getlola/agents",
+      "instructions": "./dev.getlola/AGENTS.md"
+    }
+  }
+}
+----
+
+. Add skills. Each skill is a directory under `skills/` that contains a `SKILL.md` file. Lola discovers every skill directory automatically, so the manifest does not list them:
++
+----
+---
+name: review-checklist
+description: "Review checklist for a Go change: tests, error handling, and rollback."
+---
+
+# Review checklist
+
+Describe when the assistant uses this skill and what it must do.
+----
++
+* The file starts with a YAML front matter block.
+* The `description` field is mandatory. Lola skips a skill without a description and reports a warning.
+* Quote a description that contains a colon. Without quotes the front matter is invalid and Lola skips the whole skill.
+
+. Optional: Add commands and agent definitions as Markdown files under `dev.getlola/commands/` and `dev.getlola/agents/`. Each file has a `description` field in the front matter.
+
+. Optional: Add MCP servers to `mcp.json`. Use `type: streamable-http` for a remote server. Do not add credentials: the file is stored in Git and copied into the workspace.
+
+. Validate the module before you push it. `lola mod add` reports the same warnings that the init container reports at workspace startup:
++
+[subs="+quotes,+attributes"]
+----
+$ lola mod add .
+$ lola install __<module-name>__ -a __<assistant>__ -s user
+----
++
+Check that the content is present in the destination of that assistant and that no warning names a skill or an agent.
+
+. Validate the module for the other assistants that your team uses. One module serves every assistant, so the same content installs with a different Lola target:
++
+[subs="+quotes,+attributes"]
+----
+$ lola install __<module-name>__ -a __<assistant>__ -s user
+$ lola install __<module-name>__ -s user
+----
++
+* `-a` accepts a single assistant, for example `-a gemini-cli` or `-a opencode`. Run the command once per assistant in the subset that you want to check.
+* Without `-a`, Lola asks which assistants to select, because the command runs in a terminal. The init container runs without a terminal and installs Lola's default set, which leaves out `copilot-cli`.
+* Each assistant receives the content in its own location:
++
+[cols="1,1",options="header"]
+|===
+| Assistant | Destination in `{prod-home}`
+
+| `claude-code`
+| `.claude/skills`, `.claude/commands`, `.claude/agents`
+
+| `opencode`
+| `.config/opencode/skills`
+
+| `gemini-cli`
+| A managed section of `GEMINI.md`, and `.gemini/commands`
+
+| `cursor`
+| `.cursor/skills`
+
+| `copilot-vscode`
+| `.copilot/skills`
+
+| `openclaw`
+| `.openclaw/workspace/skills`
+|===
++
+* Gemini CLI has no agent definitions: Lola skips the files in `dev.getlola/agents/` for that assistant and converts commands to the TOML format.
+* {prod-short} installs the module for the assistants that the `LOLA_AGENTS` variable names, as a single name, a comma-separated list, or `all`. Check the module with the same list that your workspaces use. See xref:configuring-a-recommended-ai-agent-configuration.adoc[].
+
+. Commit and push the module. Create a tag for each release so that clusters can install a fixed version.
+
+.Verification
+
+* `lola list` shows the installed module and its skills.
+* A workspace started with the recommended configuration reports `warnings=0` in `{prod-home}/.lola/init-status`.
+
+== Content that Lola does not carry
+
+* Assistant settings, such as the Claude Code `settings.json` file with hooks and permissions.
+* Plugins and hooks written as JavaScript or TypeScript files.
+* Credentials. Store them in a `Secret`, not in the module.
+* Absolute paths from your workstation. Use paths that exist in the workspace, such as `{prod-home}`.
+
+.Additional resources
+
+* xref:develop:distribute-claude-code-skills-with-lola.adoc[]
+* xref:configuring-a-recommended-ai-agent-configuration.adoc[]
+* link:https://github.com/LobsterTrap/lola[Lola]
+* link:https://agent-plugins.org[Agent plugins specification]

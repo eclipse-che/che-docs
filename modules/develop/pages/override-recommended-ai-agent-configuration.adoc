@@ -1,0 +1,77 @@
+:_content-type: PROCEDURE
+:description: Replace the recommended AI assistant configuration in your workspaces with your own Lola module.
+:keywords: user-guide, ai, lola, configuration, skills, override, secret
+:navtitle: Overriding the recommended AI configuration
+:page-aliases:
+
+[id="override-recommended-ai-agent-configuration"]
+= Override the recommended AI assistant configuration
+
+[role="_abstract"]
+If your administrator configured a recommended AI assistant configuration for {prod-short}, replace it with your own Lola module. Your module is installed into your workspaces at startup in place of the recommended one.
+
+Your configuration is stored in a `Secret` in your {namespace}. It applies to every workspace in the {namespace} and takes precedence over the recommended configuration.
+
+.Prerequisites
+
+* The administrator enabled the recommended AI assistant configuration. See xref:administration-guide:configuring-a-recommended-ai-agent-configuration.adoc[].
+* A Lola module in a Git repository that the workspace can reach. See xref:administration-guide:preparing-a-lola-module.adoc[].
+* Git credentials in the workspace to clone a private module repository. See xref:get-started-user:authenticating-to-a-git-server-from-a-workspace.adoc[].
+
+.Procedure
+
+. Create the `Secret` in your {namespace}:
++
+[source,yaml,subs="+attributes"]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: lola-config
+  labels:
+    controller.devfile.io/mount-to-devworkspace: "true"
+    controller.devfile.io/watch-secret: "true"
+  annotations:
+    controller.devfile.io/mount-as: env
+stringData:
+  LOLA_REPO_URL: https://github.com/<user>/<module-repo>.git
+  LOLA_REPO_REF: main
+  LOLA_AGENTS: claude-code
+----
++
+* Replace the URL and the ref with the values of your module.
+* Remove `LOLA_REPO_REF` to install the default branch of the repository.
+* A ref is used only with the URL of the same pair. The recommended ref does not apply to your module.
+* `LOLA_AGENTS` selects the AI assistants: one name, a comma-separated list such as `claude-code,opencode`, or `all`. Remove the key to leave the choice to the administrator, or to Claude Code when the administrator does not set it either.
+* A `ConfigMap` with the same keys works when the URL carries no credentials. Use a `Secret` when it does.
+* If the `lola-config` `Secret` already exists in your `{namespace}`, add these keys to it instead of creating another `Secret`, keep its other keys, and remove `LOLA_DISABLED`, or set it to anything other than `true`: while it is `true`, the init container stays off whatever else the `Secret` contains. See xref:disable-ai-agent-configuration-initialization.adoc[].
+
+[NOTE]
+====
+Creating the `Secret` restarts the running workspaces in your {namespace}. To avoid that, add the `controller.devfile.io/mount-on-start: "true"` annotation: the `Secret` is then mounted at the next workspace start, which is soon enough, because the init container reads it only when the pod starts. See xref:mounting-secrets.adoc[].
+====
+
+. Restart your workspace. The init container removes the content that it installed from the recommended module and installs your module.
+
+.Verification
+
+* In the workspace, `{prod-home}/.lola/init-status` reports `origin=personal`. The mode is `switch` when the recommended module was installed before, and `install` on a workspace that never ran the init container with a module:
++
+----
+ok <timestamp> <module-name> origin=personal mode=switch warnings=0 agents=<assistant-list> url=<module-url>
+----
+* The content of your module is installed in the directories of each selected assistant. For Claude Code, for example, `{prod-home}/.claude/skills` and `{prod-home}/.claude/agents`.
+* The skills, commands, and agents of the recommended module are gone from the assistants of the new set. When the new set leaves out Claude Code, MCP servers that the previous configuration added to `{prod-home}/.claude.json` can stay there.
+
+== Return to the recommended configuration
+
+Remove `LOLA_REPO_URL` and `LOLA_REPO_REF` from the `Secret`, or from the `ConfigMap` that supplies them, and restart the workspace. Delete the whole resource only when it holds no key you need. Keep the other keys: `LOLA_AGENTS` still selects the assistants for the recommended module. The next start installs the recommended module again.
+
+[NOTE]
+====
+The init container protects your own files. It changes only the content that Lola installs, and it removes only the module that it installed itself: modules you add to `{prod-home}/.lola/modules` by hand stay. A hand-made MCP server that reuses the name of a managed server is the exception.
+====
+
+.Additional resources
+
+* xref:distribute-claude-code-skills-with-lola.adoc[]
