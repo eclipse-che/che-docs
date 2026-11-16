@@ -34,7 +34,7 @@ stringData:
 ----
 +
 * Set the value to `true` exactly. The init container ignores any other value and continues the initialization.
-* If you already have this `Secret`, add the variable to it. Other variables in the same `Secret` keep their effect.
+* If you already have this `Secret`, add the variable to it. Other variables in the same `Secret` keep their effect. Do not delete the `Secret` and recreate it with only this key: while it is gone, the workspace restarts and installs the recommended module.
 
 [NOTE]
 ====
@@ -59,11 +59,13 @@ ok <timestamp> disabled
 +
 [subs="none"]
 ----
-<!-- lola:skills:start -->
-<!-- lola:skills:end -->
 <!-- lola:instructions:start -->
+<!-- lola:module:<module-name>:start -->
+<!-- lola:module:<module-name>:end -->
 <!-- lola:instructions:end -->
 ----
++
+Each installed module has its own pair of `lola:module` markers inside the instructions block. Delete the whole instructions block to remove every generated section; keep the content you wrote outside the markers.
 * To restore the configuration, remove the `LOLA_DISABLED` variable from the `Secret` and restart the workspace.
 
 [NOTE]

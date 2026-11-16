@@ -101,7 +101,7 @@ A successful installation reports the following line:
 ----
 [lola-init] ok module=<module-name> origin=default mode=install warnings=0 agents=<assistant-list>
 ----
-* In the workspace, `{prod-home}/.lola/init-status` contains the same result.
+* In the workspace, `{prod-home}/.lola/init-status` contains the same result with a UTC timestamp and the module URL added.
 +
 The mode is `mode=install` on the first start, `mode=update` when the repository, the ref and the set of assistants are the same as last time, and `mode=switch` when one of them changed.
 
@@ -113,6 +113,8 @@ The init container installs the module for the assistants that `LOLA_AGENTS` nam
 Supported values are `claude-code`, `opencode`, `gemini-cli`, `cursor`, `copilot-cli`, `copilot-vscode`, `openclaw`, a comma-separated combination of them, and `all`. `all` installs for every assistant that Lola installs by default, including assistants that Lola adds later. Lola leaves out `copilot-cli` there, because it writes the same location as `copilot-vscode`: add `copilot-cli` to the list explicitly to cover it. An unknown name fails the installation: the status file reports `failed` and names the value.
 
 The examples below show only the `env` part of the entry. Add it to the `lola-init` entry that you created in the procedure, which keeps its image and its `persistent-home` mount.
+
+A value set here applies to every workspace and takes precedence over the same key in the `lola-config-default` `ConfigMap` or in a developer's `lola-config` `Secret`: {prod-short} mounts those as environment variables, and {orch-name} resolves an environment variable set on the container before the mounted ones. Leave `LOLA_AGENTS` unset here when developers must choose their own set.
 
 One assistant for every workspace::
 Set `LOLA_AGENTS` on the init container.
@@ -157,7 +159,7 @@ spec:
 ----
 
 A different set for some developers::
-Each developer adds `LOLA_AGENTS` to the `lola-config` `Secret` in their own {namespace}. The recommended module stays, and only the set of assistants changes. Adding `LOLA_REPO_URL` to the same `Secret` replaces the module as well. See xref:develop:override-recommended-ai-agent-configuration.adoc[].
+Each developer adds `LOLA_AGENTS` to the `lola-config` `Secret` in their own {namespace}. The recommended module stays, and only the set of assistants changes. This works only while the init container does not set the variable itself. Adding `LOLA_REPO_URL` to the same `Secret` replaces the module as well. See xref:develop:override-recommended-ai-agent-configuration.adoc[].
 +
 [source,yaml,subs="+attributes"]
 ----
@@ -170,7 +172,7 @@ A change to the list behaves like a change of the repository or the ref: the ini
 == Managing the recommended configuration
 
 * Change the module or the ref: edit the `ConfigMap`. The {prod-operator} updates the copies in the user namespaces and the change applies at the next workspace start. A changed URL or ref removes the previous module and installs the new one.
-* Select the AI assistants: add `LOLA_AGENTS` to the environment of the init container. See xref:configuring-a-recommended-ai-agent-configuration.adoc#choosing-the-ai-assistants[]. An image that does not support this variable always installs Claude Code.
+* Select the AI assistants: add `LOLA_AGENTS` to the environment of the init container. See xref:configuring-a-recommended-ai-agent-configuration.adoc#choosing-the-ai-assistants[]. An image that does not support this variable always installs Claude Code, and an image from before the variable was renamed ignores the older `LOLA_AGENT` and says so in the log.
 * Update the image: read the new index digest from the registry and replace it in the `{prod-checluster}` custom resource. Do not use a digest from a build log.
 * Roll back: remove your entry from `spec.devEnvironments.initContainers` and delete the `ConfigMap`. Workspaces stop receiving the configuration at their next start. Content that is already installed in user homes remains.
 +
@@ -195,12 +197,12 @@ When `lola-init` is the only entry, removing the whole `initContainers` key has 
 
 [NOTE]
 ====
-The {prod-operator} updates the synced copy in every {namespace}, but it does not restart the running workspaces. The change applies at the next workspace start. To try the configuration on a few workspaces first, add the `controller.devfile.io/mount-to-devworkspace-include` annotation to the `ConfigMap`.
+The {prod-operator} updates the synced copy in every {namespace}, but it does not restart the running workspaces. The change applies at the next workspace start. To try the configuration on a few workspaces first, add the `controller.devfile.io/mount-to-devworkspace-include` annotation to the `ConfigMap` with a comma-separated list of workspace name patterns, such as `lola-test*`.
 ====
 
 [NOTE]
 ====
-A failure in the init script does not block the workspace start. The container records the failure in `{prod-home}/.lola/init-status` and the workspace starts without the AI assistant configuration. The most common cause is an unreachable repository. A missing `persistent-home` volume is different: the container cannot start, no script runs, and the workspace start fails until the volume is enabled.
+A failure in the init script does not block the workspace start. The container records the failure in `{prod-home}/.lola/init-status` and the workspace starts without the AI assistant configuration. The most common cause is an unreachable repository. The container writes no status file when it cannot write to the home, and when no repository URL is configured it logs that and exits without one. Each Lola command runs under a 120-second timeout: set `LOLA_TIMEOUT` on the init container to change it, and `0` disables the timeout. A missing `persistent-home` volume is different: the container cannot start, no script runs, and the workspace start fails until the volume is enabled.
 ====
 
 .Additional resources

@@ -107,7 +107,7 @@ $ lola install __<module-name>__ -s user
 +
 * `-a` accepts a single assistant, for example `-a gemini-cli` or `-a opencode`. Run the command once per assistant in the subset that you want to check.
 * Without `-a`, Lola asks which assistants to select, because the command runs in a terminal. The init container runs without a terminal and installs Lola's default set, which leaves out `copilot-cli`.
-* `openclaw` needs a different command: `lola install __<module-name>__ -a openclaw -s user` fails with `--scope user cannot be used with a project path argument`. Run it without `-s user`. OpenClaw receives the skills only, because Lola drops commands, agents, and MCP servers for that assistant.
+* `openclaw` needs a different command: `lola install __<module-name>__ -a openclaw -s user` fails with `--scope user cannot be used with a project path argument`. Run it without `-s user`. OpenClaw installs into `{prod-home}/.openclaw/workspace`, so create that directory first if it does not exist, and it receives the skills only, because Lola drops commands, agents, and MCP servers for that assistant.
 * Each assistant receives the content in its own location:
 +
 [cols="1,1",options="header"]
@@ -133,7 +133,7 @@ $ lola install __<module-name>__ -s user
 | `.openclaw/workspace/skills`
 |===
 +
-The table lists the main destinations at user scope. Copilot VS Code skips commands and MCP servers at that scope, and OpenClaw receives skills only.
+The table lists the main destinations at user scope. Copilot VS Code skips commands and MCP servers at that scope. OpenClaw has no user scope: it writes into `{prod-home}/.openclaw/workspace` and receives skills only.
 
 * Gemini CLI has no agent definitions: Lola skips the files in `dev.getlola/agents/` for that assistant and converts commands to the TOML format.
 * {prod-short} installs the module for the assistants that the `LOLA_AGENTS` variable names, as a single name, a comma-separated list, or `all`. Check the module with the same list that your workspaces use. See xref:configuring-a-recommended-ai-agent-configuration.adoc[].
