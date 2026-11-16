@@ -31,13 +31,14 @@ The released package, `uv tool install lola-ai`, predates the agent-plugin layou
 * A Git repository containing a Lola module. At minimum, the module should contain:
 +
 ----
-module/
-  skills/
-    <skill-name>/
-      SKILL.md
+plugin.json
+skills/
+  <skill-name>/
+    SKILL.md
+dev.getlola/
+  AGENTS.md
   commands/
     <command-name>.md
-  AGENTS.md
 ----
 
 * Git credentials configured in the workspace if the module repository is private. See xref:get-started-user:authenticating-to-a-git-server-from-a-workspace.adoc[].
@@ -48,9 +49,9 @@ module/
 +
 [source,text,subs="+quotes"]
 ----
-__<git_repository_url>__.git@main#subdirectory=module&assistant=__<assistant>__ # <1> <2>
+__<git_repository_url>__.git@main#assistant=__<assistant>__ # <1> <2>
 ----
-<1> Replace `__<git_repository_url>__` with the URL of your Lola module repository. Replace `__<assistant>__` with the target assistant: `claude-code`, `cursor`, `copilot-vscode`, `copilot-cli`, `gemini-cli`, `openclaw`, or `opencode`. The `subdirectory` fragment points to the module root inside the repository.
+<1> Replace `__<git_repository_url>__` with the URL of your Lola module repository. Replace `__<assistant>__` with the target assistant: `claude-code`, `cursor`, `copilot-vscode`, `copilot-cli`, `gemini-cli`, `openclaw`, or `opencode`. Add `subdirectory=__<path>__` to the fragment when the module is not at the repository root.
 <2> Keep the `.git` suffix: Lola reads the `@main` ref only from a clone URL that ends in `.git`. Without the suffix it treats the ref as part of the repository name.
 
 . Run `lola sync` to fetch and install the module:
