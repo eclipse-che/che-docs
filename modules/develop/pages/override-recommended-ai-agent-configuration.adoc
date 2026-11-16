@@ -1,14 +1,13 @@
 :_content-type: PROCEDURE
 :description: Replace the recommended AI assistant configuration in your workspaces with your own Lola module.
 :keywords: user-guide, ai, lola, configuration, skills, override, secret
-:navtitle: Overriding the recommended AI configuration
 :page-aliases:
 
 [id="override-recommended-ai-agent-configuration"]
 = Override the recommended AI assistant configuration
 
 [role="_abstract"]
-If your administrator configured a recommended AI assistant configuration for {prod-short}, replace it with your own Lola module. Your module is installed into your workspaces at startup in place of the recommended one.
+If your administrator configured a recommended AI assistant configuration for {prod-short}, replace it with your own link:https://github.com/LobsterTrap/lola[Lola] module. Your module is installed into your workspaces at startup in place of the recommended one.
 
 Your configuration is stored in a `Secret` in your {namespace}. It applies to every workspace in the {namespace} and takes precedence over the recommended configuration.
 
@@ -47,12 +46,9 @@ stringData:
 * A `ConfigMap` with the same keys works when the URL carries no credentials. Use a `Secret` when it does: the `Secret` keeps the URL out of the shared manifests, but Lola records the URL it cloned in `{prod-home}/.lola/modules/<module-name>/.lola/source.yml`, so a token embedded in the URL stays readable in your workspace. Prefer a token that reads only this repository, and rotate it when you replace it.
 * If the `lola-config` `Secret` already exists in your `{namespace}`, add these keys to it instead of creating another `Secret`, keep its other keys, and remove `LOLA_DISABLED`, or set it to anything other than `true`: while it is `true`, the init container stays off whatever else the `Secret` contains. See xref:disable-ai-agent-configuration-initialization.adoc[].
 
-[NOTE]
-====
-Creating the `Secret` restarts the running workspaces in your {namespace}. To avoid that, add the `controller.devfile.io/mount-on-start: "true"` annotation: the `Secret` is then mounted at the next workspace start, which is soon enough, because the init container reads it only when the pod starts. See xref:mounting-secrets.adoc[].
-====
+include::partial$snip_lola-config-restart-note.adoc[]
 
-. Restart your workspace. The init container removes the content that it installed from the recommended module and installs your module.
+. Restart the workspace if you set the `mount-on-start` annotation. The init container removes the content that it installed from the recommended module and installs your module.
 
 .Verification
 
@@ -66,7 +62,16 @@ ok <timestamp> <module-name> origin=personal mode=switch warnings=0 agents=<assi
 
 == Return to the recommended configuration
 
-Remove `LOLA_REPO_URL` and `LOLA_REPO_REF` from the `Secret`, or from the `ConfigMap` that supplies them, and restart the workspace. Delete the whole resource only when it holds no key you need. Keep the other keys: `LOLA_AGENTS` still selects the assistants for the recommended module. The next start installs the recommended module again.
+. Remove `LOLA_REPO_URL` and `LOLA_REPO_REF` from the `Secret`, or from the `ConfigMap` that supplies them. Keep the other keys: `LOLA_AGENTS` still selects the assistants for the recommended module. Delete the whole resource only when it holds no key you need.
+. Restart the workspace. The next start installs the recommended module again.
+
+.Verification
+
+* In the workspace, `{prod-home}/.lola/init-status` reports `origin=default`:
++
+----
+ok <timestamp> <module-name> origin=default mode=switch warnings=0 agents=<assistant-list> url=<module-url>
+----
 
 [NOTE]
 ====

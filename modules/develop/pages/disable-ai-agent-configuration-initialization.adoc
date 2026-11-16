@@ -1,7 +1,6 @@
 :_content-type: PROCEDURE
 :description: Prevent the AI assistant configuration init container from installing or changing content in your workspaces.
 :keywords: user-guide, ai, lola, configuration, opt out, disable, secret
-:navtitle: Disabling the AI configuration initialization
 :page-aliases:
 
 [id="disable-ai-agent-configuration-initialization"]
@@ -34,14 +33,11 @@ stringData:
 ----
 +
 * Set the value to `true` exactly. The init container ignores any other value and continues the initialization.
-* If you already have this `Secret`, add the variable to it. Other variables in the same `Secret` keep their effect. Do not delete the `Secret` and recreate it with only this key: while it is gone, the workspace restarts and installs the recommended module.
+* If you already have this `Secret`, add the variable to it. Other variables in the same `Secret` keep their effect. Do not delete the `Secret` and re-create it with only this key: while it is gone, the workspace restarts and installs the recommended module.
 
-[NOTE]
-====
-Creating the `Secret` restarts the running workspaces in your {namespace}. To avoid that, add the `controller.devfile.io/mount-on-start: "true"` annotation: the `Secret` is then mounted at the next workspace start, which is soon enough, because the init container reads it only when the pod starts. See xref:mounting-secrets.adoc[].
-====
+include::partial$snip_lola-config-restart-note.adoc[]
 
-. Restart your workspace.
+. Restart the workspace if you set the `mount-on-start` annotation. Without it, creating the `Secret` already restarted it.
 
 .Verification
 
@@ -50,12 +46,15 @@ Creating the `Secret` restarts the running workspaces in your {namespace}. To av
 ----
 ok <timestamp> disabled
 ----
-
-== Result
-
 * New workspaces in your {namespace} start without the AI assistant configuration.
-* Content that a previous start installed remains in `{prod-home}`. To remove it, delete the installed skills, commands, and agents from the directory of each assistant of the previous start: `{prod-home}/.claude` for Claude Code, `{prod-home}/.config/opencode` for OpenCode, `{prod-home}/.cursor` for Cursor, `{prod-home}/.gemini` and `{prod-home}/GEMINI.md` for Gemini CLI, `{prod-home}/.copilot` for Copilot, and `{prod-home}/.openclaw` for OpenClaw. Delete the MCP servers from `{prod-home}/.claude.json`, `{prod-home}/.config/opencode/opencode.json`, and `{prod-home}/.copilot/mcp-config.json`. See xref:administration-guide:preparing-a-lola-module.adoc[] for the destinations of every assistant.
-* In a file that you also edit yourself, such as `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`, delete only the sections between the Lola markers. Lola creates them again at the next installation:
+
+== Removing the installed content
+
+Content that a previous start installed remains in `{prod-home}`.
+
+. Delete the installed skills, commands, and agents from the directory of each assistant of the previous start. See xref:administration-guide:ref_ai-assistant-configuration.adoc[] for the destinations of every assistant.
+. Delete the MCP servers from `{prod-home}/.claude.json`, `{prod-home}/.config/opencode/opencode.json`, and `{prod-home}/.copilot/mcp-config.json`.
+. In a file that you also edit yourself, such as `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`, delete only the sections between the link:https://github.com/LobsterTrap/lola[Lola] markers. Lola creates them again at the next installation:
 +
 [subs="none"]
 ----
@@ -66,9 +65,18 @@ ok <timestamp> disabled
 ----
 +
 Each installed module has its own pair of `lola:module` markers inside the instructions block. Delete the whole instructions block to remove every generated section; keep the content you wrote outside the markers.
-* To restore the configuration, remove the `LOLA_DISABLED` variable from the `Secret` and restart the workspace.
 
 [NOTE]
 ====
 You cannot remove the init container from a workspace yourself, because it is part of the cluster configuration. To stop the initialization for the whole cluster, contact your administrator.
 ====
+
+.Next steps
+
+* To restore the configuration, remove the `LOLA_DISABLED` variable from the `Secret` and restart the workspace.
+
+.Additional resources
+
+* xref:override-recommended-ai-agent-configuration.adoc[]
+* xref:administration-guide:preparing-a-lola-module.adoc[]
+* xref:distribute-claude-code-skills-with-lola.adoc[]
