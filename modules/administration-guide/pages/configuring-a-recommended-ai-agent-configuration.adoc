@@ -193,9 +193,9 @@ $ {orch-cli} delete configmap lola-config-default -n {prod-namespace}
 +
 When `lola-init` is the only entry, removing the whole `initContainers` key has the same effect. With other init containers in the list, remove only the entry of `lola-init`: removing `0` deletes the first entry, which is not necessarily `lola-init`.
 
-[WARNING]
+[NOTE]
 ====
-Creating or modifying the `ConfigMap` restarts the running workspaces that receive the synced copy, which is every {namespace} by default. Apply the change in a quiet period. To try the configuration on a few workspaces first, add the `controller.devfile.io/mount-to-devworkspace-include` annotation to the `ConfigMap`.
+The {prod-operator} updates the synced copy in every {namespace}, but it does not restart the running workspaces. The change applies at the next workspace start. To try the configuration on a few workspaces first, add the `controller.devfile.io/mount-to-devworkspace-include` annotation to the `ConfigMap`.
 ====
 
 [NOTE]

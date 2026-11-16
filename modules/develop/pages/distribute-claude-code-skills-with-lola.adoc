@@ -12,7 +12,7 @@ A team maintains a Lola module in a Git repository containing skills (coding sta
 
 [NOTE]
 ====
-Lola manages skills, commands, and agents only. It does not persist assistant-specific settings, MCP server configurations, or plugin caches. For full Claude Code configuration persistence, see Additional resources.
+Lola manages skills, commands, agents, instructions, and MCP server declarations. It does not persist assistant-specific settings, credentials, or plugin caches. For full Claude Code configuration persistence, see Additional resources.
 ====
 
 .Prerequisites
@@ -23,8 +23,10 @@ Lola manages skills, commands, and agents only. It does not persist assistant-sp
 +
 [subs="+quotes,+attributes"]
 ----
-$ uv tool install lola-ai
+$ uv tool install "git+https://github.com/LobsterTrap/lola@53b3687975b373c856fc67b9a8f18c395c76fca4"
 ----
++
+The released package, `uv tool install lola-ai`, predates the agent-plugin layout and installs only the skills of such a module.
 
 * A Git repository containing a Lola module. At minimum, the module should contain:
 +
@@ -48,7 +50,7 @@ module/
 ----
 __<git_repository_url>__@main#subdirectory=module&assistant=__<assistant>__ # <1>
 ----
-<1> Replace `__<git_repository_url>__` with the URL of your Lola module repository. Replace `__<assistant>__` with the target assistant: `claude-code`, `cursor`, `copilot`, `gemini-cli`, or `opencode`. The `subdirectory` fragment points to the module root inside the repository.
+<1> Replace `__<git_repository_url>__` with the URL of your Lola module repository. Replace `__<assistant>__` with the target assistant: `claude-code`, `cursor`, `copilot-vscode`, `copilot-cli`, `gemini-cli`, `openclaw`, or `opencode`. The `subdirectory` fragment points to the module root inside the repository.
 
 . Run `lola sync` to fetch and install the module:
 +
@@ -93,7 +95,7 @@ events:
 == Limitations
 
 * Lola must be installed in the workspace container image or installed at startup.
-* Manages skills, commands, and agents only. Does not persist assistant-specific settings, MCP server configurations, or plugin caches.
+* Manages skills, commands, agents, instructions, and MCP server declarations. Does not persist assistant-specific settings or plugin caches.
 * Changes to skills and commands are not synced back to the source repository. The module repository is the single source of truth.
 
 .Additional resources

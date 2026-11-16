@@ -25,7 +25,7 @@ $ uv tool install "git+https://github.com/LobsterTrap/lola@53b3687975b373c856fc6
 
 .Procedure
 
-. Create the module structure in the repository root. The module name is the name of the repository directory, and a name argument would create a subdirectory instead:
+. Create the module structure in the repository root. Lola takes the module name from the `name` field of `plugin.json`, so keep that field equal to the repository directory name. A name argument to `lola mod init` would create a subdirectory instead:
 +
 [subs="+quotes,+attributes"]
 ----
@@ -36,6 +36,7 @@ The command creates the agent-plugin layout with example content:
 +
 ----
 plugin.json
+README.md
 mcp.json
 skills/<skill-name>/SKILL.md
 dev.getlola/
@@ -44,7 +45,7 @@ dev.getlola/
   commands/example-command.md
 ----
 +
-Add `--minimal` to create only the directory structure. You can also create the same files by hand.
+`--minimal` omits the example content, but it still writes `README.md` and `plugin.json` and creates the empty component directories. You can also create the same files by hand.
 
 . Set the module name, version, and description in `plugin.json`. Keep the `dev.getlola` extension so that Lola finds the commands, agents, and instructions:
 +
@@ -106,6 +107,7 @@ $ lola install __<module-name>__ -s user
 +
 * `-a` accepts a single assistant, for example `-a gemini-cli` or `-a opencode`. Run the command once per assistant in the subset that you want to check.
 * Without `-a`, Lola asks which assistants to select, because the command runs in a terminal. The init container runs without a terminal and installs Lola's default set, which leaves out `copilot-cli`.
+* `openclaw` needs a different command: `lola install __<module-name>__ -a openclaw -s user` fails with `--scope user cannot be used with a project path argument`. Run it without `-s user`. OpenClaw receives the skills only, because Lola drops commands, agents, and MCP servers for that assistant.
 * Each assistant receives the content in its own location:
 +
 [cols="1,1",options="header"]
@@ -113,24 +115,26 @@ $ lola install __<module-name>__ -s user
 | Assistant | Destination in `{prod-home}`
 
 | `claude-code`
-| `.claude/skills`, `.claude/commands`, `.claude/agents`
+| `.claude/skills`, `.claude/commands`, `.claude/agents`, a managed section of `.claude/CLAUDE.md`, and `.mcp.json`
 
 | `opencode`
-| `.config/opencode/skills`
+| `.config/opencode/skills`, `.config/opencode/commands`, `.config/opencode/agents`, a managed section of `.config/opencode/AGENTS.md`, and `.config/opencode/opencode.json`
 
 | `gemini-cli`
-| A managed section of `GEMINI.md`, and `.gemini/commands`
+| A managed section of `GEMINI.md`, `.gemini/commands`, and `.gemini/settings.json`
 
 | `cursor`
-| `.cursor/skills`
+| `.cursor/skills`, `.cursor/commands`, `.cursor/agents`, `.cursor/rules`, and `.cursor/mcp.json`
 
 | `copilot-vscode`
-| `.copilot/skills`
+| `.copilot/skills`, `.copilot/agents`, and `.copilot/copilot-instructions.md`
 
 | `openclaw`
 | `.openclaw/workspace/skills`
 |===
 +
+The table lists the main destinations at user scope. Copilot VS Code skips commands and MCP servers at that scope, and OpenClaw receives skills only.
+
 * Gemini CLI has no agent definitions: Lola skips the files in `dev.getlola/agents/` for that assistant and converts commands to the TOML format.
 * {prod-short} installs the module for the assistants that the `LOLA_AGENTS` variable names, as a single name, a comma-separated list, or `all`. Check the module with the same list that your workspaces use. See xref:configuring-a-recommended-ai-agent-configuration.adoc[].
 
@@ -138,7 +142,7 @@ $ lola install __<module-name>__ -s user
 
 .Verification
 
-* `lola list` shows the installed module and its skills.
+* `lola list` shows the installed modules and the assistants they are installed for. `lola mod info __<module-name>__` lists the skills that Lola found in the module.
 * A workspace started with the recommended configuration reports `warnings=0` in `{prod-home}/.lola/init-status`.
 
 == Content that Lola does not carry
@@ -146,7 +150,7 @@ $ lola install __<module-name>__ -s user
 * Assistant settings, such as the Claude Code `settings.json` file with hooks and permissions.
 * Plugins and hooks written as JavaScript or TypeScript files.
 * Credentials. Store them in a `Secret`, not in the module.
-* Absolute paths from your workstation. Use paths that exist in the workspace, such as `{prod-home}`.
+* Absolute paths from your workstation. Lola copies Markdown text as written: it does not copy the referenced files and does not rewrite the paths. Use paths that exist in the workspace, such as `{prod-home}`.
 
 .Additional resources
 
