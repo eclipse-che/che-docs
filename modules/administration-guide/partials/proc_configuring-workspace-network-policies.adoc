@@ -1,0 +1,77 @@
+:_content-type: PROCEDURE
+[id="configuring-workspace-network-policies"]
+= Configure network policies for workspaces
+
+[role="_abstract"]
+To restrict the traffic to and from workspace Pods, enable the NetworkPolicy that the {devworkspace} Operator provisions for each workspace.
+The feature is controlled by the `spec.devEnvironments.networking.networkPolicy` CheCluster field and is disabled by default.
+
+.Prerequisites
+* An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+
+.Procedure
+. Enable network policies for workspaces:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} patch checluster/{prod-checluster} \
+  --namespace {prod-namespace} \
+  --type merge \
+  --patch '{"spec":{"devEnvironments":{"networking":{"networkPolicy":{"enabled":true}}}}}'
+----
++
+The change applies to a workspace the next time that workspace is started or stopped.
+A running workspace picks it up after you stop and start it.
+
+. Optional: Define custom `ingress` rules in the `spec.devEnvironments.networking.networkPolicy` field to restrict the traffic that is allowed to reach the workspace Pods.
+A non-empty `ingress` list replaces the default rules, so include rules for the traffic that must still be allowed, for example traffic from the {prod-short} components:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+spec:
+  devEnvironments:
+    networking:
+      networkPolicy:
+        enabled: true
+        ingress:
+          - from:
+              - namespaceSelector:
+                  matchLabels:
+                    kubernetes.io/metadata.name: {prod-namespace}
+----
++
+In this example, the workspace accepts ingress traffic only from Pods in the {prod-short} components {orch-namespace}.
+To allow traffic from additional {orch-namespace}s, add a corresponding rule for each {orch-namespace}.
++
+. Optional: Define custom `egress` rules to restrict the traffic that the workspace Pods can send:
++
+[source,yaml,subs="+quotes,+attributes"]
+----
+spec:
+  devEnvironments:
+    networking:
+      networkPolicy:
+        enabled: true
+        egress:
+          - to:
+              - namespaceSelector:
+                  matchLabels:
+                    kubernetes.io/metadata.name: __<peer_namespace>__
+----
++
+In this example, the workspace Pods can send traffic only to Pods in the `__<peer_namespace>__` {orch-namespace}.
++
+For how the `ingress` and `egress` fields behave when they are not specified, empty, or non-empty, see xref:configuring-network-policies.adoc#workspace-network-policy-rules[Workspace network policy rules].
+
+.Verification
+* Start a workspace and verify that the NetworkPolicy resource is created for it in the user {orch-namespace}:
++
+[source,shell,subs="+quotes,+attributes"]
+----
+{orch-cli} get networkpolicies -n __<user_namespace>__
+----
+
+[role="_additional-resources"]
+.Additional resources
+* xref:checluster-custom-resource-fields-reference.adoc[]
+* link:https://kubernetes.io/docs/concepts/services-networking/network-policies/[Kubernetes network policies]

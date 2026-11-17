@@ -1,11 +1,46 @@
+:_content-type: CONCEPT
 [id="network-policies"]
 = Network policies
 
-By default, all Pods in a {orch-name} cluster can communicate with each other even if they are in different namespaces.
-In the context of {prod-short}, this makes it possible for a workspace Pod in one user {orch-namespace} to send traffic to another workspace Pod in a different user {orch-namespace}.
+[role="_abstract"]
+By default, all Pods in a {orch-name} cluster can communicate with each other across namespaces.
+In {prod-short}, this allows a workspace Pod in one user {orch-namespace} to send traffic to workspace Pods in other user {orch-namespace}s.
 
 Network policies restrict network traffic to only the flows required by {prod-short} components and workspaces.
 
-On OpenShift, the {prod-short} Operator can automatically create and manage the required NetworkPolicy resources. This is the recommended approach because the operator keeps policies synchronized as namespaces are created and deleted.
+When Operator-managed network policies for the {prod-short} components are enabled, the {prod-short} Operator creates the following resources:
 
-Alternatively, if the operator-managed policies do not fit your requirements, or if you are running {prod-short} on {kubernetes}, you can create NetworkPolicy resources manually.
+.NetworkPolicy resources in the {prod-short} {orch-namespace} on OpenShift
+[cols="1,2", options="header"]
+|===
+| Name | Description
+
+| `allow-from-same-namespace`
+| Allows ingress traffic between {prod-short} Pods in the same {orch-namespace}.
+
+| `allow-from-workspaces`
+| Allows ingress traffic from user workspace {orch-namespace}s.
+
+| `allow-from-openshift-ingress`
+| Allows ingress traffic from the OpenShift ingress {orch-namespace}.
+
+| `allow-from-openshift-host-network`
+| Allows ingress traffic from Pods that use the host network, for example the OpenShift router.
+
+| `allow-from-openshift-monitoring`
+| Allows ingress traffic from the OpenShift monitoring {orch-namespace}.
+
+| `allow-from-{prod-id-short}-operator`
+| Allows ingress traffic from the Operator Pod to {prod-short} components.
+
+| `allow-all-egress`
+| Allows all egress traffic from {prod-short} Pods.
+|===
+
+On {kubernetes}, the Operator creates only the `allow-all-ingress` and `allow-all-egress` NetworkPolicies, which allow all ingress and egress traffic.
+The {orch-namespace} of the cluster ingress controller is not known to the Operator, so enabling this setting on {kubernetes} does not restrict any traffic by itself.
+
+When network isolation for workspaces is enabled, the {devworkspace} Operator creates a `_<workspace_id>_-networkpolicy` NetworkPolicy resource in the user {orch-namespace} for each workspace.
+See xref:configuring-network-policies.adoc#configuring-workspace-network-policies[Configure network policies for workspaces].
+
+For how the `ingress` and `egress` fields of the `spec.devEnvironments.networking.networkPolicy` CheCluster field behave, see xref:workspace-network-policy-rules[Workspace network policy rules].
