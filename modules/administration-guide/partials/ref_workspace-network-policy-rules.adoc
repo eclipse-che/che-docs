@@ -1,0 +1,28 @@
+:_content-type: REFERENCE
+[id="workspace-network-policy-rules"]
+= Workspace network policy rules
+
+The `ingress` and `egress` fields of the `spec.devEnvironments.networking.networkPolicy` CheCluster field accept standard {orch-name} NetworkPolicy rules.
+
+.Workspace network policy behavior
+[cols="2,3,3", options="header"]
+|===
+| Field state | `ingress` result | `egress` result
+
+| Not specified
+| The default rules of the {devworkspace} Operator apply, and the {prod-short} Operator adds one rule allowing traffic from the {prod-short} components.
+On OpenShift, the defaults also allow traffic from the {devworkspace} Operator {orch-namespace} and from the OpenShift monitoring, ingress, host-network, and console {orch-namespace}s.
+On {kubernetes}, the default allows all ingress because the {devworkspace} Operator cannot identify the {orch-namespace} of the cluster ingress controller.
+| The default rule of the {devworkspace} Operator applies, which allows all egress traffic.
+
+| Empty list
+| All ingress traffic to the workspace Pods is denied.
+| All egress traffic from the workspace Pods is denied.
+
+| Non-empty list
+| Exactly those rules apply: the default rules are replaced, and the rule allowing traffic from the {prod-short} components is not added automatically.
+If the {prod-short} components must communicate with the workspaces, include a corresponding ingress rule.
+| Exactly those rules apply.
+|===
+
+To restrict ingress on {kubernetes}, define custom `ingress` rules.
