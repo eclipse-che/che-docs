@@ -86,7 +86,7 @@ Describe when the assistant uses this skill and what it must do.
 
 . Optional: Add MCP servers to `mcp.json`. Use `type: streamable-http` for a remote server. Do not add credentials: the file is stored in Git and copied into the workspace.
 
-. Validate the module before you push it. `lola mod add` reports the same warnings that the init container reports at workspace startup:
+. Validate the module before you push it. `lola mod add .` reports the same warnings that the init container reports at workspace startup:
 +
 [subs="+quotes,+attributes"]
 ----
@@ -105,7 +105,7 @@ $ lola install __<module-name>__ -s user
 +
 * `-a` accepts a single assistant, for example `-a gemini-cli` or `-a opencode`. Run the command once per assistant in the subset that you want to check.
 * Without `-a`, Lola asks which assistants to select, because the command runs in a terminal. The init container runs without a terminal and installs Lola's default set, which leaves out `copilot-cli`.
-* `openclaw` needs a different command: `lola install __<module-name>__ -a openclaw -s user` fails with `--scope user cannot be used with a project path argument`. Run it without `-s user`. OpenClaw installs into `{prod-home}/.openclaw/workspace`, so create that directory first if it does not exist, and it receives the skills only, because Lola drops commands, agents, and MCP servers for that assistant.
+* `openclaw` needs a different command: `lola install __<module-name>__ -a openclaw -s user` fails with `--scope user cannot be used with a project path argument`. Run it without `-s user`. OpenClaw installs into `{prod-home}/.openclaw/workspace`, so create that directory first if it does not exist, and it receives the skills only, because Lola drops commands, agents, and MCP servers for that assistant. The init container creates that directory and runs this command itself, so naming `openclaw` in `LOLA_AGENTS` works.
 
 * Each assistant receives the content in its own location. See xref:ref_ai-assistant-configuration.adoc[].
 * Gemini CLI has no agent definitions: Lola skips the files in `dev.getlola/agents/` for that assistant and converts commands to the TOML format.
