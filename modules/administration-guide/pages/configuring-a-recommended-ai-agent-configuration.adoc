@@ -17,10 +17,15 @@ The configuration uses two objects and requires no change to the {prod-operator}
 .Prerequisites
 
 * An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
-* The persistent user home is enabled, which is the default. The init container mounts the `persistent-home` volume, which {prod-short} defines only when `spec.devEnvironments.persistUserHome.enabled` is `true`. See xref:con_persistent-user-home.adoc[].
+* The workspace defines the `persistent-home` volume. {prod-short} does not define it when any of the following is true:
+** `spec.devEnvironments.persistUserHome.enabled` is `false`.
+** A container in the devfile already mounts a volume at `{prod-home}/`.
+** The workspace uses ephemeral storage and `init-persistent-home` is not configured in `spec.devEnvironments.initContainers`, which is the default.
++
+See xref:con_persistent-user-home.adoc[].
 * The module repository is prepared as described in xref:preparing-a-lola-module.adoc[].
-* The image `quay.io/che-incubator/lola-init` is available to every {namespace}. The image is public and is built for amd64 and arm64.
-* Docker with the `buildx` plugin or Podman is installed on the machine where you run the `{orch-cli}` commands.
+* The image `quay.io/che-incubator/lola-init` is available to every {namespace}. The image is public and multi-architecture.
+* Docker with the `buildx` plugin, or `skopeo`, is installed on the machine where you run the `{orch-cli}` commands.
 
 .Procedure
 
@@ -31,15 +36,14 @@ The configuration uses two objects and requires no change to the {prod-operator}
 $ docker buildx imagetools inspect quay.io/che-incubator/lola-init:latest
 ----
 +
-Alternatively, with Podman:
+Alternatively, with Skopeo:
 +
 [subs="+quotes,+attributes"]
 ----
-$ podman pull quay.io/che-incubator/lola-init:latest
-$ podman images --digests quay.io/che-incubator/lola-init
+$ skopeo inspect --format '{{.Digest}}' docker://quay.io/che-incubator/lola-init:latest
 ----
 +
-The `DIGEST` column reports the digest of the image index. Use it in the `image` field of the init container.
+Use the digest of the image index in the `image` field of the init container.
 
 . Create the `ConfigMap` with the module URL and ref in the `{prod-namespace}` {namespace}:
 +
@@ -55,6 +59,7 @@ metadata:
     app.kubernetes.io/component: workspaces-config
   annotations:
     controller.devfile.io/mount-as: env
+    controller.devfile.io/mount-on-start: "true"
 data:
   LOLA_DEFAULT_REPO_URL: https://github.com/<org>/<module-repo>.git
   LOLA_DEFAULT_REPO_REF: main
@@ -63,6 +68,7 @@ data:
 * Replace the URL and the ref with the values of your module.
 * Remove `LOLA_DEFAULT_REPO_REF` to install the default branch of the repository.
 * Keep both labels. They make the {prod-operator} synchronize the `ConfigMap` to every {namespace}.
+* Keep the `mount-on-start` annotation. It stops the {prod-operator} from adding the `ConfigMap` to a workspace pod that is already running, which would restart the workspace. The configuration applies at the next start instead.
 
 . Add the init container to the `{prod-checluster}` custom resource. A merge patch replaces the whole list, so the patch type depends on whether the list is empty:
 +
@@ -94,14 +100,14 @@ $ {orch-cli} patch checluster {prod-checluster} -n {prod-namespace} --type json 
 +
 [subs="+quotes,+attributes"]
 ----
-$ {orch-cli} get pod -l controller.devfile.io/devworkspace_name=__<workspace-name>__ \
+$ {orch-cli} get pod -n __<user-namespace>__ -l controller.devfile.io/devworkspace_name=__<workspace-name>__ \
   -o jsonpath='{.items[0].spec.initContainers[*].name}'
 ----
 * Read the init container log:
 +
 [subs="+quotes,+attributes"]
 ----
-$ {orch-cli} logs -l controller.devfile.io/devworkspace_name=__<workspace-name>__ -c lola-init
+$ {orch-cli} logs -n __<user-namespace>__ -l controller.devfile.io/devworkspace_name=__<workspace-name>__ -c lola-init
 ----
 +
 A successful installation reports the following line:
@@ -118,6 +124,9 @@ The mode is `mode=install` on the first start, `mode=update` when the repository
 * Change the module or the ref: edit the `ConfigMap`. The {prod-operator} updates the copies in the user namespaces and the change applies at the next workspace start. A changed URL or ref removes the previous module and installs the new one.
 * Select the AI assistants: add `LOLA_AGENTS` to the environment of the init container. See xref:ref_ai-assistant-configuration.adoc[].
 * Update the image: read the new index digest from the registry and replace it in the `{prod-checluster}` custom resource. Do not use a digest from a build log.
+
+== Removing the recommended configuration
+
 * Roll back: remove your entry from `spec.devEnvironments.initContainers` and delete the `ConfigMap`. Workspaces stop receiving the configuration at their next start. Content that is already installed in user homes remains.
 +
 List the entries and note the position of `lola-init`, counting from `0`:
