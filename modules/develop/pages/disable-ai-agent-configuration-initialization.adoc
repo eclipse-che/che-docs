@@ -33,8 +33,9 @@ stringData:
 ----
 +
 * Set the value to `true` exactly. The init container ignores any other value and continues the initialization.
+* If the opt-out has no effect, the administrator may have set `LOLA_DISABLED` on the init container itself. An explicit value there takes precedence over this `Secret`, so ask the administrator to remove it.
 * If you already have this `Secret`, add the variable to it. Other variables in the same `Secret` keep their effect. Do not delete the `Secret` and re-create it with only this key: while it is gone, the workspace restarts and installs the recommended module.
-* The `Secret` applies to every workspace in your {namespace}. To scope the opt-out to some workspaces, add the `controller.devfile.io/mount-to-devworkspace-include` annotation with a comma-separated list of workspace name patterns, or `controller.devfile.io/mount-to-devworkspace-exclude` to keep it out of the listed workspaces. See xref:mounting-secrets.adoc[].
+* The `Secret` applies to every workspace in your {namespace}. To scope the opt-out to some workspaces, add the `controller.devfile.io/mount-to-devworkspace-include` annotation with a comma-separated list of workspace name patterns, or `controller.devfile.io/mount-to-devworkspace-exclude` to keep it out of the listed workspaces. See xref:mounting-secrets.adoc[]. These annotations scope the whole `Secret`, including its other variables. If it also holds `LOLA_REPO_URL`, create a separate `Secret` for the opt-out instead of scoping the shared one: workspaces outside the pattern would otherwise fall back to the recommended module.
 
 include::partial$snip_lola-config-restart-note.adoc[]
 
@@ -47,14 +48,14 @@ include::partial$snip_lola-config-restart-note.adoc[]
 ----
 ok <timestamp> disabled
 ----
-* New workspaces in your {namespace} start without the AI assistant configuration.
+* Every new workspace that mounts this `Secret` starts without the AI assistant configuration.
 
 == Removing the installed content
 
 Content that a previous start installed remains in `{prod-home}`.
 
 . Delete the installed skills, commands, and agents from the directory of each assistant of the previous start. See xref:administration-guide:ref_ai-assistant-configuration.adoc[] for the destinations of every assistant.
-. Delete the MCP servers from `{prod-home}/.claude.json`, `{prod-home}/.config/opencode/opencode.json`, and `{prod-home}/.copilot/mcp-config.json`.
+. Delete the MCP servers from `{prod-home}/.mcp.json`, `{prod-home}/.claude.json`, `{prod-home}/.config/opencode/opencode.json`, `{prod-home}/.cursor/mcp.json`, and `{prod-home}/.copilot/mcp-config.json`.
 . In a file that you also edit yourself, such as `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`, delete only the sections between the link:https://github.com/LobsterTrap/lola[Lola] markers. Lola creates them again at the next installation:
 +
 [subs="none"]
