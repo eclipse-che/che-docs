@@ -23,15 +23,15 @@ The link:https://github.com/LobsterTrap/lola[Lola] init container reads its conf
 | Default branch
 
 | `LOLA_REPO_URL`
-| URL of a module repository that replaces the recommended one for one developer
+| Personal module repository of one developer, used instead of the recommended one
 | None
 
 | `LOLA_REPO_REF`
-| Branch, tag, or commit of the developer's module. Without it, the container installs the default branch.
+| Branch, tag, or commit of the personal module. Without it, the container installs the default branch.
 | Default branch
 
 | `LOLA_AGENTS`
-| Assistants to install the module for
+| Assistants to install the module for: one name, a comma-separated list, or `all`
 | `claude-code`
 
 | `LOLA_DISABLED`
@@ -41,16 +41,12 @@ The link:https://github.com/LobsterTrap/lola[Lola] init container reads its conf
 | `LOLA_TIMEOUT`
 | Timeout in seconds for each Lola command. `0` disables the timeout.
 | `120`
-
-| `LOLA_AGENT`
-| Retired name of `LOLA_AGENTS`. The container ignores it and logs that the variable is renamed.
-| None
 |===
 
 The object that supplies a variable decides which value wins when the same name is set twice:
 
 * An environment variable set on the init container in the `{prod-checluster}` custom resource wins over the same name in the `ConfigMap` or in the `Secret`. {orch-name} resolves an explicit `env` entry before the mounted ones.
-* `LOLA_REPO_URL` wins over `LOLA_DEFAULT_REPO_URL`: the developer's module replaces the recommended one in that developer's workspaces.
+* `LOLA_REPO_URL` wins over `LOLA_DEFAULT_REPO_URL`: a developer points their own workspaces at a personal module without an administrator changing the recommended one, and deleting the key falls back to the recommended module.
 * With neither repository URL set, the container logs that it has nothing to do and exits without installing anything.
 
 [id="choosing-the-ai-assistants"]
@@ -123,7 +119,7 @@ A change to the list behaves like a change of the repository or the ref: the ini
 
 == Destinations at user scope
 
-The table lists the main destinations at user scope. The `copilot-vscode` target skips commands and MCP servers, and OpenClaw has no user scope: it writes into `{prod-home}/.openclaw/workspace` and receives skills only.
+The table lists the main destinations at user scope. The `copilot-vscode` target skips commands and MCP servers, and OpenClaw has no user scope: the init container installs it into `{prod-home}/.openclaw/workspace`, and it receives skills only.
 
 .Assistant destinations at user scope
 [cols="1,1",options="header"]
@@ -141,6 +137,9 @@ The table lists the main destinations at user scope. The `copilot-vscode` target
 
 | `cursor`
 | `.cursor/skills`, `.cursor/commands`, `.cursor/agents`, `.cursor/rules`, and `.cursor/mcp.json`
+
+| `copilot-cli`
+| `.copilot/skills`, `.copilot/prompts`, `.copilot/agents`, `.copilot/copilot-instructions.md`, and `.copilot/mcp-config.json`
 
 | `copilot-vscode`
 | `.copilot/skills`, `.copilot/agents`, and `.copilot/copilot-instructions.md`
