@@ -1,0 +1,35 @@
+:_content-type: PROCEDURE
+:description: Registering a GitLab application for the IDE redirect
+:keywords: gitlab, oauth, application, ide-redirect, redirect-uri
+:navtitle: Registering a GitLab application for the IDE redirect
+// :page-aliases:
+
+[id="registering-the-gitlab-application-for-the-ide-redirect"]
+= Registering a GitLab application for the IDE redirect
+
+Register a GitLab application that the GitLab Workflow extension uses to sign in to GitLab from workspaces.
+
+.Prerequisites
+
+* You are logged in to the GitLab instance as a user who can add applications. See link:https://docs.gitlab.com/ee/integration/oauth_provider.html#authorized-applications[GitLab Docs: Authorized applications].
+
+.Procedure
+
+. Click your avatar and go to menu:Edit profile[Applications].
+
+. Enter a name for the application, for example *{prod-short} IDE*.
+
+. Enter `pass:c,a,q[{prod-url}]/api/oauth/ide-redirect` as the *Redirect URI*.
+
+. Leave the *Confidential* checkbox unselected. The GitLab Workflow extension is a public client that runs on the user side and cannot keep a client secret.
+
+. Under *Scopes*, check the `api` checkbox.
+
+. Click *Save application*.
+
+. Copy and save the *Application ID* of the new application for use when mounting the GitLab Workflow OAuth configuration.
+
+[NOTE]
+====
+This application is separate from the GitLab authorized application that xref:configuring-oauth-2-for-gitlab.adoc[Connect GitLab with OAuth] uses for Git operations. Do not reuse that application here: it is confidential, while the GitLab Workflow extension requires a non-confidential application. Both applications can be registered for the same GitLab instance.
+====

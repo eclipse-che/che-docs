@@ -1,0 +1,56 @@
+:_content-type: ASSEMBLY
+:description: Enabling OAuth sign-in to GitLab for the GitLab Workflow extension in workspaces
+:keywords: oauth, gitlab, gitlab-workflow, extension, sign-in, authentication, ide-redirect
+:navtitle: Sign in to GitLab from the IDE
+
+[id="signing-in-to-gitlab-from-the-gitlab-workflow-extension"]
+= Sign in to GitLab from the GitLab Workflow extension
+
+[role="_abstract"]
+Users can sign in to GitLab with OAuth directly from the GitLab Workflow extension that runs in a workspace, without pasting a personal access token. This page describes how the browser-based OAuth flow works and how to enable it for the workspaces of a {prod-short} instance.
+
+[id="how-gitlab-oauth-sign-in-works-in-a-workspace"]
+== How GitLab OAuth sign-in works in a workspace
+
+IDE extensions sign in to GitLab with an OAuth authorization-code flow. In desktop Visual Studio Code, GitLab returns the authorization code to the editor through the `vscode://` URI scheme. In {prod-short}, the editor runs in a browser: the `vscode://` scheme cannot receive the redirect, and every workspace has a different URL that cannot be registered in advance as the redirect URI of an OAuth application.
+
+{prod-short} provides a stable redirect endpoint for this case: `pass:c,a,q[{prod-url}]/api/oauth/ide-redirect`. You register this endpoint as the *Redirect URI* of a GitLab application and configure the GitLab Workflow extension in workspaces to use that application. During sign-in, the extension puts the callback URL of the workspace, together with an anti-CSRF token, into the OAuth `state` parameter. When GitLab redirects to the endpoint with the authorization code, {prod-short} forwards the code to the workspace that started the sign-in, and the extension exchanges the code for a token.
+
+[NOTE]
+====
+The callback URL travels inside the `state` parameter and is chosen by whoever builds the authorization URL, so it is not trusted. {prod-short} forwards the authorization code only when both of the following are true:
+
+* the request comes from a user who is signed in to {prod-short}
+* the callback URL is located under the main URL of one of the workspaces of that user
+
+Because of these checks, a user cannot collect the authorization code of another user by handing them an authorization URL that points to their own workspace.
+====
+
+This OAuth flow is independent of the OAuth configuration for Git operations in workspaces, which xref:configuring-oauth-2-for-gitlab.adoc[Connect GitLab with OAuth] describes. Both can be configured for the same GitLab instance.
+
+.Prerequisites
+
+* Workspaces use an editor based on Visual Studio Code, such as Che Code.
+
+* The GitLab Workflow extension installed in workspaces supports the `GITLAB_WORKFLOW_OAUTH_*` environment variables described in this page.
+
+To enable GitLab OAuth sign-in from the IDE:
+
+. Register a GitLab application for the IDE redirect.
+
+. Mount the GitLab Workflow OAuth configuration into workspaces.
+
+include::partial$proc_registering-the-gitlab-application-for-the-ide-redirect.adoc[leveloffset=+1]
+
+include::partial$proc_mounting-the-gitlab-workflow-oauth-configuration.adoc[leveloffset=+1]
+
+Users can then sign in from their workspaces:
+
+include::partial$proc_signing-in-to-gitlab-from-a-workspace.adoc[leveloffset=+1]
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:configuring-oauth-2-for-gitlab.adoc[Connect GitLab with OAuth] for OAuth between {prod-short} and GitLab for Git operations, such as cloning and pushing.
+* xref:extend:default-extensions-for-microsoft-visual-studio-code.adoc[] to preinstall the GitLab Workflow extension (`GitLab.gitlab-workflow`) in all workspaces.
+* link:https://docs.gitlab.com/ee/integration/oauth_provider.html[GitLab Docs: OAuth applications]
