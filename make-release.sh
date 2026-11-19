@@ -109,7 +109,7 @@ bump_branch() {
       "$playbookfile" \
       "${pr_branch}" \
       "${base_branch}" \
-      "chore: Bump to ${NEXTVERSION} in ${base_branch}"
+      "chore(release): Bump to ${NEXTVERSION} in ${base_branch}"
   fi
   git checkout ${current_branch}
 }
@@ -128,7 +128,7 @@ bump_publication_builder_branch() {
       "$playbookPublicationFile" \
       "pr-${PUBLICATION_BUILDER_BRANCH}-to-${BRANCH}" \
       "${PUBLICATION_BUILDER_BRANCH}" \
-      "chore: Bump to ${BRANCH} in ${PUBLICATION_BUILDER_BRANCH}"
+      "chore(release): Bump to ${BRANCH} in ${PUBLICATION_BUILDER_BRANCH}"
   fi
   git checkout "$current_branch"
 }
