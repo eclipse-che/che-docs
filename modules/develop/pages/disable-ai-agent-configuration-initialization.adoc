@@ -1,0 +1,84 @@
+:_content-type: PROCEDURE
+:description: Prevent the AI assistant configuration init container from installing or changing content in your workspaces.
+:keywords: user-guide, ai, lola, configuration, opt out, disable, secret
+:page-aliases:
+
+[id="disable-ai-agent-configuration-initialization"]
+= Disable the AI assistant configuration initialization
+
+[role="_abstract"]
+If you do not want the AI assistant configuration in your workspaces, disable the initialization for your {namespace}. The init container still runs, but it does not fetch, install, or change any content.
+
+.Prerequisites
+
+* The administrator enabled the AI assistant configuration for all workspaces. See xref:administration-guide:configuring-a-recommended-ai-agent-configuration.adoc[].
+
+.Procedure
+
+. Create the `Secret` in your {namespace} with the `LOLA_DISABLED` variable:
++
+[source,yaml,subs="+attributes"]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: lola-config
+  labels:
+    controller.devfile.io/mount-to-devworkspace: "true"
+    controller.devfile.io/watch-secret: "true"
+  annotations:
+    controller.devfile.io/mount-as: env
+stringData:
+  LOLA_DISABLED: "true"
+----
++
+* Set the value to `true` exactly. The init container ignores any other value and continues the initialization.
+* If the opt-out has no effect, the administrator may have set `LOLA_DISABLED` on the init container itself. An explicit value there takes precedence over this `Secret`, so ask the administrator to remove it.
+* If you already have this `Secret`, add the variable to it. Other variables in the same `Secret` keep their effect. Do not delete the `Secret` and re-create it with only this key: while it is gone, the workspace restarts and installs the recommended module.
+* The `Secret` applies to every workspace in your {namespace}. To scope the opt-out to some workspaces, add the `controller.devfile.io/mount-to-devworkspace-include` annotation with a comma-separated list of workspace name patterns, or `controller.devfile.io/mount-to-devworkspace-exclude` to keep it out of the listed workspaces. See xref:mounting-secrets.adoc[]. These annotations scope the whole `Secret`, including its other variables. If it also holds `LOLA_REPO_URL`, create a separate `Secret` for the opt-out instead of scoping the shared one: workspaces outside the pattern would otherwise fall back to the recommended module.
+
+include::partial$snip_lola-config-restart-note.adoc[]
+
+. Restart the workspace if you set the `mount-on-start` annotation. Without it, creating the `Secret` already restarted it.
+
+.Verification
+
+* In the workspace, `{prod-home}/.lola/init-status` contains the following line:
++
+----
+ok <timestamp> disabled
+----
+* Every new workspace that mounts this `Secret` starts without the AI assistant configuration.
+
+== Removing the installed content
+
+Content that a previous start installed remains in `{prod-home}`.
+
+. Delete the installed skills, commands, and agents from the directory of each assistant of the previous start. See xref:administration-guide:ref_ai-assistant-configuration.adoc[] for the destinations of every assistant.
+. Delete the MCP servers from `{prod-home}/.mcp.json`, `{prod-home}/.claude.json`, `{prod-home}/.config/opencode/opencode.json`, `{prod-home}/.cursor/mcp.json`, and `{prod-home}/.copilot/mcp-config.json`. Remove only the servers that the module installed, and keep the ones you added yourself.
+. In a file that you also edit yourself, such as `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`, delete only the sections between the link:https://github.com/LobsterTrap/lola[Lola] markers. Lola creates them again at the next installation:
++
+[subs="none"]
+----
+<!-- lola:instructions:start -->
+<!-- lola:module:<module-name>:start -->
+<!-- lola:module:<module-name>:end -->
+<!-- lola:instructions:end -->
+----
++
+Each installed module has its own pair of `lola:module` markers inside the instructions block. Delete the whole instructions block to remove every generated section; keep the content you wrote outside the markers.
+
+[NOTE]
+====
+You cannot remove the init container from a workspace yourself, because it is part of the cluster configuration. To stop the initialization for the whole cluster, contact your administrator.
+====
+
+.Next steps
+
+* To restore the configuration, remove the `LOLA_DISABLED` variable from every `Secret` that applies to this workspace, and restart it.
+
+.Additional resources
+
+* xref:override-recommended-ai-agent-configuration.adoc[]
+* xref:administration-guide:preparing-a-lola-module.adoc[]
+* xref:distribute-claude-code-skills-with-lola.adoc[]
