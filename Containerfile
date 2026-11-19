@@ -45,7 +45,6 @@ RUN set -x \
     git-core \
     graphviz \
     grep \
-    htmltest \
     jq \
     nodejs \
     python3-pip \
@@ -60,6 +59,14 @@ RUN set -x \
     && dnf clean all --quiet \
     && dot -v \
     && node --version
+
+# Install htmltest from GitHub releases (as it is no longer available as dnf package)
+ENV HTMLTEST_VERSION=0.17.0
+RUN set -x \
+    && wget -q "https://github.com/wjdp/htmltest/releases/download/v${HTMLTEST_VERSION}/htmltest_${HTMLTEST_VERSION}_linux_amd64.tar.gz" -O /tmp/htmltest.tar.gz \
+    && tar -xzf /tmp/htmltest.tar.gz -C /usr/local/bin htmltest \
+    && rm /tmp/htmltest.tar.gz \
+    && htmltest --version
 
 # Install vale from GitHub releases (the COPR repo lags behind upstream)
 ENV VALE_VERSION=3.17.1
