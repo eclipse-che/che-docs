@@ -14,6 +14,7 @@ Therefore, you must import into {prod-short} all untrusted CA chains in use by a
 * A proxy
 * An identity provider (OIDC)
 * A source code repositories provider (Git)
+* A parent devfile referenced via URI with untrusted TLS
 
 {prod-short} uses labeled ConfigMaps in {prod-short} {orch-namespace} as sources for TLS certificates.
 The ConfigMaps can have an arbitrary amount of keys with an arbitrary amount of certificates each.
@@ -39,6 +40,9 @@ spec:
 ====
 On OpenShift cluster, {prod-short} operator automatically adds Red Hat Enterprise Linux CoreOS (RHCOS) trust bundle into mounted certificates.
 ====
+
+When certificates are imported, the {prod-short} operator automatically configures the {devworkspace} Operator to trust these certificates by setting the `tlsCertificateConfigmapRef` field in the {devworkspace} Operator configuration to reference the `ca-certs-merged` ConfigMap.
+This enables the {devworkspace} Operator to trust the certificates when resolving parent devfile references via URI that use untrusted TLS certificates.
 
 .Prerequisites
 * An active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster.
@@ -111,6 +115,24 @@ This command returns {prod-short} CA bundle certificates in PEM format:
 {orch-cli} get configmap ca-certs-merged \
     --namespace=__<workspace_namespace>__ \
     --output='jsonpath={.data.tls-ca-bundle\.pem}'
+----
+
+. Verify that the {devworkspace} Operator is configured to trust the imported certificates.
+This command returns the TLS certificate ConfigMap reference in the {devworkspace} Operator configuration:
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+{orch-cli} get devworkspaceoperatorconfig \
+    --namespace={prod-namespace} \
+    devworkspace-config \
+    --output='jsonpath={.config.routing.tlsCertificateConfigmapRef}'
+----
++
+The output should show the reference to the `ca-certs-merged` ConfigMap:
++
+[subs="+attributes,+quotes",options="nowrap",role=white-space-pre]
+----
+{"name":"ca-certs-merged","namespace":"__<prod-namespace>__"}
 ----
 
 . Verify that the workspace pod mounts the `ca-certs-merged` ConfigMap:
