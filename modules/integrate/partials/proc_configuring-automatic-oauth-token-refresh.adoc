@@ -1,0 +1,119 @@
+:_content-type: PROCEDURE
+:description: Configuring automatic OAuth token refresh
+:keywords: configuring-oauth, authorization, oauth, token, refresh, git
+:navtitle: Refresh OAuth tokens automatically
+// :page-aliases:
+
+[id="configuring-automatic-oauth-token-refresh"]
+= Refresh OAuth tokens automatically
+
+Git providers issue short-lived OAuth tokens: GitLab, for example, issues tokens that expire after two hours. {prod-short} refreshes a token when it reads the token and the provider no longer accepts it, but nothing reads the token of a user who is not interacting with {prod-short} at that moment. A workspace that is left running therefore keeps an expired token in its Git credentials, and Git operations such as `git pull` and `git push` fail until the user restarts the workspace or authorizes the Git provider again.
+
+To avoid this, you can configure the {prod-short} server to refresh OAuth tokens in the background, before they expire. When the feature is enabled, a scheduled job periodically does the following:
+
+. Reads the running and starting workspaces across the cluster.
+. Determines which Git providers serve the repositories that the devfiles of those workspaces define, so that only the providers that are in use are contacted.
+. Refreshes the OAuth tokens in the {orch-namespace}s of the owners of those workspaces, and updates the token Secrets and the Git credentials of the running workspaces.
+
+Only tokens that users obtained through the {prod-short} OAuth integration are refreshed. Personal access tokens that users configured manually are not affected.
+
+The job is disabled by default. To enable it, configure the `spec.gitServices.oauthTokenRefresh` section of the `CheCluster` custom resource.
+
+.Prerequisites
+
+* You have an active `{orch-cli}` session with administrative permissions to the destination {orch-name} cluster. See {orch-cli-link}.
+* You have configured OAuth between {prod-short} and at least one Git provider.
+
+.Procedure
+
+. Enable the automatic OAuth token refresh by patching the `CheCluster` custom resource:
++
+[source,terminal,subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch checluster {prod-checluster} \
+    --namespace {prod-namespace} \
+    --type merge \
+    --patch '{
+      "spec": {
+        "gitServices": {
+          "oauthTokenRefresh": {
+            "enabled": true
+          }
+        }
+      }
+    }'
+----
+
+. Optional: Set how often the tokens are refreshed. The default is `600` seconds.
++
+[source,terminal,subs="+quotes,+attributes"]
+----
+$ {orch-cli} patch checluster {prod-checluster} \
+    --namespace {prod-namespace} \
+    --type merge \
+    --patch '{
+      "spec": {
+        "gitServices": {
+          "oauthTokenRefresh": {
+            "enabled": true,
+            "periodSec": __<period_in_seconds>__
+          }
+        }
+      }
+    }'
+----
++
+where `__<period_in_seconds>__` is greater than `0`. Set a period that is shorter than the lifetime of the tokens that your Git provider issues. To disable the job, set the `enabled` field to `false` rather than setting the period to `0`.
+
+.Supported fields for the `oauthTokenRefresh` key
+[cols="1,1,2", options="header"]
+|===
+| Field | Default | Description
+
+| `enabled`
+| `false`
+| Enables automatic refreshing of OAuth tokens before they expire.
+
+| `periodSec`
+| `600`
+| How often OAuth tokens are refreshed, in seconds. Must be greater than `0`.
+|===
+
+The following limitations apply:
+
+* Only the providers of the repositories that a workspace devfile defines are taken into account. A repository that a user clones manually in the workspace terminal does not cause the token of its provider to be refreshed.
+* Only tokens of providers that issue refresh tokens are refreshed. A token for which no refresh token is stored is skipped, and the user must authorize the Git provider again when the token expires.
+* Only {orch-namespace}s that {prod-short} manages and whose running workspaces identify a single creator are processed. Tokens in {orch-namespace}s that are shared by several users are not refreshed. Identities that do not provide a user ID, such as those of some OIDC providers, also prevent the refresh.
+* Tokens that do not expire, such as GitHub OAuth App tokens, are not refreshed.
+* If refreshing one token fails, the remaining tokens are still refreshed, and the failed token is retried on the next run of the job.
+
+.Verification
+
+. Verify that the {prod-short} server is configured to refresh the tokens:
++
+[source,terminal,subs="+quotes,+attributes"]
+----
+$ {orch-cli} exec deploy/{prod-id-short} \
+    --namespace {prod-namespace} -- \
+    env | grep CHE_OAUTH_TOKEN__REFRESH
+----
++
+The output should report `CHE_OAUTH_TOKEN__REFRESH_ENABLED=true` and the configured period.
+
+. Start a workspace from a repository that is hosted by a Git provider you configured OAuth for, and list the token Secrets in the user {orch-namespace}:
++
+[source,terminal,subs="+quotes,+attributes"]
+----
+$ {orch-cli} get secrets \
+    --namespace __<user_namespace>__ \
+    -l app.kubernetes.io/part-of=che.eclipse.org,app.kubernetes.io/component=scm-personal-access-token \
+    -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.resourceVersion}{"\n"}{end}'
+----
++
+Keep the workspace running, and run the command again after the configured period has elapsed. Only running and starting workspaces are inspected, so the tokens are no longer refreshed after the workspace stops. The resource version of the `Secret` that holds the OAuth token changes every time the token is refreshed.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:administration-guide:checluster-custom-resource-fields-reference.adoc[]
+* xref:get-started-user:using-a-git-provider-access-token.adoc[]
