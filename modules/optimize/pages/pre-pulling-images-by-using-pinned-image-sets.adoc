@@ -40,7 +40,7 @@ oc exec -n $OPERATOR_NAMESPACE deploy/{prod-operator} -- grep '@sha256:' /tmp/ex
 +
 The file also lists references that use a tag only, without a digest. They cannot be included in a `PinnedImageSet`, and the command filters them out.
 
-. Create a `PinnedImageSet` object, with the digest references in `spec.pinnedImages`:
+. Create a `PinnedImageSet` object in a file named `pinnedimageset.yaml`, with the digest references in `spec.pinnedImages`:
 +
 [source,yaml]
 ----
@@ -113,7 +113,7 @@ With automatic Operator approval, the upgrade happens unattended and the set lag
 
 [NOTE]
 ====
-The list can also include the image that the {devworkspace} Operator uses to clone projects, when this {prod-short} version provides it. The {devworkspace} Operator upgrades on its own Operator subscription, separately from {prod-short}, so refresh the set after either upgrade. After the {devworkspace} Operator upgrade, wait for its rollout to finish and regenerate the list.
+The list can also include the image that the {devworkspace} Operator uses to clone projects, when this {prod-short} version provides it. The {devworkspace} Operator upgrades on its own Operator subscription, separately from {prod-short}, so refresh the set after either upgrade. After the {devworkspace} Operator upgrade, wait for its rollout to finish and regenerate the list. The {prod-short} Operator reconciles when the {devworkspace} Operator Pod is replaced, so the regenerated list contains the clone image of the new version.
 ====
 
 == Removing the set
