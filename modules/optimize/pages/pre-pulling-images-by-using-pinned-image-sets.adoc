@@ -1,0 +1,137 @@
+:_content-type: PROCEDURE
+:description: Pre-pull workspace images on OpenShift nodes by using a PinnedImageSet
+:keywords: administration-guide, image-puller, openshift, pinned-image-set, image-caching
+:navtitle: Pre-pull images by using a PinnedImageSet on OpenShift
+
+[id="pre-pulling-images-by-using-pinned-image-sets"]
+= Pre-pulling images by using a PinnedImageSet on OpenShift
+
+This page applies to OpenShift only. On a cluster whose nodes are managed by the Machine Config Operator, use a `PinnedImageSet` object to pre-pull the editor and sample images that a {prod-short} workspace waits for. The machine config daemon (MCD) pulls the images on every node in a machine config pool before workspaces need them, avoiding a cold pull at workspace start.
+
+Use a `PinnedImageSet` as an alternative, not in addition, to the {image-puller-name}. Both mechanisms pre-pull the same images, and a pinned image also consumes disk space that is not reclaimed until the image is unpinned.
+
+[IMPORTANT]
+====
+A `PinnedImageSet` is all-or-nothing on each node: if one image in the set cannot be pulled, no image of the set is pinned on that node, and the failure is reported only in the `MachineConfigNode` status. Because of this, create a set that contains only image references that the release supports, and check the `MachineConfigNode` status after applying it.
+
+Hosted control planes do not support `PinnedImageSet`. On such a cluster, use the {image-puller-name} instead.
+====
+
+.Prerequisites
+
+* An OpenShift cluster, version 4.19.12 or later, whose nodes are managed by the Machine Config Operator. The `PinnedImageSet` feature is enabled by default from that release; earlier 4.19 releases do not provide the `PinnedImageSet` resource.
+* An active `oc` session with `cluster-admin` permissions to the OpenShift cluster.
+
+.Procedure
+
+. Find the {orch-namespace} where the {prod-short} Operator is deployed:
++
+[source,subs="+attributes"]
+----
+OPERATOR_NAMESPACE=$(oc get pods -l app.kubernetes.io/component={prod-operator} -o jsonpath='{.items[0].metadata.namespace}' --all-namespaces)
+----
+
+. Read the digest references of the editor and sample images that this {prod-short} installation uses:
++
+[source,subs="+attributes"]
+----
+oc exec -n $OPERATOR_NAMESPACE deploy/{prod-operator} -- grep '@sha256:' /tmp/external_images.txt | sort -u
+----
++
+The file also lists references that use a tag only, without a digest. They cannot be included in a `PinnedImageSet`, and the command filters them out.
+
+. Create a `PinnedImageSet` object in a file named `pinnedimageset.yaml`, with the digest references in `spec.pinnedImages`:
++
+[source,yaml]
+----
+apiVersion: machineconfiguration.openshift.io/v1
+kind: PinnedImageSet
+metadata:
+  name: che-workspace-images
+  labels:
+    machineconfiguration.openshift.io/role: worker
+spec:
+  pinnedImages:
+  - name: quay.io/devfile/universal-developer-image@sha256:...
+  - name: quay.io/devfile/universal-developer-image@sha256:...
+----
++
+* The `machineconfiguration.openshift.io/role` label selects the machine config pool that the set applies to. Use `worker` for worker nodes, `master` for control plane nodes, or the role of a custom pool. On a single-node cluster, or when the worker pool has no machines, use the role of a pool that contains the target nodes, such as `master`.
+* Set `metadata.name` to a unique value, for example one that includes the {prod-short} version, so that the set can be updated later under the same name.
+
+. Apply the object:
++
+[source,subs="+attributes"]
+----
+oc apply -f pinnedimageset.yaml
+----
+
+.Verification
+
+. Read the status of the machine config nodes and the generation of the set:
++
+[source,subs="+attributes"]
+----
+oc get machineconfignodes -o yaml
+oc get pinnedimageset <pinned-image-set> -o jsonpath='{.metadata.generation}{"\n"}'
+----
+
+. For every node in the targeted pool, find the entry for the set in `.status.pinnedImageSets` and confirm that both `currentGeneration` and `desiredGeneration` equal the generation you read. The images are pinned on that node when all three values match. Comparing the two status fields with each other is not enough: until the machine config daemon observes the update, both can still report the previous generation. While the images are being pulled, `PinnedImageSetsProgressing` is `True`, it names the nodes that are still pulling, and `currentGeneration` can be absent or lower than `desiredGeneration`.
+
+. If the pinning fails, check `lastFailedGeneration` and `lastFailedGenerationError` in the same entry. Also review the `PinnedImageSetsProgressing` and `PinnedImageSetsDegraded` conditions.
+
+== Limitations and silent failure modes
+
+* **Machine config pool selection.** A set is applied only if a machine config pool selects it by its `machineconfiguration.openshift.io/role` label. If the label does not match an existing pool, the set is accepted and never applied, without an error.
+* **Shared pools.** The MCD merges every `PinnedImageSet` that targets a machine config pool. If one set contains an image that cannot be pulled, that set stalls on the nodes of the pool, and so can the other sets that target the same nodes. Create sets for {prod-short} images with names and labels that administrators can identify.
+* **Reference format.** Each reference must be a digest reference: `sha256:` followed by 64 lowercase hexadecimal characters, after an `@`. The reference can be at most 447 characters long, must name a registry host that contains a dot, and can contain at most one {orch-namespace} segment. For example, `quay.io/devfile/universal-developer-image@sha256:...` is valid and `quay.io/namespace/team/image@sha256:...` is not. A tag before the digest, as in `image:tag@sha256:...`, is not valid.
+* **Size limit.** A set can contain at most 500 images.
+* **Authentication.** The MCD pulls with the global pull secret only, `openshift-config/pull-secret`. Image digest mirror sets (IDMS) are honored, but a workspace that authenticates against a registry with a different secret cannot pin images from that registry.
+* **Disk usage.** Pinned images are exempt from image garbage collection. The MCD never removes them while they are pinned, so a large set can cause disk pressure, which leads to pod eviction. Size the set against the disk available on the nodes.
+
+== Updating the set after an upgrade
+
+The set is a snapshot of the image digests of one {prod-short} release, and nothing updates it automatically. After every {prod-short} upgrade, refresh the set.
+
+If the set is not refreshed, the following happens, and the status still reports success:
+
+* The new release's editor and sample images are not pinned, so workspaces pull them at start.
+* The previous release's images stay pinned on every node and continue to consume disk.
+* If an image that is pinned by the old set later becomes unavailable from its registry, any node that does not already have it fails the prefetch. That includes nodes that are added, replaced, or scaled up after the upgrade. On those nodes the set stalls, and the other sets that target the same pool can stall with it. Existing nodes can hide the problem, because the MCD does not re-check images that are already pinned.
+
+.Procedure
+
+. Wait for the new {prod-short} Operator Pod to reconcile the installation. The list of images is written to the Pod's `/tmp` directory, so the list is available only from the new Pod.
+. Regenerate the list of digest references as described in steps 1 and 2 of the procedure above.
+. Replace `spec.pinnedImages` in the set with the regenerated references. Either edit the live object, for example with `oc edit pinnedimageset <pinned-image-set>`, in which case skip the next step and continue with Verification, or update the saved file so that you can apply it in the next step. Applying unchanged content does not change the set.
+. Apply the `PinnedImageSet` under the same `metadata.name`. This creates a new generation of the set.
+. Verify the new generation through the `MachineConfigNode` status, as described in Verification.
+
+The new generation is pulled to every node in the pool. The set is applied only after all pulls succeed, and the old images stay pinned until then, so size the node disk for both generations during the change. After the new generation is applied, the old images are unpinned and can be removed by garbage collection.
+
+With automatic Operator approval, the upgrade happens unattended and the set lags behind until you refresh it. To avoid a gap, use manual approval and refresh the set immediately after approving the upgrade.
+
+[NOTE]
+====
+The list can also include the image that the {devworkspace} Operator uses to clone projects, when this {prod-short} version provides it. The {devworkspace} Operator upgrades on its own Operator subscription, separately from {prod-short}, so refresh the set after either upgrade. After the {devworkspace} Operator upgrade, wait for its rollout to finish and regenerate the list. The {prod-short} Operator reconciles when the {devworkspace} Operator Pod is replaced, so the regenerated list contains the clone image of the new version.
+====
+
+== Removing the set
+
+When uninstalling {prod-short}, or when switching to the {image-puller-name}, delete the `PinnedImageSet`:
+
+[source,subs="+attributes"]
+----
+oc delete pinnedimageset <pinned-image-set>
+----
+
+Replace `<pinned-image-set>` with the `metadata.name` value that you used when creating the set.
+
+The images become unpinned on the nodes and are eligible for garbage collection.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:caching-images-for-faster-workspace-start.adoc[]
+* xref:how-image-caching-speeds-up-workspace-starts.adoc[]
+* link:https://docs.openshift.com/container-platform/4.19/machine_configuration/machine-config-pin-preload-images-about.html[Pinning images to nodes in the OpenShift Container Platform documentation]
