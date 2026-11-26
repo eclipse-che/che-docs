@@ -1,0 +1,156 @@
+:_content-type: REFERENCE
+:description: Environment variables that configure the Lola init container in {prod-short} workspaces.
+:keywords: administration, ai, lola, init container, environment variables, agents
+:page-aliases:
+
+[id="ref_ai-assistant-configuration"]
+= AI assistant configuration reference
+
+[role="_abstract"]
+The link:https://github.com/LobsterTrap/lola[Lola] init container reads its configuration from environment variables. Set them on the init container in the `{prod-checluster}` custom resource, in the `lola-config-default` `ConfigMap`, or in a developer's `lola-config` `Secret`.
+
+.Variables
+[cols="1,3,1",options="header"]
+|===
+| Variable | Purpose | Default
+
+| `LOLA_DEFAULT_REPO_URL`
+| URL of the recommended module repository
+| None
+
+| `LOLA_DEFAULT_REPO_REF`
+| Branch, tag, or commit of the recommended module. Without it, the container installs the default branch.
+| Default branch
+
+| `LOLA_REPO_URL`
+| Personal module repository of one developer, used instead of the recommended one
+| None
+
+| `LOLA_REPO_REF`
+| Branch, tag, or commit of the personal module. Without it, the container installs the default branch.
+| Default branch
+
+| `LOLA_AGENTS`
+| Assistants to install the module for: one name, a comma-separated list, or `all`
+| `claude-code`
+
+| `LOLA_DISABLED`
+| `true` skips the installation and leaves the installed content untouched. Any other value is ignored and logged.
+| None
+
+| `LOLA_TIMEOUT`
+| Timeout in seconds for each Lola command. `0` disables the timeout.
+| `120`
+|===
+
+The object that supplies a variable decides which value wins when the same name is set twice:
+
+* An environment variable set on the init container in the `{prod-checluster}` custom resource wins over the same name in the `ConfigMap` or in the `Secret`. {orch-name} resolves an explicit `env` entry before the mounted ones.
+* `LOLA_REPO_URL` wins over `LOLA_DEFAULT_REPO_URL`: a developer points their own workspaces at a personal module without an administrator changing the recommended one, and deleting the key falls back to the recommended module.
+* With neither repository URL set, the container logs that it has nothing to do and exits without installing anything.
+
+[id="choosing-the-ai-assistants"]
+== Choosing the AI assistants
+
+The init container installs the module for the assistants that `LOLA_AGENTS` names: one assistant, a comma-separated subset, or `all`. Install the same module for every assistant rather than one module per assistant. With no value set, the container installs Claude Code.
+
+Supported values are `claude-code`, `opencode`, `gemini-cli`, `cursor`, `copilot-cli`, `copilot-vscode`, `openclaw`, a comma-separated combination of them, and `all`.
+
+* `all` installs for every assistant that Lola installs by default, including assistants that Lola adds later.
+* `all` leaves out `copilot-cli`, because it writes to the same location as `copilot-vscode`. Add `copilot-cli` to the list explicitly to cover it.
+* An unknown name fails the installation: the status file reports `failed` and names the value.
+
+The examples below show only the `env` part of the entry. Add it to the `lola-init` entry that you created in xref:configuring-a-recommended-ai-agent-configuration.adoc[], which keeps its image and its `persistent-home` mount.
+
+A value set on the init container applies to every workspace in the instance. Leave `LOLA_AGENTS` unset there when developers must choose their own set.
+
+One assistant for every workspace::
+Set `LOLA_AGENTS` on the init container.
++
+[source,yaml,subs="+attributes"]
+----
+spec:
+  devEnvironments:
+    initContainers:
+      - name: lola-init
+        env:
+          - name: LOLA_AGENTS
+            value: opencode
+----
+
+Several assistants in one workspace::
+List the assistants, separated by commas. Order and duplicates do not matter.
++
+[source,yaml,subs="+attributes"]
+----
+spec:
+  devEnvironments:
+    initContainers:
+      - name: lola-init
+        env:
+          - name: LOLA_AGENTS
+            value: claude-code,opencode
+----
+
+Every assistant that Lola supports::
+Set the value to `all`. The container then installs without naming a target, so one installation covers every assistant that Lola installs by default, except `copilot-cli`.
++
+[source,yaml,subs="+attributes"]
+----
+spec:
+  devEnvironments:
+    initContainers:
+      - name: lola-init
+        env:
+          - name: LOLA_AGENTS
+            value: all
+----
+
+A different set for some developers::
+Each developer adds `LOLA_AGENTS` to the `lola-config` `Secret` in their own {namespace}. The recommended module stays, and only the set of assistants changes. This works only while the init container does not set the variable itself. Adding `LOLA_REPO_URL` to the same `Secret` replaces the module as well. See xref:develop:override-recommended-ai-agent-configuration.adoc[].
++
+[source,yaml,subs="+attributes"]
+----
+stringData:
+  LOLA_AGENTS: claude-code,gemini-cli
+----
+
+A change to the list behaves like a change of the repository or the ref: the init container removes the module from every assistant of the previous set, then installs it for the new one.
+
+== Destinations at user scope
+
+The table lists the main destinations at user scope. The `copilot-vscode` target skips commands and MCP servers, and OpenClaw has no user scope: the init container installs it into `{prod-home}/.openclaw/workspace`, and it receives skills only.
+
+.Assistant destinations at user scope
+[cols="1,1",options="header"]
+|===
+| Assistant | Destination in `{prod-home}`
+
+| `claude-code`
+| `.claude/skills`, `.claude/commands`, `.claude/agents`, a managed section of `.claude/CLAUDE.md`, and `.mcp.json`
+
+| `opencode`
+| `.config/opencode/skills`, `.config/opencode/commands`, `.config/opencode/agents`, a managed section of `.config/opencode/AGENTS.md`, and `.config/opencode/opencode.json`
+
+| `gemini-cli`
+| A managed section of `GEMINI.md`, `.gemini/commands`, and `.gemini/settings.json`
+
+| `cursor`
+| `.cursor/skills`, `.cursor/commands`, `.cursor/agents`, `.cursor/rules`, and `.cursor/mcp.json`
+
+| `copilot-cli`
+| `.copilot/skills`, `.copilot/prompts`, `.copilot/agents`, `.copilot/copilot-instructions.md`, and `.copilot/mcp-config.json`
+
+| `copilot-vscode`
+| `.copilot/skills`, `.copilot/agents`, and `.copilot/copilot-instructions.md`
+
+| `openclaw`
+| `.openclaw/workspace/skills`
+|===
+
+== Content that Lola does not carry
+
+* Assistant settings, such as the Claude Code `settings.json` file with hooks and permissions.
+* Plugins and hooks written as JavaScript or TypeScript files.
+* Credentials. Store them in a `Secret`, not in the module.
+* Absolute paths from your workstation. Lola copies Markdown text as written: it does not copy the referenced files and does not rewrite the paths. Use paths that exist in the workspace, such as `{prod-home}`.
