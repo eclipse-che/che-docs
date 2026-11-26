@@ -68,14 +68,15 @@ oc apply -f pinnedimageset.yaml
 
 .Verification
 
-. Read the status of the machine config nodes:
+. Read the status of the machine config nodes and the generation of the set:
 +
 [source,subs="+attributes"]
 ----
 oc get machineconfignodes -o yaml
+oc get pinnedimageset <pinned-image-set> -o jsonpath='{.metadata.generation}{"\n"}'
 ----
 
-. For every node in the targeted pool, find the entry for the set in `.status.pinnedImageSets` and confirm that `currentGeneration` equals `desiredGeneration`. The images are pinned on that node when the two generations match. While the images are being pulled, `PinnedImageSetsProgressing` is `True`, it names the nodes that are still pulling, and `currentGeneration` can be absent or lower than `desiredGeneration`.
+. For every node in the targeted pool, find the entry for the set in `.status.pinnedImageSets` and confirm that both `currentGeneration` and `desiredGeneration` equal the generation you read. The images are pinned on that node when all three values match. Comparing the two status fields with each other is not enough: until the machine config daemon observes the update, both can still report the previous generation. While the images are being pulled, `PinnedImageSetsProgressing` is `True`, it names the nodes that are still pulling, and `currentGeneration` can be absent or lower than `desiredGeneration`.
 
 . If the pinning fails, check `lastFailedGeneration` and `lastFailedGenerationError` in the same entry. Also review the `PinnedImageSetsProgressing` and `PinnedImageSetsDegraded` conditions.
 
@@ -102,6 +103,7 @@ If the set is not refreshed, the following happens, and the status still reports
 
 . Wait for the new {prod-short} Operator Pod to reconcile the installation. The list of images is written to the Pod's `/tmp` directory, so the list is available only from the new Pod.
 . Regenerate the list of digest references as described in steps 1 and 2 of the procedure above.
+. Replace `spec.pinnedImages` in the set with the regenerated references. Either edit the live object, for example with `oc edit pinnedimageset <name>`, in which case skip the next step and continue with Verification, or update the saved file so that you can apply it in the next step. Applying unchanged content does not change the set.
 . Apply the `PinnedImageSet` under the same `metadata.name`. This creates a new generation of the set.
 . Verify the new generation through the `MachineConfigNode` status, as described in Verification.
 
@@ -120,8 +122,10 @@ When uninstalling {prod-short}, or when switching to the {image-puller-name}, de
 
 [source,subs="+attributes"]
 ----
-oc delete pinnedimageset che-workspace-images
+oc delete pinnedimageset <pinned-image-set>
 ----
+
+Substitute the `metadata.name` that you used when creating the set.
 
 The images become unpinned on the nodes and are eligible for garbage collection.
 
