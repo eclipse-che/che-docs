@@ -66,3 +66,14 @@ jobs:
           github_token: ${{ secrets.CHE_BOT_GITHUB_TOKEN }}
           publish_branch: publication
           publish_dir: build/site
+
+      - name: Trigger website publication
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.CHE_BOT_GITHUB_TOKEN }}
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            https://api.github.com/repos/eclipse-che/che-website-publish/dispatches \
+            -d '{"event_type":"docs-published"}'
