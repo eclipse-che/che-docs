@@ -6,9 +6,9 @@
 [id="pre-pulling-images-by-using-pinned-image-sets"]
 = Pre-pulling images by using a PinnedImageSet on OpenShift
 
-This page applies to OpenShift only. On a cluster whose nodes are managed by the Machine Config Operator, use a `PinnedImageSet` object to pre-pull the editor and sample images that a {prod-short} workspace waits for. The machine config daemon (MCD) pulls the images on every node of a machine config pool before workspaces need them, which avoids a cold pull at workspace start.
+This page applies to OpenShift only. On a cluster whose nodes are managed by the Machine Config Operator, use a `PinnedImageSet` object to pre-pull the editor and sample images that a {prod-short} workspace waits for. The machine config daemon (MCD) pulls the images on every node in a machine config pool before workspaces need them, avoiding a cold pull at workspace start.
 
-Use a `PinnedImageSet` as an alternative, not in addition, to the {image-puller-name}. Both mechanisms pre-pull the same images, and a pinned image also consumes disk that is never reclaimed until it is unpinned.
+Use a `PinnedImageSet` as an alternative, not in addition, to the {image-puller-name}. Both mechanisms pre-pull the same images, and a pinned image also consumes disk space that is not reclaimed until the image is unpinned.
 
 [IMPORTANT]
 ====
@@ -19,7 +19,7 @@ Hosted control planes do not support `PinnedImageSet`. On such a cluster, use th
 
 .Prerequisites
 
-* An OpenShift cluster whose nodes are managed by the Machine Config Operator, version 4.19.12 or later. The `PinnedImageSet` feature is enabled by default from that release; earlier 4.19 releases do not provide the `PinnedImageSet` resource.
+* An OpenShift cluster, version 4.19.12 or later, whose nodes are managed by the Machine Config Operator. The `PinnedImageSet` feature is enabled by default from that release; earlier 4.19 releases do not provide the `PinnedImageSet` resource.
 * An active `oc` session with `cluster-admin` permissions to the OpenShift cluster.
 
 .Procedure
@@ -103,7 +103,7 @@ If the set is not refreshed, the following happens, and the status still reports
 
 . Wait for the new {prod-short} Operator Pod to reconcile the installation. The list of images is written to the Pod's `/tmp` directory, so the list is available only from the new Pod.
 . Regenerate the list of digest references as described in steps 1 and 2 of the procedure above.
-. Replace `spec.pinnedImages` in the set with the regenerated references. Either edit the live object, for example with `oc edit pinnedimageset <name>`, in which case skip the next step and continue with Verification, or update the saved file so that you can apply it in the next step. Applying unchanged content does not change the set.
+. Replace `spec.pinnedImages` in the set with the regenerated references. Either edit the live object, for example with `oc edit pinnedimageset <pinned-image-set>`, in which case skip the next step and continue with Verification, or update the saved file so that you can apply it in the next step. Applying unchanged content does not change the set.
 . Apply the `PinnedImageSet` under the same `metadata.name`. This creates a new generation of the set.
 . Verify the new generation through the `MachineConfigNode` status, as described in Verification.
 
@@ -125,7 +125,7 @@ When uninstalling {prod-short}, or when switching to the {image-puller-name}, de
 oc delete pinnedimageset <pinned-image-set>
 ----
 
-Substitute the `metadata.name` that you used when creating the set.
+Replace `<pinned-image-set>` with the `metadata.name` value that you used when creating the set.
 
 The images become unpinned on the nodes and are eligible for garbage collection.
 
